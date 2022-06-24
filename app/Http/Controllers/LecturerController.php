@@ -116,7 +116,7 @@ class LecturerController extends Controller
 
         $dir = "classmaterial/" . $directory->A;
 
-        Storage::disk('public')->deleteDirectory($dir);
+        Storage::disk('linode')->deleteDirectory($dir);
 
         DB::table('lecturer_dir')->where('DrID', $request->dir)->delete();
 
@@ -134,7 +134,7 @@ class LecturerController extends Controller
 
         $dir = "classmaterial/" . $directory->A . "/" . $directory->B;
 
-        Storage::disk('public')->deleteDirectory($dir);
+        Storage::disk('linode')->deleteDirectory($dir);
 
         DB::table('material_dir')->where('DrID', $request->dir)->delete();
 
@@ -153,7 +153,7 @@ class LecturerController extends Controller
 
         $dir = "classmaterial/" . $directory->A . "/" . $directory->B . "/" . $directory->C;
 
-        Storage::disk('public')->deleteDirectory($dir);
+        Storage::disk('linode')->deleteDirectory($dir);
 
         DB::table('materialsub_dir')->where('DrID', $request->dir)->delete();
 
@@ -163,7 +163,7 @@ class LecturerController extends Controller
     public function deleteMaterial(Request $request)
     {
 
-        Storage::disk('public')->delete($request->mats);
+        Storage::disk('linode')->delete($request->mats);
 
         return true;
 
@@ -206,7 +206,7 @@ class LecturerController extends Controller
                 'conpass.same' => 'The Confirm Password and Password must match!'
             ]);
 
-            $classmaterial  = Storage::disk('public')->makeDirectory($dir);
+            $classmaterial  = Storage::disk('linode')->makeDirectory($dir);
 
             $user = auth()->user()->ic;
 
@@ -264,7 +264,7 @@ class LecturerController extends Controller
 
             $course = DB::table('subjek')->where('id', Session::get('CourseID'))->first();
 
-            //$classmaterial  = Storage::disk('public')->allFiles( $dir );
+            //$classmaterial  = Storage::disk('linode')->allFiles( $dir );
 
             return view('lecturer.coursecontent.materialdirectory', compact('mat_directory', 'course'))->with('dirid', $password->DrID);
 
@@ -304,7 +304,7 @@ class LecturerController extends Controller
                 'conpass.same' => 'The Confirm Password and Password must match!'
             ]);
 
-            $classmaterial  = Storage::disk('public')->makeDirectory($dir);
+            $classmaterial  = Storage::disk('linode')->makeDirectory($dir);
 
             $user = auth()->user()->ic;
 
@@ -409,7 +409,7 @@ class LecturerController extends Controller
 
             //dd($data['chapter']);
 
-            $classmaterial  = Storage::disk('public')->makeDirectory($dir);
+            $classmaterial  = Storage::disk('linode')->makeDirectory($dir);
 
             $user = auth()->user()->ic;
 
@@ -486,7 +486,7 @@ class LecturerController extends Controller
             
             $dir = "classmaterial/" . $directory->A . "/" . $directory->B . "/" . $directory->C;
 
-            $classmaterial  = Storage::disk('public')->allFiles( $dir );
+            $classmaterial  = Storage::disk('linode')->allFiles( $dir );
 
             return view('lecturer.coursecontent.coursematerial', compact('classmaterial', 'course'))->with('dirid', $directory->DrID)->with('prev', $directory->MaterialDirID);
         }
@@ -519,7 +519,7 @@ class LecturerController extends Controller
         
 
         if(! file_exists($newname)){
-            Storage::disk('public')->putFileAs(
+            Storage::disk('linode')->putFileAs(
                 $classmaterial,
                 $file,
                 $newname
@@ -542,7 +542,7 @@ class LecturerController extends Controller
 
         $dir = "classmaterial/" . $directory->A . "/" . $directory->B . "/" . $directory->C;
 
-        $classmaterial  = Storage::disk('public')->allFiles( $dir );
+        $classmaterial  = Storage::disk('linode')->allFiles( $dir );
 
         $course = DB::table('subjek')->where('id', Session::get('CourseID'))->first();
 
@@ -566,7 +566,7 @@ class LecturerController extends Controller
 
             $dir = "classmaterial/" . $password->A . "/" . $password->B . "/" . $password->C;
 
-            $classmaterial  = Storage::disk('public')->allFiles( $dir );
+            $classmaterial  = Storage::disk('linode')->allFiles( $dir );
 
             $course = DB::table('subjek')->where('id', Session::get('CourseID'))->first();
     
