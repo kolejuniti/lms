@@ -522,7 +522,8 @@ class LecturerController extends Controller
             Storage::disk('linode')->putFileAs(
                 $classmaterial,
                 $file,
-                $newname
+                $newname,
+                'public'
               );
 
             return redirect(route('lecturer.directory.content.prev', ['dir' =>  $request->id]));
