@@ -137,6 +137,7 @@
                             <tr>
                               <td><input type="checkbox" id="{{ $ace[0] }}" name="academic[]" value="{{ $ace[0] }}" {{ ($academic[$key] != null) ? ($academic[$key]->academic_id == $ace[0]) ? 'checked' : '' : '' }}><label for="{{ $ace[0] }}" class="form-label">{{ $ace[1] }}</label></td>
                               <td id="tb_{{ $ace[0] }}" {{ ($academic[$key] != null) ? '' : 'hidden'}}><input type="text" class="form-control" id="prg_{{ $ace[0] }}" placeholder="Enter program name" name="prg[]" value="{{ ($academic[$key] != null) ? $academic[$key]->academic_name : ''}}"></td>
+                              <td id="tb2_{{ $ace[0] }}" {{ ($academic[$key] != null) ? '' : 'hidden'}}><input type="text" class="form-control" id="uni_{{ $ace[0] }}" placeholder="Enter program name" name="uni[]" value="{{ ($academic[$key] != null) ? $academic[$key]->university_name : ''}}"></td>
                             </tr>
                             @endforeach
                           </table>
@@ -287,10 +288,14 @@
 
     if(this.checked){
       document.getElementById('tb_' + check).hidden = false;
+      document.getElementById('tb2_' + check).hidden = false;
       document.getElementById('prg_' + check).required = true;
+      document.getElementById('uni_' + check).required = true;
     }else{
       document.getElementById('tb_' + check).hidden = true;
+      document.getElementById('tb2_' + check).hidden = true;
       document.getElementById('prg_' + check).required = false;
+      document.getElementById('uni_' + check).required = false;
     }
 
   });

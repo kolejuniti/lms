@@ -63,6 +63,7 @@ return [
             'endpoint' => env('LINODE_ENDPOINT'),
             'region' => env('LINODE_REGION'),
             'bucket' => env('LINODE_BUCKET'),
+            'use_path_style_endpoint' => env('LINODE_USE_PATH_STYLE_ENDPOINT', false),
         ],
 
     ],

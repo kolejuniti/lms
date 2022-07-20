@@ -176,7 +176,8 @@ class QuizController extends Controller
         $sessionid = Session::get('SessionIDS');
         $duration = $request->duration;
         $title = $request->title;
-        $date = $request->date;
+        $from = $request->from;
+        $to = $request->to;
         $questionindex = $request->questionindex;
         $status = $request->status;
         $group = $request->group;
@@ -191,7 +192,8 @@ class QuizController extends Controller
         if( !empty($quizid) ){
             $q = DB::table('tblclassquiz')->where('id', $quizid)->update([
                 "title" => $title,
-                "date" => $date,
+                "date_from" => $from,
+                "date_to" => $to,
                 "content" => $data,
                 "duration" => $duration,
                 "questionindex" => $questionindex,
@@ -204,7 +206,8 @@ class QuizController extends Controller
                 "classid" => $classid,
                 "sessionid" => $sessionid,
                 "title" => $title,
-                "date" => $date,
+                "date_from" => $from,
+                "date_to" => $to,
                 "content" => $data,
                 "duration" => $duration,
                 "questionindex" => $questionindex,
@@ -596,6 +599,7 @@ class QuizController extends Controller
                 $data['quizid'] = $quiz->id;
                 $data['quiztitle'] = $quiz->title;
                 $data['quizduration'] = $quiz->duration;
+                $data['quizendduration'] = $quiz->date_to;
                 $data['fullname'] = $quiz->name;
                 $data['created_at'] = $quiz->created_at;
                 $data['updated_at'] = $quiz->updated_at;

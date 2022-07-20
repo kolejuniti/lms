@@ -95,7 +95,7 @@
                                 @endforeach
                               </td>
                               <td class="align-items-center">
-                                <a href="{{ asset('storage/'. $dt->content) }}" download><i class="fa fa-file-pdf-o fa-3x"></i></a>
+                                <a href="{{ Storage::disk('linode')->url($dt->content) }}"><i class="fa fa-file-pdf-o fa-3x"></i></a>
                               </td>
                               <td>
                                 {{ $dt->deadline }}

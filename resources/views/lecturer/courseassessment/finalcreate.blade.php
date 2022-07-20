@@ -86,15 +86,30 @@ div.form-actions.btn-group > button{
                                             value="{{ empty($data['final']->title) ? "" : $data['final']->title }}">
                                     </div>
                                     <div class="col-md-2 mb-4">
-                                        <label for="final-duration" class="form-label "><strong>Final Duration (minutes)</strong></label>
-                                        <input type="number" oninput="this.value = this.value.toUpperCase()"  id="final-duration" class="form-control"
+                                        <label for="from" class="form-label "><strong>Final Duration (From)</strong></label>
+                                        <input type="datetime-local" oninput="this.value = this.value.toUpperCase()"  id="from" class="form-control"
+                                            value={{ empty($data['final']->duration) ? 30 : $data['final']->duration }}>
+                                    </div>
+                                    <div class="col-md-2 mb-4" id="time-to" hidden>
+                                        <label for="to" class="form-label "><strong>Final Duration (To)</strong></label>
+                                        <input type="datetime-local" oninput="this.value = this.value.toUpperCase()"  id="to" class="form-control"
                                             value={{ empty($data['final']->duration) ? 30 : $data['final']->duration }}>
                                     </div>
                                     <div class="col-md-2 mb-4">
+                                        <label for="final-duration" class="form-label "><strong>Final Duration (minutes)</strong></label>
+                                        <input readonly type="number" oninput="this.value = this.value.toUpperCase()"  id="final-duration" class="form-control"
+                                            value="">
+                                    </div>
+                                    <div class="col-md-2 mb-4" hidden>
                                         <label for="question-index" class="form-label "><strong>Question Index</strong></label>
                                         <input id="question-index" type="number" class="form-control"
                                             value={{ empty($data['final']->questionindex) ? 1 : $data['final']->questionindex }}>
                                     </div>
+                                    <!--<div class="col-md-2 mb-4">
+                                        <label for="date" class="form-label "><strong>Date</strong></label>
+                                        <input type="date" id="date" class="form-control"
+                                            value="">
+                                    </div>-->
                                     <div class="col-md-2 mb-4">
                                         <div class="form-group">
                                           <label class="form-label" for="folder">Lecturer Folder</label>
@@ -108,11 +123,6 @@ div.form-actions.btn-group > button{
                                             {{ $message }}
                                           @enderror</span>
                                         </div>
-                                    </div>
-                                    <div class="col-md-2 mb-4">
-                                        <label for="date" class="form-label "><strong>Date</strong></label>
-                                        <input type="date" id="date" class="form-control"
-                                            value="">
                                     </div>
                                     <div class="col-md-2 mb-4">
                                         <label for="total-marks" class="form-label "><strong>Total Marks</strong></label>
@@ -218,6 +228,44 @@ div.form-actions.btn-group > button{
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jQuery-formBuilder/3.4.2/form-render.min.js"></script>
 
 <script>
+var selected_from = '';
+var selected_to = '';
+
+$(document).on('change', '#from', async function(e){
+
+    $('#time-to').removeAttr('hidden');
+    
+    selected_from = $(e.target).val();
+
+    if(selected_to != '')
+    {
+        await getDuration(selected_from,selected_to);
+    }
+
+});
+
+$(document).on('change', '#to', async function(e){
+    selected_to = $(e.target).val();
+
+    await getDuration(selected_from,selected_to);
+});
+
+function getDuration(from,to)
+{
+    var x = new Date(from);
+    var y = new Date(to);
+    var z =  y - x;
+
+    var minutes = Math.floor(z / 60000);
+    //alert(z)
+
+    $('#final-duration').val(minutes);
+
+}
+
+</script>
+
+<script>
 var selected_folder = "";
 
 $(document).on('change', '#folder', async function(e){
@@ -273,7 +321,7 @@ jQuery(function($) {
 
     if(final_status == 2){
         Swal.fire({
-			title: "Final is already started!",
+			title: "final is already started!",
 			text: "You are not allowed to edit anymore once published",
 			confirmButtonText: "Ok"
 		}).then(function(res){
@@ -310,6 +358,8 @@ jQuery(function($) {
                 label: this.dataset.label + ' '+ questionnum++
             };
             var index = this.dataset.index ? Number(this.dataset.index) : undefined;
+
+            //alert(i);
 
             formBuilder.actions.addField(field, index);
 
@@ -397,6 +447,8 @@ jQuery(function($) {
                 label: this.dataset.label + ' '+ questionnum++
             };
             var index = this.dataset.index ? Number(this.dataset.index) : undefined;
+
+            //alert(i);
 
             formBuilder.actions.addField(field, index);
 
@@ -500,6 +552,8 @@ jQuery(function($) {
             };
             var index = this.dataset.index ? Number(this.dataset.index) : undefined;
 
+            //alert(i)
+
             formBuilder.actions.addField(field, index);
 
             field = {
@@ -593,7 +647,8 @@ jQuery(function($) {
                 title: $("#final-title").val(),
                 duration: $("#final-duration").val(),
                 questionindex: $("#question-index").val(),
-                date: $("#date").val(),
+                from: $("#from").val(),
+                to: $("#to").val(),
                 marks: $("#total-marks").val(),
                 group: $('input[name="group[]"]:checked').map(function(){ 
                     return this.value; 

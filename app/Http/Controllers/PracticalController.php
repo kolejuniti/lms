@@ -164,7 +164,8 @@ class PracticalController extends Controller
             Storage::disk('public')->putFileAs(
                 $dir,
                 $file,
-                $newname
+                $newname,
+                'public'
               );
 
             $q = DB::table('tblclasspractical')->insertGetId([
@@ -326,7 +327,8 @@ class PracticalController extends Controller
         Storage::disk('public')->putFileAs(
             $dir,
             $file,
-            $newname
+            $newname,
+            'public'
           );
       
         $q = \DB::table('tblclassstudentpractical')
@@ -483,7 +485,8 @@ class PracticalController extends Controller
             Storage::disk('public')->putFileAs(
                 $dir,
                 $file,
-                $newname
+                $newname,
+                'public'
               );
             
               if($today > $practical->deadline)

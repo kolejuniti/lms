@@ -176,7 +176,8 @@ class MidtermController extends Controller
         $sessionid = Session::get('SessionIDS');
         $duration = $request->duration;
         $title = $request->title;
-        $date = $request->date;
+        $from = $request->from;
+        $to = $request->to;
         $questionindex = $request->questionindex;
         $status = $request->status;
         $group = $request->group;
@@ -191,7 +192,8 @@ class MidtermController extends Controller
         if( !empty($midtermid) ){
             $q = DB::table('tblclassmidterm')->where('id', $midtermid)->update([
                 "title" => $title,
-                "date" => $date,
+                "date_from" => $from,
+                "date_to" => $to,
                 "content" => $data,
                 "duration" => $duration,
                 "questionindex" => $questionindex,
@@ -204,7 +206,8 @@ class MidtermController extends Controller
                 "classid" => $classid,
                 "sessionid" => $sessionid,
                 "title" => $title,
-                "date" => $date,
+                "date_from" => $from,
+                "date_to" => $to,
                 "content" => $data,
                 "duration" => $duration,
                 "questionindex" => $questionindex,
@@ -523,6 +526,8 @@ class MidtermController extends Controller
                     ['student_subjek.student_ic', Session::get('StudInfos')->ic]
                 ])->get();
 
+        //dd($midterm);
+
         foreach($midterm as $qz)
         {
             $status[] = DB::table('tblclassstudentmidterm')
@@ -594,6 +599,7 @@ class MidtermController extends Controller
                 $data['midtermid'] = $midterm->id;
                 $data['midtermtitle'] = $midterm->title;
                 $data['midtermduration'] = $midterm->duration;
+                $data['midtermendduration'] = $midterm->date_to;
                 $data['fullname'] = $midterm->name;
                 $data['created_at'] = $midterm->created_at;
                 $data['updated_at'] = $midterm->updated_at;

@@ -105,8 +105,17 @@ Route::post('lecturer/class/onlineclass/getChapters', [App\Http\Controllers\Lect
 Route::post('lecturer/class/onlineclass/getSubChapters', [App\Http\Controllers\LecturerController::class, 'getSubChapters']);
 Route::post('/lecturer/class/onlineclass/store', [App\Http\Controllers\LecturerController::class, 'storeOnlineClass'])->name('lecturer.onlineclass.store');
 Route::get('/lecturer/class/onlineclass/list', [App\Http\Controllers\LecturerController::class, 'OnlineClassList'])->name('lecturer.onlineclass.list');
+Route::delete('/lecturer/class/onlineclass/list/delete', [App\Http\Controllers\LecturerController::class, 'OnlineClassListDelete'])->name('lecturer.onlineclass.list.delete');
 Route::get('/lecturer/class/onlineclass/list/edit/{id}', [App\Http\Controllers\LecturerController::class, 'OnlineClassListEdit'])->name('lecturer.onlineclass.list.edit');
 Route::patch('/lecturer/class/onlineclass/list/update/{id}', [App\Http\Controllers\LecturerController::class, 'OnlineClassListUpdate'])->name('lecturer.onlineclass.list.update');
+
+Route::get('/lecturer/class/announcement', [App\Http\Controllers\LecturerController::class, 'announcement'])->name('lecturer.class.announcement');
+Route::get('/lecturer/class/announcement/getGroupList', [App\Http\Controllers\LecturerController::class, 'announcementGetGroupList']);
+Route::post('/lecturer/class/announcement/store', [App\Http\Controllers\LecturerController::class, 'storeAnnouncement'])->name('lecturer.announcement.store');
+Route::get('/lecturer/class/announcement/list', [App\Http\Controllers\LecturerController::class, 'announcementList'])->name('lecturer.announcement.list');
+Route::delete('/lecturer/class/announcement/list/delete', [App\Http\Controllers\LecturerController::class, 'announcementListDelete'])->name('lecturer.announcement.list.delete');
+Route::get('/lecturer/class/announcement/list/edit/{id}', [App\Http\Controllers\LecturerController::class, 'announcementListEdit'])->name('lecturer.announcement.list.edit');
+Route::patch('/lecturer/class/announcement/list/update/{id}', [App\Http\Controllers\LecturerController::class, 'announcementListUpdate'])->name('lecturer.announcement.list.update');
 
 Route::get('/lecturer/report/{id}', [App\Http\Controllers\LecturerController::class, 'assessmentreport'])->name('lecturer.report');
 Route::get('/lecturer/report/{id}/{student}', [App\Http\Controllers\LecturerController::class, 'studentreport'])->name('lecturer.report.student');
@@ -198,6 +207,22 @@ Route::get('/lecturer/final/{finalid}/{userid}/result', [App\Http\Controllers\Fi
 Route::post('/lecturer/final/getChapters', [App\Http\Controllers\FinalController::class, 'getChapters']);
 
 
+Route::get('/lecturer/extra/{id}', [App\Http\Controllers\ExtraController::class, 'extralist'])->name('lecturer.extra');
+Route::get('/lecturer/extra/{id}/create', [App\Http\Controllers\ExtraController::class, 'extracreate'])->name('lecturer.extra.create');
+Route::post('/lecturer/extra/insert', [App\Http\Controllers\ExtraController::class, 'insertextra']);
+Route::post('/lecturer/extra/update', [App\Http\Controllers\ExtraController::class, 'updateextra']);
+
+Route::post('/lecturer/extra/getStatus', [App\Http\Controllers\ExtraController::class, 'getStatus']);
+Route::post('/lecturer/extra/updateextraresult', [App\Http\Controllers\ExtraController::class, 'updateextraresult']);
+Route::get('/lecturer/extra/{id}/{extra}', [App\Http\Controllers\ExtraController::class, 'lecturerextrastatus'])->name('lecturer.extra.status');
+Route::get('/lecturer/extra/{extraid}/{userid}/result', [App\Http\Controllers\ExtraController::class, 'extraresult']);
+Route::post('/lecturer/extra/getChapters', [App\Http\Controllers\ExtraController::class, 'getChapters']);
+
+Route::get('/lecturer/forum/{id}', [App\Http\Controllers\ForumController::class, 'lectForum'])->name('lecturer.forum');
+Route::post('/lecturer/forum/{id}/insert', [App\Http\Controllers\ForumController::class, 'insertTopic']);
+Route::post('/lecturer/forum/{id}/topic/insert', [App\Http\Controllers\ForumController::class, 'insertForum']);
+
+
 Route::get('/student', [App\Http\Controllers\StudentController::class, 'index'])->name('student');
 Route::post('/student/course/filter', [App\Http\Controllers\StudentController::class, 'getCourseList']);
 Route::get('/student/{id}', [App\Http\Controllers\StudentController::class, 'courseSummary'])->name('student.summary');
@@ -215,6 +240,7 @@ Route::get('/Student/class/schedule/getGroup', [App\Http\Controllers\StudentCont
 Route::post('/student/class/schedule/getschedule', [App\Http\Controllers\StudentController::class, 'getSchedule']);
 Route::get('/student/class/onlineclass/list', [App\Http\Controllers\StudentController::class, 'OnlineClassList'])->name('student.onlineclass.list');
 Route::get('/student/class/onlineclass/list/{id}', [App\Http\Controllers\StudentController::class, 'OnlineClassListView'])->name('student.onlineclass.list.view');
+Route::get('/student/class/announcement/list', [App\Http\Controllers\StudentController::class, 'AnnouncementList'])->name('student.announcement.list');
 
 Route::get('/student/report/{id}', [App\Http\Controllers\StudentController::class, 'studentreport'])->name('student.report.student');
 
@@ -278,6 +304,12 @@ Route::post('/student/final/startfinal', [App\Http\Controllers\FinalController::
 Route::post('/student/final/savefinal', [App\Http\Controllers\FinalController::class, 'savefinal']);
 Route::post('/student/final/submitfinal', [App\Http\Controllers\FinalController::class, 'submitfinal']);
 
+Route::get('/student/forum/{id}', [App\Http\Controllers\ForumController::class, 'studForum'])->name('student.forum');
+Route::post('/student/forum/{id}/insert', [App\Http\Controllers\ForumController::class, 'studinsertTopic']);
+Route::post('/student/forum/{id}/topic/insert', [App\Http\Controllers\ForumController::class, 'studinsertForum']);
+
 Route::post('/login/custom', [App\Http\Controllers\LoginController::class, 'login'])->name('login.custom');
 
 Route::post('/login/student/custom', [App\Http\Controllers\LoginStudentController::class, 'login'])->name('login.student.custom');
+
+Route::get('/send-announcement', [App\Http\Controllers\AnnouncementStudentController::class, 'sendAnnouncement']);

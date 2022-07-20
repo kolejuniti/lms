@@ -39,7 +39,7 @@ class AdminController extends Controller
             'faculty' => ['required'],
         ]);
 
-        //dd(array_filter(request()->prg));
+        //dd(array_values(array_filter(request()->prg,function($v){return !is_null($v);})));
 
         //this will create data in table [Please be noted that model need to be fillable with the same data]
         User::create([
@@ -67,14 +67,17 @@ class AdminController extends Controller
 
         if(isset(request()->academic))
         {
-            $pgname = request()->prg;
+            $pgname = array_values(array_filter(request()->prg,function($v){return !is_null($v);}));
+
+            $uniname = array_values(array_filter(request()->uni,function($v){return !is_null($v);}));
 
             foreach(request()->academic as $key => $ac)
             {
                 DB::table('tbluser_academic')->insert([
                     'user_ic' => $data['ic'],
                     'academic_id' => $ac,
-                    'academic_name' => $pgname[$key]
+                    'academic_name' => $pgname[$key],
+                    'university_name' => $uniname[$key]
                 ]);
             }
         }
@@ -171,7 +174,9 @@ class AdminController extends Controller
 
         if(request()->academic != null)
         {
-            $pgname = request()->prg;
+            $pgname = $pgname = array_values(array_filter(request()->prg,function($v){return !is_null($v);}));
+
+            $uniname = array_values(array_filter(request()->uni,function($v){return !is_null($v);}));
 
             DB::table('tbluser_academic')->where('user_ic', $data['ic'])->delete();
 
@@ -180,7 +185,8 @@ class AdminController extends Controller
                 DB::table('tbluser_academic')->insert([
                     'user_ic' => $data['ic'],
                     'academic_id' => $ac,
-                    'academic_name' => $pgname[$key]
+                    'academic_name' => $pgname[$key],
+                    'university_name' => $uniname[$key]
                 ]);
             }
         }

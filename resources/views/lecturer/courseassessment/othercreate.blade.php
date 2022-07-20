@@ -44,7 +44,7 @@ div.form-actions.btn-group > button{
             <div class="d-flex align-items-center">
                 <div class="me-auto">
                     <h4 class="page-title">
-                        {{ empty($data['other']->title) ? "Create Extra" : $data['other']->title }}
+                        {{ empty($data['other']->title) ? "Create Others" : $data['other']->title }}
                     </h4>
                     <div class="d-inline-block align-items-center">
                         <nav>
@@ -56,9 +56,9 @@ div.form-actions.btn-group > button{
                                 <li class="breadcrumb-item" aria-current="page">Group Content</li>
                                 
                                     @if(empty($data['other']->title))
-                                        <li class="breadcrumb-item active" aria-current="page">Create Extra</li>
+                                        <li class="breadcrumb-item active" aria-current="page">Create Others</li>
                                     @else
-                                        <li class="breadcrumb-item active" aria-current="page">Extra</li>
+                                        <li class="breadcrumb-item active" aria-current="page">Others</li>
                                         <li class="breadcrumb-item active" aria-current="page">{{ $data['other']->title }}</li>
                                     @endif
                                 </li>
@@ -82,7 +82,7 @@ div.form-actions.btn-group > button{
                             <div class="header-setting row">
                                 <div class="row col-md-12">
                                     <div class="col-md-3 mb-4">
-                                        <label for="other-title" class="form-label "><strong>Extra Title</strong></label>
+                                        <label for="other-title" class="form-label "><strong>Others Title</strong></label>
                                         <input type="text" oninput="this.value = this.value.toUpperCase()"  id="other-title" name="other-title" class="form-control"
                                             value="{{ empty($data['other']->title) ? "" : $data['other']->title }}" required>
                                     </div>

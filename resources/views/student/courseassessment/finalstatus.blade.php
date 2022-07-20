@@ -71,67 +71,67 @@
                           </thead>
                           <tbody>
                             @foreach ($final as $key => $qz)
-                            @foreach ($status as $sts)
-                            @php
-                              if(empty($sts))
-                              {
-                                $alert = "badge bg-danger";
-                              }else{
-                                $alert = "badge bg-success";
-                              }
-                            @endphp
-                            <tr>
-                              <td style="width: 1%">
-                                  {{ $key+1 }}
-                              </td>
-                              <td style="width: 15%">
-                                <span class="{{ $alert }}">{{ Session::get('StudInfos')->name }}</span>
-                              </td>
-                              <td style="width: 5%">
-                                <span class="{{ $alert }}">{{ Session::get('StudInfos')->no_matric }}</span>
-                              </td>
-                              <td style="width: 20%">
-                                    {{ empty($sts) ? '-' : $sts->submittime }}
-                              </td>
-                              <td>
-                                    {{ empty($sts) ? '-' : $sts->status }}
-                              </td>
-                              <td>
-                                    {{ empty($sts) ? '-' : $sts->total_mark }}
-                              </td>                          
-                              
-                              <td class="project-actions text-center" >
-                                @if (empty($sts))
-                                  @if (date('Y-m-d') == $qz->date)
-                                    <a class="btn btn-success btn-sm mr-2" href="/student/final/{{ Session::get('CourseIDS') }}/{{ request()->final }}/view">
-                                      <i class="ti-user">
-                                      </i>
-                                      Answer
-                                    </a>
-                                  @elseif (date('Y-m-d') < $qz->date)
-                                    <a class="btn btn-danger btn-sm mr-2">
-                                      <i class="ti-lock">
-                                      </i>
-                                      Final will be open on {{  $qz->date  }}
-                                    </a>
-                                  @elseif (date('Y-m-d') > $qz->date)
-                                    <a class="btn btn-danger btn-sm mr-2">
-                                      <i class="ti-lock">
-                                      </i>
-                                      Final has closed on {{  $qz->date  }}
-                                    </a>
-                                  @endif
-                                @elseif (!empty($sts))
-                                <a class="btn btn-success btn-sm mr-2" href="/student/final/{{ request()->final }}/{{ Session::get('StudInfos')->ic }}/result">
-                                  <i class="ti-user">
-                                  </i>
-                                  Result
-                                </a>
-                                @endif
+                              @foreach ($status as $sts)
+                              @php
+                                if(empty($sts))
+                                {
+                                  $alert = "badge bg-danger";
+                                }else{
+                                  $alert = "badge bg-success";
+                                }
+                              @endphp
+                              <tr>
+                                <td style="width: 1%">
+                                    {{ $key+1 }}
+                                </td>
+                                <td style="width: 15%">
+                                  <span class="{{ $alert }}">{{ Session::get('StudInfos')->name }}</span>
+                                </td>
+                                <td style="width: 5%">
+                                  <span class="{{ $alert }}">{{ Session::get('StudInfos')->no_matric }}</span>
+                                </td>
+                                <td style="width: 20%">
+                                      {{ empty($sts) ? '-' : $sts->submittime }}
+                                </td>
+                                <td>
+                                      {{ empty($sts) ? '-' : $sts->status }}
+                                </td>
+                                <td>
+                                      {{ empty($sts) ? '-' : $sts->final_mark }}
+                                </td>                          
                                 
-                              </td>
-                            </tr>
-                            @endforeach                            
+                                <td class="project-actions text-center" >
+                                  @if (empty($sts) || ($sts->status == 1) )
+                                    @if (date("Y-m-d H:i:s") >= $qz->date_from && date("Y-m-d H:i:s") <= $qz->date_to)
+                                      <a class="btn btn-success btn-sm mr-2" href="/student/final/{{ Session::get('CourseIDS') }}/{{ request()->final }}/view">
+                                        <i class="ti-user">
+                                        </i>
+                                        Answer
+                                      </a>
+                                    @elseif (date("Y-m-d H:i:s") < $qz->date_from)
+                                      <a class="btn btn-danger btn-sm mr-2">
+                                        <i class="ti-lock">
+                                        </i>
+                                        Final will be open on {{  $qz->date_from  }}
+                                      </a>
+                                    @elseif (date("Y-m-d H:i:s") > $qz->date_to)
+                                      <a class="btn btn-danger btn-sm mr-2">
+                                        <i class="ti-lock">
+                                        </i>
+                                        Final has closed on {{  $qz->date_to  }}
+                                      </a>
+                                    @endif
+                                  @elseif (!empty($sts))
+                                  <a class="btn btn-success btn-sm mr-2" href="/student/final/{{ request()->final }}/{{ Session::get('StudInfos')->ic }}/result">
+                                    <i class="ti-user">
+                                    </i>
+                                    Result
+                                  </a>
+                                  @endif
+                                  
+                                </td>
+                              </tr>
+                              @endforeach                            
                             @endforeach
                           </tbody>
                         </table>

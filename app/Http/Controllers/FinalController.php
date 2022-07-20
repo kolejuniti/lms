@@ -176,7 +176,8 @@ class FinalController extends Controller
         $sessionid = Session::get('SessionIDS');
         $duration = $request->duration;
         $title = $request->title;
-        $date = $request->date;
+        $from = $request->from;
+        $to = $request->to;
         $questionindex = $request->questionindex;
         $status = $request->status;
         $group = $request->group;
@@ -191,7 +192,8 @@ class FinalController extends Controller
         if( !empty($finalid) ){
             $q = DB::table('tblclassfinal')->where('id', $finalid)->update([
                 "title" => $title,
-                "date" => $date,
+                "date_from" => $from,
+                "date_to" => $to,
                 "content" => $data,
                 "duration" => $duration,
                 "questionindex" => $questionindex,
@@ -204,7 +206,8 @@ class FinalController extends Controller
                 "classid" => $classid,
                 "sessionid" => $sessionid,
                 "title" => $title,
-                "date" => $date,
+                "date_from" => $from,
+                "date_to" => $to,
                 "content" => $data,
                 "duration" => $duration,
                 "questionindex" => $questionindex,
@@ -523,6 +526,8 @@ class FinalController extends Controller
                     ['student_subjek.student_ic', Session::get('StudInfos')->ic]
                 ])->get();
 
+        //dd($final);
+
         foreach($final as $qz)
         {
             $status[] = DB::table('tblclassstudentfinal')
@@ -594,6 +599,7 @@ class FinalController extends Controller
                 $data['finalid'] = $final->id;
                 $data['finaltitle'] = $final->title;
                 $data['finalduration'] = $final->duration;
+                $data['finalendduration'] = $final->date_to;
                 $data['fullname'] = $final->name;
                 $data['created_at'] = $final->created_at;
                 $data['updated_at'] = $final->updated_at;

@@ -395,6 +395,60 @@ class StudentController extends Controller
 
     }
 
+    public function AnnouncementList()
+    {
+        $totalstd = [];
+
+        $chapters = [];
+
+        $allgroup = [];
+
+        $student = Session::get('StudInfo');
+
+        $courseid = Session::get('CourseID');
+
+        $class = DB::table('announcement')
+                 ->join('student_subjek', function($join){
+                    $join->on('announcement.groupid', 'student_subjek.group_id');
+                })
+                 ->join('user_subjek', 'announcement.groupid', 'user_subjek.id')
+                 ->join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
+                 ->where('student_subjek.student_ic', $student->ic)
+                 ->where('subjek.id', $courseid)
+                 ->select('announcement.*')
+                 ->paginate(5);
+
+        //dd($class);
+
+        foreach ($class as $clss)
+        {
+            $group = DB::table('announcement_groupname')
+                    ->join('student_subjek', function($join){
+                        $join->on('announcement_groupname.groupname', 'student_subjek.group_name');
+                    })
+                    ->where('announcement_groupname.announcementid', $clss->id)
+                    ->where('student_subjek.group_id', $clss->groupid);
+
+            $allgroup[] = $group->groupBy('student_subjek.group_name')->get();
+            
+            $totalstd[] = $group->count();
+
+            $chapters[] = DB::table('classchapter')
+                        ->join('materialsub_dir', 'classchapter.chapterid', 'materialsub_dir.DrID')
+                        ->where('classid', $clss->id)->get();
+        }
+
+        //dd($totalstd);
+           
+        return view('student.class.listannouncement', compact([
+            'class',
+            'allgroup',
+            'totalstd',
+            'chapters'
+        ]));
+
+    }
+
     public function studentreport()
     {
         $students = Session::get('StudInfo');

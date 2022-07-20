@@ -75,7 +75,10 @@
                                 Duration
                               </th>
                               <th>
-                                Date
+                                Date From
+                              </th>
+                              <th>
+                                Date To
                               </th>
                               <th>
                               </th>
@@ -107,7 +110,10 @@
                                 {{ $dt->duration }} minutes
                               </td>
                               <td>
-                                {{ $dt->date }}
+                                {{ $dt->date_from }}
+                              </td>
+                              <td>
+                                {{ $dt->date_to }}
                               </td>
                               <td class="project-actions text-right" >
                                 <a class="btn btn-success btn-sm mr-2" href="/lecturer/final/{{ Session::get('CourseIDS') }}/{{ $dt->id }}">

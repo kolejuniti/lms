@@ -4,24 +4,32 @@
 <!-- Content Header (Page header) -->
 <div class="content-wrapper" style="min-height: 695.8px;">
   <div class="container-full">
-  <!-- Content Header (Page header) -->	  
-  <div class="content-header">
-    <div class="d-flex align-items-center">
-      <div class="me-auto">
-        <h4 class="page-title">Assign Group</h4>
-        <div class="d-inline-block align-items-center">
-          <nav>
-            <ol class="breadcrumb">
-              <li class="breadcrumb-item"><a href="#"><i class="mdi mdi-home-outline"></i></a></li>
-              <li class="breadcrumb-item" aria-current="page">Dashboard</li>
-              <li class="breadcrumb-item" aria-current="page">Students</li>
-              <li class="breadcrumb-item active" aria-current="page">Group</li>
-            </ol>
-          </nav>
+    <!-- Content Header (Page header) -->	  
+    <div class="content-header">
+      <div class="d-flex align-items-center">
+        <div class="me-auto">
+          <h4 class="page-title">Assign Group</h4>
+          <div class="d-inline-block align-items-center">
+            <nav>
+              <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#"><i class="mdi mdi-home-outline"></i></a></li>
+                <li class="breadcrumb-item" aria-current="page">Dashboard</li>
+                <li class="breadcrumb-item" aria-current="page">Students</li>
+                <li class="breadcrumb-item active" aria-current="page">Group</li>
+              </ol>
+            </nav>
+          </div>
         </div>
       </div>
+      @if($errors->any())
+      <a class="btn btn-danger btn-sm ml-2 ">
+        <i class="ti-na">
+        </i>
+        {{$errors->first()}}
+      </a>
+      @endif
     </div>
-  </div>
+  
 
     <section class="content">
       <div class="container-fluid">
@@ -137,7 +145,7 @@
     <!-- /.content -->
   </div>
 </div>
-
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 <script type="text/javascript">
 
   var selected_program = 0;
@@ -223,10 +231,36 @@
                 $('#add-student-div').removeAttr('hidden');
                 $('#add-student-div').html(data);
                 $('#add-student-div').selectpicker('refresh');
+                $('#table_registerstudent').DataTable( {
+                    responsive: true
+                } );
+
+                var $chkboxes = $('.filled-in');
+                var lastChecked = null;
+
+                $chkboxes.click(function(e) {
+                    if (!lastChecked) {
+                        lastChecked = this;
+                        return;
+                    }
+
+                    if (e.shiftKey) {
+                        var start = $chkboxes.index(this);
+                        var end = $chkboxes.index(lastChecked);
+
+                        $chkboxes.slice(Math.min(start,end), Math.max(start,end)+ 1).prop('checked', lastChecked.checked);
+                    }
+
+                    lastChecked = this;
+                });
 
             }
         });
   }
+
+  $(document).ready(function() {
+   
+});
 
 </script>
 @endsection

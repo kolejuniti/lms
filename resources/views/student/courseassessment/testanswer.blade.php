@@ -108,7 +108,14 @@ input.collected-marks + label{
                                 </h1>
                             </div>
                             <div class="box-body">
-                                <button id="start-test-btn" onclick="starttest()" class="waves-effect waves-light btn btn-lg btn-primary-light"><i class="fa fa-play"></i> Start test</button>
+                                <button id="start-test-btn" onclick="startTest()" class="waves-effect waves-light btn btn-lg btn-primary-light"><i class="fa fa-play"></i> Start Test</button>
+                            </div>
+                            <div class="box-body">
+                                <a class="btn btn-info btn-sm mr-2">
+                                    <i class="ti-alert">
+                                    </i>
+                                    The Test will be auto submit on {{ $data['testendduration'] }}
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -156,6 +163,7 @@ var selected_test = "{{ $data['testid'] }}";
 var testduration = parseInt("{{ $data['testduration'] }}");
 var teststarttime = parseInt("{{ $data['teststarttime'] }}");
 var testtimeleft = "{{ $data['testtimeleft'] }}";
+var testend = "{{ $data['testendduration'] }}";
 
 
 var search_timeout = null;
@@ -164,25 +172,37 @@ test = JSON.parse(test);
 
 
 if(teststarttime){
-    starttest();
+    startTest();
 }
 
-function starttest(){
+function startTest(){
 
-    var countDownDate = new Date();
+    var countDownDates = new Date();
 
     if(testtimeleft.length > 0){
-        countDownDate.setSeconds( testtimeleft );
+        countDownDates.setSeconds( testtimeleft );
     }else{
-        countDownDate.setSeconds( testduration * 60 );
+        countDownDates.setSeconds( testduration * 60 );
     }   
 
-    countDownDate = countDownDate.getTime();
+    countDownDate = countDownDates.getTime();
+
+
+    
     
     //Start count down timer
     var x = setInterval(function() {
         // Get today's date and time
         var now = new Date().getTime();
+
+        var end = new Date();
+
+        // Split timestamp into [ Y, M, D, h, m, s ]
+        var t = testend.split(/[- :]/);
+
+        // Apply each element to the Date function
+        var d = new Date(t[0], t[1]-1, t[2], t[3], t[4], t[5]);
+        
         
         // Find the distance between now and the count down date
         var distance = countDownDate - now;
@@ -196,13 +216,16 @@ function starttest(){
         // Output the result in an element with id="demo"
         document.getElementById("test-timer").innerHTML =  hours + "h "
         + minutes + "m " + seconds + "s ";
+
+        //alert(end);
         
         // If the count down is over, write some text 
-        if (distance < 0) {
+        if (end >= d || distance < 0) {
             clearInterval(x);
             document.getElementById("test-timer").innerHTML = "TIME EXPIRED";
             $('#submit-btn').trigger('click');
         }
+
     }, 1000);
 
     $.ajax({

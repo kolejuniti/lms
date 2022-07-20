@@ -101,24 +101,24 @@
                                 </td>                          
                                 
                                 <td class="project-actions text-center" >
-                                  @if (empty($sts))
-                                    @if (date('Y-m-d') == $qz->date)
+                                  @if (empty($sts) || ($sts->status == 1) )
+                                    @if (date("Y-m-d H:i:s") >= $qz->date_from && date("Y-m-d H:i:s") <= $qz->date_to)
                                       <a class="btn btn-success btn-sm mr-2" href="/student/test/{{ Session::get('CourseIDS') }}/{{ request()->test }}/view">
                                         <i class="ti-user">
                                         </i>
                                         Answer
                                       </a>
-                                    @elseif (date('Y-m-d') < $qz->date)
+                                    @elseif (date("Y-m-d H:i:s") < $qz->date_from)
                                       <a class="btn btn-danger btn-sm mr-2">
                                         <i class="ti-lock">
                                         </i>
-                                        test will be open on {{  $qz->date  }}
+                                        Test will be open on {{  $qz->date_from  }}
                                       </a>
-                                    @elseif (date('Y-m-d') > $qz->date)
+                                    @elseif (date("Y-m-d H:i:s") > $qz->date_to)
                                       <a class="btn btn-danger btn-sm mr-2">
                                         <i class="ti-lock">
                                         </i>
-                                        test has closed on {{  $qz->date  }}
+                                        Test has closed on {{  $qz->date_to  }}
                                       </a>
                                     @endif
                                   @elseif (!empty($sts))

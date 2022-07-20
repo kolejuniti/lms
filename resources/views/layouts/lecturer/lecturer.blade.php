@@ -106,7 +106,12 @@
 	.ck-editor__editable_inline {
 		min-height: 20em;
 	}
-</style>
+
+	.modal-backdrop
+	{
+		opacity:0.5 !important;
+	}
+	</style>
 
 
 
@@ -124,7 +129,7 @@
   <header class="main-header">
 	<div class="d-flex align-items-center logo-box justify-content-start">	
 		<!-- Logo -->
-		<a href="{{ url('home') }}" class="logo">
+		<a href="{{ url('lecturer') }}" class="logo">
 		  <!-- logo-->
 		  <div class="logo-mini w-30">
 			  <span class="light-logo"><img src="{{ asset('assets/images/logo-letter.png') }}" alt="logo" class="unity"></span>
@@ -275,6 +280,7 @@
 					<li><a href="/lecturer/paperwork/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Paperwork</a></li>
 					<li><a href="/lecturer/practical/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Practical</a></li>
 					<li><a href="/lecturer/other/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Lain-Lain</a></li>
+					<li><a href="/lecturer/extra/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Extra</a></li>
 					<li><a href="/lecturer/report/{{ Session::get('CourseID') }}" class="">Report</a></li>
 					</ul>
 				</li>
@@ -302,7 +308,18 @@
 							<li><a href="/lecturer/class/onlineclass/list" class="">List Class</a></li>
 							</ul>
 						</li>
+						<li class="treeview">
+							<a href="#"><span>Announcement</span>
+							</a>
+							<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
+							<li><a href="/lecturer/class/announcement" class="">Create Announcement</a></li>
+						<li><a href="/lecturer/class/announcement/list" class="">List Announcement</a></li>
 					</ul>
+				</li>
+					</ul>
+				</li>
+				<li>
+					<a href="/lecturer/forum/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class=""><i data-feather="message-square"></i><span>Forum</span></a>
 				</li>
 				<li class="treeview">
 				    <a href="#"><i data-feather="users"></i><span>Group</span>

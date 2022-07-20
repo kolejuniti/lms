@@ -31,21 +31,23 @@ class KP_Controller extends Controller
     {
         $users = Auth::user();
 
-        $programs = DB::table('user_program')->where('user_ic', $users->ic)->pluck('program_id');
+        //$programs = DB::table('user_program')->where('user_ic', $users->ic)->pluck('program_id');
 
         //dd($programs);
 
-        //this will fetch user data where usrtype is not ADM
-        $user = User::whereNot('usrtype',['ADM'])->where('faculty', $users->faculty)->get();
+        $programs = DB::table('user_program')->join('tblprogramme', 'user_program.program_id', 'tblprogramme.id')->where('user_ic', $users->ic)->get();
 
-        $course = DB::table('subjek')
-                  ->join('tblprogramme', 'subjek.prgid', 'tblprogramme.id')->whereIn('prgid', $programs)->get();
+        //this will fetch user data where usrtype is not ADM
+        $user = User::whereNot('usrtype',['ADM'])->get();
+
+        //$course = DB::table('subjek')
+                  //->join('tblprogramme', 'subjek.prgid', 'tblprogramme.id')->whereIn('prgid', $programs)->get();
                   
 
         $session = DB::table('sessions')
                 ->get();
 
-        return view('ketua_program.create')->with(compact('user','course','session'));
+        return view('ketua_program.create')->with(compact('user','programs','session'));
     }
 
     public function store()
@@ -98,7 +100,8 @@ class KP_Controller extends Controller
         "final" => "final",
         "paperwork" => "paperwork",
         "practical" => "practical",
-        "lain-lain" => "lain-lain"
+        "lain-lain" => "lain-lain",
+        "extra" => "extra"
        );
 
        if($data['classmark']->isEmpty())
@@ -171,22 +174,34 @@ class KP_Controller extends Controller
     {
        $users = Auth::user();
 
-       $data = subject::where('id', request()->group)->first();
+       //$programs = DB::table('user_program')->where('user_ic', $users->ic)->pluck('program_id');
 
-       $programs = DB::table('user_program')->where('user_ic', $users->ic)->pluck('program_id');
+       $prog = DB::table('user_program')
+                   ->join('tblprogramme', 'user_program.program_id', 'tblprogramme.id')
+                   ->where('user_ic', $users->ic);
+
+        $programs = $prog->get();
+
+        $prgs = $prog->pluck('tblprogramme.id');
+
+        $data = subject::join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+            ->join('tblprogramme', 'subjek.prgid', 'tblprogramme.id')
+            ->where('user_subjek.id', request()->group)
+            ->whereIn('tblprogramme.id', $prgs)
+            ->first();
 
        //dd($data);
 
        //this will fetch user data where usrtype is not ADM
        $user = User::whereNot('usrtype',['ADM'])->where('faculty', $users->faculty)->get();
 
-       $course = DB::table('subjek')
-                  ->join('tblprogramme', 'subjek.prgid', 'tblprogramme.id')->whereIn('prgid', $programs)->get();
+       //$course = DB::table('subjek')
+                  //->join('tblprogramme', 'subjek.prgid', 'tblprogramme.id')->whereIn('prgid', $programs)->get();
 
        $session = DB::table('sessions')
                ->get();
  
-        return view('ketua_program.create', compact('data', 'user', 'course', 'session'));
+        return view('ketua_program.create', compact('data', 'user', 'programs', 'session'));
     }
 
     public function updategroup(Request $request)
@@ -457,18 +472,28 @@ class KP_Controller extends Controller
 
 
         
-        //dd($request->lecturer);
+        //dd($request->student);
 
-        foreach ($request->student as $stud) {
+        if(count($request->student) > 35)
+        {
+
+            return redirect()->back()->withErrors(['The limit for student in a group cannot exceed more than 35 !']);
+
+        }else{
+
+            foreach ($request->student as $stud) {
  
-            student::where('id', $stud)->update([
-                'group_id' => $request->lecturer,
-                'group_name' => $request->group
-            ]);      
+                student::where('id', $stud)->update([
+                    'group_id' => $request->lecturer,
+                    'group_name' => $request->group
+                ]);      
+    
+            }
+
+            return redirect(route('kp.group'));
 
         }
 
-        return redirect(route('kp.group'));
     }
 
     public function lecturerindex() 

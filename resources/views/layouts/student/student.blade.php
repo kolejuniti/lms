@@ -118,7 +118,7 @@
   <header class="main-header">
 	<div class="d-flex align-items-center logo-box justify-content-start">	
 		<!-- Logo -->
-		<a href="{{ url('home') }}" class="logo">
+		<a href="{{ url('student') }}" class="logo">
 		  <!-- logo-->
 		  <div class="logo-mini w-30">
 			  <span class="light-logo"><img src="{{ asset('assets/images/logo-letter.png') }}" alt="logo" class="unity"></span>
@@ -281,8 +281,18 @@
 							<li><a href="/student/class/onlineclass/list" class="">List Class</a></li>
 						</ul>
 					</li>
+					<li class="treeview">
+						<a href="#"><span>Announcement</span>
+						</a>
+						<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
+							<li><a href="/student/class/announcement/list" class="">List Announcement</a></li>
+						</ul>
+					</li>
 				</ul>
           </li>
+		  <li>
+			<a href="/student/forum/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class=""><i data-feather="message-square"></i><span>Forum</span></a>
+		  </li>
           <li class="treeview">
 				<a href="#"><i data-feather="users"></i><span>Group</span>
 					<span class="pull-right-container">

@@ -164,7 +164,8 @@ class PaperworkController extends Controller
             Storage::disk('public')->putFileAs(
                 $dir,
                 $file,
-                $newname
+                $newname,
+                'public'
               );
 
             $q = DB::table('tblclasspaperwork')->insertGetId([
@@ -326,7 +327,8 @@ class PaperworkController extends Controller
         Storage::disk('public')->putFileAs(
             $dir,
             $file,
-            $newname
+            $newname,
+            'public'
           );
       
         $q = \DB::table('tblclassstudentpaperwork')
@@ -483,7 +485,8 @@ class PaperworkController extends Controller
             Storage::disk('public')->putFileAs(
                 $dir,
                 $file,
-                $newname
+                $newname,
+                'public'
               );
             
               if($today > $paperwork->deadline)

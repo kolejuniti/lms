@@ -85,6 +85,7 @@
                                   </i>
                                   Students
                               </a>
+                              <!--
                               <a class="btn btn-info btn-sm btn-sm mr-2" href="/KP/{{ $datas->id }}/editgroup">
                                   <i class="ti-pencil-alt">
                                   </i>
@@ -94,7 +95,7 @@
                                   <i class="ti-trash">
                                   </i>
                                   Delete
-                              </a>
+                              </a>-->
                             </td>
                           </tr>
                           @endforeach

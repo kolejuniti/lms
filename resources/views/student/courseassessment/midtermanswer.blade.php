@@ -110,6 +110,13 @@ input.collected-marks + label{
                             <div class="box-body">
                                 <button id="start-midterm-btn" onclick="startMidterm()" class="waves-effect waves-light btn btn-lg btn-primary-light"><i class="fa fa-play"></i> Start Midterm</button>
                             </div>
+                            <div class="box-body">
+                                <a class="btn btn-info btn-sm mr-2">
+                                    <i class="ti-alert">
+                                    </i>
+                                    The Midterm will be auto submit on {{ $data['midtermendduration'] }}
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -156,6 +163,7 @@ var selected_midterm = "{{ $data['midtermid'] }}";
 var midtermduration = parseInt("{{ $data['midtermduration'] }}");
 var midtermstarttime = parseInt("{{ $data['midtermstarttime'] }}");
 var midtermtimeleft = "{{ $data['midtermtimeleft'] }}";
+var midtermend = "{{ $data['midtermendduration'] }}";
 
 
 var search_timeout = null;
@@ -169,20 +177,32 @@ if(midtermstarttime){
 
 function startMidterm(){
 
-    var countDownDate = new Date();
+    var countDownDates = new Date();
 
     if(midtermtimeleft.length > 0){
-        countDownDate.setSeconds( midtermtimeleft );
+        countDownDates.setSeconds( midtermtimeleft );
     }else{
-        countDownDate.setSeconds( midtermduration * 60 );
+        countDownDates.setSeconds( midtermduration * 60 );
     }   
 
-    countDownDate = countDownDate.getTime();
+    countDownDate = countDownDates.getTime();
+
+
+    
     
     //Start count down timer
     var x = setInterval(function() {
         // Get today's date and time
         var now = new Date().getTime();
+
+        var end = new Date();
+
+        // Split timestamp into [ Y, M, D, h, m, s ]
+        var t = midtermend.split(/[- :]/);
+
+        // Apply each element to the Date function
+        var d = new Date(t[0], t[1]-1, t[2], t[3], t[4], t[5]);
+        
         
         // Find the distance between now and the count down date
         var distance = countDownDate - now;
@@ -196,13 +216,16 @@ function startMidterm(){
         // Output the result in an element with id="demo"
         document.getElementById("midterm-timer").innerHTML =  hours + "h "
         + minutes + "m " + seconds + "s ";
+
+        //alert(end);
         
         // If the count down is over, write some text 
-        if (distance < 0) {
+        if (end >= d || distance < 0) {
             clearInterval(x);
             document.getElementById("midterm-timer").innerHTML = "TIME EXPIRED";
             $('#submit-btn').trigger('click');
         }
+
     }, 1000);
 
     $.ajax({

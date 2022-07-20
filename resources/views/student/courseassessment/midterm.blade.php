@@ -59,14 +59,17 @@
                               <th style="width: 10%">
                                 Groups
                               </th>
-                              <th style="width: 20%">
+                              <th style="width: 15%">
                                 Chapters
                               </th>
                               <th style="width: 5%">
                                 Duration
                               </th>
                               <th style="width: 5%">
-                                Date
+                                Date From
+                              </th>
+                              <th style="width: 5%">
+                                Date To
                               </th>
                               <th style="width: 15%">
                               </th>
@@ -96,7 +99,10 @@
                                 {{ $dt->duration }} minutes
                               </td>
                               <td>
-                                {{ $dt->date }}
+                                {{ $dt->date_from }}
+                              </td>
+                              <td>
+                                {{ $dt->date_to }}
                               </td>
                               <td class="project-actions text-center" >
                                 <a class="btn btn-success btn-sm mr-2" href="/student/midterm/{{ Session::get('CourseIDS') }}/{{ $dt->id }}">

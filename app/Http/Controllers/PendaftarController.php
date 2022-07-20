@@ -29,7 +29,23 @@ class PendaftarController extends Controller
 
         $session = DB::table('sessions')->get();
 
-        return view('pendaftar.create', compact(['program','session']));
+        $data['state'] = DB::table('tblstate')->get();
+
+        $data['gender'] = DB::table('tblsex')->get();
+
+        $data['race'] = DB::table('tblnationality')->get();
+
+        $data['religion'] =  DB::table('tblreligion')->get();
+
+        $data['CL'] = DB::table('tblcitizenship_level')->get();
+
+        $data['citizen'] = DB::table('tblcitizenship')->get();
+
+        $data['mstatus'] = DB::table('tblmarriage')->get();
+
+        //dd($data['race']);
+
+        return view('pendaftar.create', compact(['program','session','data']));
     }
 
     public function store(Request $request)
@@ -38,8 +54,9 @@ class PendaftarController extends Controller
             'name' => ['required','string'],
             'ic' => ['required','string'],
             'matric' => ['required','string'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:students'],
             'session' => ['required'],
+            'batch' => ['required'],
             'program' => ['required'],
         ]);
 
@@ -49,9 +66,35 @@ class PendaftarController extends Controller
             'no_matric' => $data['matric'],
             'email' => $data['email'],
             'intake' => $data['session'],
+            'batch' => $data['batch'],
+            'semester' => 1,
             'program' => $data['program'],
             'password' => Hash::make('12345678'),
             'status' => 'ACTIVE',
+        ]);
+
+        DB::table('tblstudent_personal')->insert([
+            'student_ic' => $data['ic'],
+            'religion_id' => $request->religion,
+            'nationality_id' => $request->race,
+            'sex_id' => $request->gender,
+            'state_id' => $request->birth_place,
+            'marriage_id' => $request->mstatus,
+            'statelevel_id' => $request->CL,
+            'citizenship_id' => $request->citizen,
+            'no_tel' => $request->np1,
+            'no_tel2' => $request->np2,
+            'no_telhome' => $request->np3
+        ]);
+
+        DB::table('tblstudent_address')->insert([
+            'student_ic' => $data['ic'],
+            'address1' => $request->address1,
+            'address2' => $request->address2,
+            'address3' => $request->address3,
+            'city' => $request->city,
+            'postcode' => $request->postcode,
+            'state_id' => $request->state
         ]);
 
         $subject = DB::table('subjek')->where([
@@ -186,6 +229,10 @@ class PendaftarController extends Controller
     {
 
         DB::table('students')->where('ic', $request->id)->delete();
+
+        DB::table('tblstudent_address')->where('student_ic', $request->id)->delete();
+
+        DB::table('tblstudent_personal')->where('student_ic', $request->id)->delete();
 
         return true;
 

@@ -32,32 +32,40 @@
 
 </style>
 
-@if(session()->has('message'))
-    <div class="alert alert-success">
-        <span>{{ session()->get('message') }}</span>
-    </div>
-@endif
-
 <!-- Content Header (Page header) -->
 <div class="content-wrapper" style="min-height: 695.8px;">
   <div class="container-full">
-  <!-- Content Header (Page header) -->	  
-  <div class="content-header">
-    <div class="d-flex align-items-center">
-      <div class="me-auto">
-        <h4 class="page-title">Online Class</h4>
-        <div class="d-inline-block align-items-center">
-          <nav>
-            <ol class="breadcrumb">
-              <li class="breadcrumb-item"><a href="#"><i class="mdi mdi-home-outline"></i></a></li>
-              <li class="breadcrumb-item" aria-current="page">Extra</li>
-              <li class="breadcrumb-item active" aria-current="page">Profile</li>
-            </ol>
-          </nav>
+    @if(session()->has('message'))
+    <div class="container-fluid">
+      <div class="row">
+        <!-- left column -->
+        <div class="col-md-12">
+          <div class="form-group">
+            <div class="alert alert-success">
+                <span>{{ session()->get('message') }}</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-  </div>
+    @endif
+    <!-- Content Header (Page header) -->	  
+    <div class="content-header">
+      <div class="d-flex align-items-center">
+        <div class="me-auto">
+          <h4 class="page-title">Online Class</h4>
+          <div class="d-inline-block align-items-center">
+            <nav>
+              <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#"><i class="mdi mdi-home-outline"></i></a></li>
+                <li class="breadcrumb-item" aria-current="page">Extra</li>
+                <li class="breadcrumb-item active" aria-current="page">Profile</li>
+              </ol>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <section class="content">
       <div class="container-fluid">

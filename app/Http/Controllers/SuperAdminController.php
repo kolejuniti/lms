@@ -34,20 +34,25 @@ class SuperAdminController extends Controller
         //if(DB::table('students')->where('ic', $line['no_kp'])->doesntExist())
         //{
 
-            return DB::table('students')->upsert([
+            //this is to preserve number '0' infront of excel data column !
+            //dd(str_pad($line['no_tel1'],11,"0", STR_PAD_LEFT));
+
+            return DB::table('tblextra_title')->insert([
                 //'id'  => $line['id'],
                 'name'  => $line['nama'],
-                'ic' => $line['no_kp'],
-                'no_matric' => $line['no_matriks'],
-                'email'  => $line['email'],
-                'program'  => $line['id_program'],
-                //'usrtype'  => 'PL',
-                'status' => 'ACTIVE',
-                //'usrtype' => $line['id_semester'],
-                //'faculty'  => $line['faculty'],
-                'password' => Hash::make('12345678'),
-                //'status' => 'ACTIVE',
-            ], 'ic');
+                //'address1' => $line['alamat_1'],
+                //'address2' => $line['alamat_2'],
+                //'address3' => $line['alamat_3'],
+                //'city'  => $line['bandar'],
+                //'postcode'  => $line['poskod'],
+                //'state_id'  => $line['id_negeri'],
+                //'statelevel_id'  => $line['id_tarafNegara'],
+                //'citizenship_id' => $line['id_wargaNegara'],
+                //'no_tel' => str_pad($line['no_tel1'],11,"0", STR_PAD_LEFT),
+                //'no_tel2'  => str_pad($line['no_tel2'],11,"0", STR_PAD_LEFT),
+                //'password' => Hash::make('12345678'),
+                //'no_telhome' => str_pad($line['no_tel_rumah'],11,"0", STR_PAD_LEFT),
+            ]);
             
         //}
     });

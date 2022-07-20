@@ -112,7 +112,7 @@
   <header class="main-header">
 	<div class="d-flex align-items-center logo-box justify-content-start">	
 		<!-- Logo -->
-		<a href="{{ url('home') }}" class="logo">
+		<a href="{{ url('KP') }}" class="logo">
 		  <!-- logo-->
 		  <div class="logo-mini w-30">
 			  <span class="light-logo"><img src="{{ asset('assets/images/logo-letter.png') }}" alt="logo" class="unity"></span>
@@ -255,7 +255,9 @@
 						</span>
 					</a>
 					<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
+						@if (Auth::user()->usrtype == "AO")
 						<li><a href="{{ route('kp.create') }}" class="{{ (route('kp.create') == Request::url()) ? 'active' : ''}}">Lecturer</a></li>
+						@endif
 						@if (Auth::user()->usrtype != "AO")
 						<li class="treeview">
 							<a href="#"><span>Students</span>

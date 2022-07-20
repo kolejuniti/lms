@@ -118,18 +118,22 @@
                             <tr>
                               <td><input type="checkbox" id="diploma" name="academic[]" value="DP"><label for="diploma" class="form-label">DIPLOMA</label></td>
                               <td id="tb_DP" hidden><input type="text" class="form-control" id="prg_DP" placeholder="Enter program name" name="prg[]"></td>
+                              <td id="tb2_DP" hidden><input type="text" class="form-control" id="uni_DP" placeholder="Enter university name" name="uni[]"></td>
                             </tr>
                             <tr>
                               <td><input type="checkbox" id="degree" name="academic[]" value="DG"><label for="degree" class="form-label">DEGREE</label></td>
                               <td id="tb_DG" hidden><input type="text" class="form-control" id="prg_DG" placeholder="Enter program name" name="prg[]"></td>
+                              <td id="tb2_DG" hidden><input type="text" class="form-control" id="uni_DG" placeholder="Enter university name" name="uni[]"></td>
                             </tr>
                             <tr>
                               <td><input type="checkbox" id="master" name="academic[]" value="MS"><label for="master" class="form-label">MASTER</label></td>
                               <td id="tb_MS" hidden><input type="text" class="form-control" id="prg_MS" placeholder="Enter program name" name="prg[]"></td>
+                              <td id="tb2_MS" hidden><input type="text" class="form-control" id="uni_MS" placeholder="Enter university name" name="uni[]"></td>
                             </tr>
                             <tr>
                               <td><input type="checkbox" id="phd" name="academic[]" value="PHD"><label for="phd" class="form-label">PHD</label></td>
                               <td id="tb_PHD" hidden><input type="text" class="form-control" id="prg_PHD" placeholder="Enter program name" name="prg[]"></td>
+                              <td id="tb2_PHD" hidden><input type="text" class="form-control" id="uni_PHD" placeholder="Enter university name" name="uni[]"></td>
                             </tr>
                           </table>
                         </div>
@@ -208,10 +212,14 @@ function getProgramOption(faculty)
 
     if(this.checked){
       document.getElementById('tb_' + check).hidden = false;
+      document.getElementById('tb2_' + check).hidden = false;
       document.getElementById('prg_' + check).required = true;
+      document.getElementById('uni_' + check).required = true;
     }else{
       document.getElementById('tb_' + check).hidden = true;
+      document.getElementById('tb2_' + check).hidden = true;
       document.getElementById('prg_' + check).required = false;
+      document.getElementById('uni_' + check).required = false;
     }
 
   });

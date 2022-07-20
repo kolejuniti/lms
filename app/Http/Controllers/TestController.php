@@ -176,7 +176,8 @@ class TestController extends Controller
         $sessionid = Session::get('SessionIDS');
         $duration = $request->duration;
         $title = $request->title;
-        $date = $request->date;
+        $from = $request->from;
+        $to = $request->to;
         $questionindex = $request->questionindex;
         $status = $request->status;
         $group = $request->group;
@@ -191,7 +192,8 @@ class TestController extends Controller
         if( !empty($testid) ){
             $q = DB::table('tblclasstest')->where('id', $testid)->update([
                 "title" => $title,
-                "date" => $date,
+                "date_from" => $from,
+                "date_to" => $to,
                 "content" => $data,
                 "duration" => $duration,
                 "questionindex" => $questionindex,
@@ -204,7 +206,8 @@ class TestController extends Controller
                 "classid" => $classid,
                 "sessionid" => $sessionid,
                 "title" => $title,
-                "date" => $date,
+                "date_from" => $from,
+                "date_to" => $to,
                 "content" => $data,
                 "duration" => $duration,
                 "questionindex" => $questionindex,
@@ -596,6 +599,7 @@ class TestController extends Controller
                 $data['testid'] = $test->id;
                 $data['testtitle'] = $test->title;
                 $data['testduration'] = $test->duration;
+                $data['testendduration'] = $test->date_to;
                 $data['fullname'] = $test->name;
                 $data['created_at'] = $test->created_at;
                 $data['updated_at'] = $test->updated_at;

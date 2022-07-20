@@ -50,19 +50,27 @@
                           @endforeach
                         </select>
                       </div>
-                    </div>  
-                    <div class="col-md-6">
+                    </div>
+                    <div class="col-md-6" id="program-card">
                       <div class="form-group">
-                        <label class="form-label" for="course">Course</label>
-                        <select class="form-select" id="course" name="course" {{ (isset($data)) ? 'DISABLED' : '' }}>
-                          @foreach ($course as $courses)
-                            <option value="{{ $courses->sub_id }}" {{ (isset($data)) ? (($data->course_id == $courses->sub_id) ? 'SELECTED' : '') : '' }}>{{ $courses->progname }} : {{ $courses->course_name }}(Semester {{ $courses->semesterid }})</option>
+                        <label class="form-label" for="program">Program</label>
+                        <select class="form-select" id="program" name="program">
+                          <option value="-" selected disabled>-</option>
+                          @foreach ($programs as $prg)
+                            <option value="{{ $prg->id }}" {{ (isset($data)) ? (($data->prgid == $prg->id) ? 'SELECTED' : '') : '' }}>{{ $prg->progname }}</option>
                           @endforeach
                         </select>
                       </div>
-                    </div>
+                    </div>   
                   </div>
                   <div class="row"> 
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label class="form-label" for="course">Course</label>
+                        <select class="form-select" id="course" name="course">
+                        </select>
+                      </div>
+                    </div>
                     <div class="col-md-6">
                       <div class="form-group">
                         <label class="form-label" for="session">Session</label>
@@ -88,4 +96,45 @@
     </section>
   </div>
 </div>
+
+<script type="text/javascript">
+
+  var selected_program = 0;
+  var course = '';
+
+  $(document).ready(function(){
+    
+    selected_program = $( "#program option:selected" ).val();
+
+    course = "{{ (isset($data)) ? $data->prgid : '' }}"
+
+    getCourse(selected_program,course);
+  })
+
+  $(document).on('change', '#program', async function(e){
+    selected_program = $(e.target).val();
+
+    await getCourse(selected_program,course);
+
+  });
+
+  function getCourse(program,course)
+  {
+    return $.ajax({
+            headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
+            url      : "{{ url('KP/group/getcourseoptions') }}",
+            method   : 'POST',
+            data 	 : {program: program, course: course},
+            error:function(err){
+                alert("Error");
+                console.log(err);
+            },
+            success  : function(data){
+                $('#course').html(data);
+                $('#course').selectpicker('refresh');
+
+            }
+        });
+  }
+</script>
 @endsection

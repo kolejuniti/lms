@@ -139,8 +139,7 @@
                                   <i class="glyphicon glyphicon-option-vertical"></i></button>
                                   <div class="dropdown-menu" data-popper-placement="bottom-start" style="position: absolute; inset: 0px auto auto 0px; margin: 0px; transform: translate(0px, 41px);">
                                     <a href="/lecturer/class/onlineclass/list/edit/{{ $cls->id }}" class="dropdown-item" data-toggle="tooltip" data-placement="auto" title="Edit Record"><i class="fa fa-edit"></i>Edit</a>
-                                    <a href="javascript:void(0);" onclick="" class="dropdown-item" data-toggle="tooltip" data-placement="auto" title="Delete Record"><i class="fa fa-trash"></i>Delete</a>
-                                 
+                                    <a href="javascript:void(0);" onclick="deleteOnlineclass('{{ $cls->id }}')" class="dropdown-item" data-toggle="tooltip" data-placement="auto" title="Delete Record"><i class="fa fa-trash"></i>Delete</a>
                                   </div>
                               </div>
                             </div>
@@ -166,4 +165,34 @@
 </div>
 
 <script src="{{ asset('assets/src/js/pages/data-table.js') }}"></script>
+<script type="text/javascript">
+
+  function deleteOnlineclass(id){     
+      Swal.fire({
+    title: "Are you sure?",
+    text: "This will be permanent",
+    showCancelButton: true,
+    confirmButtonText: "Yes, delete it!"
+  }).then(function(res){
+    
+    if (res.isConfirmed){
+              $.ajax({
+                  headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
+                  url      : "{{ url('lecturer/class/onlineclass/list/delete') }}",
+                  method   : 'DELETE',
+                  data 	 : {id:id},
+                  error:function(err){
+                      alert("Error");
+                      console.log(err);
+                  },
+                  success  : function(data){
+                      window.location.reload();
+                      alert("success");
+                  }
+              });
+          }
+      });
+  }
+
+</script>
 @endsection

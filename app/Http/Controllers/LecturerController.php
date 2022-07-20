@@ -13,6 +13,8 @@ use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
+use League\Flysystem\AwsS3V3\PortableVisibilityConverter;
+use Mail;
 
 class LecturerController extends Controller
 {
@@ -486,7 +488,11 @@ class LecturerController extends Controller
             
             $dir = "classmaterial/" . $directory->A . "/" . $directory->B . "/" . $directory->C;
 
-            $classmaterial  = Storage::disk('linode')->allFiles( $dir );
+            $classmaterial  = Storage::disk('linode')->allFiles($dir);
+
+            //$url = Storage::disk('linode')->url($classmaterial);
+
+            //dd($classmaterial);
 
             return view('lecturer.coursecontent.coursematerial', compact('classmaterial', 'course'))->with('dirid', $directory->DrID)->with('prev', $directory->MaterialDirID);
         }
@@ -1012,6 +1018,17 @@ class LecturerController extends Controller
 
     }
 
+    public function OnlineClassListDelete(Request $request)
+    {
+
+        DB::table('onlineclass')->where('id', $request->id)->delete();
+
+        DB::table('classchapter')->where('classid', $request->id)->delete();
+
+        return true;
+
+    }
+
     function OnlineClassListEdit()
     {
 
@@ -1075,6 +1092,217 @@ class LecturerController extends Controller
         }
 
         return redirect(route('lecturer.onlineclass.list'))->with('message', 'Online Class has successfully submitted, please check online class table!');
+
+    }
+
+    public function announcement() 
+    {
+        $user = Auth::user();
+
+        $courseid = Session::get('CourseID');
+
+        $folder = DB::table('lecturer_dir')
+        ->where([
+            ['CourseID', $courseid],
+            ['Addby', $user->ic]
+            ])->get();
+
+        return view('lecturer.class.announcement', compact('folder'));
+
+    }
+
+    public function announcementGetGroupList(Request $request)
+    {
+
+        $courseid = Session::get('CourseID');
+
+        $lecturer = Auth::user();
+
+        $group = subject::join('student_subjek', 'user_subjek.id', 'student_subjek.group_id')
+        ->join('users', 'user_subjek.user_ic','users.ic')
+        ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+        ->where([
+            ['subjek.id', $courseid],
+            ['user_subjek.user_ic', $lecturer->ic]
+        ])->groupBy('student_subjek.group_name')
+        ->select('user_subjek.*','student_subjek.group_name', 'users.name')->get();
+
+        $content = "";
+        $content .= '
+        <div class="table-responsive" style="width:99.7%">
+        <table id="table_registerstudent" class="w-100 table text-fade table-bordered table-hover display nowrap margin-top-10 w-p100">
+            <thead class="thead-themed">
+            <th>group</th>
+            <th>Name</th>
+            <th></th>
+            </thead>
+            <tbody>
+        ';
+        foreach($group as $grp){
+            //$registered = ($student->status == 'ACTIVE') ? 'checked' : '';
+            $content .= '
+            <tr>
+                <td >
+                    <label>'.$grp->group_name.'</label>
+                </td>
+                <td >
+                    <label>'.$grp->name.'</label>
+                </td>
+                <td >
+                    <div class="pull-right" >
+                        <input type="checkbox" id="group_checkbox_'.$grp->id . '|' . $grp->group_name.'"
+                            class="filled-in" name="group[]" value="'.$grp->id . '|' . $grp->group_name.'" 
+                        >
+                        <label for="group_checkbox_'.$grp->id . '|' . $grp->group_name.'"> </label>
+                    </div>
+                </td>
+            </tr>
+            ';
+            }
+            $content .= '</tbody></table>';
+
+            return $content;
+
+    }
+
+    public function storeAnnouncement(Request $request)
+    {
+
+        $data = $request->validate([
+            'group' => ['required'],
+            'chapter' => [''],
+            'class_link' => [''],
+            'classdescription' => ['']
+        ]);
+
+        $grps = array_shift($data['group']);
+
+        $grps2 = explode('|', $grps);
+
+        //dd($groups);
+
+        //$date = Carbon::createFromFormat('d/m/Y', $data['date'])->format('Y-m-d');
+
+        //dd($group);
+
+        $id = DB::table('announcement')->insertGetId([
+            'groupid' => $grps2[0],
+            //'groupname' => $group[1],
+            //'classdate' => $data['date'],
+            'classlink' => $data['class_link'],
+            'classdescription' => $data['classdescription'],
+            //'classstarttime' => $data['time_from'],
+            //'classendtime' => $data['time_to']
+        ]);
+
+        foreach($request->group as $grp)
+        {
+            $group = explode('|', $grp); 
+            
+            DB::table('announcement_groupname')->insert([
+                'groupname' => $group[1],
+                'announcementid' => $id
+            ]);
+
+            $students = DB::table('students')
+                          ->join('student_subjek', 'students.ic', 'student_subjek.student_ic')
+                          ->where([
+                            ['student_subjek.group_id', $group[0]],
+                            ['student_subjek.group_name', $group[1]]
+                          ])->pluck('email');               
+        }
+
+        $test = array('hafiyyaimann1998@gmail.com', 'hafiyaimanenterprise@gmail.com');
+
+        //dd($test);
+
+        if($request->chapter != null)
+        {
+            foreach($request->chapter as $chp)
+            {
+                DB::table('announcement_chapter')->insert([
+                    'chapterid' => $chp,
+                    'announcementid' => $id
+                ]);
+            }
+        }
+
+        Mail::send('emails.welcome', $data, function($message) use ($test)
+        {    
+            $message->to($test)->subject('Test');    
+        });
+
+        //dd($data);
+
+        return redirect()->back()->with('message', 'Online Class has successfully submitted, please check online class table!');
+        
+
+    }
+
+    public function announcementList()
+    {
+        $totalstd = [];
+
+        $chapters = [];
+
+        $allgroup = [];
+
+        $user = Auth::user();
+
+        $course = Session::get('CourseID');
+
+        $class = DB::table('announcement')
+                 ->join('user_subjek', 'announcement.groupid', 'user_subjek.id')
+                 ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+                 ->select('announcement.*')
+                 ->where('user_subjek.user_ic', $user->ic)
+                 ->where('subjek.id', $course)
+                 ->orderBy('announcement.id', 'DESC')
+                 ->paginate(5);
+
+        //dd($class);
+
+        foreach ($class as $clss)
+        {
+            //$totalstd[] = student::where('group_id', $clss->groupid)->count();
+
+            $group = DB::table('announcement_groupname')
+                    ->join('student_subjek', function($join){
+                        $join->on('announcement_groupname.groupname', 'student_subjek.group_name');
+                    })
+                    ->where('announcement_groupname.announcementid', $clss->id)
+                    ->where('student_subjek.group_id', $clss->groupid);
+
+            $allgroup[] = $group->groupBy('student_subjek.group_name')->get();
+                    
+            $totalstd[] = $group->count();
+
+            $chapters[] = DB::table('announcement_chapter')
+                        ->join('materialsub_dir', 'announcement_chapter.chapterid', 'materialsub_dir.DrID')
+                        ->where('announcementid', $clss->id)->get();
+        }
+
+        //dd($totalstd);
+           
+        return view('lecturer.class.listannouncement', compact([
+            'class',
+            'allgroup',
+            'totalstd',
+            'chapters'
+        ]));
+
+    }
+
+    public function announcementListDelete(Request $request)
+    {
+
+        DB::table('announcement')->where('id', $request->id)->delete();
+
+        DB::table('announcement_chapter')->where('announcementid', $request->id)->delete();
+
+        DB::table('announcement_groupname')->where('announcementid', $request->id)->delete();
+
+        return true;
 
     }
 
