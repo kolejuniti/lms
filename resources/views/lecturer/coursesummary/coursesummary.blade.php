@@ -36,9 +36,7 @@
           </div>-->
         </div>
         <div class="card-body p-0">
-          <!-- //asset('storage/coursesummary/'.$course->progcode.'/'.str_replace(" ","_", $course->course_code).'.pdf') -->
-          <iframe src="{{ Storage::disk('linode')->url('coursesummary/'.$course->progcode.'/'.str_replace(" ","_", $course->course_code).'.pdf') }}" width="100%" height="1000" style="border:1px solid black;">
-          </iframe>
+          <iframe src="{{ asset('storage/coursesummary/'.$course->progcode.'/'.str_replace(" ","_", $course->course_code).'.pdf') }}" width="100%" height="1000" style="border:1px solid black;">
         </div>
         <!-- /.card-body -->
       </div>
