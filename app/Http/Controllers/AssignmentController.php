@@ -147,7 +147,7 @@ class AssignmentController extends Controller
 
         $dir = "classassignment/" .  $classid . "/" . $user->name . "/" . $data['assign-title'];
 
-        $classassign  = Storage::disk('public')->makeDirectory($dir);
+        $classassign  = Storage::disk('linode')->makeDirectory($dir);
 
         $file = $request->file('myPdf');
 
@@ -161,7 +161,7 @@ class AssignmentController extends Controller
         $newpath = "classassignment/" .  $classid . "/" . $user->name . "/" . $data['assign-title'] . "/" . $newname;
 
         if(! file_exists($newname)){
-            Storage::disk('public')->putFileAs(
+            Storage::disk('linode')->putFileAs(
                 $dir,
                 $file,
                 $newname,
@@ -311,7 +311,7 @@ class AssignmentController extends Controller
 
         $dir = "classassignment/" .  $classid . "/" . $assignment->name . "/" . $assignment->title . "/" . $participant . "/return";
 
-        $classassign  = Storage::disk('public')->makeDirectory($dir);
+        $classassign  = Storage::disk('linode')->makeDirectory($dir);
 
         $file = $request->file('myPdf');
 
@@ -324,7 +324,7 @@ class AssignmentController extends Controller
         $newname = $filename . "." . $file_ext;
         $newpath = "classassignment/" .  $classid . "/" . $assignment->name . "/" . $assignment->title . "/" . $participant . "/return" . "/" . $newname;
 
-        Storage::disk('public')->putFileAs(
+        Storage::disk('linode')->putFileAs(
             $dir,
             $file,
             $newname,
@@ -464,7 +464,7 @@ class AssignmentController extends Controller
 
         $dir = "classassignment/" .  $classid . "/" . $assignment->name . "/" . $assignment->title . "/" . $stud->ic;
 
-        //$classassign  = Storage::disk('public')->makeDirectory($dir);
+        //$classassign  = Storage::disk('linode')->makeDirectory($dir);
 
         $file = $request->file('myPdf');
 
@@ -482,7 +482,7 @@ class AssignmentController extends Controller
         $today = date("Y-m-d H:i:s");
 
         if(! file_exists($newname)){
-            Storage::disk('public')->putFileAs(
+            Storage::disk('linode')->putFileAs(
                 $dir,
                 $file,
                 $newname,
