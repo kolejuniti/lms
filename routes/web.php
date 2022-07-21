@@ -70,6 +70,7 @@ Route::post('/lecturer/course/filter', [App\Http\Controllers\LecturerController:
 Route::delete('/lecturer/content/delete', [App\Http\Controllers\LecturerController::class, 'deleteContent']);
 Route::delete('/lecturer/content/folder/delete', [App\Http\Controllers\LecturerController::class, 'deleteFolder']);
 Route::delete('/lecturer/content/folder/subfolder/delete', [App\Http\Controllers\LecturerController::class, 'deleteSubfolder']);
+Route::delete('/lecturer/content/folder/subfolder/deletefile', [App\Http\Controllers\LecturerController::class, 'deleteSubfolderFile']);
 Route::delete('/lecturer/content/folder/subfolder/material/delete', [App\Http\Controllers\LecturerController::class, 'deleteMaterial']);
 Route::get('/lecturer/content/{id}', [App\Http\Controllers\LecturerController::class, 'courseContent'])->name('lecturer.content');
 Route::get('/lecturer/content/{id}/create', [App\Http\Controllers\LecturerController::class, 'createContent']);
@@ -83,6 +84,7 @@ Route::get('/lecturer/content/material/sub/{dir}', [App\Http\Controllers\Lecture
 Route::get('/lecturer/content/material/sub/prev/{dir}', [App\Http\Controllers\LecturerController::class, 'prevcourseSubDirectory'])->name('lecturer.subdirectory.prev');
 Route::get('/lecturer/content/material/sub/create/{dir}', [App\Http\Controllers\LecturerController::class, 'createSubDirectory']);
 Route::post('/lecturer/content/material/sub/store/{dir}', [App\Http\Controllers\LecturerController::class, 'storeSubDirectory']);
+Route::post('/lecturer/content/material/sub/storefile/{dir}', [App\Http\Controllers\LecturerController::class, 'storefileSubDirectory']);
 Route::post('/lecturer/content/material/sub/password/{dir}', [App\Http\Controllers\LecturerController::class, 'passwordSubDirectory']);
 Route::get('/lecturer/content/material/sub/content/{dir}', [App\Http\Controllers\LecturerController::class, 'DirectoryContent'])->name('lecturer.directory.content');
 Route::get('/lecturer/content/material/sub/content/prev/{dir}', [App\Http\Controllers\LecturerController::class, 'prevDirectoryContent'])->name('lecturer.directory.content.prev');
@@ -129,6 +131,14 @@ Route::post('/lecturer/quiz/updatequizresult', [App\Http\Controllers\QuizControl
 Route::get('/lecturer/quiz/{id}/{quiz}', [App\Http\Controllers\QuizController::class, 'lecturerquizstatus'])->name('lecturer.quiz.status');
 Route::get('/lecturer/quiz/{quizid}/{userid}/result', [App\Http\Controllers\QuizController::class, 'quizresult']);
 Route::post('/lecturer/quiz/getChapters', [App\Http\Controllers\QuizController::class, 'getChapters']);
+
+Route::get('/lecturer/quiz2/{id}', [App\Http\Controllers\QuizController::class, 'quiz2list'])->name('lecturer.quiz2');
+Route::get('/lecturer/quiz2/{id}/create', [App\Http\Controllers\QuizController::class, 'quiz2create'])->name('lecturer.quiz2.create');
+Route::post('/lecturer/quiz2/insert', [App\Http\Controllers\QuizController::class, 'insertquiz2']);
+
+Route::post('/lecturer/quiz2/updatequiz2result', [App\Http\Controllers\QuizController::class, 'updatequiz2result']);
+Route::get('/lecturer/quiz2/{id}/{quiz2}', [App\Http\Controllers\QuizController::class, 'lecturerquiz2status'])->name('lecturer.quiz2.status');
+Route::get('/lecturer/quiz2/{quizid}/{userid}/result', [App\Http\Controllers\QuizController::class, 'quiz2result']);
 
 
 Route::get('/lecturer/test/{id}', [App\Http\Controllers\TestController::class, 'testlist'])->name('lecturer.test');
@@ -251,6 +261,12 @@ Route::get('/student/quiz/{quizid}/{userid}/result', [App\Http\Controllers\QuizC
 Route::post('/student/quiz/startquiz', [App\Http\Controllers\QuizController::class, 'startquiz']);
 Route::post('/student/quiz/savequiz', [App\Http\Controllers\QuizController::class, 'savequiz']);
 Route::post('/student/quiz/submitquiz', [App\Http\Controllers\QuizController::class, 'submitquiz']);
+
+Route::get('/student/quiz2/{id}', [App\Http\Controllers\QuizController::class, 'studentquiz2list'])->name('student.quiz2');
+Route::get('/student/quiz2/{id}/{quiz2}', [App\Http\Controllers\QuizController::class, 'studentquiz2status'])->name('student.quiz2.status');
+Route::get('/student/quiz2/{id}/{quiz2}/view', [App\Http\Controllers\QuizController::class, 'quiz2view']);
+Route::get('/student/quiz2/{quizid}/{userid}/result', [App\Http\Controllers\QuizController::class, 'quiz2resultstd']);
+Route::post('/student/quiz2/submitquiz2', [App\Http\Controllers\QuizController::class, 'submitquiz2']);
 
 Route::get('/student/test/{id}', [App\Http\Controllers\TestController::class, 'studenttestlist'])->name('student.test');
 Route::get('/student/test/{id}/{test}', [App\Http\Controllers\TestController::class, 'studentteststatus'])->name('student.test.status');
