@@ -72,7 +72,7 @@
 
                                 @foreach ( $classmaterial as $mats)
                                 <div class="col-md-3 text-center mb-3">
-                                    <a href="{{ Storage::disk('linode')->url($mats) }}">
+                                    <a href="{{ Storage::disk('linode')->url($mats) }}" target="_blank>
                                         <svg width="4em" height="4em" enable-background="new 0 0 512 512" version="1.1" viewBox="0 0 512 512" xml:space="preserve" >
                                             <path d="M128,0c-17.6,0-32,14.4-32,32v448c0,17.6,14.4,32,32,32h320c17.6,0,32-14.4,32-32V128L352,0H128z" fill="#E2E5E7"/>
                                             <path d="m384 128h96l-128-128v96c0 17.6 14.4 32 32 32z" fill="#B0B7BD"/>
