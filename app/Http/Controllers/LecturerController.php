@@ -560,7 +560,7 @@ class LecturerController extends Controller
 
             $course = DB::table('subjek')->where('id', Session::get('CourseID'))->first();
             
-            $dir = "classmaterial/" . $course->id . $directory->A . "/" . $directory->B . "/" . $directory->C;
+            $dir = "classmaterial/" . $course->id . "/" . $directory->A . "/" . $directory->B . "/" . $directory->C;
 
             $classmaterial  = Storage::disk('linode')->allFiles($dir);
 
@@ -592,9 +592,9 @@ class LecturerController extends Controller
 
         //dd($file_name);
 
-        $classmaterial = "classmaterial/" . $dirName->CourseID . $dirName->A . "/" . $dirName->B . "/" . $dirName->C;
+        $classmaterial = "classmaterial/" . $dirName->CourseID . "/" . $dirName->A . "/" . $dirName->B . "/" . $dirName->C;
 
-        $dirpath = "classmaterial/" . $dirName->CourseID . $dirName->A . "/" . $dirName->B . "/" . $dirName->C . "/" .$newname;
+        $dirpath = "classmaterial/" . $dirName->CourseID . "/" . $dirName->A . "/" . $dirName->B . "/" . $dirName->C . "/" .$newname;
 
         
 
