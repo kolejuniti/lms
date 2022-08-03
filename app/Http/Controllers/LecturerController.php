@@ -577,7 +577,7 @@ class LecturerController extends Controller
         $dirName = DB::table('lecturer_dir')
                 ->join('material_dir', 'lecturer_dir.DrID', 'material_dir.LecturerDirID')
                 ->join('materialsub_dir', 'material_dir.DrID', 'materialsub_dir.MaterialDirID')
-                ->select('lecturer_dir.DrName as A', 'material_dir.DrName as B', 'materialsub_dir.DrName as C', 'materialsub_dir.Password', 'materialsub_dir.MaterialDirID')
+                ->select('lecturer_dir.DrName as A', 'material_dir.DrName as B', 'materialsub_dir.DrName as C', 'materialsub_dir.Password', 'materialsub_dir.MaterialDirID', 'lecturer_dir.CourseID')
                 ->where('materialsub_dir.DrID', $request->id)->first();
         
         //dd($dirName);
@@ -592,9 +592,9 @@ class LecturerController extends Controller
 
         //dd($file_name);
 
-        $classmaterial = "classmaterial/" . $dirName->A . "/" . $dirName->B . "/" . $dirName->C;
+        $classmaterial = "classmaterial/" . $dirName->CourseID . $dirName->A . "/" . $dirName->B . "/" . $dirName->C;
 
-        $dirpath = "classmaterial/" . $dirName->A . "/" . $dirName->B . "/" . $dirName->C . "/" .$newname;
+        $dirpath = "classmaterial/" . $dirName->CourseID . $dirName->A . "/" . $dirName->B . "/" . $dirName->C . "/" .$newname;
 
         
 
