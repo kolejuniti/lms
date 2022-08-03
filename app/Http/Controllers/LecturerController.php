@@ -370,7 +370,7 @@ class LecturerController extends Controller
 
             $course = DB::table('subjek')->where('id', Session::get('CourseID'))->first();
 
-            $dir = "classmaterial/" . $directory->A . "/" . $directory->B;
+            $dir = "classmaterial/". $course->id . $directory->A . "/" . $directory->B;
 
             //this is to get file in the specific folder, unlike AllFiles to get everything from all folder
             $classmaterial  = Storage::disk('linode')->files($dir);
@@ -560,7 +560,7 @@ class LecturerController extends Controller
 
             $course = DB::table('subjek')->where('id', Session::get('CourseID'))->first();
             
-            $dir = "classmaterial/" . $directory->A . "/" . $directory->B . "/" . $directory->C;
+            $dir = "classmaterial/" . $course->id . $directory->A . "/" . $directory->B . "/" . $directory->C;
 
             $classmaterial  = Storage::disk('linode')->allFiles($dir);
 
