@@ -184,7 +184,7 @@ class StudentController extends Controller
 
             $mat_directory = DB::table('materialsub_dir')->where('MaterialDirID', $directory->DrID)->get();
 
-            $dir = "classmaterial/" . $directory->A . "/" . $directory->B;
+            $dir = "classmaterial/" . Session::get('CourseID') . "/" . $directory->A . "/" . $directory->B;
 
             //this is to get file in the specific folder, unlike AllFiles to get everything from all folder
             $classmaterial  = Storage::disk('linode')->files($dir);
@@ -206,7 +206,7 @@ class StudentController extends Controller
 
             $mat_directory = DB::table('materialsub_dir')->where('MaterialDirID', $password->DrID)->get();
 
-            $dir = "classmaterial/" . $password->A . "/" . $password->B;
+            $dir = "classmaterial/" . Session::get('CourseID') . "/" . $password->A . "/" . $password->B;
 
             //this is to get file in the specific folder, unlike AllFiles to get everything from all folder
             $classmaterial  = Storage::disk('linode')->files($dir);
@@ -228,7 +228,7 @@ class StudentController extends Controller
 
         $mat_directory = DB::table('materialsub_dir')->where('MaterialDirID', $directory->DrID)->get();
 
-        $dir = "classmaterial/" . $directory->A . "/" . $directory->B;
+        $dir = "classmaterial/" . Session::get('CourseID') . "/" . $directory->A . "/" . $directory->B;
 
         //this is to get file in the specific folder, unlike AllFiles to get everything from all folder
         $classmaterial  = Storage::disk('linode')->files($dir);
@@ -253,7 +253,7 @@ class StudentController extends Controller
 
         }else{
             
-            $dir = "classmaterial/" . $directory->A . "/" . $directory->B . "/" . $directory->C;
+            $dir = "classmaterial/" . Session::get('CourseID') . "/" . $directory->A . "/" . $directory->B . "/" . $directory->C;
 
             $classmaterial  = Storage::disk('linode')->allFiles( $dir );
 
@@ -275,7 +275,7 @@ class StudentController extends Controller
         {
             //$dir = 'classmaterial/'. $password->DrName;
 
-            $dir = "classmaterial/" . $password->A . "/" . $password->B . "/" . $password->C;
+            $dir = "classmaterial/" . Session::get('CourseID') . "/" . $password->A . "/" . $password->B . "/" . $password->C;
 
             $classmaterial  = Storage::disk('linode')->allFiles( $dir );
     

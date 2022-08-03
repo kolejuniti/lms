@@ -116,13 +116,42 @@ class LecturerController extends Controller
                 ->select('lecturer_dir.DrName as A')
                 ->where('lecturer_dir.DrID', $request->dir)->first();
 
-        $dir = "classmaterial/" . $directory->A;
+        $dir = "classmaterial/" . Session::get('CourseID') . "/" . $directory->A;
 
         Storage::disk('linode')->deleteDirectory($dir);
 
         DB::table('lecturer_dir')->where('DrID', $request->dir)->delete();
 
         return true;
+
+    }
+
+    public function renameContent(Request $request)
+    {
+
+        if($request->name != null)
+        {
+        $directory = DB::table('lecturer_dir')
+                ->select('lecturer_dir.DrName as A')
+                ->where('lecturer_dir.DrID', $request->dir)->first();
+
+        $olddir = "classmaterial/" . Session::get('CourseID') . "/" . $directory->A;
+
+        //dd($olddir);
+
+        $newdir = "classmaterial/" . Session::get('CourseID') . "/" . $request->name;
+
+        Storage::disk('linode')->move($olddir, $newdir);
+
+        //DB::table('lecturer_dir')->where('lecturer_dir.DrID', $request->dir)->update([
+            //'DrName' => $request->name
+        //]);
+
+        return true;
+
+        }else{
+            return false;
+        }
 
     }
 
@@ -134,13 +163,41 @@ class LecturerController extends Controller
                 ->select('lecturer_dir.DrName as A', 'material_dir.DrName as B')
                 ->where('material_dir.DrID', $request->dir)->first();
 
-        $dir = "classmaterial/" . $directory->A . "/" . $directory->B;
+        $dir = "classmaterial/" . Session::get('CourseID') . "/" . $directory->A . "/" . $directory->B;
 
         Storage::disk('linode')->deleteDirectory($dir);
 
         DB::table('material_dir')->where('DrID', $request->dir)->delete();
 
         return true;
+
+    }
+
+    public function renameFolder(Request $request)
+    {
+
+        if($request->name != null)
+        {
+            $directory = DB::table('lecturer_dir')
+            ->join('material_dir', 'lecturer_dir.DrID', 'material_dir.LecturerDirID')
+            ->select('lecturer_dir.DrName as A', 'material_dir.DrName as B')
+            ->where('material_dir.DrID', $request->dir)->first();
+
+        $olddir = "classmaterial/" . Session::get('CourseID') . "/" . $directory->A . "/" . $directory->B;
+
+        $newdir = "classmaterial/" . Session::get('CourseID') . "/" . $directory->A . "/" . $request->name;
+
+        Storage::disk('linode')->move($olddir, $newdir);
+
+        DB::table('material_dir')->where('material_dir.DrID', $request->dir)->update([
+            'DrName' => $request->name
+        ]);
+
+        return true;
+
+        }else{
+            return false;
+        }
 
     }
 
@@ -153,7 +210,7 @@ class LecturerController extends Controller
                 ->select('lecturer_dir.DrName as A', 'material_dir.DrName as B', 'materialsub_dir.DrName as C', 'materialsub_dir.Password', 'materialsub_dir.MaterialDirID', 'materialsub_dir.DrID')
                 ->where('materialsub_dir.DrID', $request->dir)->first();
 
-        $dir = "classmaterial/" . $directory->A . "/" . $directory->B . "/" . $directory->C;
+        $dir = "classmaterial/" . Session::get('CourseID') . "/" . $directory->A . "/" . $directory->B . "/" . $directory->C;
 
         Storage::disk('linode')->deleteDirectory($dir);
 
@@ -200,7 +257,7 @@ class LecturerController extends Controller
 
     public function storeContent(Request $request)
     {
-        $dir = "classmaterial/" . $request->name;
+        $dir = "classmaterial/" . Session::get('CourseID') . "/" . $request->name;
 
         if(DB::table('lecturer_dir')->where('DrName', $request->name)->exists())
         {
@@ -295,7 +352,7 @@ class LecturerController extends Controller
     {
         $lectdir = DB::table('lecturer_dir')->where('DrID', $request->dir)->first();
 
-        $dir = "classmaterial/" . $lectdir->DrName . "/" . $request->name;
+        $dir = "classmaterial/" . Session::get('CourseID') . "/" . $lectdir->DrName . "/" . $request->name;
 
         //dd($dir);
 
@@ -370,7 +427,7 @@ class LecturerController extends Controller
 
             $course = DB::table('subjek')->where('id', Session::get('CourseID'))->first();
 
-            $dir = "classmaterial/". $course->id . $directory->A . "/" . $directory->B;
+            $dir = "classmaterial/" . Session::get('CourseID') . "/" . $directory->A . "/" . $directory->B;
 
             //this is to get file in the specific folder, unlike AllFiles to get everything from all folder
             $classmaterial  = Storage::disk('linode')->files($dir);
@@ -392,10 +449,10 @@ class LecturerController extends Controller
     {
         $lectdir = DB::table('lecturer_dir')
                 ->join('material_dir', 'lecturer_dir.DrID', 'material_dir.LecturerDirID')
-                ->select('lecturer_dir.DrName as A', 'material_dir.DrName as B', 'lecturer_dir.DrID')
+                ->select('lecturer_dir.DrName as A', 'material_dir.DrName as B', 'lecturer_dir.DrID', 'lecturer_dir.CourseID')
                 ->where('material_dir.DrID', $request->dir)->first();
 
-        $dir = "classmaterial/" . $lectdir->A . "/" . $lectdir->B . "/" . $request->name;
+        $dir = "classmaterial/" . Session::get('CourseID') . "/" . $lectdir->A . "/" . $lectdir->B . "/" . $request->name;
 
         //dd($dir);
 
@@ -458,7 +515,7 @@ class LecturerController extends Controller
 
         $directory = DB::table('lecturer_dir')
                 ->join('material_dir', 'lecturer_dir.DrID', 'material_dir.LecturerDirID')
-                ->select('lecturer_dir.DrName as A', 'material_dir.DrName as B', 'material_dir.*')
+                ->select('lecturer_dir.DrName as A', 'material_dir.DrName as B', 'material_dir.*', 'lecturer_dir.CourseID')
                 ->where('material_dir.DrID', $request->dir)->first();
         
         //dd($dirName);
@@ -473,9 +530,9 @@ class LecturerController extends Controller
 
         //dd($file_name);
 
-        $classmaterial = "classmaterial/" . $directory->A . "/" . $directory->B;
+        $classmaterial = "classmaterial/" . Session::get('CourseID') . "/" . $directory->A . "/" . $directory->B;
 
-        $dirpath = "classmaterial/" . $directory->A . "/" . $directory->B . "/" .$newname;
+        $dirpath = "classmaterial/" . Session::get('CourseID') . "/" . $directory->A . "/" . $directory->B . "/" .$newname;
 
         
 
@@ -504,7 +561,7 @@ class LecturerController extends Controller
 
         $course = DB::table('subjek')->where('id', Session::get('CourseID'))->first();
 
-        $dir = "classmaterial/" . $directory->A . "/" . $directory->B;
+        $dir = "classmaterial/" . Session::get('CourseID') . "/" . $directory->A . "/" . $directory->B;
 
         //this is to get file in the specific folder, unlike AllFiles to get everything from all folder
         $classmaterial  = Storage::disk('linode')->files($dir);
@@ -529,7 +586,7 @@ class LecturerController extends Controller
 
             $course = DB::table('subjek')->where('id', Session::get('CourseID'))->first();
 
-            $dir = "classmaterial/" . $password->A . "/" . $password->B;
+            $dir = "classmaterial/" . Session::get('CourseID') . "/" . $password->A . "/" . $password->B;
 
             //this is to get file in the specific folder, unlike AllFiles to get everything from all folder
             $classmaterial  = Storage::disk('linode')->files($dir);
@@ -560,7 +617,7 @@ class LecturerController extends Controller
 
             $course = DB::table('subjek')->where('id', Session::get('CourseID'))->first();
             
-            $dir = "classmaterial/" . $course->id . "/" . $directory->A . "/" . $directory->B . "/" . $directory->C;
+            $dir = "classmaterial/" . Session::get('CourseID') . "/" . $directory->A . "/" . $directory->B . "/" . $directory->C;
 
             $classmaterial  = Storage::disk('linode')->allFiles($dir);
 
@@ -592,9 +649,9 @@ class LecturerController extends Controller
 
         //dd($file_name);
 
-        $classmaterial = "classmaterial/" . $dirName->CourseID . "/" . $dirName->A . "/" . $dirName->B . "/" . $dirName->C;
+        $classmaterial = "classmaterial/" . Session::get('CourseID') . "/" . $dirName->A . "/" . $dirName->B . "/" . $dirName->C;
 
-        $dirpath = "classmaterial/" . $dirName->CourseID . "/" . $dirName->A . "/" . $dirName->B . "/" . $dirName->C . "/" .$newname;
+        $dirpath = "classmaterial/" . Session::get('CourseID') . "/" . $dirName->A . "/" . $dirName->B . "/" . $dirName->C . "/" .$newname;
 
         
 
@@ -619,9 +676,7 @@ class LecturerController extends Controller
         ->select('lecturer_dir.DrName as A', 'material_dir.DrName as B', 'materialsub_dir.DrName as C', 'materialsub_dir.Password', 'materialsub_dir.MaterialDirID', 'materialsub_dir.DrID', 'lecturer_dir.CourseID')
         ->where('materialsub_dir.DrID', $request->dir)->first();
 
-        //dd($directory);
-
-        $dir = "classmaterial/" . $directory->CourseID . "/" . $directory->A . "/" . $directory->B . "/" . $directory->C;
+        $dir = "classmaterial/" . Session::get('CourseID') . "/" . $directory->A . "/" . $directory->B . "/" . $directory->C;
 
         $classmaterial  = Storage::disk('linode')->allFiles( $dir );
 
@@ -637,7 +692,7 @@ class LecturerController extends Controller
         $password = DB::table('lecturer_dir')
         ->join('material_dir', 'lecturer_dir.DrID', 'material_dir.LecturerDirID')
         ->join('materialsub_dir', 'material_dir.DrID', 'materialsub_dir.MaterialDirID')
-        ->select('lecturer_dir.DrName as A', 'material_dir.DrName as B', 'materialsub_dir.DrName as C', 'materialsub_dir.Password', 'materialsub_dir.MaterialDirID', 'materialsub_dir.DrID')
+        ->select('lecturer_dir.DrName as A', 'material_dir.DrName as B', 'materialsub_dir.DrName as C', 'materialsub_dir.Password', 'materialsub_dir.MaterialDirID', 'materialsub_dir.DrID', 'lecturer_dir.CourseID')
         ->where('materialsub_dir.DrID', $request->dir)->first();
 
 
@@ -645,7 +700,7 @@ class LecturerController extends Controller
         {
             //$dir = 'classmaterial/'. $password->DrName;
 
-            $dir = "classmaterial/" . $password->A . "/" . $password->B . "/" . $password->C;
+            $dir = "classmaterial/" . Session::get('CourseID') . "/". $password->A . "/" . $password->B . "/" . $password->C;
 
             $classmaterial  = Storage::disk('linode')->allFiles( $dir );
 
@@ -1383,20 +1438,28 @@ class LecturerController extends Controller
     public function assessmentreport()
     {
         $overallquiz = [];
+        $quizanswer = [];
 
         $overalltest = [];
+        $testanswer = [];
 
         $overallassign = [];
+        $assignanswer = [];
 
         $overallmidterm = [];
+        $midtermanswer = [];
 
         $overallfinal = [];
+        $finalanswer = [];
 
         $overallpaperwork = [];
+        $paperworkanswer = [];
 
         $overallpractical = [];
+        $practicalanswer = [];
 
         $overallother = [];
+        $otheranswer = [];
 
         $user = Auth::user();
 
@@ -1429,13 +1492,24 @@ class LecturerController extends Controller
 
         $totalquiz = $quizs->sum('total_mark');
 
+        //dd($quizid);
 
-        foreach($students as $key => $std)
-        {
-            $quizanswer[] = DB::table('tblclassstudentquiz')->where('userid', $std->ic)->whereIn('quizid', $quizid)->get();
 
-            $sumquiz[] = DB::table('tblclassstudentquiz')->where('userid', $std->ic)->whereIn('quizid', $quizid)->sum('final_mark');
-        }
+       
+            foreach($students as $keys => $std)
+            {
+                foreach($quiz as $key =>$qz)
+                {
+                
+                $quizanswer[$keys][] = DB::table('tblclassstudentquiz')->where('userid', $std->ic)->where('quizid', $qz->id)->first();
+
+                }
+
+                $sumquiz[] = DB::table('tblclassstudentquiz')->where('userid', $std->ic)->whereIn('quizid', $quizid)->sum('final_mark');
+               
+            }
+
+        //dd($quizanswer);
 
 
         //TEST
@@ -1454,12 +1528,17 @@ class LecturerController extends Controller
 
         $totaltest = $tests->sum('total_mark');
 
-
-        foreach($students as $key => $std)
+        foreach($students as $keys => $std)
         {
-            $testanswer[] = DB::table('tblclassstudenttest')->where('userid', $std->ic)->whereIn('testid', $testid)->get();
+            foreach($test as $key =>$ts)
+            {
+            
+            $testanswer[$keys][] = DB::table('tblclassstudenttest')->where('userid', $std->ic)->where('testid', $ts->id)->first();
+
+            }
 
             $sumtest[] = DB::table('tblclassstudenttest')->where('userid', $std->ic)->whereIn('testid', $testid)->sum('final_mark');
+            
         }
 
 
@@ -1479,13 +1558,18 @@ class LecturerController extends Controller
         $totalassign = $assigns->sum('total_mark');
 
 
-        foreach($students as $key => $std)
+        foreach($students as $keys => $std)
         {
-            $assignanswer[] = DB::table('tblclassstudentassign')->where('userid', $std->ic)->whereIn('assignid', $assignid)->get();
+            foreach($assign as $key =>$as)
+            {
+            
+            $assignanswer[$keys][] = DB::table('tblclassstudentassign')->where('userid', $std->ic)->where('assignid', $as->id)->first();
+
+            }
 
             $sumassign[] = DB::table('tblclassstudentassign')->where('userid', $std->ic)->whereIn('assignid', $assignid)->sum('final_mark');
+            
         }
-
 
 
         //MIDTERM
@@ -1502,11 +1586,17 @@ class LecturerController extends Controller
 
         $totalmidterm = $midterms->sum('total_mark');
 
-        foreach($students as $std)
+        foreach($students as $keys => $std)
         {
-            $midtermanswer[] = DB::table('tblclassstudentmidterm')->where('userid', $std->ic)->whereIn('midtermid', $midtermid)->get();
+            foreach($midterm as $key =>$md)
+            {
+            
+            $midtermanswer[$keys][] = DB::table('tblclassstudentmidterm')->where('userid', $std->ic)->where('midtermid', $md->id)->first();
+
+            }
 
             $summidterm[] = DB::table('tblclassstudentmidterm')->where('userid', $std->ic)->whereIn('midtermid', $midtermid)->sum('final_mark');
+            
         }
 
         //FINAL
@@ -1523,11 +1613,17 @@ class LecturerController extends Controller
 
         $totalfinal = $finals->sum('total_mark');
 
-        foreach($students as $std)
+        foreach($students as $keys => $std)
         {
-            $finalanswer[] = DB::table('tblclassstudentfinal')->where('userid', $std->ic)->whereIn('finalid', $finalid)->get();
+            foreach($final as $key =>$fn)
+            {
+            
+            $finalanswer[$keys][] = DB::table('tblclassstudentfinal')->where('userid', $std->ic)->where('finalid', $fn->id)->first();
+
+            }
 
             $sumfinal[] = DB::table('tblclassstudentfinal')->where('userid', $std->ic)->whereIn('finalid', $finalid)->sum('final_mark');
+            
         }
 
 
@@ -1545,11 +1641,17 @@ class LecturerController extends Controller
 
         $totalpaperwork = $paperworks->sum('total_mark');
 
-        foreach($students as $std)
+        foreach($students as $keys => $std)
         {
-            $paperworkanswer[] = DB::table('tblclassstudentpaperwork')->where('userid', $std->ic)->whereIn('paperworkid', $paperworkid)->get();
+            foreach($paperwork as $key =>$pw)
+            {
+            
+            $paperworkanswer[$keys][] = DB::table('tblclassstudentpaperwork')->where('userid', $std->ic)->where('paperworkid', $pw->id)->first();
+
+            }
 
             $sumpaperwork[] = DB::table('tblclassstudentpaperwork')->where('userid', $std->ic)->whereIn('paperworkid', $paperworkid)->sum('final_mark');
+            
         }
 
 
@@ -1559,7 +1661,7 @@ class LecturerController extends Controller
         ->where([
             ['classid', request()->id],
             ['sessionid', Session::get('SessionID')]
-        ]);;
+        ]);
 
         $practical = $practicals->get();
 
@@ -1567,12 +1669,20 @@ class LecturerController extends Controller
 
         $totalpractical = $practicals->sum('total_mark');
 
-        foreach($students as $std)
+        foreach($students as $keys => $std)
         {
-            $practicalanswer[] = DB::table('tblclassstudentpractical')->where('userid', $std->ic)->whereIn('practicalid', $practicalid)->get();
+            foreach($practical as $key =>$pr)
+            {
+            
+            $practicalanswer[$keys][] = DB::table('tblclassstudentpractical')->where('userid', $std->ic)->where('practicalid', $pr->id)->first();
+
+            }
 
             $sumpractical[] = DB::table('tblclassstudentpractical')->where('userid', $std->ic)->whereIn('practicalid', $practicalid)->sum('final_mark');
+            
         }
+
+        //dd($paperworkanswer);
 
         //OTHER
 
@@ -1588,11 +1698,17 @@ class LecturerController extends Controller
 
         $totalother = $others->sum('total_mark');
 
-        foreach($students as $std)
+        foreach($students as $keys => $std)
         {
-            $otheranswer[] = DB::table('tblclassstudentother')->where('userid', $std->ic)->whereIn('otherid', $otherid)->get();
+            foreach($other as $key =>$ot)
+            {
+            
+            $otheranswer[$keys][] = DB::table('tblclassstudentother')->where('userid', $std->ic)->where('otherid', $ot->id)->first();
+
+            }
 
             $sumother[] = DB::table('tblclassstudentother')->where('userid', $std->ic)->whereIn('otherid', $otherid)->sum('final_mark');
+            
         }
 
         //dd($students);
