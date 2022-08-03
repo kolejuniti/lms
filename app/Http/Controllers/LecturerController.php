@@ -616,12 +616,12 @@ class LecturerController extends Controller
         $directory = DB::table('lecturer_dir')
         ->join('material_dir', 'lecturer_dir.DrID', 'material_dir.LecturerDirID')
         ->join('materialsub_dir', 'material_dir.DrID', 'materialsub_dir.MaterialDirID')
-        ->select('lecturer_dir.DrName as A', 'material_dir.DrName as B', 'materialsub_dir.DrName as C', 'materialsub_dir.Password', 'materialsub_dir.MaterialDirID', 'materialsub_dir.DrID')
+        ->select('lecturer_dir.DrName as A', 'material_dir.DrName as B', 'materialsub_dir.DrName as C', 'materialsub_dir.Password', 'materialsub_dir.MaterialDirID', 'materialsub_dir.DrID', 'lecturer_dir.CourseID')
         ->where('materialsub_dir.DrID', $request->dir)->first();
 
         //dd($directory);
 
-        $dir = "classmaterial/" . $directory->A . "/" . $directory->B . "/" . $directory->C;
+        $dir = "classmaterial/" . $directory->CourseID . "/" . $directory->A . "/" . $directory->B . "/" . $directory->C;
 
         $classmaterial  = Storage::disk('linode')->allFiles( $dir );
 
