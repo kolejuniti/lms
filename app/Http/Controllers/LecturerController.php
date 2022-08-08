@@ -20,6 +20,8 @@ class LecturerController extends Controller
 {
     public function index(Request $request)
     {
+        Session::put('User', Auth::user());
+        
         //this function will get authenticated user and use relational models to join table
         $data = auth()->user()->subjects()
             ->join('subjek', 'user_subjek.course_id','=','subjek.sub_id')
@@ -33,6 +35,32 @@ class LecturerController extends Controller
         $sessions = DB::table('sessions')->where('Status', 'ACTIVE')->get();
 
         return view('lecturer', compact(['data','sessions']));
+    }
+
+    public function setting()
+    {
+        //dd(Auth::user());
+
+        return view('settingLecturer');
+
+    }
+
+    public function updateSetting(Request $request)
+    {
+
+        $data = $request->validate([
+            'pass' => ['max:10','required'],
+            'conpass' => ['max:10','same:pass']
+        ],[
+            'conpass.same' => 'The Confirm Password and Password must match!'
+        ]);
+
+        Auth::user()->update([
+            'password' =>  Hash::make($data['pass'])
+        ]);
+
+        return redirect()->back()->with('alert', 'You have successfully updated your setting!');
+
     }
 
     public function getCourseList(Request $request)
@@ -131,18 +159,14 @@ class LecturerController extends Controller
 
         if($request->name != null)
         {
-        $directory = DB::table('lecturer_dir')
-                ->select('lecturer_dir.DrName as A')
-                ->where('lecturer_dir.DrID', $request->dir)->first();
+        $directory = DB::table('lecturer_dir')->where('lecturer_dir.DrID', $request->dir)->update([
+            'newDrName' => $request->name
+        ]);
 
-        $olddir = "classmaterial/" . Session::get('CourseID') . "/" . $directory->A;
-
-        //dd($olddir);
-
-        $newdir = "classmaterial/" . Session::get('CourseID') . "/" . $request->name;
-
-        Storage::disk('linode')->move($olddir, $newdir);
-
+        //THIS IS TO RENAME USING HELPER STORAGE
+        //$olddir = "classmaterial/" . Session::get('CourseID') . "/" . $directory->A;
+        //$newdir = "classmaterial/" . Session::get('CourseID') . "/" . $request->name;
+        //Storage::disk('linode')->move($olddir, $newdir);
         //DB::table('lecturer_dir')->where('lecturer_dir.DrID', $request->dir)->update([
             //'DrName' => $request->name
         //]);
@@ -181,17 +205,16 @@ class LecturerController extends Controller
             $directory = DB::table('lecturer_dir')
             ->join('material_dir', 'lecturer_dir.DrID', 'material_dir.LecturerDirID')
             ->select('lecturer_dir.DrName as A', 'material_dir.DrName as B')
-            ->where('material_dir.DrID', $request->dir)->first();
+            ->where('material_dir.DrID', $request->dir)->update([
+                'material_dir.newDrName' => $request->name
+            ]);
 
-        $olddir = "classmaterial/" . Session::get('CourseID') . "/" . $directory->A . "/" . $directory->B;
-
-        $newdir = "classmaterial/" . Session::get('CourseID') . "/" . $directory->A . "/" . $request->name;
-
-        Storage::disk('linode')->move($olddir, $newdir);
-
-        DB::table('material_dir')->where('material_dir.DrID', $request->dir)->update([
-            'DrName' => $request->name
-        ]);
+        //$olddir = "classmaterial/" . Session::get('CourseID') . "/" . $directory->A . "/" . $directory->B;
+        //$newdir = "classmaterial/" . Session::get('CourseID') . "/" . $directory->A . "/" . $request->name;
+        //Storage::disk('linode')->move($olddir, $newdir);
+        //DB::table('material_dir')->where('material_dir.DrID', $request->dir)->update([
+        //    'DrName' => $request->name
+        //]);
 
         return true;
 
@@ -237,15 +260,80 @@ class LecturerController extends Controller
 
     }
 
+    public function renameSubfolder(Request $request)
+    {
+
+        if($request->name != null)
+        {
+            DB::table('materialsub_dir')->where('DrID', $request->dir)->update([
+                'newDrName' => $request->name
+            ]);
+
+        return true;
+
+        }else{
+            return false;
+        }
+
+    }
+
+    public function renameFileSubfolder(Request $request)
+    {
+
+        if($request->name != null)
+        {
+        $directory = DB::table('lecturer_dir')
+        ->join('material_dir', 'lecturer_dir.DrID', 'material_dir.LecturerDirID')
+        ->select('lecturer_dir.DrName as A', 'material_dir.DrName as B')
+        ->where('material_dir.DrID', $request->dir)->first();
+
+        $olddir = "classmaterial/" . Session::get('CourseID') . "/" . $directory->A . "/" . $directory->B . "/" . $request->file;
+        $newdir = "classmaterial/" . Session::get('CourseID') . "/" . $directory->A . "/" . $directory->B . "/" . $request->name . "." . $request->ext;
+        Storage::disk('linode')->move($olddir, $newdir);
+
+        return true;
+
+        }else{
+            return false;
+        }
+
+    }
+
+    public function renameMaterial(Request $request)
+    {
+
+        if($request->name != null)
+        {
+
+        $directory = DB::table('lecturer_dir')
+        ->join('material_dir', 'lecturer_dir.DrID', 'material_dir.LecturerDirID')
+        ->join('materialsub_dir', 'material_dir.DrID', 'materialsub_dir.MaterialDirID')
+        ->select('lecturer_dir.DrName as A', 'material_dir.DrName as B', 'materialsub_dir.DrName as C')
+        ->where('materialsub_dir.DrID', $request->dir)->first();
+
+        $olddir = "classmaterial/" . Session::get('CourseID') . "/" . $directory->A . "/" . $directory->B . "/" . $directory->C . "/" . $request->file;
+        $newdir = "classmaterial/" . Session::get('CourseID') . "/" . $directory->A . "/" . $directory->B . "/" . $directory->C . "/" . $request->name . "." . $request->ext;
+        Storage::disk('linode')->move($olddir, $newdir);
+
+        return true;
+
+        }else{
+            return false;
+        }
+
+    }
+
     public function coursecontent()
     {
-        $folder = DB::table('lecturer_dir')->where('CourseID', request()->id)->get();
+        $user = Auth::user();
+
+        $folder = DB::table('lecturer_dir')->where('CourseID', request()->id)->where('Addby', $user->ic)->get();
 
         $course = DB::table('subjek')->where('id', Session::get('CourseID'))->first();
 
         //$test = Session::get('SessionID');
 
-        //dd($test);
+        //dd($folder);
         
         return view('lecturer.coursecontent.index', compact('folder', 'course'))->with('course_id', request()->id);
     }

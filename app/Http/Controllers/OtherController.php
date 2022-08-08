@@ -78,7 +78,6 @@ class OtherController extends Controller
         $folder = DB::table('lecturer_dir')
         ->where([
             ['CourseID', $courseid],
-            ['SessionID', $sessionid],
             ['Addby', $user->ic]
             ])->get();
 
@@ -147,7 +146,7 @@ class OtherController extends Controller
 
         $dir = "classother/" .  $classid . "/" . $user->name . "/" . $data['other-title'];
 
-        $classother  = Storage::disk('public')->makeDirectory($dir);
+        $classother  = Storage::disk('linode')->makeDirectory($dir);
 
         $file = $request->file('myPdf');
 
@@ -161,7 +160,7 @@ class OtherController extends Controller
         $newpath = "classother/" .  $classid . "/" . $user->name . "/" . $data['other-title'] . "/" . $newname;
 
         if(! file_exists($newname)){
-            Storage::disk('public')->putFileAs(
+            Storage::disk('linode')->putFileAs(
                 $dir,
                 $file,
                 $newname,
@@ -311,7 +310,7 @@ class OtherController extends Controller
 
         $dir = "classother/" .  $classid . "/" . $other->name . "/" . $other->title . "/" . $participant . "/return";
 
-        $classother  = Storage::disk('public')->makeDirectory($dir);
+        $classother  = Storage::disk('linode')->makeDirectory($dir);
 
         $file = $request->file('myPdf');
 
@@ -324,7 +323,7 @@ class OtherController extends Controller
         $newname = $filename . "." . $file_ext;
         $newpath = "classother/" .  $classid . "/" . $other->name . "/" . $other->title . "/" . $participant . "/return" . "/" . $newname;
 
-        Storage::disk('public')->putFileAs(
+        Storage::disk('linode')->putFileAs(
             $dir,
             $file,
             $newname,
@@ -482,7 +481,7 @@ class OtherController extends Controller
         $today = date("Y-m-d H:i:s");
 
         if(! file_exists($newname)){
-            Storage::disk('public')->putFileAs(
+            Storage::disk('linode')->putFileAs(
                 $dir,
                 $file,
                 $newname,

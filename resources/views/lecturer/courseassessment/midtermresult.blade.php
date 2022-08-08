@@ -243,12 +243,15 @@ function renderForm(formdata){
 
         $(fbRender).formRender(formRenderOptions );
 
+        //$('[name="checkbox-question3[]"]').attr("disabled","disabled");
+
         for(let i=0; i < index; i++){
 
-        $(`[name="radio-question${i}"]`).attr("disabled","disabled");
-        $(`[name="checkbox-question${i}[]"]`).attr("disabled","disabled");
-        $(`[name="subjective-text${i}"]`).attr("disabled","disabled");
+        $(`[name="radio-question${i}"]:not(:checked)`).attr('disabled', true);
+        $(`[name="checkbox-question${i}[]"]`).click(false);
+        $(`[name="subjective-text${i}"]:not(:checked)`).attr('disabled', true);
 
+        //alert(`[name="checkbox-question${i}"]`)
         }
        
         //alert(index);

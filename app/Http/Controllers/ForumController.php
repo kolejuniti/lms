@@ -59,12 +59,12 @@ class ForumController extends Controller
 
         DB::table('tblforum_topic')->insert([
             'TopicName' => $request->inputTitle,
-            'CourseID' => Session::get('CourseIDS'),
+            'CourseID' => $request->id,
             'SessionID' => Session::get('SessionIDS'),
             'Addby' => $user->ic
         ]);
 
-        return redirect('/lecturer/forum/'. Session::get('CourseIDS') . '?session='.  Session::get('SessionIDS'));
+        return redirect('/lecturer/forum/'. $request->id . '?session='.  Session::get('SessionIDS'));
 
     }
 

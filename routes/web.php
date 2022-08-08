@@ -25,13 +25,18 @@ Route::get('/SA', [App\Http\Controllers\SuperAdminController::class, 'index']);
 Route::post('/SA/import', [App\Http\Controllers\SuperAdminController::class, 'import']);
 
 Route::get('/admin', [App\Http\Controllers\AdminController::class, 'index'])->name('admin');
+Route::get('/admin/{id}/edit', [App\Http\Controllers\AdminController::class, 'edit'])->name('admin.edit');
+Route::patch('/admin/{id}', [App\Http\Controllers\AdminController::class, 'update'])->name('admin.update');
 Route::get('/admin/create', [App\Http\Controllers\AdminController::class, 'create'])->name('admin.create');
 Route::post('/admin/store', [App\Http\Controllers\AdminController::class, 'store'])->name('admin.store');
 Route::delete('/admin/delete', [App\Http\Controllers\AdminController::class, 'delete'])->name('admin.delete');
 Route::post('/admin/getProgramoptions', [App\Http\Controllers\AdminController::class, 'getProgramoptions']);
 Route::post('/admin/getProgramoptions2', [App\Http\Controllers\AdminController::class, 'getProgramoptions2']);
-Route::get('/admin/{id}/edit', [App\Http\Controllers\AdminController::class, 'edit'])->name('admin.edit');
-Route::patch('/admin/{id}', [App\Http\Controllers\AdminController::class, 'update'])->name('admin.update');
+Route::get('/admin/report/lecturer', [App\Http\Controllers\AdminController::class, 'getReportLecturer'])->name('admin.report.lecturer');
+Route::post('/admin/report/lecturer/getFolder', [App\Http\Controllers\AdminController::class, 'getFolder']);
+Route::post('/admin/report/lecturer/getSubfolder', [App\Http\Controllers\AdminController::class, 'getSubFolder']);
+Route::post('/admin/report/lecturer/getSubfolder/getSubfolder2', [App\Http\Controllers\AdminController::class, 'getSubFolder2']);
+Route::post('/admin/report/lecturer/getSubfolder/getSubfolder2/getMaterial', [App\Http\Controllers\AdminController::class, 'getMaterial']);
 
 Route::get('/KP', [App\Http\Controllers\KP_Controller::class, 'index'])->name('ketua_program');
 Route::get('/KP/create', [App\Http\Controllers\KP_Controller::class, 'create'])->name('kp.create');
@@ -65,13 +70,31 @@ Route::post('/pendaftar/group/getSubject', [App\Http\Controllers\PendaftarContro
 Route::post('/pendaftar/group/getStudentTableIndex', [App\Http\Controllers\PendaftarController::class, 'getStudentTableIndex']);
 Route::post('/pendaftar/group/getGroupOption', [App\Http\Controllers\PendaftarController::class, 'getGroupOption']);
 
+Route::get('/AR', [App\Http\Controllers\AR_Controller::class, 'courseList'])->name('pendaftar_akademik');
+Route::post('/AR/getCourse', [App\Http\Controllers\AR_Controller::class, 'getCourse']);
+Route::post('/AR/course/create', [App\Http\Controllers\AR_Controller::class, 'createCourse']);
+Route::delete('/AR/course/delete', [App\Http\Controllers\AR_Controller::class, 'deleteCourse'])->name('pendaftar_akademik.delete');
+Route::post('/AR/course/update', [App\Http\Controllers\AR_Controller::class, 'updateCourse']);
+Route::get('/AR/student', [App\Http\Controllers\AR_Controller::class, 'studentCourse'])->name('pendaftar_akademik.student');
+Route::get('/AR/student/getStudent', [App\Http\Controllers\AR_Controller::class, 'getStudents']);
+Route::get('/AR/student/getCourse', [App\Http\Controllers\AR_Controller::class, 'getCourses']);
+Route::post('/AR/student/register', [App\Http\Controllers\AR_Controller::class, 'registerCourse']);
+Route::delete('/AR/student/unregister', [App\Http\Controllers\AR_Controller::class, 'unregisterCourse']);
+
 Route::get('/lecturer', [App\Http\Controllers\LecturerController::class, 'index'])->name('lecturer');
+Route::get('/lecturer/setting', [App\Http\Controllers\LecturerController::class, 'setting'])->name('lecturer.setting');
+Route::post('/lecturer/update', [App\Http\Controllers\LecturerController::class, 'updateSetting']);
 Route::post('/lecturer/course/filter', [App\Http\Controllers\LecturerController::class, 'getCourseList']);
 Route::delete('/lecturer/content/delete', [App\Http\Controllers\LecturerController::class, 'deleteContent']);
+Route::post('/lecturer/content/rename', [App\Http\Controllers\LecturerController::class, 'renameContent']);
 Route::delete('/lecturer/content/folder/delete', [App\Http\Controllers\LecturerController::class, 'deleteFolder']);
+Route::post('/lecturer/content/folder/rename', [App\Http\Controllers\LecturerController::class, 'renameFolder']);
 Route::delete('/lecturer/content/folder/subfolder/delete', [App\Http\Controllers\LecturerController::class, 'deleteSubfolder']);
 Route::delete('/lecturer/content/folder/subfolder/deletefile', [App\Http\Controllers\LecturerController::class, 'deleteSubfolderFile']);
+Route::post('/lecturer/content/folder/subfolder/rename', [App\Http\Controllers\LecturerController::class, 'renameSubfolder']);
+Route::post('/lecturer/content/folder/subfolder/renameFile', [App\Http\Controllers\LecturerController::class, 'renameFileSubfolder']);
 Route::delete('/lecturer/content/folder/subfolder/material/delete', [App\Http\Controllers\LecturerController::class, 'deleteMaterial']);
+Route::post('/lecturer/content/folder/subfolder/material/renameFile', [App\Http\Controllers\LecturerController::class, 'renameMaterial']);
 Route::get('/lecturer/content/{id}', [App\Http\Controllers\LecturerController::class, 'courseContent'])->name('lecturer.content');
 Route::get('/lecturer/content/{id}/create', [App\Http\Controllers\LecturerController::class, 'createContent']);
 Route::post('/lecturer/content/{id}/store', [App\Http\Controllers\LecturerController::class, 'storeContent']);
@@ -125,7 +148,6 @@ Route::get('/lecturer/report/{id}/{student}', [App\Http\Controllers\LecturerCont
 Route::get('/lecturer/quiz/{id}', [App\Http\Controllers\QuizController::class, 'quizlist'])->name('lecturer.quiz');
 Route::get('/lecturer/quiz/{id}/create', [App\Http\Controllers\QuizController::class, 'quizcreate'])->name('lecturer.quiz.create');
 Route::post('/lecturer/quiz/insert', [App\Http\Controllers\QuizController::class, 'insertquiz']);
-
 Route::post('/lecturer/quiz/getStatus', [App\Http\Controllers\QuizController::class, 'getStatus']);
 Route::post('/lecturer/quiz/updatequizresult', [App\Http\Controllers\QuizController::class, 'updatequizresult']);
 Route::get('/lecturer/quiz/{id}/{quiz}', [App\Http\Controllers\QuizController::class, 'lecturerquizstatus'])->name('lecturer.quiz.status');
@@ -135,32 +157,60 @@ Route::post('/lecturer/quiz/getChapters', [App\Http\Controllers\QuizController::
 Route::get('/lecturer/quiz2/{id}', [App\Http\Controllers\QuizController::class, 'quiz2list'])->name('lecturer.quiz2');
 Route::get('/lecturer/quiz2/{id}/create', [App\Http\Controllers\QuizController::class, 'quiz2create'])->name('lecturer.quiz2.create');
 Route::post('/lecturer/quiz2/insert', [App\Http\Controllers\QuizController::class, 'insertquiz2']);
-
+Route::post('/lecturer/quiz2/update', [App\Http\Controllers\QuizController::class, 'updatequiz2']);
+Route::post('/lecturer/quiz2/getStatus', [App\Http\Controllers\QuizController::class, 'getStatus']);
 Route::post('/lecturer/quiz2/updatequiz2result', [App\Http\Controllers\QuizController::class, 'updatequiz2result']);
-Route::get('/lecturer/quiz2/{id}/{quiz2}', [App\Http\Controllers\QuizController::class, 'lecturerquiz2status'])->name('lecturer.quiz2.status');
+Route::get('/lecturer/quiz2/{id}/{quiz}', [App\Http\Controllers\QuizController::class, 'lecturerquiz2status'])->name('lecturer.quiz2.status');
 Route::get('/lecturer/quiz2/{quizid}/{userid}/result', [App\Http\Controllers\QuizController::class, 'quiz2result']);
+Route::post('/lecturer/quiz2/getChapters', [App\Http\Controllers\QuizController::class, 'getChapters']);
+
+//Route::get('/lecturer/quiz2/{id}', [App\Http\Controllers\QuizController::class, 'quiz2list'])->name('lecturer.quiz2');
+//Route::get('/lecturer/quiz2/{id}/create', [App\Http\Controllers\QuizController::class, 'quiz2create'])->name('lecturer.quiz2.create');
+//Route::post('/lecturer/quiz2/insert', [App\Http\Controllers\QuizController::class, 'insertquiz2']);
+
+//Route::post('/lecturer/quiz2/updatequiz2result', [App\Http\Controllers\QuizController::class, 'updatequiz2result']);
+//Route::get('/lecturer/quiz2/{id}/{quiz2}', [App\Http\Controllers\QuizController::class, 'lecturerquiz2status'])->name('lecturer.quiz2.status');
+//Route::get('/lecturer/quiz2/{quizid}/{userid}/result', [App\Http\Controllers\QuizController::class, 'quiz2result']);
 
 
 Route::get('/lecturer/test/{id}', [App\Http\Controllers\TestController::class, 'testlist'])->name('lecturer.test');
 Route::get('/lecturer/test/{id}/create', [App\Http\Controllers\TestController::class, 'testcreate'])->name('lecturer.test.create');
 Route::post('/lecturer/test/insert', [App\Http\Controllers\TestController::class, 'inserttest']);
-
 Route::post('/lecturer/test/getStatus', [App\Http\Controllers\TestController::class, 'getStatus']);
 Route::post('/lecturer/test/updatetestresult', [App\Http\Controllers\TestController::class, 'updatetestresult']);
 Route::get('/lecturer/test/{id}/{test}', [App\Http\Controllers\TestController::class, 'lecturerteststatus'])->name('lecturer.test.status');
 Route::get('/lecturer/test/{testid}/{userid}/result', [App\Http\Controllers\TestController::class, 'testresult']);
 Route::post('/lecturer/test/getChapters', [App\Http\Controllers\TestController::class, 'getChapters']);
 
+Route::get('/lecturer/test2/{id}', [App\Http\Controllers\TestController::class, 'test2list'])->name('lecturer.test2');
+Route::get('/lecturer/test2/{id}/create', [App\Http\Controllers\TestController::class, 'test2create'])->name('lecturer.test2.create');
+Route::post('/lecturer/test2/insert', [App\Http\Controllers\TestController::class, 'inserttest2']);
+Route::post('/lecturer/test2/update', [App\Http\Controllers\TestController::class, 'updatetest2']);
+Route::post('/lecturer/test2/getStatus', [App\Http\Controllers\TestController::class, 'getStatus']);
+Route::post('/lecturer/test2/updatetest2result', [App\Http\Controllers\TestController::class, 'updatetest2result']);
+Route::get('/lecturer/test2/{id}/{test}', [App\Http\Controllers\TestController::class, 'lecturertest2status'])->name('lecturer.test2.status');
+Route::get('/lecturer/test2/{testid}/{userid}/result', [App\Http\Controllers\TestController::class, 'test2result']);
+Route::post('/lecturer/test2/getChapters', [App\Http\Controllers\TestController::class, 'getChapters']);
+
 
 Route::get('/lecturer/assign/{id}', [App\Http\Controllers\AssignmentController::class, 'assignlist'])->name('lecturer.assign');
 Route::get('/lecturer/assign/{id}/create', [App\Http\Controllers\AssignmentController::class, 'assigncreate'])->name('lecturer.assign.create');
 Route::post('/lecturer/assign/insert', [App\Http\Controllers\AssignmentController::class, 'insertassign']);
-
 Route::post('/lecturer/assign/getStatus', [App\Http\Controllers\AssignmentController::class, 'getStatus']);
 Route::post('/lecturer/assign/updateassignresult', [App\Http\Controllers\AssignmentController::class, 'updateassignresult']);
 Route::get('/lecturer/assign/{id}/{assign}', [App\Http\Controllers\AssignmentController::class, 'lecturerassignstatus'])->name('lecturer.assign.status');
 Route::get('/lecturer/assign/{assignid}/{userid}/result', [App\Http\Controllers\AssignmentController::class, 'assignresult']);
 Route::post('/lecturer/assign/getChapters', [App\Http\Controllers\AssignmentController::class, 'getChapters']);
+
+Route::get('/lecturer/assign2/{id}', [App\Http\Controllers\AssignmentController::class, 'assign2list'])->name('lecturer.assign2');
+Route::get('/lecturer/assign2/{id}/create', [App\Http\Controllers\AssignmentController::class, 'assign2create'])->name('lecturer.assign2.create');
+Route::post('/lecturer/assign2/insert', [App\Http\Controllers\AssignmentController::class, 'insertassign2']);
+Route::post('/lecturer/assign2/update', [App\Http\Controllers\AssignmentController::class, 'updateassign2']);
+Route::post('/lecturer/assign2/getStatus', [App\Http\Controllers\AssignmentController::class, 'getStatus']);
+Route::post('/lecturer/assign2/updateassign2result', [App\Http\Controllers\AssignmentController::class, 'updateassign2result']);
+Route::get('/lecturer/assign2/{id}/{assign}', [App\Http\Controllers\AssignmentController::class, 'lecturerassign2status'])->name('lecturer.assign2.status');
+Route::get('/lecturer/assign2/{assignid}/{userid}/result', [App\Http\Controllers\AssignmentController::class, 'assign2result']);
+Route::post('/lecturer/assign2/getChapters', [App\Http\Controllers\AssignmentController::class, 'getChapters']);
 
 
 Route::get('/lecturer/paperwork/{id}', [App\Http\Controllers\PaperworkController::class, 'paperworklist'])->name('lecturer.paperwork');

@@ -62,21 +62,23 @@
                                                 <path d="m19.329 91.814h270.61c10.67 0 19.329 8.65 19.329 19.329l-19.329 164.3c0 10.67-8.659 19.329-19.329 19.329h-231.95c-10.67 0-19.329-8.659-19.329-19.329l-19.329-164.3c0-10.68 8.659-19.329 19.329-19.329z" fill="#F4B459"/>
                                             </svg>
                                             <div class="p-3">
-                                                {{ $fold->DrName }}  &nbsp <i class="{{ ($fold->Password != null) ? 'fa fa-lock' : '' }}"></i>
+                                                {{ ($fold->newDrName != null) ? $fold->newDrName : $fold->DrName }}  &nbsp <i class="{{ ($fold->Password != null) ? 'fa fa-lock' : '' }}"></i>
                                             </div>
                                         </a>
 
-                                        <div id="rename-material-" class="collapse input-group mb-3" data-bs-parent="#material-directory">
-                                            <button class="btn btn-link btn-circle btn-xs " data-bs-toggle="collapse" data-bs-target="#rename-material-" aria-expanded="false" aria-controls="rename-material-">
-                                                <i class="mdi mdi-close text-dark"></i>
-                                            </button> 
-                                            <input type="text" class="form-control" data-material-name="" data-original-name="" data-original-path="" value="" >    
-                                            <button class="btn btn-link btn-circle btn-xs" type="button" onclick="">
-                                                <i class="fa fa-save text-dark"></i>
-                                            </button>  
-                                        </div>
+                                        <form method="post" name="form-rename" id="form-rename"> 
+                                            <div id="rename-material-{{ $fold->DrID }}" class="collapse input-group mb-3" data-bs-parent="#material-directory">
+                                                <button class="btn btn-link btn-circle btn-xs " data-bs-toggle="collapse" data-bs-target="#rename-material-{{ $fold->DrID }}" aria-expanded="false" aria-controls="rename-material-{{ $fold->DrID }}">
+                                                    <i class="mdi mdi-close text-dark"></i>
+                                                </button> 
+                                                <input type="text" class="form-control" id="test-{{ $fold->DrID }}"> 
+                                                <button class="btn btn-link btn-circle btn-xs" type="button" onclick="renameMaterial('{{ $fold->DrID }}')">
+                                                    <i class="fa fa-save text-dark"></i>
+                                                </button>  
+                                            </div>
+                                        </form>
                             
-                                        <button data-bs-toggle="collapse" data-bs-target="#rename-material-" aria-expanded="false" aria-controls="rename-material-"
+                                        <button data-bs-toggle="collapse" data-bs-target="#rename-material-{{ $fold->DrID }}" aria-expanded="false" aria-controls="rename-material-{{ $fold->DrID }}"
                                             class="btn btn-secondary btn-sm">
                                                 <i class="mdi mdi-pencil"></i>
                                         </button>
@@ -130,6 +132,30 @@
                 });
             }
         });
+    }
+
+
+    function renameMaterial(dir)
+    {
+        var name = document.getElementById('test-'+dir).value;
+
+        $.ajax({
+                    headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
+                    url      : "{{ url('lecturer/content/rename') }}",
+                    method   : 'POST',
+                    data 	 : {dir:dir,name:name},
+                    error:function(err){
+                        alert("Error");
+                        console.log(err);
+                    },
+                    success  : function(data){
+                        window.location.reload();
+                        alert("success");
+                    }
+                });
+
+        //alert(form);
+
     }
 
 </script>

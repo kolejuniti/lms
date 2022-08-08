@@ -19,10 +19,8 @@
 </head>
 	
 <body class="hold-transition theme-primary bg-img" style="background-image: url({{ asset('assets/images/auth-bg/bg-16.jpg') }})">
-	
 	<div class="container h-p100">
 		<div class="row align-items-center justify-content-md-center h-p100">	
-			
 			<div class="col-12">
 				<div class="row justify-content-center g-0">
 					<div class="col-lg-5 col-md-5 col-12">
@@ -35,6 +33,20 @@
 								</div>
 								<p class="mb-0 text-fade p-3 pb-0 ">Sign in to continue.</p>							
 							</div>
+							@if(session()->has('message'))
+							<div class="container-fluid mt-2">
+								<div class="row justify-content-center">
+									<!-- left column -->
+									<div class="col-md-5">
+										<div class="form-group">
+											<div class="alert alert-danger" style="text-align: center">
+												<span>{{ session()->get('message') }}</span>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							@endif
 							<div class="p-40">
 								<ul class="nav nav-tabs nav-bordered mb-4 center">
 									<li class="nav-item col-6" style="text-align:center">
@@ -46,7 +58,7 @@
 										</a>
 									</li>
 									<li class="nav-item col-6" style="text-align:center">
-										<a class="nav-link" onclick="openCity(event, 'Paris')" id="v-pills-institutiontype-tab" controller="getinstitutiontype" table-data="table_institutiontype" data-bs-toggle="tab" data-toggle="pill" href="#v-pills-institutiontype" role="tab" aria-controls="v-pills-institutiontype" aria-selected="false">
+										<a class="nav-link" onclick="openCity(event, 'student')" id="v-pills-institutiontype-tab" controller="getinstitutiontype" table-data="table_institutiontype" data-bs-toggle="tab" data-toggle="pill" href="#v-pills-institutiontype" role="tab" aria-controls="v-pills-institutiontype" aria-selected="false">
 											<div class=" d-md-block ">
 												<i class="fa fa-address-card-o"></i>
 												<span class="hidden-sm-down ml-1">&nbsp Students</span>
@@ -79,7 +91,7 @@
 										  <div class="row">
 											<div class="col-6">
 											  <div class="checkbox">
-												<input type="checkbox" id="basic_checkbox_1" >
+												<input type="checkbox" id="basic_checkbox_1" name="remember" value="1">
 												<label for="basic_checkbox_1">Remember Me</label>
 											  </div>
 											</div>
@@ -106,7 +118,7 @@
 									</form>
 								</div>
 								
-								<div id="Paris" class="tabcontent" hidden>
+								<div id="student" class="tabcontent" hidden>
 									<form action="{{ route('login.student.custom') }}" method="post">
 										@csrf
 										<div class="form-group">
@@ -130,7 +142,7 @@
 										  <div class="row">
 											<div class="col-6">
 											  <div class="checkbox">
-												<input type="checkbox" id="basic_checkbox_1" >
+												<input type="checkbox" id="basic_checkbox_1" name="remember" value="1">
 												<label for="basic_checkbox_1">Remember Me</label>
 											  </div>
 											</div>
@@ -156,12 +168,8 @@
 										  </div>
 									</form>
 								</div>
-								
-								<div id="Tokyo" class="tabcontent" hidden>
-									<h3>Tokyo</h3>
-									<p>Tokyo is the capital of Japan.</p>
-								</div>	
-								<div class="text-center">
+									
+								<!--<div class="text-center">
 									<p class="mt-15 mb-0 text-fade">Don't have an account? <a href="#" class="text-primary ms-5">Sign Up</a></p>
 								</div>
 								
@@ -172,7 +180,7 @@
 									  <a class="waves-effect waves-circle btn btn-social-icon btn-circle btn-twitter-light" href="#"><i class="fa fa-twitter"></i></a>
 									  <a class="waves-effect waves-circle btn btn-social-icon btn-circle btn-instagram-light" href="#"><i class="fa fa-instagram"></i></a>
 									</p>	
-								</div>
+								</div>-->
 							</div>						
 						</div>
 					</div>

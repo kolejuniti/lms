@@ -37,7 +37,8 @@ class QuizController extends Controller
                 ->where([
                     ['classid', Session::get('CourseIDS')],
                     ['sessionid', Session::get('SessionIDS')],
-                    ['addby', $user->ic]
+                    ['addby', $user->ic],
+                    ['content','!=', null]
                 ])->get();
 
         //dd($data);
@@ -62,6 +63,8 @@ class QuizController extends Controller
     {
         $user = Auth::user();
 
+        $data['quizid'] = null;
+
         $courseid = Session::get('CourseIDS');
 
         $sessionid = Session::get('SessionIDS');
@@ -80,13 +83,41 @@ class QuizController extends Controller
         $folder = DB::table('lecturer_dir')
         ->where([
             ['CourseID', $courseid],
-            ['SessionID', $sessionid],
             ['Addby', $user->ic]
             ])->get();
 
         //dd($folder);
 
-        return view('lecturer.courseassessment.quizcreate', compact(['group', 'folder']));
+        if(isset(request()->quizid))
+        {
+
+            $quizid = request()->quizid;
+ 
+            $data['quizid'] = $quizid;
+
+            $data['quiz'] = DB::table('tblclassquiz')->select('tblclassquiz.*')
+            ->where([
+                ['classid', Session::get('CourseIDS')],
+                ['sessionid', Session::get('SessionIDS')],
+                ['id', $quizid],
+                ['addby', $user->ic],
+                ['content','!=', null]
+            ])->get()->first();
+
+            $folders = DB::table('tblclassquiz_chapter')
+                        ->join('material_dir', 'tblclassquiz_chapter.chapterid', 'material_dir.DrID')
+                        ->where('tblclassquiz_chapter.quizid', $quizid);
+
+            $data['folder'] = $folders->join('lecturer_dir', 'material_dir.LecturerDirID', 'lecturer_dir.DrID')
+                                     ->select('lecturer_dir.*')->get()->first();
+
+            $data['quizstatus'] = $data['quiz']->status;
+
+        }
+
+        //dd($data);
+
+        return view('lecturer.courseassessment.quizcreate', compact(['group', 'folder', 'data']));
     }
 
     public function getChapters(Request $request)
@@ -201,6 +232,30 @@ class QuizController extends Controller
                 "addby" => $user->ic,
                 "status" => $status
             ]);
+
+            DB::table('tblclassquiz_group')->where('quizid',$quizid)->delete();
+
+            foreach($group as $grp)
+            {
+                $gp = explode('|', $grp);
+                
+                DB::table('tblclassquiz_group')->insert([
+                    "groupid" => $gp[0],
+                    "groupname" => $gp[1],
+                    "quizid" => $quizid
+                ]);
+            }
+
+            DB::table('tblclassquiz_chapter')->where('quizid',$quizid)->delete();
+
+            foreach($chapter as $chp)
+            {
+                DB::table('tblclassquiz_chapter')->insert([
+                    "chapterid" => $chp,
+                    "quizid" => $quizid
+                ]);
+            }
+
         }else{
             $q = DB::table('tblclassquiz')->insertGetId([
                 "classid" => $classid,
@@ -341,7 +396,6 @@ class QuizController extends Controller
                             $quizformdata[$index]->values[$i]->label = $original_quizformdata[$index]->values[$i]->label . $incorrect_label;
                         }
                         $i++;
-                        $count+1;
                     }
 
                     $userData = !empty($quizformdata[$index]->userData[0]) ? $quizformdata[$index]->userData[0] : null;
@@ -349,6 +403,7 @@ class QuizController extends Controller
                     if(in_array($userData, $correct_answer)){
                         $gain_mark = true;
                     }
+                    $count++;
                     
                 }
                 
@@ -365,7 +420,6 @@ class QuizController extends Controller
                             $quizformdata[$index]->values[$i]->label = $original_quizformdata[$index]->values[$i]->label . $incorrect_label;
                         }
                         $i++;
-                        $count+1;
                     }
                     
                     $userData = !empty($quizformdata[$index]->userData) ? $quizformdata[$index]->userData : null;
@@ -373,6 +427,7 @@ class QuizController extends Controller
                     if( count( array_diff_assoc($correct_answer, $userData) )  == 0){
                         $gain_mark = true;
                     }
+                    $count++;
                 
                 }
             }
@@ -495,7 +550,8 @@ class QuizController extends Controller
                 ->where([
                     ['tblclassquiz.classid', Session::get('CourseIDS')],
                     ['tblclassquiz.sessionid', Session::get('SessionIDS')],
-                    ['student_subjek.student_ic', $student->ic]
+                    ['student_subjek.student_ic', $student->ic],
+                    ['tblclassquiz.content','!=', null]
                 ])->get();
 
         //dd($data);
@@ -735,7 +791,6 @@ class QuizController extends Controller
                             $quizformdata[$index]->values[$i]->label = $original_quizformdata[$index]->values[$i]->label . $incorrect_label;
                         }
                         $i++;
-                        $count+1;
                     }
 
                     $userData = !empty($quizformdata[$index]->userData[0]) ? $quizformdata[$index]->userData[0] : null;
@@ -743,6 +798,7 @@ class QuizController extends Controller
                     if(in_array($userData, $correct_answer)){
                         $gain_mark = true;
                     }
+                    $count++;
                     
                 }
                 
@@ -759,7 +815,6 @@ class QuizController extends Controller
                             $quizformdata[$index]->values[$i]->label = $original_quizformdata[$index]->values[$i]->label . $incorrect_label;
                         }
                         $i++;
-                        $count+1;
                     }
                     
                     $userData = !empty($quizformdata[$index]->userData) ? $quizformdata[$index]->userData : null;
@@ -767,6 +822,7 @@ class QuizController extends Controller
                     if( count( array_diff_assoc($correct_answer, $userData) )  == 0){
                         $gain_mark = true;
                     }
+                    $count++;
                 
                 }
             }
@@ -832,5 +888,268 @@ class QuizController extends Controller
         $data['studentquizstatus'] = $quiz->studentquizstatus;
 
         return view('student.courseassessment.quizresult', compact('data'));
+    }
+
+
+
+    //THIS IS QUIZ PART 2
+
+
+    public function quiz2list()
+    {
+        Session::put('CourseIDS', request()->id);
+
+        if(Session::get('SessionIDS') == null)
+        {
+        Session::put('SessionIDS', request()->session);
+        }
+
+        $user = Auth::user();
+        $group = array();
+
+        $chapter = array();
+
+        //dd(Session::get('CourseIDS'));
+
+        $data = DB::table('tblclassquiz')
+                ->join('users', 'tblclassquiz.addby', 'users.ic')
+                ->where([
+                    ['tblclassquiz.classid', Session::get('CourseIDS')],
+                    ['tblclassquiz.sessionid', Session::get('SessionIDS')],
+                    ['tblclassquiz.addby', $user->ic],
+                    ['tblclassquiz.content', null]
+                ])
+                ->select('tblclassquiz.*', 'users.name AS addby')->get();
+
+        //dd($data);
+
+      
+            foreach($data as $dt)
+            {
+                $group[] = DB::table('tblclassquiz_group')
+                        ->join('user_subjek', 'tblclassquiz_group.groupid', 'user_subjek.id')
+                        ->where('tblclassquiz_group.quizid', $dt->id)->get();
+
+                $chapter[] = DB::table('tblclassquiz_chapter')
+                        ->join('material_dir', 'tblclassquiz_chapter.chapterid', 'material_dir.DrID')
+                        ->where('tblclassquiz_chapter.quizid', $dt->id)->get();
+            }
+      
+
+        return view('lecturer.courseassessment.quiz2', compact('data', 'group', 'chapter'));
+    }
+
+    public function quiz2create()
+    {
+        $user = Auth::user();
+
+        $courseid = Session::get('CourseIDS');
+
+        $sessionid = Session::get('SessionIDS');
+
+        //$totalpercent = 0;
+
+        $group = subject::join('student_subjek', 'user_subjek.id', 'student_subjek.group_id')
+        ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+        ->where([
+            ['subjek.id', $courseid],
+            ['user_subjek.session_id', $sessionid],
+            ['user_subjek.user_ic', $user->ic]
+        ])->groupBy('student_subjek.group_name')
+        ->select('user_subjek.*', 'subjek.course_name', 'student_subjek.group_name')->get();
+
+        //dd(Session::get('CourseIDS'));
+
+        $folder = DB::table('lecturer_dir')
+        ->where([
+            ['CourseID', $courseid],
+            ['Addby', $user->ic]
+            ])->get();
+
+        //dd($folder);
+
+        //$percentage = DB::table('tblclassmarks')->where([
+            //['course_id', $courseid],
+            //['assessment', 'quiz']
+        //])->first();
+
+        //$markquiz =  DB::table('tblclassquiz')->where([
+           // ['classid', $courseid],
+           // ['sessionid', $sessionid],
+            //['addby', $user->ic]
+        //])->sum('total_mark');
+
+        //if($markquiz != null)
+        //{
+         //   $totalpercent = $percentage->mark_percentage - $markquiz;
+        //}else{
+        //    $totalpercent = $percentage->mark_percentage;
+        //}
+
+        //dd($totalpercent);
+
+        return view('lecturer.courseassessment.quiz2create', compact(['group', 'folder']));
+    }
+
+
+    public function insertquiz2(Request $request){
+        //$data = $request->data;
+        $classid = Session::get('CourseIDS');
+        $sessionid = Session::get('SessionIDS');
+        $title = $request->title;
+        $group = $request->group;
+        $chapter = $request->chapter;
+        $marks = $request->marks;
+
+        $user = Auth::user();
+            
+        $quizid = empty($request->quiz) ? '' : $request->quiz;
+
+        
+        if( !empty($quizid) ){
+            $q = DB::table('tblclassquiz')->where('id', $quizid)->update([
+                "title" => $title,
+                "total_mark" => $marks,
+                "addby" => $user->ic,
+                "status" => 2
+            ]);
+        }else{
+            $q = DB::table('tblclassquiz')->insertGetId([
+                "classid" => $classid,
+                "sessionid" => $sessionid,
+                "title" => $title,
+                "total_mark" => $marks,
+                "addby" => $user->ic,
+                "status" => 2
+            ]);
+
+            foreach($group as $grp)
+            {
+                $gp = explode('|', $grp);
+                
+                DB::table('tblclassquiz_group')->insert([
+                    "groupid" => $gp[0],
+                    "groupname" => $gp[1],
+                    "quizid" => $q
+                ]);
+            }
+
+            foreach($chapter as $chp)
+            {
+                DB::table('tblclassquiz_chapter')->insert([
+                    "chapterid" => $chp,
+                    "quizid" => $q
+                ]);
+            }
+        }
+        
+        
+        return redirect(route('lecturer.quiz2', ['id' => $classid]));
+    }
+
+    public function lecturerquiz2status()
+    {
+        $user = Auth::user();
+
+        $group = DB::table('user_subjek')
+                ->join('tblclassquiz_group', 'user_subjek.id', 'tblclassquiz_group.groupid')
+                ->join('tblclassquiz', 'tblclassquiz_group.quizid', 'tblclassquiz.id')
+                ->where([
+                    ['tblclassquiz.classid', Session::get('CourseIDS')],
+                    ['tblclassquiz.sessionid', Session::get('SessionIDS')],
+                    ['user_subjek.user_ic', $user->ic],
+                    ['tblclassquiz.id', request()->quiz]
+                ])->get();
+                
+            
+        //dd($group);
+
+        $quiz = DB::table('student_subjek')
+                ->join('tblclassquiz_group', function($join){
+                    $join->on('student_subjek.group_id', 'tblclassquiz_group.groupid');
+                    $join->on('student_subjek.group_name', 'tblclassquiz_group.groupname');
+                })
+                ->join('tblclassquiz', 'tblclassquiz_group.quizid', 'tblclassquiz.id')
+                ->join('students', 'student_subjek.student_ic', 'students.ic')
+                ->select('student_subjek.*', 'tblclassquiz.id AS clssid', 'tblclassquiz.total_mark', 'students.no_matric', 'students.name')
+                ->where([
+                    ['tblclassquiz.classid', Session::get('CourseIDS')],
+                    ['tblclassquiz.sessionid', Session::get('SessionIDS')],
+                    ['tblclassquiz.id', request()->quiz],
+                    ['tblclassquiz.addby', $user->ic]
+                ])->get();
+        
+        
+        
+        //dd($quiz);
+
+        foreach($quiz as $qz)
+        {
+            //$status[] = DB::table('tblclassstudentquiz')
+            //->where([
+               // ['quizid', $qz->clssid],
+               // ['userid', $qz->student_ic]
+           // ])->get();
+
+           if(!DB::table('tblclassstudentquiz')->where([['quizid', $qz->clssid],['userid', $qz->student_ic]])->exists()){
+
+                DB::table('tblclassstudentquiz')->insert([
+                    'quizid' => $qz->clssid,
+                    'userid' => $qz->student_ic
+                ]);
+
+           }
+
+            $status[] = DB::table('tblclassstudentquiz')
+            ->where([
+                ['quizid', $qz->clssid],
+                ['userid', $qz->student_ic]
+            ])->first();
+        }
+
+        //dd($status);
+
+        return view('lecturer.courseassessment.quiz2status', compact('quiz', 'status', 'group'));
+
+    }
+
+    public function updatequiz2(Request $request)
+    {
+        $user = Auth::user();
+
+        $marks = json_decode($request->marks);
+
+        $ics = json_decode($request->ics);
+
+        $quizid = json_decode($request->quizid);
+
+        $limitpercen = DB::table('tblclassquiz')->where('id', $quizid)->first();
+
+        foreach($marks as $key => $mrk)
+        {
+
+            if($mrk > $limitpercen->total_mark)
+            {
+                return ["message"=>"Field Error", "id" => $ics];
+            }
+
+        }
+
+       
+        $upsert = [];
+        foreach($marks as $key => $mrk){
+            array_push($upsert, [
+            'userid' => $ics[$key],
+            'quizid' => $quizid,
+            'submittime' => date("Y-m-d H:i:s"),
+            'final_mark' => $mrk,
+            'status' => 1
+            ]);
+        }
+
+        DB::table('tblclassstudentquiz')->upsert($upsert, ['userid', 'quizid']);
+
+        return ["message"=>"Success", "id" => $ics];
+
     }
 }

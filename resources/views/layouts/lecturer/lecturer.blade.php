@@ -233,7 +233,7 @@
 							<p class="pt-5 fs-14 mb-0 fw-700"></p>
 							<small class="fs-10 mb-0 text-uppercase text-mute"></small>
 						</div>
-						<img src="{{ asset('assets/images/avatar/avatar-13.png') }}" class="avatar rounded-circle bg-primary-light h-40 w-40" alt="" />
+						<img src="{{ (Session::get('User')->image != null) ? Storage::disk('linode')->url(Session::get('User')->image) : asset('assets/images/avatar/avatar-13.png') }}" class="avatar rounded-circle bg-primary-light h-40 w-40" alt="" />
 					</div>
 				</a>
 			</li>		  
@@ -272,9 +272,30 @@
 								</span>
 							</a>
 					<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
-					<li><a href="/lecturer/quiz/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Quiz</a></li>
-					<li><a href="/lecturer/test/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Test</a></li>
-					<li><a href="/lecturer/assign/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Assignment</a></li>
+					<li class="treeview">
+						<a href="#"><span>Quiz</span>
+						</a>
+						<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
+						<li><a href="/lecturer/quiz/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Online</a></li>
+						<li><a href="/lecturer/quiz2/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Offline</a></li>
+						</ul>
+					</li>
+					<li class="treeview">
+						<a href="#"><span>Test</span>
+						</a>
+						<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
+						<li><a href="/lecturer/test/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Online</a></li>
+						<li><a href="/lecturer/test2/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Offline</a></li>
+						</ul>
+					</li>
+					<li class="treeview">
+						<a href="#"><span>Assignment</span>
+						</a>
+						<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
+						<li><a href="/lecturer/assign/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Online</a></li>
+						<li><a href="/lecturer/assign2/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Offline</a></li>
+						</ul>
+					</li>
 					<li><a href="/lecturer/midterm/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Midterm</a></li>
 					<li><a href="/lecturer/final/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Final</a></li>
 					<li><a href="/lecturer/paperwork/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Paperwork</a></li>
@@ -388,7 +409,7 @@
 			</div>
             <div>
                 <div class="d-flex flex-row">
-                    <div class=""><img src="{{ asset('assets/images/avatar/avatar-13.png') }}" alt="user" class="rounded bg-danger-light w-150" width="100"></div>
+                    <div class=""><img src="{{ (Session::get('User')->image != null) ? Storage::disk('linode')->url(Session::get('User')->image) : asset('assets/images/avatar/avatar-13.png') }}" alt="user" class="rounded bg-danger-light w-150" width="100"></div>
                     <div class="ps-20">
                         <h5 class="mb-0"></h5>
                         <p class="my-5 text-fade"></p>
@@ -413,12 +434,12 @@
               </div> --}}
 			  <div>
 				  <div class="col-sm-12 d-flex justify-content-center">
-				  	  <a href="" type="button" class="waves-effect waves-light btn btn-secondary btn-rounded mb-5" style="margin-right:10px;"><i class="mdi mdi-account-edit"></i> Edit</a>
-              <a href="{{ route('logout') }}" type="button" class="waves-effect waves-light btn btn-secondary btn-rounded mb-5"
-              onclick="event.preventDefault();
-              document.getElementById('logout-form').submit();">
-              <i class="mdi mdi-logout"></i>{{ __('Logout') }}</a>
-  
+					<a href="/lecturer/setting" type="button" class="waves-effect waves-light btn btn-secondary btn-rounded mb-5" style="margin-right:10px;"><i class="mdi mdi-account-edit"></i> Edit</a>
+					<a href="{{ route('logout') }}" type="button" class="waves-effect waves-light btn btn-secondary btn-rounded mb-5"
+					onclick="event.preventDefault();
+					document.getElementById('logout-form').submit();">
+					<i class="mdi mdi-logout"></i>{{ __('Logout') }}</a>
+		
               <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
               @csrf
               </form>

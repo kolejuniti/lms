@@ -62,6 +62,8 @@ class TestController extends Controller
     {
         $user = Auth::user();
 
+        $data['testid'] = null;
+
         $courseid = Session::get('CourseIDS');
 
         $sessionid = Session::get('SessionIDS');
@@ -80,13 +82,41 @@ class TestController extends Controller
         $folder = DB::table('lecturer_dir')
         ->where([
             ['CourseID', $courseid],
-            ['SessionID', $sessionid],
             ['Addby', $user->ic]
             ])->get();
 
         //dd($folder);
 
-        return view('lecturer.courseassessment.testcreate', compact(['group', 'folder']));
+        if(isset(request()->testid))
+        {
+
+            $testid = request()->testid;
+ 
+            $data['testid'] = $testid;
+
+            $data['test'] = DB::table('tblclasstest')->select('tblclasstest.*')
+            ->where([
+                ['classid', Session::get('CourseIDS')],
+                ['sessionid', Session::get('SessionIDS')],
+                ['id', $testid],
+                ['addby', $user->ic],
+                ['content','!=', null]
+            ])->get()->first();
+
+            $folders = DB::table('tblclasstest_chapter')
+                        ->join('material_dir', 'tblclasstest_chapter.chapterid', 'material_dir.DrID')
+                        ->where('tblclasstest_chapter.testid', $testid);
+
+            $data['folder'] = $folders->join('lecturer_dir', 'material_dir.LecturerDirID', 'lecturer_dir.DrID')
+                                     ->select('lecturer_dir.*')->get()->first();
+
+            $data['teststatus'] = $data['test']->status;
+
+        }
+
+        //dd($data);
+
+        return view('lecturer.courseassessment.testcreate', compact(['group', 'folder', 'data']));
     }
 
     public function getChapters(Request $request)
@@ -201,6 +231,30 @@ class TestController extends Controller
                 "addby" => $user->ic,
                 "status" => $status
             ]);
+
+            DB::table('tblclasstest_group')->where('testid',$testid)->delete();
+
+            foreach($group as $grp)
+            {
+                $gp = explode('|', $grp);
+                
+                DB::table('tblclasstest_group')->insert([
+                    "groupid" => $gp[0],
+                    "groupname" => $gp[1],
+                    "testid" => $testid
+                ]);
+            }
+
+            DB::table('tblclasstest_chapter')->where('testid',$testid)->delete();
+
+            foreach($chapter as $chp)
+            {
+                DB::table('tblclasstest_chapter')->insert([
+                    "chapterid" => $chp,
+                    "testid" => $testid
+                ]);
+            }
+
         }else{
             $q = DB::table('tblclasstest')->insertGetId([
                 "classid" => $classid,
@@ -341,7 +395,6 @@ class TestController extends Controller
                             $testformdata[$index]->values[$i]->label = $original_testformdata[$index]->values[$i]->label . $incorrect_label;
                         }
                         $i++;
-                        $count+1;
                     }
 
                     $userData = !empty($testformdata[$index]->userData[0]) ? $testformdata[$index]->userData[0] : null;
@@ -349,6 +402,7 @@ class TestController extends Controller
                     if(in_array($userData, $correct_answer)){
                         $gain_mark = true;
                     }
+                    $count++;
                     
                 }
                 
@@ -365,7 +419,6 @@ class TestController extends Controller
                             $testformdata[$index]->values[$i]->label = $original_testformdata[$index]->values[$i]->label . $incorrect_label;
                         }
                         $i++;
-                        $count+1;
                     }
                     
                     $userData = !empty($testformdata[$index]->userData) ? $testformdata[$index]->userData : null;
@@ -373,6 +426,7 @@ class TestController extends Controller
                     if( count( array_diff_assoc($correct_answer, $userData) )  == 0){
                         $gain_mark = true;
                     }
+                    $count++;
                 
                 }
             }
@@ -735,7 +789,6 @@ class TestController extends Controller
                             $testformdata[$index]->values[$i]->label = $original_testformdata[$index]->values[$i]->label . $incorrect_label;
                         }
                         $i++;
-                        $count+1;
                     }
 
                     $userData = !empty($testformdata[$index]->userData[0]) ? $testformdata[$index]->userData[0] : null;
@@ -743,6 +796,7 @@ class TestController extends Controller
                     if(in_array($userData, $correct_answer)){
                         $gain_mark = true;
                     }
+                    $count++;
                     
                 }
                 
@@ -759,7 +813,6 @@ class TestController extends Controller
                             $testformdata[$index]->values[$i]->label = $original_testformdata[$index]->values[$i]->label . $incorrect_label;
                         }
                         $i++;
-                        $count+1;
                     }
                     
                     $userData = !empty($testformdata[$index]->userData) ? $testformdata[$index]->userData : null;
@@ -767,6 +820,7 @@ class TestController extends Controller
                     if( count( array_diff_assoc($correct_answer, $userData) )  == 0){
                         $gain_mark = true;
                     }
+                    $count++;
                 
                 }
             }
@@ -832,5 +886,266 @@ class TestController extends Controller
         $data['studentteststatus'] = $test->studentteststatus;
 
         return view('student.courseassessment.testresult', compact('data'));
+    }
+
+    //THIS IS TEST PART 2
+
+
+    public function test2list()
+    {
+        Session::put('CourseIDS', request()->id);
+
+        if(Session::get('SessionIDS') == null)
+        {
+        Session::put('SessionIDS', request()->session);
+        }
+
+        $user = Auth::user();
+        $group = array();
+
+        $chapter = array();
+
+        //dd(Session::get('CourseIDS'));
+
+        $data = DB::table('tblclasstest')
+                ->join('users', 'tblclasstest.addby', 'users.ic')
+                ->where([
+                    ['tblclasstest.classid', Session::get('CourseIDS')],
+                    ['tblclasstest.sessionid', Session::get('SessionIDS')],
+                    ['tblclasstest.addby', $user->ic],
+                    ['tblclasstest.content', null]
+                ])
+                ->select('tblclasstest.*', 'users.name AS addby')->get();
+
+        //dd($data);
+
+      
+            foreach($data as $dt)
+            {
+                $group[] = DB::table('tblclasstest_group')
+                        ->join('user_subjek', 'tblclasstest_group.groupid', 'user_subjek.id')
+                        ->where('tblclasstest_group.testid', $dt->id)->get();
+
+                $chapter[] = DB::table('tblclasstest_chapter')
+                        ->join('material_dir', 'tblclasstest_chapter.chapterid', 'material_dir.DrID')
+                        ->where('tblclasstest_chapter.testid', $dt->id)->get();
+            }
+      
+
+        return view('lecturer.courseassessment.test2', compact('data', 'group', 'chapter'));
+    }
+
+    public function test2create()
+    {
+        $user = Auth::user();
+
+        $courseid = Session::get('CourseIDS');
+
+        $sessionid = Session::get('SessionIDS');
+
+        //$totalpercent = 0;
+
+        $group = subject::join('student_subjek', 'user_subjek.id', 'student_subjek.group_id')
+        ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+        ->where([
+            ['subjek.id', $courseid],
+            ['user_subjek.session_id', $sessionid],
+            ['user_subjek.user_ic', $user->ic]
+        ])->groupBy('student_subjek.group_name')
+        ->select('user_subjek.*', 'subjek.course_name', 'student_subjek.group_name')->get();
+
+        //dd(Session::get('CourseIDS'));
+
+        $folder = DB::table('lecturer_dir')
+        ->where([
+            ['CourseID', $courseid],
+            ['Addby', $user->ic]
+            ])->get();
+
+        //dd($folder);
+
+        //$percentage = DB::table('tblclassmarks')->where([
+            //['course_id', $courseid],
+            //['assessment', 'test']
+        //])->first();
+
+        //$marktest =  DB::table('tblclasstest')->where([
+           // ['classid', $courseid],
+           // ['sessionid', $sessionid],
+            //['addby', $user->ic]
+        //])->sum('total_mark');
+
+        //if($marktest != null)
+        //{
+         //   $totalpercent = $percentage->mark_percentage - $marktest;
+        //}else{
+        //    $totalpercent = $percentage->mark_percentage;
+        //}
+
+        //dd($totalpercent);
+
+        return view('lecturer.courseassessment.test2create', compact(['group', 'folder']));
+    }
+
+
+    public function inserttest2(Request $request){
+        //$data = $request->data;
+        $classid = Session::get('CourseIDS');
+        $sessionid = Session::get('SessionIDS');
+        $title = $request->title;
+        $group = $request->group;
+        $chapter = $request->chapter;
+        $marks = $request->marks;
+
+        $user = Auth::user();
+            
+        $testid = empty($request->test) ? '' : $request->test;
+
+        
+        if( !empty($testid) ){
+            $q = DB::table('tblclasstest')->where('id', $testid)->update([
+                "title" => $title,
+                "total_mark" => $marks,
+                "addby" => $user->ic,
+                "status" => 2
+            ]);
+        }else{
+            $q = DB::table('tblclasstest')->insertGetId([
+                "classid" => $classid,
+                "sessionid" => $sessionid,
+                "title" => $title,
+                "total_mark" => $marks,
+                "addby" => $user->ic,
+                "status" => 2
+            ]);
+
+            foreach($group as $grp)
+            {
+                $gp = explode('|', $grp);
+                
+                DB::table('tblclasstest_group')->insert([
+                    "groupid" => $gp[0],
+                    "groupname" => $gp[1],
+                    "testid" => $q
+                ]);
+            }
+
+            foreach($chapter as $chp)
+            {
+                DB::table('tblclasstest_chapter')->insert([
+                    "chapterid" => $chp,
+                    "testid" => $q
+                ]);
+            }
+        }
+        
+        
+        return redirect(route('lecturer.test2', ['id' => $classid]));
+    }
+
+    public function lecturertest2status()
+    {
+        $user = Auth::user();
+
+        $group = DB::table('user_subjek')
+                ->join('tblclasstest_group', 'user_subjek.id', 'tblclasstest_group.groupid')
+                ->join('tblclasstest', 'tblclasstest_group.testid', 'tblclasstest.id')
+                ->where([
+                    ['tblclasstest.classid', Session::get('CourseIDS')],
+                    ['tblclasstest.sessionid', Session::get('SessionIDS')],
+                    ['user_subjek.user_ic', $user->ic],
+                    ['tblclasstest.id', request()->test]
+                ])->get();
+                
+            
+        //dd($group);
+
+        $test = DB::table('student_subjek')
+                ->join('tblclasstest_group', function($join){
+                    $join->on('student_subjek.group_id', 'tblclasstest_group.groupid');
+                    $join->on('student_subjek.group_name', 'tblclasstest_group.groupname');
+                })
+                ->join('tblclasstest', 'tblclasstest_group.testid', 'tblclasstest.id')
+                ->join('students', 'student_subjek.student_ic', 'students.ic')
+                ->select('student_subjek.*', 'tblclasstest.id AS clssid', 'tblclasstest.total_mark', 'students.no_matric', 'students.name')
+                ->where([
+                    ['tblclasstest.classid', Session::get('CourseIDS')],
+                    ['tblclasstest.sessionid', Session::get('SessionIDS')],
+                    ['tblclasstest.id', request()->test],
+                    ['tblclasstest.addby', $user->ic]
+                ])->get();
+        
+        
+        
+        //dd($test);
+
+        foreach($test as $qz)
+        {
+            //$status[] = DB::table('tblclassstudenttest')
+            //->where([
+               // ['testid', $qz->clssid],
+               // ['userid', $qz->student_ic]
+           // ])->get();
+
+           if(!DB::table('tblclassstudenttest')->where([['testid', $qz->clssid],['userid', $qz->student_ic]])->exists()){
+
+                DB::table('tblclassstudenttest')->insert([
+                    'testid' => $qz->clssid,
+                    'userid' => $qz->student_ic
+                ]);
+
+           }
+
+            $status[] = DB::table('tblclassstudenttest')
+            ->where([
+                ['testid', $qz->clssid],
+                ['userid', $qz->student_ic]
+            ])->first();
+        }
+
+        //dd($status);
+
+        return view('lecturer.courseassessment.test2status', compact('test', 'status', 'group'));
+
+    }
+
+    public function updatetest2(Request $request)
+    {
+        $user = Auth::user();
+
+        $marks = json_decode($request->marks);
+
+        $ics = json_decode($request->ics);
+
+        $testid = json_decode($request->testid);
+
+        $limitpercen = DB::table('tblclasstest')->where('id', $testid)->first();
+
+        foreach($marks as $key => $mrk)
+        {
+
+            if($mrk > $limitpercen->total_mark)
+            {
+                return ["message"=>"Field Error", "id" => $ics];
+            }
+
+        }
+
+       
+        $upsert = [];
+        foreach($marks as $key => $mrk){
+            array_push($upsert, [
+            'userid' => $ics[$key],
+            'testid' => $testid,
+            'submittime' => date("Y-m-d H:i:s"),
+            'final_mark' => $mrk,
+            'status' => 1
+            ]);
+        }
+
+        DB::table('tblclassstudenttest')->upsert($upsert, ['userid', 'testid']);
+
+        return ["message"=>"Success", "id" => $ics];
+
     }
 }

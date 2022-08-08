@@ -68,7 +68,7 @@
                                         </a>
                                     </div>
 
-                                    @foreach ( $classmaterial as $mats)
+                                    @foreach ( $classmaterial as $key => $mats)
                                         <div class="col-md-3 text-center mb-3">
                                             <a href="{{ Storage::disk('linode')->url($mats) }}" target="_blank">
                                                 <svg width="4em" height="4em" enable-background="new 0 0 512 512" version="1.1" viewBox="0 0 512 512" xml:space="preserve" >
@@ -84,24 +84,26 @@
                                                     <path d="m400 432h-304v16h304c8.8 0 16-7.2 16-16v-16c0 8.8-7.2 16-16 16z" fill="#CAD1D8"/>
                                                 </svg>
                                                 <div class="p-3">
-                                                    {{ basename($mats )}} / {{ $extension = pathinfo(storage_path($mats), PATHINFO_EXTENSION); }}
+                                                    {{ basename($mats)}} / {{ $extension = pathinfo(storage_path($mats), PATHINFO_EXTENSION); }}
                                                 </div>
                                             </a>
 
-                                            <div id="rename-material-" class="collapse input-group mb-3 " data-bs-parent="#material-directory">
-                                                <button class="btn btn-link btn-circle btn-xs " data-bs-toggle="collapse" data-bs-target="#rename-material-" aria-expanded="false" aria-controls="rename-material-">
-                                                    <i class="mdi mdi-close text-dark"></i>
-                                                </button> 
-                                                <input type="text" class="form-control" data-material-name="" data-original-name="" data-original-path="" value="" >    
-                                                <button class="btn btn-link btn-circle btn-xs" type="button" onclick="">
-                                                    <i class="fa fa-save text-dark"></i>
-                                                </button>  
-                                            </div>
+                                            <form method="post" name="form-rename" id="form-rename"> 
+                                                <div id="rename-material-{{ $key }}" class="collapse input-group mb-3" data-bs-parent="#material-directory">
+                                                    <button class="btn btn-link btn-circle btn-xs " data-bs-toggle="collapse" data-bs-target="#rename-material-{{ $key }}" aria-expanded="false" aria-controls="rename-material-{{ $key }}">
+                                                        <i class="mdi mdi-close text-dark"></i>
+                                                    </button> 
+                                                    <input type="text" class="form-control" id="test-{{ $key }}"> 
+                                                    <button class="btn btn-link btn-circle btn-xs" type="button" onclick="renameFile('{{ basename($mats)}}','{{ $key }}','{{ pathinfo(storage_path($mats), PATHINFO_EXTENSION); }}')">
+                                                        <i class="fa fa-save text-dark"></i>
+                                                    </button>  
+                                                </div>
+                                            </form>
                                 
-                                            <button data-bs-toggle="collapse" data-bs-target="#rename-material-" aria-expanded="false" aria-controls="rename-material-"
+                                            <a data-bs-toggle="collapse" data-bs-target="#rename-material-{{ $key }}" aria-expanded="false" aria-controls="rename-material-{{ $key }}"
                                                 class="btn btn-secondary btn-sm">
                                                     <i class="mdi mdi-pencil"></i>
-                                            </button>
+                                            </a>
                                 
                                             <a  onclick="deleteMaterial('{{ $mats }}')" class="btn btn-secondary btn-sm">
                                                 <i class="mdi mdi-delete"></i>
@@ -150,6 +152,34 @@
                         alert("success");
                     }
                 });
+            }
+        });
+    }
+
+    function renameFile(file,key,ext)
+    {
+        var name = document.getElementById('test-'+key).value;
+
+        var dir = '{{ request()->dir }}';
+
+        $.ajax({
+            headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
+            url      : "{{ url('lecturer/content/folder/subfolder/material/renameFile') }}",
+            method   : 'POST',
+            data 	 : {file:file,name:name,dir:dir,ext:ext},
+            error:function(err){
+                alert("Error");
+                console.log(err);
+            },
+            success  : function(data){
+                if(data == 1)
+                {
+                    window.location.reload();
+                    alert("success");
+                }else{
+                    alert("Please insert valid name to proceed");
+                }
+
             }
         });
     }

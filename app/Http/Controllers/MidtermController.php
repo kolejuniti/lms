@@ -62,6 +62,8 @@ class MidtermController extends Controller
     {
         $user = Auth::user();
 
+        $data['midtermid'] = null;
+
         $courseid = Session::get('CourseIDS');
 
         $sessionid = Session::get('SessionIDS');
@@ -80,13 +82,41 @@ class MidtermController extends Controller
         $folder = DB::table('lecturer_dir')
         ->where([
             ['CourseID', $courseid],
-            ['SessionID', $sessionid],
             ['Addby', $user->ic]
             ])->get();
 
         //dd($folder);
 
-        return view('lecturer.courseassessment.midtermcreate', compact(['group', 'folder']));
+        if(isset(request()->midtermid))
+        {
+
+            $midtermid = request()->midtermid;
+ 
+            $data['midtermid'] = $midtermid;
+
+            $data['midterm'] = DB::table('tblclassmidterm')->select('tblclassmidterm.*')
+            ->where([
+                ['classid', Session::get('CourseIDS')],
+                ['sessionid', Session::get('SessionIDS')],
+                ['id', $midtermid],
+                ['addby', $user->ic],
+                ['content','!=', null]
+            ])->get()->first();
+
+            $folders = DB::table('tblclassmidterm_chapter')
+                        ->join('material_dir', 'tblclassmidterm_chapter.chapterid', 'material_dir.DrID')
+                        ->where('tblclassmidterm_chapter.midtermid', $midtermid);
+
+            $data['folder'] = $folders->join('lecturer_dir', 'material_dir.LecturerDirID', 'lecturer_dir.DrID')
+                                     ->select('lecturer_dir.*')->get()->first();
+
+            $data['midtermstatus'] = $data['midterm']->status;
+
+        }
+
+        //dd($data);
+
+        return view('lecturer.courseassessment.midtermcreate', compact(['group', 'folder', 'data']));
     }
 
     public function getChapters(Request $request)
@@ -201,6 +231,30 @@ class MidtermController extends Controller
                 "addby" => $user->ic,
                 "status" => $status
             ]);
+
+            DB::table('tblclassmidterm_group')->where('midtermid',$midtermid)->delete();
+
+            foreach($group as $grp)
+            {
+                $gp = explode('|', $grp);
+                
+                DB::table('tblclassmidterm_group')->insert([
+                    "groupid" => $gp[0],
+                    "groupname" => $gp[1],
+                    "midtermid" => $midtermid
+                ]);
+            }
+
+            DB::table('tblclassmidterm_chapter')->where('midtermid',$midtermid)->delete();
+
+            foreach($chapter as $chp)
+            {
+                DB::table('tblclassmidterm_chapter')->insert([
+                    "chapterid" => $chp,
+                    "midtermid" => $midtermid
+                ]);
+            }
+
         }else{
             $q = DB::table('tblclassmidterm')->insertGetId([
                 "classid" => $classid,
@@ -341,7 +395,6 @@ class MidtermController extends Controller
                             $midtermformdata[$index]->values[$i]->label = $original_midtermformdata[$index]->values[$i]->label . $incorrect_label;
                         }
                         $i++;
-                        $count+1;
                     }
 
                     $userData = !empty($midtermformdata[$index]->userData[0]) ? $midtermformdata[$index]->userData[0] : null;
@@ -349,6 +402,7 @@ class MidtermController extends Controller
                     if(in_array($userData, $correct_answer)){
                         $gain_mark = true;
                     }
+                    $count++;
                     
                 }
                 
@@ -365,7 +419,6 @@ class MidtermController extends Controller
                             $midtermformdata[$index]->values[$i]->label = $original_midtermformdata[$index]->values[$i]->label . $incorrect_label;
                         }
                         $i++;
-                        $count+1;
                     }
                     
                     $userData = !empty($midtermformdata[$index]->userData) ? $midtermformdata[$index]->userData : null;
@@ -373,6 +426,7 @@ class MidtermController extends Controller
                     if( count( array_diff_assoc($correct_answer, $userData) )  == 0){
                         $gain_mark = true;
                     }
+                    $count++;
                 
                 }
             }
@@ -735,7 +789,6 @@ class MidtermController extends Controller
                             $midtermformdata[$index]->values[$i]->label = $original_midtermformdata[$index]->values[$i]->label . $incorrect_label;
                         }
                         $i++;
-                        $count+1;
                     }
 
                     $userData = !empty($midtermformdata[$index]->userData[0]) ? $midtermformdata[$index]->userData[0] : null;
@@ -743,6 +796,7 @@ class MidtermController extends Controller
                     if(in_array($userData, $correct_answer)){
                         $gain_mark = true;
                     }
+                    $count++;
                     
                 }
                 
@@ -759,7 +813,6 @@ class MidtermController extends Controller
                             $midtermformdata[$index]->values[$i]->label = $original_midtermformdata[$index]->values[$i]->label . $incorrect_label;
                         }
                         $i++;
-                        $count+1;
                     }
                     
                     $userData = !empty($midtermformdata[$index]->userData) ? $midtermformdata[$index]->userData : null;
@@ -767,6 +820,7 @@ class MidtermController extends Controller
                     if( count( array_diff_assoc($correct_answer, $userData) )  == 0){
                         $gain_mark = true;
                     }
+                    $count++;
                 
                 }
             }

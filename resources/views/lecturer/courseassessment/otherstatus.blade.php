@@ -17,12 +17,12 @@
     <div class="content-header">
         <div class="d-flex align-items-center">
             <div class="me-auto">
-                <h4 class="page-title">Extra</h4>
+                <h4 class="page-title">Other</h4>
                 <div class="d-inline-block align-items-center">
                     <nav>
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item"><a href="#"><i class="mdi mdi-home-outline"></i></a></li>
-                            <li class="breadcrumb-item" aria-current="page">Extra</li>
+                            <li class="breadcrumb-item" aria-current="page">Other</li>
                         </ol>
                     </nav>
                 </div>
@@ -37,7 +37,7 @@
           <div class="col-12">
             <div class="box">
               <div class="card-header mb-4">
-                <h3 class="card-title">Extra List</h3>
+                <h3 class="card-title">Other List</h3>
               </div>
               <div class="box-body">
                 <div class="table-responsive">
@@ -49,7 +49,7 @@
                           <select class="form-select" id="group" name="group" required>
                               <option value="" selected disabled>-</option>
                               @foreach ($group as $grp)
-                                <option value="{{ $grp->groupid }}">Group {{ $grp->group_name }}</option>
+                                <option value="{{ $grp->groupid }}">Group {{ $grp->groupname }}</option>
                               @endforeach
                           </select>
                           <span class="text-danger">@error('folder')

@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Session;
 use App\Models\student;
 use App\Models\User;
 use App\Models\subject;
@@ -14,6 +16,8 @@ class PendaftarController extends Controller
 {
     public function index()
     {
+        Session::put('User', Auth::user());
+        
         $student = DB::table('students')->get();
 
         $program = DB::table('tblprogramme')->get();

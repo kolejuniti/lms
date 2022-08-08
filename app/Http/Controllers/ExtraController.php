@@ -70,6 +70,8 @@ class ExtraController extends Controller
 
         $sessionid = Session::get('SessionIDS');
 
+        $totalpercent = 0;
+
         $group = subject::join('student_subjek', 'user_subjek.id', 'student_subjek.group_id')
         ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
         ->where([
@@ -84,7 +86,6 @@ class ExtraController extends Controller
         $folder = DB::table('lecturer_dir')
         ->where([
             ['CourseID', $courseid],
-            ['SessionID', $sessionid],
             ['Addby', $user->ic]
             ])->get();
 
@@ -92,7 +93,27 @@ class ExtraController extends Controller
 
         //dd($folder);
 
-        return view('lecturer.courseassessment.extracreate', compact(['group', 'folder', 'title']));
+        $percentage = DB::table('tblclassmarks')->where([
+            ['course_id', $courseid],
+            ['assessment', 'extra']
+        ])->first();
+
+        $markextra =  DB::table('tblclassextra')->where([
+            ['classid', $courseid],
+            ['sessionid', $sessionid],
+            ['addby', $user->ic]
+        ])->sum('total_mark');
+
+        if($markextra != null)
+        {
+            $totalpercent = $percentage->mark_percentage - $markextra;
+        }else{
+            $totalpercent = $percentage->mark_percentage;
+        }
+
+        //dd($totalpercent);
+
+        return view('lecturer.courseassessment.extracreate', compact(['group', 'folder', 'title', 'totalpercent']));
     }
 
 
@@ -227,6 +248,19 @@ class ExtraController extends Controller
 
         $extraid = json_decode($request->extraid);
 
+        $limitpercen = DB::table('tblclassextra')->where('id', $extraid)->first();
+
+        foreach($marks as $key => $mrk)
+        {
+
+            if($mrk > $limitpercen->total_mark)
+            {
+                return ["message"=>"Field Error", "id" => $ics];
+            }
+
+        }
+
+       
         $upsert = [];
         foreach($marks as $key => $mrk){
             array_push($upsert, [

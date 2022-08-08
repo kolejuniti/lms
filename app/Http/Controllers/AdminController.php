@@ -1,18 +1,31 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\User;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
-use Intervention\Image\Facades\Image;
+use App\Models\subject;
+use App\Models\student;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Contracts\Filesystem\Filesystem;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Validator;
+use Carbon\Carbon;
+use League\Flysystem\AwsS3V3\PortableVisibilityConverter;
+use Mail;
+use Intervention\Image\Facades\Image;
 
 class AdminController extends Controller
 {
     public function index() 
     {
+
+        Session::put('User', Auth::user());
+
+        //dd(Session::get('User'));
+
         $users = User::all()->sortBy('usrtype');
 
         //dd($users);
@@ -137,13 +150,28 @@ class AdminController extends Controller
         //this is to check if image is not empty
         if(request('image'))
         {
-            
+            $imageName = request('image')->getClientOriginalName(); 
+
+            $filepath = "storage/";
+
             //this is to store file/image in specific folder
-            $imagePath = request('image')->store('storage', 'public');
+            //$imagePath = request('image')->storeAs('storage', $imageName, 'linode', 'public');
+
+            Storage::disk('linode')->putFileAs(
+                $filepath,
+                request('image'),
+                $imageName,
+                'public'
+              );
+
+              $imagePath = $filepath . $imageName;
+
+            //dd($imagePath);
 
             //this is to resize image  Image need to be declared with 'use Intervention\Image\Facades\Image;'
-            $image = Image::make(public_path("storage/{$imagePath}"))->fit(1000, 1000);
-            $image->save();
+            $image = Image::make(Storage::disk('linode')->url($imagePath))->fit(1000, 1000);
+            //dd($image);
+            $image->save($imagePath);
 
             //store path in image parameter and store in $imageArray variable
             $imageArray = ['image' => $imagePath];
@@ -292,5 +320,94 @@ class AdminController extends Controller
             return $content;
 
         return view('admin.getprogram', compact('program', 'id'));
+    }
+
+    
+    public function getReportLecturer()
+    {
+
+        $faculty = DB::table('tblfaculty')->get();
+
+        foreach($faculty as $key => $fcl)
+        {
+            $lecturer[] = DB::table('users')->where('faculty', $fcl->id)->whereIn('usrtype', ['LCT','PL'])->get();
+
+            //dd($lecturer);
+
+            foreach($lecturer[$key] as $key1 => $lct)
+            {
+                $course[$key][$key1] = DB::table('user_subjek')
+                    ->join('subjek', 'user_subjek.course_id','=','subjek.sub_id')
+                    ->join('sessions', 'user_subjek.session_id','sessions.SessionID')
+                    ->where('user_subjek.user_ic', $lct->ic)
+                    ->select('subjek.*','user_subjek.course_id','sessions.SessionName','sessions.SessionID')
+                    ->groupBy('user_subjek.course_id')
+                    ->get();
+
+            }
+        }
+
+        //dd($course);
+
+        return view('admin.lecturerReport', compact('faculty','lecturer','course'));
+
+    }
+
+    public function getFolder(Request $request)
+    {
+
+        $folder = DB::table('lecturer_dir')->where('Addby', $request->ic)->where('CourseID', $request->id)->get();
+
+        return view('admin.getSubfolder', compact('folder'));
+    }
+
+    public function getSubFolder(Request $request)
+    {
+
+        $subfolder = DB::table('material_dir')->where('LecturerDirID', $request->id)->get();
+
+        $prev0 = $folder = DB::table('lecturer_dir')->where('DrID', $request->id)->first();
+
+        return view('admin.getSubfolder', compact('subfolder','prev0'));
+
+    }
+
+    public function getSubFolder2(Request $request)
+    {
+
+        $directory = DB::table('lecturer_dir')
+        ->join('material_dir', 'lecturer_dir.DrID', 'material_dir.LecturerDirID')
+        ->select('lecturer_dir.DrName as A', 'material_dir.DrName as B', 'material_dir.*', 'lecturer_dir.CourseID')
+        ->where('material_dir.DrID', $request->id)->first();
+
+        $subfolder2 = DB::table('materialsub_dir')->where('MaterialDirID', $request->id)->get();
+
+        $dir = "classmaterial/" . $directory->CourseID . "/" . $directory->A . "/" . $directory->B;
+
+        //this is to get file in the specific folder, unlike AllFiles to get everything from all folder
+        $classmaterial  = Storage::disk('linode')->files($dir);
+
+        $prev = $directory->LecturerDirID;
+
+        return view('admin.getSubfolder', compact('subfolder2', 'classmaterial','prev'));
+
+    }
+
+    public function getMaterial(Request $request)
+    {
+
+        $directory = DB::table('lecturer_dir')
+        ->join('material_dir', 'lecturer_dir.DrID', 'material_dir.LecturerDirID')
+        ->join('materialsub_dir', 'material_dir.DrID', 'materialsub_dir.MaterialDirID')
+        ->select('lecturer_dir.DrName as A', 'material_dir.DrName as B', 'materialsub_dir.DrName as C', 'materialsub_dir.Password', 'materialsub_dir.MaterialDirID', 'materialsub_dir.DrID', 'lecturer_dir.CourseID')
+        ->where('materialsub_dir.DrID', $request->id)->first();
+
+        $dir = "classmaterial/" . $directory->CourseID . "/" . $directory->A . "/" . $directory->B . "/" . $directory->C;
+
+        $classmaterial  = Storage::disk('linode')->allFiles($dir);
+
+        $prev2 = $directory->MaterialDirID;
+
+        return view('admin.getSubfolder', compact('classmaterial','prev2'));
     }
 }

@@ -62,6 +62,8 @@ class FinalController extends Controller
     {
         $user = Auth::user();
 
+        $data['finalid'] = null;
+
         $courseid = Session::get('CourseIDS');
 
         $sessionid = Session::get('SessionIDS');
@@ -80,13 +82,41 @@ class FinalController extends Controller
         $folder = DB::table('lecturer_dir')
         ->where([
             ['CourseID', $courseid],
-            ['SessionID', $sessionid],
             ['Addby', $user->ic]
             ])->get();
 
         //dd($folder);
 
-        return view('lecturer.courseassessment.finalcreate', compact(['group', 'folder']));
+        if(isset(request()->finalid))
+        {
+
+            $finalid = request()->finalid;
+ 
+            $data['finalid'] = $finalid;
+
+            $data['final'] = DB::table('tblclassfinal')->select('tblclassfinal.*')
+            ->where([
+                ['classid', Session::get('CourseIDS')],
+                ['sessionid', Session::get('SessionIDS')],
+                ['id', $finalid],
+                ['addby', $user->ic],
+                ['content','!=', null]
+            ])->get()->first();
+
+            $folders = DB::table('tblclassfinal_chapter')
+                        ->join('material_dir', 'tblclassfinal_chapter.chapterid', 'material_dir.DrID')
+                        ->where('tblclassfinal_chapter.finalid', $finalid);
+
+            $data['folder'] = $folders->join('lecturer_dir', 'material_dir.LecturerDirID', 'lecturer_dir.DrID')
+                                     ->select('lecturer_dir.*')->get()->first();
+
+            $data['finalstatus'] = $data['final']->status;
+
+        }
+
+        //dd($data);
+
+        return view('lecturer.courseassessment.finalcreate', compact(['group', 'folder', 'data']));
     }
 
     public function getChapters(Request $request)
@@ -201,6 +231,30 @@ class FinalController extends Controller
                 "addby" => $user->ic,
                 "status" => $status
             ]);
+
+            DB::table('tblclassfinal_group')->where('finalid',$finalid)->delete();
+
+            foreach($group as $grp)
+            {
+                $gp = explode('|', $grp);
+                
+                DB::table('tblclassfinal_group')->insert([
+                    "groupid" => $gp[0],
+                    "groupname" => $gp[1],
+                    "finalid" => $finalid
+                ]);
+            }
+
+            DB::table('tblclassfinal_chapter')->where('finalid',$finalid)->delete();
+
+            foreach($chapter as $chp)
+            {
+                DB::table('tblclassfinal_chapter')->insert([
+                    "chapterid" => $chp,
+                    "finalid" => $finalid
+                ]);
+            }
+
         }else{
             $q = DB::table('tblclassfinal')->insertGetId([
                 "classid" => $classid,
@@ -341,7 +395,6 @@ class FinalController extends Controller
                             $finalformdata[$index]->values[$i]->label = $original_finalformdata[$index]->values[$i]->label . $incorrect_label;
                         }
                         $i++;
-                        $count+1;
                     }
 
                     $userData = !empty($finalformdata[$index]->userData[0]) ? $finalformdata[$index]->userData[0] : null;
@@ -349,6 +402,7 @@ class FinalController extends Controller
                     if(in_array($userData, $correct_answer)){
                         $gain_mark = true;
                     }
+                    $count++;
                     
                 }
                 
@@ -365,7 +419,6 @@ class FinalController extends Controller
                             $finalformdata[$index]->values[$i]->label = $original_finalformdata[$index]->values[$i]->label . $incorrect_label;
                         }
                         $i++;
-                        $count+1;
                     }
                     
                     $userData = !empty($finalformdata[$index]->userData) ? $finalformdata[$index]->userData : null;
@@ -373,6 +426,7 @@ class FinalController extends Controller
                     if( count( array_diff_assoc($correct_answer, $userData) )  == 0){
                         $gain_mark = true;
                     }
+                    $count++;
                 
                 }
             }
@@ -735,7 +789,6 @@ class FinalController extends Controller
                             $finalformdata[$index]->values[$i]->label = $original_finalformdata[$index]->values[$i]->label . $incorrect_label;
                         }
                         $i++;
-                        $count+1;
                     }
 
                     $userData = !empty($finalformdata[$index]->userData[0]) ? $finalformdata[$index]->userData[0] : null;
@@ -743,6 +796,7 @@ class FinalController extends Controller
                     if(in_array($userData, $correct_answer)){
                         $gain_mark = true;
                     }
+                    $count++;
                     
                 }
                 
@@ -759,7 +813,6 @@ class FinalController extends Controller
                             $finalformdata[$index]->values[$i]->label = $original_finalformdata[$index]->values[$i]->label . $incorrect_label;
                         }
                         $i++;
-                        $count+1;
                     }
                     
                     $userData = !empty($finalformdata[$index]->userData) ? $finalformdata[$index]->userData : null;
@@ -767,6 +820,7 @@ class FinalController extends Controller
                     if( count( array_diff_assoc($correct_answer, $userData) )  == 0){
                         $gain_mark = true;
                     }
+                    $count++;
                 
                 }
             }

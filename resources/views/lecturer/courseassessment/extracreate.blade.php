@@ -120,8 +120,8 @@ div.form-actions.btn-group > button{
                                         </div>
                                     </div>
                                     <div class="col-md-3 mb-4">
-                                        <label for="total-marks" class="form-label "><strong>Total Marks</strong></label>
-                                        <input type="number" id="total-marks" name="marks" class="form-control"
+                                        <label for="total-marks" class="form-label "><strong>Total Marks</strong><span> (%)</span></label>
+                                        <input type="number" id="total-marks" name="marks" class="form-control" max="{{ $totalpercent }}"
                                             value="" required>
                                     </div>
                                     

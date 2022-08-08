@@ -78,7 +78,6 @@ class PracticalController extends Controller
         $folder = DB::table('lecturer_dir')
         ->where([
             ['CourseID', $courseid],
-            ['SessionID', $sessionid],
             ['Addby', $user->ic]
             ])->get();
 
@@ -147,7 +146,7 @@ class PracticalController extends Controller
 
         $dir = "classpractical/" .  $classid . "/" . $user->name . "/" . $data['practical-title'];
 
-        $classpractical  = Storage::disk('public')->makeDirectory($dir);
+        $classpractical  = Storage::disk('linode')->makeDirectory($dir);
 
         $file = $request->file('myPdf');
 
@@ -161,7 +160,7 @@ class PracticalController extends Controller
         $newpath = "classpractical/" .  $classid . "/" . $user->name . "/" . $data['practical-title'] . "/" . $newname;
 
         if(! file_exists($newname)){
-            Storage::disk('public')->putFileAs(
+            Storage::disk('linode')->putFileAs(
                 $dir,
                 $file,
                 $newname,
@@ -311,7 +310,7 @@ class PracticalController extends Controller
 
         $dir = "classpractical/" .  $classid . "/" . $practical->name . "/" . $practical->title . "/" . $participant . "/return";
 
-        $classpractical  = Storage::disk('public')->makeDirectory($dir);
+        $classpractical  = Storage::disk('linode')->makeDirectory($dir);
 
         $file = $request->file('myPdf');
 
@@ -324,7 +323,7 @@ class PracticalController extends Controller
         $newname = $filename . "." . $file_ext;
         $newpath = "classpractical/" .  $classid . "/" . $practical->name . "/" . $practical->title . "/" . $participant . "/return" . "/" . $newname;
 
-        Storage::disk('public')->putFileAs(
+        Storage::disk('linode')->putFileAs(
             $dir,
             $file,
             $newname,
@@ -482,7 +481,7 @@ class PracticalController extends Controller
         $today = date("Y-m-d H:i:s");
 
         if(! file_exists($newname)){
-            Storage::disk('public')->putFileAs(
+            Storage::disk('linode')->putFileAs(
                 $dir,
                 $file,
                 $newname,

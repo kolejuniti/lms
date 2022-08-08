@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\subject;
 use App\Models\student;
 use App\Models\User;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
@@ -13,6 +14,8 @@ class KP_Controller extends Controller
 {
     public function index()
     {
+        Session::put('User', Auth::user());
+
         $kp = Auth::user();
 
         $data = subject::join('users', 'user_subjek.user_ic', '=', 'users.ic')
@@ -474,10 +477,10 @@ class KP_Controller extends Controller
         
         //dd($request->student);
 
-        if(count($request->student) > 35)
+        if(count($request->student) > 40)
         {
 
-            return redirect()->back()->withErrors(['The limit for student in a group cannot exceed more than 35 !']);
+            return redirect()->back()->withErrors(['The limit for student in a group cannot exceed more than 40 !']);
 
         }else{
 

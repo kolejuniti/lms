@@ -121,7 +121,7 @@
                                     </i>
                                     Students
                                 </a>
-                                <a class="btn btn-info btn-sm btn-sm mr-2" href="#">
+                                <a class="btn btn-info btn-sm btn-sm mr-2" href="/lecturer/quiz/{{ Session::get('CourseID') }}/create?quizid={{ $dt->id }}">
                                     <i class="ti-pencil-alt">
                                     </i>
                                     Edit

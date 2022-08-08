@@ -78,7 +78,6 @@ class AssignmentController extends Controller
         $folder = DB::table('lecturer_dir')
         ->where([
             ['CourseID', $courseid],
-            ['SessionID', $sessionid],
             ['Addby', $user->ic]
             ])->get();
 
@@ -464,7 +463,7 @@ class AssignmentController extends Controller
 
         $dir = "classassignment/" .  $classid . "/" . $assignment->name . "/" . $assignment->title . "/" . $stud->ic;
 
-        //$classassign  = Storage::disk('linode')->makeDirectory($dir);
+        //$classassign  = Storage::disk('public')->makeDirectory($dir);
 
         $file = $request->file('myPdf');
 
@@ -557,5 +556,265 @@ class AssignmentController extends Controller
         return view('student.courseassessment.assignmentresult', compact('data'));
     }
 
+    //THIS IS ASSIGNMENT PART 2
+
+
+    public function assign2list()
+    {
+        Session::put('CourseIDS', request()->id);
+
+        if(Session::get('SessionIDS') == null)
+        {
+        Session::put('SessionIDS', request()->session);
+        }
+
+        $user = Auth::user();
+        $group = array();
+
+        $chapter = array();
+
+        //dd(Session::get('CourseIDS'));
+
+        $data = DB::table('tblclassassign')
+                ->join('users', 'tblclassassign.addby', 'users.ic')
+                ->where([
+                    ['tblclassassign.classid', Session::get('CourseIDS')],
+                    ['tblclassassign.sessionid', Session::get('SessionIDS')],
+                    ['tblclassassign.addby', $user->ic],
+                    ['tblclassassign.content', null]
+                ])
+                ->select('tblclassassign.*', 'users.name AS addby')->get();
+
+        //dd($data);
+
+      
+            foreach($data as $dt)
+            {
+                $group[] = DB::table('tblclassassign_group')
+                        ->join('user_subjek', 'tblclassassign_group.groupid', 'user_subjek.id')
+                        ->where('tblclassassign_group.assignid', $dt->id)->get();
+
+                $chapter[] = DB::table('tblclassassign_chapter')
+                        ->join('material_dir', 'tblclassassign_chapter.chapterid', 'material_dir.DrID')
+                        ->where('tblclassassign_chapter.assignid', $dt->id)->get();
+            }
+      
+
+        return view('lecturer.courseassessment.assignment2', compact('data', 'group', 'chapter'));
+    }
+
+    public function assign2create()
+    {
+        $user = Auth::user();
+
+        $courseid = Session::get('CourseIDS');
+
+        $sessionid = Session::get('SessionIDS');
+
+        //$totalpercent = 0;
+
+        $group = subject::join('student_subjek', 'user_subjek.id', 'student_subjek.group_id')
+        ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+        ->where([
+            ['subjek.id', $courseid],
+            ['user_subjek.session_id', $sessionid],
+            ['user_subjek.user_ic', $user->ic]
+        ])->groupBy('student_subjek.group_name')
+        ->select('user_subjek.*', 'subjek.course_name', 'student_subjek.group_name')->get();
+
+        //dd(Session::get('CourseIDS'));
+
+        $folder = DB::table('lecturer_dir')
+        ->where([
+            ['CourseID', $courseid],
+            ['Addby', $user->ic]
+            ])->get();
+
+        //dd($folder);
+
+        //$percentage = DB::table('tblclassmarks')->where([
+            //['course_id', $courseid],
+            //['assessment', 'assign']
+        //])->first();
+
+        //$markassign =  DB::table('tblclassassign')->where([
+           // ['classid', $courseid],
+           // ['sessionid', $sessionid],
+            //['addby', $user->ic]
+        //])->sum('total_mark');
+
+        //if($markassign != null)
+        //{
+         //   $totalpercent = $percentage->mark_percentage - $markassign;
+        //}else{
+        //    $totalpercent = $percentage->mark_percentage;
+        //}
+
+        //dd($totalpercent);
+
+        return view('lecturer.courseassessment.assignment2create', compact(['group', 'folder']));
+    }
+
+
+    public function insertassign2(Request $request){
+        //$data = $request->data;
+        $classid = Session::get('CourseIDS');
+        $sessionid = Session::get('SessionIDS');
+        $title = $request->title;
+        $group = $request->group;
+        $chapter = $request->chapter;
+        $marks = $request->marks;
+
+        $user = Auth::user();
+            
+        $assignid = empty($request->assign) ? '' : $request->assign;
+
+        
+        if( !empty($assignid) ){
+            $q = DB::table('tblclassassign')->where('id', $assignid)->update([
+                "title" => $title,
+                "total_mark" => $marks,
+                "addby" => $user->ic,
+                "status" => 2
+            ]);
+        }else{
+            $q = DB::table('tblclassassign')->insertGetId([
+                "classid" => $classid,
+                "sessionid" => $sessionid,
+                "title" => $title,
+                "total_mark" => $marks,
+                "addby" => $user->ic,
+                "status" => 2
+            ]);
+
+            foreach($group as $grp)
+            {
+                $gp = explode('|', $grp);
+                
+                DB::table('tblclassassign_group')->insert([
+                    "groupid" => $gp[0],
+                    "groupname" => $gp[1],
+                    "assignid" => $q
+                ]);
+            }
+
+            foreach($chapter as $chp)
+            {
+                DB::table('tblclassassign_chapter')->insert([
+                    "chapterid" => $chp,
+                    "assignid" => $q
+                ]);
+            }
+        }
+        
+        
+        return redirect(route('lecturer.assign2', ['id' => $classid]));
+    }
+
+    public function lecturerassign2status()
+    {
+        $user = Auth::user();
+
+        $group = DB::table('user_subjek')
+                ->join('tblclassassign_group', 'user_subjek.id', 'tblclassassign_group.groupid')
+                ->join('tblclassassign', 'tblclassassign_group.assignid', 'tblclassassign.id')
+                ->where([
+                    ['tblclassassign.classid', Session::get('CourseIDS')],
+                    ['tblclassassign.sessionid', Session::get('SessionIDS')],
+                    ['user_subjek.user_ic', $user->ic],
+                    ['tblclassassign.id', request()->assign]
+                ])->get();
+                
+            
+        //dd($group);
+
+        $assign = DB::table('student_subjek')
+                ->join('tblclassassign_group', function($join){
+                    $join->on('student_subjek.group_id', 'tblclassassign_group.groupid');
+                    $join->on('student_subjek.group_name', 'tblclassassign_group.groupname');
+                })
+                ->join('tblclassassign', 'tblclassassign_group.assignid', 'tblclassassign.id')
+                ->join('students', 'student_subjek.student_ic', 'students.ic')
+                ->select('student_subjek.*', 'tblclassassign.id AS clssid', 'tblclassassign.total_mark', 'students.no_matric', 'students.name')
+                ->where([
+                    ['tblclassassign.classid', Session::get('CourseIDS')],
+                    ['tblclassassign.sessionid', Session::get('SessionIDS')],
+                    ['tblclassassign.id', request()->assign],
+                    ['tblclassassign.addby', $user->ic]
+                ])->get();
+        
+        
+        
+        //dd($assign);
+
+        foreach($assign as $qz)
+        {
+            //$status[] = DB::table('tblclassstudentassign')
+            //->where([
+               // ['assignid', $qz->clssid],
+               // ['userid', $qz->student_ic]
+           // ])->get();
+
+           if(!DB::table('tblclassstudentassign')->where([['assignid', $qz->clssid],['userid', $qz->student_ic]])->exists()){
+
+                DB::table('tblclassstudentassign')->insert([
+                    'assignid' => $qz->clssid,
+                    'userid' => $qz->student_ic
+                ]);
+
+           }
+
+            $status[] = DB::table('tblclassstudentassign')
+            ->where([
+                ['assignid', $qz->clssid],
+                ['userid', $qz->student_ic]
+            ])->first();
+        }
+
+        //dd($status);
+
+        return view('lecturer.courseassessment.assignment2status', compact('assign', 'status', 'group'));
+
+    }
+
+    public function updateassign2(Request $request)
+    {
+        $user = Auth::user();
+
+        $marks = json_decode($request->marks);
+
+        $ics = json_decode($request->ics);
+
+        $assignid = json_decode($request->assignid);
+
+        $limitpercen = DB::table('tblclassassign')->where('id', $assignid)->first();
+
+        foreach($marks as $key => $mrk)
+        {
+
+            if($mrk > $limitpercen->total_mark)
+            {
+                return ["message"=>"Field Error", "id" => $ics];
+            }
+
+        }
+
+       
+        $upsert = [];
+        foreach($marks as $key => $mrk){
+            array_push($upsert, [
+            'userid' => $ics[$key],
+            'assignid' => $assignid,
+            'submittime' => date("Y-m-d H:i:s"),
+            'final_mark' => $mrk,
+            'status' => 1
+            ]);
+        }
+
+        DB::table('tblclassstudentassign')->upsert($upsert, ['userid', 'assignid']);
+
+        return ["message"=>"Success", "id" => $ics];
+
+    }
 
 }

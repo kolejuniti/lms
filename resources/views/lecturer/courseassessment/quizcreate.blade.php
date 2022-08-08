@@ -83,17 +83,17 @@ div.form-actions.btn-group > button{
                                     <div class="col-md-2 mb-4">
                                         <label for="quiz-title" class="form-label "><strong>Quiz Title</strong></label>
                                         <input type="text" oninput="this.value = this.value.toUpperCase()"  id="quiz-title" class="form-control"
-                                            value="{{ empty($data['quiz']->title) ? "" : $data['quiz']->title }}">
+                                            value="{{ empty($data['quiz']->title) ? "" : $data['quiz']->title }}" required>
                                     </div>
                                     <div class="col-md-2 mb-4">
                                         <label for="from" class="form-label "><strong>Quiz Duration (From)</strong></label>
-                                        <input type="datetime-local" oninput="this.value = this.value.toUpperCase()"  id="from" class="form-control"
-                                            value={{ empty($data['quiz']->duration) ? 30 : $data['quiz']->duration }}>
+                                        <input type="datetime-local" id="from" class="form-control"
+                                            value={{ empty($data['quiz']->date_from) ? '' : date('Y-m-d\TH:i:s', strtotime($data['quiz']->date_from)) }} required>
                                     </div>
                                     <div class="col-md-2 mb-4" id="time-to" hidden>
                                         <label for="to" class="form-label "><strong>Quiz Duration (To)</strong></label>
                                         <input type="datetime-local" oninput="this.value = this.value.toUpperCase()"  id="to" class="form-control"
-                                            value={{ empty($data['quiz']->duration) ? 30 : $data['quiz']->duration }}>
+                                            value={{ empty($data['quiz']->date_to) ? '' : date('Y-m-d\TH:i:s', strtotime($data['quiz']->date_to))  }} required>
                                     </div>
                                     <div class="col-md-2 mb-4">
                                         <label for="quiz-duration" class="form-label "><strong>Quiz Duration (minutes)</strong></label>
@@ -116,7 +116,7 @@ div.form-actions.btn-group > button{
                                           <select class="form-select" id="folder" name="folder" required>
                                               <option value="" disabled selected>-</option>
                                               @foreach ($folder as $fold)
-                                              <option value="{{ $fold->DrID }}">{{ $fold->DrName }}</option>
+                                              <option value="{{ $fold->DrID }}" {{ empty($data['folder']->DrID) ? '' : (($fold->DrID == $data['folder']->DrID) ? 'selected' : '' )}}>{{ $fold->DrName }}</option>
                                               @endforeach
                                           </select>
                                           <span class="text-danger">@error('folder')
@@ -127,7 +127,7 @@ div.form-actions.btn-group > button{
                                     <div class="col-md-2 mb-4">
                                         <label for="total-marks" class="form-label "><strong>Total Marks</strong></label>
                                         <input type="number" id="total-marks" class="form-control"
-                                            value="">
+                                            value="{{ empty($data['quiz']->total_mark) ? '' : $data['quiz']->total_mark }}" required>
                                     </div>
                                 </div>
                                 <div class="row col-md-12">
@@ -153,7 +153,7 @@ div.form-actions.btn-group > button{
                                                             <td >
                                                                 <div class="pull-right" >
                                                                     <input type="checkbox" id="chapter_checkbox_{{$grp->group_name}}"
-                                                                        class="filled-in" name="group[]" value="{{$grp->id}}|{{$grp->group_name}}" >
+                                                                        class="filled-in" name="group[]" value="{{$grp->id}}|{{$grp->group_name}}" required>
                                                                     <label for="chapter_checkbox_{{$grp->group_name}}"> </label>
                                                                 </div>
                                                             </td>
@@ -231,6 +231,22 @@ div.form-actions.btn-group > button{
 var selected_from = '';
 var selected_to = '';
 
+$(document).ready(function(){
+    if('{{ $data['quizid'] }}' != '')
+    {
+        //alert('true');
+
+        $('#time-to').removeAttr('hidden');
+    
+        selected_from = $('#from').val();
+
+        selected_to = $('#to').val();
+
+        getDuration(selected_from,selected_to);
+
+    }
+});
+
 $(document).on('change', '#from', async function(e){
 
     $('#time-to').removeAttr('hidden');
@@ -263,6 +279,7 @@ function getDuration(from,to)
 
 }
 
+
 </script>
 
 <script>
@@ -272,6 +289,15 @@ $(document).on('change', '#folder', async function(e){
     selected_folder = $(e.target).val();
 
     await getChapters(selected_folder);
+});
+
+$(document).ready(function(){
+    if('{{ $data['quizid'] }}' != '')
+    {
+        selected_folder = $('#folder').val();
+
+        getChapters(selected_folder);
+    }
 });
 
 function getChapters(folder)
@@ -308,6 +334,7 @@ var selected_quiz  = "{{ empty($data['quizid']) ? '' : $data['quizid'] }}";
 var quiz            = {!! empty($data['quiz']) ? "''" : json_encode($data['quiz']) !!};
 var quiz_status  = {!! empty($data['quizstatus']) ? "''" : $data['quizstatus'] !!};
 var quizFormData    = [];
+var i = 0;
 
 jQuery(function($) {
 
@@ -335,8 +362,13 @@ jQuery(function($) {
         fbOptions = {
             formData: quizFormData,
             dataType: 'xml',
-            onCloseFieldEdit: function(editPanel) { },
+            onCloseFieldEdit: function(editPanel) {},
             onOpenFieldEdit: function(editPanel) {},
+            onClearAll: function() {
+                $('#question-index').val(1);
+                questionnum = $('#question-index').val();
+                i = 1;
+            },
             onSave: function() {
                 $fbEditor.toggle();
                 $formContainer.toggle();
@@ -350,7 +382,7 @@ jQuery(function($) {
     }
 
     var buttons = document.getElementsByClassName('appendfield1');
-    for (var i = 0; i < buttons.length; i++) {
+    for (i = 0; i < buttons.length; i++) {
         buttons[i].onclick = function() {
             var field = {
                 type: 'header',
@@ -380,7 +412,7 @@ jQuery(function($) {
                     {
                         "label": "a) ",
                         "value": "a",
-                        "selected": true,
+                        "selected": false
                     },
                     {
                         "label": "b)",
@@ -435,7 +467,9 @@ jQuery(function($) {
             
             formBuilder.actions.addField(field, index);
             $('#question-index').val(questionnum);
+
         };
+
     }
 
     var buttons2 = document.getElementsByClassName('appendfield2');
@@ -469,7 +503,7 @@ jQuery(function($) {
                     {
                         "label": "a)",
                         "value": "a",
-                        "selected": true
+                        "selected": false
                     },
                     {
                         "label": "b)",

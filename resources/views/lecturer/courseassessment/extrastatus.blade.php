@@ -164,6 +164,7 @@
           ],
         });
     } );
+    
 
     $(document).on('change', '#group', function(e) {
         selected_group = $(e.target).val();
@@ -238,11 +239,9 @@ $('#savebtn').click(function (e){
                     alert("Success! Extra's Results has been updated/created!");
                     window.location.reload();
                 }else{
-                    $('.error-field').html('');
-                    if(res.message == "Field Error"){
-                        for (f in res.error) {
-                            $('#'+f+'_error').html(res.error[f]);
-                        }
+                    if(res.message == "Field Error"){ 
+                          //$('#'+f+'_error').html(res.error[f]);
+                          alert("The Marks you inputted has exceed the maximum percentage! Please recheck.");
                     }
                     else if(res.message == "Group code already existed inside the system"){
                         $('#classcode_error').html(res.message);

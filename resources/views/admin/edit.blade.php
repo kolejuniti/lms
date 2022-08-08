@@ -41,8 +41,8 @@
                   <label for="inputGroupFile01" class="mt-2 mb-2 text-muted">User Image</label>
                   <br><br>
                   <label for="inputGroupFile01"  style="cursor:pointer">
-                    <img src="/storage/{{ $id->image }}" 
-                    onerror="this.onerror=null;this.src='{{ asset('assets/images/1.jpg') }}';"
+                    <img src="{{ ($id->image != null) ? Storage::disk('linode')->url($id->image) : asset('assets/images/1.jpg')}}" 
+                    
                     height="300em" witdh="auto" 
                     id="userimage" class="bg-light w-200 h-200 rounded-circle avatar-lg img-thumbnail" alt="">
                   </label>
@@ -230,6 +230,13 @@
 
 
   } );
+
+  inputGroupFile01.onchange = evt => {
+    const [file] = inputGroupFile01.files
+    if (file) {
+      userimage.src = URL.createObjectURL(file)
+    }
+  }
  
   $(document).on('change', '#usrtype', async function(e){
       usertype = $(e.target).val();

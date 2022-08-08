@@ -8,11 +8,14 @@ use App\Models\student;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 
 class AO_Controller extends Controller
 {
     public function index()
     {
+        Session::put('User', Auth::user());
+        
         $ao = Auth::user();
 
         $data = subject::leftjoin('users as A', 'user_subjek.user_ic', '=', 'A.ic')

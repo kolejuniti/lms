@@ -20,9 +20,9 @@ class StudentController extends Controller
 {
     public function index()
     {
-        $student = auth()->guard('student')->user();
+        Session::put('User', Auth::guard('student')->user());
 
-        //dd($student);
+        $student = auth()->guard('student')->user();
 
         $user = Session::put('StudInfo', $student);
 
@@ -103,17 +103,22 @@ class StudentController extends Controller
         Session::put('SessionID', request()->session);
         }
 
-        //dd(request()->session);
+        //dd(Session::get('CourseID'));
 
         return view('student.coursesummary.coursesummary');
     }
 
     public function courseContent()
     {
+        $lecturer = DB::table('users')->join('user_subjek', 'users.ic', 'user_subjek.user_ic')->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')->where([
+            ['subjek.id', request()->id],
+            ['user_subjek.session_id', Session::get('SessionID')]
+        ])->select('users.*')->first();
+        
         $folder = DB::table('lecturer_dir')
         ->where([
             ['CourseID', request()->id],
-            ['SessionID', Session::get('SessionID')],
+            ['Addby', $lecturer->ic],
             ])->get();
 
         //dd(Session::get('SessionID'));

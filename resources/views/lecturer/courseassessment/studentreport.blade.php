@@ -163,19 +163,20 @@
                                       Report
                                   </a>
                                 </td>--> 
-                                @if (count($quizanswer[$key]) > 0)
+                            
+
+                                @if (isset($quizanswer[$key]))
                                   @foreach ($quizanswer[$key] as $keys => $qzanswer)
-                                  <td>
-                                    <span >{{ $qzanswer->final_mark }}</span>
-                                  </td> 
+                                    @if ($qzanswer != null)
+                                    <td>
+                                      <span >{{ $qzanswer->final_mark }}</span>
+                                    </td>
+                                    @elseif($qzanswer == null) 
+                                    <td>
+                                      <span >-</span>
+                                    </td>
+                                    @endif
                                   @endforeach
-                                  @if (count($quizanswer[$key]) < count($quiz))
-                                    @for ($i=count($quizanswer[$key]); $i < count($quiz); $i++)
-                                      <td>
-                                        <span >-</span>
-                                      </td>
-                                    @endfor
-                                  @endif
                                 @else
                                   @foreach ($quiz as $qz)
                                   <td>
@@ -190,19 +191,18 @@
                                 </td> 
                                 @endforeach
 
-                                @if (count($testanswer[$key]) > 0)
-                                @foreach ($testanswer[$key] as $keys => $tsanswer)
-                                <td>
-                                  <span >{{ $tsanswer->final_mark }}</span>
-                                </td> 
-                                @endforeach
-                                @if (count($testanswer[$key]) < count($test))
-                                  @for ($i=count($testanswer[$key]); $i < count($test); $i++)
+                                @if (isset($testanswer[$key]))
+                                  @foreach ($testanswer[$key] as $keys => $tsanswer)
+                                    @if ($tsanswer != null)
+                                    <td>
+                                      <span >{{ $tsanswer->final_mark }}</span>
+                                    </td>
+                                    @elseif($tsanswer == null) 
                                     <td>
                                       <span >-</span>
                                     </td>
-                                  @endfor
-                                @endif
+                                    @endif
+                                  @endforeach
                                 @else
                                   @foreach ($test as $ts)
                                   <td>
@@ -217,19 +217,18 @@
                                 </td> 
                                 @endforeach
 
-                                @if (count($assignanswer[$key]) > 0)
+                                @if (isset($assignanswer[$key]))
                                   @foreach ($assignanswer[$key] as $keys => $asanswer)
-                                  <td>
-                                    <span >{{ $asanswer->final_mark }}</span>
-                                  </td> 
+                                    @if ($asanswer != null)
+                                    <td>
+                                      <span >{{ $asanswer->final_mark }}</span>
+                                    </td>
+                                    @elseif($asanswer == null) 
+                                    <td>
+                                      <span >-</span>
+                                    </td>
+                                    @endif
                                   @endforeach
-                                  @if (count($assignanswer[$key]) < count($assign))
-                                    @for ($i=count($assignanswer[$key]); $i < count($assign); $i++)
-                                      <td>
-                                        <span >-</span>
-                                      </td>
-                                    @endfor
-                                  @endif
                                 @else
                                   @foreach ($assign as $as)
                                   <td>
@@ -243,75 +242,71 @@
                                   <span >{{ round($as) }}</span>
                                 </td> 
                                 @endforeach
-                                
-                                @if (count($midtermanswer[$key]) > 0)
-                                  @foreach ($midtermanswer[$key] as $keys => $qzanswer)
-                                  <td>
-                                    <span >{{ $qzanswer->final_mark }}</span>
-                                  </td> 
+
+                                @if (isset($midtermanswer[$key]))
+                                  @foreach ($midtermanswer[$key] as $keys => $mdanswer)
+                                    @if ($mdanswer != null)
+                                    <td>
+                                      <span >{{ $mdanswer->final_mark }}</span>
+                                    </td>
+                                    @elseif($mdanswer == null) 
+                                    <td>
+                                      <span >-</span>
+                                    </td>
+                                    @endif
                                   @endforeach
-                                  @if (count($midtermanswer[$key]) < count($midterm))
-                                    @for ($i=count($midtermanswer[$key]); $i < count($midterm); $i++)
-                                      <td>
-                                        <span >-</span>
-                                      </td>
-                                    @endfor
-                                  @endif
                                 @else
-                                  @foreach ($midterm as $qz)
+                                  @foreach ($midterm as $md)
                                   <td>
                                     <span >-</span>
                                   </td> 
                                   @endforeach
                                 @endif
 
-                                @foreach ((array) $overallmidterm[$key] as $qz)
+                                @foreach ((array) $overallmidterm[$key] as $md)
                                 <td>
-                                  <span >{{ round($qz) }}</span>
+                                  <span >{{ round($md) }}</span>
                                 </td> 
                                 @endforeach
 
-                                @if (count($finalanswer[$key]) > 0)
-                                  @foreach ($finalanswer[$key] as $keys => $qzanswer)
-                                  <td>
-                                    <span >{{ $qzanswer->final_mark }}</span>
-                                  </td> 
+                                @if (isset($finalanswer[$key]))
+                                  @foreach ($finalanswer[$key] as $keys => $fnanswer)
+                                    @if ($fnanswer != null)
+                                    <td>
+                                      <span >{{ $fnanswer->final_mark }}</span>
+                                    </td>
+                                    @elseif($fnanswer == null) 
+                                    <td>
+                                      <span >-</span>
+                                    </td>
+                                    @endif
                                   @endforeach
-                                  @if (count($finalanswer[$key]) < count($final))
-                                    @for ($i=count($finalanswer[$key]); $i < count($final); $i++)
-                                      <td>
-                                        <span >-</span>
-                                      </td>
-                                    @endfor
-                                  @endif
                                 @else
-                                  @foreach ($final as $qz)
+                                  @foreach ($final as $fn)
                                   <td>
                                     <span >-</span>
                                   </td> 
                                   @endforeach
                                 @endif
 
-                                @foreach ((array) $overallfinal[$key] as $qz)
+                                @foreach ((array) $overallfinal[$key] as $fn)
                                 <td>
-                                  <span >{{ round($qz) }}</span>
+                                  <span >{{ round($fn) }}</span>
                                 </td> 
                                 @endforeach
 
-
-                                @if (count($paperworkanswer[$key]) > 0)
+                                @if (isset($paperworkanswer[$key]))
                                   @foreach ($paperworkanswer[$key] as $keys => $pwanswer)
-                                  <td>
-                                    <span >{{ $pwanswer->final_mark }}</span>
-                                  </td> 
+                                    @if ($pwanswer != null)
+                                    <td>
+                                      <span >{{ $pwanswer->final_mark }}</span>
+                                    </td>
+                                    @elseif($pwanswer == null) 
+                                    <td>
+                                      <span >-</span>
+                                    </td>
+                                    @endif
                                   @endforeach
-                                  @if (count($paperworkanswer[$key]) < count($paperwork))
-                                    @for ($i=count($paperworkanswer[$key]); $i < count($paperwork); $i++)
-                                      <td>
-                                        <span >-</span>
-                                      </td>
-                                    @endfor
-                                  @endif
                                 @else
                                   @foreach ($paperwork as $pw)
                                   <td>
@@ -326,20 +321,18 @@
                                 </td> 
                                 @endforeach
 
-
-                                @if (count($practicalanswer[$key]) > 0)
+                                @if (isset($practicalanswer[$key]))
                                   @foreach ($practicalanswer[$key] as $keys => $pranswer)
-                                  <td>
-                                    <span >{{ $pranswer->final_mark }}</span>
-                                  </td> 
+                                    @if ($pranswer != null)
+                                    <td>
+                                      <span >{{ $pranswer->final_mark }}</span>
+                                    </td>
+                                    @elseif($pranswer == null) 
+                                    <td>
+                                      <span >-</span>
+                                    </td>
+                                    @endif
                                   @endforeach
-                                  @if (count($practicalanswer[$key]) < count($practical))
-                                    @for ($i=count($practicalanswer[$key]); $i < count($practical); $i++)
-                                      <td>
-                                        <span >-</span>
-                                      </td>
-                                    @endfor
-                                  @endif
                                 @else
                                   @foreach ($practical as $pr)
                                   <td>
@@ -354,20 +347,18 @@
                                 </td> 
                                 @endforeach
 
-
-                                @if (count($otheranswer[$key]) > 0)
+                                @if (isset($otheranswer[$key]))
                                   @foreach ($otheranswer[$key] as $keys => $otanswer)
-                                  <td>
-                                    <span >{{ $otanswer->final_mark }}</span>
-                                  </td> 
+                                    @if ($otanswer != null)
+                                    <td>
+                                      <span >{{ $otanswer->final_mark }}</span>
+                                    </td>
+                                    @elseif($otanswer == null) 
+                                    <td>
+                                      <span >-</span>
+                                    </td>
+                                    @endif
                                   @endforeach
-                                  @if (count($otheranswer[$key]) < count($other))
-                                    @for ($i=count($otheranswer[$key]); $i < count($other); $i++)
-                                      <td>
-                                        <span >-</span>
-                                      </td>
-                                    @endfor
-                                  @endif
                                 @else
                                   @foreach ($other as $ot)
                                   <td>

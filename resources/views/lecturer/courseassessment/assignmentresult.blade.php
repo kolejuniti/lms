@@ -85,7 +85,7 @@ input.collected-marks + label{
                     </div>
                 </div>
                 <div class="col-xl-12 col-12">
-                    <div class=" d-flex justify-content-center">
+                    <div class="d-flex justify-content-center">
                         <div id="fb-rendered-form" class="card" style="width:800px">
                             <div class="card-body">
                                 <div class="row">
