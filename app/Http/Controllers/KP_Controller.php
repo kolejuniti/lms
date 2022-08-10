@@ -23,7 +23,6 @@ class KP_Controller extends Controller
                         ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
                         ->select('users.name','user_subjek.*','subjek.course_name','subjek.course_code','sessions.SessionName')
                         ->where('users.faculty', $kp->faculty)
-                        ->where('user_subjek.addby', $kp->ic)
                         //->orderBy('sessions.SessionID')
                         ->get();
 
