@@ -37,8 +37,9 @@ class SuperAdminController extends Controller
             //this is to preserve number '0' infront of excel data column !
             //dd(str_pad($line['no_tel1'],11,"0", STR_PAD_LEFT));
 
-            return DB::table('student_subjek')->upsert([
+            return DB::table('user_subjek')->upsert([
                 //'id'  => $line['id'],
+                //table_student
                 //'name'  => $line['name'],
                 //'ic' => str_pad($line['ic'],12,"0", STR_PAD_LEFT),
                 //'no_matric' => $line['no_matric'],
@@ -50,6 +51,7 @@ class SuperAdminController extends Controller
                 //'program' => $line['program'],
                 //'password' => Hash::make('12345678'),
                 //'status' => 'ACTIVE',
+                //student_detail
                 //'address1' => $line['alamat_1'],
                 //'address2' => $line['alamat_2'],
                 //'address3' => $line['alamat_3'],
@@ -62,14 +64,21 @@ class SuperAdminController extends Controller
                 //'no_tel2'  => str_pad($line['no_tel2'],11,"0", STR_PAD_LEFT),
                 //'password' => Hash::make('12345678'),
                 //'no_telhome' => str_pad($line['no_tel_rumah'],11,"0", STR_PAD_LEFT),
-                'student_ic' => str_pad($line['student_ic'],12,"0", STR_PAD_LEFT),
-                'courseid' => $line['courseid'],
-                'sessionid' => $line['sessionid'],
-                'semesterid' => $line['semesterid'],
-                'group_id' => $line['group_id'],
-                'group_name' => $line['group_name'],
-                'status' => 'ACTIVE',
-            ],['student_ic']);
+                //table student_subjek
+                //'student_ic' => str_pad($line['student_ic'],12,"0", STR_PAD_LEFT),
+                //'courseid' => $line['courseid'],
+                //'sessionid' => $line['sessionid'],
+                //'semesterid' => $line['semesterid'],
+                //'group_id' => $line['group_id'],
+                //'group_name' => $line['group_name'],
+                //'status' => 'ACTIVE',
+                //table user_subjek
+                'id' => $line['id'],
+                'user_ic' => $line['user_ic'],
+                'course_id' => $line['course_id'],
+                'session_id' => $line['session_id'],
+                'addby' => $line['addby'],
+            ],['id']);
             
         //}
     });
