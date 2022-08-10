@@ -288,14 +288,30 @@ class KP_Controller extends Controller
 
     public function getStudentTable(Request $request)
     {
-        $students = DB::table('student_subjek')
-        ->select('student_subjek.*', 'students.name','students.no_matric','students.intake')
-        ->join('students', 'student_subjek.student_ic', 'students.ic')
-       
-        ->where('courseid',$request->course)
-        ->where('sessionid',$request->session)
-        
-        ->get();
+
+        if(isset($request->session))
+        {
+            if(isset($request->course))
+            {
+                $students = DB::table('student_subjek')
+                ->select('student_subjek.*', 'students.name','students.no_matric','students.intake')
+                ->join('students', 'student_subjek.student_ic', 'students.ic')
+                ->where('courseid',$request->course)
+                ->where('sessionid',$request->session)->get();
+            }else
+            {
+                $students = DB::table('student_subjek')
+                ->select('student_subjek.*', 'students.name','students.no_matric','students.intake')
+                ->join('students', 'student_subjek.student_ic', 'students.ic')
+                ->where('sessionid',$request->session)->get();
+            }
+        }else
+        {
+            $students = DB::table('student_subjek')
+                ->select('student_subjek.*', 'students.name','students.no_matric','students.intake')
+                ->join('students', 'student_subjek.student_ic', 'students.ic')
+                ->where('courseid',$request->course)->get();
+        }
 
         $content = "";
         $content .= '

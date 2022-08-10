@@ -37,7 +37,7 @@ class SuperAdminController extends Controller
             //this is to preserve number '0' infront of excel data column !
             //dd(str_pad($line['no_tel1'],11,"0", STR_PAD_LEFT));
 
-            return DB::table('user_subjek')->upsert([
+            return DB::table('student_subjek')->upsert([
                 //'id'  => $line['id'],
                 //table_student
                 //'name'  => $line['name'],
@@ -65,20 +65,20 @@ class SuperAdminController extends Controller
                 //'password' => Hash::make('12345678'),
                 //'no_telhome' => str_pad($line['no_tel_rumah'],11,"0", STR_PAD_LEFT),
                 //table student_subjek
-                //'student_ic' => str_pad($line['student_ic'],12,"0", STR_PAD_LEFT),
-                //'courseid' => $line['courseid'],
-                //'sessionid' => $line['sessionid'],
-                //'semesterid' => $line['semesterid'],
-                //'group_id' => $line['group_id'],
-                //'group_name' => $line['group_name'],
-                //'status' => 'ACTIVE',
+                'student_ic' => str_pad($line['student_ic'],12,"0", STR_PAD_LEFT),
+                'courseid' => $line['courseid'],
+                'sessionid' => $line['sessionid'],
+                'semesterid' => $line['semesterid'],
+                'group_id' => $line['group_id'],
+                'group_name' => $line['group_name'],
+                'status' => 'ACTIVE',
                 //table user_subjek
-                'id' => $line['id'],
-                'user_ic' => $line['user_ic'],
-                'course_id' => $line['course_id'],
-                'session_id' => $line['session_id'],
-                'addby' => $line['addby'],
-            ],['id']);
+                //'id' => $line['id'],
+                //'user_ic' => $line['user_ic'],
+                //'course_id' => $line['course_id'],
+                //'session_id' => $line['session_id'],
+                //'addby' => $line['addby'],
+            ],['student_ic']);
             
         //}
     });
