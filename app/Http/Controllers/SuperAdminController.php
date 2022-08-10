@@ -40,7 +40,7 @@ class SuperAdminController extends Controller
             return DB::table('students')->upsert([
                 //'id'  => $line['id'],
                 'name'  => $line['name'],
-                'ic' => str_pad($line['ic'],12,"0", STR_PAD_LEFT),,
+                'ic' => str_pad($line['ic'],12,"0", STR_PAD_LEFT),
                 'no_matric' => $line['no_matric'],
                 'email' => $line['email'],
                 'intake' => $line['intake'],
