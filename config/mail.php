@@ -82,7 +82,7 @@ return [
     ],
 
     'mailers' => [
-        'sendmail' => [
+        'smtp' => [
             'transport' => 'sendmail',
             'host' => env('MAIL_HOST', 'smtp.mailgun.org'),
             'port' => env('MAIL_PORT', 587),
