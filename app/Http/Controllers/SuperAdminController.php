@@ -40,7 +40,7 @@ class SuperAdminController extends Controller
             return DB::table('students')->upsert([
                 //'id'  => $line['id'],
                 'name'  => $line['name'],
-                'ic' => $line['ic'],
+                'ic' => str_pad($line['ic'],12,"0", STR_PAD_LEFT),,
                 'no_matric' => $line['no_matric'],
                 'email' => $line['email'],
                 'intake' => $line['intake'],
@@ -48,7 +48,7 @@ class SuperAdminController extends Controller
                 'session' => $line['session'],
                 'semester' => $line['semester'],
                 'program' => $line['program'],
-                'password' => Hash::make($line['ic']),
+                'password' => Hash::make('12345678'),
                 'status' => 'ACTIVE',
                 //'address1' => $line['alamat_1'],
                 //'address2' => $line['alamat_2'],
@@ -66,8 +66,6 @@ class SuperAdminController extends Controller
             
         //}
     });
-
-
 
      return back()->with('success', 'Excel Data Imported successfully.');
     }
