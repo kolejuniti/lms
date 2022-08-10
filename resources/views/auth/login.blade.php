@@ -15,7 +15,6 @@
 	<!-- Style-->  
 	<link rel="stylesheet" href="{{ asset('assets/src/css/style.css') }}">
 	<link rel="stylesheet" href="{{ asset('assets/src/css/skin_color.css') }}">
-
 </head>
 	
 <body class="hold-transition theme-primary bg-img" style="background-image: url({{ asset('assets/images/auth-bg/bg-16.jpg') }})">
@@ -28,7 +27,7 @@
 							<div class="content-top-agile p-20 pb-0">
 								{{-- <h2 class="text-primary fw-600">Let's Get Started</h2> --}}
 								<div class="container mb-5">
-									<img src="{{ asset('assets/images/logo-letter.png')}}" height="60em" width="auto" >
+									<img src="{{ asset('assets/images/logo/Kolej-UNITI.png')}}" height="60em" width="auto" >
 									<img src="{{ asset('assets/images/logo-dark-text.png')}}" height="30em" width="auto"  class="">
 								</div>
 								<p class="mb-0 text-fade p-3 pb-0 ">Sign in to continue.</p>							
@@ -124,7 +123,7 @@
 										<div class="form-group">
 											<div class="input-group mb-3">
 												<span class="input-group-text bg-transparent"><i class="text-fade ti-user"></i></span>
-												<input type="text" name="ic" class="form-control ps-15 bg-transparent" placeholder="Ic">
+												<input type="text" name="ic" class="form-control ps-15 bg-transparent" placeholder="No. Matric">
 											</div>
 											@if ($errors->has('ic'))
 												<span class="text-danger">{{ $errors->first('ic') }}</span>

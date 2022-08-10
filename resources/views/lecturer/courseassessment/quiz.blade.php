@@ -63,9 +63,6 @@
                                 Title
                               </th>
                               <th>
-                                Creator
-                              </th>
-                              <th>
                                 Groups
                               </th>
                               <th>
@@ -81,6 +78,9 @@
                                 Date To
                               </th>
                               <th>
+                                Status
+                              </th>
+                              <th>
                               </th>
                             </tr>
                           </thead>
@@ -92,9 +92,6 @@
                               </td>
                               <td>
                                   {{ $dt->title }}
-                              </td>
-                              <td>
-                                  {{ $dt->addby }}
                               </td>
                               <td>
                                   @foreach ($group[$key] as $grp)
@@ -115,6 +112,9 @@
                               <td>
                                 {{ $dt->date_to }}
                               </td>
+                              <td>
+                                {{ $dt->statusname }}
+                              </td>
                               <td class="project-actions text-right" >
                                 <a class="btn btn-success btn-sm mr-2" href="/lecturer/quiz/{{ Session::get('CourseIDS') }}/{{ $dt->id }}">
                                     <i class="ti-user">
@@ -126,7 +126,7 @@
                                     </i>
                                     Edit
                                 </a>
-                                <a class="btn btn-danger btn-sm" href="#">
+                                <a class="btn btn-danger btn-sm" href="#" onclick="deleteQuiz('{{ $dt->id }}')">
                                     <i class="ti-trash">
                                     </i>
                                     Delete
@@ -161,32 +161,32 @@ $(document).ready( function () {
         location.href = "/lecturer/quiz/{{ Session::get('CourseID') }}/create";
     })
 
-    function deleteMaterial(dir){     
-        Swal.fire({
-			title: "Are you sure?",
-			text: "This will be permanent",
-			showCancelButton: true,
-			confirmButtonText: "Yes, delete it!"
-		}).then(function(res){
-			
-			if (res.isConfirmed){
-                $.ajax({
-                    headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
-                    url      : "{{ url('lecturer/content/delete') }}",
-                    method   : 'DELETE',
-                    data 	 : {dir:dir},
-                    error:function(err){
-                        alert("Error");
-                        console.log(err);
-                    },
-                    success  : function(data){
-                        window.location.reload();
-                        alert("success");
-                    }
-                });
-            }
-        });
-    }
+    function deleteQuiz(id){     
+      Swal.fire({
+    title: "Are you sure?",
+    text: "This will be permanent",
+    showCancelButton: true,
+    confirmButtonText: "Yes, delete it!"
+  }).then(function(res){
+    
+    if (res.isConfirmed){
+              $.ajax({
+                  headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
+                  url      : "{{ url('lecturer/quiz/deletequiz') }}",
+                  method   : 'POST',
+                  data 	 : {id:id},
+                  error:function(err){
+                      alert("Error");
+                      console.log(err);
+                  },
+                  success  : function(data){
+                      window.location.reload();
+                      alert("success");
+                  }
+              });
+          }
+      });
+  }
 
 </script>
 @stop

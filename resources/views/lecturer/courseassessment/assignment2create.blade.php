@@ -153,10 +153,10 @@ div.form-actions.btn-group > button{
                                             </div>
                                         </div>
                                     </div>
-                                    <!--<div class="col-md-3 mb-4">
+                                    <div class="col-md-3 mb-4">
                                         <label for="total-marks" class="form-label "><strong>Content</strong></label>
                                         <input type="file" id="myPdf" name="myPdf" class="form-control"><br required>
-                                    </div>-->
+                                    </div>
                                 </div>
                             </div>
                         </div>

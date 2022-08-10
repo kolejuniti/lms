@@ -8,6 +8,11 @@
         border:1px solid #eee;
         box-shadow: 0 0 0 #eee;
     }
+
+    div.dt-buttons {
+    float: right;
+    margin-left:10px;
+    }
 </style>
 
 <!-- Content Wrapper. Contains page content -->
@@ -400,10 +405,15 @@
     var selected_quiz = "{{ request()->quiz }}";
 
     $(document).ready( function () {
-        $('#myTable').DataTable();
-
-        
+        $('#myTable').DataTable({
+          dom: 'lBfrtip', // if you remove this line you will see the show entries dropdown
+          
+          buttons: [
+              'copy', 'csv', 'excel'
+          ],
+        });
     } );
+    
 
     $(document).on('change', '#group', function(e) {
         selected_group = $(e.target).val();

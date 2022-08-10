@@ -40,6 +40,40 @@ class StudentController extends Controller
         return view('student', compact(['subject','sessions']));
     }
 
+    public function setting()
+    {
+        $student = DB::table('students')->where('ic', Auth::guard('student')->user()->ic)->first();
+
+        return view('settingStudent', compact('student'));
+    }
+
+    public function updateSetting(Request $request)
+    {
+        $data = $request->validate([
+            'email' => ['email', 'required'],
+            'pass' => ['nullable','max:10'],
+            'conpass' => ['max:10','same:pass']
+        ],[
+            'conpass.same' => 'The Confirm Password and Password must match!'
+        ]);
+
+        //dd($data['pass']);
+
+        if($data['pass'] != null)
+        {
+            Auth::guard('student')->user()->update([
+                'email' => $data['email'],
+                'password' =>  Hash::make($data['pass'])
+            ]);
+        }else{
+            Auth::guard('student')->user()->update([
+                'email' => $data['email']
+            ]);
+        }
+
+        return redirect()->back()->with('alert', 'You have successfully updated your setting!');
+    }
+
     public function getCourseList(Request $request)
     {
         $student = Session::get('StudInfo');
@@ -103,9 +137,11 @@ class StudentController extends Controller
         Session::put('SessionID', request()->session);
         }
 
-        //dd(Session::get('CourseID'));
+        $course = DB::table('subjek')
+                  ->join('tblprogramme', 'subjek.prgid', 'tblprogramme.id')
+                  ->where('subjek.id', request()->id)->first();
 
-        return view('student.coursesummary.coursesummary');
+        return view('student.coursesummary.coursesummary', compact('course'));
     }
 
     public function courseContent()

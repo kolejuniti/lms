@@ -132,7 +132,7 @@
 		<a href="{{ url('lecturer') }}" class="logo">
 		  <!-- logo-->
 		  <div class="logo-mini w-30">
-			  <span class="light-logo"><img src="{{ asset('assets/images/logo-letter.png') }}" alt="logo" class="unity"></span>
+			  <span class="light-logo"><img src="{{ asset('assets/images/logo/Kolej-UNITI.png')}}" alt="logo" class="unity"></span>
 			  <span class="dark-logo"><img src="{{ asset('assets/images/logo-letter-white.png') }}" alt="logo"></span>
 		  </div>
 		  <div class="logo-lg">
@@ -180,7 +180,7 @@
 				</label>
 			  </a>				
             </li>
-			<li class="dropdown notifications-menu btn-group">
+			<!--<li class="dropdown notifications-menu btn-group">
 				<a href="#" class="waves-effect waves-light btn-primary-light svg-bt-icon bg-transparent" data-bs-toggle="dropdown" title="Notifications">
 					<i data-feather="bell"></i>
 					<div class="pulse-wave"></div>
@@ -199,7 +199,7 @@
 					</div>
 				  </li>
 				  <li>
-					<!-- inner menu: contains the actual data -->
+					inner menu: contains the actual data
 					<ul class="menu sm-scrol">
 					  <li>
 						<a href="#">
@@ -222,7 +222,7 @@
 					  <a href="#">View all</a>
 				  </li>
 				</ul>
-			</li>
+			</li>-->
 			
 			
 			<!-- User Account-->
@@ -296,11 +296,11 @@
 						<li><a href="/lecturer/assign2/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Offline</a></li>
 						</ul>
 					</li>
-					<li><a href="/lecturer/midterm/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Midterm</a></li>
+					<!--<li><a href="/lecturer/midterm/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Midterm</a></li>
 					<li><a href="/lecturer/final/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Final</a></li>
 					<li><a href="/lecturer/paperwork/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Paperwork</a></li>
 					<li><a href="/lecturer/practical/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Practical</a></li>
-					<li><a href="/lecturer/other/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Lain-Lain</a></li>
+					<li><a href="/lecturer/other/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Lain-Lain</a></li>-->
 					<li><a href="/lecturer/extra/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Extra</a></li>
 					<li><a href="/lecturer/report/{{ Session::get('CourseID') }}" class="">Report</a></li>
 					</ul>
@@ -342,27 +342,24 @@
 				<li>
 					<a href="/lecturer/forum/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class=""><i data-feather="message-square"></i><span>Forum</span></a>
 				</li>
-				<li class="treeview">
+				<!--<li class="treeview">
 				    <a href="#"><i data-feather="users"></i><span>Group</span>
 						<span class="pull-right-container">
 							<i class="fa fa-angle-left pull-right"></i>
 						</span>
 				    </a>
-            <ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
-              <?php
-                $group = DB::table('user_subjek')->where('course_id', Session::get('CourseID'))->get();
-              ?>
-              @foreach ($group as $grp)
-                <li class="treeview">
-                  <a href="{{ $grp->id }}" class="">{{ $grp->group_name }}</a>
-                  <ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
-                    <li><a href="" class="">Members</a></li>
-                    <li><a href="" class="">Group Content</a></li>
-                  </ul>
-                </li>
-              @endforeach
-            </ul>
-          </li>
+					<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
+					
+						<li class="treeview">
+						<a href="" class=""></a>
+						<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
+							<li><a href="" class="">Members</a></li>
+							<li><a href="" class="">Group Content</a></li>
+						</ul>
+						</li>
+					
+					</ul>
+				</li>-->
 			  </ul>
 			  <div class="sidebar-widgets">
 				  <div class="mx-25 mb-30 pb-20 side-bx bg-primary-light rounded20">

@@ -87,7 +87,7 @@
                 <div class="col-md-12">
                   <div class="fx-card-item">
                     <div class="fx-card-avatar fx-overlay-1" style="cursor:pointer">
-                      <img src="" style="height:auto !important; max-height:250px !important" onerror="this.onerror=null;this.src='{{ asset('assets/images/default.webp') }}';" 
+                      <img src="" style="height:auto !important; max-height:250px !important" onerror="this.onerror=null;this.src='{{ asset('assets/images/uniti.jpg') }}';" 
                       class="bber-0 bbsr-0" alt="...">
                       <div class="fx-overlay ">
                         <ul class="fx-info">

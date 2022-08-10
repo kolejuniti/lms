@@ -71,7 +71,7 @@
 									<div class="tab-content" id="v-pills-tabContent">
                     @if(count($class) < 1)
                     <div class=" d-flex justify-content-center align-items-center box-header bg-secondary-light" style="height:20em">
-                        <h1 class="text-muted ">-- Class Not Found --</h1>
+                        <h1 class="text-muted ">-- Announcement Not Found --</h1>
                     </div>
                     @else
                         {{ $class->links('vendor.pagination.bootstrap-5') }}

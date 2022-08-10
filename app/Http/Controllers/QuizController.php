@@ -33,13 +33,13 @@ class QuizController extends Controller
 
         //dd(Session::get('CourseIDS'));
 
-        $data = DB::table('tblclassquiz')
+        $data = DB::table('tblclassquiz')->join('tblclassquizstatus', 'tblclassquiz.status', 'tblclassquizstatus.id')
                 ->where([
-                    ['classid', Session::get('CourseIDS')],
-                    ['sessionid', Session::get('SessionIDS')],
-                    ['addby', $user->ic],
-                    ['content','!=', null]
-                ])->get();
+                    ['tblclassquiz.classid', Session::get('CourseIDS')],
+                    ['tblclassquiz.sessionid', Session::get('SessionIDS')],
+                    ['tblclassquiz.addby', $user->ic],
+                    ['tblclassquiz.date_from','!=', null]
+                ])->select('tblclassquiz.*', 'tblclassquizstatus.statusname')->get();
 
         //dd($data);
 
@@ -57,6 +57,33 @@ class QuizController extends Controller
       
 
         return view('lecturer.courseassessment.quiz', compact('data', 'group', 'chapter'));
+    }
+
+    public function deletequiz(Request $request)
+    {
+
+        try {
+
+            $quiz = DB::table('tblclassquiz')->where('id', $request->id)->first();
+
+            if($quiz->status != 3)
+            {
+            DB::table('tblclassquiz')->where('id', $request->id)->update([
+                'status' => 3
+            ]);
+
+            return true;
+
+            }else{
+
+                die;
+
+            }
+          
+          } catch (\Exception $e) {
+          
+              return $e->getMessage();
+          }
     }
 
     public function quizcreate()
@@ -551,7 +578,8 @@ class QuizController extends Controller
                     ['tblclassquiz.classid', Session::get('CourseIDS')],
                     ['tblclassquiz.sessionid', Session::get('SessionIDS')],
                     ['student_subjek.student_ic', $student->ic],
-                    ['tblclassquiz.content','!=', null]
+                    ['tblclassquiz.content','!=', null],
+                    ['tblclassquiz.status','!=', 3]
                 ])->get();
 
         //dd($data);
@@ -913,13 +941,14 @@ class QuizController extends Controller
 
         $data = DB::table('tblclassquiz')
                 ->join('users', 'tblclassquiz.addby', 'users.ic')
+                ->join('tblclassquizstatus', 'tblclassquiz.status', 'tblclassquizstatus.id')
                 ->where([
                     ['tblclassquiz.classid', Session::get('CourseIDS')],
                     ['tblclassquiz.sessionid', Session::get('SessionIDS')],
                     ['tblclassquiz.addby', $user->ic],
-                    ['tblclassquiz.content', null]
+                    ['tblclassquiz.date_from', null]
                 ])
-                ->select('tblclassquiz.*', 'users.name AS addby')->get();
+                ->select('tblclassquiz.*', 'users.name AS addby', 'tblclassquizstatus.statusname')->get();
 
         //dd($data);
 
@@ -1001,7 +1030,15 @@ class QuizController extends Controller
         $chapter = $request->chapter;
         $marks = $request->marks;
 
+        $data = $request->validate([
+            'myPdf' => 'required', 'mimes:pdf'
+        ]);
+
         $user = Auth::user();
+
+        $dir = "classquiz2/" .  $classid . "/" . $user->name . "/" . $title;
+        $classquiz2  = Storage::disk('linode')->makeDirectory($dir);
+        $file = $request->file('myPdf');
             
         $quizid = empty($request->quiz) ? '' : $request->quiz;
 
@@ -1014,33 +1051,52 @@ class QuizController extends Controller
                 "status" => 2
             ]);
         }else{
-            $q = DB::table('tblclassquiz')->insertGetId([
-                "classid" => $classid,
-                "sessionid" => $sessionid,
-                "title" => $title,
-                "total_mark" => $marks,
-                "addby" => $user->ic,
-                "status" => 2
-            ]);
+            $file_name = $file->getClientOriginalName();
+            $file_ext = $file->getClientOriginalExtension();
+            $fileInfo = pathinfo($file_name);
+            $filename = $fileInfo['filename'];
+            $newname = $filename . "." . $file_ext;
+            $newpath = "classquiz2/" .  $classid . "/" . $user->name . "/" . $title . "/" . $newname;
 
-            foreach($group as $grp)
-            {
-                $gp = explode('|', $grp);
-                
-                DB::table('tblclassquiz_group')->insert([
-                    "groupid" => $gp[0],
-                    "groupname" => $gp[1],
-                    "quizid" => $q
+            if(!file_exists($newname)){
+                Storage::disk('linode')->putFileAs(
+                    $dir,
+                    $file,
+                    $newname,
+                    'public'
+                );
+
+                $q = DB::table('tblclassquiz')->insertGetId([
+                    "classid" => $classid,
+                    "sessionid" => $sessionid,
+                    "title" => $title,
+                    'content' => $newpath,
+                    "total_mark" => $marks,
+                    "addby" => $user->ic,
+                    "status" => 2
                 ]);
+
+                foreach($request->group as $grp)
+                {
+                    $gp = explode('|', $grp);
+
+                    DB::table('tblclassquiz_group')->insert([
+                        "groupid" => $gp[0],
+                        "groupname" => $gp[1],
+                        "quizid" => $q
+                    ]);
+                }
+
+                foreach($request->chapter as $chp)
+                {
+                    DB::table('tblclassquiz_chapter')->insert([
+                        "chapterid" => $chp,
+                        "quizid" => $q
+                    ]);
+                }
+
             }
 
-            foreach($chapter as $chp)
-            {
-                DB::table('tblclassquiz_chapter')->insert([
-                    "chapterid" => $chp,
-                    "quizid" => $q
-                ]);
-            }
         }
         
         
@@ -1150,6 +1206,65 @@ class QuizController extends Controller
         DB::table('tblclassstudentquiz')->upsert($upsert, ['userid', 'quizid']);
 
         return ["message"=>"Success", "id" => $ics];
+
+    }
+
+
+    //This is quiz 2 Student Controller
+
+
+    public function studentquiz2list()
+    {
+        $chapter = [];
+
+        Session::put('CourseIDS', request()->id);
+
+        if(Session::get('SessionIDS') == null)
+        {
+        Session::put('SessionIDS', request()->session);
+        }
+
+        $student = auth()->guard('student')->user();
+
+        Session::put('StudInfos', $student);
+
+        //dd($student->ic);
+
+        $data = DB::table('tblclassquiz')
+                ->join('tblclassquiz_group', 'tblclassquiz.id', 'tblclassquiz_group.quizid')
+                ->join('tblclassquizstatus', 'tblclassquiz.status', 'tblclassquizstatus.id')
+                ->join('student_subjek', function($join){
+                    $join->on('tblclassquiz_group.groupid', 'student_subjek.group_id');
+                    $join->on('tblclassquiz_group.groupname', 'student_subjek.group_name');
+                })
+                ->join('user_subjek', 'tblclassquiz_group.groupid', 'user_subjek.id')
+                ->select('tblclassquiz.*', 'tblclassquiz_group.groupname','tblclassquizstatus.statusname')
+                ->where([
+                    ['tblclassquiz.classid', Session::get('CourseIDS')],
+                    ['tblclassquiz.sessionid', Session::get('SessionIDS')],
+                    ['student_subjek.student_ic', $student->ic],
+                    ['tblclassquiz.date_from', null],
+                    ['tblclassquiz.status','!=', 3]
+                ])->get();
+
+        //dd($data);
+
+        foreach($data as $dt)
+        {
+            $chapter[] = DB::table('tblclassquiz_chapter')
+                      ->join('material_dir', 'tblclassquiz_chapter.chapterid', 'material_dir.DrID')
+                      ->where('tblclassquiz_chapter.quizid', $dt->id)->get();
+
+            $marks[] = DB::table('tblclassstudentquiz')
+                      ->where([
+                        ['quizid', $dt->id],
+                        ['userid', $student->ic]
+                      ])->get();
+        }
+
+        //dd($marks);
+
+        return view('student.courseassessment.quiz2', compact('data', 'chapter', 'marks'));
 
     }
 }

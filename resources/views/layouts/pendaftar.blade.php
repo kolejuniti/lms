@@ -119,7 +119,7 @@
 		<a href="{{ url('pendaftar') }}" class="logo">
 		  <!-- logo-->
 		  <div class="logo-mini w-30">
-			  <span class="light-logo"><img src="{{ asset('assets/images/logo-letter.png') }}" alt="logo" class="unity"></span>
+			  <span class="light-logo"><img src="{{ asset('assets/images/logo/Kolej-UNITI.png')}}" alt="logo" class="unity"></span>
 			  <span class="dark-logo"><img src="{{ asset('assets/images/logo-letter-white.png') }}" alt="logo"></span>
 		  </div>
 		  <div class="logo-lg">
@@ -314,15 +314,15 @@
               </div> --}}
 			  <div>
 				  <div class="col-sm-12 d-flex justify-content-center">
-				  	  <a href="" type="button" class="waves-effect waves-light btn btn-secondary btn-rounded mb-5" style="margin-right:10px;"><i class="mdi mdi-account-edit"></i> Edit</a>
-              <a href="{{ route('logout') }}" type="button" class="waves-effect waves-light btn btn-secondary btn-rounded mb-5"
-              onclick="event.preventDefault();
-              document.getElementById('logout-form').submit();">
-              <i class="mdi mdi-logout"></i>{{ __('Logout') }}</a>
+				  <a href="/lecturer/setting" type="button" class="waves-effect waves-light btn btn-secondary btn-rounded mb-5" style="margin-right:10px;"><i class="mdi mdi-account-edit"></i> Edit</a>
+				  <a href="{{ route('logout') }}" type="button" class="waves-effect waves-light btn btn-secondary btn-rounded mb-5"
+				  onclick="event.preventDefault();
+				  document.getElementById('logout-form').submit();">
+				  <i class="mdi mdi-logout"></i>{{ __('Logout') }}</a>
   
-              <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-              @csrf
-              </form>
+					<form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+					@csrf
+					</form>
 			  	  </div>
               </div>
               <div class="dropdown-divider my-30"></div>

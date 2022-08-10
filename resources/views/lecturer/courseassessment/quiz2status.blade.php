@@ -259,5 +259,32 @@ $('#savebtn').click(function (e){
 
 })
 
+function deleteQuiz(id){     
+      Swal.fire({
+    title: "Are you sure?",
+    text: "This will be permanent",
+    showCancelButton: true,
+    confirmButtonText: "Yes, delete it!"
+  }).then(function(res){
+    
+    if (res.isConfirmed){
+              $.ajax({
+                  headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
+                  url      : "{{ url('lecturer/class/announcement/list/delete') }}",
+                  method   : 'DELETE',
+                  data 	 : {id:id},
+                  error:function(err){
+                      alert("Error");
+                      console.log(err);
+                  },
+                  success  : function(data){
+                      window.location.reload();
+                      alert("success");
+                  }
+              });
+          }
+      });
+  }
+
 </script>
 @stop

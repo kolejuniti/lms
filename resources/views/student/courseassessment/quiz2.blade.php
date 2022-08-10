@@ -50,25 +50,23 @@
                               <th style="width: 1%">
                                 No.
                               </th>
-                              <th style="width: 15%">
+                              <th>
                                 Title
                               </th>
-                              <th style="width: 5%">
-                                Creator
-                              </th>
-                              <th style="width: 10%">
-                                Groups
-                              </th>
-                              <th style="width: 20%">
+                              <th>
                                 Chapters
                               </th>
-                              <th style="width: 15%">
+                              <th>
                                 Attachment
                               </th>
-                              <th style="width: 5%">
-                                Deadline
+                              <th>
+                                Full Mark
                               </th>
-                              <th style="width: 20%">
+                              <th>
+                                Status
+                              </th>
+                              <th>
+                                Mark
                               </th>
                             </tr>
                           </thead>
@@ -78,16 +76,8 @@
                               <td style="width: 1%">
                                   {{ $key+1 }}
                               </td>
-                              <td style="width: 15%">
+                              <td>
                                   {{ $dt->title }}
-                              </td>
-                              <td style="width: 5%">
-                                  {{ $dt->addby }}
-                              </td>
-                              <td style="width: 10%">
-                                  @foreach ($group[$key] as $grp)
-                                    Group {{ $grp->groupname }},
-                                  @endforeach
                               </td>
                               <td>
                                 @foreach ($chapter[$key] as $chp)
@@ -97,25 +87,23 @@
                               <td class="align-items-center">
                                 <a href="{{ Storage::disk('linode')->url($dt->content) }}"><i class="fa fa-file-pdf-o fa-3x"></i></a>
                               </td>
+                              <!--<td class="align-items-center">
+                                <a href=""><i class="fa fa-file-pdf-o fa-3x"></i></a>
+                              </td>-->
                               <td>
-                                {{ $dt->deadline }}
+                                {{ $dt->total_mark }}
+                              </td>
+                              <td>
+                                {{ $dt->statusname }}
                               </td>
                               <td class="project-actions text-right" >
-                                <a class="btn btn-success btn-sm mr-2" href="/student/quiz2/{{ Session::get('CourseIDS') }}/{{ $dt->id }}">
-                                    <i class="ti-user">
-                                    </i>
-                                    Students
-                                </a>
-                                <a class="btn btn-info btn-sm btn-sm mr-2" href="#">
-                                    <i class="ti-pencil-alt">
-                                    </i>
-                                    Edit
-                                </a>
-                                <a class="btn btn-danger btn-sm" href="#">
-                                    <i class="ti-trash">
-                                    </i>
-                                    Delete
-                                </a>
+                                @foreach ($marks[$key] as $mrk)
+                                  @if ( $mrk->final_mark == null)
+                                    0 / {{ $dt->total_mark }}
+                                  @else
+                                  {{ $mrk->final_mark }} / {{ $dt->total_mark }}
+                                  @endif
+                                @endforeach
                               </td>
                             </tr>                            
                             @endforeach

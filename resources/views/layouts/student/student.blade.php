@@ -121,7 +121,7 @@
 		<a href="{{ url('student') }}" class="logo">
 		  <!-- logo-->
 		  <div class="logo-mini w-30">
-			  <span class="light-logo"><img src="{{ asset('assets/images/logo-letter.png') }}" alt="logo" class="unity"></span>
+			  <span class="light-logo"><img src="{{ asset('assets/images/logo/Kolej-UNITI.png')}}" alt="logo" class="unity"></span>
 			  <span class="dark-logo"><img src="{{ asset('assets/images/logo-letter-white.png') }}" alt="logo"></span>
 		  </div>
 		  <div class="logo-lg">
@@ -169,7 +169,7 @@
 				</label>
 			  </a>				
             </li>
-			<li class="dropdown notifications-menu btn-group">
+			<!--<li class="dropdown notifications-menu btn-group">
 				<a href="#" class="waves-effect waves-light btn-primary-light svg-bt-icon bg-transparent" data-bs-toggle="dropdown" title="Notifications">
 					<i data-feather="bell"></i>
 					<div class="pulse-wave"></div>
@@ -188,7 +188,7 @@
 					</div>
 				  </li>
 				  <li>
-					<!-- inner menu: contains the actual data -->
+					inner menu: contains the actual data
 					<ul class="menu sm-scrol">
 					  <li>
 						<a href="#">
@@ -211,7 +211,7 @@
 					  <a href="#">View all</a>
 				  </li>
 				</ul>
-			</li>
+			</li>-->
 			
 			
 			<!-- User Account-->
@@ -260,16 +260,32 @@
 						</a>
 						<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
 						<li><a href="/student/quiz/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Online</a></li>
-						<li><a href="/student/quiz2/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Physical</a></li>
+						<li><a href="/student/quiz2/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Offline</a></li>
 						</ul>
 					</li>
-					<li><a href="/student/test/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Test</a></li>
+					<li class="treeview">
+						<a href="#"><span>Test</span>
+						</a>
+						<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
+						<li><a href="/student/test/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Online</a></li>
+						<li><a href="/student/test2/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Offline</a></li>
+						</ul>
+					</li>
+					<li class="treeview">
+						<a href="#"><span>Assignment</span>
+						</a>
+						<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
+						<li><a href="/student/assign/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Online</a></li>
+						<li><a href="/student/assign2/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Offline</a></li>
+						</ul>
+					</li>
+					<!--<li><a href="/student/test/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Test</a></li>
 					<li><a href="/student/assign/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Assignment</a></li>
 					<li><a href="/student/midterm/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Midterm</a></li>
 					<li><a href="/student/final/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Final</a></li>
 					<li><a href="/student/paperwork/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Paperwork</a></li>
 					<li><a href="/student/practical/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Practical</a></li>
-					<li><a href="/student/other/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Lain-Lain</a></li>
+					<li><a href="/student/other/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Lain-Lain</a></li>-->
 					<li><a href="/student/report/{{ Session::get('CourseID') }}" class="">Report</a></li>
 				</ul>
           </li>
@@ -300,13 +316,13 @@
 		  <li>
 			<a href="/student/forum/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class=""><i data-feather="message-square"></i><span>Forum</span></a>
 		  </li>
-          <li class="treeview">
+          <!--<li class="treeview">
 				<a href="#"><i data-feather="users"></i><span>Group</span>
 					<span class="pull-right-container">
 						<i class="fa fa-angle-left pull-right"></i>
 					</span>
 				</a>
-          </li>
+          </li>-->
 			  </ul>
 			  <div class="sidebar-widgets">
 				  <div class="mx-25 mb-30 pb-20 side-bx bg-primary-light rounded20">
@@ -378,15 +394,15 @@
               </div> --}}
 			  <div>
 				  <div class="col-sm-12 d-flex justify-content-center">
-				  	  <a href="" type="button" class="waves-effect waves-light btn btn-secondary btn-rounded mb-5" style="margin-right:10px;"><i class="mdi mdi-account-edit"></i> Edit</a>
-              <a href="{{ route('logout') }}" type="button" class="waves-effect waves-light btn btn-secondary btn-rounded mb-5"
-              onclick="event.preventDefault();
-              document.getElementById('logout-form').submit();">
-              <i class="mdi mdi-logout"></i>{{ __('Logout') }}</a>
+				  	  <a href="/student/setting" type="button" class="waves-effect waves-light btn btn-secondary btn-rounded mb-5" style="margin-right:10px;"><i class="mdi mdi-account-edit"></i> Edit</a>
+					  <a href="{{ route('logout') }}" type="button" class="waves-effect waves-light btn btn-secondary btn-rounded mb-5"
+					  onclick="event.preventDefault();
+					  document.getElementById('logout-form').submit();">
+					  <i class="mdi mdi-logout"></i>{{ __('Logout') }}</a>
   
-              <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-              @csrf
-              </form>
+					<form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+					@csrf
+					</form>
 			  	  </div>
               </div>
               <div class="dropdown-divider my-30"></div>

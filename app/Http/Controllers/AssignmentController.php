@@ -33,12 +33,13 @@ class AssignmentController extends Controller
 
         //dd(Session::get('CourseIDS'));
 
-        $data = DB::table('tblclassassign')
+        $data = DB::table('tblclassassign')->join('tblclassassignstatus', 'tblclassassign.status', 'tblclassassignstatus.id')
                 ->where([
-                    ['classid', Session::get('CourseIDS')],
-                    ['sessionid', Session::get('SessionIDS')],
-                    ['addby', $user->ic]
-                ])->get();
+                    ['tblclassassign.classid', Session::get('CourseIDS')],
+                    ['tblclassassign.sessionid', Session::get('SessionIDS')],
+                    ['tblclassassign.addby', $user->ic],
+                    ['tblclassassign.deadline','!=', null]
+                ])->select('tblclassassign.*', 'tblclassassignstatus.statusname')->get();
 
       
             foreach($data as $dt)
@@ -54,6 +55,33 @@ class AssignmentController extends Controller
       
 
         return view('lecturer.courseassessment.assignment', compact('data', 'group', 'chapter'));
+    }
+
+    public function deleteassign(Request $request)
+    {
+
+        try {
+
+            $assign = DB::table('tblclassassign')->where('id', $request->id)->first();
+
+            if($assign->status != 3)
+            {
+            DB::table('tblclassassign')->where('id', $request->id)->update([
+                'status' => 3
+            ]);
+
+            return true;
+
+            }else{
+
+                die;
+
+            }
+          
+          } catch (\Exception $e) {
+          
+              return $e->getMessage();
+          }
     }
 
     public function assigncreate()
@@ -380,7 +408,8 @@ class AssignmentController extends Controller
                 ->where([
                     ['tblclassassign.classid', Session::get('CourseIDS')],
                     ['tblclassassign.sessionid', Session::get('SessionIDS')],
-                    ['student_subjek.student_ic', $student->ic]
+                    ['student_subjek.student_ic', $student->ic],
+                    ['tblclassassign.status','!=', 3]
                 ])->get();
 
       
@@ -576,14 +605,14 @@ class AssignmentController extends Controller
         //dd(Session::get('CourseIDS'));
 
         $data = DB::table('tblclassassign')
-                ->join('users', 'tblclassassign.addby', 'users.ic')
+                ->join('users', 'tblclassassign.addby', 'users.ic')->join('tblclassassignstatus', 'tblclassassign.status', 'tblclassassignstatus.id')
                 ->where([
                     ['tblclassassign.classid', Session::get('CourseIDS')],
                     ['tblclassassign.sessionid', Session::get('SessionIDS')],
                     ['tblclassassign.addby', $user->ic],
-                    ['tblclassassign.content', null]
+                    ['tblclassassign.deadline', null]
                 ])
-                ->select('tblclassassign.*', 'users.name AS addby')->get();
+                ->select('tblclassassign.*', 'users.name AS addby', 'tblclassassignstatus.statusname')->get();
 
         //dd($data);
 
@@ -665,7 +694,15 @@ class AssignmentController extends Controller
         $chapter = $request->chapter;
         $marks = $request->marks;
 
+        $data = $request->validate([
+            'myPdf' => 'required', 'mimes:pdf'
+        ]);
+
         $user = Auth::user();
+
+        $dir = "classassign2/" .  $classid . "/" . $user->name . "/" . $title;
+        $classassign2  = Storage::disk('linode')->makeDirectory($dir);
+        $file = $request->file('myPdf');
             
         $assignid = empty($request->assign) ? '' : $request->assign;
 
@@ -678,33 +715,52 @@ class AssignmentController extends Controller
                 "status" => 2
             ]);
         }else{
-            $q = DB::table('tblclassassign')->insertGetId([
-                "classid" => $classid,
-                "sessionid" => $sessionid,
-                "title" => $title,
-                "total_mark" => $marks,
-                "addby" => $user->ic,
-                "status" => 2
-            ]);
+            $file_name = $file->getClientOriginalName();
+            $file_ext = $file->getClientOriginalExtension();
+            $fileInfo = pathinfo($file_name);
+            $filename = $fileInfo['filename'];
+            $newname = $filename . "." . $file_ext;
+            $newpath = "classassign2/" .  $classid . "/" . $user->name . "/" . $title . "/" . $newname;
 
-            foreach($group as $grp)
-            {
-                $gp = explode('|', $grp);
-                
-                DB::table('tblclassassign_group')->insert([
-                    "groupid" => $gp[0],
-                    "groupname" => $gp[1],
-                    "assignid" => $q
+            if(!file_exists($newname)){
+                Storage::disk('linode')->putFileAs(
+                    $dir,
+                    $file,
+                    $newname,
+                    'public'
+                );
+
+                $q = DB::table('tblclassassign')->insertGetId([
+                    "classid" => $classid,
+                    "sessionid" => $sessionid,
+                    "title" => $title,
+                    'content' => $newpath,
+                    "total_mark" => $marks,
+                    "addby" => $user->ic,
+                    "status" => 2
                 ]);
+
+                foreach($request->group as $grp)
+                {
+                    $gp = explode('|', $grp);
+
+                    DB::table('tblclassassign_group')->insert([
+                        "groupid" => $gp[0],
+                        "groupname" => $gp[1],
+                        "assignid" => $q
+                    ]);
+                }
+
+                foreach($request->chapter as $chp)
+                {
+                    DB::table('tblclassassign_chapter')->insert([
+                        "chapterid" => $chp,
+                        "assignid" => $q
+                    ]);
+                }
+
             }
 
-            foreach($chapter as $chp)
-            {
-                DB::table('tblclassassign_chapter')->insert([
-                    "chapterid" => $chp,
-                    "assignid" => $q
-                ]);
-            }
         }
         
         
@@ -814,6 +870,64 @@ class AssignmentController extends Controller
         DB::table('tblclassstudentassign')->upsert($upsert, ['userid', 'assignid']);
 
         return ["message"=>"Success", "id" => $ics];
+
+    }
+
+    //This is assignment 2 Student Controller
+
+
+    public function studentassign2list()
+    {
+        $chapter = [];
+
+        Session::put('CourseIDS', request()->id);
+
+        if(Session::get('SessionIDS') == null)
+        {
+        Session::put('SessionIDS', request()->session);
+        }
+
+        $student = auth()->guard('student')->user();
+
+        Session::put('StudInfos', $student);
+
+        //dd($student->ic);
+
+        $data = DB::table('tblclassassign')
+                ->join('tblclassassign_group', 'tblclassassign.id', 'tblclassassign_group.assignid')
+                ->join('tblclassassignstatus', 'tblclassassign.status', 'tblclassassignstatus.id')
+                ->join('student_subjek', function($join){
+                    $join->on('tblclassassign_group.groupid', 'student_subjek.group_id');
+                    $join->on('tblclassassign_group.groupname', 'student_subjek.group_name');
+                })
+                ->join('user_subjek', 'tblclassassign_group.groupid', 'user_subjek.id')
+                ->select('tblclassassign.*', 'tblclassassign_group.groupname','tblclassassignstatus.statusname')
+                ->where([
+                    ['tblclassassign.classid', Session::get('CourseIDS')],
+                    ['tblclassassign.sessionid', Session::get('SessionIDS')],
+                    ['student_subjek.student_ic', $student->ic],
+                    ['tblclassassign.deadline', null],
+                    ['tblclassassign.status','!=', 3]
+                ])->get();
+
+        //dd($data);
+
+        foreach($data as $dt)
+        {
+            $chapter[] = DB::table('tblclassassign_chapter')
+                      ->join('material_dir', 'tblclassassign_chapter.chapterid', 'material_dir.DrID')
+                      ->where('tblclassassign_chapter.assignid', $dt->id)->get();
+
+            $marks[] = DB::table('tblclassstudentassign')
+                      ->where([
+                        ['assignid', $dt->id],
+                        ['userid', $student->ic]
+                      ])->get();
+        }
+
+        //dd($marks);
+
+        return view('student.courseassessment.assignment2', compact('data', 'chapter', 'marks'));
 
     }
 

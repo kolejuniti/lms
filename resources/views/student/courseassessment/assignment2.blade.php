@@ -1,5 +1,5 @@
 
-@extends('layouts.lecturer.lecturer')
+@extends('layouts.student.student')
 
 @section('main')
 
@@ -40,15 +40,6 @@
                 <h3 class="card-title">Assignment List</h3>
               </div>
               <div class="box-body">
-                <div class="row mb-3">
-                    <div class="col-md-12 mb-3">
-                        <div class="pull-right">
-                            <button id="newFolder" class="waves-effect waves-light btn btn-primary btn-sm">
-                                <i class="fa fa-plus"></i> <i class="fa fa-folder"></i> &nbsp New Assignment
-                            </button>
-                        </div>
-                    </div>
-                </div>
                 <div class="table-responsive">
                   <div id="complex_header_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap4 no-footer">
                     <div class="row">
@@ -59,25 +50,23 @@
                               <th style="width: 1%">
                                 No.
                               </th>
-                              <th style="width: 15%">
+                              <th>
                                 Title
                               </th>
-                              <th style="width: 10%">
-                                Groups
-                              </th>
-                              <th style="width: 20%">
+                              <th>
                                 Chapters
                               </th>
-                              <th style="width: 15%">
+                              <th>
                                 Attachment
                               </th>
-                              <th style="width: 5%">
-                                Deadline
+                              <th>
+                                Full Mark
                               </th>
                               <th>
                                 Status
                               </th>
-                              <th style="width: 20%">
+                              <th>
+                                Mark
                               </th>
                             </tr>
                           </thead>
@@ -87,13 +76,8 @@
                               <td style="width: 1%">
                                   {{ $key+1 }}
                               </td>
-                              <td style="width: 15%">
+                              <td>
                                   {{ $dt->title }}
-                              </td>
-                              <td style="width: 10%">
-                                  @foreach ($group[$key] as $grp)
-                                    Group {{ $grp->groupname }},
-                                  @endforeach
                               </td>
                               <td>
                                 @foreach ($chapter[$key] as $chp)
@@ -103,28 +87,23 @@
                               <td class="align-items-center">
                                 <a href="{{ Storage::disk('linode')->url($dt->content) }}"><i class="fa fa-file-pdf-o fa-3x"></i></a>
                               </td>
+                              <!--<td class="align-items-center">
+                                <a href=""><i class="fa fa-file-pdf-o fa-3x"></i></a>
+                              </td>-->
                               <td>
-                                {{ $dt->deadline }}
+                                {{ $dt->total_mark }}
                               </td>
                               <td>
                                 {{ $dt->statusname }}
                               </td>
                               <td class="project-actions text-right" >
-                                <a class="btn btn-success btn-sm mr-2" href="/lecturer/assign/{{ Session::get('CourseIDS') }}/{{ $dt->id }}">
-                                    <i class="ti-user">
-                                    </i>
-                                    Students
-                                </a>
-                                <a class="btn btn-info btn-sm btn-sm mr-2" href="#">
-                                    <i class="ti-pencil-alt">
-                                    </i>
-                                    Edit
-                                </a>
-                                <a class="btn btn-danger btn-sm" href="#" onclick="deleteAssign('{{ $dt->id }}')">
-                                    <i class="ti-trash">
-                                    </i>
-                                    Delete
-                                </a>
+                                @foreach ($marks[$key] as $mrk)
+                                  @if ( $mrk->final_mark == null)
+                                    0 / {{ $dt->total_mark }}
+                                  @else
+                                  {{ $mrk->final_mark }} / {{ $dt->total_mark }}
+                                  @endif
+                                @endforeach
                               </td>
                             </tr>                            
                             @endforeach
@@ -150,37 +129,6 @@
 $(document).ready( function () {
     $('#myTable').DataTable();
 } );
-
-    $(document).on('click', '#newFolder', function() {
-        location.href = "/lecturer/assign/{{ Session::get('CourseID') }}/create";
-    })
-
-    function deleteAssign(id){     
-      Swal.fire({
-    title: "Are you sure?",
-    text: "This will be permanent",
-    showCancelButton: true,
-    confirmButtonText: "Yes, delete it!"
-  }).then(function(res){
-    
-    if (res.isConfirmed){
-              $.ajax({
-                  headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
-                  url      : "{{ url('lecturer/assign/deleteassign') }}",
-                  method   : 'POST',
-                  data 	 : {id:id},
-                  error:function(err){
-                      alert("Error");
-                      console.log(err);
-                  },
-                  success  : function(data){
-                      window.location.reload();
-                      alert("success");
-                  }
-              });
-          }
-      });
-  }
 
 </script>
 @stop

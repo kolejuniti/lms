@@ -1,4 +1,4 @@
-@extends((Auth::user()->usrtype == "LCT") ? 'layouts.lecturer' : (Auth::user()->usrtype == "PL" ? 'layouts.ketua_program' : (Auth::user()->usrtype == "AO" ? 'layouts.pegawai_takbir' : (Auth::user()->usrtype == "AR" ? 'layouts.pendaftar_akademik' : (Auth::user()->usrtype == "RGS" ? 'layouts.pendaftar' : '')))))
+@extends('layouts.student')
 
 
 @section('main')
@@ -34,28 +34,46 @@
               </div>
               <!-- /.card-header -->
               <!-- form start -->
-              <form action="/lecturer/update" method="POST">
+              <form action="/student/update" method="POST">
                 @csrf
                 @method('POST')
                 <div class="card-body">
                     <div class="col-md-6">
                       <div class="form-group">
-                        <label class="form-label" for="ic">New Password</label>
-                        <input type="password" class="form-control" id="pass" name="pass" placeholder="Enter Password">
-                        <span class="text-danger">@error('pass')
-                          {{ $message }}
-                        @enderror</span>
-                        <span class="text-danger">@error('conpass')
+                        <label class="form-label" for="email">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" value="{{ $student->email }}">
+                        <span class="text-danger">@error('email')
                           {{ $message }}
                         @enderror</span>
                       </div>
                     </div>
-                    <div class="col-md-6">
+                    <!--<div class="col-md-6">
                       <div class="form-group">
                         <label class="form-label" for="ic">Confirm Password</label>
                         <input type="password" class="form-control" id="conpass" name="conpass" placeholder="Enter Confirm Password">
                       </div>
-                    </div>
+                    </div>-->
+                    <button type="button" id="myButton" class="btn btn-info">Change Password</button>
+                    <div id="collapsee">
+											<div class="col-md-6 mt-2">
+                        <div class="form-group">
+                          <label class="form-label" for="ic">New Password</label>
+                          <input type="password" class="form-control" id="pass" name="pass" placeholder="Enter Password">
+                          <span class="text-danger">@error('pass')
+                            {{ $message }}
+                          @enderror</span>
+                          <span class="text-danger">@error('conpass')
+                            {{ $message }}
+                          @enderror</span>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label class="form-label" for="ic">Confirm Password</label>
+                          <input type="password" class="form-control" id="conpass" name="conpass" placeholder="Enter Confirm Password">
+                        </div>
+                      </div>
+										</div>
                 </div>
                 <!-- /.card-body -->
                 <div class="card-footer">
@@ -80,5 +98,14 @@ var msg = '{{Session::get('alert')}}';
     if(exist){
       alert(msg);
     }
+</script>
+
+<script>
+	$(document).ready(function(){
+		$("#collapsee").hide();
+		$("#myButton").click(function(){
+			$("#collapsee").slideToggle(500);
+		});
+	});
 </script>
 @endsection

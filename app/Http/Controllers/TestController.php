@@ -33,12 +33,13 @@ class TestController extends Controller
 
         //dd(Session::get('CourseIDS'));
 
-        $data = DB::table('tblclasstest')
+        $data = DB::table('tblclasstest')->join('tblclassteststatus', 'tblclasstest.status', 'tblclassteststatus.id')
                 ->where([
-                    ['classid', Session::get('CourseIDS')],
-                    ['sessionid', Session::get('SessionIDS')],
-                    ['addby', $user->ic]
-                ])->get();
+                    ['tblclasstest.classid', Session::get('CourseIDS')],
+                    ['tblclasstest.sessionid', Session::get('SessionIDS')],
+                    ['tblclasstest.addby', $user->ic],
+                    ['tblclasstest.date_from','!=', null]
+                ])->select('tblclasstest.*', 'tblclassteststatus.statusname')->get();
 
         //dd($data);
 
@@ -56,6 +57,33 @@ class TestController extends Controller
       
 
         return view('lecturer.courseassessment.test', compact('data', 'group', 'chapter'));
+    }
+
+    public function deletetest(Request $request)
+    {
+
+        try {
+
+            $test = DB::table('tblclasstest')->where('id', $request->id)->first();
+
+            if($test->status != 3)
+            {
+            DB::table('tblclasstest')->where('id', $request->id)->update([
+                'status' => 3
+            ]);
+
+            return true;
+
+            }else{
+
+                die;
+
+            }
+          
+          } catch (\Exception $e) {
+          
+              return $e->getMessage();
+          }
     }
 
     public function testcreate()
@@ -549,7 +577,8 @@ class TestController extends Controller
                 ->where([
                     ['tblclasstest.classid', Session::get('CourseIDS')],
                     ['tblclasstest.sessionid', Session::get('SessionIDS')],
-                    ['student_subjek.student_ic', $student->ic]
+                    ['student_subjek.student_ic', $student->ic],
+                    ['tblclasstest.status','!=', 3]
                 ])->get();
 
         //dd($data);
@@ -908,14 +937,14 @@ class TestController extends Controller
         //dd(Session::get('CourseIDS'));
 
         $data = DB::table('tblclasstest')
-                ->join('users', 'tblclasstest.addby', 'users.ic')
+                ->join('users', 'tblclasstest.addby', 'users.ic')->join('tblclassteststatus', 'tblclasstest.status', 'tblclassteststatus.id')
                 ->where([
                     ['tblclasstest.classid', Session::get('CourseIDS')],
                     ['tblclasstest.sessionid', Session::get('SessionIDS')],
                     ['tblclasstest.addby', $user->ic],
-                    ['tblclasstest.content', null]
+                    ['tblclasstest.date_from', null]
                 ])
-                ->select('tblclasstest.*', 'users.name AS addby')->get();
+                ->select('tblclasstest.*', 'users.name AS addby', 'tblclassteststatus.statusname')->get();
 
         //dd($data);
 
@@ -997,7 +1026,15 @@ class TestController extends Controller
         $chapter = $request->chapter;
         $marks = $request->marks;
 
+        $data = $request->validate([
+            'myPdf' => 'required', 'mimes:pdf'
+        ]);
+
         $user = Auth::user();
+
+        $dir = "classtest2/" .  $classid . "/" . $user->name . "/" . $title;
+        $classtest2  = Storage::disk('linode')->makeDirectory($dir);
+        $file = $request->file('myPdf');
             
         $testid = empty($request->test) ? '' : $request->test;
 
@@ -1010,33 +1047,52 @@ class TestController extends Controller
                 "status" => 2
             ]);
         }else{
-            $q = DB::table('tblclasstest')->insertGetId([
-                "classid" => $classid,
-                "sessionid" => $sessionid,
-                "title" => $title,
-                "total_mark" => $marks,
-                "addby" => $user->ic,
-                "status" => 2
-            ]);
+            $file_name = $file->getClientOriginalName();
+            $file_ext = $file->getClientOriginalExtension();
+            $fileInfo = pathinfo($file_name);
+            $filename = $fileInfo['filename'];
+            $newname = $filename . "." . $file_ext;
+            $newpath = "classtest2/" .  $classid . "/" . $user->name . "/" . $title . "/" . $newname;
 
-            foreach($group as $grp)
-            {
-                $gp = explode('|', $grp);
-                
-                DB::table('tblclasstest_group')->insert([
-                    "groupid" => $gp[0],
-                    "groupname" => $gp[1],
-                    "testid" => $q
+            if(!file_exists($newname)){
+                Storage::disk('linode')->putFileAs(
+                    $dir,
+                    $file,
+                    $newname,
+                    'public'
+                );
+
+                $q = DB::table('tblclasstest')->insertGetId([
+                    "classid" => $classid,
+                    "sessionid" => $sessionid,
+                    "title" => $title,
+                    'content' => $newpath,
+                    "total_mark" => $marks,
+                    "addby" => $user->ic,
+                    "status" => 2
                 ]);
+
+                foreach($request->group as $grp)
+                {
+                    $gp = explode('|', $grp);
+
+                    DB::table('tblclasstest_group')->insert([
+                        "groupid" => $gp[0],
+                        "groupname" => $gp[1],
+                        "testid" => $q
+                    ]);
+                }
+
+                foreach($request->chapter as $chp)
+                {
+                    DB::table('tblclasstest_chapter')->insert([
+                        "chapterid" => $chp,
+                        "testid" => $q
+                    ]);
+                }
+
             }
 
-            foreach($chapter as $chp)
-            {
-                DB::table('tblclasstest_chapter')->insert([
-                    "chapterid" => $chp,
-                    "testid" => $q
-                ]);
-            }
         }
         
         
@@ -1146,6 +1202,64 @@ class TestController extends Controller
         DB::table('tblclassstudenttest')->upsert($upsert, ['userid', 'testid']);
 
         return ["message"=>"Success", "id" => $ics];
+
+    }
+
+    //This is test 2 Student Controller
+
+
+    public function studenttest2list()
+    {
+        $chapter = [];
+
+        Session::put('CourseIDS', request()->id);
+
+        if(Session::get('SessionIDS') == null)
+        {
+        Session::put('SessionIDS', request()->session);
+        }
+
+        $student = auth()->guard('student')->user();
+
+        Session::put('StudInfos', $student);
+
+        //dd($student->ic);
+
+        $data = DB::table('tblclasstest')
+                ->join('tblclasstest_group', 'tblclasstest.id', 'tblclasstest_group.testid')
+                ->join('tblclassteststatus', 'tblclasstest.status', 'tblclassteststatus.id')
+                ->join('student_subjek', function($join){
+                    $join->on('tblclasstest_group.groupid', 'student_subjek.group_id');
+                    $join->on('tblclasstest_group.groupname', 'student_subjek.group_name');
+                })
+                ->join('user_subjek', 'tblclasstest_group.groupid', 'user_subjek.id')
+                ->select('tblclasstest.*', 'tblclasstest_group.groupname','tblclassteststatus.statusname')
+                ->where([
+                    ['tblclasstest.classid', Session::get('CourseIDS')],
+                    ['tblclasstest.sessionid', Session::get('SessionIDS')],
+                    ['student_subjek.student_ic', $student->ic],
+                    ['tblclasstest.date_from', null],
+                    ['tblclasstest.status','!=', 3]
+                ])->get();
+
+        //dd($data);
+
+        foreach($data as $dt)
+        {
+            $chapter[] = DB::table('tblclasstest_chapter')
+                      ->join('material_dir', 'tblclasstest_chapter.chapterid', 'material_dir.DrID')
+                      ->where('tblclasstest_chapter.testid', $dt->id)->get();
+
+            $marks[] = DB::table('tblclassstudenttest')
+                      ->where([
+                        ['testid', $dt->id],
+                        ['userid', $student->ic]
+                      ])->get();
+        }
+
+        //dd($marks);
+
+        return view('student.courseassessment.test2', compact('data', 'chapter', 'marks'));
 
     }
 }

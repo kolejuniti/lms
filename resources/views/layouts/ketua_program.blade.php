@@ -115,7 +115,7 @@
 		<a href="{{ url('KP') }}" class="logo">
 		  <!-- logo-->
 		  <div class="logo-mini w-30">
-			  <span class="light-logo"><img src="{{ asset('assets/images/logo-letter.png') }}" alt="logo" class="unity"></span>
+			  <span class="light-logo"><img src="{{ asset('assets/images/logo/Kolej-UNITI.png')}}" alt="logo" class="unity"></span>
 			  <span class="dark-logo"><img src="{{ asset('assets/images/logo-letter-white.png') }}" alt="logo"></span>
 		  </div>
 		  <div class="logo-lg">
@@ -163,7 +163,7 @@
 				</label>
 			  </a>				
             </li>
-			<li class="dropdown notifications-menu btn-group">
+			<!--<li class="dropdown notifications-menu btn-group">
 				<a href="#" class="waves-effect waves-light btn-primary-light svg-bt-icon bg-transparent" data-bs-toggle="dropdown" title="Notifications">
 					<i data-feather="bell"></i>
 					<div class="pulse-wave"></div>
@@ -182,7 +182,6 @@
 					</div>
 				  </li>
 				  <li>
-					<!-- inner menu: contains the actual data -->
 					<ul class="menu sm-scrol">
 					  <li>
 						<a href="#">
@@ -205,7 +204,7 @@
 					  <a href="#">View all</a>
 				  </li>
 				</ul>
-			</li>
+			</li>-->
 			
 			
 			<!-- User Account-->
