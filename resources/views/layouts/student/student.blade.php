@@ -125,7 +125,7 @@
 			  <span class="dark-logo"><img src="{{ asset('assets/images/logo-letter-white.png') }}" alt="logo"></span>
 		  </div>
 		  <div class="logo-lg">
-			  <span class="light-logo"><img src="{{ asset('assets/images/logo-dark-text.png') }}" alt="logo" class="eduhub"></span>
+			  <span class="light-logo"><img src="{{ asset('assets/images/learn_logo.png') }}" alt="logo" class="eduhub"></span>
 			  <span class="dark-logo"><img src="{{ asset('assets/images/logo-light-text.png') }}" alt="logo"></span>
 		  </div>
 		</a>	
