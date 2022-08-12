@@ -348,7 +348,7 @@ class LecturerController extends Controller
     {
         $dir = "classmaterial/" . Session::get('CourseID') . "/" . $request->name;
 
-        if(DB::table('lecturer_dir')->where([['DrName', $request->name],['CouseID', Session::get('CourseID')]])->exists())
+        if(DB::table('lecturer_dir')->where([['DrName', $request->name],['CourseID', Session::get('CourseID')]])->exists())
         {
 
             return redirect()->back() ->with('alert', 'Folder already exists! Please try again with a different name.');
