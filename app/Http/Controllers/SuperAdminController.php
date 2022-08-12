@@ -39,7 +39,7 @@ class SuperAdminController extends Controller
 
             return DB::table('students')->upsert([
                 //'id'  => $line['id'],
-                'name'  => $line['nama'],
+                'name'  => $line['name'],
                 'ic'  => $line['ic'],
                 'no_matric'  => $line['no_matric'],
                 'email'  => $line['email'],
