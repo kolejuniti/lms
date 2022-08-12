@@ -284,7 +284,7 @@ Route::post('/lecturer/forum/{id}/topic/insert', [App\Http\Controllers\ForumCont
 
 
 Route::get('/student', [App\Http\Controllers\StudentController::class, 'index'])->name('student');
-Route::get('/student/setting', [App\Http\Controllers\LecturerController::class, 'setting'])->name('student.setting');
+Route::get('/student/setting', [App\Http\Controllers\StudentController::class, 'setting'])->name('student.setting');
 Route::post('/student/course/filter', [App\Http\Controllers\StudentController::class, 'getCourseList']);
 Route::get('/student/{id}', [App\Http\Controllers\StudentController::class, 'courseSummary'])->name('student.summary');
 Route::get('/student/content/{id}', [App\Http\Controllers\StudentController::class, 'courseContent'])->name('student.content');
