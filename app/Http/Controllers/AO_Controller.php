@@ -14,6 +14,9 @@ class AO_Controller extends Controller
 {
     public function index()
     {
+        //forgot current session
+        Session::forget(['User','CourseID','SessionID']);
+
         Session::put('User', Auth::user());
         
         $ao = Auth::user();

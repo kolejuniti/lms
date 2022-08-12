@@ -610,7 +610,7 @@ class QuizController extends Controller
                     ['student_subjek.student_ic', Session::get('StudInfos')->ic]
                 ])->get();
 
-        //dd($quiz);
+        //dd(Session::get('StudInfos')->ic);
 
         foreach($quiz as $qz)
         {
@@ -628,12 +628,16 @@ class QuizController extends Controller
 
     public function quizview(Request $request){
 
+        //dd(str_replace('"', '', Session::get('StudInfos')->ic));
+
+        //dd(Session::get('StudInfo')->ic)
+
         $id = $request->quiz;
         $quiz = DB::table('tblclassquiz')
             ->leftjoin('tblclassstudentquiz', function($join) 
             {
                 $join->on('tblclassquiz.id', '=', 'tblclassstudentquiz.quizid');
-                $join->on('tblclassstudentquiz.userid',  '=', DB::raw(Session::get('StudInfos')->ic));
+                $join->on('tblclassstudentquiz.userid',  '=', DB::raw('12323'));
             })
             ->leftJoin('students', 'tblclassstudentquiz.userid', 'students.ic')
             ->leftJoin('tblclassquizstatus', 'tblclassquiz.status', 'tblclassquizstatus.id')
@@ -746,7 +750,7 @@ class QuizController extends Controller
             ->leftjoin('tblclassstudentquiz', function($join) 
             {
                 $join->on('tblclassquiz.id', '=', 'tblclassstudentquiz.quizid');
-                $join->on('tblclassstudentquiz.userid',  '=', DB::raw(Session::get('StudInfos')->ic));
+                $join->on('tblclassstudentquiz.userid',  '=', DB::raw('12345'));
             })
             ->select('tblclassquiz.*', 'tblclassstudentquiz.userid', DB::raw('tblclassstudentquiz.status as studentquizstatus'),
              'tblclassstudentquiz.quizid')
@@ -789,10 +793,11 @@ class QuizController extends Controller
                 'tblclassquiz.duration','students.name')
             ->where('tblclassstudentquiz.quizid', $id)
             ->where('tblclassstudentquiz.userid', $userid)->get()->first();
+
+        //dd($quiz);
        
         $quizformdata = json_decode($quiz->content)->formData;
         $original_quizformdata = json_decode($quiz->original_content)->formData;
-        
 
         $gain_mark = false;
         $correct_label = " <i style='font-size:1.5em' class='fa fa-check text-success'></i>";
@@ -914,6 +919,8 @@ class QuizController extends Controller
         $data['submittime'] = $quiz->submittime;
         $data['questionindex'] = $quiz->questionindex;
         $data['studentquizstatus'] = $quiz->studentquizstatus;
+
+        //dd($data);
 
         return view('student.courseassessment.quizresult', compact('data'));
     }
@@ -1216,6 +1223,8 @@ class QuizController extends Controller
     public function studentquiz2list()
     {
         $chapter = [];
+
+        $marks = [];
 
         Session::put('CourseIDS', request()->id);
 

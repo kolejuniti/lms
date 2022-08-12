@@ -14,6 +14,9 @@ class KP_Controller extends Controller
 {
     public function index()
     {
+        //forgot current session
+        Session::forget(['User','CourseID','SessionID']);
+
         Session::put('User', Auth::user());
 
         $kp = Auth::user();
@@ -97,6 +100,7 @@ class KP_Controller extends Controller
 
        $assessment = array(
         "quiz" => "quiz",
+        "test" => "test",
         "assignment" => "assignment",
         "midterm" => "midterm",
         "final" => "final",

@@ -22,6 +22,7 @@ class LecturerController extends Controller
     {
         //forgot current session
         Session::forget(['User','CourseID','SessionID']);
+
         Session::put('User', Auth::user());
         
         //this function will get authenticated user and use relational models to join table
@@ -30,7 +31,6 @@ class LecturerController extends Controller
             ->join('sessions', 'user_subjek.session_id','sessions.SessionID')
             ->where('sessions.Status', 'ACTIVE')
             ->select('subjek.*','user_subjek.course_id','sessions.SessionName','sessions.SessionID')
-            //->groupBy('user_subjek.course_id')
             ->get();
 
             //dd($data);
@@ -1432,7 +1432,7 @@ class LecturerController extends Controller
                           ])->pluck('email');               
         }
 
-        $test = array('faizulsoknan@gmail.com');
+        $test = array('hafiyyaimann1998@gmail.com', 'hafiyaimanenterprise@gmail.com');
 
         //dd($test);
 
@@ -1554,581 +1554,227 @@ class LecturerController extends Controller
 
         $user = Auth::user();
 
-        $students = DB::table('user_subjek')
+        $groups = DB::table('user_subjek')
                   ->join('student_subjek', 'user_subjek.id', 'student_subjek.group_id')
-                  ->join('students', 'student_subjek.student_ic', 'students.ic')
                   ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
-                  ->select('user_subjek.*','student_subjek.group_name','student_subjek.group_id','students.*')
+                  ->select('user_subjek.*','student_subjek.group_name','student_subjek.group_id')
                   ->where([
                      ['user_subjek.user_ic', $user->ic],
                      ['user_subjek.session_id', Session::get('SessionID')],
                      ['subjek.id', request()->id]
-                   ])->get();
+                  ])->groupBy('student_subjek.group_name')->get();
 
-        //dd($students);
-
-        //QUIZ
-
-        $quizs = DB::table('tblclassquiz')
-        ->where([
-            ['classid', request()->id],
-            ['sessionid', Session::get('SessionID')]
-        ]);
-
-
-        $quiz = $quizs->get();
-
-
-        $quizid = $quizs->pluck('id');
-
-        $totalquiz = $quizs->sum('total_mark');
-
-        //dd($quizid);
-
-
-       
-            foreach($students as $keys => $std)
-            {
-                foreach($quiz as $key =>$qz)
-                {
-                
-                $quizanswer[$keys][] = DB::table('tblclassstudentquiz')->where('userid', $std->ic)->where('quizid', $qz->id)->first();
-
-                }
-
-                $sumquiz[] = DB::table('tblclassstudentquiz')->where('userid', $std->ic)->whereIn('quizid', $quizid)->sum('final_mark');
-               
-            }
-
-        //dd($quizanswer);
-
-
-        //TEST
-
-        $tests = DB::table('tblclasstest')
-        ->where([
-            ['classid', request()->id],
-            ['sessionid', Session::get('SessionID')]
-        ]);
-
-
-        $test = $tests->get();
-
-
-        $testid = $tests->pluck('id');
-
-        $totaltest = $tests->sum('total_mark');
-
-        foreach($students as $keys => $std)
+        foreach($groups as $ky => $grp)
         {
-            foreach($test as $key =>$ts)
-            {
-            
-            $testanswer[$keys][] = DB::table('tblclassstudenttest')->where('userid', $std->ic)->where('testid', $ts->id)->first();
 
-            }
 
-            $sumtest[] = DB::table('tblclassstudenttest')->where('userid', $std->ic)->whereIn('testid', $testid)->sum('final_mark');
-            
-        }
+                $students[] = $data = DB::table('user_subjek')
+                ->join('student_subjek', 'user_subjek.id', 'student_subjek.group_id')
+                ->join('students', 'student_subjek.student_ic', 'students.ic')
+                ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+                ->select('user_subjek.*','student_subjek.group_name','student_subjek.group_id','students.*')
+                ->where([
+                ['user_subjek.user_ic', $user->ic],
+                ['user_subjek.session_id', Session::get('SessionID')],
+                ['subjek.id', request()->id]
+                ])->where('student_subjek.group_name', $grp->group_name)->get();
 
+                //QUIZ
 
-        //ASSIGNMENT
-
-        $assigns = DB::table('tblclassassign')
-        ->where([
-            ['classid', request()->id],
-            ['sessionid', Session::get('SessionID')]
-        ]);
-
-
-        $assign = $assigns->get();
-
-        $assignid = $assigns->pluck('id');
-
-        $totalassign = $assigns->sum('total_mark');
-
-
-        foreach($students as $keys => $std)
-        {
-            foreach($assign as $key =>$as)
-            {
-            
-            $assignanswer[$keys][] = DB::table('tblclassstudentassign')->where('userid', $std->ic)->where('assignid', $as->id)->first();
-
-            }
-
-            $sumassign[] = DB::table('tblclassstudentassign')->where('userid', $std->ic)->whereIn('assignid', $assignid)->sum('final_mark');
-            
-        }
-
-
-        //MIDTERM
-
-        $midterms = DB::table('tblclassmidterm')
-        ->where([
-            ['classid', request()->id],
-            ['sessionid', Session::get('SessionID')]
-        ]);
-
-        $midterm = $midterms->get();
-
-        $midtermid = $midterms->pluck('id');
-
-        $totalmidterm = $midterms->sum('total_mark');
-
-        foreach($students as $keys => $std)
-        {
-            foreach($midterm as $key =>$md)
-            {
-            
-            $midtermanswer[$keys][] = DB::table('tblclassstudentmidterm')->where('userid', $std->ic)->where('midtermid', $md->id)->first();
-
-            }
-
-            $summidterm[] = DB::table('tblclassstudentmidterm')->where('userid', $std->ic)->whereIn('midtermid', $midtermid)->sum('final_mark');
-            
-        }
-
-        //FINAL
-
-        $finals = DB::table('tblclassfinal')
-        ->where([
-            ['classid', request()->id],
-            ['sessionid', Session::get('SessionID')]
-        ]);
-
-        $final = $finals->get();
-
-        $finalid = $finals->pluck('id');
-
-        $totalfinal = $finals->sum('total_mark');
-
-        foreach($students as $keys => $std)
-        {
-            foreach($final as $key =>$fn)
-            {
-            
-            $finalanswer[$keys][] = DB::table('tblclassstudentfinal')->where('userid', $std->ic)->where('finalid', $fn->id)->first();
-
-            }
-
-            $sumfinal[] = DB::table('tblclassstudentfinal')->where('userid', $std->ic)->whereIn('finalid', $finalid)->sum('final_mark');
-            
-        }
-
-
-        //PAPERWORK
-
-        $paperworks = DB::table('tblclasspaperwork')
-        ->where([
-            ['classid', request()->id],
-            ['sessionid', Session::get('SessionID')]
-        ]);;
-
-        $paperwork = $paperworks->get();
-
-        $paperworkid = $paperworks->pluck('id');
-
-        $totalpaperwork = $paperworks->sum('total_mark');
-
-        foreach($students as $keys => $std)
-        {
-            foreach($paperwork as $key =>$pw)
-            {
-            
-            $paperworkanswer[$keys][] = DB::table('tblclassstudentpaperwork')->where('userid', $std->ic)->where('paperworkid', $pw->id)->first();
-
-            }
-
-            $sumpaperwork[] = DB::table('tblclassstudentpaperwork')->where('userid', $std->ic)->whereIn('paperworkid', $paperworkid)->sum('final_mark');
-            
-        }
-
-
-        //PRACTICAL
-
-        $practicals = DB::table('tblclasspractical')
-        ->where([
-            ['classid', request()->id],
-            ['sessionid', Session::get('SessionID')]
-        ]);
-
-        $practical = $practicals->get();
-
-        $practicalid = $practicals->pluck('id');
-
-        $totalpractical = $practicals->sum('total_mark');
-
-        foreach($students as $keys => $std)
-        {
-            foreach($practical as $key =>$pr)
-            {
-            
-            $practicalanswer[$keys][] = DB::table('tblclassstudentpractical')->where('userid', $std->ic)->where('practicalid', $pr->id)->first();
-
-            }
-
-            $sumpractical[] = DB::table('tblclassstudentpractical')->where('userid', $std->ic)->whereIn('practicalid', $practicalid)->sum('final_mark');
-            
-        }
-
-        //dd($paperworkanswer);
-
-        //OTHER
-
-        $others = DB::table('tblclassother')
-        ->where([
-            ['classid', request()->id],
-            ['sessionid', Session::get('SessionID')]
-        ]);;
-
-        $other = $others->get();
-
-        $otherid = $others->pluck('id');
-
-        $totalother = $others->sum('total_mark');
-
-        foreach($students as $keys => $std)
-        {
-            foreach($other as $key =>$ot)
-            {
-            
-            $otheranswer[$keys][] = DB::table('tblclassstudentother')->where('userid', $std->ic)->where('otherid', $ot->id)->first();
-
-            }
-
-            $sumother[] = DB::table('tblclassstudentother')->where('userid', $std->ic)->whereIn('otherid', $otherid)->sum('final_mark');
-            
-        }
-
-        //dd($students);
-
-
-
-        foreach($students as $key=>$std)
-        {
-            //QUIZ
-
-            $percentquiz[] = DB::table('tblclassmarks')
-                            ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
-                            ['subjek.sub_id', $std->course_id],
-                            ['assessment', 'quiz']
-                        ])->first();
-
-            //dd($std->course_id);
-
-            $totalquiz = DB::table('tblclassquiz')
+                $quizs = DB::table('tblclassquiz')
                         ->join('tblclassquiz_group', 'tblclassquiz.id', 'tblclassquiz_group.quizid')
-                        ->join('student_subjek', function($data){
-                            $data->on('tblclassquiz_group.groupname', 'student_subjek.group_name');
-                            $data->on('tblclassquiz_group.groupid', 'student_subjek.group_id');
-                        })
                         ->where([
                             ['tblclassquiz.classid', request()->id],
                             ['tblclassquiz.sessionid', Session::get('SessionID')],
-                            ['student_subjek.student_ic', $std->ic]
-                        ])
-                        ->sum('total_mark');
+                            ['tblclassquiz_group.groupname', $grp->group_name]
+                        ]);
 
-            
-            //dd($totalquiz);
+                $quiz[] = $quizs->get();
 
-            if($percentquiz[$key] != null)
-            {
-                if(DB::table('tblclassquiz')
-                ->where([
-                    ['classid', request()->id],
-                    ['sessionid', Session::get('SessionID')]
-                ])->exists()){
-                    //dd($percentquiz[$key]->mark_percentage);
-                    $overallquiz[] = $sumquiz[$key] / $totalquiz * $percentquiz[$key]->mark_percentage;
-                }else{
-                    array_push($overallquiz, 0);
-                }
+                $quizid = $quizs->pluck('tblclassquiz.id');
 
-            }else{
-                array_push($overallquiz, 0);
-            }
+                $totalquiz = $quizs->sum('tblclassquiz.total_mark');
 
+                //TEST
 
-
-            //TEST
-
-            $percenttest[] = DB::table('tblclassmarks')
-                            ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
-                            ['subjek.sub_id', $std->course_id],
-                            ['assessment', 'test']
-                        ])->first();
-
-            //dd($std->course_id);
-
-            $totaltest = DB::table('tblclasstest')
+                $tests = DB::table('tblclasstest')
                         ->join('tblclasstest_group', 'tblclasstest.id', 'tblclasstest_group.testid')
-                        ->join('student_subjek', function($data){
-                            $data->on('tblclasstest_group.groupname', 'student_subjek.group_name');
-                            $data->on('tblclasstest_group.groupid', 'student_subjek.group_id');
-                        })
                         ->where([
                             ['tblclasstest.classid', request()->id],
                             ['tblclasstest.sessionid', Session::get('SessionID')],
-                            ['student_subjek.student_ic', $std->ic]
-                        ])
-                        ->sum('total_mark');
+                            ['tblclasstest_group.groupname', $grp->group_name]
+                        ]);
 
-            
-            //dd($totaltest);
+                $test[] = $tests->get();
 
-            if($percenttest[$key] != null)
-            {
-                if(DB::table('tblclasstest')
-                ->where([
-                    ['classid', request()->id],
-                    ['sessionid', Session::get('SessionID')]
-                ])->exists()){
-                    //dd($percenttest[$key]->mark_percentage);
-                    $overalltest[] = $sumtest[$key] / $totaltest * $percenttest[$key]->mark_percentage;
-                }else{
-                    array_push($overalltest, 0);
-                }
+                $testid = $tests->pluck('tblclasstest.id');
 
-            }else{
-                array_push($overalltest, 0);
-            }
+                $totaltest = $tests->sum('tblclasstest.total_mark');
 
-            //ASSIGNMENT
+                //ASSIGNMENT
 
-            $percentassign[] = DB::table('tblclassmarks')
-                            ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
-                            ['subjek.sub_id', $std->course_id],
-                            ['assessment', 'assignment']
-                        ])->first();
-
-            $totalassign = DB::table('tblclassassign')
+                $assigns = DB::table('tblclassassign')
                         ->join('tblclassassign_group', 'tblclassassign.id', 'tblclassassign_group.assignid')
-                        ->join('student_subjek', function($data){
-                            $data->on('tblclassassign_group.groupname', 'student_subjek.group_name');
-                            $data->on('tblclassassign_group.groupid', 'student_subjek.group_id');
-                        })
                         ->where([
                             ['tblclassassign.classid', request()->id],
                             ['tblclassassign.sessionid', Session::get('SessionID')],
-                            ['student_subjek.student_ic', $std->ic]
-                        ])->sum('total_mark');
+                            ['tblclassassign_group.groupname', $grp->group_name]
+                        ]);
 
-            if($percentassign[$key] != null)
-            {
-                if(DB::table('tblclassassign')
-                ->where([
-                    ['classid', request()->id],
-                    ['sessionid', Session::get('SessionID')]
-                ])->exists()){
-                    $overallassign[] = $sumassign[$key] / $totalassign * $percentassign[$key]->mark_percentage;
-                }else{
-                    array_push($overallassign, 0);
-                }
+                $assign[] = $assigns->get();
 
-            }else{
-                array_push($overallassign, 0);
-            }
+                $assignid = $assigns->pluck('tblclassassign.id');
 
-            //MIDTERM
+                $totalassign = $assigns->sum('tblclassassign.total_mark');
 
-            $percentmidterm[] = DB::table('tblclassmarks')
-                            ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
-                            ['subjek.sub_id', $std->course_id],
-                            ['assessment', 'midterm']
-                        ])->first();
-
-            $totalmidterm = DB::table('tblclassmidterm')
-                        ->join('tblclassmidterm_group', 'tblclassmidterm.id', 'tblclassmidterm_group.midtermid')
-                        ->join('student_subjek', function($data){
-                            $data->on('tblclassmidterm_group.groupname', 'student_subjek.group_name');
-                            $data->on('tblclassmidterm_group.groupid', 'student_subjek.group_id');
-                        })
-                        ->where([
-                            ['tblclassmidterm.classid', request()->id],
-                            ['tblclassmidterm.sessionid', Session::get('SessionID')],
-                            ['student_subjek.student_ic', $std->ic]
-                        ])->sum('total_mark');
-
-            if($percentmidterm[$key] != null)
-            {
-
-                if(DB::table('tblclassmidterm')
-                ->where([
-                    ['classid', request()->id],
-                    ['sessionid', Session::get('SessionID')]
-                ])->exists()){
-                    $overallmidterm[] = $summidterm[$key] / $totalmidterm * $percentmidterm[$key]->mark_percentage;
-                }else{
-                    array_push($overallmidterm, 0);
-                }
-
-            }else{
-                array_push($overallmidterm, 0);
-            }
+                //////////////////////////////////////////////////////////////////////////////////////////
             
-            //FINAL
+                foreach($students[$ky] as $keys => $std)
+                {
+    
+                    // QUIZ
 
-            $percentfinal[] = DB::table('tblclassmarks')
-                            ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
-                            ['subjek.sub_id', $std->course_id],
-                            ['assessment', 'final']
-                        ])->first();
+                    foreach($quiz[$ky] as $key =>$qz)
+                    {
+                    
+                    $quizanswer[$ky][$keys][$key] = DB::table('tblclassstudentquiz')->where('userid', $std->ic)->where('quizid', $qz->quizid)->first();
 
-            $totalfinal = DB::table('tblclassfinal')
-                        ->join('tblclassfinal_group', 'tblclassfinal.id', 'tblclassfinal_group.finalid')
-                        ->join('student_subjek', function($data){
-                            $data->on('tblclassfinal_group.groupname', 'student_subjek.group_name');
-                            $data->on('tblclassfinal_group.groupid', 'student_subjek.group_id');
-                        })
-                        ->where([
-                            ['tblclassfinal.classid', request()->id],
-                            ['tblclassfinal.sessionid', Session::get('SessionID')],
-                            ['student_subjek.student_ic', $std->ic]
-                        ])->sum('total_mark');
+                    }
 
-            if($percentfinal[$key] != null)
-            {
+                    $sumquiz[$ky][$keys] = DB::table('tblclassstudentquiz')->where('userid', $std->ic)->whereIn('quizid', $quizid)->sum('final_mark');
 
-                if(DB::table('tblclassfinal')
-                ->where([
-                    ['classid', request()->id],
-                    ['sessionid', Session::get('SessionID')]
-                ])->exists()){
-                    $overallfinal[] = $sumfinal[$key] / $totalfinal * $percentfinal[$key]->mark_percentage;
-                }else{
-                    array_push($overallfinal, 0);
-                }
-           
-            }else{
-                array_push($overallfinal, 0);
-            }
-
-            //PAPERWORK
-
-            $percentpaperwork[] = DB::table('tblclassmarks')
+                    $percentquiz = DB::table('tblclassmarks')
                                 ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
                                 ['subjek.sub_id', $std->course_id],
-                                ['assessment', 'paperwork']
-                            ])->first();
+                                ['assessment', 'quiz']
+                                ])->first();
 
-            $totalpaperwork = DB::table('tblclasspaperwork')
-                        ->join('tblclasspaperwork_group', 'tblclasspaperwork.id', 'tblclasspaperwork_group.paperworkid')
-                        ->join('student_subjek', function($data){
-                            $data->on('tblclasspaperwork_group.groupname', 'student_subjek.group_name');
-                            $data->on('tblclasspaperwork_group.groupid', 'student_subjek.group_id');
-                        })
-                        ->where([
-                            ['tblclasspaperwork.classid', request()->id],
-                            ['tblclasspaperwork.sessionid', Session::get('SessionID')],
-                            ['student_subjek.student_ic', $std->ic]
-                        ])->sum('total_mark');
-
-            if($percentpaperwork[$key] != null)
-            {
-
-                if(DB::table('tblclasspaperwork')
-                ->where([
-                    ['classid', request()->id],
-                    ['sessionid', Session::get('SessionID')]
-                ])->exists()){
-                    $overallpaperwork[] = $sumpaperwork[$key] / $totalpaperwork * $percentpaperwork[$key]->mark_percentage;
-                }else{
-                    array_push($overallpaperwork, 0);
-                }
-
-            }else{
-                array_push($overallpaperwork, 0);
-            }
-
-            //PRACTICAL
-
-            $percentpractical[] = DB::table('tblclassmarks')
-                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
-                                ['subjek.sub_id', $std->course_id],
-                                ['assessment', 'practical']
-                            ])->first();
-
-            $totalpractical = DB::table('tblclasspractical')
-                        ->join('tblclasspractical_group', 'tblclasspractical.id', 'tblclasspractical_group.practicalid')
-                        ->join('student_subjek', function($data){
-                            $data->on('tblclasspractical_group.groupname', 'student_subjek.group_name');
-                            $data->on('tblclasspractical_group.groupid', 'student_subjek.group_id');
-                        })
-                        ->where([
-                            ['tblclasspractical.classid', request()->id],
-                            ['tblclasspractical.sessionid', Session::get('SessionID')],
-                            ['student_subjek.student_ic', $std->ic]
-                        ])->sum('total_mark');
-
-            if($percentpractical[$key] != null)
-            {
-                if(DB::table('tblclasspractical')
-                ->where([
-                    ['classid', request()->id],
-                    ['sessionid', Session::get('SessionID')]
-                ])->exists()){
-                    $overallpractical[] = $sumpractical[$key] / $totalpractical * $percentpractical[$key]->mark_percentage;
-                }else{
-                    array_push($overallpractical, 0);
-                }
-
-            }else{
-                array_push($overallpractical, 0);
-            }
-
-            //OTHER
-
-            $percentother[] = DB::table('tblclassmarks')
-                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
-                                ['subjek.sub_id', $std->course_id],
-                                ['assessment', 'lain-lain']
-                            ])->first();
-
-            $totalother = DB::table('tblclassother')
-                        ->join('tblclassother_group', 'tblclassother.id', 'tblclassother_group.otherid')
-                        ->join('student_subjek', function($data){
-                            $data->on('tblclassother_group.groupname', 'student_subjek.group_name');
-                            $data->on('tblclassother_group.groupid', 'student_subjek.group_id');
-                        })
-                        ->where([
-                            ['tblclassother.classid', request()->id],
-                            ['tblclassother.sessionid', Session::get('SessionID')],
-                            ['student_subjek.student_ic', $std->ic]
-                        ])->sum('total_mark');
-
-            if($percentother[$key] != null)
-            {
-                if(DB::table('tblclassother')
-                ->where([
-                    ['classid', request()->id],
-                    ['sessionid', Session::get('SessionID')]
-                ])->exists()){
-                    $overallother[] = $sumother[$key] / $totalother * $percentother[$key]->mark_percentage;
-                }else{
-                    array_push($overallother, 0);
-                }
-
-            }else{
-                array_push($overallother, 0);
-            }
+                    if($quizs = DB::table('tblclassquiz')
+                    ->join('tblclassquiz_group', 'tblclassquiz.id', 'tblclassquiz_group.quizid')
+                    ->where([
+                        ['tblclassquiz.classid', request()->id],
+                        ['tblclassquiz.sessionid', Session::get('SessionID')],
+                        ['tblclassquiz_group.groupname', $grp->group_name]
+                    ])->exists()){
+                        if($percentquiz != null)
+                        {
+                            if(DB::table('tblclassquiz')
+                            ->where([
+                                ['classid', request()->id],
+                                ['sessionid', Session::get('SessionID')]
+                            ])->exists()){
+                                //dd($totalquiz);
+                                $overallquiz[$ky][$keys] = $sumquiz[$ky][$keys] / $totalquiz * $percentquiz->mark_percentage;
+                            }else{
+                                array_push($overallquiz, 0);
+                            }
             
+                        }else{
+                            array_push($overallquiz, 0);
+                        }
+                    }else{
+                        array_push($overallquiz, 0);
+                    }
+
+
+                    // TEST
+                    
+                    foreach($test[$ky] as $key =>$qz)
+                    {
+                    
+                    $testanswer[$ky][$keys][$key] = DB::table('tblclassstudenttest')->where('userid', $std->ic)->where('testid', $qz->testid)->first();
+
+                    }
+
+                    $sumtest[$ky][$keys] = DB::table('tblclassstudenttest')->where('userid', $std->ic)->whereIn('testid', $testid)->sum('final_mark');
+
+                    $percenttest = DB::table('tblclassmarks')
+                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
+                                ['subjek.sub_id', $std->course_id],
+                                ['assessment', 'test']
+                                ])->first();
+
+                    if($tests = DB::table('tblclasstest')
+                    ->join('tblclasstest_group', 'tblclasstest.id', 'tblclasstest_group.testid')
+                    ->where([
+                        ['tblclasstest.classid', request()->id],
+                        ['tblclasstest.sessionid', Session::get('SessionID')],
+                        ['tblclasstest_group.groupname', $grp->group_name]
+                    ])->exists()){
+                        if($percenttest != null)
+                        {
+                            if(DB::table('tblclasstest')
+                            ->where([
+                                ['classid', request()->id],
+                                ['sessionid', Session::get('SessionID')]
+                            ])->exists()){
+                                //dd($totaltest);
+                                $overalltest[$ky][$keys] = $sumtest[$ky][$keys] / $totaltest * $percenttest->mark_percentage;
+                            }else{
+                                array_push($overalltest, 0);
+                            }
+            
+                        }else{
+                            array_push($overalltest, 0);
+                        }
+                    }else{
+                        array_push($overalltest, 0);
+                    }
+
+
+                    // ASSIGNMENT
+                    
+                    foreach($assign[$ky] as $key =>$qz)
+                    {
+                    
+                    $assignanswer[$ky][$keys][$key] = DB::table('tblclassstudentassign')->where('userid', $std->ic)->where('assignid', $qz->assignid)->first();
+
+                    }
+
+                    $sumassign[$ky][$keys] = DB::table('tblclassstudentassign')->where('userid', $std->ic)->whereIn('assignid', $assignid)->sum('final_mark');
+
+                    $percentassign = DB::table('tblclassmarks')
+                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
+                                ['subjek.sub_id', $std->course_id],
+                                ['assessment', 'assign']
+                                ])->first();
+
+                    if($assigns = DB::table('tblclassassign')
+                    ->join('tblclassassign_group', 'tblclassassign.id', 'tblclassassign_group.assignid')
+                    ->where([
+                        ['tblclassassign.classid', request()->id],
+                        ['tblclassassign.sessionid', Session::get('SessionID')],
+                        ['tblclassassign_group.groupname', $grp->group_name]
+                    ])->exists()){
+                        if($percentassign != null)
+                        {
+                            if(DB::table('tblclassassign')
+                            ->where([
+                                ['classid', request()->id],
+                                ['sessionid', Session::get('SessionID')]
+                            ])->exists()){
+                                //dd($totalassign);
+                                $overallassign[$ky][$keys] = $sumassign[$ky][$keys] / $totalassign * $percentassign->mark_percentage;
+                            }else{
+                                array_push($overallassign, 0);
+                            }
+            
+                        }else{
+                            array_push($overallassign, 0);
+                        }
+                    }else{
+                        array_push($overallassign, 0);
+                    }
+            
+                }
         }
-        
-        //dd($totalquiz);
 
-        return view('lecturer.courseassessment.studentreport', compact('students',
-                                                                       'quiz', 'quizanswer',
-                                                                       'test', 'testanswer',
-                                                                       'assign', 'assignanswer', 
-                                                                       'midterm', 'midtermanswer',
-                                                                       'final', 'finalanswer',
-                                                                       'paperwork', 'paperworkanswer',
-                                                                       'practical', 'practicalanswer', 
-                                                                       'other', 'otheranswer',
-                                                                       'overallquiz', 'overalltest', 'overallmidterm', 'overallfinal', 'overallassign', 'overallpaperwork', 'overallpractical', 'overallother'));
+        //dd($overallquiz);
+
+        return view('lecturer.courseassessment.studentreport', compact('groups', 'students',
+                                                                       'quiz', 'quizanswer','overallquiz',
+                                                                       'test', 'testanswer','overalltest',
+                                                                       'assign', 'assignanswer','overallassign'));
 
     }
 

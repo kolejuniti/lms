@@ -1212,6 +1212,8 @@ class TestController extends Controller
     {
         $chapter = [];
 
+        $marks = [];
+        
         Session::put('CourseIDS', request()->id);
 
         if(Session::get('SessionIDS') == null)
