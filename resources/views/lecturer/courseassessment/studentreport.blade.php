@@ -40,29 +40,29 @@
     <section class="content">
         <div class="row">
           <div class="col-12">
+            @foreach ($groups as $ky => $grp)
             <div class="box">
               <div class="card-header mb-4">
-                <h3 class="card-title">Student List</h3>
+                <h3 class="card-title">Student List : Group {{ $grp->group_name }}</h3>
               </div>
               <div class="box-body">
                 <div class="table-responsive">
                   <div id="complex_header_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap4 no-footer">
                     <div class="row">
-                      <div class="col-md-2 mb-4">
-                        <div class="form-group">
-                          <label class="form-label" for="group">Group</label>
-                          <select class="form-select" id="group" name="group" required>
-                              <option value="" selected disabled>-</option>
-                       
-                          </select>
-                          <span class="text-danger">@error('folder')
-                            {{ $message }}
-                          @enderror</span>
-                        </div>
-                      </div>
                       <div id = "status">
                         <div class="col-sm-12">
-                          <table id="myTable" class="table table-striped projects display dataTable no-footer" style="width: 100%;" role="grid" aria-describedby="complex_header_info">
+                          <table id="myTable{{$grp->group_name}}" class="table table-striped projects display dataTable no-footer" style="width: 100%;" role="grid" aria-describedby="complex_header_info">
+                            <script>
+                              $(document).ready( function () {
+                                  $('#myTable{{$grp->group_name}}').DataTable({
+                                    dom: 'lBfrtip', // if you remove this line you will see the show entries dropdown
+                                    
+                                    buttons: [
+                                        'copy', 'csv', 'excel'
+                                    ],
+                                  });
+                              } );
+                            </script>
                             <thead>
                               <tr>
                                 <th >
@@ -78,9 +78,9 @@
                                   Group Name
                                 </th>
                                 <!--<th>
-                                  Action
+                                  QUIZ
                                 </th>-->
-                                @foreach ($quiz as $key=>$qz)
+                                @foreach ($quiz[$ky] as $key=>$qz)
                                 <th>
                                   QUIZ {{ $key+1 }} : {{ $qz->title }} ({{ $qz->total_mark }})
                                 </th>
@@ -88,66 +88,32 @@
                                 <th >
                                   Overall Quiz (%)
                                 </th>
-                                @foreach ($test as $key=>$ts)
+                                <!--<th>
+                                  TEST
+                                </th>-->
+                                @foreach ($test[$ky] as $key=>$qz)
                                 <th>
-                                  TEST {{ $key+1 }} : {{ $ts->title }} ({{ $ts->total_mark }})
+                                  TEST {{ $key+1 }} : {{ $qz->title }} ({{ $qz->total_mark }})
                                 </th>
                                 @endforeach
                                 <th >
-                                  Overall TEST (%)
+                                  Overall Test (%)
                                 </th>
-                                @foreach ($assign as $key=>$as)
+                                <!--<th>
+                                  ASSIGNMENT
+                                </th>-->
+                                @foreach ($assign[$ky] as $key=>$qz)
                                 <th>
-                                  Assignment {{ $key+1 }} : {{ $as->title }} ({{ $as->total_mark }})
+                                  ASSIGNMENT {{ $key+1 }} : {{ $qz->title }} ({{ $qz->total_mark }})
                                 </th>
                                 @endforeach
                                 <th >
                                   Overall Assignment (%)
                                 </th>
-                                @foreach ($midterm as $key=>$qz)
-                                <th>
-                                  MIDTERM {{ $key+1 }} : {{ $qz->title }} ({{ $qz->total_mark }})
-                                </th>
-                                @endforeach
-                                <th >
-                                  Overall Midterm (%)
-                                </th>
-                                @foreach ($final as $key=>$qz)
-                                <th>
-                                  FINAL {{ $key+1 }} : {{ $qz->title }} ({{ $qz->total_mark }})
-                                </th>
-                                @endforeach
-                                <th >
-                                  Overall Final (%)
-                                </th>
-                                @foreach ($paperwork as $key=>$pw)
-                                <th>
-                                  PAPERWORK {{ $key+1 }} : {{ $pw->title }} ({{ $pw->total_mark }})
-                                </th>
-                                @endforeach
-                                <th >
-                                  Overall PAPERWORK (%)
-                                </th>
-                                @foreach ($practical as $key=>$qz)
-                                <th>
-                                  PRACTICAL {{ $key+1 }} : {{ $qz->title }} ({{ $qz->total_mark }})
-                                </th>
-                                @endforeach
-                                <th >
-                                  Overall PRACTICAL (%)
-                                </th>
-                                @foreach ($other as $key=>$qz)
-                                <th>
-                                  OTHER {{ $key+1 }} : {{ $qz->title }} ({{ $qz->total_mark }})
-                                </th>
-                                @endforeach
-                                <th >
-                                  Overall OTHER (%)
-                                </th>
                               </tr>
                             </thead>
                             <tbody>
-                              @foreach ($students as $key => $std)
+                              @foreach ($students[$ky] as $key => $std)
                               <tr>
                                 <td>
                                     {{ $key+1 }}
@@ -161,17 +127,11 @@
                                 <td>
                                   <span >{{ $std->group_name }}</span>
                                 </td>
-                                <!--<td>
-                                  <a class="btn btn-success btn-sm mr-2" href="/lecturer/report/{{ request()->id }}/{{ $std->ic }}">
-                                      <i class="ti-user">
-                                      </i>
-                                      Report
-                                  </a>
-                                </td>--> 
                             
+                                <!-- QUIZ -->
 
-                                @if (isset($quizanswer[$key]))
-                                  @foreach ($quizanswer[$key] as $keys => $qzanswer)
+                                @if (isset($quizanswer[$ky][$key]))
+                                  @foreach ($quizanswer[$ky][$key] as $keys => $qzanswer)
                                     @if ($qzanswer != null)
                                     <td>
                                       <span >{{ $qzanswer->final_mark }}</span>
@@ -183,21 +143,34 @@
                                     @endif
                                   @endforeach
                                 @else
-                                  @foreach ($quiz as $qz)
+                                  @foreach ($quiz[$ky] as $qz)
                                   <td>
                                     <span >-</span>
                                   </td> 
                                   @endforeach
                                 @endif
                                 
-                                @foreach ((array) $overallquiz[$key] as $qz)
+                                @if ($groupcheck = DB::table('tblclassquiz')->join('tblclassquiz_group', 'tblclassquiz.id', 'tblclassquiz_group.quizid')
+                                ->where([
+                                  ['tblclassquiz.classid', request()->id],
+                                  ['tblclassquiz.sessionid', Session::get('SessionID')],
+                                  ['tblclassquiz_group.groupname', $grp->group_name]
+                                ])->exists())
+                                  @foreach ((array) $overallquiz[$ky][$key] as $qz)
+                                  <td>
+                                    <span >{{ $qz }}</span>
+                                  </td> 
+                                  @endforeach 
+                                @else
                                 <td>
-                                  <span >{{ round($qz) }}</span>
+                                  <span >0</span>
                                 </td> 
-                                @endforeach
+                                @endif
 
-                                @if (isset($testanswer[$key]))
-                                  @foreach ($testanswer[$key] as $keys => $tsanswer)
+                                <!-- TEST -->
+
+                                @if (isset($testanswer[$ky][$key]))
+                                  @foreach ($testanswer[$ky][$key] as $keys => $tsanswer)
                                     @if ($tsanswer != null)
                                     <td>
                                       <span >{{ $tsanswer->final_mark }}</span>
@@ -209,176 +182,69 @@
                                     @endif
                                   @endforeach
                                 @else
-                                  @foreach ($test as $ts)
+                                  @foreach ($test[$ky] as $ts)
                                   <td>
                                     <span >-</span>
                                   </td> 
                                   @endforeach
+                                @endif
+                                
+                                @if ($groupcheck = DB::table('tblclasstest')->join('tblclasstest_group', 'tblclasstest.id', 'tblclasstest_group.testid')
+                                ->where([
+                                  ['tblclasstest.classid', request()->id],
+                                  ['tblclasstest.sessionid', Session::get('SessionID')],
+                                  ['tblclasstest_group.groupname', $grp->group_name]
+                                ])->exists())
+                                  @foreach ((array) $overalltest[$ky][$key] as $ts)
+                                  <td>
+                                    <span >{{ $ts }}</span>
+                                  </td> 
+                                  @endforeach 
+                                @else
+                                <td>
+                                  <span >0</span>
+                                </td> 
+                                @endif
+
+                                <!-- ASSIGNMENT -->
+
+                                @if (isset($assignanswer[$ky][$key]))
+                                  @foreach ($assignanswer[$ky][$key] as $keys => $aganswer)
+                                    @if ($aganswer != null)
+                                    <td>
+                                      <span >{{ $aganswer->final_mark }}</span>
+                                    </td>
+                                    @elseif($aganswer == null) 
+                                    <td>
+                                      <span >-</span>
+                                    </td>
+                                    @endif
+                                  @endforeach
+                                @else
+                                  @foreach ($assign[$ky] as $ag)
+                                  <td>
+                                    <span >-</span>
+                                  </td> 
+                                  @endforeach
+                                @endif
+                                
+                                @if ($groupcheck = DB::table('tblclassassign')->join('tblclassassign_group', 'tblclassassign.id', 'tblclassassign_group.assignid')
+                                ->where([
+                                  ['tblclassassign.classid', request()->id],
+                                  ['tblclassassign.sessionid', Session::get('SessionID')],
+                                  ['tblclassassign_group.groupname', $grp->group_name]
+                                ])->exists())
+                                  @foreach ((array) $overallassign[$ky][$key] as $ag)
+                                  <td>
+                                    <span >{{ $ag }}</span>
+                                  </td> 
+                                  @endforeach 
+                                @else
+                                <td>
+                                  <span >0</span>
+                                </td> 
                                 @endif
                               
-                                @foreach ((array) $overalltest[$key] as $ts)
-                                <td>
-                                  <span >{{ round($ts) }}</span>
-                                </td> 
-                                @endforeach
-
-                                @if (isset($assignanswer[$key]))
-                                  @foreach ($assignanswer[$key] as $keys => $asanswer)
-                                    @if ($asanswer != null)
-                                    <td>
-                                      <span >{{ $asanswer->final_mark }}</span>
-                                    </td>
-                                    @elseif($asanswer == null) 
-                                    <td>
-                                      <span >-</span>
-                                    </td>
-                                    @endif
-                                  @endforeach
-                                @else
-                                  @foreach ($assign as $as)
-                                  <td>
-                                    <span >-</span>
-                                  </td> 
-                                  @endforeach
-                                @endif
-                                
-                                @foreach ((array) $overallassign[$key] as $as)
-                                <td>
-                                  <span >{{ round($as) }}</span>
-                                </td> 
-                                @endforeach
-
-                                @if (isset($midtermanswer[$key]))
-                                  @foreach ($midtermanswer[$key] as $keys => $mdanswer)
-                                    @if ($mdanswer != null)
-                                    <td>
-                                      <span >{{ $mdanswer->final_mark }}</span>
-                                    </td>
-                                    @elseif($mdanswer == null) 
-                                    <td>
-                                      <span >-</span>
-                                    </td>
-                                    @endif
-                                  @endforeach
-                                @else
-                                  @foreach ($midterm as $md)
-                                  <td>
-                                    <span >-</span>
-                                  </td> 
-                                  @endforeach
-                                @endif
-
-                                @foreach ((array) $overallmidterm[$key] as $md)
-                                <td>
-                                  <span >{{ round($md) }}</span>
-                                </td> 
-                                @endforeach
-
-                                @if (isset($finalanswer[$key]))
-                                  @foreach ($finalanswer[$key] as $keys => $fnanswer)
-                                    @if ($fnanswer != null)
-                                    <td>
-                                      <span >{{ $fnanswer->final_mark }}</span>
-                                    </td>
-                                    @elseif($fnanswer == null) 
-                                    <td>
-                                      <span >-</span>
-                                    </td>
-                                    @endif
-                                  @endforeach
-                                @else
-                                  @foreach ($final as $fn)
-                                  <td>
-                                    <span >-</span>
-                                  </td> 
-                                  @endforeach
-                                @endif
-
-                                @foreach ((array) $overallfinal[$key] as $fn)
-                                <td>
-                                  <span >{{ round($fn) }}</span>
-                                </td> 
-                                @endforeach
-
-                                @if (isset($paperworkanswer[$key]))
-                                  @foreach ($paperworkanswer[$key] as $keys => $pwanswer)
-                                    @if ($pwanswer != null)
-                                    <td>
-                                      <span >{{ $pwanswer->final_mark }}</span>
-                                    </td>
-                                    @elseif($pwanswer == null) 
-                                    <td>
-                                      <span >-</span>
-                                    </td>
-                                    @endif
-                                  @endforeach
-                                @else
-                                  @foreach ($paperwork as $pw)
-                                  <td>
-                                    <span >-</span>
-                                  </td> 
-                                  @endforeach
-                                @endif
-
-                                @foreach ((array) $overallpaperwork[$key] as $pw)
-                                <td>
-                                  <span >{{ round($pw) }}</span>
-                                </td> 
-                                @endforeach
-
-                                @if (isset($practicalanswer[$key]))
-                                  @foreach ($practicalanswer[$key] as $keys => $pranswer)
-                                    @if ($pranswer != null)
-                                    <td>
-                                      <span >{{ $pranswer->final_mark }}</span>
-                                    </td>
-                                    @elseif($pranswer == null) 
-                                    <td>
-                                      <span >-</span>
-                                    </td>
-                                    @endif
-                                  @endforeach
-                                @else
-                                  @foreach ($practical as $pr)
-                                  <td>
-                                    <span >-</span>
-                                  </td> 
-                                  @endforeach
-                                @endif
-
-                                @foreach ((array) $overallpractical[$key] as $pr)
-                                <td>
-                                  <span >{{ round($pr) }}</span>
-                                </td> 
-                                @endforeach
-
-                                @if (isset($otheranswer[$key]))
-                                  @foreach ($otheranswer[$key] as $keys => $otanswer)
-                                    @if ($otanswer != null)
-                                    <td>
-                                      <span >{{ $otanswer->final_mark }}</span>
-                                    </td>
-                                    @elseif($otanswer == null) 
-                                    <td>
-                                      <span >-</span>
-                                    </td>
-                                    @endif
-                                  @endforeach
-                                @else
-                                  @foreach ($other as $ot)
-                                  <td>
-                                    <span >-</span>
-                                  </td> 
-                                  @endforeach
-                                @endif
-
-                                @foreach ((array) $overallother[$key] as $ot)
-                                <td>
-                                  <span >{{ round($ot) }}</span>
-                                </td> 
-                                @endforeach
-
-                                
                               </tr> 
                               @endforeach
                             </tbody>
@@ -390,6 +256,7 @@
                 </div>
               </div>
             </div>
+            @endforeach         
           </div>
         </div>
       </section>
@@ -403,16 +270,6 @@
 <script type="text/javascript">
     var selected_group = "";
     var selected_quiz = "{{ request()->quiz }}";
-
-    $(document).ready( function () {
-        $('#myTable').DataTable({
-          dom: 'lBfrtip', // if you remove this line you will see the show entries dropdown
-          
-          buttons: [
-              'copy', 'csv', 'excel'
-          ],
-        });
-    } );
     
 
     $(document).on('change', '#group', function(e) {

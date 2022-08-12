@@ -153,7 +153,7 @@ input.collected-marks + label{
 
 var test = {!! json_encode($data['test']) !!};
 var selected_test = {{ json_encode($data['testid']) }};
-var selected_participant = {{ json_encode($data['testuserid']) }};
+var selected_participant = {!! json_encode($data['testuserid']) !!};
 var test_status = {{ json_encode($data['studentteststatus']) }};
 var index = "{{ $data['questionindex'] }}";
 

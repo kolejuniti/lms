@@ -153,7 +153,7 @@ input.collected-marks + label{
 
 var midterm = {!! json_encode($data['midterm']) !!};
 var selected_midterm = {{ json_encode($data['midtermid']) }};
-var selected_participant = {{ json_encode($data['midtermuserid']) }};
+var selected_participant = {!! json_encode($data['midtermuserid']) !!};
 var midterm_status = {{ json_encode($data['studentmidtermstatus']) }};
 var index = "{{ $data['questionindex'] }}";
 

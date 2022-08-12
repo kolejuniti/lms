@@ -162,7 +162,6 @@ input.collected-marks + label{
 
 var assign = {!! json_encode($data['assign']) !!};
 var selected_assign = {{ json_encode($data['assignid']) }};
-var selected_participant = {{ json_encode($data['assignuserid']) }};
 var assign_status = {{ json_encode($data['studentassignstatus']) }};
 
 $(document).ready(function(){

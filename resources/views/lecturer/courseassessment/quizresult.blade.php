@@ -153,7 +153,7 @@ input.collected-marks + label{
 
 var quiz = {!! json_encode($data['quiz']) !!};
 var selected_quiz = {{ json_encode($data['quizid']) }};
-var selected_participant = {{ json_encode($data['quizuserid']) }};
+var selected_participant = {!! json_encode($data['quizuserid']) !!};
 var quiz_status = {{ json_encode($data['studentquizstatus']) }};
 var index = "{{ $data['questionindex'] }}";
 

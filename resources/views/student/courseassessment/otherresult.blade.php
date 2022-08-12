@@ -162,7 +162,6 @@ input.collected-marks + label{
 
 var other = {!! json_encode($data['other']) !!};
 var selected_other = {{ json_encode($data['otherid']) }};
-var selected_participant = {{ json_encode($data['otheruserid']) }};
 var other_status = {{ json_encode($data['studentotherstatus']) }};
 
 $(document).ready(function(){

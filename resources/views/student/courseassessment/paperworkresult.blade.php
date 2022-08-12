@@ -162,7 +162,6 @@ input.collected-marks + label{
 
 var paperwork = {!! json_encode($data['paperwork']) !!};
 var selected_paperwork = {{ json_encode($data['paperworkid']) }};
-var selected_participant = {{ json_encode($data['paperworkuserid']) }};
 var paperwork_status = {{ json_encode($data['studentpaperworkstatus']) }};
 
 $(document).ready(function(){

@@ -162,7 +162,6 @@ input.collected-marks + label{
 
 var practical = {!! json_encode($data['practical']) !!};
 var selected_practical = {{ json_encode($data['practicalid']) }};
-var selected_participant = {{ json_encode($data['practicaluserid']) }};
 var practical_status = {{ json_encode($data['studentpracticalstatus']) }};
 
 $(document).ready(function(){

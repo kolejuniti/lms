@@ -142,6 +142,13 @@
 </div>
 <!-- /.content-wrapper -->
 <script src="{{ asset('assets/src/js/pages/data-table.js') }}"></script>
+<script type="text/javascript">
+  var msg = '{{Session::get('alert')}}';
+  var exist = '{{Session::has('alert')}}';
+  if(exist){
+    alert(msg);
+  }
+</script>
 
 <script type="text/javascript">
 $(document).ready( function () {

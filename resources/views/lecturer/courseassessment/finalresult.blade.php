@@ -153,7 +153,7 @@ input.collected-marks + label{
 
 var final = {!! json_encode($data['final']) !!};
 var selected_final = {{ json_encode($data['finalid']) }};
-var selected_participant = {{ json_encode($data['finaluserid']) }};
+var selected_participant = {!! json_encode($data['finaluserid']) !!};
 var final_status = {{ json_encode($data['studentfinalstatus']) }};
 var index = "{{ $data['questionindex'] }}";
 
