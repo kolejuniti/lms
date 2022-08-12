@@ -285,6 +285,7 @@ Route::post('/lecturer/forum/{id}/topic/insert', [App\Http\Controllers\ForumCont
 
 Route::get('/student', [App\Http\Controllers\StudentController::class, 'index'])->name('student');
 Route::get('/student/setting', [App\Http\Controllers\StudentController::class, 'setting'])->name('student.setting');
+Route::post('/student/update', [App\Http\Controllers\StudentController::class, 'updateSetting']);
 Route::post('/student/course/filter', [App\Http\Controllers\StudentController::class, 'getCourseList']);
 Route::get('/student/{id}', [App\Http\Controllers\StudentController::class, 'courseSummary'])->name('student.summary');
 Route::get('/student/content/{id}', [App\Http\Controllers\StudentController::class, 'courseContent'])->name('student.content');
@@ -312,12 +313,9 @@ Route::get('/student/quiz/{quizid}/{userid}/result', [App\Http\Controllers\QuizC
 Route::post('/student/quiz/startquiz', [App\Http\Controllers\QuizController::class, 'startquiz']);
 Route::post('/student/quiz/savequiz', [App\Http\Controllers\QuizController::class, 'savequiz']);
 Route::post('/student/quiz/submitquiz', [App\Http\Controllers\QuizController::class, 'submitquiz']);
+Route::post('lecturer/quiz/deletequiz', [App\Http\Controllers\QuizController::class, 'deletequiz']);
 
 Route::get('/student/quiz2/{id}', [App\Http\Controllers\QuizController::class, 'studentquiz2list'])->name('student.quiz2');
-Route::get('/student/quiz2/{id}/{quiz2}', [App\Http\Controllers\QuizController::class, 'studentquiz2status'])->name('student.quiz2.status');
-Route::get('/student/quiz2/{id}/{quiz2}/view', [App\Http\Controllers\QuizController::class, 'quiz2view']);
-Route::get('/student/quiz2/{quizid}/{userid}/result', [App\Http\Controllers\QuizController::class, 'quiz2resultstd']);
-Route::post('/student/quiz2/submitquiz2', [App\Http\Controllers\QuizController::class, 'submitquiz2']);
 
 Route::get('/student/test/{id}', [App\Http\Controllers\TestController::class, 'studenttestlist'])->name('student.test');
 Route::get('/student/test/{id}/{test}', [App\Http\Controllers\TestController::class, 'studentteststatus'])->name('student.test.status');
@@ -326,6 +324,9 @@ Route::get('/student/test/{testid}/{userid}/result', [App\Http\Controllers\TestC
 Route::post('/student/test/starttest', [App\Http\Controllers\TestController::class, 'starttest']);
 Route::post('/student/test/savetest', [App\Http\Controllers\TestController::class, 'savetest']);
 Route::post('/student/test/submittest', [App\Http\Controllers\TestController::class, 'submittest']);
+Route::post('lecturer/test/deletetest', [App\Http\Controllers\TestController::class, 'deletetest']);
+
+Route::get('/student/test2/{id}', [App\Http\Controllers\TestController::class, 'studenttest2list'])->name('student.test2');
 
 
 Route::get('/student/assign/{id}', [App\Http\Controllers\AssignmentController::class, 'studentassignlist'])->name('student.assign');
@@ -333,6 +334,9 @@ Route::get('/student/assign/{id}/{assign}', [App\Http\Controllers\AssignmentCont
 Route::get('/student/assign/{id}/{assign}/view', [App\Http\Controllers\AssignmentController::class, 'assignview']);
 Route::get('/student/assign/{assignid}/{userid}/result', [App\Http\Controllers\AssignmentController::class, 'assignresultstd']);
 Route::post('/student/assign/submitassign', [App\Http\Controllers\AssignmentController::class, 'submitassign']);
+Route::post('lecturer/assign/deleteassign', [App\Http\Controllers\AssignmentController::class, 'deleteassign']);
+
+Route::get('/student/assign2/{id}', [App\Http\Controllers\AssignmentController::class, 'studentassign2list'])->name('student.assign2');
 
 Route::get('/student/paperwork/{id}', [App\Http\Controllers\PaperworkController::class, 'studentpaperworklist'])->name('student.paperwork');
 Route::get('/student/paperwork/{id}/{paperwork}', [App\Http\Controllers\PaperworkController::class, 'studentpaperworkstatus'])->name('student.paperwork.status');
