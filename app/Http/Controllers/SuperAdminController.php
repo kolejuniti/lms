@@ -37,19 +37,30 @@ class SuperAdminController extends Controller
             //this is to preserve number '0' infront of excel data column !
             //dd(str_pad($line['no_tel1'],11,"0", STR_PAD_LEFT));
 
-            return DB::table('students')->upsert([
+            return DB::table('student_subjek')->insert([
                 //'id'  => $line['id'],
-                'name'  => $line['name'],
-                'ic'  => $line['ic'],
-                'no_matric'  => $line['no_matric'],
-                'email'  => $line['email'],
-                'intake'  => $line['intake'],
-                'batch'  => $line['batch'],
-                'session'  => $line['session'],
-                'semester'  => $line['semester'],
-                'program'  => $line['program'],
-                'password'  => Hash::make('12345678'),
-                'status'  => $line['status'],
+
+                //upload_student
+                //'name'  => $line['name'],
+                //'ic'  => $line['ic'],
+                //'no_matric'  => $line['no_matric'],
+                //'email'  => $line['email'],
+                //'intake'  => $line['intake'],
+                //'batch'  => $line['batch'],
+                //'session'  => $line['session'],
+                //'semester'  => $line['semester'],
+                //'program'  => $line['program'],
+                //'password'  => Hash::make('12345678'),
+                //'status'  => $line['status'],
+
+                //upload_student_subjek
+                'student_ic'  => $line['student_ic'],
+                'courseid'  => $line['courseid'],
+                'sessionid'  => $line['sessionid'],
+                'semesterid'  => $line['semesterid'],
+                'group_id'  => $line['group_id'],
+                'group_name'  => $line['group_name'],
+
                 //'address1' => $line['alamat_1'],
                 //'address2' => $line['alamat_2'],
                 //'address3' => $line['alamat_3'],
@@ -62,7 +73,7 @@ class SuperAdminController extends Controller
                 //'no_tel2'  => str_pad($line['no_tel2'],11,"0", STR_PAD_LEFT),
                 //'password' => Hash::make('12345678'),
                 //'no_telhome' => str_pad($line['no_tel_rumah'],11,"0", STR_PAD_LEFT),
-            ],'no_matric');
+            ]);
             
         //}
     });
