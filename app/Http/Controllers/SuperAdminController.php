@@ -21,7 +21,7 @@ class SuperAdminController extends Controller
     function import(Request $request)
     {
      $this->validate($request, [
-      'file'  => 'required|mimes:xls,xlsx'
+      'file'  => 'required|mimes:xls,xlsx,csv'
      ]);
 
      $path = $request->file('file')->getRealPath();
@@ -37,9 +37,19 @@ class SuperAdminController extends Controller
             //this is to preserve number '0' infront of excel data column !
             //dd(str_pad($line['no_tel1'],11,"0", STR_PAD_LEFT));
 
-            return DB::table('tblextra_title')->insert([
+            return DB::table('students')->upsert([
                 //'id'  => $line['id'],
                 'name'  => $line['nama'],
+                'ic'  => $line['ic'],
+                'no_matric'  => $line['no_matric'],
+                'email'  => $line['email'],
+                'intake'  => $line['intake'],
+                'batch'  => $line['batch'],
+                'session'  => $line['session'],
+                'semester'  => $line['semester'],
+                'program'  => $line['program'],
+                'password'  => Hash::make('12345678'),
+                'status'  => $line['status'],
                 //'address1' => $line['alamat_1'],
                 //'address2' => $line['alamat_2'],
                 //'address3' => $line['alamat_3'],
@@ -52,7 +62,7 @@ class SuperAdminController extends Controller
                 //'no_tel2'  => str_pad($line['no_tel2'],11,"0", STR_PAD_LEFT),
                 //'password' => Hash::make('12345678'),
                 //'no_telhome' => str_pad($line['no_tel_rumah'],11,"0", STR_PAD_LEFT),
-            ]);
+            ],'no_matric');
             
         //}
     });
