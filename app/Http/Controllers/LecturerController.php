@@ -20,6 +20,8 @@ class LecturerController extends Controller
 {
     public function index(Request $request)
     {
+        //forgot current session
+        Session::forget(['User','CourseID','SessionID']);
         Session::put('User', Auth::user());
         
         //this function will get authenticated user and use relational models to join table
