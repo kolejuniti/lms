@@ -37,7 +37,7 @@ class SuperAdminController extends Controller
             //this is to preserve number '0' infront of excel data column !
             //dd(str_pad($line['no_tel1'],11,"0", STR_PAD_LEFT));
 
-            return DB::table('student_subjek')->insert([
+            return DB::table('user_subjek')->insert([
                 //'id'  => $line['id'],
 
                 //upload_student
@@ -54,12 +54,19 @@ class SuperAdminController extends Controller
                 //'status'  => $line['status'],
 
                 //upload_student_subjek
-                'student_ic'  => $line['student_ic'],
-                'courseid'  => $line['courseid'],
-                'sessionid'  => $line['sessionid'],
-                'semesterid'  => $line['semesterid'],
-                'group_id'  => $line['group_id'],
-                'group_name'  => $line['group_name'],
+                //'student_ic'  => $line['student_ic'],
+                //'courseid'  => $line['courseid'],
+                //'sessionid'  => $line['sessionid'],
+                //'semesterid'  => $line['semesterid'],
+                //'group_id'  => $line['group_id'],
+                //'group_name'  => $line['group_name'],
+
+                //upload_user_subjek
+                'id'  => $line['id'],
+                'user_ic'  => $line['user_ic'],
+                'course_id'  => $line['course_id'],
+                'session_id'  => $line['session_id'],
+                'addby'  => $line['addby'],
 
                 //'address1' => $line['alamat_1'],
                 //'address2' => $line['alamat_2'],
