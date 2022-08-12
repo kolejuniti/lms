@@ -28,7 +28,7 @@ class LecturerController extends Controller
             ->join('sessions', 'user_subjek.session_id','sessions.SessionID')
             ->where('sessions.Status', 'ACTIVE')
             ->select('subjek.*','user_subjek.course_id','sessions.SessionName','sessions.SessionID')
-            ->groupBy('user_subjek.course_id')
+            //->groupBy('user_subjek.course_id')
             ->get();
 
             //dd($data);
