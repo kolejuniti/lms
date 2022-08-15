@@ -329,14 +329,14 @@
 							<li><a href="/lecturer/class/onlineclass/list" class="">List Class</a></li>
 							</ul>
 						</li>
-						<li class="treeview">
+						<!--<li class="treeview">
 							<a href="#"><span>Announcement</span>
 							</a>
 							<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
 							<li><a href="/lecturer/class/announcement" class="">Create Announcement</a></li>
 						<li><a href="/lecturer/class/announcement/list" class="">List Announcement</a></li>
 					</ul>
-				</li>
+				</li>-->
 					</ul>
 				</li>
 				<li>
