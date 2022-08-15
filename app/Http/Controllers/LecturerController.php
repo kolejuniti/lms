@@ -1434,6 +1434,8 @@ class LecturerController extends Controller
 
         $test = array('faizulsoknan@gmail.com');
 
+        //$test = array($students);
+
         //dd($test);
 
         if($request->chapter != null)
