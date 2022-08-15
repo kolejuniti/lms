@@ -28,7 +28,7 @@
 								{{-- <h2 class="text-primary fw-600">Let's Get Started</h2> --}}
 								<div class="container mb-5">
 									<img src="{{ asset('assets/images/logo/Kolej-UNITI.png')}}" height="60em" width="auto" >
-									<img src="{{ asset('assets/images/logo-dark-text.png')}}" height="30em" width="auto"  class="">
+									<img src="{{ asset('assets/images/logo_ucms.png')}}" height="30em" width="auto"  class="">
 								</div>
 								<p class="mb-0 text-fade p-3 pb-0 ">Sign in to continue.</p>							
 							</div>
