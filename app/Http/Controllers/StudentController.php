@@ -67,6 +67,7 @@ class StudentController extends Controller
             ]);
         return redirect()->back()->with('alert', 'You have successfully updated your setting!');
         }else{
+            dd($data['email']);
             Auth::guard('student')->user()->update([
                 'email' => $data['email']
             ]);
