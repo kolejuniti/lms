@@ -48,7 +48,7 @@
                         <span class="text-danger">@error('pass')
                           {{ $message }}
                         @enderror</span>
-                        <span class="text-danger">@error('conpass')
+                        <span class="text-danger">@error('confirm-password')
                           {{ $message }}
                         @enderror</span>
                       </div>
@@ -70,7 +70,7 @@
                       <div class="col-md-6">
                         <div class="form-group">
                           <label class="form-label" for="ic">Confirm Password</label>
-                          <input type="password" class="form-control" id="conpass" name="conpass" placeholder="Enter Confirm Password">
+                          <input type="password" class="form-control" id="confirm-password" name="confirm-password" placeholder="Enter Confirm Password">
                         </div>
                       </div>
 										</div>
