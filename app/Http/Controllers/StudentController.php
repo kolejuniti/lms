@@ -49,12 +49,17 @@ class StudentController extends Controller
 
     public function updateSetting(Request $request)
     {
+        Validator::extend('without_spaces', function($attr, $value){
+            return preg_match('/^\S*$/u', $value);
+        });
+
         $data = $request->validate([
             'email' => ['email', 'required'],
-            'pass' => ['nullable','max:10','regex:/^\S*$/u'],
-            'conpass' => ['max:10','same:pass','regex:/^\S*$/u']
+            'pass' => ['nullable','max:10','without_spaces'],
+            'conpass' => ['max:10','same:pass','without_spaces']
         ],[
-            'conpass.same' => 'The Confirm Password and Password must match!'
+            'conpass.same' => 'The Confirm Password and Password must match!',
+            'username.without_spaces' => 'Whitespace not allowed.'
         ]);
 
         //dd($data['pass']);
