@@ -53,9 +53,9 @@ class StudentController extends Controller
         $data = $request->validate([
             'email' => ['email', 'required'],
             'pass' => ['nullable','max:10','regex:/^\S*$/u'],
-            'conpass' => ['max:10','same:pass','regex:/^\S*$/u']
+            'confirm-password' => ['max:10','same:pass','regex:/^\S*$/u']
         ],[
-            'conpass.same' => 'The Confirm Password and Password must match!',
+            'confirm-password.same' => 'The Confirm Password and Password must match!',
             'pass.regex' => 'The Password cannot have white spaces!'
         ]);
 
