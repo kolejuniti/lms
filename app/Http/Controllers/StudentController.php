@@ -65,13 +65,13 @@ class StudentController extends Controller
                 'email' => $data['email'],
                 'password' =>  Hash::make($data['pass'])
             ]);
+        return redirect()->back()->with('alert', 'You have successfully updated your setting!');
         }else{
             Auth::guard('student')->user()->update([
                 'email' => $data['email']
             ]);
+        return redirect()->back()->with('alert', 'You have successfully updated your email!');
         }
-
-        return redirect()->back()->with('alert', 'You have successfully updated your setting!');
     }
 
     public function getCourseList(Request $request)
