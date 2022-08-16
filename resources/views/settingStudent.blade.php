@@ -45,6 +45,12 @@
                         <span class="text-danger">@error('email')
                           {{ $message }}
                         @enderror</span>
+                        <span class="text-danger">@error('pass')
+                          {{ $message }}
+                        @enderror</span>
+                        <span class="text-danger">@error('conpass')
+                          {{ $message }}
+                        @enderror</span>
                       </div>
                     </div>
                     <!--<div class="col-md-6">
@@ -59,12 +65,6 @@
                         <div class="form-group">
                           <label class="form-label" for="ic">New Password</label>
                           <input type="password" class="form-control" id="pass" name="pass" placeholder="Enter Password">
-                          <span class="text-danger">@error('pass')
-                            {{ $message }}
-                          @enderror</span>
-                          <span class="text-danger">@error('conpass')
-                            {{ $message }}
-                          @enderror</span>
                         </div>
                       </div>
                       <div class="col-md-6">
