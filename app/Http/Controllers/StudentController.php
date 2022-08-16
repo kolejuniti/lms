@@ -49,9 +49,6 @@ class StudentController extends Controller
 
     public function updateSetting(Request $request)
     {
-        Validator::extend('without_spaces', function($attr, $value){
-            return preg_match('/^\S*$/u', $value);
-        });
 
         $data = $request->validate([
             'email' => ['email', 'required'],
