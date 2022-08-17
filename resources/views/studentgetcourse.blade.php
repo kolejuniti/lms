@@ -34,6 +34,9 @@
                   <p class="card-text text-gray-600">
                     <strong>Session</strong> {{ ucwords($key->SessionName) }}
                   </p>
+                  <p class="card-text text-gray-600">
+                    <strong>Program</strong> {{ ucwords($key->progname) }}
+                  </p>
                 </div>
               </div>
           </div>
