@@ -73,7 +73,7 @@
         <div class="row">
           @foreach ($data as $key)
           <div class="col-md-4">
-            <div class="card" style="padding:0 !important; height:30em">
+            <div class="card" style="padding:0 !important; height:32em">
               <div class="row g-0 fx-element-overlay g-0 align-items-center">
                 <div class="col-md-12">
                   <div class="fx-card-item">
@@ -105,6 +105,9 @@
                             </p>-->
                             <p class="card-text text-gray-600">
                               <strong>Session</strong> {{ ucwords($key->SessionName) }}
+                            </p>
+                            <p class="card-text text-gray-600">
+                              <strong>Session</strong> {{ ucwords($key->progname) }}
                             </p>
                           </div>
                         </div>
