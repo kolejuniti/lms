@@ -15,7 +15,21 @@
 	<!-- Style-->  
 	<link rel="stylesheet" href="{{ asset('assets/src/css/style.css') }}">
 	<link rel="stylesheet" href="{{ asset('assets/src/css/skin_color.css') }}">
+
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.15.1/moment.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.7.14/js/bootstrap-datetimepicker.min.js"></script>
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.8.2/dist/alpine.min.js" defer></script>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
 </head>
+@php
+	Auth::logout();
+@endphp
 	
 <body class="hold-transition theme-primary bg-img" style="background-image: url({{ asset('assets/images/auth-bg/bg-16.jpg') }})">
 	<div class="container h-p100">
@@ -189,6 +203,14 @@
 	</div>
 
 	<script>
+		var student = "{{ (Session::get('StudInfo') != null) ? Session::get('StudInfo') : '' }}"
+
+		$(document).ready( function () {
+			if(student != '')
+			{
+				location.href = "/student";
+			}
+		} );
 
 		function openCity(evt, cityName) {
 		// Declare all variables
@@ -211,6 +233,8 @@
 		document.getElementById(cityName).hidden = false;
 		evt.currentTarget.className += " active";
 		}
+
+		
 
 	</script>
 

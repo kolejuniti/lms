@@ -37,8 +37,15 @@
         </div>
         <div class="card-body p-0">
           <!-- //asset('storage/coursesummary/'.$course->progcode.'/'.str_replace(" ","_", $course->course_code).'.pdf') -->
+          @if (Storage::disk('linode')->exists('coursesummary/'.$course->progcode.'/'.str_replace(" ","_", $course->course_code).'.pdf'))
           <iframe src="{{ Storage::disk('linode')->url('coursesummary/'.$course->progcode.'/'.str_replace(" ","_", $course->course_code).'.pdf') }}" width="100%" height="1000" style="border:1px solid black;">
           </iframe>
+          @else
+          <div class=" d-flex justify-content-center align-items-center box-header bg-secondary-light" style="height:20em">
+            <h1 class="text-muted ">-- Course Summary not set --</h1>
+          </div>
+          @endif
+          
         </div>
         <!-- /.card-body -->
       </div>

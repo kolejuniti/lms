@@ -29,15 +29,21 @@
         <div class="card-header">
           <h3 class="card-title">Course Summary</h3>
 
-          <div class="card-tools">
+          <!--<div class="card-tools">
             <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
               <i class="fas fa-minus"></i>
             </button>
-          </div>
+          </div>-->
         </div>
         <div class="card-body p-0">
+          @if (Storage::disk('linode')->exists('coursesummary/'.$course->progcode.'/'.str_replace(" ","_", $course->course_code).'.pdf'))
           <iframe src="{{ Storage::disk('linode')->url('coursesummary/'.$course->progcode.'/'.str_replace(" ","_", $course->course_code).'.pdf') }}" width="100%" height="1000" style="border:1px solid black;">
           </iframe>
+          @else
+          <div class=" d-flex justify-content-center align-items-center box-header bg-secondary-light" style="height:20em">
+            <h1 class="text-muted ">-- Course Summary not set --</h1>
+          </div>
+          @endif
         </div>
         <!-- /.card-body -->
       </div>
