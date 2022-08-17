@@ -330,8 +330,10 @@ class LecturerController extends Controller
     {
         $user = Auth::user();
 
+        $subid = DB::table('subjek')->where('id', request()->id)->pluck('sub_id');
+
         $folder = DB::table('lecturer_dir')
-                  ->join('subjek', 'lecturer_dir.CourseID','subjek.id')->where('subjek.id', request()->id)->where('Addby', $user->ic)->get();
+                  ->join('subjek', 'lecturer_dir.CourseID','subjek.id')->where('subjek.sub_id', $subid)->where('Addby', $user->ic)->get();
 
         $course = DB::table('subjek')->where('id', Session::get('CourseID'))->first();
 
