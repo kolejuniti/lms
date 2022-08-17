@@ -60,9 +60,10 @@ return [
             'driver' => 's3',
             'key' => env('LINODE_KEY'),
             'secret' => env('LINODE_SECRET'),
-            'endpoint' => env('LINODE_ENDPOINT'),
             'region' => env('LINODE_REGION'),
             'bucket' => env('LINODE_BUCKET'),
+            'url' => env('LINODE_URL'),
+            'endpoint' => env('LINODE_ENDPOINT'),
             'use_path_style_endpoint' => env('LINODE_USE_PATH_STYLE_ENDPOINT', false),
         ],
 
