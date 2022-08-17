@@ -1432,9 +1432,9 @@ class LecturerController extends Controller
                           ])->pluck('email');               
         }
 
-        $test = array('faizulsoknan@gmail.com');
+        //$test = array('faizulsoknan@gmail.com');
 
-        //$test = array($students);
+        $test = array($students);
 
         //dd($test);
 
