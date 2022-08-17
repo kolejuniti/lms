@@ -52,6 +52,7 @@ class SuperAdminController extends Controller
                 //'no_tel2'  => str_pad($line['no_tel2'],11,"0", STR_PAD_LEFT),
                 //'password' => Hash::make('12345678'),
                 //'no_telhome' => str_pad($line['no_tel_rumah'],11,"0", STR_PAD_LEFT),
+                //student_subjek
                 'student_ic' =>$line['student_ic'],
                 'courseid' =>$line['courseid'],
                 'sessionid' =>$line['sessionid'],

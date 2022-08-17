@@ -77,7 +77,7 @@ class LecturerController extends Controller
             ->select('subjek.*','user_subjek.course_id','sessions.SessionName','sessions.SessionID')
             ->where('user_subjek.session_id','LIKE','%'.$request->session.'%')
             ->where('subjek.course_name','LIKE','%'.$request->search."%")
-            ->groupBy('user_subjek.course_id')
+            //->groupBy('user_subjek.course_id')
             ->get();
 
         }elseif(isset($request->search))
@@ -88,7 +88,7 @@ class LecturerController extends Controller
             ->join('sessions', 'user_subjek.session_id','sessions.SessionID')
             ->select('subjek.*','user_subjek.course_id','sessions.SessionName','sessions.SessionID')
             ->where('subjek.course_name','LIKE','%'.$request->search."%")
-            ->groupBy('user_subjek.course_id')
+            //->groupBy('user_subjek.course_id')
             ->get();
 
         }elseif(isset($request->session))
@@ -98,7 +98,7 @@ class LecturerController extends Controller
             ->join('sessions', 'user_subjek.session_id','sessions.SessionID')
             ->select('subjek.*','user_subjek.course_id','sessions.SessionName','sessions.SessionID')
             ->where('user_subjek.session_id','LIKE','%'.$request->session.'%')
-            ->groupBy('user_subjek.course_id')
+            //->groupBy('user_subjek.course_id')
             ->get();
         }else{
 
@@ -106,7 +106,7 @@ class LecturerController extends Controller
             ->join('subjek', 'user_subjek.course_id','=','subjek.sub_id')
             ->join('sessions', 'user_subjek.session_id','sessions.SessionID')
             ->select('subjek.*','user_subjek.course_id','sessions.SessionName','sessions.SessionID')
-            ->groupBy('user_subjek.course_id')
+            //->groupBy('user_subjek.course_id')
             ->get();
 
         }
