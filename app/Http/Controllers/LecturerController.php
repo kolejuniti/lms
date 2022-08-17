@@ -28,9 +28,10 @@ class LecturerController extends Controller
         //this function will get authenticated user and use relational models to join table
         $data = auth()->user()->subjects()
             ->join('subjek', 'user_subjek.course_id','=','subjek.sub_id')
+            ->join('tblprogramme', 'subjek.prgid', 'tblprogramme.id')
             ->join('sessions', 'user_subjek.session_id','sessions.SessionID')
             ->where('sessions.Status', 'ACTIVE')
-            ->select('subjek.*','user_subjek.course_id','sessions.SessionName','sessions.SessionID')
+            ->select('subjek.*','user_subjek.course_id','sessions.SessionName','sessions.SessionID','tblprogramme.progname')
             ->get();
 
             //dd($data);
@@ -73,8 +74,9 @@ class LecturerController extends Controller
 
         $data = auth()->user()->subjects()
             ->join('subjek', 'user_subjek.course_id','=','subjek.sub_id')
+            ->join('tblprogramme', 'subjek.prgid', 'tblprogramme.id')
             ->join('sessions', 'user_subjek.session_id','sessions.SessionID')
-            ->select('subjek.*','user_subjek.course_id','sessions.SessionName','sessions.SessionID')
+            ->select('subjek.*','user_subjek.course_id','sessions.SessionName','sessions.SessionID','tblprogramme.progname')
             ->where('user_subjek.session_id','LIKE','%'.$request->session.'%')
             ->where('subjek.course_name','LIKE','%'.$request->search."%")
             //->groupBy('user_subjek.course_id')
@@ -85,8 +87,9 @@ class LecturerController extends Controller
 
         $data = auth()->user()->subjects()
             ->join('subjek', 'user_subjek.course_id','=','subjek.sub_id')
+            ->join('tblprogramme', 'subjek.prgid', 'tblprogramme.id')
             ->join('sessions', 'user_subjek.session_id','sessions.SessionID')
-            ->select('subjek.*','user_subjek.course_id','sessions.SessionName','sessions.SessionID')
+            ->select('subjek.*','user_subjek.course_id','sessions.SessionName','sessions.SessionID','tblprogramme.progname')
             ->where('subjek.course_name','LIKE','%'.$request->search."%")
             //->groupBy('user_subjek.course_id')
             ->get();
@@ -95,8 +98,9 @@ class LecturerController extends Controller
         {
         $data = auth()->user()->subjects()
             ->join('subjek', 'user_subjek.course_id','=','subjek.sub_id')
+            ->join('tblprogramme', 'subjek.prgid', 'tblprogramme.id')
             ->join('sessions', 'user_subjek.session_id','sessions.SessionID')
-            ->select('subjek.*','user_subjek.course_id','sessions.SessionName','sessions.SessionID')
+            ->select('subjek.*','user_subjek.course_id','sessions.SessionName','sessions.SessionID','tblprogramme.progname')
             ->where('user_subjek.session_id','LIKE','%'.$request->session.'%')
             //->groupBy('user_subjek.course_id')
             ->get();
@@ -104,8 +108,9 @@ class LecturerController extends Controller
 
         $data = auth()->user()->subjects()
             ->join('subjek', 'user_subjek.course_id','=','subjek.sub_id')
+            ->join('tblprogramme', 'subjek.prgid', 'tblprogramme.id')
             ->join('sessions', 'user_subjek.session_id','sessions.SessionID')
-            ->select('subjek.*','user_subjek.course_id','sessions.SessionName','sessions.SessionID')
+            ->select('subjek.*','user_subjek.course_id','sessions.SessionName','sessions.SessionID','tblprogramme.progname')
             //->groupBy('user_subjek.course_id')
             ->get();
 
@@ -1435,9 +1440,7 @@ class LecturerController extends Controller
                           ])->pluck('email');               
         }
 
-        //$test = array('faizulsoknan@gmail.com');
-
-        $test = array($students);
+        $test = array('hafiyyaimann1998@gmail.com', 'hafiyaimanenterprise@gmail.com');
 
         //dd($test);
 
@@ -2143,6 +2146,135 @@ class LecturerController extends Controller
         //dd($date);
             
         return view('lecturer.class.attendancereport', compact('lists', 'students', 'group', 'date'));
+
+    }
+
+
+    public function libraryIndex()
+    {
+
+        $lecturer = DB::table('users')
+                    ->join('user_subjek', 'users.ic', 'user_subjek.user_ic')
+                    ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+                    ->where([
+                        ['subjek.id', Session::get('CourseID')],
+                        ['user_subjek.session_id', Session::get('SessionID')]
+                    ])->get();
+
+        //dd($lecturer);
+
+        return view('lecturer.library.library', compact('lecturer'));
+
+    }
+
+    public function getContent(Request $request)
+    {
+
+        $folder = DB::table('lecturer_dir')
+                   ->where([
+                    ['Addby', $request->ic],
+                    ['CourseID', Session::get('CourseID')]
+                    ])->get();
+
+        return view('lecturer.library.getSubfolder', compact('folder'));
+
+    }
+
+    public function getSubFolder(Request $request)
+    {
+
+        $subfolder = DB::table('material_dir')->where('LecturerDirID', $request->id)->get();
+
+        $prev0 = $folder = DB::table('lecturer_dir')->where('DrID', $request->id)->first();
+
+        return view('lecturer.library.getSubfolder', compact('subfolder','prev0'));
+
+    }
+
+    public function getSubFolder2(Request $request)
+    {
+
+        $directory = DB::table('lecturer_dir')
+        ->join('material_dir', 'lecturer_dir.DrID', 'material_dir.LecturerDirID')
+        ->select('lecturer_dir.DrName as A', 'material_dir.DrName as B', 'material_dir.*', 'lecturer_dir.CourseID')
+        ->where('material_dir.DrID', $request->id)->first();
+
+        $subfolder2 = DB::table('materialsub_dir')->where('MaterialDirID', $request->id)->get();
+
+        $dir = "classmaterial/" . $directory->CourseID . "/" . $directory->A . "/" . $directory->B;
+
+        //this is to get file in the specific folder, unlike AllFiles to get everything from all folder
+        $classmaterial  = Storage::disk('linode')->files($dir);
+
+        $prev = $directory->LecturerDirID;
+
+        return view('lecturer.library.getSubfolder', compact('subfolder2', 'classmaterial','prev'));
+
+    }
+
+    public function getMaterial(Request $request)
+    {
+
+        $directory = DB::table('lecturer_dir')
+        ->join('material_dir', 'lecturer_dir.DrID', 'material_dir.LecturerDirID')
+        ->join('materialsub_dir', 'material_dir.DrID', 'materialsub_dir.MaterialDirID')
+        ->select('lecturer_dir.DrName as A', 'material_dir.DrName as B', 'materialsub_dir.DrName as C', 'materialsub_dir.Password', 'materialsub_dir.MaterialDirID', 'materialsub_dir.DrID', 'lecturer_dir.CourseID')
+        ->where('materialsub_dir.DrID', $request->id)->first();
+
+        $dir = "classmaterial/" . $directory->CourseID . "/" . $directory->A . "/" . $directory->B . "/" . $directory->C;
+
+        $classmaterial  = Storage::disk('linode')->allFiles($dir);
+
+        $prev2 = $directory->MaterialDirID;
+
+        return view('lecturer.library.getSubfolder', compact('classmaterial','prev2'));
+    }
+
+    public function getQuiz(Request $request)
+    {
+
+        $quiz = DB::table('tblclassquiz')
+                ->join('tblclassquiz_group', 'tblclassquiz.id', 'tblclassquiz_group.quizid')
+                ->join('tblclassquiz_chapter', 'tblclassquiz.id', 'tblclassquiz_chapter.quizid')
+                ->where([
+                    ['tblclassquiz.addby', $request->ic],
+                    ['tblclassquiz.classid', Session::get('CourseID')]
+                ])->select('tblclassquiz.*')->get();
+
+
+        return view('lecturer.library.getQuiz', compact('quiz'));
+
+    }
+
+    public function getTest(Request $request)
+    {
+
+        $test = DB::table('tblclasstest')
+                ->join('tblclasstest_group', 'tblclasstest.id', 'tblclasstest_group.testid')
+                ->join('tblclasstest_chapter', 'tblclasstest.id', 'tblclasstest_chapter.testid')
+                ->where([
+                    ['tblclasstest.addby', $request->ic],
+                    ['tblclasstest.classid', Session::get('CourseID')]
+                ])->select('tblclasstest.*')->get();
+
+
+        return view('lecturer.library.getTest', compact('test'));
+
+    }
+
+    public function getAssignment(Request $request)
+    {
+
+        $assign = DB::table('tblclassassign')
+                ->join('tblclassassign_group', 'tblclassassign.id', 'tblclassassign_group.assignid')
+                ->join('tblclassassign_chapter', 'tblclassassign.id', 'tblclassassign_chapter.assignid')
+                ->where([
+                    ['tblclassassign.addby', $request->ic],
+                    ['tblclassassign.classid', Session::get('CourseID')]
+                ])->select('tblclassassign.*')->get();
+
+
+        return view('lecturer.library.getAssignment', compact('assign'));
 
     }
   

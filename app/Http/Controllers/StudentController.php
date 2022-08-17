@@ -27,8 +27,9 @@ class StudentController extends Controller
         $user = Session::put('StudInfo', $student);
 
         $subject = student::join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
+        ->join('tblprogramme', 'subjek.prgid', 'tblprogramme.id')
         ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
-        ->select('subjek.*','student_subjek.courseid','sessions.SessionName','sessions.SessionID')
+        ->select('subjek.*','student_subjek.courseid','sessions.SessionName','sessions.SessionID','tblprogramme.progname')
         ->groupBy('student_subjek.courseid')
         ->where('student_subjek.student_ic', $student->ic)
         ->get();
@@ -49,14 +50,13 @@ class StudentController extends Controller
 
     public function updateSetting(Request $request)
     {
-
         $data = $request->validate([
             'email' => ['email', 'required'],
             'pass' => ['nullable','max:10','regex:/^\S*$/u'],
-            'confirm-password' => ['max:10','same:pass','regex:/^\S*$/u']
+            'conpass' => ['max:10','same:pass','regex:/^\S*$/u']
         ],[
-            'confirm-password.same' => 'The Confirm Password and Password must match!',
-            'pass.regex' => 'The Password cannot have white spaces!'
+            'conpass.same' => 'The Confirm Password and Password must match!',
+            'pass.regex' => 'The Password cannot have spaces!'
         ]);
 
         //dd($data['pass']);
@@ -67,13 +67,13 @@ class StudentController extends Controller
                 'email' => $data['email'],
                 'password' =>  Hash::make($data['pass'])
             ]);
-        return redirect()->back()->with('alert', 'You have successfully updated your setting!');
         }else{
             Auth::guard('student')->user()->update([
                 'email' => $data['email']
             ]);
-        return redirect()->back()->with('alert', 'You have successfully updated your email!');
         }
+
+        return redirect()->back()->with('alert', 'You have successfully updated your setting!');
     }
 
     public function getCourseList(Request $request)
@@ -84,8 +84,9 @@ class StudentController extends Controller
         {
 
         $data = student::join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
+            ->join('tblprogramme', 'subjek.prgid', 'tblprogramme.id')
             ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
-            ->select('subjek.*','student_subjek.courseid','sessions.SessionName','sessions.SessionID')
+            ->select('subjek.*','student_subjek.courseid','sessions.SessionName','sessions.SessionID','tblprogramme.progname')
             ->where('student_subjek.sessionid','LIKE','%'.$request->session.'%')
             ->where('subjek.course_name','LIKE','%'.$request->search."%")
             ->groupBy('student_subjek.courseid')
@@ -96,8 +97,9 @@ class StudentController extends Controller
         {
 
         $data = student::join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
+            ->join('tblprogramme', 'subjek.prgid', 'tblprogramme.id')
             ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
-            ->select('subjek.*','student_subjek.courseid','sessions.SessionName','sessions.SessionID')
+            ->select('subjek.*','student_subjek.courseid','sessions.SessionName','sessions.SessionID','tblprogramme.progname')
             ->where('subjek.course_name','LIKE','%'.$request->search."%")
             ->groupBy('student_subjek.courseid')
             ->where('student_subjek.student_ic', $student->ic)
@@ -107,8 +109,9 @@ class StudentController extends Controller
         {
 
         $data = student::join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
+            ->join('tblprogramme', 'subjek.prgid', 'tblprogramme.id')
             ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
-            ->select('subjek.*','student_subjek.courseid','sessions.SessionName','sessions.SessionID')
+            ->select('subjek.*','student_subjek.courseid','sessions.SessionName','sessions.SessionID','tblprogramme.progname')
             ->where('student_subjek.sessionid','LIKE','%'.$request->session.'%')
             ->groupBy('student_subjek.courseid')
             ->where('student_subjek.student_ic', $student->ic)
@@ -117,8 +120,9 @@ class StudentController extends Controller
         }else{
 
         $data = student::join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
+            ->join('tblprogramme', 'subjek.prgid', 'tblprogramme.id')
             ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
-            ->select('subjek.*','student_subjek.courseid','sessions.SessionName','sessions.SessionID')
+            ->select('subjek.*','student_subjek.courseid','sessions.SessionName','sessions.SessionID','tblprogramme.progname')
             ->groupBy('student_subjek.courseid')
             ->where('student_subjek.student_ic', $student->ic)
             ->get();
@@ -153,11 +157,13 @@ class StudentController extends Controller
             ['user_subjek.session_id', Session::get('SessionID')]
         ])->select('users.*')->first();
         
+        $subid = DB::table('subjek')->where('id', request()->id)->pluck('sub_id');
+
         $folder = DB::table('lecturer_dir')
-        ->where([
-            ['CourseID', request()->id],
-            ['Addby', $lecturer->ic],
-            ])->get();
+                  ->join('subjek', 'lecturer_dir.CourseID','subjek.id')
+                  ->where('subjek.sub_id', $subid)
+                  ->where('Addby', $lecturer->ic)
+                  ->get();
 
         //dd(Session::get('SessionID'));
         
