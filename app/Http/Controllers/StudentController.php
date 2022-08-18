@@ -153,6 +153,7 @@ class StudentController extends Controller
     public function courseContent()
     {
 
+
         $lecturer = DB::table('user_subjek')->join('student_subjek', 'user_subjek.id','student_subjek.group_id')
                     ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
                     ->where([
@@ -161,8 +162,11 @@ class StudentController extends Controller
                         ['student_subjek.sessionid', Session::get('SessionID')],
                     ])->select('user_subjek.*')->first();
         
-        //dd(Session::get('SessionID'));
+        //dd($lecturer);
 
+        if($lecturer != null)
+        {
+        
         $subid = DB::table('subjek')->where('id', request()->id)->pluck('sub_id');
 
         $folder = DB::table('lecturer_dir')
@@ -170,6 +174,10 @@ class StudentController extends Controller
                   ->where('subjek.sub_id', $subid)
                   ->where('Addby', $lecturer->user_ic)
                   ->get();
+
+        }else{
+            $folder = null;
+        }
 
         //dd(Session::get('SessionID'));
         
