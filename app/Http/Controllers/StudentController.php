@@ -153,15 +153,15 @@ class StudentController extends Controller
     public function courseContent()
     {
 
-        $lecturer = DB::table('student_subjek')
-                    ->join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
+        $lecturer = DB::table('user_subjek')->join('student_subjek', 'user_subjek.id','student_subjek.group_id')
+                    ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
                     ->where([
                         ['student_subjek.student_ic', Session::get('StudInfo')->ic],
                         ['subjek.id', request()->id],
                         ['student_subjek.sessionid', Session::get('SessionID')],
-                    ])->select('student_subjek.*')->first();
+                    ])->select('user_subjek.*')->first();
         
-        dd($lecturer);
+        //dd(Session::get('SessionID'));
 
         $subid = DB::table('subjek')->where('id', request()->id)->pluck('sub_id');
 
