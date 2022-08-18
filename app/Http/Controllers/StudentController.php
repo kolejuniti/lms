@@ -152,19 +152,21 @@ class StudentController extends Controller
 
     public function courseContent()
     {
-        $lecturer = DB::table('users')->join('user_subjek', 'users.ic', 'user_subjek.user_ic')->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')->where([
-            ['subjek.id', request()->id],
-            ['user_subjek.session_id', Session::get('SessionID')]
-        ])->select('users.*')->first();
 
-        //dd($lecturer);
+        $lecturer = DB::table('user_subjek')->join('student_subjek', 'user_subjek.id','student_subjek.group_id')
+                    ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+                    ->where([
+                        ['student_subjek.student_ic', Session::get('StudInfo')->ic],
+                        ['subjek.id', request()->id],
+                        ['student_subjek.sessionid', Session::get('SessionID')],
+                    ])->select('user_subjek.*')->first();
         
         $subid = DB::table('subjek')->where('id', request()->id)->pluck('sub_id');
 
         $folder = DB::table('lecturer_dir')
                   ->join('subjek', 'lecturer_dir.CourseID','subjek.id')
                   ->where('subjek.sub_id', $subid)
-                  ->where('Addby', $lecturer->ic)
+                  ->where('Addby', $lecturer->user_ic)
                   ->get();
 
         //dd(Session::get('SessionID'));
