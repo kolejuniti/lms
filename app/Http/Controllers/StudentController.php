@@ -155,7 +155,9 @@ class StudentController extends Controller
         $lecturer = DB::table('users')->join('user_subjek', 'users.ic', 'user_subjek.user_ic')->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')->where([
             ['subjek.id', request()->id],
             ['user_subjek.session_id', Session::get('SessionID')]
-        ])->select('users.*')->first();
+        ])->select('users.*')->dd();//first();
+
+
         
         $subid = DB::table('subjek')->where('id', request()->id)->pluck('sub_id');
 
