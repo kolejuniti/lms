@@ -42,8 +42,9 @@
                     </div>
                     <div class="box-body">
                         <div id="material-div">
-                            <div id="material-directory" class='row'>         
-                                @foreach ( $folder as $i => $fold)
+                            <div id="material-directory" class='row'> 
+                                @if ($folder != null)
+                                    @foreach ( $folder as $i => $fold)
                                     <div class="col-md-3 text-center mb-3">
                                         <a href="/student/content/material/{{ $fold->DrID }}" >
                                             <svg width="4em" height="4em" enable-background="new 0 0 309.267 309.267" version="1.1" viewBox="0 0 309.27 309.27" xml:space="preserve">
@@ -56,7 +57,20 @@
                                             </div>
                                         </a>
                                     </div>
-                                @endforeach
+                                    @endforeach
+                                @else
+                                <div class="box bg-danger">
+                                    <div class="box-body d-flex p-0">
+                                        <div class="flex-grow-1 p-30 flex-grow-1 bg-img bg-none-md" style="background-position: right bottom; background-size: auto 100%; background-image: url(images/svg-icon/color-svg/custom-30.svg)">
+                                            <div class="row">
+                                                <div class="col-12 col-xl-12">
+                                                    <h1 class="mb-0 fw-600">You are not yet assigned to group, please consult the person in charge.</h1>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                @endif        
                             </div> 
                         </div>
                     </div>
