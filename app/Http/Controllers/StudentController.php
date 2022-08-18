@@ -158,10 +158,10 @@ class StudentController extends Controller
                     ->where([
                         ['student_subjek.student_ic', Session::get('StudInfo')->ic],
                         ['subjek.id', request()->id],
-                        //['student_subjek.sessionid', Session::get('SessionID')],
+                        ['student_subjek.sessionid', Session::get('SessionID')],
                     ])->select('user_subjek.*')->first();
         
-        //dd(request()->id);
+        dd($lecturer);
 
         $subid = DB::table('subjek')->where('id', request()->id)->pluck('sub_id');
 
