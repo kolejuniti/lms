@@ -69,7 +69,7 @@
                 </div>
                 <!-- /.card -->
                 <div class="form-group pull-right">
-                  <button type="/KP/{{ $data['course'] }}/insert/marks" class="btn btn-primary">Submit</button>
+                  <button type="submit" class="btn btn-primary">Submit</button>
                 </div>
               </form>
               <!-- Modal -->
@@ -77,7 +77,7 @@
                 <div class="modal-dialog">
                     <!-- modal content-->
                     <div class="modal-content" id="getModal">
-                        <form action="/AR/session/create" method="post" role="form" enctype="multipart/form-data">
+                        <form action="/KP/{{ $data['course'] }}/insert/marks" method="post" role="form" enctype="multipart/form-data">
                           @csrf
                           @method('POST')
                           <div class="modal-header">
