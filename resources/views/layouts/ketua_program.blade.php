@@ -21,6 +21,11 @@
 	{{-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/css-skeletons@1.0.3/css/css-skeletons.min.css"/> --}}
 	<link rel="stylesheet" href="https://unpkg.com/css-skeletons@1.0.3/css/css-skeletons.min.css" />
 
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.15.1/moment.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.7.14/js/bootstrap-datetimepicker.min.js"></script>
+
 	<!-- For Collaps -->
 
 
@@ -94,6 +99,11 @@
 	.ck-editor__editable_inline {
 		min-height: 20em;
 	}
+
+	.modal-backdrop
+	{
+		opacity:0.5 !important;
+	}
 </style>
 
 
@@ -116,11 +126,11 @@
 		  <!-- logo-->
 		  <div class="logo-mini w-30">
 			  <span class="light-logo"><img src="{{ asset('assets/images/logo/Kolej-UNITI.png')}}" alt="logo" class="unity"></span>
-			  <span class="dark-logo"><img src="{{ asset('assets/images/logo-letter-white.png') }}" alt="logo"></span>
+			  <span class="dark-logo"><img src="{{ asset('assets/images/logo_ucms.png') }}" alt="logo"></span>
 		  </div>
 		  <div class="logo-lg">
-			  <span class="light-logo"><img src="{{ asset('assets/images/logo_ucms.png') }}" alt="logo" class="eduhub"></span>
-			  <span class="dark-logo"><img src="{{ asset('assets/images/logo_ucms.png') }}" alt="logo"></span>
+			  <span class="light-logo"><img src="{{ asset('assets/images/logo-dark-text.png') }}" alt="logo" class="eduhub"></span>
+			  <span class="dark-logo"><img src="{{ asset('assets/images/logo-light-text.png') }}" alt="logo"></span>
 		  </div>
 		</a>	
 	</div>   

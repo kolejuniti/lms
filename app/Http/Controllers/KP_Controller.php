@@ -134,13 +134,21 @@ class KP_Controller extends Controller
             }
         }
 
-        
-       dd($assessment);
+        $data['assessment'] = $assessment;
 
        }
  
         return view('ketua_program.assessment', compact('data'));
     }
+
+    private function removeElementWithValue($array, $key, $value){
+        foreach($array as $subKey => $subArray){
+             if($subArray[$key] == $value){
+                  unset($array[$subKey]);
+             }
+        }
+        return $array;
+   }
 
     public function update_marks(Request $request)
     {
@@ -168,6 +176,21 @@ class KP_Controller extends Controller
 
         return redirect()->route('ketua_program');
 
+    }
+
+    public function insert_marks(Request $request)
+    {
+        $request->validate([
+            'assessment' => 'required'
+        ]);
+        
+        DB::table('tblclassmarks')->insert([
+            'assessment' => $request->assessment,
+            'course_id' => $request->course,
+            'mark_percentage' => 0
+        ]);
+
+        return redirect()->route('ketua_program');
     }
 
     public function edit()
