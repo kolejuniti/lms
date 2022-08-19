@@ -81,10 +81,10 @@ Route::get('/AR/student/getStudent', [App\Http\Controllers\AR_Controller::class,
 Route::get('/AR/student/getCourse', [App\Http\Controllers\AR_Controller::class, 'getCourses']);
 Route::post('/AR/student/register', [App\Http\Controllers\AR_Controller::class, 'registerCourse']);
 Route::delete('/AR/student/unregister', [App\Http\Controllers\AR_Controller::class, 'unregisterCourse']);
-Route::get('/AR/session', [App\Http\Controllers\AR_Controller::class, 'sessionList'])->name('pendaftar_akademik.session');
-Route::post('/AR/session/create', [App\Http\Controllers\AR_Controller::class, 'createSession']);
-Route::post('/AR/session/update', [App\Http\Controllers\AR_Controller::class, 'updateSession']);
-Route::delete('/AR/session/delete', [App\Http\Controllers\AR_Controller::class, 'deleteDelete'])->name('pendaftar_akademik.session.delete');
+//Route::get('/AR/session', [App\Http\Controllers\AR_Controller::class, 'sessionList'])->name('pendaftar_akademik.session');
+//Route::post('/AR/session/create', [App\Http\Controllers\AR_Controller::class, 'createSession']);
+//Route::post('/AR/session/update', [App\Http\Controllers\AR_Controller::class, 'updateSession']);
+//Route::delete('/AR/session/delete', [App\Http\Controllers\AR_Controller::class, 'deleteDelete'])->name('pendaftar_akademik.session.delete');
 
 Route::get('/lecturer', [App\Http\Controllers\LecturerController::class, 'index'])->name('lecturer');
 Route::get('/lecturer/setting', [App\Http\Controllers\LecturerController::class, 'setting'])->name('lecturer.setting');
