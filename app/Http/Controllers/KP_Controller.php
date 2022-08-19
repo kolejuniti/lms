@@ -92,8 +92,11 @@ class KP_Controller extends Controller
     public function assessment()
     {
 
-       $data['classmark'] = DB::table('tblclassmarks')->where('course_id', request()->course)
-               ->get();
+       $marks = DB::table('tblclassmarks')->where('course_id', request()->course);
+
+       $data['classmark'] = $marks->get();
+
+       $type = $marks->pluck('assessment');
 
        $data['course'] = request()->course;
                
@@ -122,13 +125,18 @@ class KP_Controller extends Controller
 
            }
 
-           //dd($data);
+           $data['classmark'] = DB::table('tblclassmarks')->whereIn('id', $datas)->get();
+       }else{
 
-            $data['classmark'] = DB::table('tblclassmarks')->whereIn('id', $datas)->get();
+        foreach ($data['classmark'] as $key => $value) {
+            if (($key = array_search($value->assessment, $assessment)) !== false) {
+                unset($assessment[$key]);
+            }
+        }
 
-            //$data['course'] = request()->course;
+        
+       dd($assessment);
 
-            //dd($data);
        }
  
         return view('ketua_program.assessment', compact('data'));
