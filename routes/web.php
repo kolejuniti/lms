@@ -49,6 +49,7 @@ Route::get('/KP/{group}/editgroup', [App\Http\Controllers\KP_Controller::class, 
 Route::patch('/KP/{group}/updategroup/{id}', [App\Http\Controllers\KP_Controller::class, 'updategroup'])->name('kp.updategroup');
 Route::patch('/KP/{group}', [App\Http\Controllers\KP_Controller::class, 'update'])->name('kp.update');
 Route::patch('/KP/{course}/update/marks', [App\Http\Controllers\KP_Controller::class, 'update_marks'])->name('kp.update.marks');
+Route::post('/KP/{course}/insert/marks', [App\Http\Controllers\KP_Controller::class, 'insert_marks'])->name('kp.insert.marks');
 Route::get('/KP/create/group', [App\Http\Controllers\KP_Controller::class, 'create_group'])->name('kp.group');
 Route::post('/KP/group/getStudentTable', [App\Http\Controllers\KP_Controller::class, 'getStudentTable']);
 Route::post('KP/group/getcourseoptions', [App\Http\Controllers\KP_Controller::class, 'getCourse']);
@@ -80,6 +81,10 @@ Route::get('/AR/student/getStudent', [App\Http\Controllers\AR_Controller::class,
 Route::get('/AR/student/getCourse', [App\Http\Controllers\AR_Controller::class, 'getCourses']);
 Route::post('/AR/student/register', [App\Http\Controllers\AR_Controller::class, 'registerCourse']);
 Route::delete('/AR/student/unregister', [App\Http\Controllers\AR_Controller::class, 'unregisterCourse']);
+Route::get('/AR/session', [App\Http\Controllers\AR_Controller::class, 'sessionList'])->name('pendaftar_akademik.session');
+Route::post('/AR/session/create', [App\Http\Controllers\AR_Controller::class, 'createSession']);
+Route::post('/AR/session/update', [App\Http\Controllers\AR_Controller::class, 'updateSession']);
+Route::delete('/AR/session/delete', [App\Http\Controllers\AR_Controller::class, 'deleteDelete'])->name('pendaftar_akademik.session.delete');
 
 Route::get('/lecturer', [App\Http\Controllers\LecturerController::class, 'index'])->name('lecturer');
 Route::get('/lecturer/setting', [App\Http\Controllers\LecturerController::class, 'setting'])->name('lecturer.setting');
@@ -133,6 +138,15 @@ Route::get('/lecturer/class/onlineclass/list', [App\Http\Controllers\LecturerCon
 Route::delete('/lecturer/class/onlineclass/list/delete', [App\Http\Controllers\LecturerController::class, 'OnlineClassListDelete'])->name('lecturer.onlineclass.list.delete');
 Route::get('/lecturer/class/onlineclass/list/edit/{id}', [App\Http\Controllers\LecturerController::class, 'OnlineClassListEdit'])->name('lecturer.onlineclass.list.edit');
 Route::patch('/lecturer/class/onlineclass/list/update/{id}', [App\Http\Controllers\LecturerController::class, 'OnlineClassListUpdate'])->name('lecturer.onlineclass.list.update');
+
+Route::get('/lecturer/library/{id}', [App\Http\Controllers\LecturerController::class, 'libraryIndex'])->name('lecturer.library');
+Route::post('/lecturer/library/getFolder', [App\Http\Controllers\LecturerController::class, 'getContent'])->name('lecturer.library.content');
+Route::post('/lecturer/library/getSubfolder', [App\Http\Controllers\LecturerController::class, 'getSubFolder']);
+Route::post('/lecturer/library/getSubfolder/getSubfolder2', [App\Http\Controllers\LecturerController::class, 'getSubFolder2']);
+Route::post('/lecturer/library/getSubfolder/getSubfolder2/getMaterial', [App\Http\Controllers\LecturerController::class, 'getMaterial']);
+Route::post('/lecturer/library/getQuiz', [App\Http\Controllers\LecturerController::class, 'getQuiz'])->name('lecturer.library.quiz');
+Route::post('/lecturer/library/getTest', [App\Http\Controllers\LecturerController::class, 'getTest'])->name('lecturer.library.test');
+Route::post('/lecturer/library/getAssignment', [App\Http\Controllers\LecturerController::class, 'getAssignment'])->name('lecturer.library.assignment');
 
 Route::get('/lecturer/class/announcement', [App\Http\Controllers\LecturerController::class, 'announcement'])->name('lecturer.class.announcement');
 Route::get('/lecturer/class/announcement/getGroupList', [App\Http\Controllers\LecturerController::class, 'announcementGetGroupList']);
@@ -379,8 +393,10 @@ Route::get('/student/forum/{id}', [App\Http\Controllers\ForumController::class, 
 Route::post('/student/forum/{id}/insert', [App\Http\Controllers\ForumController::class, 'studinsertTopic']);
 Route::post('/student/forum/{id}/topic/insert', [App\Http\Controllers\ForumController::class, 'studinsertForum']);
 
-Route::post('/login/custom', [App\Http\Controllers\LoginController::class, 'login'])->name('login.custom');
 
-Route::post('/login/student/custom', [App\Http\Controllers\LoginStudentController::class, 'login'])->name('login.student.custom');
+Route::middleware(['preventBackHistory'])->group(function () {
+    Route::post('/login/custom', [App\Http\Controllers\LoginController::class, 'login'])->name('login.custom');
+    Route::post('/login/student/custom', [App\Http\Controllers\LoginStudentController::class, 'login'])->name('login.student.custom');
+});
 
 Route::get('/send-announcement', [App\Http\Controllers\AnnouncementStudentController::class, 'sendAnnouncement']);
