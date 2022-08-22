@@ -961,6 +961,7 @@ class LecturerController extends Controller
         ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
         ->where([
             ['subjek.id', $courseid],
+            ['user_subjek.session_id', Session::get('SessionID')],
             ['user_subjek.user_ic', $lecturer->ic]
         ])->groupBy('student_subjek.group_name')
         ->select('user_subjek.*','student_subjek.group_name')->get();
