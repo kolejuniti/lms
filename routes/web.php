@@ -393,9 +393,9 @@ Route::get('/student/forum/{id}', [App\Http\Controllers\ForumController::class, 
 Route::post('/student/forum/{id}/insert', [App\Http\Controllers\ForumController::class, 'studinsertTopic']);
 Route::post('/student/forum/{id}/topic/insert', [App\Http\Controllers\ForumController::class, 'studinsertForum']);
 
-//Route::middleware(['preventBackHistory'])->group(function () {
+Route::middleware(['preventBackHistory'])->group(function () {
     Route::post('/login/custom', [App\Http\Controllers\LoginController::class, 'login'])->name('login.custom');
     Route::post('/login/student/custom', [App\Http\Controllers\LoginStudentController::class, 'login'])->name('login.student.custom');
-//});
+});
 
 Route::get('/send-announcement', [App\Http\Controllers\AnnouncementStudentController::class, 'sendAnnouncement']);
