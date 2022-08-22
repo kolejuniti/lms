@@ -995,7 +995,7 @@ class LecturerController extends Controller
     {
         $group = explode('|', $request->group);
 
-        $students = student::join('students', 'student_subjek.student_ic', 'students.ic')->where('group_id', $group[0])->where('group_name', $group[1])->where('sessionid', Session::get('SessionID'))->get();
+        $students = student::join('students', 'student_subjek.student_ic', 'students.ic')->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')->where('group_id', $group[0])->where('group_name', $group[1])->where('student_subjek.sessionid', Session::get('SessionID'))->get();
 
         $content = "";
         $content .= '
@@ -1004,7 +1004,7 @@ class LecturerController extends Controller
             <thead class="thead-themed">
             <th>Name</th>
             <th>Matric No</th>
-            <th>Intake</th>
+            <th>Session</th>
             <th>Status</th>
             <th></th>
             </thead>
@@ -1022,7 +1022,7 @@ class LecturerController extends Controller
                     <label>'.$student->no_matric.'</label>
                 </td>
                 <td >
-                    <p class="text-bold text-fade">'.$student->intake.'</p>
+                    <p class="text-bold text-fade">'.$student->SessionName.'</p>
                 </td>
                 <td >
                     <p class="text-bold text-fade">'.$student->status.'</p>
