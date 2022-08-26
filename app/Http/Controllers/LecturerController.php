@@ -2128,7 +2128,7 @@ class LecturerController extends Controller
 
         //dd($students);
 
-        $group = $student->select('user_subjek.*', 'student_subjek.group_name', 'subjek.*')->first();
+        $group = $student->join('user_subjek', 'student_subjek.group_id', 'user_subjek.id')->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')->select('user_subjek.', 'student_subjek.group_name', 'subjek.')->first();
 
         $date = $request->date;
 
