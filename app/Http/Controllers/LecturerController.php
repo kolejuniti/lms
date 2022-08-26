@@ -2149,7 +2149,7 @@ class LecturerController extends Controller
         }
 
 
-        dd($date);
+        dd($list);
             
         return view('lecturer.class.attendancereport', compact('lists', 'students', 'group', 'date'));
 
