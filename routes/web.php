@@ -81,10 +81,10 @@ Route::get('/AR/student/getStudent', [App\Http\Controllers\AR_Controller::class,
 Route::get('/AR/student/getCourse', [App\Http\Controllers\AR_Controller::class, 'getCourses']);
 Route::post('/AR/student/register', [App\Http\Controllers\AR_Controller::class, 'registerCourse']);
 Route::delete('/AR/student/unregister', [App\Http\Controllers\AR_Controller::class, 'unregisterCourse']);
-//Route::get('/AR/session', [App\Http\Controllers\AR_Controller::class, 'sessionList'])->name('pendaftar_akademik.session');
-//Route::post('/AR/session/create', [App\Http\Controllers\AR_Controller::class, 'createSession']);
-//Route::post('/AR/session/update', [App\Http\Controllers\AR_Controller::class, 'updateSession']);
-//Route::delete('/AR/session/delete', [App\Http\Controllers\AR_Controller::class, 'deleteDelete'])->name('pendaftar_akademik.session.delete');
+Route::get('/AR/session', [App\Http\Controllers\AR_Controller::class, 'sessionList'])->name('pendaftar_akademik.session');
+Route::post('/AR/session/create', [App\Http\Controllers\AR_Controller::class, 'createSession']);
+Route::post('/AR/session/update', [App\Http\Controllers\AR_Controller::class, 'updateSession']);
+Route::delete('/AR/session/delete', [App\Http\Controllers\AR_Controller::class, 'deleteDelete'])->name('pendaftar_akademik.session.delete');
 
 Route::get('/lecturer', [App\Http\Controllers\LecturerController::class, 'index'])->name('lecturer');
 Route::get('/lecturer/setting', [App\Http\Controllers\LecturerController::class, 'setting'])->name('lecturer.setting');
@@ -130,6 +130,7 @@ Route::post('/lecturer/class/attendance/getDate', [App\Http\Controllers\Lecturer
 Route::post('/lecturer/class/attendance/store', [App\Http\Controllers\LecturerController::class, 'storeAttendance'])->name('lecturer.attendance.store');
 Route::get('/lecturer/class/attendance/report', [App\Http\Controllers\LecturerController::class, 'listAttendance'])->name('lecturer.attendance.report');
 Route::get('/lecturer/class/attendance/report/{date}/{group}', [App\Http\Controllers\LecturerController::class, 'reportAttendance']);
+Route::post('/lecturer/class/attendance/deletAttendance', [App\Http\Controllers\LecturerController::class, 'deletAttendance']);
 Route::get('/lecturer/class/onlineclass', [App\Http\Controllers\LecturerController::class, 'onlineClass'])->name('lecturer.class.onlineclass');
 Route::post('lecturer/class/onlineclass/getChapters', [App\Http\Controllers\LecturerController::class, 'getChapters']);
 Route::post('lecturer/class/onlineclass/getSubChapters', [App\Http\Controllers\LecturerController::class, 'getSubChapters']);
@@ -392,6 +393,7 @@ Route::post('/student/final/submitfinal', [App\Http\Controllers\FinalController:
 Route::get('/student/forum/{id}', [App\Http\Controllers\ForumController::class, 'studForum'])->name('student.forum');
 Route::post('/student/forum/{id}/insert', [App\Http\Controllers\ForumController::class, 'studinsertTopic']);
 Route::post('/student/forum/{id}/topic/insert', [App\Http\Controllers\ForumController::class, 'studinsertForum']);
+
 
 Route::middleware(['preventBackHistory'])->group(function () {
     Route::post('/login/custom', [App\Http\Controllers\LoginController::class, 'login'])->name('login.custom');
