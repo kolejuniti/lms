@@ -51,7 +51,7 @@
                                 </div>
                             </td>
                           </tr>
-                          <tr id="demo-{{ $lct->ic }}" class="collapse cell-1 row-child" data-toggle="collapse" data-target="#demo-assessment{{ $key }}">
+                          <tr id="demo-{{ $lct->ic }}" class="collapse cell-1 row-child" data-toggle="collapse" data-target="#demo-assessment-{{ $key }}">
                               <td>
                                   <div style="margin-left: 40px;">
                                       <i class="ti-folder" style="margin-right: 5px;"></i>
@@ -59,7 +59,7 @@
                                   </div>
                               </td>
                           </tr>
-                          <tr id="#demo-assessment{{ $key }}" class="collapse cell-1 row-child" data-toggle="collapse" data-target="#demo-" onclick="getQuiz('{{ $lct->ic }}')">
+                          <tr id="demo-assessment-{{ $key }}" class="collapse cell-1 row-child" data-toggle="collapse" data-target="#demo-" onclick="getQuiz('{{ $lct->ic }}')">
                             <td>
                                 <div style="margin-left: 60px;">
                                     <i class="ti-folder" style="margin-right: 5px;"></i>
@@ -67,7 +67,7 @@
                                 </div>
                             </td>
                           </tr>
-                          <tr id="#demo-assessment{{ $key }}" class="collapse cell-1 row-child" data-toggle="collapse" data-target="#demo-" onclick="getTest('{{ $lct->ic }}')">
+                          <tr id="demo-assessment-{{ $key }}" class="collapse cell-1 row-child" data-toggle="collapse" data-target="#demo-" onclick="getTest('{{ $lct->ic }}')">
                             <td>
                                 <div style="margin-left: 60px;">
                                     <i class="ti-folder" style="margin-right: 5px;"></i>
@@ -75,7 +75,7 @@
                                 </div>
                             </td>
                           </tr>
-                          <tr id="#demo-assessment{{ $key }}" class="collapse cell-1 row-child" data-toggle="collapse" data-target="#demo-" onclick="getAssignment('{{ $lct->ic }}')">
+                          <tr id="demo-assessment-{{ $key }}" class="collapse cell-1 row-child" data-toggle="collapse" data-target="#demo-" onclick="getAssignment('{{ $lct->ic }}')">
                             <td>
                                 <div style="margin-left: 60px;">
                                     <i class="ti-folder" style="margin-right: 5px;"></i>
