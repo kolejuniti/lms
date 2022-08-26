@@ -1076,16 +1076,21 @@ class LecturerController extends Controller
 
         foreach($data['student'] as $std)
         {
-            DB::table('tblclassattendance')->insert([
-                'student_ic' => $std,
-                'groupid' => $group[0],
-                'groupname' => $group[1],
-                //'classscheduleid' => $data['schedule'],
-                'classdate' => $data['date']
-            ]);
+            if(DB::table('tblclassattendance')->where([['student_ic', $std],['groupid', $group[0]],['groupname', $group[1]],['classdate', $data['date']]])->exists())
+            {
+                
+            }else{
+                DB::table('tblclassattendance')->insert([
+                    'student_ic' => $std,
+                    'groupid' => $group[0],
+                    'groupname' => $group[1],
+                    //'classscheduleid' => $data['schedule'],
+                    'classdate' => $data['date']
+                ]);
+            }
         }
 
-        return redirect()->back()->with('message', 'Student Attendance has been submitted!');
+        return redirect()->back()->with('message', 'Student attendance has been submitted!');
 
     }
 
@@ -1440,8 +1445,6 @@ class LecturerController extends Controller
                             ['student_subjek.group_name', $group[1]]
                           ])->pluck('email');               
         }
-
-        //$test = array('hafiyyaimann1998@gmail.com', 'hafiyaimanenterprise@gmail.com');
 
         $test = array($students);
 
@@ -2149,6 +2152,19 @@ class LecturerController extends Controller
         //dd($date);
             
         return view('lecturer.class.attendancereport', compact('lists', 'students', 'group', 'date'));
+
+    }
+
+    public function deletAttendance(Request $request)
+    {
+
+        DB::table('tblclassattendance')->where([
+            ['classdate', $request->date],
+            ['groupid', $request->group],
+            ['groupname', $request->name]
+        ])->delete();
+
+        return back()->with('message', 'Attendance have successfully deleted!');
 
     }
 
