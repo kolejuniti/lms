@@ -2,15 +2,23 @@
 
 @section('main')
 
-@if(session()->has('message'))
-    <div class="alert alert-success">
-        {{ session()->get('message') }}
-    </div>
-@endif
-
 <!-- Content Header (Page header) -->
 <div class="content-wrapper" style="min-height: 695.8px;">
   <div class="container-full">
+    @if(session()->has('message'))
+    <div class="container-fluid">
+      <div class="row">
+        <!-- left column -->
+        <div class="col-md-12">
+          <div class="form-group">
+            <div class="alert alert-success">
+                <span>{{ session()->get('message') }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    @endif
   <!-- Content Header (Page header) -->	  
   <div class="content-header">
     <div class="d-flex align-items-center">
