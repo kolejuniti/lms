@@ -39,7 +39,7 @@
 
                 
                             <p class="d-flex justify-content-center">
-                                <a href="{{ Storage::disk('linode')->url($ts->content) }}" class="btn btn-primary m-1" data-toggle="tooltip" data-placement="auto" title="Use"><i class="fa fa-download "></i></a>
+                                <a href="{{ Storage::disk('linode')->url($ts->content) }}" class="btn btn-primary m-1" target="_blank" data-toggle="tooltip" data-placement="auto" title="Use"><i class="fa fa-download "></i></a>
                             </p>
                         </div>
                     </div>
