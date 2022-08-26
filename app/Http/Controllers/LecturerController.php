@@ -2121,8 +2121,8 @@ class LecturerController extends Controller
 
         $student = DB::table('student_subjek')
                     ->join('students', 'student_subjek.student_ic', 'students.ic')->where('student_subjek.group_id', $request->group)->where('student_subjek.group_name', $request->name)
-                    ->join('user_subjek', 'student_subjek.group_id', 'user_subjek.id')
-                    ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id');
+                    //->join('user_subjek', 'student_subjek.group_id', 'user_subjek.id')
+                    //->join('subjek', 'user_subjek.course_id', 'subjek.sub_id');
         
         $students = $student->get();
 
