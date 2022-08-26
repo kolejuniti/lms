@@ -2126,6 +2126,8 @@ class LecturerController extends Controller
         
         $students = $student->get();
 
+        dd($students);
+
         $group = $student->select('user_subjek.*', 'student_subjek.group_name', 'subjek.*')->first();
 
         $date = $request->date;
