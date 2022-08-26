@@ -13,6 +13,20 @@
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
     <div class="container-full">
+    @if(session()->has('message'))
+    <div class="container-fluid">
+      <div class="row">
+        <!-- left column -->
+        <div class="col-md-12">
+          <div class="form-group">
+            <div class="alert alert-success">
+                <span>{{ session()->get('message') }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    @endif
     <!-- Content Header (Page header) -->	  
     <div class="content-header">
         <div class="d-flex align-items-center">
@@ -77,6 +91,11 @@
                                     </i>
                                     Report
                                 </a>
+                                <a class="btn btn-danger btn-sm btn-sm" href="#" onclick="deleteAttendance('{{ $lst->classdate }}','{{ $lst->groupid }}','{{ $lst->groupname }}')">
+                                  <i class="ti-trash">
+                                  </i>
+                                  Delete
+                                </a>
                               </td>
                             </tr>                            
                             @endforeach
@@ -103,5 +122,32 @@ $(document).ready( function () {
     $('#myTable').DataTable();
 } );
 
+function deleteAttendance(date,group,name)
+{
+  Swal.fire({
+    title: "Are you sure?",
+    text: "This will be permanent",
+    showCancelButton: true,
+    confirmButtonText: "Yes, delete it!"
+    }).then(function(res){
+      
+      if (res.isConfirmed){
+                $.ajax({
+                    headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
+                    url      : "{{ url('lecturer/class/attendance/deletAttendance') }}",
+                    method   : 'POST',
+                    data 	 : {date:date, group:group, name:name},
+                    error:function(err){
+                        alert("Error");
+                        console.log(err);
+                    },
+                    success  : function(data){
+                        window.location.reload();
+                        alert("success");
+                    }
+                });
+            }
+        });
+}
 </script>
 @stop
