@@ -1,4 +1,4 @@
-@extends((Auth::user()->usrtype == "LCT") ? 'layouts.lecturer' : (Auth::user()->usrtype == "PL" ? 'layouts.ketua_program' : (Auth::user()->usrtype == "AO" ? 'layouts.pegawai_takbir' : (Auth::user()->usrtype == "AR" ? 'layouts.pendaftar_akademik' : (Auth::user()->usrtype == "RGS" ? 'layouts.pendaftar' : '')))))
+@extends((Auth::user()->usrtype == "LCT") ? 'layouts.lecturer' : (Auth::user()->usrtype == "PL" ? 'layouts.ketua_program' : (Auth::user()->usrtype == "AO" ? 'layouts.ketua_program' : (Auth::user()->usrtype == "AR" ? 'layouts.pendaftar_akademik' : (Auth::user()->usrtype == "RGS" ? 'layouts.pendaftar' : '')))))
 
 
 @section('main')
