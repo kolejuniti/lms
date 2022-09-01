@@ -222,7 +222,7 @@
 							<p class="pt-5 fs-14 mb-0 fw-700"></p>
 							<small class="fs-10 mb-0 text-uppercase text-mute"></small>
 						</div>
-						<img src="{{ Storage::disk('linode')->url('storage/student_image/' . Session::get('User')->ic . '.jpg') }}" class="avatar rounded-circle bg-primary-light h-40 w-40" alt="" />
+						<img src="{{ Storage::disk('linode')->url('storage/student_image/' . Session::get('User')->ic . '.jpg') }}"/>
 					</div>
 				</a>
 			</li>		  
