@@ -67,7 +67,7 @@
                         <div class="form-group">
                           <label class="form-label" for="date">Date</label>
                           <div class="input-group">
-                          <input id="date" name="date" value="" type="date" class="form-control" >
+                          <input id="date" name="date" value="" type="datetime-local" class="form-control" >
                           <!--<input id="schedule" name="schedule" value="" type="text" class="form-control" hidden>-->
                           </div>
                         </div>
