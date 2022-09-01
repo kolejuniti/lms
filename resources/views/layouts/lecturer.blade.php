@@ -235,6 +235,9 @@
 			  <ul class="sidebar-menu" data-widget="tree">	  
         		<li>
 					<a href="{{ route('lecturer') }}" class="{{ (route('lecturer') == Request::url()) ? 'active' : ''}}"><i data-feather="bookmark"></i><span>Course</span></a>
+				</li>
+        		<li>
+					<a href="{{ Storage::disk('linode')->url('classschedule/index.htm') }}" class="{{ (route('lecturer') == Request::url()) ? 'active' : ''}}"><i data-feather="bookmark"></i><span>Schedule</span></a>
 				</li> 
 			  </ul>
 			  <div class="sidebar-widgets">
