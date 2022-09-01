@@ -369,7 +369,7 @@
 			</div>
             <div>
                 <div class="d-flex flex-row">
-                    <div class=""><img src="{{ (Session::get('User')->image != null) ? Storage::disk('linode')->url(Session::get('User')->image) : asset('assets/images/avatar/avatar-13.png') }}" alt="user" class="rounded bg-danger-light w-150" width="100"></div>
+                    <div class=""><img src="{{ Storage::disk('linode')->temporaryUrl('storage/student_image/' . Session::get('User')->ic . '.jpg',now()->addMinutes(5)) }}" alt="user" class="rounded bg-danger-light w-150" width="100"></div>
                     <div class="ps-20">
                         <h5 class="mb-0"></h5>
                         <p class="my-5 text-fade"></p>
