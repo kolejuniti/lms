@@ -240,7 +240,7 @@
 					<a href="{{ Storage::disk('linode')->url('classschedule/index.htm') }}" target="_blank" class="{{ (route('lecturer') == Request::url()) ? 'active' : ''}}"><i data-feather="bookmark"></i><span>Schedule</span></a>
 				</li>  
         		<li>
-					<a href="{{ asset('storage/classschedule/index.htm'); }}" target="_blank" class="{{ (route('lecturer') == Request::url()) ? 'active' : ''}}"><i data-feather="bookmark"></i><span>Schedule Ralat</span></a>
+					<a href="{{ asset('classschedule/index.htm'); }}" target="_blank" class="{{ (route('lecturer') == Request::url()) ? 'active' : ''}}"><i data-feather="bookmark"></i><span>Schedule Ralat</span></a>
 				</li>
 			  </ul>
 			  <div class="sidebar-widgets">
