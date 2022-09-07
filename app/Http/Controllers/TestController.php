@@ -92,6 +92,8 @@ class TestController extends Controller
 
         $data['testid'] = null;
 
+        $data['reuse'] = null;
+
         $courseid = Session::get('CourseIDS');
 
         $sessionid = Session::get('SessionIDS');
@@ -124,21 +126,15 @@ class TestController extends Controller
 
             $data['test'] = DB::table('tblclasstest')->select('tblclasstest.*')
             ->where([
-                ['classid', Session::get('CourseIDS')],
-                ['sessionid', Session::get('SessionIDS')],
-                ['id', $testid],
-                ['addby', $user->ic],
-                ['content','!=', null]
+                ['id', $testid]
             ])->get()->first();
 
-            $folders = DB::table('tblclasstest_chapter')
-                        ->join('material_dir', 'tblclasstest_chapter.chapterid', 'material_dir.DrID')
-                        ->where('tblclasstest_chapter.testid', $testid);
-
-            $data['folder'] = $folders->join('lecturer_dir', 'material_dir.LecturerDirID', 'lecturer_dir.DrID')
-                                     ->select('lecturer_dir.*')->get()->first();
-
             $data['teststatus'] = $data['test']->status;
+
+            if(isset(request()->REUSE))
+            {
+                $data['reuse'] = request()->REUSE;
+            }
 
         }
 
@@ -246,44 +242,11 @@ class TestController extends Controller
             
         $testid = empty($request->test) ? '' : $request->test;
 
+        $statusReuse = empty($request->reuse) ? '' : $request->reuse;
+
         
-        if( !empty($testid) ){
-            $q = DB::table('tblclasstest')->where('id', $testid)->update([
-                "title" => $title,
-                "date_from" => $from,
-                "date_to" => $to,
-                "content" => $data,
-                "duration" => $duration,
-                "questionindex" => $questionindex,
-                "total_mark" => $marks,
-                "addby" => $user->ic,
-                "status" => $status
-            ]);
-
-            DB::table('tblclasstest_group')->where('testid',$testid)->delete();
-
-            foreach($group as $grp)
-            {
-                $gp = explode('|', $grp);
-                
-                DB::table('tblclasstest_group')->insert([
-                    "groupid" => $gp[0],
-                    "groupname" => $gp[1],
-                    "testid" => $testid
-                ]);
-            }
-
-            DB::table('tblclasstest_chapter')->where('testid',$testid)->delete();
-
-            foreach($chapter as $chp)
-            {
-                DB::table('tblclasstest_chapter')->insert([
-                    "chapterid" => $chp,
-                    "testid" => $testid
-                ]);
-            }
-
-        }else{
+        if( !empty($statusReuse))
+        {
             $q = DB::table('tblclasstest')->insertGetId([
                 "classid" => $classid,
                 "sessionid" => $sessionid,
@@ -315,6 +278,78 @@ class TestController extends Controller
                     "chapterid" => $chp,
                     "testid" => $q
                 ]);
+            }
+            
+        }else{
+            if( !empty($testid) ){
+                $q = DB::table('tblclasstest')->where('id', $testid)->update([
+                    "title" => $title,
+                    "date_from" => $from,
+                    "date_to" => $to,
+                    "content" => $data,
+                    "duration" => $duration,
+                    "questionindex" => $questionindex,
+                    "total_mark" => $marks,
+                    "addby" => $user->ic,
+                    "status" => $status
+                ]);
+
+                DB::table('tblclasstest_group')->where('testid',$testid)->delete();
+
+                foreach($group as $grp)
+                {
+                    $gp = explode('|', $grp);
+                    
+                    DB::table('tblclasstest_group')->insert([
+                        "groupid" => $gp[0],
+                        "groupname" => $gp[1],
+                        "testid" => $testid
+                    ]);
+                }
+
+                DB::table('tblclasstest_chapter')->where('testid',$testid)->delete();
+
+                foreach($chapter as $chp)
+                {
+                    DB::table('tblclasstest_chapter')->insert([
+                        "chapterid" => $chp,
+                        "testid" => $testid
+                    ]);
+                }
+
+            }else{
+                $q = DB::table('tblclasstest')->insertGetId([
+                    "classid" => $classid,
+                    "sessionid" => $sessionid,
+                    "title" => $title,
+                    "date_from" => $from,
+                    "date_to" => $to,
+                    "content" => $data,
+                    "duration" => $duration,
+                    "questionindex" => $questionindex,
+                    "total_mark" => $marks,
+                    "addby" => $user->ic,
+                    "status" => $status
+                ]);
+
+                foreach($group as $grp)
+                {
+                    $gp = explode('|', $grp);
+                    
+                    DB::table('tblclasstest_group')->insert([
+                        "groupid" => $gp[0],
+                        "groupname" => $gp[1],
+                        "testid" => $q
+                    ]);
+                }
+
+                foreach($chapter as $chp)
+                {
+                    DB::table('tblclasstest_chapter')->insert([
+                        "chapterid" => $chp,
+                        "testid" => $q
+                    ]);
+                }
             }
         }
         

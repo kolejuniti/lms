@@ -92,6 +92,8 @@ class QuizController extends Controller
 
         $data['quizid'] = null;
 
+        $data['reuse'] = null;
+
         $courseid = Session::get('CourseIDS');
 
         $sessionid = Session::get('SessionIDS');
@@ -124,21 +126,17 @@ class QuizController extends Controller
 
             $data['quiz'] = DB::table('tblclassquiz')->select('tblclassquiz.*')
             ->where([
-                ['classid', Session::get('CourseIDS')],
-                ['sessionid', Session::get('SessionIDS')],
-                ['id', $quizid],
-                ['addby', $user->ic],
-                ['content','!=', null]
+                ['id', $quizid]
             ])->get()->first();
 
-            $folders = DB::table('tblclassquiz_chapter')
-                        ->join('material_dir', 'tblclassquiz_chapter.chapterid', 'material_dir.DrID')
-                        ->where('tblclassquiz_chapter.quizid', $quizid);
-
-            $data['folder'] = $folders->join('lecturer_dir', 'material_dir.LecturerDirID', 'lecturer_dir.DrID')
-                                     ->select('lecturer_dir.*')->get()->first();
+            //dd($data['quiz']);
 
             $data['quizstatus'] = $data['quiz']->status;
+
+            if(isset(request()->REUSE))
+            {
+                $data['reuse'] = request()->REUSE;
+            }
 
         }
 
@@ -246,44 +244,10 @@ class QuizController extends Controller
             
         $quizid = empty($request->quiz) ? '' : $request->quiz;
 
-        
-        if( !empty($quizid) ){
-            $q = DB::table('tblclassquiz')->where('id', $quizid)->update([
-                "title" => $title,
-                "date_from" => $from,
-                "date_to" => $to,
-                "content" => $data,
-                "duration" => $duration,
-                "questionindex" => $questionindex,
-                "total_mark" => $marks,
-                "addby" => $user->ic,
-                "status" => $status
-            ]);
+        $statusReuse = empty($request->reuse) ? '' : $request->reuse;
 
-            DB::table('tblclassquiz_group')->where('quizid',$quizid)->delete();
-
-            foreach($group as $grp)
-            {
-                $gp = explode('|', $grp);
-                
-                DB::table('tblclassquiz_group')->insert([
-                    "groupid" => $gp[0],
-                    "groupname" => $gp[1],
-                    "quizid" => $quizid
-                ]);
-            }
-
-            DB::table('tblclassquiz_chapter')->where('quizid',$quizid)->delete();
-
-            foreach($chapter as $chp)
-            {
-                DB::table('tblclassquiz_chapter')->insert([
-                    "chapterid" => $chp,
-                    "quizid" => $quizid
-                ]);
-            }
-
-        }else{
+        if( !empty($statusReuse))
+        {
             $q = DB::table('tblclassquiz')->insertGetId([
                 "classid" => $classid,
                 "sessionid" => $sessionid,
@@ -315,6 +279,78 @@ class QuizController extends Controller
                     "chapterid" => $chp,
                     "quizid" => $q
                 ]);
+            }
+            
+        }else{
+            if( !empty($quizid) ){
+                $q = DB::table('tblclassquiz')->where('id', $quizid)->update([
+                    "title" => $title,
+                    "date_from" => $from,
+                    "date_to" => $to,
+                    "content" => $data,
+                    "duration" => $duration,
+                    "questionindex" => $questionindex,
+                    "total_mark" => $marks,
+                    "addby" => $user->ic,
+                    "status" => $status
+                ]);
+
+                DB::table('tblclassquiz_group')->where('quizid',$quizid)->delete();
+
+                foreach($group as $grp)
+                {
+                    $gp = explode('|', $grp);
+                    
+                    DB::table('tblclassquiz_group')->insert([
+                        "groupid" => $gp[0],
+                        "groupname" => $gp[1],
+                        "quizid" => $quizid
+                    ]);
+                }
+
+                DB::table('tblclassquiz_chapter')->where('quizid',$quizid)->delete();
+
+                foreach($chapter as $chp)
+                {
+                    DB::table('tblclassquiz_chapter')->insert([
+                        "chapterid" => $chp,
+                        "quizid" => $quizid
+                    ]);
+                }
+
+            }else{
+                $q = DB::table('tblclassquiz')->insertGetId([
+                    "classid" => $classid,
+                    "sessionid" => $sessionid,
+                    "title" => $title,
+                    "date_from" => $from,
+                    "date_to" => $to,
+                    "content" => $data,
+                    "duration" => $duration,
+                    "questionindex" => $questionindex,
+                    "total_mark" => $marks,
+                    "addby" => $user->ic,
+                    "status" => $status
+                ]);
+
+                foreach($group as $grp)
+                {
+                    $gp = explode('|', $grp);
+                    
+                    DB::table('tblclassquiz_group')->insert([
+                        "groupid" => $gp[0],
+                        "groupname" => $gp[1],
+                        "quizid" => $q
+                    ]);
+                }
+
+                foreach($chapter as $chp)
+                {
+                    DB::table('tblclassquiz_chapter')->insert([
+                        "chapterid" => $chp,
+                        "quizid" => $q
+                    ]);
+                }
             }
         }
         
