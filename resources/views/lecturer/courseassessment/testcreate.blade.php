@@ -331,6 +331,7 @@ function getChapters(folder)
 var questionnum     = $('#question-index').val();
 var selected_class  = "{{ Session::get('CourseID') }}";
 var selected_test  = "{{ empty($data['testid']) ? '' : $data['testid'] }}";
+var reuse  = "{{ empty($data['reuse']) ? '' : $data['reuse'] }}";
 var test            = {!! empty($data['test']) ? "''" : json_encode($data['test']) !!};
 var test_status  = {!! empty($data['teststatus']) ? "''" : $data['teststatus'] !!};
 var testFormData    = [];
@@ -346,39 +347,64 @@ jQuery(function($) {
         testFormData = JSON.parse(testFormData).formData;
     }
 
-    if(test_status == 2){
-        Swal.fire({
-			title: "test is already started!",
-			text: "You are not allowed to edit anymore once published",
-			confirmButtonText: "Ok"
-		}).then(function(res){
-            renderForm(testFormData);
-            $('#fb-rendered-form').show();
-            $('.header-setting *').attr('disabled', 'disabled');
-            $('.hide-published-element').hide();
-		});
-    }else{
-        
-        fbOptions = {
-            formData: testFormData,
-            dataType: 'xml',
-            onCloseFieldEdit: function(editPanel) {},
-            onOpenFieldEdit: function(editPanel) {},
-            onClearAll: function() {
-                $('#question-index').val(1);
-                questionnum = $('#question-index').val();
-                i = 1;
+    if(reuse == null)
+    {
+        if(test_status == 2){
+            Swal.fire({
+                title: "Test is already started!",
+                text: "You are not allowed to edit anymore once published",
+                confirmButtonText: "Ok"
+            }).then(function(res){
+                renderForm(testFormData);
+                $('#fb-rendered-form').show();
+                $('.header-setting *').attr('disabled', 'disabled');
+                $('.hide-published-element').hide();
+            });
+        }else{
+            
+            fbOptions = {
+                formData: testFormData,
+                dataType: 'xml',
+                onCloseFieldEdit: function(editPanel) {},
+                onOpenFieldEdit: function(editPanel) {},
+                onClearAll: function() {
+                    $('#question-index').val(1);
+                    questionnum = $('#question-index').val();
+                    i = 1;
+                },
+                onSave: function() {
+                    $fbEditor.toggle();
+                    $formContainer.toggle();
+                    $('#form-div').hide();
+                    $('.addFieldWrap').hide();
+                    $('#fb-render').formRender({formData: formBuilder.formData});
+                }
             },
-            onSave: function() {
-                $fbEditor.toggle();
-                $formContainer.toggle();
-                $('#form-div').hide();
-                $('.addFieldWrap').hide();
-                $('#fb-render').formRender({formData: formBuilder.formData});
-            }
-        },
 
-        formBuilder = $fbEditor.formBuilder(fbOptions);
+            formBuilder = $fbEditor.formBuilder(fbOptions);
+        }
+    }else{
+
+        fbOptions = {
+                formData: testFormData,
+                dataType: 'xml',
+                onCloseFieldEdit: function(editPanel) {},
+                onOpenFieldEdit: function(editPanel) {},
+                onClearAll: function() {
+                    $('#question-index').val(1);
+                    questionnum = $('#question-index').val();
+                    i = 1;
+                },
+                onSave: function() {
+                    $fbEditor.toggle();
+                    $formContainer.toggle();
+                    $('#form-div').hide();
+                    $('.addFieldWrap').hide();
+                    $('#fb-render').formRender({formData: formBuilder.formData});
+                }
+            },
+
+            formBuilder = $fbEditor.formBuilder(fbOptions);
     }
 
     var buttons = document.getElementsByClassName('appendfield1');
@@ -678,6 +704,7 @@ jQuery(function($) {
             data:  { 
                 class: selected_class, 
                 test: selected_test,
+                reuse: reuse,
                 title: $("#test-title").val(),
                 duration: $("#test-duration").val(),
                 questionindex: $("#question-index").val(),

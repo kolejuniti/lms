@@ -331,6 +331,7 @@ function getChapters(folder)
 var questionnum     = $('#question-index').val();
 var selected_class  = "{{ Session::get('CourseID') }}";
 var selected_quiz  = "{{ empty($data['quizid']) ? '' : $data['quizid'] }}";
+var reuse  = "{{ empty($data['reuse']) ? '' : $data['reuse'] }}";
 var quiz            = {!! empty($data['quiz']) ? "''" : json_encode($data['quiz']) !!};
 var quiz_status  = {!! empty($data['quizstatus']) ? "''" : $data['quizstatus'] !!};
 var quizFormData    = [];
@@ -346,39 +347,64 @@ jQuery(function($) {
         quizFormData = JSON.parse(quizFormData).formData;
     }
 
-    if(quiz_status == 2){
-        Swal.fire({
-			title: "Quiz is already started!",
-			text: "You are not allowed to edit anymore once published",
-			confirmButtonText: "Ok"
-		}).then(function(res){
-            renderForm(quizFormData);
-            $('#fb-rendered-form').show();
-            $('.header-setting *').attr('disabled', 'disabled');
-            $('.hide-published-element').hide();
-		});
-    }else{
-        
-        fbOptions = {
-            formData: quizFormData,
-            dataType: 'xml',
-            onCloseFieldEdit: function(editPanel) {},
-            onOpenFieldEdit: function(editPanel) {},
-            onClearAll: function() {
-                $('#question-index').val(1);
-                questionnum = $('#question-index').val();
-                i = 1;
+    if(reuse == null)
+    {
+        if(quiz_status == 2){
+            Swal.fire({
+                title: "Quiz is already started!",
+                text: "You are not allowed to edit anymore once published",
+                confirmButtonText: "Ok"
+            }).then(function(res){
+                renderForm(quizFormData);
+                $('#fb-rendered-form').show();
+                $('.header-setting *').attr('disabled', 'disabled');
+                $('.hide-published-element').hide();
+            });
+        }else{
+            
+            fbOptions = {
+                formData: quizFormData,
+                dataType: 'xml',
+                onCloseFieldEdit: function(editPanel) {},
+                onOpenFieldEdit: function(editPanel) {},
+                onClearAll: function() {
+                    $('#question-index').val(1);
+                    questionnum = $('#question-index').val();
+                    i = 1;
+                },
+                onSave: function() {
+                    $fbEditor.toggle();
+                    $formContainer.toggle();
+                    $('#form-div').hide();
+                    $('.addFieldWrap').hide();
+                    $('#fb-render').formRender({formData: formBuilder.formData});
+                }
             },
-            onSave: function() {
-                $fbEditor.toggle();
-                $formContainer.toggle();
-                $('#form-div').hide();
-                $('.addFieldWrap').hide();
-                $('#fb-render').formRender({formData: formBuilder.formData});
-            }
-        },
 
-        formBuilder = $fbEditor.formBuilder(fbOptions);
+            formBuilder = $fbEditor.formBuilder(fbOptions);
+        }
+    }else{
+
+        fbOptions = {
+                formData: quizFormData,
+                dataType: 'xml',
+                onCloseFieldEdit: function(editPanel) {},
+                onOpenFieldEdit: function(editPanel) {},
+                onClearAll: function() {
+                    $('#question-index').val(1);
+                    questionnum = $('#question-index').val();
+                    i = 1;
+                },
+                onSave: function() {
+                    $fbEditor.toggle();
+                    $formContainer.toggle();
+                    $('#form-div').hide();
+                    $('.addFieldWrap').hide();
+                    $('#fb-render').formRender({formData: formBuilder.formData});
+                }
+            },
+
+            formBuilder = $fbEditor.formBuilder(fbOptions);
     }
 
     var buttons = document.getElementsByClassName('appendfield1');
@@ -678,6 +704,7 @@ jQuery(function($) {
             data:  { 
                 class: selected_class, 
                 quiz: selected_quiz,
+                reuse: reuse,
                 title: $("#quiz-title").val(),
                 duration: $("#quiz-duration").val(),
                 questionindex: $("#question-index").val(),
