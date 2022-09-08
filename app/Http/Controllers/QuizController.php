@@ -140,7 +140,7 @@ class QuizController extends Controller
 
         }
 
-        //dd($data);
+        dd($data);
 
         return view('lecturer.courseassessment.quizcreate', compact(['group', 'folder', 'data']));
     }
