@@ -264,7 +264,7 @@
 					<a href="{{ route('pendaftar_akademik.student') }}" class="{{ (route('pendaftar_akademik.student') == Request::url()) ? 'active' : ''}}"><i data-feather="user"></i><span>Create Student</span></a>
 				</li>
         		<li>
-					<a href="{{ url('storage/classschedule/index.htm') }}" target="_blank" class="{{ (route('lecturer') == Request::url()) ? 'active' : ''}}"><i data-feather="layout"></i><span>Schedule 2023</span></a>
+					<a href="{{ url('storage/classschedule/index.htm') }}" target="_blank" class="{{ (route('lecturer') == Request::url()) ? 'active' : ''}}"><i data-feather="layout"></i><span>Schedule</span></a>
 				</li>
 			  </ul>
 			  <div class="sidebar-widgets">
