@@ -235,10 +235,13 @@
 			  <ul class="sidebar-menu" data-widget="tree">	  
         		<li>
 					<a href="{{ route('student') }}" class="{{ (route('student') == Request::url()) ? 'active' : ''}}"><i data-feather="bookmark"></i><span>Course</span></a>
-				</li>   
+				</li>
         		<li>
-					<a href="{{ asset('storage/classschedule/index.htm') }}" target="_blank" class="{{ (route('lecturer') == Request::url()) ? 'active' : ''}}"><i data-feather="layout"></i><span>Schedule</span></a>
-				</li> 
+					<a href="{{ Storage::disk('linode')->url('classschedule/index.htm') }}" target="_blank" class="{{ (route('lecturer') == Request::url()) ? 'active' : ''}}"><i data-feather="bookmark"></i><span>Schedule</span></a>
+				</li>   
+        		<!--<li>
+					<a href="{{ url('storage/classschedule/index.htm') }}" target="_blank" class="{{ (route('lecturer') == Request::url()) ? 'active' : ''}}"><i data-feather="layout"></i><span>Schedule</span></a>
+				</li>-->
 			  </ul>
 			  <div class="sidebar-widgets">
 				  <div class="mx-25 mb-30 pb-20 side-bx bg-primary-light rounded20">
