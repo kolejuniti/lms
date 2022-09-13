@@ -262,7 +262,10 @@
 				</li>
 				<li>
 					<a href="{{ route('pendaftar_akademik.student') }}" class="{{ (route('pendaftar_akademik.student') == Request::url()) ? 'active' : ''}}"><i data-feather="user"></i><span>Create Student</span></a>
-				  </li>
+				</li>
+        		<li>
+					<a href="{{ url('storage/classschedule/index.htm') }}" target="_blank" class="{{ (route('lecturer') == Request::url()) ? 'active' : ''}}"><i data-feather="layout"></i><span>Schedule</span></a>
+				</li>
 			  </ul>
 			  <div class="sidebar-widgets">
 				  <div class="mx-25 mb-30 pb-20 side-bx bg-primary-light rounded20">
