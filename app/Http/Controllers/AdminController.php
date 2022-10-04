@@ -330,7 +330,7 @@ class AdminController extends Controller
 
         foreach($faculty as $key => $fcl)
         {
-            $lecturer[] = DB::table('users')->where('faculty', $fcl->id)->whereIn('usrtype', ['LCT','PL'])->get();
+            $lecturer[] = DB::table('users')->where('status', 'ACTIVE')->where('faculty', $fcl->id)->whereIn('usrtype', ['LCT','PL'])->get();
 
             //dd($lecturer);
 
