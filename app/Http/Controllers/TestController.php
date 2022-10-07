@@ -667,7 +667,7 @@ class TestController extends Controller
             ->leftjoin('tblclassstudenttest', function($join) 
             {
                 $join->on('tblclasstest.id', '=', 'tblclassstudenttest.testid');
-                $join->on('tblclassstudenttest.userid',  '=', DB::raw(Session::get('StudInfos')->ic));
+                $join->on('tblclassstudenttest.userid',  '=', DB::raw('12323'));
             })
             ->leftJoin('students', 'tblclassstudenttest.userid', 'students.ic')
             ->leftJoin('tblclassteststatus', 'tblclasstest.status', 'tblclassteststatus.id')
