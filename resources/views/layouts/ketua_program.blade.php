@@ -284,7 +284,7 @@
 				</li>  	
 				@endif
 				<li class="treeview">
-				    <a href="#"><i data-feather="clipboard"></i><span>Report</span>
+				    <a href="#"><i data-feather="archive"></i><span>Archive & Report</span>
 						<span class="pull-right-container">
 							<i class="fa fa-angle-left pull-right"></i>
 						</span>
