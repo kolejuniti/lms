@@ -17,6 +17,10 @@ Route::get('/', function () {
     return view('auth.login');
 });
 
+Route::get('/loginAdmin', function () {
+    return view('auth.loginAdmin');
+});
+
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
@@ -24,6 +28,7 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 Route::get('/SA', [App\Http\Controllers\SuperAdminController::class, 'index']);
 Route::post('/SA/import', [App\Http\Controllers\SuperAdminController::class, 'import']);
 
+Route::get('/admin_dashboard', [App\Http\Controllers\AdminController::class, 'dashboard'])->name('admin.dashboard');
 Route::get('/admin', [App\Http\Controllers\AdminController::class, 'index'])->name('admin');
 Route::get('/admin/{id}/edit', [App\Http\Controllers\AdminController::class, 'edit'])->name('admin.edit');
 Route::patch('/admin/{id}', [App\Http\Controllers\AdminController::class, 'update'])->name('admin.update');
@@ -37,6 +42,7 @@ Route::post('/admin/report/lecturer/getFolder', [App\Http\Controllers\AdminContr
 Route::post('/admin/report/lecturer/getSubfolder', [App\Http\Controllers\AdminController::class, 'getSubFolder']);
 Route::post('/admin/report/lecturer/getSubfolder/getSubfolder2', [App\Http\Controllers\AdminController::class, 'getSubFolder2']);
 Route::post('/admin/report/lecturer/getSubfolder/getSubfolder2/getMaterial', [App\Http\Controllers\AdminController::class, 'getMaterial']);
+Route::get('/admin/attendance/report', [App\Http\Controllers\AdminController::class, 'listAttendance'])->name('admin.attendance');
 
 Route::get('/KP', [App\Http\Controllers\KP_Controller::class, 'index'])->name('ketua_program');
 Route::get('/KP/create', [App\Http\Controllers\KP_Controller::class, 'create'])->name('kp.create');
@@ -59,18 +65,35 @@ Route::get('/KP/lecturer', [App\Http\Controllers\KP_Controller::class, 'lecturer
 Route::post('/KP/lecturer/filter', [App\Http\Controllers\KP_Controller::class, 'getLecturerTable']);
 Route::get('/KP/lecturer/report/{id}', [App\Http\Controllers\KP_Controller::class, 'lecturer_report'])->name('kp.lecturer.report');
 Route::get('/KP/marks', [App\Http\Controllers\KP_Controller::class, 'courseMark'])->name('kp.coursemark');
+Route::get('/KP/report/file', [App\Http\Controllers\KP_Controller::class, 'lecturerReportFile'])->name('kp.report.file');
 
 Route::get('/AO', [App\Http\Controllers\AO_Controller::class, 'index'])->name('pegawai_takbir');
 
+Route::get('/pendaftar_dashboard', [App\Http\Controllers\PendaftarController::class, 'dashboard'])->name('pendaftar.dashboard');
 Route::get('/pendaftar', [App\Http\Controllers\PendaftarController::class, 'index'])->name('pendaftar');
 Route::get('/pendaftar/create', [App\Http\Controllers\PendaftarController::class, 'create'])->name('pendaftar.create');
-Route::get('/pendaftar/create', [App\Http\Controllers\PendaftarController::class, 'create'])->name('pendaftar.create');
 Route::post('/pendaftar/store', [App\Http\Controllers\PendaftarController::class, 'store'])->name('pendaftar.store');
+Route::get('/pendaftar/edit/{ic}', [App\Http\Controllers\PendaftarController::class, 'edit'])->name('pendaftar.edit');
+Route::post('/pendaftar/edit/update', [App\Http\Controllers\PendaftarController::class, 'update'])->name('pendaftar.update');
+Route::post('/pendaftar/getProgram', [App\Http\Controllers\PendaftarController::class, 'getProgram'])->name('pendaftar.getProgram');
 Route::delete('/pendaftar/delete', [App\Http\Controllers\PendaftarController::class, 'delete'])->name('pendaftar.delete');
 Route::post('/pendaftar/group/getSubject', [App\Http\Controllers\PendaftarController::class, 'getSubjectOption']);
 Route::post('/pendaftar/group/getStudentTableIndex', [App\Http\Controllers\PendaftarController::class, 'getStudentTableIndex']);
 Route::post('/pendaftar/group/getGroupOption', [App\Http\Controllers\PendaftarController::class, 'getGroupOption']);
+Route::get('/pendaftar/spm/{ic}', [App\Http\Controllers\PendaftarController::class, 'spmIndex'])->name('pendaftar.spm');
+Route::post('/pendaftar/spm/{ic}/store', [App\Http\Controllers\PendaftarController::class, 'spmStore'])->name('pendaftar.spm.store');
+Route::get('/pendaftar/student/edit', [App\Http\Controllers\PendaftarController::class, 'studentEdit'])->name('pendaftar.student.edit');
+Route::get('/pendaftar/student/status', [App\Http\Controllers\PendaftarController::class, 'studentStatus'])->name('pendaftar.student.status');
+Route::post('/pendaftar/student/status/listStudent', [App\Http\Controllers\PendaftarController::class, 'getStudentList']);
+Route::post('/pendaftar/student/status/getStudent', [App\Http\Controllers\PendaftarController::class, 'getStudentInfo']);
+Route::post('/pendaftar/student/status/storeStudent', [App\Http\Controllers\PendaftarController::class, 'storeStudentInfo']);
+Route::get('/pendaftar/student/viewStatus', [App\Http\Controllers\PendaftarController::class, 'viewStatus'])->name('pendaftar.student.viewstatus');
+Route::post('/pendaftar/student/status/getReportStd', [App\Http\Controllers\PendaftarController::class, 'getReportStd']);
+Route::get('/pendaftar/student/report', [App\Http\Controllers\PendaftarController::class, 'studentReport'])->name('pendaftar.student.studentreport');
 
+
+
+Route::get('/AR_dashboard', [App\Http\Controllers\AR_Controller::class, 'dashboard'])->name('pendaftar_akademik.dashboard');
 Route::get('/AR', [App\Http\Controllers\AR_Controller::class, 'courseList'])->name('pendaftar_akademik');
 Route::post('/AR/getCourse', [App\Http\Controllers\AR_Controller::class, 'getCourse']);
 Route::post('/AR/course/create', [App\Http\Controllers\AR_Controller::class, 'createCourse']);
@@ -85,6 +108,8 @@ Route::get('/AR/session', [App\Http\Controllers\AR_Controller::class, 'sessionLi
 Route::post('/AR/session/create', [App\Http\Controllers\AR_Controller::class, 'createSession']);
 Route::post('/AR/session/update', [App\Http\Controllers\AR_Controller::class, 'updateSession']);
 Route::delete('/AR/session/delete', [App\Http\Controllers\AR_Controller::class, 'deleteDelete'])->name('pendaftar_akademik.session.delete');
+Route::get('/AR/schedule/index', [App\Http\Controllers\AR_Controller::class, 'scheduleIndex'])->name('pendaftar_akademik.schedule');
+Route::post('/AR/schedule/store', [App\Http\Controllers\AR_Controller::class, 'dropzoneStore'])->name('pendaftar_akademik.schedule.store');
 
 Route::get('/lecturer', [App\Http\Controllers\LecturerController::class, 'index'])->name('lecturer');
 Route::get('/lecturer/setting', [App\Http\Controllers\LecturerController::class, 'setting'])->name('lecturer.setting');
@@ -394,9 +419,28 @@ Route::get('/student/forum/{id}', [App\Http\Controllers\ForumController::class, 
 Route::post('/student/forum/{id}/insert', [App\Http\Controllers\ForumController::class, 'studinsertTopic']);
 Route::post('/student/forum/{id}/topic/insert', [App\Http\Controllers\ForumController::class, 'studinsertForum']);
 
+Route::get('/finance_dashboard', [App\Http\Controllers\FinanceController::class, 'dashboard'])->name('finance.dashboard');
+Route::get('/finance', [App\Http\Controllers\FinanceController::class, 'index'])->name('finance');
+Route::post('/finance/claim/create', [App\Http\Controllers\FinanceController::class, 'createClaim']);
+Route::post('/finance/claim/update', [App\Http\Controllers\FinanceController::class, 'updateClaim']);
+Route::post('/finance/claim/delete', [App\Http\Controllers\FinanceController::class, 'deleteClaim']);
+Route::get('/finance/claimpackage', [App\Http\Controllers\FinanceController::class, 'claimPackage'])->name('claimpackage');
+Route::post('/finance/claimpackage/getclaim', [App\Http\Controllers\FinanceController::class, 'getClaim']);
+Route::post('/finance/claimpackage/addclaim', [App\Http\Controllers\FinanceController::class, 'addClaim']);
+Route::post('/finance/claimpackage/copyclaim', [App\Http\Controllers\FinanceController::class, 'copyClaim']);
+Route::post('/finance/claimpackage/update', [App\Http\Controllers\FinanceController::class, 'updatePackage']);
+Route::post('/finance/claimpackage/delete', [App\Http\Controllers\FinanceController::class, 'deletePackage']);
+Route::get('/finance/payment', [App\Http\Controllers\FinanceController::class, 'studentPayment'])->name('finance.payment');
+Route::post('/finance/payment/getStudent', [App\Http\Controllers\FinanceController::class, 'getStudentPayment']);
+Route::post('/finance/payment/storePayment', [App\Http\Controllers\FinanceController::class, 'storePayment']);
+Route::post('/finance/payment/storePaymentDtl', [App\Http\Controllers\FinanceController::class, 'storePaymentDtl']);
+Route::post('/finance/payment/deletePayment', [App\Http\Controllers\FinanceController::class, 'deletePayment']);
+Route::post('/finance/payment/confirmPayment', [App\Http\Controllers\FinanceController::class, 'confirmPayment']);
+
 
 Route::middleware(['preventBackHistory'])->group(function () {
     Route::post('/login/custom', [App\Http\Controllers\LoginController::class, 'login'])->name('login.custom');
+    Route::post('/loginAdmin/custom', [App\Http\Controllers\LoginController::class, 'loginAdmin'])->name('loginAdmin.custom');
     Route::post('/login/student/custom', [App\Http\Controllers\LoginStudentController::class, 'login'])->name('login.student.custom');
 });
 
