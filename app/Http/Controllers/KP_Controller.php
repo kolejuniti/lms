@@ -671,4 +671,37 @@ class KP_Controller extends Controller
 
         return view('ketua_program.course_mark', compact('course'));
     }
+
+    public function lecturerReportFile()
+    {
+        $user = Auth::user();
+
+        //dd($user);
+
+        $faculty = DB::table('tblfaculty')->where('id', $user->faculty)->get();
+
+        foreach($faculty as $key => $fcl)
+        {
+            $lecturer[] = DB::table('users')->where('status', 'ACTIVE')->where('faculty', $fcl->id)->where('usrtype', 'LCT')->get();
+
+            //dd($lecturer);
+
+            foreach($lecturer[$key] as $key1 => $lct)
+            {
+                $course[$key][$key1] = DB::table('user_subjek')
+                    ->join('subjek', 'user_subjek.course_id','=','subjek.sub_id')
+                    ->join('sessions', 'user_subjek.session_id','sessions.SessionID')
+                    ->where('user_subjek.user_ic', $lct->ic)
+                    ->select('subjek.*','user_subjek.course_id','sessions.SessionName','sessions.SessionID')
+                    ->groupBy('user_subjek.course_id')
+                    ->get();
+
+            }
+        }
+
+        //dd($course);
+
+        return view('ketua_program.report.lecturerReport', compact('faculty','lecturer','course'));
+
+    }
 }
