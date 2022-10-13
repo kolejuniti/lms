@@ -625,7 +625,8 @@ jQuery(function($) {
             formBuilder.actions.addField(field, index);
 
             field = {
-                type: 'text',
+                type: 'textarea',
+                rows: 10,
                 className: 'form-control',
                 placeholder: 'Your Answer',
                 label: '',
