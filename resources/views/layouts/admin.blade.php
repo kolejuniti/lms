@@ -250,7 +250,10 @@
 						<li><a href="/admin/report/lecturer">Lecturer</a></li>
 						<li><a href="#">-</a></li>
 					</ul>
-				</li> 
+				</li>
+				<li>
+					<a href="{{ Storage::disk('linode')->url('classschedule/index.htm') }}" target="_blank" class="{{ (route('lecturer') == Request::url()) ? 'active' : ''}}"><i data-feather="layout"></i><span>Schedule</span></a>
+				</li>  
 
 				<!--<li>
 					<a href="" class=""><i data-feather="video"></i><span>Web Conferencing</span></a>
