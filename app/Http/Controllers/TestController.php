@@ -38,7 +38,8 @@ class TestController extends Controller
                     ['tblclasstest.classid', Session::get('CourseIDS')],
                     ['tblclasstest.sessionid', Session::get('SessionIDS')],
                     ['tblclasstest.addby', $user->ic],
-                    ['tblclasstest.date_from','!=', null]
+                    ['tblclasstest.date_from','!=', null],
+                    ['tblclasstest.status','!=','3']
                 ])->select('tblclasstest.*', 'tblclassteststatus.statusname')->get();
 
         //dd($data);
