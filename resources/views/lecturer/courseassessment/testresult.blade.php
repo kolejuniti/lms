@@ -249,7 +249,7 @@ function renderForm(formdata){
 
         $(`[name="radio-question${i}"]:not(:checked)`).attr('disabled', true);
         $(`[name="checkbox-question${i}[]"]`).click(false);
-        $(`[name="subjective-text${i}"]:not(:checked)`).attr('disabled', true);
+        $(`[name="subjective-text${i}"]:not(:checked)`).attr('readonly', true);
 
         //alert(`[name="checkbox-question${i}"]`)
         }
