@@ -121,7 +121,7 @@
                                   <div class="form-inline col-md-6 d-flex">
                                       <input  type="number" class="form-control" name="marks[]" max="{{ $qz->total_mark}}" value="{{ $status[$key]->final_mark }}">
                                       <input  type="text" name="ic[]" value="{{ $qz->student_ic }}" hidden>
-                                      <span>/ {{ $qz->total_mark}} </span>
+                                      <span>{{ $status[$key]->final_mark }} / {{ $qz->total_mark}}</span>
                                   </div>
                                 </td>
                               </tr> 
