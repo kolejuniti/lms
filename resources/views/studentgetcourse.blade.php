@@ -11,7 +11,7 @@
             <div class="fx-overlay ">
               <ul class="fx-info">
                 <li>
-                  <a href="/student/{{ $key->id }}" class="btn btn-primary-outline mr-1" data-toggle="tooltip" data-placement="auto" ><i class="fa fa-paper-plane"></i> View</a>
+                  <a href="/student/{{ $key->id }}?session={{ $key->SessionID }}" class="btn btn-primary-outline mr-1" data-toggle="tooltip" data-placement="auto" ><i class="fa fa-paper-plane"></i> View</a>
                 </li> 
               </ul>
             </div>
