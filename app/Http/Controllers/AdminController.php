@@ -442,7 +442,7 @@ class AdminController extends Controller
 
     }
 
-    public function getAssessment(Request $request)
+    /*public function getAssessment(Request $request)
     {
 
         if($request->from != '' && $request->to != '')
@@ -473,39 +473,6 @@ class AdminController extends Controller
                         ['sessionid', $session],
                         ['addby', $ic]
                         ])->whereBetween('created_at', [$request->from, $request->to])->get();
-
-            /*if($request->as == 'QUIZ')
-            {
-
-                $assessment = DB::table('tblclassquiz')
-                      ->where([
-                                ['classid', $course],
-                                ['sessionid', $session],
-                                ['addby', $ic]
-                                ])->whereBetween('created_at', [$request->from, $request->to])->get();
-
-
-            }elseif($request->as == 'TEST')
-            {
-
-                $assessment = DB::table('tblclasstest')
-                      ->where([
-                                ['classid', $course],
-                                ['sessionid', $session],
-                                ['addby', $ic]
-                                ])->whereBetween('created_at', [$request->from, $request->to])->get();
-
-            }elseif($request->as == 'ASSIGNMENT')
-            {
-
-                $assessment = DB::table('tblclassassign')
-                      ->where([
-                                ['classid', $course],
-                                ['sessionid', $session],
-                                ['addby', $ic]
-                                ])->whereBetween('created_at', [$request->from, $request->to])->get();
-
-            }*/
 
             $content = "";
             $content .= '
@@ -584,6 +551,35 @@ class AdminController extends Controller
             return $content;
 
         }
+
+    }*/
+
+    public function assessment()
+    {
+
+        return view('admin.report.assessment');
+
+    }
+
+    public function getAssessment(Request $request)
+    {
+
+        $data['assessment'] = DB::table('tblclassquiz')
+        ->join('users', 'tblclassquiz.addby', 'users.ic')
+        ->whereBetween('tblclassquiz.created_at', [$request->from, $request->to])
+        ->select('tblclassquiz.*', 'users.name')->get();
+
+        $data['assessment2'] = DB::table('tblclasstest')
+        ->join('users', 'tblclasstest.addby', 'users.ic')
+        ->whereBetween('tblclasstest.created_at', [$request->from, $request->to])
+        ->select('tblclasstest.*', 'users.name')->get();
+
+        $data['assessment3'] = DB::table('tblclassassign')
+        ->join('users', 'tblclassassign.addby', 'users.ic')
+        ->whereBetween('tblclassassign.created_at', [$request->from, $request->to])
+        ->select('tblclassassign.*', 'users.name')->get();
+
+        return view('admin.report.getAssessment', compact('data'));
 
     }
 
