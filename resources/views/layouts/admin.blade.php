@@ -216,7 +216,6 @@
 							<p class="pt-5 fs-14 mb-0 fw-700"></p>
 							<small class="fs-10 mb-0 text-uppercase text-mute"></small>
 						</div>
-						<!--<img src="{{ (Session::get('User')->image != null) ? Storage::disk('linode')->url(Session::get('User')->image) : asset('assets/images/avatar/avatar-13.png') }}" class="avatar rounded-circle bg-primary-light h-40 w-40" alt="" />-->
 					</div>
 				</a>
 			</li>		  
