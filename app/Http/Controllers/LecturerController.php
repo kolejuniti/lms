@@ -1785,7 +1785,7 @@ class LecturerController extends Controller
                 }
         }
 
-        //dd($overallquiz);
+        //dd($overallassign);
 
         return view('lecturer.courseassessment.studentreport', compact('groups', 'students',
                                                                        'quiz', 'quizanswer','overallquiz',
