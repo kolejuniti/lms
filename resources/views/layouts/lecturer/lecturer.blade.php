@@ -312,8 +312,6 @@
 								</span>
 							</a>
 					<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
-						<!--<li><a href="/lecturer/class/schedule" class="">Manage Scedule</a></li>-->
-						<li><a href="https://uniti.edu.my/wp-content/uploads/2022/08/index.htm" target="_blank" class="">Scedule</a></li>
 						<li class="treeview">
 									<a href="#"><span>Attendance</span>
 									</a>
