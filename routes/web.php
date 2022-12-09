@@ -43,7 +43,9 @@ Route::post('/admin/report/lecturer/getSubfolder', [App\Http\Controllers\AdminCo
 Route::post('/admin/report/lecturer/getSubfolder/getSubfolder2', [App\Http\Controllers\AdminController::class, 'getSubFolder2']);
 Route::post('/admin/report/lecturer/getSubfolder/getSubfolder2/getMaterial', [App\Http\Controllers\AdminController::class, 'getMaterial']);
 Route::get('/admin/attendance/report', [App\Http\Controllers\AdminController::class, 'listAttendance'])->name('admin.attendance');
-Route::post('/admin/report/lecturer/getAssessment', [App\Http\Controllers\AdminController::class, 'getAssessment']);
+//Route::post('/admin/report/lecturer/getAssessment', [App\Http\Controllers\AdminController::class, 'getAssessment']);
+Route::get('/admin/report/assessment', [App\Http\Controllers\AdminController::class, 'assessment'])->name('admin.report.assessment');
+Route::post('/admin/report/assessment/getAssessment', [App\Http\Controllers\AdminController::class, 'getAssessment']);
 Route::post('/admin/report/lecturer/getUserLog', [App\Http\Controllers\AdminController::class, 'getUserLog']);
 
 Route::get('/KP', [App\Http\Controllers\KP_Controller::class, 'index'])->name('ketua_program');
