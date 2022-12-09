@@ -296,7 +296,6 @@
 					</span>
 				</a>
 				<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
-					<li><a href="/student/class/schedule" class="">Scedule</a></li>
 					<li class="treeview">
 						<a href="#"><span>Online Class</span>
 						</a>
