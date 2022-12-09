@@ -1,4 +1,4 @@
-@extends('../layouts.finance')
+@extends('../layouts.admin')
 
 @section('main')
 <!-- Content Header (Page header) -->
