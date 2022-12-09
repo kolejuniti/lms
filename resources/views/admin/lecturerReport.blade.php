@@ -51,15 +51,15 @@
                                       <i class="ti-user" style="margin-right: 5px;"></i>
                                       {{ $lct->name }}
                                       @if($lct->lastLogin != null)
-                                      <span class="badge bg-success pull-right" style="margin-left: 10px;">Last Logged : {{ $lct->lastLogin }}</span>
+                                      <a class="btn btn-success pull-right btn-sm pr-2" onclick="getUser('{{ $lct->ic }}')" data-toggle="modal" data-target="#userLog">Last Logged : {{ $lct->lastLogin }}</a>
                                       @else
-                                      <span class="badge bg-danger pull-right" style="margin-left: 10px;">Not Logged</span>
+                                      <a class="btn btn-danger pull-right btn-sm pr-2" data-toggle="modal" data-target="#userLog">Not Logged</a>
                                       @endif
                                   </div>
                               </td>
                           </tr>
                           @foreach ($course[$key][$key2] as $key3 => $crs)
-                          <tr id="demo-{{ $lct->ic }}" class="collapse cell-1 row-child" data-toggle="collapse" data-target="#demo-{{ $crs->id }}" onclick="tryerr0('{{ $crs->id }}','{{ $lct->ic }}')">
+                          <tr id="demo-{{ $lct->ic }}" class="collapse cell-1 row-child" data-toggle="collapse" data-target="#demo-{{ $crs->id }}" onclick="tryerr0('{{ $crs->id }}','{{ $lct->ic }}','{{ $crs->SessionID }}')">
                               <td>
                                   <div style="margin-left: 40px;">
                                       <i class="ti-folder" style="margin-right: 5px;"></i>
@@ -81,6 +81,99 @@
               </div>
             </div>
             <!-- /.card -->
+            <div id="uploadModal" class="modal" class="modal fade" role="dialog">
+              <div class="modal-dialog">
+                  <!-- modal content-->
+                  <div class="modal-content" id="getModal">
+                      <form action="#" method="post" role="form" enctype="multipart/form-data">
+                        @csrf
+                        @method('POST')
+                        <div class="modal-header">
+                            <div class="">
+                                <button class="close waves-effect waves-light btn btn-danger btn-sm pull-right" data-dismiss="modal">
+                                    &times;
+                                </button>
+                            </div>
+                        </div>
+                        <div class="modal-body">
+                          <div class="row col-md-12">
+                            <div>
+                              <div class="form-group">
+                                <label>From (Start)</label>
+                                <input type="date" name="from" id="from" class="form-control">
+                              </div>
+                            </div>
+                            <div>
+                              <div class="form-group">
+                                <label>To (End)</label>
+                                <input type="date" name="to" id="to" class="form-control">
+                              </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-md-12 mt-3">
+                                    <div class="form-group mt-3">
+                                        <label class="form-label">Asessment List</label>
+                                        <table id="claim_list" class="table table-striped projects display dataTable">
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="modal-footer">
+                        </div>
+                      </form>
+                  </div>
+              </div>
+            </div>
+
+            <div id="userLog" class="modal" class="modal fade" role="dialog">
+              <div class="modal-dialog">
+                  <!-- modal content-->
+                  <div class="modal-content" id="getModal">
+                      <form action="#" method="post" role="form" enctype="multipart/form-data">
+                        @csrf
+                        @method('POST')
+                        <div class="modal-header">
+                            <div class="">
+                                <button class="close waves-effect waves-light btn btn-danger btn-sm pull-right" data-dismiss="modal">
+                                    &times;
+                                </button>
+                            </div>
+                        </div>
+                        <div class="modal-body">
+                          <div class="row col-md-12">
+                            <div>
+                              <div class="form-group">
+                                <label>From (Start)</label>
+                                <input type="date" name="from_log" id="from_log" class="form-control">
+                              </div>
+                            </div>
+                            <div>
+                              <div class="form-group">
+                                <label>To (End)</label>
+                                <input type="date" name="to_log" id="to_log" class="form-control">
+                              </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-md-12 mt-3">
+                                    <div class="form-group mt-3">
+                                        <label class="form-label">User Log</label>
+                                        <table id="log_list" class="table table-striped projects display dataTable">
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="modal-footer">
+                        </div>
+                      </form>
+                  </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -102,14 +195,14 @@ $(document).ready( function () {
         });
     } );
 
-function tryerr0(id,ic)
+function tryerr0(id,ic,ses)
 {
   //alert(id);
   return $.ajax({
         headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
         url      : "{{ url('admin/report/lecturer/getFolder') }}",
         method   : 'POST',
-        data 	 : {id: id,ic: ic},
+        data 	 : {id: id,ic: ic,ses: ses},
         error:function(err){
             alert("Error");
             console.log(err);
@@ -187,6 +280,87 @@ function tryerr3(id)
           //$('#chapter').selectpicker('refresh');
         }
     });
+}
+
+$(document).on('change', '#from', async function(e){
+    selected_from = $(e.target).val();
+
+    await getAssessment(selected_from,selected_to);
+});
+
+$(document).on('change', '#to', async function(e){
+    selected_to = $(e.target).val();
+
+    await getAssessment(selected_from,selected_to);
+});
+
+function getAssessment(from,to)
+{
+
+  return $.ajax({
+        headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
+        url      : "{{ url('admin/report/lecturer/getAssessment') }}",
+        method   : 'POST',
+        data 	 : {from: from,to: to},
+        error:function(err){
+            alert("Error");
+            console.log(err);
+        },
+        success  : function(data){
+            
+            //$('#lecturer-selection-div').removeAttr('hidden');
+            //$('#lecturer').selectpicker('refresh');
+  
+            //$('#chapter').removeAttr('hidden');
+                $('#claim_list').html(data);
+                //$('#chapter').selectpicker('refresh');
+        }
+    });
+
+}
+
+$(document).on('change', '#from_log', async function(e){
+    selected_from = $(e.target).val();
+
+    await getUserLog(selected_from,selected_to);
+});
+
+$(document).on('change', '#to_log', async function(e){
+    selected_to = $(e.target).val();
+
+    await getUserLog(selected_from,selected_to);
+});
+
+function getUser(ic)
+{
+
+  user = ic;
+
+}
+
+function getUserLog(from,to)
+{
+
+  return $.ajax({
+        headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
+        url      : "{{ url('admin/report/lecturer/getUserLog') }}",
+        method   : 'POST',
+        data 	 : {from: from,to: to,user: user},
+        error:function(err){
+            alert("Error");
+            console.log(err);
+        },
+        success  : function(data){
+            
+            //$('#lecturer-selection-div').removeAttr('hidden');
+            //$('#lecturer').selectpicker('refresh');
+  
+            //$('#chapter').removeAttr('hidden');
+                $('#log_list').html(data);
+                //$('#chapter').selectpicker('refresh');
+        }
+    });
+
 }
 
 </script>
