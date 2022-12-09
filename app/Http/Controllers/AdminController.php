@@ -19,10 +19,15 @@ use Intervention\Image\Facades\Image;
 
 class AdminController extends Controller
 {
+    public function dashboard()
+    {
+        Session::put('User', Auth::user());
+
+        return view('dashboard');
+    }
+
     public function index() 
     {
-
-        Session::put('User', Auth::user());
 
         //dd(Session::get('User'));
 
@@ -355,6 +360,11 @@ class AdminController extends Controller
 
     public function getFolder(Request $request)
     {
+        Session::put('CourseID', $request->id);
+
+        Session::put('SessionID', $request->ses);
+
+        Session::put('LectIC', $request->ic);
 
         $folder = DB::table('lecturer_dir')->where('Addby', $request->ic)->where('CourseID', $request->id)->get();
 
@@ -409,5 +419,230 @@ class AdminController extends Controller
         $prev2 = $directory->MaterialDirID;
 
         return view('admin.getSubfolder', compact('classmaterial','prev2'));
+    }
+
+    public function listAttendance(Request $request)
+    {
+        $courseid = Session::get('CourseID');
+
+        $sessionid = Session::get('SessionID');
+
+        $list = DB::table('tblclassattendance')
+                ->join('user_subjek', 'tblclassattendance.groupid', 'user_subjek.id')
+                ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+                ->where([
+                    ['subjek.id', $courseid],
+                    ['user_subjek.session_id', $sessionid]
+                ])->groupBy('tblclassattendance.groupname')->groupBy('tblclassattendance.classdate')
+                ->orderBy('tblclassattendance.classdate', 'ASC')->get();
+
+        //dd($list);
+
+        return view('lecturer.class.attendancelist', compact('list'));
+
+    }
+
+    public function getAssessment(Request $request)
+    {
+
+        if($request->from != '' && $request->to != '')
+        {
+            $course = Session::get('CourseID', $request->id);
+
+            $session = Session::get('SessionID', $request->ses);
+
+            $ic = Session::get('LectIC', $request->ic);
+
+            $assessment = DB::table('tblclassquiz')
+            ->where([
+                      ['classid', $course],
+                      ['sessionid', $session],
+                      ['addby', $ic]
+                      ])->whereBetween('created_at', [$request->from, $request->to])->get();
+
+            $assessment2 = DB::table('tblclasstest')
+            ->where([
+                    ['classid', $course],
+                    ['sessionid', $session],
+                    ['addby', $ic]
+                    ])->whereBetween('created_at', [$request->from, $request->to])->get();
+
+            $assessment3 = DB::table('tblclassassign')
+                ->where([
+                        ['classid', $course],
+                        ['sessionid', $session],
+                        ['addby', $ic]
+                        ])->whereBetween('created_at', [$request->from, $request->to])->get();
+
+            /*if($request->as == 'QUIZ')
+            {
+
+                $assessment = DB::table('tblclassquiz')
+                      ->where([
+                                ['classid', $course],
+                                ['sessionid', $session],
+                                ['addby', $ic]
+                                ])->whereBetween('created_at', [$request->from, $request->to])->get();
+
+
+            }elseif($request->as == 'TEST')
+            {
+
+                $assessment = DB::table('tblclasstest')
+                      ->where([
+                                ['classid', $course],
+                                ['sessionid', $session],
+                                ['addby', $ic]
+                                ])->whereBetween('created_at', [$request->from, $request->to])->get();
+
+            }elseif($request->as == 'ASSIGNMENT')
+            {
+
+                $assessment = DB::table('tblclassassign')
+                      ->where([
+                                ['classid', $course],
+                                ['sessionid', $session],
+                                ['addby', $ic]
+                                ])->whereBetween('created_at', [$request->from, $request->to])->get();
+
+            }*/
+
+            $content = "";
+            $content .= '
+            <div class="table-responsive" style="width:99.7%">
+            <table id="table_registerstudent" class="w-100 table table-bordered table-hover display nowrap margin-top-10 w-p100">
+                <thead class="thead-themed">
+                <th>No</th>
+                <th>Title</th>
+                <th>Date</th>
+                <th></th>
+                </thead>
+                <tbody>
+            ';
+            foreach($assessment as $key => $as){
+                //$registered = ($student->status == 'ACTIVE') ? 'checked' : '';
+                $content .= '
+                <tr>
+                    <td >
+                        <label>'.$key+1 .'</label>
+                    </td>
+                    <td >
+                        <label>'.$as->title.'</label>
+                    </td>
+                    <td >
+                        <label>'.$as->created_at.'</label>
+                    </td>
+                </tr>
+                ';
+            }
+
+            foreach($assessment2 as $key => $as){
+                //$registered = ($student->status == 'ACTIVE') ? 'checked' : '';
+                $content .= '
+                <tr>
+                    <td >
+                        <label>'.$key+1 .'</label>
+                    </td>
+                    <td >
+                        <label>'.$as->title.'</label>
+                    </td>
+                    <td >
+                        <label>'.$as->created_at.'</label>
+                    </td>
+                </tr>
+                ';
+            }
+
+            foreach($assessment3 as $key => $as){
+                //$registered = ($student->status == 'ACTIVE') ? 'checked' : '';
+                $content .= '
+                <tr>
+                    <td >
+                        <label>'.$key+1 .'</label>
+                    </td>
+                    <td >
+                        <label>'.$as->title.'</label>
+                    </td>
+                    <td >
+                        <label>'.$as->created_at.'</label>
+                    </td>
+                </tr>
+                ';
+            }
+                $content .= '</tbody></table>
+                
+                <script>
+                $(\'#table_registerstudent\').DataTable({
+                    dom: \'lBfrtip\', // if you remove this line you will see the show entries dropdown
+                    
+                    buttons: [
+                        \'copy\', \'csv\', \'excel\', \'pdf\', \'print\'
+                    ],
+                  });
+                </script>';
+
+            return $content;
+
+        }
+
+    }
+
+
+    public function getUserLog(Request $request)
+    {
+
+        if($request->from != '' && $request->to != '')
+        {
+
+            $log = DB::table('tbluser_log')
+            ->where([
+                      ['ic', $request->user]
+                      ])->whereBetween('date', [$request->from, $request->to])->get();
+
+            $content = "";
+            $content .= '
+            <div class="table-responsive" style="width:99.7%">
+            <table id="table_registerstudent" class="w-100 table table-bordered table-hover display nowrap margin-top-10 w-p100">
+                <thead class="thead-themed">
+                <th>No</th>
+                <th>Remark</th>
+                <th>Date</th>
+                <th></th>
+                </thead>
+                <tbody>
+            ';
+            foreach($log as $key => $lg){
+                //$registered = ($student->status == 'ACTIVE') ? 'checked' : '';
+                $content .= '
+                <tr>
+                    <td >
+                        <label>'.$key+1 .'</label>
+                    </td>
+                    <td >
+                        <label>'.$lg->remark.'</label>
+                    </td>
+                    <td >
+                        <label>'.$lg->date.'</label>
+                    </td>
+                </tr>
+                ';
+            }
+
+                $content .= '</tbody></table>
+                
+                <script>
+                $(\'#table_registerstudent\').DataTable({
+                    dom: \'lBfrtip\', // if you remove this line you will see the show entries dropdown
+                    
+                    buttons: [
+                        \'copy\', \'csv\', \'excel\', \'pdf\', \'print\'
+                    ],
+                  });
+                </script>';
+
+            return $content;
+
+        }
+
     }
 }
