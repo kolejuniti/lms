@@ -248,6 +248,7 @@
 				    </a>
 					<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
 						<li><a href="/admin/report/lecturer">Lecturer</a></li>
+						<li><a href="/admin/report/assessment">Assessment</a></li>
 					</ul>
 				</li>
 				<li>
