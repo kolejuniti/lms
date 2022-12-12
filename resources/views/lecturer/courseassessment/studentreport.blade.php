@@ -86,7 +86,17 @@
                                 </th>
                                 @endforeach
                                 <th >
-                                  Overall Quiz (%)
+                                  @php
+                                  $markpercen = DB::table('tblclassmarks')->where([
+                                  ['course_id', request()->id],
+                                  ['assessment', 'quiz']
+                                  ])->first();
+                                  @endphp
+                                  @if ($markpercen != null)
+                                  Overall QUIZ ({{ $markpercen->mark_percentage }}%)
+                                  @else
+                                  Overall QUIZ (%)
+                                  @endif
                                 </th>
                                 <!--<th>
                                   TEST
@@ -97,7 +107,17 @@
                                 </th>
                                 @endforeach
                                 <th >
+                                  @php
+                                  $markpercen = DB::table('tblclassmarks')->where([
+                                  ['course_id', request()->id],
+                                  ['assessment', 'test']
+                                  ])->first();
+                                  @endphp
+                                  @if ($markpercen != null)
+                                  Overall Test ({{ $markpercen->mark_percentage }}%)
+                                  @else
                                   Overall Test (%)
+                                  @endif
                                 </th>
                                 <!--<th>
                                   ASSIGNMENT
@@ -108,7 +128,17 @@
                                 </th>
                                 @endforeach
                                 <th >
-                                  Overall Assignment (%)
+                                  @php
+                                  $markpercen = DB::table('tblclassmarks')->where([
+                                  ['course_id', request()->id],
+                                  ['assessment', 'assignment']
+                                  ])->first();
+                                  @endphp
+                                  @if ($markpercen != null)
+                                  Overall ASSIGNMENT ({{ $markpercen->mark_percentage }}%)
+                                  @else
+                                  Overall ASSIGNMENT (%)
+                                  @endif
                                 </th>
                               </tr>
                             </thead>
