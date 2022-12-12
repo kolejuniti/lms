@@ -38,8 +38,7 @@ class QuizController extends Controller
                     ['tblclassquiz.classid', Session::get('CourseIDS')],
                     ['tblclassquiz.sessionid', Session::get('SessionIDS')],
                     ['tblclassquiz.addby', $user->ic],
-                    ['tblclassquiz.date_from','!=', null],
-                    ['tblclassquiz.status','!=','3']
+                    ['tblclassquiz.date_from','!=', null]
                 ])->select('tblclassquiz.*', 'tblclassquizstatus.statusname')->get();
 
         //dd($data);
@@ -1086,60 +1085,68 @@ class QuizController extends Controller
             
         $quizid = empty($request->quiz) ? '' : $request->quiz;
 
+        if($group != null && $chapter != null)
+        {
         
-        if( !empty($quizid) ){
-            $q = DB::table('tblclassquiz')->where('id', $quizid)->update([
-                "title" => $title,
-                "total_mark" => $marks,
-                "addby" => $user->ic,
-                "status" => 2
-            ]);
-        }else{
-            $file_name = $file->getClientOriginalName();
-            $file_ext = $file->getClientOriginalExtension();
-            $fileInfo = pathinfo($file_name);
-            $filename = $fileInfo['filename'];
-            $newname = $filename . "." . $file_ext;
-            $newpath = "classquiz2/" .  $classid . "/" . $user->name . "/" . $title . "/" . $newname;
-
-            if(!file_exists($newname)){
-                Storage::disk('linode')->putFileAs(
-                    $dir,
-                    $file,
-                    $newname,
-                    'public'
-                );
-
-                $q = DB::table('tblclassquiz')->insertGetId([
-                    "classid" => $classid,
-                    "sessionid" => $sessionid,
+            if( !empty($quizid) ){
+                $q = DB::table('tblclassquiz')->where('id', $quizid)->update([
                     "title" => $title,
-                    'content' => $newpath,
                     "total_mark" => $marks,
                     "addby" => $user->ic,
                     "status" => 2
                 ]);
+            }else{
+                $file_name = $file->getClientOriginalName();
+                $file_ext = $file->getClientOriginalExtension();
+                $fileInfo = pathinfo($file_name);
+                $filename = $fileInfo['filename'];
+                $newname = $filename . "." . $file_ext;
+                $newpath = "classquiz2/" .  $classid . "/" . $user->name . "/" . $title . "/" . $newname;
 
-                foreach($request->group as $grp)
-                {
-                    $gp = explode('|', $grp);
+                if(!file_exists($newname)){
+                    Storage::disk('linode')->putFileAs(
+                        $dir,
+                        $file,
+                        $newname,
+                        'public'
+                    );
 
-                    DB::table('tblclassquiz_group')->insert([
-                        "groupid" => $gp[0],
-                        "groupname" => $gp[1],
-                        "quizid" => $q
+                    $q = DB::table('tblclassquiz')->insertGetId([
+                        "classid" => $classid,
+                        "sessionid" => $sessionid,
+                        "title" => $title,
+                        'content' => $newpath,
+                        "total_mark" => $marks,
+                        "addby" => $user->ic,
+                        "status" => 2
                     ]);
-                }
 
-                foreach($request->chapter as $chp)
-                {
-                    DB::table('tblclassquiz_chapter')->insert([
-                        "chapterid" => $chp,
-                        "quizid" => $q
-                    ]);
+                    foreach($request->group as $grp)
+                    {
+                        $gp = explode('|', $grp);
+
+                        DB::table('tblclassquiz_group')->insert([
+                            "groupid" => $gp[0],
+                            "groupname" => $gp[1],
+                            "quizid" => $q
+                        ]);
+                    }
+
+                    foreach($request->chapter as $chp)
+                    {
+                        DB::table('tblclassquiz_chapter')->insert([
+                            "chapterid" => $chp,
+                            "quizid" => $q
+                        ]);
+                    }
+
                 }
 
             }
+
+        }else{
+
+            return redirect()->back()->withErrors(['Please fill in the group and sub-chapter checkbox !']);
 
         }
         

@@ -38,8 +38,7 @@ class AssignmentController extends Controller
                     ['tblclassassign.classid', Session::get('CourseIDS')],
                     ['tblclassassign.sessionid', Session::get('SessionIDS')],
                     ['tblclassassign.addby', $user->ic],
-                    ['tblclassassign.deadline','!=', null],
-                    ['tblclassassign.status','!=','3']
+                    ['tblclassassign.deadline','!=', null]
                 ])->select('tblclassassign.*', 'tblclassassignstatus.statusname')->get();
 
       
@@ -188,45 +187,54 @@ class AssignmentController extends Controller
         $newname = $filename . "." . $file_ext;
         $newpath = "classassignment/" .  $classid . "/" . $user->name . "/" . $data['assign-title'] . "/" . $newname;
 
-        if(! file_exists($newname)){
-            Storage::disk('linode')->putFileAs(
-                $dir,
-                $file,
-                $newname,
-                'public'
-              );
+        if($request->chapter != null && $request->chapter != null)
+        {
 
-            $q = DB::table('tblclassassign')->insertGetId([
-                'classid' => $classid,
-                'sessionid' => $sessionid,
-                'status' => 2,
-                'title' => $data['assign-title'],
-                'content' => $newpath,
-                'deadline' => $data['assign-duration'],
-                'total_mark' => $data['total-marks'],
-                'addby' => $user->ic
-            ]);
+            if(! file_exists($newname)){
+                Storage::disk('linode')->putFileAs(
+                    $dir,
+                    $file,
+                    $newname,
+                    'public'
+                );
 
-            foreach($request->group as $grp)
-            {
-                $gp = explode('|', $grp);
-
-                DB::table('tblclassassign_group')->insert([
-                    "groupid" => $gp[0],
-                    "groupname" => $gp[1],
-                    "assignid" => $q
+                $q = DB::table('tblclassassign')->insertGetId([
+                    'classid' => $classid,
+                    'sessionid' => $sessionid,
+                    'status' => 2,
+                    'title' => $data['assign-title'],
+                    'content' => $newpath,
+                    'deadline' => $data['assign-duration'],
+                    'total_mark' => $data['total-marks'],
+                    'addby' => $user->ic
                 ]);
+
+                foreach($request->group as $grp)
+                {
+                    $gp = explode('|', $grp);
+
+                    DB::table('tblclassassign_group')->insert([
+                        "groupid" => $gp[0],
+                        "groupname" => $gp[1],
+                        "assignid" => $q
+                    ]);
+                }
+
+                foreach($request->chapter as $chp)
+                {
+                    DB::table('tblclassassign_chapter')->insert([
+                        "chapterid" => $chp,
+                        "assignid" => $q
+                    ]);
+                }
+
+                return redirect(route('lecturer.assign', ['id' => $classid]));
             }
 
-            foreach($request->chapter as $chp)
-            {
-                DB::table('tblclassassign_chapter')->insert([
-                    "chapterid" => $chp,
-                    "assignid" => $q
-                ]);
-            }
+        }else{
 
-            return redirect(route('lecturer.assign', ['id' => $classid]));
+            return redirect()->back()->withErrors(['Please fill in the group and sub-chapter checkbox !']);
+
         }
 
     }
@@ -707,63 +715,70 @@ class AssignmentController extends Controller
             
         $assignid = empty($request->assign) ? '' : $request->assign;
 
+        if($group != null && $chapter != null)
+        {
         
-        if( !empty($assignid) ){
-            $q = DB::table('tblclassassign')->where('id', $assignid)->update([
-                "title" => $title,
-                "total_mark" => $marks,
-                "addby" => $user->ic,
-                "status" => 2
-            ]);
-        }else{
-            $file_name = $file->getClientOriginalName();
-            $file_ext = $file->getClientOriginalExtension();
-            $fileInfo = pathinfo($file_name);
-            $filename = $fileInfo['filename'];
-            $newname = $filename . "." . $file_ext;
-            $newpath = "classassign2/" .  $classid . "/" . $user->name . "/" . $title . "/" . $newname;
-
-            if(!file_exists($newname)){
-                Storage::disk('linode')->putFileAs(
-                    $dir,
-                    $file,
-                    $newname,
-                    'public'
-                );
-
-                $q = DB::table('tblclassassign')->insertGetId([
-                    "classid" => $classid,
-                    "sessionid" => $sessionid,
+            if( !empty($assignid) ){
+                $q = DB::table('tblclassassign')->where('id', $assignid)->update([
                     "title" => $title,
-                    'content' => $newpath,
                     "total_mark" => $marks,
                     "addby" => $user->ic,
                     "status" => 2
                 ]);
+            }else{
+                $file_name = $file->getClientOriginalName();
+                $file_ext = $file->getClientOriginalExtension();
+                $fileInfo = pathinfo($file_name);
+                $filename = $fileInfo['filename'];
+                $newname = $filename . "." . $file_ext;
+                $newpath = "classassign2/" .  $classid . "/" . $user->name . "/" . $title . "/" . $newname;
 
-                foreach($request->group as $grp)
-                {
-                    $gp = explode('|', $grp);
+                if(!file_exists($newname)){
+                    Storage::disk('linode')->putFileAs(
+                        $dir,
+                        $file,
+                        $newname,
+                        'public'
+                    );
 
-                    DB::table('tblclassassign_group')->insert([
-                        "groupid" => $gp[0],
-                        "groupname" => $gp[1],
-                        "assignid" => $q
+                    $q = DB::table('tblclassassign')->insertGetId([
+                        "classid" => $classid,
+                        "sessionid" => $sessionid,
+                        "title" => $title,
+                        'content' => $newpath,
+                        "total_mark" => $marks,
+                        "addby" => $user->ic,
+                        "status" => 2
                     ]);
-                }
 
-                foreach($request->chapter as $chp)
-                {
-                    DB::table('tblclassassign_chapter')->insert([
-                        "chapterid" => $chp,
-                        "assignid" => $q
-                    ]);
+                    foreach($request->group as $grp)
+                    {
+                        $gp = explode('|', $grp);
+
+                        DB::table('tblclassassign_group')->insert([
+                            "groupid" => $gp[0],
+                            "groupname" => $gp[1],
+                            "assignid" => $q
+                        ]);
+                    }
+
+                    foreach($request->chapter as $chp)
+                    {
+                        DB::table('tblclassassign_chapter')->insert([
+                            "chapterid" => $chp,
+                            "assignid" => $q
+                        ]);
+                    }
+
                 }
 
             }
 
+        }else{
+
+            return redirect()->back()->withErrors(['Please fill in the group and sub-chapter checkbox !']);
+
         }
-        
         
         return redirect(route('lecturer.assign2', ['id' => $classid]));
     }

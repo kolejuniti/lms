@@ -134,44 +134,51 @@ class ExtraController extends Controller
             
         $extraid = empty($request->extra) ? '' : $request->extra;
 
+        if($group != null && $chapter != null)
+        {
         
-        if( !empty($extraid) ){
-            $q = DB::table('tblclassextra')->where('id', $extraid)->update([
-                "title" => $title,
-                "total_mark" => $marks,
-                "addby" => $user->ic,
-                "status" => 2
-            ]);
+            if( !empty($extraid) ){
+                $q = DB::table('tblclassextra')->where('id', $extraid)->update([
+                    "title" => $title,
+                    "total_mark" => $marks,
+                    "addby" => $user->ic,
+                    "status" => 2
+                ]);
+            }else{
+                $q = DB::table('tblclassextra')->insertGetId([
+                    "classid" => $classid,
+                    "sessionid" => $sessionid,
+                    "title" => $title,
+                    "total_mark" => $marks,
+                    "addby" => $user->ic,
+                    "status" => 2
+                ]);
+
+                foreach($group as $grp)
+                {
+                    $gp = explode('|', $grp);
+                    
+                    DB::table('tblclassextra_group')->insert([
+                        "groupid" => $gp[0],
+                        "groupname" => $gp[1],
+                        "extraid" => $q
+                    ]);
+                }
+
+                foreach($chapter as $chp)
+                {
+                    DB::table('tblclassextra_chapter')->insert([
+                        "chapterid" => $chp,
+                        "extraid" => $q
+                    ]);
+                }
+            }
+        
         }else{
-            $q = DB::table('tblclassextra')->insertGetId([
-                "classid" => $classid,
-                "sessionid" => $sessionid,
-                "title" => $title,
-                "total_mark" => $marks,
-                "addby" => $user->ic,
-                "status" => 2
-            ]);
 
-            foreach($group as $grp)
-            {
-                $gp = explode('|', $grp);
-                
-                DB::table('tblclassextra_group')->insert([
-                    "groupid" => $gp[0],
-                    "groupname" => $gp[1],
-                    "extraid" => $q
-                ]);
-            }
+            return redirect()->back()->withErrors(['Please fill in the group and sub-chapter checkbox !']);
 
-            foreach($chapter as $chp)
-            {
-                DB::table('tblclassextra_chapter')->insert([
-                    "chapterid" => $chp,
-                    "extraid" => $q
-                ]);
-            }
         }
-        
         
         return redirect(route('lecturer.extra', ['id' => $classid]));
     }
