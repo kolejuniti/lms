@@ -1645,6 +1645,23 @@ class LecturerController extends Controller
 
                 $totalassign = $assigns->sum('tblclassassign.total_mark');
 
+                //EXTRA
+
+                $extras = DB::table('tblclassextra')
+                        ->join('tblclassextra_group', 'tblclassextra.id', 'tblclassextra_group.extraid')
+                        ->where([
+                            ['tblclassextra.classid', request()->id],
+                            ['tblclassextra.sessionid', Session::get('SessionID')],
+                            ['tblclassextra_group.groupname', $grp->group_name],
+                            ['tblclassextra.status', '!=', 3]
+                        ]);
+
+                $extra[] = $extras->get();
+
+                $extraid = $extras->pluck('tblclassextra.id');
+
+                $totalextra = $extras->sum('tblclassextra.total_mark');
+
                 //////////////////////////////////////////////////////////////////////////////////////////
             
                 foreach($students[$ky] as $keys => $std)
@@ -1682,7 +1699,7 @@ class LecturerController extends Controller
                                 ['sessionid', Session::get('SessionID')]
                             ])->exists()){
                                 //dd($totalquiz);
-                                $overallquiz[$ky][$keys] = $sumquiz[$ky][$keys] / $totalquiz * $percentquiz->mark_percentage;
+                                $overallquiz[$ky][$keys] = number_format((float)$sumquiz[$ky][$keys] / $totalquiz * $percentquiz->mark_percentage, 2, '.', '');
                             }else{
                                 array_push($overallquiz, 0);
                             }
@@ -1727,7 +1744,7 @@ class LecturerController extends Controller
                                 ['sessionid', Session::get('SessionID')]
                             ])->exists()){
                                 //dd($totaltest);
-                                $overalltest[$ky][$keys] = $sumtest[$ky][$keys] / $totaltest * $percenttest->mark_percentage;
+                                $overalltest[$ky][$keys] = number_format((float)$sumtest[$ky][$keys] / $totaltest * $percenttest->mark_percentage, 2, '.', '');
                             }else{
                                 array_push($overalltest, 0);
                             }
@@ -1772,7 +1789,7 @@ class LecturerController extends Controller
                                 ['sessionid', Session::get('SessionID')]
                             ])->exists()){
                                 //dd($totalassign);
-                                $overallassign[$ky][$keys] = $sumassign[$ky][$keys] / $totalassign * $percentassign->mark_percentage;
+                                $overallassign[$ky][$keys] = number_format((float)$sumassign[$ky][$keys] / $totalassign * $percentassign->mark_percentage, 2, '.', '');
                             }else{
                                 array_push($overallassign, 0);
                             }
@@ -1783,6 +1800,50 @@ class LecturerController extends Controller
                     }else{
                         array_push($overallassign, 0);
                     }
+
+                    // EXTRA
+                    
+                    foreach($extra[$ky] as $key =>$qz)
+                    {
+                    
+                    $extraanswer[$ky][$keys][$key] = DB::table('tblclassstudentextra')->where('userid', $std->ic)->where('extraid', $qz->extraid)->first();
+
+                    }
+
+                    $sumextra[$ky][$keys] = DB::table('tblclassstudentextra')->where('userid', $std->ic)->whereIn('extraid', $extraid)->sum('final_mark');
+
+                    $percentextra = DB::table('tblclassmarks')
+                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
+                                ['subjek.id', request()->id],
+                                ['assessment', 'extrament']
+                                ])->first();
+
+                    if($extras = DB::table('tblclassextra')
+                    ->join('tblclassextra_group', 'tblclassextra.id', 'tblclassextra_group.extraid')
+                    ->where([
+                        ['tblclassextra.classid', request()->id],
+                        ['tblclassextra.sessionid', Session::get('SessionID')],
+                        ['tblclassextra_group.groupname', $grp->group_name]
+                    ])->exists()){
+                        if($percentextra != null)
+                        {
+                            if(DB::table('tblclassextra')
+                            ->where([
+                                ['classid', request()->id],
+                                ['sessionid', Session::get('SessionID')]
+                            ])->exists()){
+                                //dd($totalextra);
+                                $overallextra[$ky][$keys] = number_format((float)$sumextra[$ky][$keys], 2, '.', '');
+                            }else{
+                                array_push($overallextra, 0);
+                            }
+            
+                        }else{
+                            array_push($overallextra, 0);
+                        }
+                    }else{
+                        array_push($overallextra, 0);
+                    }
             
                 }
         }
@@ -1792,7 +1853,8 @@ class LecturerController extends Controller
         return view('lecturer.courseassessment.studentreport', compact('groups', 'students',
                                                                        'quiz', 'quizanswer','overallquiz',
                                                                        'test', 'testanswer','overalltest',
-                                                                       'assign', 'assignanswer','overallassign'));
+                                                                       'assign', 'assignanswer','overallassign',
+                                                                       'extra', 'extraanswer','overallextra'));
 
     }
 
@@ -2056,9 +2118,6 @@ class LecturerController extends Controller
                                 ['assessment', 'lain-lain']
                                 ])->first();
 
-        //dd($percentother);
-  
-        //get marked other
         $other = DB::table('tblclassstudentother')
                 ->join('tblclassother', 'tblclassstudentother.otherid', 'tblclassother.id')
                 ->where([
@@ -2085,13 +2144,48 @@ class LecturerController extends Controller
             $total_allother = 0;
         }
 
+        //EXTRA
+
+        $percentextra = DB::table('tblclassmarks')
+                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
+                                ['subjek.id', Session::get('CourseID')],
+                                ['assessment', 'lain-lain']
+                                ])->first();
+
+        $extra = DB::table('tblclassstudentextra')
+                ->join('tblclassextra', 'tblclassstudentextra.extraid', 'tblclassextra.id')
+                ->where([
+                    ['tblclassstudentextra.userid', request()->student],
+                    ['tblclassextra.classid', request()->id],
+                    ['tblclassextra.sessionid', Session::get('SessionID')]
+                ]);
+        
+        $totalextra = $extra->sum('tblclassextra.total_mark');
+
+        $markextra = $extra->sum('tblclassstudentextra.final_mark');
+
+        if($percentextra != null)
+        {
+            $percentageextra = $percentextra->mark_percentage;
+        }
+
+        $extralist = $extra->get();
+
+        if($totalextra != 0 && $markextra != 0)
+        {
+            $total_allextra = round((int)$markextra);
+        }else{
+            $total_allextra = 0;
+        }
+
         return view('lecturer.courseassessment.reportdetails', compact('student', 'quizlist', 'totalquiz', 'markquiz', 'percentagequiz', 'total_allquiz',
                                                                                   'assignlist', 'totalassign', 'markassign', 'percentageassign', 'total_allassign',
                                                                                   'midtermlist', 'totalmidterm', 'markmidterm', 'percentagemidterm', 'total_allmidterm',
                                                                                   'finallist', 'totalfinal', 'markfinal', 'percentagefinal', 'total_allfinal',
                                                                                   'paperworklist', 'totalpaperwork', 'markpaperwork', 'percentagepaperwork', 'total_allpaperwork',
                                                                                   'practicallist', 'totalpractical', 'markpractical', 'percentagepractical', 'total_allpractical',
-                                                                                  'otherlist', 'totalother', 'markother', 'percentageother', 'total_allother'));
+                                                                                  'otherlist', 'totalother', 'markother', 'percentageother', 'total_allother',
+                                                                                  'extralist', 'totalextra', 'markextra', 'percentageextra', 'total_allextra'));
     }
 
 
