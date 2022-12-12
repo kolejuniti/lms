@@ -284,7 +284,7 @@
                                 ])->exists())
                                   @if(DB::table('tblclassmarks')->where([
                                   ['course_id', request()->id],
-                                  ['assessment', 'assign']
+                                  ['assessment', 'assignment']
                                   ])->first() != null)
                                     @foreach ((array) $overallassign[$ky][$key] as $ag)
                                     <td>
