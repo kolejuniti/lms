@@ -31,6 +31,7 @@ class LecturerController extends Controller
             ->join('tblprogramme', 'subjek.prgid', 'tblprogramme.id')
             ->join('sessions', 'user_subjek.session_id','sessions.SessionID')
             ->where('sessions.Status', 'ACTIVE')
+            ->distinct('subjek.sub_id')
             ->select('subjek.*','user_subjek.course_id','sessions.SessionName','sessions.SessionID','tblprogramme.progname')
             ->get();
 
@@ -1446,9 +1447,7 @@ class LecturerController extends Controller
                           ])->pluck('email');               
         }
 
-        //$test = array($students);
-
-        $test = array('faizulsoknan@gmail.com');
+        $test = array($students);
 
         //dd($test);
 
@@ -1602,7 +1601,8 @@ class LecturerController extends Controller
                         ->where([
                             ['tblclassquiz.classid', request()->id],
                             ['tblclassquiz.sessionid', Session::get('SessionID')],
-                            ['tblclassquiz_group.groupname', $grp->group_name]
+                            ['tblclassquiz_group.groupname', $grp->group_name],
+                            ['tblclassquiz.status', '!=', 3]
                         ]);
 
                 $quiz[] = $quizs->get();
@@ -1618,7 +1618,8 @@ class LecturerController extends Controller
                         ->where([
                             ['tblclasstest.classid', request()->id],
                             ['tblclasstest.sessionid', Session::get('SessionID')],
-                            ['tblclasstest_group.groupname', $grp->group_name]
+                            ['tblclasstest_group.groupname', $grp->group_name],
+                            ['tblclasstest.status', '!=', 3]
                         ]);
 
                 $test[] = $tests->get();
@@ -1634,7 +1635,8 @@ class LecturerController extends Controller
                         ->where([
                             ['tblclassassign.classid', request()->id],
                             ['tblclassassign.sessionid', Session::get('SessionID')],
-                            ['tblclassassign_group.groupname', $grp->group_name]
+                            ['tblclassassign_group.groupname', $grp->group_name],
+                            ['tblclassassign.status', '!=', 3]
                         ]);
 
                 $assign[] = $assigns->get();
@@ -2105,7 +2107,7 @@ class LecturerController extends Controller
                 ->where([
                     ['subjek.id', $courseid],
                     ['user_subjek.session_id', $sessionid]
-                ])->distinct()->groupBy('tblclassattendance.groupname')->groupBy('tblclassattendance.classdate')
+                ])->groupBy('tblclassattendance.groupname')->groupBy('tblclassattendance.classdate')
                 ->orderBy('tblclassattendance.classdate', 'ASC')->get();
 
         //dd($list);
@@ -2128,8 +2130,6 @@ class LecturerController extends Controller
         
         $students = $student->get();
 
-        //dd($students);
-
         $group = $student->join('user_subjek', 'student_subjek.group_id', 'user_subjek.id')->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')->select('user_subjek.*', 'student_subjek.group_name', 'subjek.*')->first();
 
         $date = $request->date;
@@ -2150,10 +2150,8 @@ class LecturerController extends Controller
 
             $lists[] = $list->get();
 
+
         }
-
-
-        //dd($lists);
             
         return view('lecturer.class.attendancereport', compact('lists', 'students', 'group', 'date'));
 
