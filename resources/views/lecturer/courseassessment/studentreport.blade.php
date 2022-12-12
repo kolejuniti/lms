@@ -140,6 +140,27 @@
                                   Overall ASSIGNMENT (%)
                                   @endif
                                 </th>
+                                <!--<th>
+                                  EXTRA
+                                </th>-->
+                                @foreach ($extra[$ky] as $key=>$qz)
+                                <th>
+                                  EXTRA {{ $key+1 }} : {{ $qz->title }} ({{ $qz->total_mark }})
+                                </th>
+                                @endforeach
+                                <th >
+                                  @php
+                                  $markpercen = DB::table('tblclassmarks')->where([
+                                  ['course_id', request()->id],
+                                  ['assessment', 'extra']
+                                  ])->first();
+                                  @endphp
+                                  @if ($markpercen != null)
+                                  Overall EXTRA ({{ $markpercen->mark_percentage }}%)
+                                  @else
+                                  Overall EXTRA (%)
+                                  @endif
+                                </th>
                               </tr>
                             </thead>
                             <tbody>
@@ -287,6 +308,54 @@
                                   ['assessment', 'assignment']
                                   ])->first() != null)
                                     @foreach ((array) $overallassign[$ky][$key] as $ag)
+                                    <td>
+                                      <span >{{ $ag }}</span>
+                                    </td> 
+                                    @endforeach
+                                  @else
+                                  <td>
+                                    <span >0</span>
+                                  </td> 
+                                  @endif
+                                @else
+                                <td>
+                                  <span >0</span>
+                                </td> 
+                                @endif
+
+                                <!-- EXTRA -->
+
+                                @if (isset($extraanswer[$ky][$key]))
+                                  @foreach ($extraanswer[$ky][$key] as $keys => $qzanswer)
+                                    @if ($qzanswer != null)
+                                    <td>
+                                      <span >{{ $qzanswer->final_mark }}</span>
+                                    </td>
+                                    @elseif($qzanswer == null) 
+                                    <td>
+                                      <span >-</span>
+                                    </td>
+                                    @endif
+                                  @endforeach
+                                @else
+                                  @foreach ($extra[$ky] as $qz)
+                                  <td>
+                                    <span >-</span>
+                                  </td> 
+                                  @endforeach
+                                @endif
+                                
+                                @if ($groupcheck = DB::table('tblclassextra')->join('tblclassextra_group', 'tblclassextra.id', 'tblclassextra_group.extraid')
+                                ->where([
+                                  ['tblclassextra.classid', request()->id],
+                                  ['tblclassextra.sessionid', Session::get('SessionID')],
+                                  ['tblclassextra_group.groupname', $grp->group_name]
+                                ])->exists())
+                                  @if(DB::table('tblclassmarks')->where([
+                                  ['course_id', request()->id],
+                                  ['assessment', 'extra']
+                                  ])->first() != null)
+                                    @foreach ((array) $overallextra[$ky][$key] as $ag)
                                     <td>
                                       <span >{{ $ag }}</span>
                                     </td> 

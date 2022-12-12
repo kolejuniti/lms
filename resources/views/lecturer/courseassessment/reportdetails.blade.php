@@ -727,6 +727,104 @@
 						</div>
 					</div>
 					@endif
+
+					<!-- extra -->
+
+					@if ($percentageextra != "")
+					<div class="col-12">
+						<div class="box">
+							<div class="card-header">
+							<h3 class="card-title d-flex">Extra ({{ $percentageextra }}%)</h3>
+							</div>
+							<div class="box-body">
+								<div class="table-responsive">
+									<div id="complex_header_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap4 no-footer">
+									<div class="row">
+										<div class="col-sm-12">
+										<table id="table_projectprogress_extra" class="table table-striped projects display dataTable no-footer " style="width: 100%;">
+											<thead class="thead-themed">
+											<tr>
+												<th style="width: 1%">
+												No.
+												</th>
+												<th style="width: 20%">
+												Title
+												</th>
+												<th style="width: 20%">
+												Deadline
+												</th>
+												<th style="width: 20%">
+												Total Mark
+												</th>
+												<td style="width: 20%">
+												extra Mark
+												</td>
+											</tr>
+											</thead>
+											<tbody>
+											@foreach ($extralist as $keys=>$extra)
+												<tr>
+													<td>
+													{{ $keys+1 }}
+													</td>
+													<td >
+													{{ $extra->title }}
+													</td>
+													<td>
+													{{ $extra->deadline }}
+													</td>
+													<td>
+													{{ $extra->total_mark }}
+													</td>
+													<td>
+													{{ $extra->final_mark }}
+													</td>
+												</tr>
+											@endforeach
+												<tr>
+													<td style="width: 1%">
+														
+													</td>
+													<td >
+														
+													</td>
+													<td>
+														Total Marks by Percentage
+													</td>
+													<td>
+														$${ Overall Mark : {{ $markextra }} \over Total Mark :{{ $totalextra }} \\ \times Percentage : {{ $percentageextra }} }$$
+													</td>
+													<td>
+														<strong>Overall Percentage : {{ $total_allextra }}%</strong>
+													</td>
+												</tr>
+											</tbody>
+											<tfoot class="tfoot-themed">
+												<tr>
+													
+												</tr>
+											</tfoot>
+										</table>
+										</div>
+									</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					@else
+					<div class="box bg-danger">
+						<div class="box-body d-flex p-0">
+							<div class="flex-grow-1 p-30 flex-grow-1 bg-img bg-none-md" style="background-position: right bottom; background-size: auto 100%; background-image: url(images/svg-icon/color-svg/custom-30.svg)">
+								<div class="row">
+									<div class="col-12 col-xl-12">
+										<h1 class="mb-0 fw-600">Extra percentage is not set, please consult the person in charge.</h1>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					@endif
 				</div>
 			</div>
 		</section>
@@ -765,6 +863,10 @@
 
 	$(document).ready(function() {
 		CreateTable('table_projectprogress_other');  
+	});
+
+	$(document).ready(function() {
+		CreateTable('table_projectprogress_extra');  
 	});
   </script>
   <script>
