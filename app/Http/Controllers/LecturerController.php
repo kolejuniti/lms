@@ -1754,7 +1754,7 @@ class LecturerController extends Controller
                     $percentassign = DB::table('tblclassmarks')
                                 ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
                                 ['subjek.id', request()->id],
-                                ['assessment', 'assign']
+                                ['assessment', 'assignment']
                                 ])->first();
 
                     if($assigns = DB::table('tblclassassign')
