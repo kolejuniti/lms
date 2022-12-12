@@ -156,11 +156,20 @@
                                   ['tblclassquiz.sessionid', Session::get('SessionID')],
                                   ['tblclassquiz_group.groupname', $grp->group_name]
                                 ])->exists())
-                                  @foreach ((array) $overallquiz[$ky][$key] as $qz)
+                                  @if(DB::table('tblclassmarks')->where([
+                                  ['course_id', request()->id],
+                                  ['assessment', 'quiz']
+                                  ])->first() != null)
+                                    @foreach ((array) $overallquiz[$ky][$key] as $ag)
+                                    <td>
+                                      <span >{{ $ag }}</span>
+                                    </td> 
+                                    @endforeach
+                                  @else
                                   <td>
-                                    <span >{{ $qz }}</span>
+                                    <span >0</span>
                                   </td> 
-                                  @endforeach 
+                                  @endif
                                 @else
                                 <td>
                                   <span >0</span>
@@ -195,11 +204,20 @@
                                   ['tblclasstest.sessionid', Session::get('SessionID')],
                                   ['tblclasstest_group.groupname', $grp->group_name]
                                 ])->exists())
-                                  @foreach ((array) $overalltest[$ky][$key] as $ts)
+                                  @if(DB::table('tblclassmarks')->where([
+                                  ['course_id', request()->id],
+                                  ['assessment', 'test']
+                                  ])->first() != null)
+                                    @foreach ((array) $overalltest[$ky][$key] as $ag)
+                                    <td>
+                                      <span >{{ $ag }}</span>
+                                    </td> 
+                                    @endforeach
+                                  @else
                                   <td>
-                                    <span >{{ $ts }}</span>
+                                    <span >0</span>
                                   </td> 
-                                  @endforeach 
+                                  @endif
                                 @else
                                 <td>
                                   <span >0</span>
@@ -234,11 +252,20 @@
                                   ['tblclassassign.sessionid', Session::get('SessionID')],
                                   ['tblclassassign_group.groupname', $grp->group_name]
                                 ])->exists())
-                                  @foreach ((array) $overallassign[$ky][$key] as $ag)
+                                  @if(DB::table('tblclassmarks')->where([
+                                  ['course_id', request()->id],
+                                  ['assessment', 'assign']
+                                  ])->first() != null)
+                                    @foreach ((array) $overallassign[$ky][$key] as $ag)
+                                    <td>
+                                      <span >{{ $ag }}</span>
+                                    </td> 
+                                    @endforeach
+                                  @else
                                   <td>
-                                    <span >{{ $ag }}</span>
+                                    <span >0</span>
                                   </td> 
-                                  @endforeach 
+                                  @endif
                                 @else
                                 <td>
                                   <span >0</span>
