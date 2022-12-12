@@ -21,7 +21,7 @@ class LecturerController extends Controller
     public function index(Request $request)
     {
         //forgot current session
-        Session::forget(['User','CourseID','SessionID']);
+        Session::forget(['User','CourseID','SessionID','CourseIDS','SessionIDS']);
 
         Session::put('User', Auth::user());
         
