@@ -1663,7 +1663,7 @@ class LecturerController extends Controller
 
                     $percentquiz = DB::table('tblclassmarks')
                                 ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
-                                ['subjek.sub_id', $std->course_id],
+                                ['subjek.id', request()->id],
                                 ['assessment', 'quiz']
                                 ])->first();
 
@@ -1708,7 +1708,7 @@ class LecturerController extends Controller
 
                     $percenttest = DB::table('tblclassmarks')
                                 ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
-                                ['subjek.sub_id', $std->course_id],
+                                ['subjek.id', request()->id],
                                 ['assessment', 'test']
                                 ])->first();
 
@@ -1753,7 +1753,7 @@ class LecturerController extends Controller
 
                     $percentassign = DB::table('tblclassmarks')
                                 ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
-                                ['subjek.sub_id', $std->course_id],
+                                ['subjek.id', request()->id],
                                 ['assessment', 'assign']
                                 ])->first();
 
