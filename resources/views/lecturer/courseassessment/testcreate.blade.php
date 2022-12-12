@@ -698,36 +698,46 @@ jQuery(function($) {
     });
 
     function saveForm(status = 1){
-        $.ajax({
-            headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
-            url: "{{ url('lecturer/test/insert') }}",
-            type: 'POST',
-            data:  { 
-                class: selected_class, 
-                test: selected_test,
-                reuse: reuse,
-                title: $("#test-title").val(),
-                duration: $("#test-duration").val(),
-                questionindex: $("#question-index").val(),
-                from: $("#from").val(),
-                to: $("#to").val(),
-                marks: $("#total-marks").val(),
-                group: $('input[name="group[]"]:checked').map(function(){ 
-                    return this.value; 
-                }).get(),
-                chapter: $('input[name="chapter[]"]:checked').map(function(){ 
-                    return this.value; 
-                }).get(),
-                status: status,
-                data:window.JSON.stringify({formData: $fbEditor.formRender("userData") })
-            },
-            error:function(err){
-                console.log(err);
-            },
-            success:function(res){
-                location.href= "/lecturer/test/{{ Session::get('CourseIDS') }}";
-            }
-        });
+
+        if($('input[name="group[]"]').is(':checked') && $('input[name="chapter[]"]').is(':checked'))
+        {
+
+            $.ajax({
+                headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
+                url: "{{ url('lecturer/test/insert') }}",
+                type: 'POST',
+                data:  { 
+                    class: selected_class, 
+                    test: selected_test,
+                    reuse: reuse,
+                    title: $("#test-title").val(),
+                    duration: $("#test-duration").val(),
+                    questionindex: $("#question-index").val(),
+                    from: $("#from").val(),
+                    to: $("#to").val(),
+                    marks: $("#total-marks").val(),
+                    group: $('input[name="group[]"]:checked').map(function(){ 
+                        return this.value; 
+                    }).get(),
+                    chapter: $('input[name="chapter[]"]:checked').map(function(){ 
+                        return this.value; 
+                    }).get(),
+                    status: status,
+                    data:window.JSON.stringify({formData: $fbEditor.formRender("userData") })
+                },
+                error:function(err){
+                    console.log(err);
+                },
+                success:function(res){
+                    location.href= "/lecturer/test/{{ Session::get('CourseIDS') }}";
+                }
+            });
+
+        }else{
+
+        alert('Please fill in the group and sub-chapter checkbox!');
+
+        }
     }
 });
 

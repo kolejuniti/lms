@@ -67,8 +67,14 @@ div.form-actions.btn-group > button{
                         </nav>
                     </div>
                 </div>
-                
             </div>
+            @if($errors->any())
+            <a class="btn btn-danger btn-sm md-12 ">
+                <i class="ti-na">
+                </i>
+                {{$errors->first()}}
+            </a>
+            @endif
         </div>
 
         <!-- Main content -->
