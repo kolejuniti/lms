@@ -40,7 +40,8 @@ class ExtraController extends Controller
                 ->where([
                     ['tblclassextra.classid', Session::get('CourseIDS')],
                     ['tblclassextra.sessionid', Session::get('SessionIDS')],
-                    ['tblclassextra.addby', $user->ic]
+                    ['tblclassextra.addby', $user->ic],
+                    ['tblclassquiz.status', '!=', 3]
                 ])
                 ->select('tblclassextra.*', 'tblextra_title.name AS title', 'users.name AS addby')->get();
 

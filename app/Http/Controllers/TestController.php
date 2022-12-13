@@ -38,6 +38,7 @@ class TestController extends Controller
                     ['tblclasstest.classid', Session::get('CourseIDS')],
                     ['tblclasstest.sessionid', Session::get('SessionIDS')],
                     ['tblclasstest.addby', $user->ic],
+                    ['tblclassquiz.status', '!=', 3],
                     ['tblclasstest.date_from','!=', null]
                 ])->select('tblclasstest.*', 'tblclassteststatus.statusname')->get();
 
