@@ -1567,6 +1567,9 @@ class LecturerController extends Controller
         $overallother = [];
         $otheranswer = [];
 
+        $overallextra = [];
+        $extraanswer = [];
+
         $user = Auth::user();
 
         $groups = DB::table('user_subjek')
