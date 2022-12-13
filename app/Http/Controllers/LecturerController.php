@@ -1847,7 +1847,7 @@ class LecturerController extends Controller
                     $percentextra = DB::table('tblclassmarks')
                                 ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
                                 ['subjek.id', request()->id],
-                                ['assessment', 'extrament']
+                                ['assessment', 'extra']
                                 ])->first();
 
                     if($extras = DB::table('tblclassextra')
@@ -1865,7 +1865,7 @@ class LecturerController extends Controller
                                 ['sessionid', Session::get('SessionID')]
                             ])->exists()){
                                 //dd($totalextra);
-                                $overallextra[$ky][$keys] = number_format((float)$sumextra[$ky][$keys] / $totalextra * $percentextra->mark_percentage, 2, '.', '');
+                                $overallextra[$ky][$keys] = number_format((float)$sumextra[$ky][$keys], 2, '.', '');
                             }else{
                                 array_push($overallextra, 0);
                             }
