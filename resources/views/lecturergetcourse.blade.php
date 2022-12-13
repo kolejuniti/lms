@@ -1,17 +1,17 @@
 <div class="row">
 @foreach ($data as $key)
 <div class="col-md-4">
-  <div class="card" style="padding:0 !important; height:32em">
+  <div class="card" style="padding:0 !important; height:30em">
     <div class="row g-0 fx-element-overlay g-0 align-items-center">
       <div class="col-md-12">
         <div class="fx-card-item">
           <div class="fx-card-avatar fx-overlay-1" style="cursor:pointer">
-            <img src="" style="height:auto !important; max-height:250px !important" onerror="this.onerror=null;this.src='{{ asset('assets/images/uniti.jpg') }}';" 
+            <img src="" style="height:auto !important; max-height:250px !important" onerror="this.onerror=null;this.src='{{ asset('assets/images/default.webp') }}';" 
             class="bber-0 bbsr-0" alt="...">
             <div class="fx-overlay ">
               <ul class="fx-info">
                 <li>
-                  <a href="/lecturer/{{ $key->id }}" class="btn btn-primary-outline mr-1" data-toggle="tooltip" data-placement="auto" ><i class="fa fa-paper-plane"></i> View</a>
+                  <a href="/lecturer/{{ $key->id }}?session={{ $key->SessionID }}" class="btn btn-primary-outline mr-1" data-toggle="tooltip" data-placement="auto" ><i class="fa fa-paper-plane"></i> View</a>
                 </li> 
               </ul>
             </div>
@@ -33,9 +33,6 @@
                   </p>-->
                   <p class="card-text text-gray-600">
                     <strong>Session</strong> {{ ucwords($key->SessionName) }}
-                  </p>
-                  <p class="card-text text-gray-600">
-                    <strong>Program</strong> {{ ucwords($key->progname) }}
                   </p>
                 </div>
               </div>
