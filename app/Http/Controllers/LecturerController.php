@@ -858,7 +858,7 @@ class LecturerController extends Controller
                 </div>
                 <div class="col-md-10 align-self-center lh-lg">
                     <span><strong>'. $grp->group_name .'</strong></span><br>
-                    <span><strong>'. $lecturer->name .'</strong></span><br>
+                    <span><strong>'. htmlentities($lecturer->name, ENT_QUOTES) .'</strong></span><br>
                     <span>'. $lecturer->email .' | <strong class="text-fade"">'.$lecturer->faculty .'</strong></span><br>
                     <span class="text-fade"></span>
                 </div>
@@ -982,7 +982,7 @@ class LecturerController extends Controller
                 </div>
                 <div class="col-md-10 align-self-center lh-lg">
                     <span><strong>'. $grp->group_name .'</strong></span><br>
-                    <span><strong>'. $lecturer->name .'</strong></span><br>
+                    <span><strong>'. htmlentities($lecturer->name, ENT_QUOTES) .'</strong></span><br>
                     <span>'. $lecturer->email .' | <strong class="text-fade"">'.$lecturer->faculty .'</strong></span><br>
                     <span class="text-fade"></span>
                 </div>
@@ -1381,7 +1381,7 @@ class LecturerController extends Controller
                     <label>'.$grp->group_name.'</label>
                 </td>
                 <td >
-                    <label>'.$grp->name.'</label>
+                    <label>'.htmlentities($grp->name, ENT_QUOTES).'</label>
                 </td>
                 <td >
                     <div class="pull-right" >
