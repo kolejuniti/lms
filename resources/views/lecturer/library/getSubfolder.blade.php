@@ -1,4 +1,4 @@
-<div id="material-directory" class='d-flex'>
+<div id="material-directory" class='row'>
 
     @if (isset($folder))
         @foreach ($folder as $fdr)

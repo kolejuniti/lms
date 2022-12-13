@@ -1,4 +1,4 @@
-<div id="material-directory" class='d-flex'>
+<div id="material-directory" class='row'>
 @foreach ($assign as $ag)
     <div class="col-md-3">
         <a href="#">
