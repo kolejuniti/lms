@@ -388,7 +388,7 @@ class TestController extends Controller
                     ['tblclasstest.sessionid', Session::get('SessionIDS')],
                     ['tblclasstest.id', request()->test],
                     ['tblclasstest.addby', $user->ic]
-                ])->get();
+                ])->orderBy('students.name')->get();
         
         
         

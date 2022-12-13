@@ -268,7 +268,7 @@ class AssignmentController extends Controller
                     ['tblclassassign.sessionid', Session::get('SessionIDS')],
                     ['tblclassassign.id', request()->assign],
                     ['tblclassassign.addby', $user->ic]
-                ])->get();
+                ])->orderBy('students.name')->get();
         
         //dd($assign);
 

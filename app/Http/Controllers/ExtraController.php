@@ -214,7 +214,7 @@ class ExtraController extends Controller
                     ['tblclassextra.sessionid', Session::get('SessionIDS')],
                     ['tblclassextra.id', request()->extra],
                     ['tblclassextra.addby', $user->ic]
-                ])->get();
+                ])->orderBy('students.name')->get();
         
         
         

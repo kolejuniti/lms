@@ -389,7 +389,7 @@ class QuizController extends Controller
                     ['tblclassquiz.sessionid', Session::get('SessionIDS')],
                     ['tblclassquiz.id', request()->quiz],
                     ['tblclassquiz.addby', $user->ic]
-                ])->get();
+                ])->orderBy('students.name')->get();
         
         
         

@@ -1020,7 +1020,12 @@ class LecturerController extends Controller
     {
         $group = explode('|', $request->group);
 
-        $students = student::join('students', 'student_subjek.student_ic', 'students.ic')->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')->where('group_id', $group[0])->where('group_name', $group[1])->where('student_subjek.sessionid', Session::get('SessionID'))->get();
+        $students = student::join('students', 'student_subjek.student_ic', 'students.ic')
+                    ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
+                    ->where('group_id', $group[0])->where('group_name', $group[1])
+                    ->where('student_subjek.sessionid', Session::get('SessionID'))
+                    ->orderBy('students.name')
+                    ->get();
 
         $content = "";
         $content .= '
