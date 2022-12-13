@@ -1865,7 +1865,7 @@ class LecturerController extends Controller
                                 ['sessionid', Session::get('SessionID')]
                             ])->exists()){
                                 //dd($totalextra);
-                                $overallextra[$ky][$keys] = number_format((float)$sumextra[$ky][$keys], 2, '.', '');
+                                $overallextra[$ky][$keys] = number_format((float)$sumextra[$ky][$keys] / $totalextra * $percentextra->mark_percentage, 2, '.', '');
                             }else{
                                 array_push($overallextra, 0);
                             }
@@ -1905,6 +1905,8 @@ class LecturerController extends Controller
         $percentagepractical = "";
 
         $percentageother = "";
+
+        $percentageextra = "";
 
         $student = DB::table('students')
                 ->join('student_subjek', 'students.ic', 'student_subjek.student_ic')
