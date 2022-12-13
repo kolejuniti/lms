@@ -38,7 +38,7 @@ class AssignmentController extends Controller
                     ['tblclassassign.classid', Session::get('CourseIDS')],
                     ['tblclassassign.sessionid', Session::get('SessionIDS')],
                     ['tblclassassign.addby', $user->ic],
-                    ['tblclassquiz.status', '!=', 3],
+                    ['tblclassassign.status', '!=', 3],
                     ['tblclassassign.deadline','!=', null]
                 ])->select('tblclassassign.*', 'tblclassassignstatus.statusname')->get();
 
