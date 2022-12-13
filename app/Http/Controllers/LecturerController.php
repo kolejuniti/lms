@@ -72,45 +72,64 @@ class LecturerController extends Controller
     {
         if(isset($request->search) && isset($request->session))
         {
+        //forgot current session
+        Session::forget(['CourseID','SessionID','CourseIDS','SessionIDS']);
 
         $data = auth()->user()->subjects()
             ->join('subjek', 'user_subjek.course_id','=','subjek.sub_id')
             ->join('tblprogramme', 'subjek.prgid', 'tblprogramme.id')
             ->join('sessions', 'user_subjek.session_id','sessions.SessionID')
+            ->where('sessions.Status', 'ACTIVE')
+            ->distinct('subjek.sub_id')
             ->select('subjek.*','user_subjek.course_id','sessions.SessionName','sessions.SessionID','tblprogramme.progname')
-            ->where('user_subjek.session_id','LIKE','%'.$request->session.'%')
             ->where('subjek.course_name','LIKE','%'.$request->search."%")
+            ->orwhere('subjek.course_code','LIKE','%'.$request->search."%")
+            ->where('user_subjek.session_id','LIKE','%'.$request->session.'%')
             //->groupBy('user_subjek.course_id')
             ->get();
 
         }elseif(isset($request->search))
         {
+        //forgot current session
+        Session::forget(['CourseID','SessionID','CourseIDS','SessionIDS']);
 
         $data = auth()->user()->subjects()
             ->join('subjek', 'user_subjek.course_id','=','subjek.sub_id')
             ->join('tblprogramme', 'subjek.prgid', 'tblprogramme.id')
             ->join('sessions', 'user_subjek.session_id','sessions.SessionID')
+            ->where('sessions.Status', 'ACTIVE')
+            ->distinct('subjek.sub_id')
             ->select('subjek.*','user_subjek.course_id','sessions.SessionName','sessions.SessionID','tblprogramme.progname')
             ->where('subjek.course_name','LIKE','%'.$request->search."%")
+            ->orwhere('subjek.course_code','LIKE','%'.$request->search."%")
             //->groupBy('user_subjek.course_id')
             ->get();
 
         }elseif(isset($request->session))
         {
-        $data = auth()->user()->subjects()
-            ->join('subjek', 'user_subjek.course_id','=','subjek.sub_id')
-            ->join('tblprogramme', 'subjek.prgid', 'tblprogramme.id')
-            ->join('sessions', 'user_subjek.session_id','sessions.SessionID')
-            ->select('subjek.*','user_subjek.course_id','sessions.SessionName','sessions.SessionID','tblprogramme.progname')
-            ->where('user_subjek.session_id','LIKE','%'.$request->session.'%')
-            //->groupBy('user_subjek.course_id')
-            ->get();
-        }else{
+        //forgot current session
+        Session::forget(['CourseID','SessionID','CourseIDS','SessionIDS']);
 
         $data = auth()->user()->subjects()
             ->join('subjek', 'user_subjek.course_id','=','subjek.sub_id')
             ->join('tblprogramme', 'subjek.prgid', 'tblprogramme.id')
             ->join('sessions', 'user_subjek.session_id','sessions.SessionID')
+            ->where('sessions.Status', 'ACTIVE')
+            ->distinct('subjek.sub_id')
+            ->select('subjek.*','user_subjek.course_id','sessions.SessionName','sessions.SessionID','tblprogramme.progname')
+            ->where('user_subjek.session_id','LIKE','%'.$request->session.'%')
+            //->groupBy('user_subjek.course_id')
+            ->get();
+        }else{
+        //forgot current session
+        Session::forget(['CourseID','SessionID','CourseIDS','SessionIDS']);
+
+        $data = auth()->user()->subjects()
+            ->join('subjek', 'user_subjek.course_id','=','subjek.sub_id')
+            ->join('tblprogramme', 'subjek.prgid', 'tblprogramme.id')
+            ->join('sessions', 'user_subjek.session_id','sessions.SessionID')
+            ->where('sessions.Status', 'ACTIVE')
+            ->distinct('subjek.sub_id')
             ->select('subjek.*','user_subjek.course_id','sessions.SessionName','sessions.SessionID','tblprogramme.progname')
             //->groupBy('user_subjek.course_id')
             ->get();
