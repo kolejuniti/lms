@@ -1721,7 +1721,8 @@ class LecturerController extends Controller
                     ->where([
                         ['tblclassquiz.classid', request()->id],
                         ['tblclassquiz.sessionid', Session::get('SessionID')],
-                        ['tblclassquiz_group.groupname', $grp->group_name]
+                        ['tblclassquiz_group.groupname', $grp->group_name],
+                        ['tblclassquiz.status', '!=', 3]
                     ])->exists()){
                         if($percentquiz != null)
                         {
