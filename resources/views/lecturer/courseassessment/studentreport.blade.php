@@ -205,7 +205,8 @@
                                 ->where([
                                   ['tblclassquiz.classid', request()->id],
                                   ['tblclassquiz.sessionid', Session::get('SessionID')],
-                                  ['tblclassquiz_group.groupname', $grp->group_name]
+                                  ['tblclassquiz_group.groupname', $grp->group_name],
+                                  ['tblclassquiz.status', '!=', 3]
                                 ])->exists())
                                   @if(DB::table('tblclassmarks')->where([
                                   ['course_id', request()->id],
@@ -253,7 +254,8 @@
                                 ->where([
                                   ['tblclasstest.classid', request()->id],
                                   ['tblclasstest.sessionid', Session::get('SessionID')],
-                                  ['tblclasstest_group.groupname', $grp->group_name]
+                                  ['tblclasstest_group.groupname', $grp->group_name],
+                                  ['tblclasstest.status', '!=', 3]
                                 ])->exists())
                                   @if(DB::table('tblclassmarks')->where([
                                   ['course_id', request()->id],
@@ -301,7 +303,8 @@
                                 ->where([
                                   ['tblclassassign.classid', request()->id],
                                   ['tblclassassign.sessionid', Session::get('SessionID')],
-                                  ['tblclassassign_group.groupname', $grp->group_name]
+                                  ['tblclassassign_group.groupname', $grp->group_name],
+                                  ['tblclassassign.status', '!=', 3]
                                 ])->exists())
                                   @if(DB::table('tblclassmarks')->where([
                                   ['course_id', request()->id],
@@ -349,7 +352,8 @@
                                 ->where([
                                   ['tblclassextra.classid', request()->id],
                                   ['tblclassextra.sessionid', Session::get('SessionID')],
-                                  ['tblclassextra_group.groupname', $grp->group_name]
+                                  ['tblclassextra_group.groupname', $grp->group_name],
+                                  ['tblclassextra.status', '!=', 3]
                                 ])->exists())
                                   @if(DB::table('tblclassmarks')->where([
                                   ['course_id', request()->id],
