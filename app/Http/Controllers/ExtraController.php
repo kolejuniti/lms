@@ -105,7 +105,7 @@ class ExtraController extends Controller
             ['addby', $user->ic]
         ])->sum('total_mark');
 
-        if($percentage != null)
+        /*if($percentage != null)
         {
 
             if($markextra != null)
@@ -118,7 +118,9 @@ class ExtraController extends Controller
             return view('lecturer.courseassessment.extracreate', compact(['group', 'folder', 'title', 'totalpercent']));
         }else{
             return redirect()->back()->with('alert', 'Your Program Lead have not yet set the Percentage mark!');
-        }
+        }*/
+
+        return view('lecturer.courseassessment.extracreate', compact(['group', 'folder', 'title', 'totalpercent']));
     }
 
 

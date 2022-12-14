@@ -1842,7 +1842,7 @@ class LecturerController extends Controller
 
                     }
 
-                    $sumextra[$ky][$keys] = DB::table('tblclassstudentextra')->where('userid', $std->ic)->whereIn('extraid', $extraid)->sum('final_mark');
+                    $sumextra[$ky][$keys] = DB::table('tblclassstudentextra')->where('userid', $std->ic)->whereIn('extraid', $extraid)->sum('total_mark');
 
                     $percentextra = DB::table('tblclassmarks')
                                 ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
@@ -1865,7 +1865,7 @@ class LecturerController extends Controller
                                 ['sessionid', Session::get('SessionID')]
                             ])->exists()){
                                 //dd($totalextra);
-                                $overallextra[$ky][$keys] = number_format((float)$sumextra[$ky][$keys], 2, '.', '');
+                                $overallextra[$ky][$keys] = number_format((float)$sumextra[$ky][$keys] / $totalextra * $percentextra->mark_percentage, 2, '.', '');
                             }else{
                                 array_push($overallextra, 0);
                             }
@@ -1880,7 +1880,7 @@ class LecturerController extends Controller
                 }
         }
 
-        //dd($overallassign);
+        //dd($extraanswer);
 
         return view('lecturer.courseassessment.studentreport', compact('groups', 'students',
                                                                        'quiz', 'quizanswer','overallquiz',
