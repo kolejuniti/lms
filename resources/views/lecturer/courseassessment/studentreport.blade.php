@@ -143,9 +143,9 @@
                                 <!--<th>
                                   EXTRA
                                 </th>-->
-                                @foreach ($extra[$ky] as $key=>$qz)
+                                @foreach ($extra[$ky] as $key=>$ex)
                                 <th>
-                                  EXTRA {{ $key+1 }} : {{ $qz->title }} ({{ $qz->total_mark }})
+                                  Extra {{ $key+1 }} : {{ $ex->title }} ({{ $ex->total_mark }})
                                 </th>
                                 @endforeach
                                 <th >
@@ -156,9 +156,9 @@
                                   ])->first();
                                   @endphp
                                   @if ($markpercen != null)
-                                  Overall EXTRA ({{ $markpercen->mark_percentage }}%)
+                                  Overall Extra ({{ $markpercen->mark_percentage }}%)
                                   @else
-                                  Overall EXTRA (%)
+                                  Overall Extra (%)
                                   @endif
                                 </th>
                               </tr>
@@ -326,19 +326,19 @@
                                 <!-- EXTRA -->
 
                                 @if (isset($extraanswer[$ky][$key]))
-                                  @foreach ($extraanswer[$ky][$key] as $keys => $qzanswer)
-                                    @if ($qzanswer != null)
+                                  @foreach ($extraanswer[$ky][$key] as $keys => $tsanswer)
+                                    @if ($tsanswer != null)
                                     <td>
-                                      <span >{{ $qzanswer->final_mark }}</span>
+                                      <span >{{ $tsanswer->total_mark }}</span>
                                     </td>
-                                    @elseif($qzanswer == null) 
+                                    @elseif($tsanswer == null) 
                                     <td>
                                       <span >-</span>
                                     </td>
                                     @endif
                                   @endforeach
                                 @else
-                                  @foreach ($extra[$ky] as $qz)
+                                  @foreach ($extra[$ky] as $ts)
                                   <td>
                                     <span >-</span>
                                   </td> 
