@@ -1767,7 +1767,8 @@ class LecturerController extends Controller
                     ->where([
                         ['tblclasstest.classid', request()->id],
                         ['tblclasstest.sessionid', Session::get('SessionID')],
-                        ['tblclasstest_group.groupname', $grp->group_name]
+                        ['tblclasstest_group.groupname', $grp->group_name],
+                        ['tblclasstest.status', '!=', 3]
                     ])->exists()){
                         if($percenttest != null)
                         {
@@ -1812,7 +1813,8 @@ class LecturerController extends Controller
                     ->where([
                         ['tblclassassign.classid', request()->id],
                         ['tblclassassign.sessionid', Session::get('SessionID')],
-                        ['tblclassassign_group.groupname', $grp->group_name]
+                        ['tblclassassign_group.groupname', $grp->group_name],
+                        ['tblclassassign.status', '!=', 3]
                     ])->exists()){
                         if($percentassign != null)
                         {
@@ -1856,7 +1858,8 @@ class LecturerController extends Controller
                     ->where([
                         ['tblclassextra.classid', request()->id],
                         ['tblclassextra.sessionid', Session::get('SessionID')],
-                        ['tblclassextra_group.groupname', $grp->group_name]
+                        ['tblclassextra_group.groupname', $grp->group_name],
+                        ['tblclassextra.status', '!=', 3]
                     ])->exists()){
                         if($percentextra != null)
                         {
