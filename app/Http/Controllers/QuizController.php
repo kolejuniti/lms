@@ -990,7 +990,8 @@ class QuizController extends Controller
                     ['tblclassquiz.classid', Session::get('CourseIDS')],
                     ['tblclassquiz.sessionid', Session::get('SessionIDS')],
                     ['tblclassquiz.addby', $user->ic],
-                    ['tblclassquiz.date_from', null]
+                    ['tblclassquiz.date_from', null],
+                    ['tblclassquiz.status', '!=', 3]
                 ])
                 ->select('tblclassquiz.*', 'users.name AS addby', 'tblclassquizstatus.statusname')->get();
 
@@ -1185,7 +1186,7 @@ class QuizController extends Controller
                     ['tblclassquiz.sessionid', Session::get('SessionIDS')],
                     ['tblclassquiz.id', request()->quiz],
                     ['tblclassquiz.addby', $user->ic]
-                ])->get();
+                ])->orderBy('students.name')->get();
         
         
         
