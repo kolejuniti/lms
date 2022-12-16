@@ -1880,23 +1880,30 @@ class LecturerController extends Controller
                     }else{
                         array_push($overallextra, 0);
                     }
+
+                    $overallall[$ky][$keys] = $overallquiz[$ky][$keys] + $overalltest[$ky][$keys] + $overallassign[$ky][$keys] + $overallextra[$ky][$keys];
             
                 }
+
         }
 
-        //dd($extraanswer);
+        //dd($overallall);
 
         return view('lecturer.courseassessment.studentreport', compact('groups', 'students',
                                                                        'quiz', 'quizanswer','overallquiz',
                                                                        'test', 'testanswer','overalltest',
                                                                        'assign', 'assignanswer','overallassign',
-                                                                       'extra', 'extraanswer','overallextra'));
+                                                                       'extra', 'extraanswer','overallextra',
+                                                                       'overallall'
+                                                                    ));
 
     }
 
     public function studentreport()
     {
         $percentagequiz = "";
+
+        $percentagetest = "";
 
         $percentageassign = "";
 
@@ -1958,6 +1965,41 @@ class LecturerController extends Controller
             $total_allquiz = round(( (int)$markquiz / (int)$totalquiz ) * (int)$percentagequiz);
         }else{
             $total_allquiz = 0;
+        }
+
+        //TEST
+
+        $percenttest = DB::table('tblclassmarks')
+                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
+                                ['subjek.id', Session::get('CourseID')],
+                                ['assessment', 'test']
+                                ])->first();
+
+        //get marked test
+        $test = DB::table('tblclassstudenttest')
+                ->join('tblclasstest', 'tblclassstudenttest.testid', 'tblclasstest.id')
+                ->where([
+                    ['tblclassstudenttest.userid', request()->student],
+                    ['tblclasstest.classid', request()->id],
+                    ['tblclasstest.sessionid', Session::get('SessionID')]
+                ]);
+        
+        $totaltest = $test->sum('tblclasstest.total_mark');
+
+        $marktest = $test->sum('tblclassstudenttest.final_mark');
+
+        if($percenttest != null)
+        {
+            $percentagetest = $percenttest->mark_percentage;
+        }
+
+        $testlist = $test->get();
+
+        if($totaltest != 0 && $marktest != 0)
+        {
+            $total_alltest = round(( (int)$marktest / (int)$totaltest ) * (int)$percentagetest);
+        }else{
+            $total_alltest = 0;
         }
 
 
@@ -2217,6 +2259,7 @@ class LecturerController extends Controller
         }
 
         return view('lecturer.courseassessment.reportdetails', compact('student', 'quizlist', 'totalquiz', 'markquiz', 'percentagequiz', 'total_allquiz',
+                                                                                  'testlist', 'totaltest', 'marktest', 'percentagetest', 'total_alltest',
                                                                                   'assignlist', 'totalassign', 'markassign', 'percentageassign', 'total_allassign',
                                                                                   'midtermlist', 'totalmidterm', 'markmidterm', 'percentagemidterm', 'total_allmidterm',
                                                                                   'finallist', 'totalfinal', 'markfinal', 'percentagefinal', 'total_allfinal',
