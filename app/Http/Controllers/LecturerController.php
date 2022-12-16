@@ -1734,14 +1734,14 @@ class LecturerController extends Controller
                                 //dd($totalquiz);
                                 $overallquiz[$ky][$keys] = number_format((float)$sumquiz[$ky][$keys] / $totalquiz * $percentquiz->mark_percentage, 2, '.', '');
                             }else{
-                                array_push($overallquiz, 0);
+                                $overallquiz[$ky][$keys] = 0;
                             }
             
                         }else{
-                            array_push($overallquiz, 0);
+                            $overallquiz[$ky][$keys] = 0;
                         }
                     }else{
-                        array_push($overallquiz, 0);
+                        $overallquiz[$ky][$keys] = 0;
                     }
 
 
@@ -1780,14 +1780,14 @@ class LecturerController extends Controller
                                 //dd($totaltest);
                                 $overalltest[$ky][$keys] = number_format((float)$sumtest[$ky][$keys] / $totaltest * $percenttest->mark_percentage, 2, '.', '');
                             }else{
-                                array_push($overalltest, 0);
+                                $overalltest[$ky][$keys] = 0;
                             }
             
                         }else{
-                            array_push($overalltest, 0);
+                            $overalltest[$ky][$keys] = 0;
                         }
                     }else{
-                        array_push($overalltest, 0);
+                        $overalltest[$ky][$keys] = 0;
                     }
 
 
@@ -1826,14 +1826,14 @@ class LecturerController extends Controller
                                 //dd($totalassign);
                                 $overallassign[$ky][$keys] = number_format((float)$sumassign[$ky][$keys] / $totalassign * $percentassign->mark_percentage, 2, '.', '');
                             }else{
-                                array_push($overallassign, 0);
+                               $overallassign[$ky][$keys] = 0;
                             }
             
                         }else{
-                            array_push($overallassign, 0);
+                            $overallassign[$ky][$keys] = 0;
                         }
                     }else{
-                        array_push($overallassign, 0);
+                        $overallassign[$ky][$keys] = 0;
                     }
 
                     // EXTRA
@@ -1871,14 +1871,14 @@ class LecturerController extends Controller
                                 //dd($totalextra);
                                 $overallextra[$ky][$keys] = number_format((float)$sumextra[$ky][$keys] / $totalextra * $percentextra->mark_percentage, 2, '.', '');
                             }else{
-                                array_push($overallextra, 0);
+                                $overallextra[$ky][$keys] = 0;
                             }
             
                         }else{
-                            array_push($overallextra, 0);
+                            $overallextra[$ky][$keys] = 0;
                         }
                     }else{
-                        array_push($overallextra, 0);
+                        $overallextra[$ky][$keys] = 0;
                     }
 
                     $overallall[$ky][$keys] = $overallquiz[$ky][$keys] + $overalltest[$ky][$keys] + $overallassign[$ky][$keys] + $overallextra[$ky][$keys];
@@ -2281,7 +2281,8 @@ class LecturerController extends Controller
                 ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
                 ->where([
                     ['subjek.id', $courseid],
-                    ['user_subjek.session_id', $sessionid]
+                    ['user_subjek.session_id', $sessionid],
+                    ['user_subjek.user_ic', Auth::user()->ic]
                 ])->groupBy('tblclassattendance.groupname')->groupBy('tblclassattendance.classdate')
                 ->orderBy('tblclassattendance.classdate', 'ASC')->get();
 
