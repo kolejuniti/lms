@@ -114,9 +114,9 @@
                                   ])->first();
                                   @endphp
                                   @if ($markpercen != null)
-                                  Overall Test ({{ $markpercen->mark_percentage }}%)
+                                  Overall TEST ({{ $markpercen->mark_percentage }}%)
                                   @else
-                                  Overall Test (%)
+                                  Overall TEST (%)
                                   @endif
                                 </th>
                                 <!--<th>
@@ -156,10 +156,13 @@
                                   ])->first();
                                   @endphp
                                   @if ($markpercen != null)
-                                  Overall Extra ({{ $markpercen->mark_percentage }}%)
+                                  Overall EXTRA ({{ $markpercen->mark_percentage }}%)
                                   @else
-                                  Overall Extra (%)
+                                  Overall EXTRA (%)
                                   @endif
+                                </th>
+                                <th>
+                                  OVERALL PERCENTAGE
                                 </th>
                               </tr>
                             </thead>
@@ -213,17 +216,17 @@
                                   ['assessment', 'quiz']
                                   ])->first() != null)
                                     @foreach ((array) $overallquiz[$ky][$key] as $ag)
-                                    <td>
+                                    <td style="background-color: #677ee2">
                                       <span >{{ $ag }}</span>
                                     </td> 
                                     @endforeach
                                   @else
-                                  <td>
+                                  <td style="background-color: #677ee2">
                                     <span >0</span>
                                   </td> 
                                   @endif
                                 @else
-                                <td>
+                                <td style="background-color: #677ee2">
                                   <span >0</span>
                                 </td> 
                                 @endif
@@ -262,17 +265,17 @@
                                   ['assessment', 'test']
                                   ])->first() != null)
                                     @foreach ((array) $overalltest[$ky][$key] as $ag)
-                                    <td>
+                                    <td style="background-color: #677ee2">
                                       <span >{{ $ag }}</span>
                                     </td> 
                                     @endforeach
                                   @else
-                                  <td>
+                                  <td style="background-color: #677ee2">
                                     <span >0</span>
                                   </td> 
                                   @endif
                                 @else
-                                <td>
+                                <td style="background-color: #677ee2">
                                   <span >0</span>
                                 </td> 
                                 @endif
@@ -311,17 +314,17 @@
                                   ['assessment', 'assignment']
                                   ])->first() != null)
                                     @foreach ((array) $overallassign[$ky][$key] as $ag)
-                                    <td>
+                                    <td style="background-color: #677ee2">
                                       <span >{{ $ag }}</span>
                                     </td> 
                                     @endforeach
                                   @else
-                                  <td>
+                                  <td style="background-color: #677ee2">
                                     <span >0</span>
                                   </td> 
                                   @endif
                                 @else
-                                <td>
+                                <td style="background-color: #677ee2">
                                   <span >0</span>
                                 </td> 
                                 @endif
@@ -360,21 +363,27 @@
                                   ['assessment', 'extra']
                                   ])->first() != null)
                                     @foreach ((array) $overallextra[$ky][$key] as $ag)
-                                    <td>
+                                    <td style="background-color: #677ee2">
                                       <span >{{ $ag }}</span>
                                     </td> 
                                     @endforeach
                                   @else
-                                  <td>
+                                  <td style="background-color: #677ee2">
                                     <span >0</span>
                                   </td> 
                                   @endif
                                 @else
-                                <td>
+                                <td style="background-color: #677ee2">
                                   <span >0</span>
                                 </td> 
                                 @endif
-                              
+                                
+                                  @foreach ((array) $overallall[$ky][$key] as $ag)
+                                    <td >
+                                      <span >{{ $ag }}%</span>
+                                    </td> 
+                                    @endforeach
+                        
                               </tr> 
                               @endforeach
                             </tbody>
