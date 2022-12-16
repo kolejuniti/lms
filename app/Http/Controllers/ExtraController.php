@@ -84,11 +84,12 @@ class ExtraController extends Controller
 
         //dd(Session::get('CourseIDS'));
 
+        $subid = DB::table('subjek')->where('id', $courseid)->pluck('sub_id');
+
         $folder = DB::table('lecturer_dir')
-        ->where([
-            ['CourseID', $courseid],
-            ['Addby', $user->ic]
-            ])->get();
+                  ->join('subjek', 'lecturer_dir.CourseID','subjek.id')
+                  ->where('subjek.sub_id', $subid)
+                  ->where('Addby', $user->ic)->get();
 
         $title = DB::table('tblextra_title')->get();
 

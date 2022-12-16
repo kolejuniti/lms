@@ -110,11 +110,12 @@ class TestController extends Controller
 
         //dd(Session::get('CourseIDS'));
 
+        $subid = DB::table('subjek')->where('id', $courseid)->pluck('sub_id');
+
         $folder = DB::table('lecturer_dir')
-        ->where([
-            ['CourseID', $courseid],
-            ['Addby', $user->ic]
-            ])->get();
+                  ->join('subjek', 'lecturer_dir.CourseID','subjek.id')
+                  ->where('subjek.sub_id', $subid)
+                  ->where('Addby', $user->ic)->get();
 
         //dd($folder);
 
@@ -978,7 +979,8 @@ class TestController extends Controller
                     ['tblclasstest.classid', Session::get('CourseIDS')],
                     ['tblclasstest.sessionid', Session::get('SessionIDS')],
                     ['tblclasstest.addby', $user->ic],
-                    ['tblclasstest.date_from', null]
+                    ['tblclasstest.date_from', null],
+                    ['tblclasstest.status', '!=', 3]
                 ])
                 ->select('tblclasstest.*', 'users.name AS addby', 'tblclassteststatus.statusname')->get();
 
@@ -1021,11 +1023,12 @@ class TestController extends Controller
 
         //dd(Session::get('CourseIDS'));
 
+        $subid = DB::table('subjek')->where('id', $courseid)->pluck('sub_id');
+
         $folder = DB::table('lecturer_dir')
-        ->where([
-            ['CourseID', $courseid],
-            ['Addby', $user->ic]
-            ])->get();
+                  ->join('subjek', 'lecturer_dir.CourseID','subjek.id')
+                  ->where('subjek.sub_id', $subid)
+                  ->where('Addby', $user->ic)->get();
 
         //dd($folder);
 
@@ -1172,7 +1175,7 @@ class TestController extends Controller
                     ['tblclasstest.sessionid', Session::get('SessionIDS')],
                     ['tblclasstest.id', request()->test],
                     ['tblclasstest.addby', $user->ic]
-                ])->get();
+                ])->orderBy('students.name')->get();
         
         
         
