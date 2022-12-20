@@ -71,12 +71,12 @@
                               <th style="width: 20%">
                                 Chapters
                               </th>
-                              <th style="width: 15%">
+                              <!--<th style="width: 15%">
                                 Attachment
                               </th>
                               <th style="width: 5%">
                                 Deadline
-                              </th>
+                              </th>-->
                               <th style="width: 20%">
                               </th>
                             </tr>
@@ -103,24 +103,19 @@
                                   Chapter {{ $chp->ChapterNo }} : {{ $chp->DrName }},
                                 @endforeach
                               </td>
-                              <td class="align-items-center">
-                                <a href="{{ Storage::disk('linode')->url($dt->content) }}"><i class="fa fa-file-pdf-o fa-3x"></i></a>
+                              <!--<td class="align-items-center">
+                                <a href=" Storage::disk('linode')->url($dt->content) "><i class="fa fa-file-pdf-o fa-3x"></i></a>
                               </td>
-                              <td>
+                              <td>*/
                                 {{ $dt->deadline }}
-                              </td>
+                              </td>-->
                               <td class="project-actions text-right" >
                                 <a class="btn btn-success btn-sm mr-2" href="/lecturer/other/{{ Session::get('CourseIDS') }}/{{ $dt->id }}">
                                     <i class="ti-user">
                                     </i>
                                     Students
                                 </a>
-                                <a class="btn btn-info btn-sm btn-sm mr-2" href="#">
-                                    <i class="ti-pencil-alt">
-                                    </i>
-                                    Edit
-                                </a>
-                                <a class="btn btn-danger btn-sm" href="#">
+                                <a class="btn btn-danger btn-sm" href="#" onclick="deleteOther('{{ $dt->id }}')">
                                     <i class="ti-trash">
                                     </i>
                                     Delete
@@ -181,6 +176,33 @@ $(document).ready( function () {
             }
         });
     }
+
+    function deleteOther(id){     
+      Swal.fire({
+    title: "Are you sure?",
+    text: "This will be permanent",
+    showCancelButton: true,
+    confirmButtonText: "Yes, delete it!"
+  }).then(function(res){
+    
+    if (res.isConfirmed){
+              $.ajax({
+                  headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
+                  url      : "{{ url('lecturer/other/deleteother') }}",
+                  method   : 'POST',
+                  data 	 : {id:id},
+                  error:function(err){
+                      alert("Error");
+                      console.log(err);
+                  },
+                  success  : function(data){
+                      window.location.reload();
+                      alert("success");
+                  }
+              });
+          }
+      });
+  }
 
 </script>
 @stop

@@ -8,6 +8,11 @@
         border:1px solid #eee;
         box-shadow: 0 0 0 #eee;
     }
+
+        div.dt-buttons {
+    float: right;
+    margin-left:10px;
+    }
 </style>
 
 <!-- Content Wrapper. Contains page content -->
@@ -65,32 +70,24 @@
                                 <th style="width: 1%">
                                   No.
                                 </th>
-                                <th style="width: 15%">
+                                <th>
                                   Name
                                 </th>
-                                <th style="width: 5%">
+                                <th>
                                   Matric No.
                                 </th>
-                                <th style="width: 20%">
+                                <th>
                                   Submission Date
                                 </th>
-                                <th style="width: 15%">
-                                  Attachment
-                                </th>
-                                <th style="width: 10%">
-                                  Status Submission
-                                </th>
-                                <th style="width: 5%">
+                                <th>
                                   Marks
-                                </th>
-                                <th style="width: 20%">
                                 </th>
                               </tr>
                             </thead>
                             <tbody>
                               @foreach ($other as $key => $qz)
 
-                              @if (count($status[$key]) > 0)
+                              @if ($status[$key]->total_mark != 0)
                                 @php
                                   $alert = "badge bg-success";
                                 @endphp
@@ -104,63 +101,30 @@
                                 <td style="width: 1%">
                                     {{ $key+1 }}
                                 </td>
-                                <td style="width: 15%">
+                                <td>
                                   <span class="{{ $alert }}">{{ $qz->name }}</span>
                                 </td>
-                                <td style="width: 5%">
+                                <td>
                                   <span class="">{{ $qz->no_matric }}</span>
                                 </td>
-                                @if (count($status[$key]) > 0)
-                                  @foreach ($status[$key] as $keys => $sts)
-                                  <td style="width: 20%">
-                                        {{ empty($sts) ? '-' : $sts->subdate}}
-                                  </td>
-                                  <td style="width: 5%">
-                                    @if (empty($sts))
-                                      -
-                                    @else
-                                      <a href="{{ Storage::disk('linode')->url($sts->content) }}"><i class="fa fa-file-pdf-o fa-3x"></i></a>
-                                    @endif
-                                </td>
+                                @if ($status[$key]->total_mark != 0)
+                                  
                                   <td>
-                                    @if (empty($sts))
-                                    -
-                                    @else
-                                      @if ($sts->status_submission == 2)
-                                        <span class="badge bg-danger">Late</span>
-                                      @else
-                                        <span class="badge bg-success">Submit</span>
-                                      @endif
-                                    @endif
-                                  </td>
-                                  <td>
-                                        {{ empty($sts) ? '-' : $sts->final_mark }} / {{ $qz->total_mark }}
-                                  </td>
-                                  <td class="project-actions text-center" >
-                                    <a class="btn btn-success btn-sm mr-2" href="/lecturer/other/{{ request()->other }}/{{ $sts->userid }}/result">
-                                        <i class="ti-user">
-                                        </i>
-                                        Students
-                                    </a>
+                                        {{ $status[$key]->submittime}}
                                   </td>                                               
-                                  @endforeach
                                 @else
-                                  <td style="width: 20%">
-                                    -
-                                  </td>
-                                  <td>
-                                    -
-                                  </td>
-                                  <td>
+                                <td>
                                   -
-                                  </td> 
-                                  <td>
-
-                                  </td>
+                                </td>
                                 @endif
-                              
-                            
-                            </tr> 
+                                <td>
+                                  <div class="form-inline col-md-6 d-flex">
+                                      <input  type="number" class="form-control" name="marks[]" max="{{ $qz->total_mark}}" value="{{ $status[$key]->total_mark }}">
+                                      <input  type="text" name="ic[]" value="{{ $qz->student_ic }}" hidden>
+                                      <span>{{ $status[$key]->total_mark }} / {{ $qz->total_mark}}</span>
+                                  </div>
+                                </td>
+                              </tr> 
                             
                               @endforeach
                             </tbody>
@@ -171,6 +135,11 @@
                   </div>
                 </div>
               </div>
+              <div class="box-footer">
+                <div class="pull-right">
+                    <button id="savebtn" class="btn btn-primary"><i class="ti-trash"></i> Save</button>
+                </div>
+            </div>
             </div>
           </div>
         </div>
@@ -187,10 +156,15 @@
     var selected_other = "{{ request()->other }}";
 
     $(document).ready( function () {
-        $('#myTable').DataTable();
-
-        
+        $('#myTable').DataTable({
+          dom: 'lBfrtip', // if you remove this line you will see the show entries dropdown
+          
+          buttons: [
+              'copy', 'csv', 'excel', 'pdf', 'print'
+          ],
+        });
     } );
+    
 
     $(document).on('change', '#group', function(e) {
         selected_group = $(e.target).val();
@@ -223,6 +197,67 @@
         });
 
     }
+
+
+$('#savebtn').click(function (e){
+
+  e.preventDefault();   
+
+  var marks = $("input[name='marks[]']").map(function(){return $(this).val();}).get();;
+
+  var ics = $("input[name='ic[]']").map(function(){return $(this).val();}).get();;
+
+  var otherid = "{{ request()->other }}";
+
+  //alert(otherid);
+
+  var formData = new FormData();
+
+  var alldata = [];
+
+
+  formData.append('marks', JSON.stringify(marks));
+
+  formData.append('ics', JSON.stringify(ics));
+
+  formData.append('otherid', JSON.parse(JSON.stringify(otherid)));
+
+  $.ajax({
+        headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
+        url: '{{ url('/lecturer/other/update') }}',
+        type: 'POST',
+        data: formData,
+        cache : false,
+        processData: false,
+        contentType: false,
+        error:function(err){
+            console.log(err);
+        },
+        success:function(res){
+            try{
+                if(res.message == "Success"){
+                    alert("Success! Other's Results has been updated/created!");
+                    window.location.reload();
+                }else{
+                    if(res.message == "Field Error"){ 
+                          //$('#'+f+'_error').html(res.error[f]);
+                          alert("The Marks you inputted has exceed the maximum percentage! Please recheck.");
+                    }
+                    else if(res.message == "Group code already existed inside the system"){
+                        $('#classcode_error').html(res.message);
+                    }
+                    else{
+                        alert(res.message);
+                    }
+                    $("html, body").animate({ scrollTop: 0 }, "fast");
+                }
+            }catch(err){
+                alert("Ops sorry, there is an error");
+            }
+        }
+    });
+
+})
 
 </script>
 @stop

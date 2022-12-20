@@ -82,14 +82,18 @@ div.form-actions.btn-group > button{
                             <div class="header-setting row">
                                 <div class="row col-md-12">
                                     <div class="col-md-3 mb-4">
-                                        <label for="other-title" class="form-label "><strong>Others Title</strong></label>
-                                        <input type="text" oninput="this.value = this.value.toUpperCase()"  id="other-title" name="other-title" class="form-control"
-                                            value="{{ empty($data['other']->title) ? "" : $data['other']->title }}" required>
-                                    </div>
-                                    <div class="col-md-2 mb-4">
-                                        <label for="other-duration" class="form-label "><strong>other Deadline</strong></label>
-                                        <input type="datetime-local" oninput="this.value = this.value.toUpperCase()"  id="other-duration" name="other-duration" class="form-control"
-                                            value="" required>
+                                        <div class="form-group">
+                                          <label class="form-label" for="title"><strong>Other Title</strong></label>
+                                          <select class="form-select" id="title" name="title" required>
+                                              <option value="" disabled selected>-</option>
+                                              @foreach ($title as $tt)
+                                              <option value="{{ $tt->id }}">{{ $tt->name }}</option>
+                                              @endforeach
+                                          </select>
+                                          <span class="text-danger">@error('title')
+                                            {{ $message }}
+                                          @enderror</span>
+                                        </div>
                                     </div>
                                     <div class="col-md-2 mb-4">
                                         <div class="form-group">
@@ -106,8 +110,8 @@ div.form-actions.btn-group > button{
                                         </div>
                                     </div>
                                     <div class="col-md-3 mb-4">
-                                        <label for="total-marks" class="form-label "><strong>Total Marks</strong></label>
-                                        <input type="number" id="total-marks" name="total-marks" class="form-control"
+                                        <label for="total-marks" class="form-label "><strong>Total Marks</strong><span> (%)</span></label>
+                                        <input type="number" id="total-marks" name="marks" class="form-control" 
                                             value="" required>
                                     </div>
                                     
@@ -153,10 +157,10 @@ div.form-actions.btn-group > button{
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-md-3 mb-4">
+                                    <!--<div class="col-md-3 mb-4">
                                         <label for="total-marks" class="form-label "><strong>Content</strong></label>
                                         <input type="file" id="myPdf" name="myPdf" class="form-control"><br required>
-                                    </div>
+                                    </div>-->
                                 </div>
 
 
