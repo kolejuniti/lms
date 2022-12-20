@@ -543,6 +543,8 @@ class StudentController extends Controller
         
         $percentagequiz = "";
 
+        $percentagetest = "";
+
         $percentagemidterm = "";
 
         $percentagefinal = "";
@@ -554,6 +556,8 @@ class StudentController extends Controller
         $percentagepractical = "";
 
         $percentageother = "";
+
+        $percentageextra = "";
 
         //$percentagefinal = "";
 
@@ -593,6 +597,40 @@ class StudentController extends Controller
             $total_allquiz = round(( (int)$markquiz / (int)$totalquiz ) * (int)$percentagequiz);
         }else{
             $total_allquiz = 0;
+        }
+
+        //TEST
+
+        $percenttest = DB::table('tblclassmarks')
+                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
+                                ['subjek.id', Session::get('CourseID')],
+                                ['assessment', 'test']
+                                ])->first();
+
+        $test = DB::table('tblclassstudenttest')
+                ->join('tblclasstest', 'tblclassstudenttest.testid', 'tblclasstest.id')
+                ->where([
+                    ['tblclassstudenttest.userid', $students->ic],
+                    ['tblclasstest.classid', request()->id],
+                    ['tblclasstest.sessionid', Session::get('SessionID')]
+                ]);
+        
+        $totaltest = $test->sum('tblclasstest.total_mark');
+
+        $marktest = $test->sum('tblclassstudenttest.final_mark');
+
+        if($percenttest != null)
+        {
+            $percentagetest = $percenttest->mark_percentage;
+        }
+
+        $testlist = $test->get();
+
+        if($totaltest != 0 && $marktest != 0)
+        {
+            $total_alltest = round(( (int)$marktest / (int)$totaltest ) * (int)$percentagetest);
+        }else{
+            $total_alltest = 0;
         }
 
         //ASSIGNMENT
@@ -804,12 +842,48 @@ class StudentController extends Controller
             $total_allother = 0;
         }
 
+        //EXTRA
+
+        $percentextra = DB::table('tblclassmarks')
+                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
+                                ['subjek.id', Session::get('CourseID')],
+                                ['assessment', 'extra']
+                                ])->first();
+
+        $extra = DB::table('tblclassstudentextra')
+                ->join('tblclassextra', 'tblclassstudentextra.extraid', 'tblclassextra.id')
+                ->where([
+                    ['tblclassstudentextra.userid', $students->ic],
+                    ['tblclassextra.classid', request()->id],
+                    ['tblclassextra.sessionid', Session::get('SessionID')]
+                ]);
+        
+        $totalextra = $extra->sum('tblclassextra.total_mark');
+
+        $markextra = $extra->sum('tblclassstudentextra.final_mark');
+
+        if($percentextra != null)
+        {
+            $percentageextra = $percentextra->mark_percentage;
+        }
+
+        $extralist = $extra->get();
+
+        if($totalextra != 0 && $markextra != 0)
+        {
+            $total_allextra = round(( (int)$markextra / (int)$totalextra ) * (int)$percentageextra);
+        }else{
+            $total_allextra = 0;
+        }
+
         return view('student.courseassessment.reportdetails', compact('student', 'quizlist', 'totalquiz', 'markquiz', 'percentagequiz', 'total_allquiz',
+                                                                                  'testlist', 'totaltest', 'marktest', 'percentagetest', 'total_alltest',
                                                                                  'assignlist', 'totalassign', 'markassign', 'percentageassign', 'total_allassign',
                                                                                  'midtermlist', 'totalmidterm', 'markmidterm', 'percentagemidterm', 'total_allmidterm',
                                                                                  'finallist', 'totalfinal', 'markfinal', 'percentagefinal', 'total_allfinal',
                                                                                  'paperworklist', 'totalpaperwork', 'markpaperwork', 'percentagepaperwork', 'total_allpaperwork',
                                                                                  'practicallist', 'totalpractical', 'markpractical', 'percentagepractical', 'total_allpractical',
-                                                                                 'otherlist', 'totalother', 'markother', 'percentageother', 'total_allother',));
+                                                                                 'otherlist', 'totalother', 'markother', 'percentageother', 'total_allother',
+                                                                                 'extralist', 'totalextra', 'markextra', 'percentageextra', 'total_allextra'));
     }
 }

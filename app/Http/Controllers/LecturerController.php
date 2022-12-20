@@ -2229,7 +2229,7 @@ class LecturerController extends Controller
         $percentextra = DB::table('tblclassmarks')
                                 ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
                                 ['subjek.id', Session::get('CourseID')],
-                                ['assessment', 'lain-lain']
+                                ['assessment', 'extra']
                                 ])->first();
 
         $extra = DB::table('tblclassstudentextra')
