@@ -34,11 +34,15 @@ class FinalController extends Controller
         //dd(Session::get('CourseIDS'));
 
         $data = DB::table('tblclassfinal')
+                ->join('users', 'tblclassfinal.addby', 'users.ic')->join('tblclassfinalstatus', 'tblclassfinal.status', 'tblclassfinalstatus.id')
                 ->where([
-                    ['classid', Session::get('CourseIDS')],
-                    ['sessionid', Session::get('SessionIDS')],
-                    ['addby', $user->ic]
-                ])->get();
+                    ['tblclassfinal.classid', Session::get('CourseIDS')],
+                    ['tblclassfinal.sessionid', Session::get('SessionIDS')],
+                    ['tblclassfinal.addby', $user->ic],
+                    ['tblclassfinal.deadline', null],
+                    ['tblclassfinal.status', '!=', 3]
+                ])
+                ->select('tblclassfinal.*', 'users.name AS addby', 'tblclassfinalstatus.statusname')->get();
 
         //dd($data);
 
@@ -62,11 +66,11 @@ class FinalController extends Controller
     {
         $user = Auth::user();
 
-        $data['finalid'] = null;
-
         $courseid = Session::get('CourseIDS');
 
         $sessionid = Session::get('SessionIDS');
+
+        //$totalpercent = 0;
 
         $group = subject::join('student_subjek', 'user_subjek.id', 'student_subjek.group_id')
         ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
@@ -79,219 +83,153 @@ class FinalController extends Controller
 
         //dd(Session::get('CourseIDS'));
 
+        $subid = DB::table('subjek')->where('id', $courseid)->pluck('sub_id');
+
         $folder = DB::table('lecturer_dir')
-        ->where([
-            ['CourseID', $courseid],
-            ['Addby', $user->ic]
-            ])->get();
+                  ->join('subjek', 'lecturer_dir.CourseID','subjek.id')
+                  ->where('subjek.sub_id', $subid)
+                  ->where('Addby', $user->ic)->get();
 
         //dd($folder);
 
-        if(isset(request()->finalid))
-        {
+        //$percentage = DB::table('tblclassmarks')->where([
+            //['course_id', $courseid],
+            //['assessment', 'final']
+        //])->first();
 
-            $finalid = request()->finalid;
- 
-            $data['finalid'] = $finalid;
+        //$markfinal =  DB::table('tblclassfinal')->where([
+           // ['classid', $courseid],
+           // ['sessionid', $sessionid],
+            //['addby', $user->ic]
+        //])->sum('total_mark');
 
-            $data['final'] = DB::table('tblclassfinal')->select('tblclassfinal.*')
-            ->where([
-                ['classid', Session::get('CourseIDS')],
-                ['sessionid', Session::get('SessionIDS')],
-                ['id', $finalid],
-                ['addby', $user->ic],
-                ['content','!=', null]
-            ])->get()->first();
+        //if($markfinal != null)
+        //{
+         //   $totalpercent = $percentage->mark_percentage - $markfinal;
+        //}else{
+        //    $totalpercent = $percentage->mark_percentage;
+        //}
 
-            $folders = DB::table('tblclassfinal_chapter')
-                        ->join('material_dir', 'tblclassfinal_chapter.chapterid', 'material_dir.DrID')
-                        ->where('tblclassfinal_chapter.finalid', $finalid);
+        //dd($totalpercent);
 
-            $data['folder'] = $folders->join('lecturer_dir', 'material_dir.LecturerDirID', 'lecturer_dir.DrID')
-                                     ->select('lecturer_dir.*')->get()->first();
-
-            $data['finalstatus'] = $data['final']->status;
-
-        }
-
-        //dd($data);
-
-        return view('lecturer.courseassessment.finalcreate', compact(['group', 'folder', 'data']));
+        return view('lecturer.courseassessment.finalcreate', compact(['group', 'folder']));
     }
 
-    public function getChapters(Request $request)
+    public function deletefinal(Request $request)
     {
 
-        $subchapter = DB::table('material_dir')->where('LecturerDirID', $request->folder)->get();
+        try {
 
-        $content = "";
-        $content .= '
-        <div class="table-responsive" style="width:99.7%">
-        <table id="table_registerstudent" class="w-100 table text-fade table-bordered table-hover display nowrap margin-top-10 w-p100">
-            <thead class="thead-themed">
-            <th>Sub Chapter</th>
-            <th>Name</th>
-            <th></th>
-            </thead>
-            <tbody>
-        ';
-        foreach($subchapter as $sub){
-            //$registered = ($student->status == 'ACTIVE') ? 'checked' : '';
-            $content .= '
-            <tr>
-                <td >
-                    <label>'.$sub->ChapterNo.'</label>
-                </td>
-                <td >
-                    <label>'.$sub->DrName.'</label>
-                </td>
-                <td >
-                    <div class="pull-right" >
-                        <input type="checkbox" id="chapter_checkbox_'.$sub->DrID.'"
-                            class="filled-in" name="chapter[]" value="'.$sub->DrID.'" 
-                        >
-                        <label for="chapter_checkbox_'.$sub->DrID.'"> </label>
-                    </div>
-                </td>
-            </tr>
-            ';
+            $final = DB::table('tblclassfinal')->where('id', $request->id)->first();
+
+            if($final->status != 3)
+            {
+            DB::table('tblclassfinal')->where('id', $request->id)->update([
+                'status' => 3
+            ]);
+
+            return true;
+
+            }else{
+
+                die;
+
             }
-            $content .= '</tbody></table>';
-
-            return $content;
-
-    }
-
-    public function getStatus(Request $request)
-    {
-
-        $user = Auth::user();
-            
-        //dd($group);
-
-        $final = DB::table('student_subjek')
-                ->join('tblclassfinal_group', 'student_subjek.group_id', 'tblclassfinal_group.groupid')
-                ->join('tblclassfinal', 'tblclassfinal_group.finalid', 'tblclassfinal.id')
-                ->join('students', 'student_subjek.student_ic', 'students.ic')
-                ->select('student_subjek.*', 'tblclassfinal.id AS clssid', 'tblclassfinal.total_mark', 'students.no_matric', 'students.name')
-                ->where([
-                    ['tblclassfinal.classid', Session::get('CourseIDS')],
-                    ['tblclassfinal.sessionid', Session::get('SessionIDS')],
-                    ['tblclassfinal.id', $request->final],
-                    ['tblclassfinal.addby', $user->ic],
-                    ['tblclassfinal_group.groupid', $request->group]
-                ])->get();
-        
-        //dd($final);
-
-        foreach($final as $qz)
-        {
-            $statu[] = DB::table('tblclassstudentfinal')
-            ->where([
-                ['finalid', $qz->clssid],
-                ['userid', $qz->student_ic]
-            ])->get();
-        }
-
-        //dd($final);
-
-        return view('lecturer.courseassessment.getstatusfinal', compact('final', 'status'));
-
+          
+          } catch (\Exception $e) {
+          
+              return $e->getMessage();
+          }
     }
 
 
     public function insertfinal(Request $request){
-        $data = $request->data;
+        //$data = $request->data;
         $classid = Session::get('CourseIDS');
         $sessionid = Session::get('SessionIDS');
-        $duration = $request->duration;
         $title = $request->title;
-        $from = $request->from;
-        $to = $request->to;
-        $questionindex = $request->questionindex;
-        $status = $request->status;
         $group = $request->group;
         $chapter = $request->chapter;
         $marks = $request->marks;
 
+        $data = $request->validate([
+            'myPdf' => 'required', 'mimes:pdf'
+        ]);
+
         $user = Auth::user();
+
+        $dir = "classfinal/" .  $classid . "/" . $user->name . "/" . $title;
+        $classfinal  = Storage::disk('linode')->makeDirectory($dir);
+        $file = $request->file('myPdf');
             
         $finalid = empty($request->final) ? '' : $request->final;
 
+        if($group != null && $chapter != null)
+        {
         
-        if( !empty($finalid) ){
-            $q = DB::table('tblclassfinal')->where('id', $finalid)->update([
-                "title" => $title,
-                "date_from" => $from,
-                "date_to" => $to,
-                "content" => $data,
-                "duration" => $duration,
-                "questionindex" => $questionindex,
-                "total_mark" => $marks,
-                "addby" => $user->ic,
-                "status" => $status
-            ]);
-
-            DB::table('tblclassfinal_group')->where('finalid',$finalid)->delete();
-
-            foreach($group as $grp)
-            {
-                $gp = explode('|', $grp);
-                
-                DB::table('tblclassfinal_group')->insert([
-                    "groupid" => $gp[0],
-                    "groupname" => $gp[1],
-                    "finalid" => $finalid
+            if( !empty($finalid) ){
+                $q = DB::table('tblclassfinal')->where('id', $finalid)->update([
+                    "title" => $title,
+                    "total_mark" => $marks,
+                    "addby" => $user->ic,
+                    "status" => 2
                 ]);
-            }
+            }else{
+                $file_name = $file->getClientOriginalName();
+                $file_ext = $file->getClientOriginalExtension();
+                $fileInfo = pathinfo($file_name);
+                $filename = $fileInfo['filename'];
+                $newname = $filename . "." . $file_ext;
+                $newpath = "classfinal/" .  $classid . "/" . $user->name . "/" . $title . "/" . $newname;
 
-            DB::table('tblclassfinal_chapter')->where('finalid',$finalid)->delete();
+                if(!file_exists($newname)){
+                    Storage::disk('linode')->putFileAs(
+                        $dir,
+                        $file,
+                        $newname,
+                        'public'
+                    );
 
-            foreach($chapter as $chp)
-            {
-                DB::table('tblclassfinal_chapter')->insert([
-                    "chapterid" => $chp,
-                    "finalid" => $finalid
-                ]);
+                    $q = DB::table('tblclassfinal')->insertGetId([
+                        "classid" => $classid,
+                        "sessionid" => $sessionid,
+                        "title" => $title,
+                        'content' => $newpath,
+                        "total_mark" => $marks,
+                        "addby" => $user->ic,
+                        "status" => 2
+                    ]);
+
+                    foreach($request->group as $grp)
+                    {
+                        $gp = explode('|', $grp);
+
+                        DB::table('tblclassfinal_group')->insert([
+                            "groupid" => $gp[0],
+                            "groupname" => $gp[1],
+                            "finalid" => $q
+                        ]);
+                    }
+
+                    foreach($request->chapter as $chp)
+                    {
+                        DB::table('tblclassfinal_chapter')->insert([
+                            "chapterid" => $chp,
+                            "finalid" => $q
+                        ]);
+                    }
+
+                }
+
             }
 
         }else{
-            $q = DB::table('tblclassfinal')->insertGetId([
-                "classid" => $classid,
-                "sessionid" => $sessionid,
-                "title" => $title,
-                "date_from" => $from,
-                "date_to" => $to,
-                "content" => $data,
-                "duration" => $duration,
-                "questionindex" => $questionindex,
-                "total_mark" => $marks,
-                "addby" => $user->ic,
-                "status" => $status
-            ]);
 
-            foreach($group as $grp)
-            {
-                $gp = explode('|', $grp);
-                
-                DB::table('tblclassfinal_group')->insert([
-                    "groupid" => $gp[0],
-                    "groupname" => $gp[1],
-                    "finalid" => $q
-                ]);
-            }
+            return redirect()->back()->withErrors(['Please fill in the group and sub-chapter checkbox !']);
 
-            foreach($chapter as $chp)
-            {
-                DB::table('tblclassfinal_chapter')->insert([
-                    "chapterid" => $chp,
-                    "finalid" => $q
-                ]);
-            }
         }
         
-        
-        return true;
+        return redirect(route('lecturer.final', ['id' => $classid]));
     }
 
     public function lecturerfinalstatus()
@@ -332,199 +270,83 @@ class FinalController extends Controller
 
         foreach($final as $qz)
         {
+            //$status[] = DB::table('tblclassstudentfinal')
+            //->where([
+               // ['finalid', $qz->clssid],
+               // ['userid', $qz->student_ic]
+           // ])->get();
+
+           if(!DB::table('tblclassstudentfinal')->where([['finalid', $qz->clssid],['userid', $qz->student_ic]])->exists()){
+
+                DB::table('tblclassstudentfinal')->insert([
+                    'finalid' => $qz->clssid,
+                    'userid' => $qz->student_ic
+                ]);
+
+           }
+
             $status[] = DB::table('tblclassstudentfinal')
             ->where([
                 ['finalid', $qz->clssid],
                 ['userid', $qz->student_ic]
-            ])->get();
+            ])->first();
         }
 
-        //dd($final);
+        //dd($status);
 
         return view('lecturer.courseassessment.finalstatus', compact('final', 'status', 'group'));
 
     }
 
-    public function finalresult(Request $request){
-        
-        $id = $request->finalid;
-        $userid = $request->userid;
-        $count = 1;
+    public function updatefinal(Request $request)
+    {
+        $user = Auth::user();
 
-        //dd($id);
+        $marks = json_decode($request->marks);
 
-        $final = DB::table('tblclassstudentfinal')
-            ->join('tblclassfinal', 'tblclassstudentfinal.finalid', 'tblclassfinal.id')
-            ->leftJoin('students', 'tblclassstudentfinal.userid', 'students.ic')
-            ->select('tblclassstudentfinal.*', 'tblclassstudentfinal.finalid', 'tblclassfinal.title',  
-                DB::raw('tblclassfinal.content as original_content'), 
-                'tblclassfinal.questionindex',
-                'tblclassstudentfinal.userid',
-                'tblclassstudentfinal.submittime',
-                DB::raw('tblclassstudentfinal.status as studentfinalstatus'),
-                'tblclassfinal.duration','students.name')
-            ->where('tblclassstudentfinal.finalid', $id)
-            ->where('tblclassstudentfinal.userid', $userid)->get()->first();
-       
-        $finalformdata = json_decode($final->content)->formData;
-        $original_finalformdata = json_decode($final->original_content)->formData;
-        
+        $ics = json_decode($request->ics);
 
-        $gain_mark = false;
-        $correct_label = " <i style='font-size:1.5em' class='fa fa-check text-success'></i>";
-        $incorrect_label = " <i style='font-size:1.5em' class='fa fa-close text-danger'></i>";
+        $finalid = json_decode($request->finalid);
 
-        foreach($original_finalformdata as $index => $q){
+        $limitpercen = DB::table('tblclassfinal')->where('id', $finalid)->first();
 
-        //$radio = "radio-question".$count+1;
-        //dd($radio);
+        foreach($marks as $key => $mrk)
+        {
 
-            if(!empty($original_finalformdata[$index]->name) ){
-
-                if($original_finalformdata[$index]->name == "radio-question".$count){
-                    $i =0;
-                    $correct_answer = $original_finalformdata[$index + 1]->label;
-                    $correct_answer = preg_replace('/\s+/', '', $correct_answer );
-                    $correct_answer = explode(",", $correct_answer);
-                    
-                    foreach($finalformdata[$index]->values as $v){
-                        
-                        if(in_array($v->value, $correct_answer)){
-                            $finalformdata[$index]->values[$i]->label = $original_finalformdata[$index]->values[$i]->label . $correct_label;
-                        }else{
-                            $finalformdata[$index]->values[$i]->label = $original_finalformdata[$index]->values[$i]->label . $incorrect_label;
-                        }
-                        $i++;
-                    }
-
-                    $userData = !empty($finalformdata[$index]->userData[0]) ? $finalformdata[$index]->userData[0] : null;
-
-                    if(in_array($userData, $correct_answer)){
-                        $gain_mark = true;
-                    }
-                    $count++;
-                    
-                }
-                
-                if($original_finalformdata[$index]->name == "checkbox-question".$count){
-                    $i =0;
-                    $correct_answer = $original_finalformdata[$index + 1]->label;
-                    $correct_answer = preg_replace('/\s+/', '', $correct_answer );
-                    $correct_answer = explode(",", $correct_answer);
-                    
-                    foreach($finalformdata[$index]->values as $v){
-                        if(in_array($v->value, $correct_answer)){
-                            $finalformdata[$index]->values[$i]->label = $original_finalformdata[$index]->values[$i]->label . $correct_label;
-                        }else{
-                            $finalformdata[$index]->values[$i]->label = $original_finalformdata[$index]->values[$i]->label . $incorrect_label;
-                        }
-                        $i++;
-                    }
-                    
-                    $userData = !empty($finalformdata[$index]->userData) ? $finalformdata[$index]->userData : null;
-
-                    if( count( array_diff_assoc($correct_answer, $userData) )  == 0){
-                        $gain_mark = true;
-                    }
-                    $count++;
-                
-                }
+            if($mrk > $limitpercen->total_mark)
+            {
+                return ["message"=>"Field Error", "id" => $ics];
             }
 
-            if(!empty($original_finalformdata[$index]->className) ){
-                
-                if(str_contains($original_finalformdata[$index]->className, "feedback-text")){
-                    $finalformdata[$index] = $q;
-                  
-                    $finalformdata[$index]->type = "paragraph";
-
-                    if(!empty($q->userData[0])){
-                        $finalformdata[$index]->label = $q->userData[0];
-                    }else{
-                        $finalformdata[$index]->label = " ";
-                    }
-                    $finalformdata[$index]->className = "bg-red mb-4 text-danger";
-                }
-
-                if(str_contains($original_finalformdata[$index]->className, "collected-marks")){
-
-                    $mark_label           = $original_finalformdata[$index]->values[0]->label;
-                    $mark                 = $original_finalformdata[$index]->values[0]->value;
-                    
-                    //if result is published then use graded data
-                    if($final->studentfinalstatus == 3){
-                        $graded_data = empty($finalformdata[$index]->userData[0]) ? "" : $finalformdata[$index]->userData[0];
-
-                        if($graded_data == $mark){
-                            $finalformdata[$index]->values[0]->selected = true;
-                        }else{
-                            $finalformdata[$index]->values[0]->selected = false;
-                        }
-                    }else{
-                        //auto correct answer on mcq by matching user answer with original answer
-                        $finalformdata[$index] = $original_finalformdata[$index];
-
-                        if($gain_mark){
-                            $finalformdata[$index]->values[0]->selected = true;
-                        }else{
-                            $finalformdata[$index]->values[0]->selected = false;
-                        }
-                        
-                        $gain_mark = false;
-                    }
-                }
-            }
         }
 
        
-        $data['final'] = $finalformdata;
-        $data['comments'] = $final->comments;
-        $data['finalid'] = $final->finalid;
-        $data['finaltitle'] = $final->title;
-        $data['finalduration'] = $final->duration;
-        $data['finaluserid'] = $final->userid;
-        $data['fullname'] = $final->name;
-        $data['created_at'] = $final->created_at;
-        $data['updated_at'] = $final->updated_at;
-        $data['submittime'] = $final->submittime;
-        $data['questionindex'] = $final->questionindex;
-        $data['studentfinalstatus'] = $final->studentfinalstatus;
-
-        return view('lecturer.courseassessment.finalresult', compact('data'));
-    }
-
-    public function updatefinalresult(Request $request){
-        $final = $request->final;
-        $participant = $request->participant;
-        $final_mark = $request->final_mark;
-        $comments = $request->comments;
-        //$total_mark = $request->total_mark;
-        $data = $request->data;
-
-      
-        $q = \DB::table('tblclassstudentfinal')
-            ->where('finalid', $final)
-            ->where("userid", $participant)
-            ->update([
-                "content" => $data,
-                "final_mark" => $final_mark,
-                //"total_mark" => $total_mark,
-                "comments" => $comments,
-                "status" => 3
+        $upsert = [];
+        foreach($marks as $key => $mrk){
+            array_push($upsert, [
+            'userid' => $ics[$key],
+            'finalid' => $finalid,
+            'submittime' => date("Y-m-d H:i:s"),
+            'final_mark' => $mrk,
+            'status' => 1
             ]);
-        
-        return true;
+        }
+
+        DB::table('tblclassstudentfinal')->upsert($upsert, ['userid', 'finalid']);
+
+        return ["message"=>"Success", "id" => $ics];
+
     }
 
+    //This is final 2 Student Controller
 
-
-
-    //This is Student final Controller//
 
     public function studentfinallist()
     {
         $chapter = [];
 
+        $marks = [];
+        
         Session::put('CourseIDS', request()->id);
 
         if(Session::get('SessionIDS') == null)
@@ -540,16 +362,19 @@ class FinalController extends Controller
 
         $data = DB::table('tblclassfinal')
                 ->join('tblclassfinal_group', 'tblclassfinal.id', 'tblclassfinal_group.finalid')
+                ->join('tblclassfinalstatus', 'tblclassfinal.status', 'tblclassfinalstatus.id')
                 ->join('student_subjek', function($join){
                     $join->on('tblclassfinal_group.groupid', 'student_subjek.group_id');
                     $join->on('tblclassfinal_group.groupname', 'student_subjek.group_name');
                 })
                 ->join('user_subjek', 'tblclassfinal_group.groupid', 'user_subjek.id')
-                ->select('tblclassfinal.*', 'tblclassfinal_group.groupname')
+                ->select('tblclassfinal.*', 'tblclassfinal_group.groupname','tblclassfinalstatus.statusname')
                 ->where([
                     ['tblclassfinal.classid', Session::get('CourseIDS')],
                     ['tblclassfinal.sessionid', Session::get('SessionIDS')],
-                    ['student_subjek.student_ic', $student->ic]
+                    ['student_subjek.student_ic', $student->ic],
+                    ['tblclassfinal.deadline', null],
+                    ['tblclassfinal.status','!=', 3]
                 ])->get();
 
         //dd($data);
@@ -559,332 +384,17 @@ class FinalController extends Controller
             $chapter[] = DB::table('tblclassfinal_chapter')
                       ->join('material_dir', 'tblclassfinal_chapter.chapterid', 'material_dir.DrID')
                       ->where('tblclassfinal_chapter.finalid', $dt->id)->get();
+
+            $marks[] = DB::table('tblclassstudentfinal')
+                      ->where([
+                        ['finalid', $dt->id],
+                        ['userid', $student->ic]
+                      ])->get();
         }
 
-        return view('student.courseassessment.final', compact('data', 'chapter'));
+        //dd($marks);
 
-    }
+        return view('student.courseassessment.final', compact('data', 'chapter', 'marks'));
 
-    public function studentfinalstatus()
-    {
-        $final = DB::table('student_subjek')
-                ->join('tblclassfinal_group', function($join){
-                    $join->on('student_subjek.group_id', 'tblclassfinal_group.groupid');
-                    $join->on('student_subjek.group_name', 'tblclassfinal_group.groupname');
-                })
-                ->join('tblclassfinal', 'tblclassfinal_group.finalid', 'tblclassfinal.id')
-                ->where([
-                    ['tblclassfinal.classid', Session::get('CourseIDS')],
-                    ['tblclassfinal.sessionid', Session::get('SessionIDS')],
-                    ['tblclassfinal.id', request()->final],
-                    ['student_subjek.student_ic', Session::get('StudInfos')->ic]
-                ])->get();
-
-        //dd($final);
-
-        foreach($final as $qz)
-        {
-            $status[] = DB::table('tblclassstudentfinal')
-            ->where([
-                ['finalid', $qz->id],
-                ['userid', Session::get('StudInfos')->ic]
-            ])->first();
-        }
-
-        //dd($status);
-
-        return view('student.courseassessment.finalstatus', compact('final', 'status'));
-    }
-
-    public function finalview(Request $request){
-
-        $id = $request->final;
-        $final = DB::table('tblclassfinal')
-            ->leftjoin('tblclassstudentfinal', function($join) 
-            {
-                $join->on('tblclassfinal.id', '=', 'tblclassstudentfinal.finalid');
-                $join->on('tblclassstudentfinal.userid',  '=', DB::raw(Session::get('StudInfos')->ic));
-            })
-            ->leftJoin('students', 'tblclassstudentfinal.userid', 'students.ic')
-            ->leftJoin('tblclassfinalstatus', 'tblclassfinal.status', 'tblclassfinalstatus.id')
-            ->select('tblclassfinal.*', 'tblclassstudentfinal.userid', 'tblclassstudentfinal.finalid','students.name', 
-                DB::raw('tblclassfinal.status as classfinalstatus'),
-                DB::raw('tblclassstudentfinal.status as studentfinalstatus'), 'tblclassstudentfinal.endtime', 'tblclassstudentfinal.starttime' , 
-                DB::raw('TIMESTAMPDIFF(SECOND, now(), endtime) as timeleft'),
-                DB::raw('tblclassstudentfinal.content as studentfinalcontent')
-            )
-            ->where('tblclassfinal.id', $id)
-            ->get()->first();
-
-        //dd($final);
-
-        $finalformdata = json_decode($final->content)->formData;
-
-        if(!empty($final->studentfinalcontent)){
-            $finalformdata = json_decode($final->studentfinalcontent)->formData;
-        }
-
-        foreach($finalformdata as $index => $v){
-
-            if(!empty($finalformdata[$index]->className) ){
-                if(str_contains($finalformdata[$index]->className, "collected-marks")){
-                    $finalformdata[$index]->type = "paragraph";
-                    $finalformdata[$index]->label = $finalformdata[$index]->values[0]->label;
-                }
-
-                if(str_contains($finalformdata[$index]->className, "correct-answer")){
-                    $finalformdata[$index]->className = "correct-answer d-none";
-                    unset($finalformdata[$index]->label);
-                }
-
-                if(str_contains($finalformdata[$index]->className, "feedback-text")){
-                    $finalformdata[$index]->className = "feedback-text d-none";
-                    unset($finalformdata[$index]->label);
-                }
-            }
-        }
-
-        if($final->classfinalstatus == 2){
-            if($final->studentfinalstatus == 2 || $final->studentfinalstatus == 3){
-                //completed final
-                return redirect('/academics/final/'.$final->finalid.'/result');
-            }else{
-                $data['final'] = json_encode($finalformdata );
-                $data['finalid'] = $final->id;
-                $data['finaltitle'] = $final->title;
-                $data['finalduration'] = $final->duration;
-                $data['finalendduration'] = $final->date_to;
-                $data['fullname'] = $final->name;
-                $data['created_at'] = $final->created_at;
-                $data['updated_at'] = $final->updated_at;
-                $data['finalstarttime'] = $final->starttime;
-                $data['finalendtime'] = $final->endtime;
-                $data['finaltimeleft'] = $final->timeleft;
-        
-                return view('student.courseassessment.finalanswer', compact('data'));
-            }
-        }else{
-            return "final is not published yet";
-        }
-    }
-
-    public function startfinal(Request $request){
-        $final = $request->final;
-        $data = $request->data;
-        
-        $finalduration = DB::table('tblclassfinal')->select('duration')->where('id', $final)->first()->duration;
-        
-        try{
-            DB::beginTransaction();
-            $q =  DB::table('tblclassstudentfinal')->insert([
-                "userid" =>  Session::get('StudInfos')->ic,
-                "finalid" => $final,
-                "content" => $data,
-                "starttime" =>  DB::raw('now()'),
-                "endtime" => DB::raw('now() + INTERVAL '.$finalduration.' MINUTE'),
-                "status" => 1
-            ]);
-            DB::commit();
-        }catch(QueryException $ex){
-            if($ex->getCode() == 23000){
-            }else{
-                \Log::debug($ex);
-            }
-        }
-    }
-
-    public function savefinal(Request $request){
-        $data = $request->data;
-        $finalid = $request->final;
-
-
-        $q = DB::table('tblclassstudentfinal')->where('status', 1)->where('finalid',$finalid)->where('userid', Session::get('StudInfos')->ic)->update([
-            "content" => $data
-        ]);
-
-        $q = ($q == 1) ? true : false;
-
-        return $q;
-     
-    }
-
-    public function submitfinal(Request $request){
-        $data = $request->data;
-        $id = $request->id;
-
-        $final = DB::table('tblclassfinal')
-            ->leftjoin('tblclassstudentfinal', function($join) 
-            {
-                $join->on('tblclassfinal.id', '=', 'tblclassstudentfinal.finalid');
-                $join->on('tblclassstudentfinal.userid',  '=', DB::raw(Session::get('StudInfos')->ic));
-            })
-            ->select('tblclassfinal.*', 'tblclassstudentfinal.userid', DB::raw('tblclassstudentfinal.status as studentfinalstatus'),
-             'tblclassstudentfinal.finalid')
-            ->where('tblclassfinal.id', $id)
-            ->get()->first();
-
-        if($final->studentfinalstatus == 2 || $final->studentfinalstatus == 3){
-            return ["status"=>false, "message" =>"Sorry, you have completed the final before."];
-        }
-
-        $q = DB::table('tblclassstudentfinal')->upsert([
-            "userid" => Session::get('StudInfos')->ic,
-            "finalid" => $id,
-            "submittime" => DB::raw('now()'),
-            "content" => $data,
-            "status" => 2
-        ],['userid', 'finalid']);
-
-        return ["status"=>true, "message" =>$data];
-     
-    }
-
-    public function finalresultstd(Request $request){
-        
-        $id = $request->finalid;
-        $userid = $request->userid;
-        $count = 1;
-
-        //dd($id);
-
-        $final = DB::table('tblclassstudentfinal')
-            ->join('tblclassfinal', 'tblclassstudentfinal.finalid', 'tblclassfinal.id')
-            ->leftJoin('students', 'tblclassstudentfinal.userid', 'students.ic')
-            ->select('tblclassstudentfinal.*', 'tblclassstudentfinal.finalid', 'tblclassfinal.title',  
-                DB::raw('tblclassfinal.content as original_content'), 
-                'tblclassfinal.questionindex',
-                'tblclassstudentfinal.userid',
-                'tblclassstudentfinal.submittime',
-                DB::raw('tblclassstudentfinal.status as studentfinalstatus'),
-                'tblclassfinal.duration','students.name')
-            ->where('tblclassstudentfinal.finalid', $id)
-            ->where('tblclassstudentfinal.userid', $userid)->get()->first();
-       
-        $finalformdata = json_decode($final->content)->formData;
-        $original_finalformdata = json_decode($final->original_content)->formData;
-        
-
-        $gain_mark = false;
-        $correct_label = " <i style='font-size:1.5em' class='fa fa-check text-success'></i>";
-        $incorrect_label = " <i style='font-size:1.5em' class='fa fa-close text-danger'></i>";
-
-        foreach($original_finalformdata as $index => $q){
-
-        //$radio = "radio-question".$count+1;
-        //dd($radio);
-
-            if(!empty($original_finalformdata[$index]->name) ){
-
-                if($original_finalformdata[$index]->name == "radio-question".$count){
-                    $i =0;
-                    $correct_answer = $original_finalformdata[$index + 1]->label;
-                    $correct_answer = preg_replace('/\s+/', '', $correct_answer );
-                    $correct_answer = explode(",", $correct_answer);
-                    
-                    foreach($finalformdata[$index]->values as $v){
-                        
-                        if(in_array($v->value, $correct_answer)){
-                            $finalformdata[$index]->values[$i]->label = $original_finalformdata[$index]->values[$i]->label . $correct_label;
-                        }else{
-                            $finalformdata[$index]->values[$i]->label = $original_finalformdata[$index]->values[$i]->label . $incorrect_label;
-                        }
-                        $i++;
-                    }
-
-                    $userData = !empty($finalformdata[$index]->userData[0]) ? $finalformdata[$index]->userData[0] : null;
-
-                    if(in_array($userData, $correct_answer)){
-                        $gain_mark = true;
-                    }
-                    $count++;
-                    
-                }
-                
-                if($original_finalformdata[$index]->name == "checkbox-question".$count){
-                    $i =0;
-                    $correct_answer = $original_finalformdata[$index + 1]->label;
-                    $correct_answer = preg_replace('/\s+/', '', $correct_answer );
-                    $correct_answer = explode(",", $correct_answer);
-                    
-                    foreach($finalformdata[$index]->values as $v){
-                        if(in_array($v->value, $correct_answer)){
-                            $finalformdata[$index]->values[$i]->label = $original_finalformdata[$index]->values[$i]->label . $correct_label;
-                        }else{
-                            $finalformdata[$index]->values[$i]->label = $original_finalformdata[$index]->values[$i]->label . $incorrect_label;
-                        }
-                        $i++;
-                    }
-                    
-                    $userData = !empty($finalformdata[$index]->userData) ? $finalformdata[$index]->userData : null;
-
-                    if( count( array_diff_assoc($correct_answer, $userData) )  == 0){
-                        $gain_mark = true;
-                    }
-                    $count++;
-                
-                }
-            }
-
-            if(!empty($original_finalformdata[$index]->className) ){
-                
-                if(str_contains($original_finalformdata[$index]->className, "feedback-text")){
-                    $finalformdata[$index] = $q;
-                  
-                    $finalformdata[$index]->type = "paragraph";
-
-                    if(!empty($q->userData[0])){
-                        $finalformdata[$index]->label = $q->userData[0];
-                    }else{
-                        $finalformdata[$index]->label = " ";
-                    }
-                    $finalformdata[$index]->className = "bg-red mb-4 text-danger";
-                }
-
-                if(str_contains($original_finalformdata[$index]->className, "collected-marks")){
-
-                    $mark_label           = $original_finalformdata[$index]->values[0]->label;
-                    $mark                 = $original_finalformdata[$index]->values[0]->value;
-                    
-                    //if result is published then use graded data
-                    if($final->studentfinalstatus == 3){
-                        $graded_data = empty($finalformdata[$index]->userData[0]) ? "" : $finalformdata[$index]->userData[0];
-
-                        if($graded_data == $mark){
-                            $finalformdata[$index]->values[0]->selected = true;
-                        }else{
-                            $finalformdata[$index]->values[0]->selected = false;
-                        }
-                    }else{
-                        //auto correct answer on mcq by matching user answer with original answer
-                        $finalformdata[$index] = $original_finalformdata[$index];
-
-                        if($gain_mark){
-                            $finalformdata[$index]->values[0]->selected = true;
-                        }else{
-                            $finalformdata[$index]->values[0]->selected = false;
-                        }
-                        
-                        $gain_mark = false;
-                    }
-                }
-            }
-        }
-
-       
-        $data['final'] = $finalformdata;
-        $data['comments'] = $final->comments;
-
-        $data['finalid'] = $final->finalid;
-        $data['finaltitle'] = $final->title;
-        $data['finalduration'] = $final->duration;
-        $data['finaluserid'] = $final->userid;
-        $data['fullname'] = $final->name;
-        $data['created_at'] = $final->created_at;
-        $data['updated_at'] = $final->updated_at;
-        $data['submittime'] = $final->submittime;
-        $data['questionindex'] = $final->questionindex;
-        $data['studentfinalstatus'] = $final->studentfinalstatus;
-
-        return view('student.courseassessment.finalresult', compact('data'));
     }
 }
