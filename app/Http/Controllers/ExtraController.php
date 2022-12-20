@@ -124,6 +124,32 @@ class ExtraController extends Controller
         return view('lecturer.courseassessment.extracreate', compact(['group', 'folder', 'title', 'totalpercent']));
     }
 
+    public function deleteextra(Request $request)
+    {
+
+        try {
+
+            $extra = DB::table('tblclassextra')->where('id', $request->id)->first();
+
+            if($extra->status != 3)
+            {
+            DB::table('tblclassextra')->where('id', $request->id)->update([
+                'status' => 3
+            ]);
+
+            return true;
+
+            }else{
+
+                die;
+
+            }
+          
+          } catch (\Exception $e) {
+          
+              return $e->getMessage();
+          }
+    }
 
     public function insertextra(Request $request){
         //$data = $request->data;

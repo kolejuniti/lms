@@ -40,6 +40,17 @@ class OtherController extends Controller
                     ['addby', $user->ic]
                 ])->get();
 
+        $data = DB::table('tblclassother')
+                ->join('tblextra_title', 'tblclassother.title', 'tblextra_title.id')
+                ->join('users', 'tblclassother.addby', 'users.ic')
+                ->where([
+                    ['tblclassother.classid', Session::get('CourseIDS')],
+                    ['tblclassother.sessionid', Session::get('SessionIDS')],
+                    ['tblclassother.addby', $user->ic],
+                    ['tblclassother.status', '!=', 3]
+                ])
+                ->select('tblclassother.*', 'tblextra_title.name AS title', 'users.name AS addby')->get();
+
       
             foreach($data as $dt)
             {
@@ -75,15 +86,18 @@ class OtherController extends Controller
 
         //dd(Session::get('CourseIDS'));
 
+        $subid = DB::table('subjek')->where('id', $courseid)->pluck('sub_id');
+
         $folder = DB::table('lecturer_dir')
-        ->where([
-            ['CourseID', $courseid],
-            ['Addby', $user->ic]
-            ])->get();
+                  ->join('subjek', 'lecturer_dir.CourseID','subjek.id')
+                  ->where('subjek.sub_id', $subid)
+                  ->where('Addby', $user->ic)->get();
+
+        $title = DB::table('tblextra_title')->get();
 
         //dd($folder);
 
-        return view('lecturer.courseassessment.othercreate', compact(['group', 'folder']));
+        return view('lecturer.courseassessment.othercreate', compact(['group', 'folder', 'title']));
     }
 
     public function getChapters(Request $request)
@@ -129,7 +143,99 @@ class OtherController extends Controller
 
     }
 
+    public function deleteother(Request $request)
+    {
+
+        try {
+
+            $other = DB::table('tblclassother')->where('id', $request->id)->first();
+
+            if($other->status != 3)
+            {
+            DB::table('tblclassother')->where('id', $request->id)->update([
+                'status' => 3
+            ]);
+
+            return true;
+
+            }else{
+
+                die;
+
+            }
+          
+          } catch (\Exception $e) {
+          
+              return $e->getMessage();
+          }
+    }
+
     public function insertother(Request $request)
+    {
+
+        //$data = $request->data;
+        $classid = Session::get('CourseIDS');
+        $sessionid = Session::get('SessionIDS');
+        $title = $request->title;
+        $group = $request->group;
+        $chapter = $request->chapter;
+        $marks = $request->marks;
+
+        $user = Auth::user();
+            
+        $otherid = empty($request->other) ? '' : $request->other;
+
+        if($group != null && $chapter != null)
+        {
+        
+            if( !empty($otherid) ){
+                $q = DB::table('tblclassother')->where('id', $otherid)->update([
+                    "title" => $title,
+                    "total_mark" => $marks,
+                    "addby" => $user->ic,
+                    "status" => 2
+                ]);
+            }else{
+                $q = DB::table('tblclassother')->insertGetId([
+                    "classid" => $classid,
+                    "sessionid" => $sessionid,
+                    "title" => $title,
+                    "total_mark" => $marks,
+                    "addby" => $user->ic,
+                    "status" => 2
+                ]);
+
+                foreach($group as $grp)
+                {
+                    $gp = explode('|', $grp);
+                    
+                    DB::table('tblclassother_group')->insert([
+                        "groupid" => $gp[0],
+                        "groupname" => $gp[1],
+                        "otherid" => $q
+                    ]);
+                }
+
+                foreach($chapter as $chp)
+                {
+                    DB::table('tblclassother_chapter')->insert([
+                        "chapterid" => $chp,
+                        "otherid" => $q
+                    ]);
+                }
+            }
+        
+        }else{
+
+            return redirect()->back()->withErrors(['Please fill in the group and sub-chapter checkbox !']);
+
+        }
+        
+        return redirect(route('lecturer.other', ['id' => $classid]));
+
+    }
+
+    public function backupinsertother ()
     {
 
         $user = Auth::user();
@@ -199,7 +305,6 @@ class OtherController extends Controller
 
             return redirect(route('lecturer.other', ['id' => $classid]));
         }
-
     }
 
     public function lecturerotherstatus()
@@ -211,9 +316,11 @@ class OtherController extends Controller
                 ->join('tblclassother', 'tblclassother_group.otherid', 'tblclassother.id')
                 ->where([
                     ['tblclassother.classid', Session::get('CourseIDS')],
+                    ['tblclassother.sessionid', Session::get('SessionIDS')],
                     ['user_subjek.user_ic', $user->ic],
                     ['tblclassother.id', request()->other]
                 ])->get();
+                
             
         //dd($group);
 
@@ -230,121 +337,80 @@ class OtherController extends Controller
                     ['tblclassother.sessionid', Session::get('SessionIDS')],
                     ['tblclassother.id', request()->other],
                     ['tblclassother.addby', $user->ic]
-                ])->get();
+                ])->orderBy('students.name')->get();
+        
+        
         
         //dd($other);
 
         foreach($other as $qz)
         {
+            //$status[] = DB::table('tblclassstudentother')
+            //->where([
+               // ['otherid', $qz->clssid],
+               // ['userid', $qz->student_ic]
+           // ])->get();
+
+           if(!DB::table('tblclassstudentother')->where([['otherid', $qz->clssid],['userid', $qz->student_ic]])->exists()){
+
+                DB::table('tblclassstudentother')->insert([
+                    'otherid' => $qz->clssid,
+                    'userid' => $qz->student_ic
+                ]);
+
+           }
+
             $status[] = DB::table('tblclassstudentother')
             ->where([
                 ['otherid', $qz->clssid],
                 ['userid', $qz->student_ic]
-            ])->get();
+            ])->first();
         }
 
-        //dd($other);
+        //dd($status);
 
         return view('lecturer.courseassessment.otherstatus', compact('other', 'status', 'group'));
 
     }
 
-    public function otherresult(Request $request){
-        
-        $id = $request->otherid;
-        $userid = $request->userid;
-        $count = 1;
+    public function updateother(Request $request)
+    {
+        $user = Auth::user();
 
-        //dd($id);
+        $marks = json_decode($request->marks);
 
-        $other = DB::table('tblclassstudentother')
-            ->join('tblclassother', 'tblclassstudentother.otherid', 'tblclassother.id')
-            ->leftJoin('students', 'tblclassstudentother.userid', 'students.ic')
-            ->select('tblclassstudentother.*', 'tblclassstudentother.otherid', 'tblclassother.title',  
-                DB::raw('tblclassother.content as original_content'),
-                'tblclassstudentother.return_content', 
-                'tblclassstudentother.userid',
-                'tblclassstudentother.subdate',
-                'tblclassstudentother.final_mark',
-                DB::raw('tblclassstudentother.status as studentotherstatus'),
-                'tblclassother.deadline','tblclassother.total_mark','students.name', 'students.ic')
-            ->where('tblclassstudentother.otherid', $id)
-            ->where('tblclassstudentother.userid', $userid)->get()->first();
+        $ics = json_decode($request->ics);
+
+        $otherid = json_decode($request->otherid);
+
+        $limitpercen = DB::table('tblclassother')->where('id', $otherid)->first();
+
+        foreach($marks as $key => $mrk)
+        {
+
+            if($mrk > $limitpercen->total_mark)
+            {
+                return ["message"=>"Field Error", "id" => $ics];
+            }
+
+        }
 
        
-        $data['other'] = $other->content;
-        //dd($data['other']);
-        $data['return'] = $other->return_content;
-        $data['comments'] = $other->comments;
-        $data['mark'] = $other->final_mark;
-        $data['otherid'] = $other->otherid;
-        $data['othertitle'] = $other->title;
-        $data['totalmark'] = $other->total_mark;
-        $data['otherdeadline'] = $other->deadline;
-        $data['otheruserid'] = $other->userid;
-        $data['fullname'] = $other->name;
-        $data['IC'] = $other->ic;
-        $data['created_at'] = $other->created_at;
-        $data['updated_at'] = $other->updated_at;
-        $data['subdate'] = $other->subdate;
-        $data['studentotherstatus'] = $other->studentotherstatus;
-
-        return view('lecturer.courseassessment.otherresult', compact('data'));
-    }
-
-    public function updateotherresult(Request $request){
-        $otherid = $request->id;
-        $participant = $request->participant;
-        $final_mark = $request->markss;
-        $comments = $request->commentss;
-        $classid = Session::get('CourseIDS');
-        //$total_mark = $request->total_mark;
-        //$data = $request->data;
-
-        $other = DB::table('tblclassother')
-                      ->join('users', 'tblclassother.addby', 'users.ic')
-                      ->where('tblclassother.id', $otherid)
-                      ->first();
-
-        //dd($other);
-
-        $dir = "classother/" .  $classid . "/" . $other->name . "/" . $other->title . "/" . $participant . "/return";
-
-        $classother  = Storage::disk('linode')->makeDirectory($dir);
-
-        $file = $request->file('myPdf');
-
-        //dd($file);
-
-        $file_name = $file->getClientOriginalName();
-        $file_ext = $file->getClientOriginalExtension();
-        $fileInfo = pathinfo($file_name);
-        $filename = $fileInfo['filename'];
-        $newname = $filename . "." . $file_ext;
-        $newpath = "classother/" .  $classid . "/" . $other->name . "/" . $other->title . "/" . $participant . "/return" . "/" . $newname;
-
-        Storage::disk('linode')->putFileAs(
-            $dir,
-            $file,
-            $newname,
-            'public'
-          );
-      
-        $q = \DB::table('tblclassstudentother')
-            ->where('otherid', $otherid)
-            ->where("userid", $participant)
-            ->update([
-                "return_content" => $newpath,
-                "final_mark" => $final_mark,
-                //"total_mark" => $total_mark,
-                "comments" => $comments,
-                "status" => 3
+        $upsert = [];
+        foreach($marks as $key => $mrk){
+            array_push($upsert, [
+            'userid' => $ics[$key],
+            'otherid' => $otherid,
+            'submittime' => date("Y-m-d H:i:s"),
+            'total_mark' => $mrk,
+            'status' => 1
             ]);
-        
-            return redirect(route('lecturer.other.status',
-        
-            ['id' => $classid,'other' => $otherid]
-           ));
+        }
+
+        DB::table('tblclassstudentother')->upsert($upsert, ['userid', 'otherid']);
+
+        return ["message"=>"Success", "id" => $ics];
+
     }
 
 
