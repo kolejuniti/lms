@@ -67,48 +67,35 @@ div.form-actions.btn-group > button{
                         </nav>
                     </div>
                 </div>
-                
             </div>
+            @if($errors->any())
+            <a class="btn btn-danger btn-sm md-12 ">
+                <i class="ti-na">
+                </i>
+                {{$errors->first()}}
+            </a>
+            @endif
         </div>
 
         <!-- Main content -->
         <section class="content">
             <div class="row">
-
+                <form action="/lecturer/final/insert" method="POST" enctype="multipart/form-data">
+                @csrf
                 <div class="col-xl-12 col-12">
                     <div class="box">
                         <div class="box-body">
                             <div class="header-setting row">
                                 <div class="row col-md-12">
-                                    <div class="col-md-2 mb-4">
-                                        <label for="final-title" class="form-label "><strong>Final Title</strong></label>
-                                        <input type="text" oninput="this.value = this.value.toUpperCase()"  id="final-title" class="form-control"
-                                            value="{{ empty($data['final']->title) ? "" : $data['final']->title }}" required>
-                                    </div>
-                                    <div class="col-md-2 mb-4">
-                                        <label for="from" class="form-label "><strong>Final Duration (From)</strong></label>
-                                        <input type="datetime-local" id="from" class="form-control"
-                                            value={{ empty($data['final']->date_from) ? '' : date('Y-m-d\TH:i:s', strtotime($data['final']->date_from)) }} required>
-                                    </div>
-                                    <div class="col-md-2 mb-4" id="time-to" hidden>
-                                        <label for="to" class="form-label "><strong>Final Duration (To)</strong></label>
-                                        <input type="datetime-local" oninput="this.value = this.value.toUpperCase()"  id="to" class="form-control"
-                                            value={{ empty($data['final']->date_to) ? '' : date('Y-m-d\TH:i:s', strtotime($data['final']->date_to))  }} required>
-                                    </div>
-                                    <div class="col-md-2 mb-4">
-                                        <label for="final-duration" class="form-label "><strong>Final Duration (minutes)</strong></label>
-                                        <input readonly type="number" oninput="this.value = this.value.toUpperCase()"  id="final-duration" class="form-control"
-                                            value="">
-                                    </div>
-                                    <div class="col-md-2 mb-4" hidden>
-                                        <label for="question-index" class="form-label "><strong>Question Index</strong></label>
-                                        <input id="question-index" type="number" class="form-control"
-                                            value={{ empty($data['final']->questionindex) ? 1 : $data['final']->questionindex }}>
+                                    <div class="col-md-3 mb-4">
+                                        <label for="title" class="form-label "><strong>Final Title</strong></label>
+                                        <input type="text" oninput="this.value = this.value.toUpperCase()"  id="title" name="title" class="form-control"
+                                            value="" required>
                                     </div>
                                     <!--<div class="col-md-2 mb-4">
-                                        <label for="date" class="form-label "><strong>Date</strong></label>
-                                        <input type="date" id="date" class="form-control"
-                                            value="">
+                                        <label for="extra-duration" class="form-label "><strong>extra Deadline</strong></label>
+                                        <input type="datetime-local" oninput="this.value = this.value.toUpperCase()"  id="extra-duration" name="extra-duration" class="form-control"
+                                            value="" required>
                                     </div>-->
                                     <div class="col-md-2 mb-4">
                                         <div class="form-group">
@@ -116,7 +103,7 @@ div.form-actions.btn-group > button{
                                           <select class="form-select" id="folder" name="folder" required>
                                               <option value="" disabled selected>-</option>
                                               @foreach ($folder as $fold)
-                                              <option value="{{ $fold->DrID }}" {{ empty($data['folder']->DrID) ? '' : (($fold->DrID == $data['folder']->DrID) ? 'selected' : '' )}}>{{ $fold->DrName }}</option>
+                                              <option value="{{ $fold->DrID }}">{{ $fold->DrName }}</option>
                                               @endforeach
                                           </select>
                                           <span class="text-danger">@error('folder')
@@ -124,11 +111,12 @@ div.form-actions.btn-group > button{
                                           @enderror</span>
                                         </div>
                                     </div>
-                                    <div class="col-md-2 mb-4">
-                                        <label for="total-marks" class="form-label "><strong>Total Marks</strong></label>
-                                        <input type="number" id="total-marks" class="form-control"
-                                            value="{{ empty($data['final']->total_mark) ? '' : $data['final']->total_mark }}" required>
+                                    <div class="col-md-3 mb-4">
+                                        <label for="total-marks" class="form-label "><strong>Total Marks</strong><span></span></label>
+                                        <input type="number" id="total-marks" name="marks" class="form-control"
+                                            value="" required>
                                     </div>
+                                    
                                 </div>
                                 <div class="row col-md-12">
                                     <div class="col-md-6 mb-4">
@@ -153,7 +141,7 @@ div.form-actions.btn-group > button{
                                                             <td >
                                                                 <div class="pull-right" >
                                                                     <input type="checkbox" id="chapter_checkbox_{{$grp->group_name}}"
-                                                                        class="filled-in" name="group[]" value="{{$grp->id}}|{{$grp->group_name}}" required>
+                                                                        class="filled-in" name="group[]" value="{{$grp->id}}|{{ $grp->group_name }}" >
                                                                     <label for="chapter_checkbox_{{$grp->group_name}}"> </label>
                                                                 </div>
                                                             </td>
@@ -171,52 +159,23 @@ div.form-actions.btn-group > button{
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-
-                                <div id="form-div" class="hide-published-element col-md-12 mb-3">
-                                    <div class="addFieldWrap pull-left">
-                                        <a id="appendfield3" class="appendfield3 waves-effect waves-light btn btn-app btn-danger-light " data-label="Question" type="button">
-                                            <i class="fa fa-plus"></i> <b>Header</b></a>
-                                        <a id="appendfield1" class="appendfield1 waves-effect waves-light btn btn-app btn-info-light " data-label="Question" type="button">
-                                            <i class="fa fa-plus"></i> <b>Radio Question</b></a>
-                                        <a id="appendfield2" class="appendfield2 waves-effect waves-light btn btn-app btn-warning-light " data-label="Question" type="button">
-                                            <i class="fa fa-plus"></i> <b>Checkbox Question</b></a>
-                                        <a id="appendfield2" class="appendfield4 waves-effect waves-light btn btn-app btn-success-light " data-label="Question" type="button">
-                                            <i class="fa fa-plus"></i> <b>Subjective Question</b></a>
+                                    <div class="col-md-3 mb-4">
+                                        <label for="total-marks" class="form-label "><strong>Content</strong></label>
+                                        <input type="file" id="myPdf" name="myPdf" class="form-control"><br required>
                                     </div>
                                 </div>
-
-                                <div class="col-md-12">
-                                    <div id="fb-editor"></div>
-                                    <div id="build-wrap"></div>
-                                </div>
-                                
                             </div>
-
                         </div>
                     </div>
                 </div>
                 <div class="col-xl-12 col-12">
-                    <div class=" d-flex justify-content-center">
-                        <div id="fb-rendered-form" class="card" style="width:800px">
-                            <div class="card-body">
-                                <form action="#" id="fb-render" class="mb-3"></form>
-                                <div class="row">
-                                    <div class="col-md-3">
-                                        <button onclick="history.back();" class="btn btn-secondary pull-left m-1"><i class="mdi mdi-keyboard-return"></i> Back</button>
-                                    </div>
-                                    <div class="col-md-9 hide-published-element">
-                                        <button id="publish-final"  class="btn btn-info pull-right m-1"><i class="mdi mdi-publish"></i> Save & Publish</button>
-                                        <button id="save-final"  class="btn btn-primary pull-right m-1"><i class="mdi mdi-content-save"></i> Save</button>
-                                        <button class="btn btn-primary-light edit-form pull-right m-1"><i class="mdi mdi-edit"></i> Edit</button>
-                                    </div>
-                                </div>
-                            </div>
+                    <div class="card" style="width:100%">
+                        <div class="card-body">
+                            <button id="publish-final"  class="btn btn-info pull-right m-1"><i class="mdi mdi-publish"></i> Save & Publish</button>
                         </div>
                     </div>
                 </div>
-                
-              
+                </form>
             </div>
         </section>
     </div>
@@ -226,61 +185,8 @@ div.form-actions.btn-group > button{
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jQuery-formBuilder/3.4.2/form-builder.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jQuery-formBuilder/3.4.2/form-render.min.js"></script>
-
-<script>
-var selected_from = '';
-var selected_to = '';
-
-$(document).ready(function(){
-    if('{{ $data['finalid'] }}' != '')
-    {
-        //alert('true');
-
-        $('#time-to').removeAttr('hidden');
-    
-        selected_from = $('#from').val();
-
-        selected_to = $('#to').val();
-
-        getDuration(selected_from,selected_to);
-
-    }
-});
-
-$(document).on('change', '#from', async function(e){
-
-    $('#time-to').removeAttr('hidden');
-    
-    selected_from = $(e.target).val();
-
-    if(selected_to != '')
-    {
-        await getDuration(selected_from,selected_to);
-    }
-
-});
-
-$(document).on('change', '#to', async function(e){
-    selected_to = $(e.target).val();
-
-    await getDuration(selected_from,selected_to);
-});
-
-function getDuration(from,to)
-{
-    var x = new Date(from);
-    var y = new Date(to);
-    var z =  y - x;
-
-    var minutes = Math.floor(z / 60000);
-    //alert(z)
-
-    $('#final-duration').val(minutes);
-
-}
-
-
-</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://mozilla.github.io/pdf.js/build/pdf.js"></script>
 
 <script>
 var selected_folder = "";
@@ -291,21 +197,12 @@ $(document).on('change', '#folder', async function(e){
     await getChapters(selected_folder);
 });
 
-$(document).ready(function(){
-    if('{{ $data['finalid'] }}' != '')
-    {
-        selected_folder = $('#folder').val();
-
-        getChapters(selected_folder);
-    }
-});
-
 function getChapters(folder)
 {
 
   return $.ajax({
         headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
-        url      : "{{ url('lecturer/final/getChapters') }}",
+        url      : "{{ url('lecturer/other/getChapters') }}",
         method   : 'POST',
         data 	 : {folder: folder},
         error:function(err){
@@ -325,404 +222,6 @@ function getChapters(folder)
 
 }
 </script>
-
-<script>
-
-var questionnum     = $('#question-index').val();
-var selected_class  = "{{ Session::get('CourseID') }}";
-var selected_final  = "{{ empty($data['finalid']) ? '' : $data['finalid'] }}";
-var final            = {!! empty($data['final']) ? "''" : json_encode($data['final']) !!};
-var final_status  = {!! empty($data['finalstatus']) ? "''" : $data['finalstatus'] !!};
-var finalFormData    = [];
-var i = 0;
-
-jQuery(function($) {
-
-    var $fbEditor = $(document.getElementById('fb-editor'));
-    $formContainer = $(document.getElementById('fb-rendered-form'));
-
-    if(Object.keys(final).length > 0){
-        finalFormData = final.content;
-        finalFormData = JSON.parse(finalFormData).formData;
-    }
-
-    if(final_status == 2){
-        Swal.fire({
-			title: "final is already started!",
-			text: "You are not allowed to edit anymore once published",
-			confirmButtonText: "Ok"
-		}).then(function(res){
-            renderForm(finalFormData);
-            $('#fb-rendered-form').show();
-            $('.header-setting *').attr('disabled', 'disabled');
-            $('.hide-published-element').hide();
-		});
-    }else{
-        
-        fbOptions = {
-            formData: finalFormData,
-            dataType: 'xml',
-            onCloseFieldEdit: function(editPanel) {},
-            onOpenFieldEdit: function(editPanel) {},
-            onClearAll: function() {
-                $('#question-index').val(1);
-                questionnum = $('#question-index').val();
-                i = 1;
-            },
-            onSave: function() {
-                $fbEditor.toggle();
-                $formContainer.toggle();
-                $('#form-div').hide();
-                $('.addFieldWrap').hide();
-                $('#fb-render').formRender({formData: formBuilder.formData});
-            }
-        },
-
-        formBuilder = $fbEditor.formBuilder(fbOptions);
-    }
-
-    var buttons = document.getElementsByClassName('appendfield1');
-    for (i = 0; i < buttons.length; i++) {
-        buttons[i].onclick = function() {
-            var field = {
-                type: 'header',
-                className: 'mt-4',
-                label: this.dataset.label + ' '+ questionnum++
-            };
-            var index = this.dataset.index ? Number(this.dataset.index) : undefined;
-
-            //alert(i);
-
-            formBuilder.actions.addField(field, index);
-
-            field = {
-                type: 'paragraph',
-                className: '',
-                label: 'Sample of the question paragraph...'
-            };
-            
-            formBuilder.actions.addField(field, index);
-
-            field = {
-                type: 'radio-group',
-                className: 'with-gap radio-col-primary',
-                label: '<label class="mt-2 text-primary"><strong>Your Answer</strong></label>',
-                name: 'radio-question'+ i++,
-                values: [
-                    {
-                        "label": "a) ",
-                        "value": "a",
-                        "selected": false
-                    },
-                    {
-                        "label": "b)",
-                        "value": "b",
-                        "selected": false
-                    },
-                    {
-                        "label": "c)",
-                        "value": "c",
-                        "selected": false
-                    },
-                    {
-                        "label": "d)",
-                        "value": "d",
-                        "selected": false
-                    },
-                ]
-            };
-            
-            formBuilder.actions.addField(field, index);
-
-            field = {
-                type: 'paragraph',
-                className: 'correct-answer',
-                label: 'a'
-            };
-
-            formBuilder.actions.addField(field, index);
-
-            field = {
-                type: 'checkbox-group',
-                className: 'collected-marks pull-right chk-col-danger',
-                label: '',  
-                values: [
-                    {
-                        "label": "1 mark",
-                        "value": "1",
-                        "selected": false
-                    }
-                ]
-            };
-            
-            
-            formBuilder.actions.addField(field, index);
-
-            field = {
-                type: 'text',
-                className: 'feedback-text form-control',
-                placeholder: 'Comment',
-                label: '',
-            };
-            
-            formBuilder.actions.addField(field, index);
-            $('#question-index').val(questionnum);
-
-        };
-
-    }
-
-    var buttons2 = document.getElementsByClassName('appendfield2');
-    for (var i = 0; i < buttons2.length; i++) {
-        buttons2[i].onclick = function() {
-            var field = {
-                type: 'header',
-                className: 'mt-4',
-                label: this.dataset.label + ' '+ questionnum++
-            };
-            var index = this.dataset.index ? Number(this.dataset.index) : undefined;
-
-            //alert(i);
-
-            formBuilder.actions.addField(field, index);
-
-            field = {
-                type: 'paragraph',
-                className: '',
-                label: 'Sample of the question paragraph...'
-            };
-            
-            formBuilder.actions.addField(field, index);
-
-            field = {
-                type: 'checkbox-group',
-                className: 'filled-in chk-col-warning',
-                label: '<label class="mt-2 text-primary"><strong>Your Answer</strong></label>',
-                name: 'checkbox-question'+ i++,
-                values: [
-                    {
-                        "label": "a)",
-                        "value": "a",
-                        "selected": false
-                    },
-                    {
-                        "label": "b)",
-                        "value": "b",
-                        "selected": false
-                    },
-                    {
-                        "label": "c)",
-                        "value": "c",
-                        "selected": false
-                    },
-                    {
-                        "label": "d)",
-                        "value": "d",
-                        "selected": false
-                    },
-                ]
-            };
-
-            formBuilder.actions.addField(field, index);
-
-            field = {
-                type: 'paragraph',
-                className: 'correct-answer',
-                label: 'a'
-            };
-            
-            formBuilder.actions.addField(field, index);
-
-            field = {
-                type: 'checkbox-group',
-                className: 'collected-marks pull-right chk-col-danger',
-                label: '',  
-                values: [
-                    {
-                        "label": "1 mark",
-                        "value": "1",
-                        "selected": false
-                    }
-                ]
-            };
-            
-            
-            formBuilder.actions.addField(field, index);
-
-            field = {
-                type: 'text',
-                className: 'feedback-text form-control',
-                placeholder: 'Comment',
-                label: '',
-            };
-            
-            formBuilder.actions.addField(field, index);
-            $('#question-index').val(questionnum);
-        };
-    }
-
-    var buttons3 = document.getElementsByClassName('appendfield3');
-    for (var i = 0; i < buttons3.length; i++) {
-        buttons3[i].onclick = function() {
-            var field = {
-                type: 'header',
-                className: 'd-flex justify-content-center bg-primary p-2',
-                label: 'Header'
-            };
-            var index = this.dataset.index ? Number(this.dataset.index) : undefined;
-
-            formBuilder.actions.addField(field, index);
-            $('#question-index').val(questionnum);
-        };
-    }
-
-    var buttons4 = document.getElementsByClassName('appendfield4');
-    for (var i = 0; i < buttons4.length; i++) {
-        buttons4[i].onclick = function() {
-            var field = {
-                type: 'header',
-                className: 'mt-4',
-                label: this.dataset.label + ' '+ questionnum++
-            };
-            var index = this.dataset.index ? Number(this.dataset.index) : undefined;
-
-            //alert(i)
-
-            formBuilder.actions.addField(field, index);
-
-            field = {
-                type: 'paragraph',
-                className: '',
-                label: 'Sample of the question paragraph...'
-            };
-            
-            formBuilder.actions.addField(field, index);
-
-            field = {
-                type: 'text',
-                className: 'form-control',
-                placeholder: 'Your Answer',
-                label: '',
-                name: 'subjective-text'+ i++,
-            };
-            
-            formBuilder.actions.addField(field, index);
-
-            field = {
-                type: 'checkbox-group',
-                className: 'collected-marks pull-right chk-col-danger',
-                label: '',  
-                values: [
-                    {
-                        "label": "1 mark",
-                        "value": "1",
-                        "selected": false
-                    }
-                ]
-            };
-            
-            formBuilder.actions.addField(field, index);
-
-            field = {
-                type: 'text',
-                className: 'feedback-text form-control',
-                placeholder: 'Comment',
-                label: '',
-            };
-            
-            formBuilder.actions.addField(field, index);
-            $('#question-index').val(questionnum);  
-        };
-    }
-
-    /* On Clicks */
-    $('.edit-form', $formContainer).click(function() {
-        $fbEditor.toggle();
-        $formContainer.toggle();
-    });
-
-    document.getElementById('publish-final').addEventListener('click', function() {
-    
-        Swal.fire({
-			title: "Are you sure?",
-			text: "Student will be able to start the final and you are not allow to edit anymore",
-			showCancelButton: true,
-			confirmButtonText: "Confirm"
-		}).then(function(res){
-			if (res.isConfirmed){
-                saveForm(2);
-			}
-		});
-  
-    }, false);
-
-    document.getElementById('save-final').addEventListener('click', function() {
-        saveForm();
-    }, false);
-    
-    $(document).on('click', '.edit-form', function(e){
-        $('#form-div').show();
-        $('.addFieldWrap').show();
-    });
-
-    /* On Keyups */
-    $(document).on('keyup', '#question-index', function(e){
-        questionnum  = $('#question-index').val();
-    });
-
-    function saveForm(status = 1){
-        $.ajax({
-            headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
-            url: "{{ url('lecturer/final/insert') }}",
-            type: 'POST',
-            data:  { 
-                class: selected_class, 
-                final: selected_final,
-                title: $("#final-title").val(),
-                duration: $("#final-duration").val(),
-                questionindex: $("#question-index").val(),
-                from: $("#from").val(),
-                to: $("#to").val(),
-                marks: $("#total-marks").val(),
-                group: $('input[name="group[]"]:checked').map(function(){ 
-                    return this.value; 
-                }).get(),
-                chapter: $('input[name="chapter[]"]:checked').map(function(){ 
-                    return this.value; 
-                }).get(),
-                status: status,
-                data:window.JSON.stringify({formData: $fbEditor.formRender("userData") })
-            },
-            error:function(err){
-                console.log(err);
-            },
-            success:function(res){
-                location.href= "/lecturer/final/{{ Session::get('CourseIDS') }}";
-            }
-        });
-    }
-});
-
-$('.btn.btn-primary.save-template.save-template').html("Done");
-
-
-
-
-function renderForm(formdata){
-    jQuery(function($) {
-        const fbRender = document.getElementById("fb-render");
-        const originalFormData = formdata;
-
-        var formRenderOptions = {
-            datatype: 'json',
-            formData: JSON.stringify(originalFormData)
-        };
-
-        $(fbRender).formRender(formRenderOptions );
-    });
-}
-</script>
-
 
 
 
