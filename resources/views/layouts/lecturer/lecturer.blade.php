@@ -300,18 +300,20 @@
 					<li><a href="/lecturer/final/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Final</a></li>
 					<li><a href="/lecturer/paperwork/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Paperwork</a></li>
 					<li><a href="/lecturer/practical/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Practical</a></li>
-					<li><a href="/lecturer/other/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Lain-Lain</a></li>-->
-					<li><a href="/lecturer/extra/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Extra</a></li>
+					<li><a href="/lecturer/other/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Lain-Lain</a></li>
+					<li><a href="/lecturer/extra/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Extra</a></li>-->
 					<li><a href="/lecturer/report/{{ Session::get('CourseID') }}" class="">Report</a></li>
 					</ul>
 				</li>
 				<li class="treeview">
-							<a href="#"><i data-feather="video"></i><span>Class</span>
-								<span class="pull-right-container">
-									<i class="fa fa-angle-left pull-right"></i>
-								</span>
-							</a>
+					<a href="#"><i data-feather="video"></i><span>Class</span>
+						<span class="pull-right-container">
+							<i class="fa fa-angle-left pull-right"></i>
+						</span>
+					</a>
 					<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
+						<!--<li><a href="/lecturer/class/schedule" class="">Manage Scedule</a></li>-->
+						<li><a href="https://uniti.edu.my/wp-content/uploads/2022/08/index.htm" target="_blank" class="">Scedule</a></li>
 						<li class="treeview">
 									<a href="#"><span>Attendance</span>
 									</a>
@@ -434,12 +436,12 @@
 			  <div>
 				  <div class="col-sm-12 d-flex justify-content-center">
 					<a href="/lecturer/setting" type="button" class="waves-effect waves-light btn btn-secondary btn-rounded mb-5" style="margin-right:10px;"><i class="mdi mdi-account-edit"></i> Edit</a>
-					<a href="{{ route('logout') }}" type="button" class="waves-effect waves-light btn btn-secondary btn-rounded mb-5"
+					<a href="{{ route('custom_logout') }}" type="button" class="waves-effect waves-light btn btn-secondary btn-rounded mb-5"
 					onclick="event.preventDefault();
 					document.getElementById('logout-form').submit();">
 					<i class="mdi mdi-logout"></i>{{ __('Logout') }}</a>
 		
-              <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+              <form id="logout-form" action="{{ route('custom_logout') }}" method="POST" class="d-none">
               @csrf
               </form>
 			  	  </div>
