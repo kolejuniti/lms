@@ -259,10 +259,9 @@ Route::get('/lecturer/assign2/{id}', [App\Http\Controllers\AssignmentController:
 Route::get('/lecturer/assign2/{id}/create', [App\Http\Controllers\AssignmentController::class, 'assign2create'])->name('lecturer.assign2.create');
 Route::post('/lecturer/assign2/insert', [App\Http\Controllers\AssignmentController::class, 'insertassign2']);
 Route::post('/lecturer/assign2/update', [App\Http\Controllers\AssignmentController::class, 'updateassign2']);
-Route::post('/lecturer/assign2/getStatus', [App\Http\Controllers\AssignmentController::class, 'getStatus']);
+
 Route::post('/lecturer/assign2/updateassign2result', [App\Http\Controllers\AssignmentController::class, 'updateassign2result']);
 Route::get('/lecturer/assign2/{id}/{assign}', [App\Http\Controllers\AssignmentController::class, 'lecturerassign2status'])->name('lecturer.assign2.status');
-Route::get('/lecturer/assign2/{assignid}/{userid}/result', [App\Http\Controllers\AssignmentController::class, 'assign2result']);
 Route::post('/lecturer/assign2/getChapters', [App\Http\Controllers\AssignmentController::class, 'getChapters']);
 
 
@@ -294,7 +293,6 @@ Route::post('/lecturer/other/insert', [App\Http\Controllers\OtherController::cla
 Route::post('/lecturer/other/update', [App\Http\Controllers\OtherController::class, 'updateother']);
 Route::post('/lecturer/other/deleteother', [App\Http\Controllers\OtherController::class, 'deleteother']);
 
-Route::post('/lecturer/other/getStatus', [App\Http\Controllers\OtherController::class, 'getStatus']);
 Route::post('/lecturer/other/updateotherresult', [App\Http\Controllers\OtherController::class, 'updateotherresult']);
 Route::get('/lecturer/other/{id}/{other}', [App\Http\Controllers\OtherController::class, 'lecturerotherstatus'])->name('lecturer.other.status');
 Route::get('/lecturer/other/{otherid}/{userid}/result', [App\Http\Controllers\OtherController::class, 'otherresult']);
@@ -304,21 +302,20 @@ Route::post('/lecturer/other/getChapters', [App\Http\Controllers\OtherController
 Route::get('/lecturer/midterm/{id}', [App\Http\Controllers\MidtermController::class, 'midtermlist'])->name('lecturer.midterm');
 Route::get('/lecturer/midterm/{id}/create', [App\Http\Controllers\MidtermController::class, 'midtermcreate'])->name('lecturer.midterm.create');
 Route::post('/lecturer/midterm/insert', [App\Http\Controllers\MidtermController::class, 'insertmidterm']);
+Route::post('/lecturer/midterm/update', [App\Http\Controllers\MidtermController::class, 'updatemidterm']);
+Route::post('/lecturer/midterm/deletemidterm', [App\Http\Controllers\MidtermController::class, 'deletemidterm']);
 
-Route::post('/lecturer/midterm/getStatus', [App\Http\Controllers\MidtermController::class, 'getStatus']);
-Route::post('/lecturer/midterm/updatemidtermresult', [App\Http\Controllers\MidtermController::class, 'updatemidtermresult']);
 Route::get('/lecturer/midterm/{id}/{midterm}', [App\Http\Controllers\MidtermController::class, 'lecturermidtermstatus'])->name('lecturer.midterm.status');
-Route::get('/lecturer/midterm/{midtermid}/{userid}/result', [App\Http\Controllers\MidtermController::class, 'midtermresult']);
 Route::post('/lecturer/midterm/getChapters', [App\Http\Controllers\MidtermController::class, 'getChapters']);
 
-Route::get('/lecturer/final/{id}', [App\Http\Controllers\FinalController::class, 'finallist'])->name('lecturer.final');
-Route::get('/lecturer/final/{id}/create', [App\Http\Controllers\FInalController::class, 'finalcreate'])->name('lecturer.final.create');
-Route::post('/lecturer/final/insert', [App\Http\Controllers\FinalController::class, 'insertfinal']);
 
-Route::post('/lecturer/final/getStatus', [App\Http\Controllers\FinalController::class, 'getStatus']);
-Route::post('/lecturer/final/updatefinalresult', [App\Http\Controllers\FinalController::class, 'updatefinalresult']);
+Route::get('/lecturer/final/{id}', [App\Http\Controllers\FinalController::class, 'finallist'])->name('lecturer.final');
+Route::get('/lecturer/final/{id}/create', [App\Http\Controllers\FinalController::class, 'finalcreate'])->name('lecturer.final.create');
+Route::post('/lecturer/final/insert', [App\Http\Controllers\FinalController::class, 'insertfinal']);
+Route::post('/lecturer/final/update', [App\Http\Controllers\FinalController::class, 'updatefinal']);
+Route::post('/lecturer/final/deletefinal', [App\Http\Controllers\FinalController::class, 'deletefinal']);
+
 Route::get('/lecturer/final/{id}/{final}', [App\Http\Controllers\FinalController::class, 'lecturerfinalstatus'])->name('lecturer.final.status');
-Route::get('/lecturer/final/{finalid}/{userid}/result', [App\Http\Controllers\FinalController::class, 'finalresult']);
 Route::post('/lecturer/final/getChapters', [App\Http\Controllers\FinalController::class, 'getChapters']);
 
 
@@ -328,7 +325,6 @@ Route::post('/lecturer/extra/insert', [App\Http\Controllers\ExtraController::cla
 Route::post('/lecturer/extra/update', [App\Http\Controllers\ExtraController::class, 'updateextra']);
 Route::post('/lecturer/extra/deleteextra', [App\Http\Controllers\ExtraController::class, 'deleteextra']);
 
-Route::post('/lecturer/extra/getStatus', [App\Http\Controllers\ExtraController::class, 'getStatus']);
 Route::post('/lecturer/extra/updateextraresult', [App\Http\Controllers\ExtraController::class, 'updateextraresult']);
 Route::get('/lecturer/extra/{id}/{extra}', [App\Http\Controllers\ExtraController::class, 'lecturerextrastatus'])->name('lecturer.extra.status');
 Route::get('/lecturer/extra/{extraid}/{userid}/result', [App\Http\Controllers\ExtraController::class, 'extraresult']);
