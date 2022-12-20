@@ -21,6 +21,8 @@ Route::get('/loginAdmin', function () {
     return view('auth.loginAdmin');
 });
 
+
+
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
@@ -48,6 +50,7 @@ Route::get('/admin/report/assessment', [App\Http\Controllers\AdminController::cl
 Route::post('/admin/report/assessment/getAssessment', [App\Http\Controllers\AdminController::class, 'getAssessment']);
 Route::post('/admin/report/lecturer/getUserLog', [App\Http\Controllers\AdminController::class, 'getUserLog']);
 
+
 Route::get('/KP', [App\Http\Controllers\KP_Controller::class, 'index'])->name('ketua_program');
 Route::get('/KP/create', [App\Http\Controllers\KP_Controller::class, 'create'])->name('kp.create');
 Route::post('/KP/store', [App\Http\Controllers\KP_Controller::class, 'store'])->name('kp.store');
@@ -73,6 +76,8 @@ Route::get('/KP/report/file', [App\Http\Controllers\KP_Controller::class, 'lectu
 
 Route::get('/AO', [App\Http\Controllers\AO_Controller::class, 'index'])->name('pegawai_takbir');
 
+Route::get('/DN', [App\Http\Controllers\DN_Controller::class, 'index'])->name('dekan');
+
 Route::get('/pendaftar_dashboard', [App\Http\Controllers\PendaftarController::class, 'dashboard'])->name('pendaftar.dashboard');
 Route::get('/pendaftar', [App\Http\Controllers\PendaftarController::class, 'index'])->name('pendaftar');
 Route::get('/pendaftar/create', [App\Http\Controllers\PendaftarController::class, 'create'])->name('pendaftar.create');
@@ -94,6 +99,7 @@ Route::post('/pendaftar/student/status/storeStudent', [App\Http\Controllers\Pend
 Route::get('/pendaftar/student/viewStatus', [App\Http\Controllers\PendaftarController::class, 'viewStatus'])->name('pendaftar.student.viewstatus');
 Route::post('/pendaftar/student/status/getReportStd', [App\Http\Controllers\PendaftarController::class, 'getReportStd']);
 Route::get('/pendaftar/student/report', [App\Http\Controllers\PendaftarController::class, 'studentReport'])->name('pendaftar.student.studentreport');
+Route::post('/pendaftar/student/report/getStudentReport', [App\Http\Controllers\PendaftarController::class, 'getStudentReport']);
 
 
 
@@ -440,6 +446,51 @@ Route::post('/finance/payment/storePayment', [App\Http\Controllers\FinanceContro
 Route::post('/finance/payment/storePaymentDtl', [App\Http\Controllers\FinanceController::class, 'storePaymentDtl']);
 Route::post('/finance/payment/deletePayment', [App\Http\Controllers\FinanceController::class, 'deletePayment']);
 Route::post('/finance/payment/confirmPayment', [App\Http\Controllers\FinanceController::class, 'confirmPayment']);
+Route::get('/finance/payment/claim', [App\Http\Controllers\FinanceController::class, 'studentClaim'])->name('finance.payment.claim');
+Route::post('/finance/payment/claim/getStudent', [App\Http\Controllers\FinanceController::class, 'getStudentClaim']);
+Route::post('/finance/payment/claim/registerClaim', [App\Http\Controllers\FinanceController::class, 'registerClaim']);
+Route::post('/finance/payment/claim/addStudentClaim', [App\Http\Controllers\FinanceController::class, 'addStudentClaim']);
+Route::post('/finance/payment/claim/deleteStudentClaim', [App\Http\Controllers\FinanceController::class, 'deleteStudentClaim']);
+Route::post('/finance/payment/claim/confirmClaim', [App\Http\Controllers\FinanceController::class, 'confirmClaim']);
+Route::get('/finance/payment/tuition', [App\Http\Controllers\FinanceController::class, 'studentTuition'])->name('finance.payment.tuition');
+Route::post('/finance/payment/tuition/getStudent', [App\Http\Controllers\FinanceController::class, 'getStudentTuition']);
+Route::post('/finance/payment/tuition/storeTuition', [App\Http\Controllers\FinanceController::class, 'storeTuition']);
+Route::post('/finance/payment/tuition/storeTuitionDtl', [App\Http\Controllers\FinanceController::class, 'storeTuitionDtl']);
+Route::post('/finance/payment/tuition/confirmTuition', [App\Http\Controllers\FinanceController::class, 'confirmTuition']);
+Route::post('/finance/payment/tuition/deleteTuition', [App\Http\Controllers\FinanceController::class, 'deleteTuition']);
+Route::get('/finance/sponsorship/library', [App\Http\Controllers\FinanceController::class, 'sponsorLibrary'])->name('sponsorship.library');
+Route::post('/finance/sponsorship/library/create', [App\Http\Controllers\FinanceController::class, 'createSponsor']);
+Route::post('/finance/sponsorship/library/update', [App\Http\Controllers\FinanceController::class, 'updateSponsor']);
+Route::post('/finance/sponsorship/library/delete', [App\Http\Controllers\FinanceController::class, 'deleteSponsor']);
+Route::get('/finance/sponsorship/library/payment', [App\Http\Controllers\FinanceController::class, 'paymentSponsor'])->name('sponsorship.payment');
+Route::get('/finance/sponsorship/library/payment/input', [App\Http\Controllers\FinanceController::class, 'paymentSponsorInput'])->name('sponsorship.payment.input');
+Route::post('/finance/sponsorship/library/payment/input/store', [App\Http\Controllers\FinanceController::class, 'paymentSponsorStore']);
+Route::post('/finance/sponsorship/library/payment/input/store2', [App\Http\Controllers\FinanceController::class, 'paymentSponsorStore2']);
+Route::post('/finance/sponsorship/library/payment/input/delete', [App\Http\Controllers\FinanceController::class, 'paymentSponsorDelete']);
+Route::post('/finance/sponsorship/library/payment/input/confirm', [App\Http\Controllers\FinanceController::class, 'paymentSponsorConfirm']);
+Route::get('/finance/sponsorship/payment/student', [App\Http\Controllers\FinanceController::class, 'paymentStudent'])->name('sponsorship.payment.student');
+Route::post('/finance/sponsorship/payment/student/getStudent', [App\Http\Controllers\FinanceController::class, 'getStudentSponsor']);
+Route::post('/finance/sponsorship/payment/student/storeStudent', [App\Http\Controllers\FinanceController::class, 'storeStudent']);
+Route::post('/finance/sponsorship/payment/student/confirmStudent', [App\Http\Controllers\FinanceController::class, 'confirmStudent']);
+Route::get('/finance/sponsorship/payment/getReceipt', [App\Http\Controllers\FinanceController::class, 'getReceipt'])->name('receipt');
+Route::get('/finance/sponsorship/payment/getReceipt2', [App\Http\Controllers\FinanceController::class, 'getReceipt2'])->name('receipt2');
+Route::get('/finance/sponsorship/payment/getReceipt3', [App\Http\Controllers\FinanceController::class, 'getReceipt3'])->name('receipt3');
+Route::get('/finance/report/statement', [App\Http\Controllers\FinanceController::class, 'studentStatement'])->name('finance.statement');
+Route::post('/finance/report/statement/getStudent', [App\Http\Controllers\FinanceController::class, 'statementGetStudent']);
+Route::get('/finance/report/receiptlist', [App\Http\Controllers\FinanceController::class, 'receiptList'])->name('finance.receiptList');
+Route::post('/finance/report/receiptlist/getReceiptList', [App\Http\Controllers\FinanceController::class, 'getReceiptList']);
+Route::get('/finance/report/receiptlist/getReceiptProof', [App\Http\Controllers\FinanceController::class, 'getReceiptProof']);
+
+
+Route::get('/treasurer_dashboard', [App\Http\Controllers\TreasurerController::class, 'dashboard'])->name('treasurer.dashboard');
+Route::get('/treasurer/payment/credit', [App\Http\Controllers\TreasurerController::class, 'creditNote'])->name('treasurer.payment.credit');
+Route::post('/treasurer/payment/credit/getStudent', [App\Http\Controllers\TreasurerController::class, 'getStudentCredit']);
+Route::post('/treasurer/payment/credit/storeCredit', [App\Http\Controllers\TreasurerController::class, 'storeCredit']);
+Route::post('/treasurer/payment/credit/confirmCredit', [App\Http\Controllers\TreasurerController::class, 'confirmCredit']);
+Route::get('/treasurer/payment/debit', [App\Http\Controllers\TreasurerController::class, 'debitNote'])->name('treasurer.payment.debit');
+Route::post('/treasurer/payment/debit/getStudent', [App\Http\Controllers\TreasurerController::class, 'getStudentDebit']);
+Route::post('/treasurer/payment/debit/storeDebit', [App\Http\Controllers\TreasurerController::class, 'storeDebit']);
+Route::post('/treasurer/payment/credit/getStatement', [App\Http\Controllers\TreasurerController::class, 'getStatement']);
 
 
 Route::middleware(['preventBackHistory'])->group(function () {
@@ -449,3 +500,5 @@ Route::middleware(['preventBackHistory'])->group(function () {
 });
 
 Route::get('/send-announcement', [App\Http\Controllers\AnnouncementStudentController::class, 'sendAnnouncement']);
+
+Route::post("/logout/custom",[App\Http\Controllers\LogoutController::class,"store"])->name('custom_logout');
