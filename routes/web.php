@@ -203,6 +203,7 @@ Route::post('/lecturer/quiz/updatequizresult', [App\Http\Controllers\QuizControl
 Route::get('/lecturer/quiz/{id}/{quiz}', [App\Http\Controllers\QuizController::class, 'lecturerquizstatus'])->name('lecturer.quiz.status');
 Route::get('/lecturer/quiz/{quizid}/{userid}/result', [App\Http\Controllers\QuizController::class, 'quizresult']);
 Route::post('/lecturer/quiz/getChapters', [App\Http\Controllers\QuizController::class, 'getChapters']);
+Route::post('/lecturer/quiz/deletequiz', [App\Http\Controllers\QuizController::class, 'deletequiz']);
 
 Route::get('/lecturer/quiz2/{id}', [App\Http\Controllers\QuizController::class, 'quiz2list'])->name('lecturer.quiz2');
 Route::get('/lecturer/quiz2/{id}/create', [App\Http\Controllers\QuizController::class, 'quiz2create'])->name('lecturer.quiz2.create');
@@ -231,6 +232,7 @@ Route::post('/lecturer/test/updatetestresult', [App\Http\Controllers\TestControl
 Route::get('/lecturer/test/{id}/{test}', [App\Http\Controllers\TestController::class, 'lecturerteststatus'])->name('lecturer.test.status');
 Route::get('/lecturer/test/{testid}/{userid}/result', [App\Http\Controllers\TestController::class, 'testresult']);
 Route::post('/lecturer/test/getChapters', [App\Http\Controllers\TestController::class, 'getChapters']);
+Route::post('/lecturer/test/deletetest', [App\Http\Controllers\TestController::class, 'deletetest']);
 
 Route::get('/lecturer/test2/{id}', [App\Http\Controllers\TestController::class, 'test2list'])->name('lecturer.test2');
 Route::get('/lecturer/test2/{id}/create', [App\Http\Controllers\TestController::class, 'test2create'])->name('lecturer.test2.create');
@@ -251,6 +253,7 @@ Route::post('/lecturer/assign/updateassignresult', [App\Http\Controllers\Assignm
 Route::get('/lecturer/assign/{id}/{assign}', [App\Http\Controllers\AssignmentController::class, 'lecturerassignstatus'])->name('lecturer.assign.status');
 Route::get('/lecturer/assign/{assignid}/{userid}/result', [App\Http\Controllers\AssignmentController::class, 'assignresult']);
 Route::post('/lecturer/assign/getChapters', [App\Http\Controllers\AssignmentController::class, 'getChapters']);
+Route::post('/lecturer/assign/deleteassign', [App\Http\Controllers\AssignmentController::class, 'deleteassign']);
 
 Route::get('/lecturer/assign2/{id}', [App\Http\Controllers\AssignmentController::class, 'assign2list'])->name('lecturer.assign2');
 Route::get('/lecturer/assign2/{id}/create', [App\Http\Controllers\AssignmentController::class, 'assign2create'])->name('lecturer.assign2.create');
@@ -288,6 +291,8 @@ Route::post('/lecturer/practical/getChapters', [App\Http\Controllers\PracticalCo
 Route::get('/lecturer/other/{id}', [App\Http\Controllers\OtherController::class, 'otherlist'])->name('lecturer.other');
 Route::get('/lecturer/other/{id}/create', [App\Http\Controllers\OtherController::class, 'othercreate'])->name('lecturer.other.create');
 Route::post('/lecturer/other/insert', [App\Http\Controllers\OtherController::class, 'insertother']);
+Route::post('/lecturer/other/update', [App\Http\Controllers\OtherController::class, 'updateother']);
+Route::post('/lecturer/other/deleteother', [App\Http\Controllers\OtherController::class, 'deleteother']);
 
 Route::post('/lecturer/other/getStatus', [App\Http\Controllers\OtherController::class, 'getStatus']);
 Route::post('/lecturer/other/updateotherresult', [App\Http\Controllers\OtherController::class, 'updateotherresult']);
@@ -321,6 +326,7 @@ Route::get('/lecturer/extra/{id}', [App\Http\Controllers\ExtraController::class,
 Route::get('/lecturer/extra/{id}/create', [App\Http\Controllers\ExtraController::class, 'extracreate'])->name('lecturer.extra.create');
 Route::post('/lecturer/extra/insert', [App\Http\Controllers\ExtraController::class, 'insertextra']);
 Route::post('/lecturer/extra/update', [App\Http\Controllers\ExtraController::class, 'updateextra']);
+Route::post('/lecturer/extra/deleteextra', [App\Http\Controllers\ExtraController::class, 'deleteextra']);
 
 Route::post('/lecturer/extra/getStatus', [App\Http\Controllers\ExtraController::class, 'getStatus']);
 Route::post('/lecturer/extra/updateextraresult', [App\Http\Controllers\ExtraController::class, 'updateextraresult']);
@@ -363,7 +369,6 @@ Route::get('/student/quiz/{quizid}/{userid}/result', [App\Http\Controllers\QuizC
 Route::post('/student/quiz/startquiz', [App\Http\Controllers\QuizController::class, 'startquiz']);
 Route::post('/student/quiz/savequiz', [App\Http\Controllers\QuizController::class, 'savequiz']);
 Route::post('/student/quiz/submitquiz', [App\Http\Controllers\QuizController::class, 'submitquiz']);
-Route::post('lecturer/quiz/deletequiz', [App\Http\Controllers\QuizController::class, 'deletequiz']);
 
 Route::get('/student/quiz2/{id}', [App\Http\Controllers\QuizController::class, 'studentquiz2list'])->name('student.quiz2');
 
@@ -374,7 +379,6 @@ Route::get('/student/test/{testid}/{userid}/result', [App\Http\Controllers\TestC
 Route::post('/student/test/starttest', [App\Http\Controllers\TestController::class, 'starttest']);
 Route::post('/student/test/savetest', [App\Http\Controllers\TestController::class, 'savetest']);
 Route::post('/student/test/submittest', [App\Http\Controllers\TestController::class, 'submittest']);
-Route::post('lecturer/test/deletetest', [App\Http\Controllers\TestController::class, 'deletetest']);
 
 Route::get('/student/test2/{id}', [App\Http\Controllers\TestController::class, 'studenttest2list'])->name('student.test2');
 
@@ -384,7 +388,6 @@ Route::get('/student/assign/{id}/{assign}', [App\Http\Controllers\AssignmentCont
 Route::get('/student/assign/{id}/{assign}/view', [App\Http\Controllers\AssignmentController::class, 'assignview']);
 Route::get('/student/assign/{assignid}/{userid}/result', [App\Http\Controllers\AssignmentController::class, 'assignresultstd']);
 Route::post('/student/assign/submitassign', [App\Http\Controllers\AssignmentController::class, 'submitassign']);
-Route::post('lecturer/assign/deleteassign', [App\Http\Controllers\AssignmentController::class, 'deleteassign']);
 
 Route::get('/student/assign2/{id}', [App\Http\Controllers\AssignmentController::class, 'studentassign2list'])->name('student.assign2');
 
