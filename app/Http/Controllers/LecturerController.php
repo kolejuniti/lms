@@ -32,7 +32,7 @@ class LecturerController extends Controller
             ->join('sessions', 'user_subjek.session_id','sessions.SessionID')
             ->where('sessions.Status', 'ACTIVE')
             ->where('tblprogramme.progstatusid', 1)
-            ->distinct('subjek.sub_id')
+            ->groupBy('subjek.sub_id', 'user_subjek.session_id')
             ->select('subjek.*','user_subjek.course_id','sessions.SessionName','sessions.SessionID','tblprogramme.progname')
             ->get();
 
