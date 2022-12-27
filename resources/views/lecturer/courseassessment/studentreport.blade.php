@@ -161,6 +161,69 @@
                                   Overall EXTRA (%)
                                   @endif
                                 </th>
+                                <!--<th>
+                                  OTHER
+                                </th>-->
+                                @foreach ($other[$ky] as $key=>$ex)
+                                <th>
+                                  Other {{ $key+1 }} : {{ $ex->title }} ({{ $ex->total_mark }})
+                                </th>
+                                @endforeach
+                                <th >
+                                  @php
+                                  $markpercen = DB::table('tblclassmarks')->where([
+                                  ['course_id', request()->id],
+                                  ['assessment', 'other']
+                                  ])->first();
+                                  @endphp
+                                  @if ($markpercen != null)
+                                  Overall OTHER ({{ $markpercen->mark_percentage }}%)
+                                  @else
+                                  Overall OTHER (%)
+                                  @endif
+                                </th>
+                                <!--<th>
+                                  MIDTERM
+                                </th>-->
+                                @foreach ($midterm[$ky] as $key=>$ex)
+                                <th>
+                                  Midterm {{ $key+1 }} : {{ $ex->title }} ({{ $ex->total_mark }})
+                                </th>
+                                @endforeach
+                                <th >
+                                  @php
+                                  $markpercen = DB::table('tblclassmarks')->where([
+                                  ['course_id', request()->id],
+                                  ['assessment', 'midterm']
+                                  ])->first();
+                                  @endphp
+                                  @if ($markpercen != null)
+                                  Overall MIDTERM ({{ $markpercen->mark_percentage }}%)
+                                  @else
+                                  Overall MIDTERM (%)
+                                  @endif
+                                </th>
+                                <!--<th>
+                                  FINAL
+                                </th>-->
+                                @foreach ($final[$ky] as $key=>$ex)
+                                <th>
+                                  Final {{ $key+1 }} : {{ $ex->title }} ({{ $ex->total_mark }})
+                                </th>
+                                @endforeach
+                                <th >
+                                  @php
+                                  $markpercen = DB::table('tblclassmarks')->where([
+                                  ['course_id', request()->id],
+                                  ['assessment', 'final']
+                                  ])->first();
+                                  @endphp
+                                  @if ($markpercen != null)
+                                  Overall FINAL ({{ $markpercen->mark_percentage }}%)
+                                  @else
+                                  Overall FINAL (%)
+                                  @endif
+                                </th>
                                 <th>
                                   OVERALL PERCENTAGE
                                 </th>
@@ -377,13 +440,157 @@
                                   <span >0</span>
                                 </td> 
                                 @endif
+
+                                <!-- OTHER -->
+
+                                @if (isset($otheranswer[$ky][$key]))
+                                  @foreach ($otheranswer[$ky][$key] as $keys => $tsanswer)
+                                    @if ($tsanswer != null)
+                                    <td>
+                                      <span >{{ $tsanswer->total_mark }}</span>
+                                    </td>
+                                    @elseif($tsanswer == null) 
+                                    <td>
+                                      <span >-</span>
+                                    </td>
+                                    @endif
+                                  @endforeach
+                                @else
+                                  @foreach ($other[$ky] as $ts)
+                                  <td>
+                                    <span >-</span>
+                                  </td> 
+                                  @endforeach
+                                @endif
                                 
-                                  @foreach ((array) $overallall[$ky][$key] as $ag)
-                                    <td >
-                                      <span >{{ $ag }}%</span>
+                                @if ($groupcheck = DB::table('tblclassother')->join('tblclassother_group', 'tblclassother.id', 'tblclassother_group.otherid')
+                                ->where([
+                                  ['tblclassother.classid', request()->id],
+                                  ['tblclassother.sessionid', Session::get('SessionID')],
+                                  ['tblclassother_group.groupname', $grp->group_name],
+                                  ['tblclassother.status', '!=', 3]
+                                ])->exists())
+                                  @if(DB::table('tblclassmarks')->where([
+                                  ['course_id', request()->id],
+                                  ['assessment', 'other']
+                                  ])->first() != null)
+                                    @foreach ((array) $overallother[$ky][$key] as $ag)
+                                    <td style="background-color: #677ee2">
+                                      <span >{{ $ag }}</span>
                                     </td> 
                                     @endforeach
-                        
+                                  @else
+                                  <td style="background-color: #677ee2">
+                                    <span >0</span>
+                                  </td> 
+                                  @endif
+                                @else
+                                <td style="background-color: #677ee2">
+                                  <span >0</span>
+                                </td> 
+                                @endif
+
+                                <!-- MIDTERM -->
+
+                                @if (isset($midtermanswer[$ky][$key]))
+                                  @foreach ($midtermanswer[$ky][$key] as $keys => $tsanswer)
+                                    @if ($tsanswer != null)
+                                    <td>
+                                      <span >{{ $tsanswer->total_mark }}</span>
+                                    </td>
+                                    @elseif($tsanswer == null) 
+                                    <td>
+                                      <span >-</span>
+                                    </td>
+                                    @endif
+                                  @endforeach
+                                @else
+                                  @foreach ($midterm[$ky] as $ts)
+                                  <td>
+                                    <span >-</span>
+                                  </td> 
+                                  @endforeach
+                                @endif
+                                
+                                @if ($groupcheck = DB::table('tblclassmidterm')->join('tblclassmidterm_group', 'tblclassmidterm.id', 'tblclassmidterm_group.midtermid')
+                                ->where([
+                                  ['tblclassmidterm.classid', request()->id],
+                                  ['tblclassmidterm.sessionid', Session::get('SessionID')],
+                                  ['tblclassmidterm_group.groupname', $grp->group_name],
+                                  ['tblclassmidterm.status', '!=', 3]
+                                ])->exists())
+                                  @if(DB::table('tblclassmarks')->where([
+                                  ['course_id', request()->id],
+                                  ['assessment', 'midterm']
+                                  ])->first() != null)
+                                    @foreach ((array) $overallmidterm[$ky][$key] as $ag)
+                                    <td style="background-color: #677ee2">
+                                      <span >{{ $ag }}</span>
+                                    </td> 
+                                    @endforeach
+                                  @else
+                                  <td style="background-color: #677ee2">
+                                    <span >0</span>
+                                  </td> 
+                                  @endif
+                                @else
+                                <td style="background-color: #677ee2">
+                                  <span >0</span>
+                                </td> 
+                                @endif
+
+                                <!-- FINAL -->
+
+                                @if (isset($finalanswer[$ky][$key]))
+                                  @foreach ($finalanswer[$ky][$key] as $keys => $tsanswer)
+                                    @if ($tsanswer != null)
+                                    <td>
+                                      <span >{{ $tsanswer->total_mark }}</span>
+                                    </td>
+                                    @elseif($tsanswer == null) 
+                                    <td>
+                                      <span >-</span>
+                                    </td>
+                                    @endif
+                                  @endforeach
+                                @else
+                                  @foreach ($final[$ky] as $ts)
+                                  <td>
+                                    <span >-</span>
+                                  </td> 
+                                  @endforeach
+                                @endif
+                                
+                                @if ($groupcheck = DB::table('tblclassfinal')->join('tblclassfinal_group', 'tblclassfinal.id', 'tblclassfinal_group.finalid')
+                                ->where([
+                                  ['tblclassfinal.classid', request()->id],
+                                  ['tblclassfinal.sessionid', Session::get('SessionID')],
+                                  ['tblclassfinal_group.groupname', $grp->group_name],
+                                  ['tblclassfinal.status', '!=', 3]
+                                ])->exists())
+                                  @if(DB::table('tblclassmarks')->where([
+                                  ['course_id', request()->id],
+                                  ['assessment', 'final']
+                                  ])->first() != null)
+                                    @foreach ((array) $overallfinal[$ky][$key] as $ag)
+                                    <td style="background-color: #677ee2">
+                                      <span >{{ $ag }}</span>
+                                    </td> 
+                                    @endforeach
+                                  @else
+                                  <td style="background-color: #677ee2">
+                                    <span >0</span>
+                                  </td> 
+                                  @endif
+                                @else
+                                <td style="background-color: #677ee2">
+                                  <span >0</span>
+                                </td> 
+                                @endif
+                                
+                                <td >
+                                  <span >{{ $overallall[$ky][$key] }}%</span>
+                                </td> 
                               </tr> 
                               @endforeach
                             </tbody>
