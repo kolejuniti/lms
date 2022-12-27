@@ -496,7 +496,7 @@
                                   @foreach ($midtermanswer[$ky][$key] as $keys => $tsanswer)
                                     @if ($tsanswer != null)
                                     <td>
-                                      <span >{{ $tsanswer->total_mark }}</span>
+                                      <span >{{ $tsanswer->final_mark }}</span>
                                     </td>
                                     @elseif($tsanswer == null) 
                                     <td>
@@ -545,7 +545,7 @@
                                   @foreach ($finalanswer[$ky][$key] as $keys => $tsanswer)
                                     @if ($tsanswer != null)
                                     <td>
-                                      <span >{{ $tsanswer->total_mark }}</span>
+                                      <span >{{ $tsanswer->final_mark }}</span>
                                     </td>
                                     @elseif($tsanswer == null) 
                                     <td>
