@@ -85,6 +85,7 @@
                                   QUIZ {{ $key+1 }} : {{ $qz->title }} ({{ $qz->total_mark }})
                                 </th>
                                 @endforeach
+                                @if (count($quiz[$ky]) > 0)
                                 <th >
                                   @php
                                   $markpercen = DB::table('tblclassmarks')->where([
@@ -98,6 +99,8 @@
                                   Overall QUIZ (%)
                                   @endif
                                 </th>
+                                @endif
+                                
                                 <!--<th>
                                   TEST
                                 </th>-->
@@ -106,6 +109,7 @@
                                   TEST {{ $key+1 }} : {{ $qz->title }} ({{ $qz->total_mark }})
                                 </th>
                                 @endforeach
+                                @if (count($test[$ky]) > 0)
                                 <th >
                                   @php
                                   $markpercen = DB::table('tblclassmarks')->where([
@@ -119,6 +123,8 @@
                                   Overall TEST (%)
                                   @endif
                                 </th>
+                                @endif
+
                                 <!--<th>
                                   ASSIGNMENT
                                 </th>-->
@@ -127,6 +133,7 @@
                                   ASSIGNMENT {{ $key+1 }} : {{ $qz->title }} ({{ $qz->total_mark }})
                                 </th>
                                 @endforeach
+                                @if (count($assign[$ky]) > 0)
                                 <th >
                                   @php
                                   $markpercen = DB::table('tblclassmarks')->where([
@@ -140,6 +147,8 @@
                                   Overall ASSIGNMENT (%)
                                   @endif
                                 </th>
+                                @endif
+
                                 <!--<th>
                                   EXTRA
                                 </th>-->
@@ -148,6 +157,7 @@
                                   Extra {{ $key+1 }} : {{ $ex->title }} ({{ $ex->total_mark }})
                                 </th>
                                 @endforeach
+                                @if (count($extra[$ky]) > 0)
                                 <th >
                                   @php
                                   $markpercen = DB::table('tblclassmarks')->where([
@@ -161,6 +171,8 @@
                                   Overall EXTRA (%)
                                   @endif
                                 </th>
+                                @endif
+
                                 <!--<th>
                                   OTHER
                                 </th>-->
@@ -169,6 +181,7 @@
                                   Other {{ $key+1 }} : {{ $ex->title }} ({{ $ex->total_mark }})
                                 </th>
                                 @endforeach
+                                @if (count($other[$ky]) > 0)
                                 <th >
                                   @php
                                   $markpercen = DB::table('tblclassmarks')->where([
@@ -182,6 +195,8 @@
                                   Overall OTHER (%)
                                   @endif
                                 </th>
+                                @endif
+
                                 <!--<th>
                                   MIDTERM
                                 </th>-->
@@ -190,6 +205,7 @@
                                   Midterm {{ $key+1 }} : {{ $ex->title }} ({{ $ex->total_mark }})
                                 </th>
                                 @endforeach
+                                @if (count($midterm[$ky]) > 0)
                                 <th >
                                   @php
                                   $markpercen = DB::table('tblclassmarks')->where([
@@ -203,6 +219,8 @@
                                   Overall MIDTERM (%)
                                   @endif
                                 </th>
+                                @endif
+
                                 <!--<th>
                                   FINAL
                                 </th>-->
@@ -211,6 +229,7 @@
                                   Final {{ $key+1 }} : {{ $ex->title }} ({{ $ex->total_mark }})
                                 </th>
                                 @endforeach
+                                @if (count($final[$ky]) > 0)
                                 <th >
                                   @php
                                   $markpercen = DB::table('tblclassmarks')->where([
@@ -224,6 +243,7 @@
                                   Overall FINAL (%)
                                   @endif
                                 </th>
+                                @endif
                                 <th>
                                   OVERALL PERCENTAGE
                                 </th>
@@ -267,31 +287,33 @@
                                   @endforeach
                                 @endif
                                 
-                                @if ($groupcheck = DB::table('tblclassquiz')->join('tblclassquiz_group', 'tblclassquiz.id', 'tblclassquiz_group.quizid')
-                                ->where([
-                                  ['tblclassquiz.classid', request()->id],
-                                  ['tblclassquiz.sessionid', Session::get('SessionID')],
-                                  ['tblclassquiz_group.groupname', $grp->group_name],
-                                  ['tblclassquiz.status', '!=', 3]
-                                ])->exists())
-                                  @if(DB::table('tblclassmarks')->where([
-                                  ['course_id', request()->id],
-                                  ['assessment', 'quiz']
-                                  ])->first() != null)
-                                    @foreach ((array) $overallquiz[$ky][$key] as $ag)
+                                @if (count($quiz[$ky]) > 0)
+                                  @if ($groupcheck = DB::table('tblclassquiz')->join('tblclassquiz_group', 'tblclassquiz.id', 'tblclassquiz_group.quizid')
+                                  ->where([
+                                    ['tblclassquiz.classid', request()->id],
+                                    ['tblclassquiz.sessionid', Session::get('SessionID')],
+                                    ['tblclassquiz_group.groupname', $grp->group_name],
+                                    ['tblclassquiz.status', '!=', 3]
+                                  ])->exists())
+                                    @if(DB::table('tblclassmarks')->where([
+                                    ['course_id', request()->id],
+                                    ['assessment', 'quiz']
+                                    ])->first() != null)
+                                      @foreach ((array) $overallquiz[$ky][$key] as $ag)
+                                      <td style="background-color: #677ee2">
+                                        <span >{{ $ag }}</span>
+                                      </td> 
+                                      @endforeach
+                                    @else
                                     <td style="background-color: #677ee2">
-                                      <span >{{ $ag }}</span>
+                                      <span >0</span>
                                     </td> 
-                                    @endforeach
+                                    @endif
                                   @else
                                   <td style="background-color: #677ee2">
                                     <span >0</span>
                                   </td> 
                                   @endif
-                                @else
-                                <td style="background-color: #677ee2">
-                                  <span >0</span>
-                                </td> 
                                 @endif
 
                                 <!-- TEST -->
@@ -316,31 +338,33 @@
                                   @endforeach
                                 @endif
                                 
-                                @if ($groupcheck = DB::table('tblclasstest')->join('tblclasstest_group', 'tblclasstest.id', 'tblclasstest_group.testid')
-                                ->where([
-                                  ['tblclasstest.classid', request()->id],
-                                  ['tblclasstest.sessionid', Session::get('SessionID')],
-                                  ['tblclasstest_group.groupname', $grp->group_name],
-                                  ['tblclasstest.status', '!=', 3]
-                                ])->exists())
-                                  @if(DB::table('tblclassmarks')->where([
-                                  ['course_id', request()->id],
-                                  ['assessment', 'test']
-                                  ])->first() != null)
-                                    @foreach ((array) $overalltest[$ky][$key] as $ag)
+                                @if (count($test[$ky]) > 0)
+                                  @if ($groupcheck = DB::table('tblclasstest')->join('tblclasstest_group', 'tblclasstest.id', 'tblclasstest_group.testid')
+                                  ->where([
+                                    ['tblclasstest.classid', request()->id],
+                                    ['tblclasstest.sessionid', Session::get('SessionID')],
+                                    ['tblclasstest_group.groupname', $grp->group_name],
+                                    ['tblclasstest.status', '!=', 3]
+                                  ])->exists())
+                                    @if(DB::table('tblclassmarks')->where([
+                                    ['course_id', request()->id],
+                                    ['assessment', 'test']
+                                    ])->first() != null)
+                                      @foreach ((array) $overalltest[$ky][$key] as $ag)
+                                      <td style="background-color: #677ee2">
+                                        <span >{{ $ag }}</span>
+                                      </td> 
+                                      @endforeach
+                                    @else
                                     <td style="background-color: #677ee2">
-                                      <span >{{ $ag }}</span>
+                                      <span >0</span>
                                     </td> 
-                                    @endforeach
+                                    @endif
                                   @else
                                   <td style="background-color: #677ee2">
                                     <span >0</span>
                                   </td> 
                                   @endif
-                                @else
-                                <td style="background-color: #677ee2">
-                                  <span >0</span>
-                                </td> 
                                 @endif
 
                                 <!-- ASSIGNMENT -->
@@ -365,31 +389,33 @@
                                   @endforeach
                                 @endif
                                 
-                                @if ($groupcheck = DB::table('tblclassassign')->join('tblclassassign_group', 'tblclassassign.id', 'tblclassassign_group.assignid')
-                                ->where([
-                                  ['tblclassassign.classid', request()->id],
-                                  ['tblclassassign.sessionid', Session::get('SessionID')],
-                                  ['tblclassassign_group.groupname', $grp->group_name],
-                                  ['tblclassassign.status', '!=', 3]
-                                ])->exists())
-                                  @if(DB::table('tblclassmarks')->where([
-                                  ['course_id', request()->id],
-                                  ['assessment', 'assignment']
-                                  ])->first() != null)
-                                    @foreach ((array) $overallassign[$ky][$key] as $ag)
+                                @if (count($assign[$ky]) > 0)
+                                  @if ($groupcheck = DB::table('tblclassassign')->join('tblclassassign_group', 'tblclassassign.id', 'tblclassassign_group.assignid')
+                                  ->where([
+                                    ['tblclassassign.classid', request()->id],
+                                    ['tblclassassign.sessionid', Session::get('SessionID')],
+                                    ['tblclassassign_group.groupname', $grp->group_name],
+                                    ['tblclassassign.status', '!=', 3]
+                                  ])->exists())
+                                    @if(DB::table('tblclassmarks')->where([
+                                    ['course_id', request()->id],
+                                    ['assessment', 'assignment']
+                                    ])->first() != null)
+                                      @foreach ((array) $overallassign[$ky][$key] as $ag)
+                                      <td style="background-color: #677ee2">
+                                        <span >{{ $ag }}</span>
+                                      </td> 
+                                      @endforeach
+                                    @else
                                     <td style="background-color: #677ee2">
-                                      <span >{{ $ag }}</span>
+                                      <span >0</span>
                                     </td> 
-                                    @endforeach
+                                    @endif
                                   @else
                                   <td style="background-color: #677ee2">
                                     <span >0</span>
                                   </td> 
                                   @endif
-                                @else
-                                <td style="background-color: #677ee2">
-                                  <span >0</span>
-                                </td> 
                                 @endif
 
                                 <!-- EXTRA -->
@@ -414,31 +440,33 @@
                                   @endforeach
                                 @endif
                                 
-                                @if ($groupcheck = DB::table('tblclassextra')->join('tblclassextra_group', 'tblclassextra.id', 'tblclassextra_group.extraid')
-                                ->where([
-                                  ['tblclassextra.classid', request()->id],
-                                  ['tblclassextra.sessionid', Session::get('SessionID')],
-                                  ['tblclassextra_group.groupname', $grp->group_name],
-                                  ['tblclassextra.status', '!=', 3]
-                                ])->exists())
-                                  @if(DB::table('tblclassmarks')->where([
-                                  ['course_id', request()->id],
-                                  ['assessment', 'extra']
-                                  ])->first() != null)
-                                    @foreach ((array) $overallextra[$ky][$key] as $ag)
+                                @if (count($extra[$ky]) > 0)
+                                  @if ($groupcheck = DB::table('tblclassextra')->join('tblclassextra_group', 'tblclassextra.id', 'tblclassextra_group.extraid')
+                                  ->where([
+                                    ['tblclassextra.classid', request()->id],
+                                    ['tblclassextra.sessionid', Session::get('SessionID')],
+                                    ['tblclassextra_group.groupname', $grp->group_name],
+                                    ['tblclassextra.status', '!=', 3]
+                                  ])->exists())
+                                    @if(DB::table('tblclassmarks')->where([
+                                    ['course_id', request()->id],
+                                    ['assessment', 'extra']
+                                    ])->first() != null)
+                                      @foreach ((array) $overallextra[$ky][$key] as $ag)
+                                      <td style="background-color: #677ee2">
+                                        <span >{{ $ag }}</span>
+                                      </td> 
+                                      @endforeach
+                                    @else
                                     <td style="background-color: #677ee2">
-                                      <span >{{ $ag }}</span>
+                                      <span >0</span>
                                     </td> 
-                                    @endforeach
+                                    @endif
                                   @else
                                   <td style="background-color: #677ee2">
                                     <span >0</span>
                                   </td> 
                                   @endif
-                                @else
-                                <td style="background-color: #677ee2">
-                                  <span >0</span>
-                                </td> 
                                 @endif
 
                                 <!-- OTHER -->
@@ -463,31 +491,33 @@
                                   @endforeach
                                 @endif
                                 
-                                @if ($groupcheck = DB::table('tblclassother')->join('tblclassother_group', 'tblclassother.id', 'tblclassother_group.otherid')
-                                ->where([
-                                  ['tblclassother.classid', request()->id],
-                                  ['tblclassother.sessionid', Session::get('SessionID')],
-                                  ['tblclassother_group.groupname', $grp->group_name],
-                                  ['tblclassother.status', '!=', 3]
-                                ])->exists())
-                                  @if(DB::table('tblclassmarks')->where([
-                                  ['course_id', request()->id],
-                                  ['assessment', 'other']
-                                  ])->first() != null)
-                                    @foreach ((array) $overallother[$ky][$key] as $ag)
+                                @if (count($other[$ky]) > 0)
+                                  @if ($groupcheck = DB::table('tblclassother')->join('tblclassother_group', 'tblclassother.id', 'tblclassother_group.otherid')
+                                  ->where([
+                                    ['tblclassother.classid', request()->id],
+                                    ['tblclassother.sessionid', Session::get('SessionID')],
+                                    ['tblclassother_group.groupname', $grp->group_name],
+                                    ['tblclassother.status', '!=', 3]
+                                  ])->exists())
+                                    @if(DB::table('tblclassmarks')->where([
+                                    ['course_id', request()->id],
+                                    ['assessment', 'other']
+                                    ])->first() != null)
+                                      @foreach ((array) $overallother[$ky][$key] as $ag)
+                                      <td style="background-color: #677ee2">
+                                        <span >{{ $ag }}</span>
+                                      </td> 
+                                      @endforeach
+                                    @else
                                     <td style="background-color: #677ee2">
-                                      <span >{{ $ag }}</span>
+                                      <span >0</span>
                                     </td> 
-                                    @endforeach
+                                    @endif
                                   @else
                                   <td style="background-color: #677ee2">
                                     <span >0</span>
                                   </td> 
                                   @endif
-                                @else
-                                <td style="background-color: #677ee2">
-                                  <span >0</span>
-                                </td> 
                                 @endif
 
                                 <!-- MIDTERM -->
@@ -512,31 +542,33 @@
                                   @endforeach
                                 @endif
                                 
-                                @if ($groupcheck = DB::table('tblclassmidterm')->join('tblclassmidterm_group', 'tblclassmidterm.id', 'tblclassmidterm_group.midtermid')
-                                ->where([
-                                  ['tblclassmidterm.classid', request()->id],
-                                  ['tblclassmidterm.sessionid', Session::get('SessionID')],
-                                  ['tblclassmidterm_group.groupname', $grp->group_name],
-                                  ['tblclassmidterm.status', '!=', 3]
-                                ])->exists())
-                                  @if(DB::table('tblclassmarks')->where([
-                                  ['course_id', request()->id],
-                                  ['assessment', 'midterm']
-                                  ])->first() != null)
-                                    @foreach ((array) $overallmidterm[$ky][$key] as $ag)
+                                @if (count($midterm[$ky]) > 0)
+                                  @if ($groupcheck = DB::table('tblclassmidterm')->join('tblclassmidterm_group', 'tblclassmidterm.id', 'tblclassmidterm_group.midtermid')
+                                  ->where([
+                                    ['tblclassmidterm.classid', request()->id],
+                                    ['tblclassmidterm.sessionid', Session::get('SessionID')],
+                                    ['tblclassmidterm_group.groupname', $grp->group_name],
+                                    ['tblclassmidterm.status', '!=', 3]
+                                  ])->exists())
+                                    @if(DB::table('tblclassmarks')->where([
+                                    ['course_id', request()->id],
+                                    ['assessment', 'midterm']
+                                    ])->first() != null)
+                                      @foreach ((array) $overallmidterm[$ky][$key] as $ag)
+                                      <td style="background-color: #677ee2">
+                                        <span >{{ $ag }}</span>
+                                      </td> 
+                                      @endforeach
+                                    @else
                                     <td style="background-color: #677ee2">
-                                      <span >{{ $ag }}</span>
+                                      <span >0</span>
                                     </td> 
-                                    @endforeach
+                                    @endif
                                   @else
                                   <td style="background-color: #677ee2">
                                     <span >0</span>
                                   </td> 
                                   @endif
-                                @else
-                                <td style="background-color: #677ee2">
-                                  <span >0</span>
-                                </td> 
                                 @endif
 
                                 <!-- FINAL -->
@@ -561,31 +593,33 @@
                                   @endforeach
                                 @endif
                                 
-                                @if ($groupcheck = DB::table('tblclassfinal')->join('tblclassfinal_group', 'tblclassfinal.id', 'tblclassfinal_group.finalid')
-                                ->where([
-                                  ['tblclassfinal.classid', request()->id],
-                                  ['tblclassfinal.sessionid', Session::get('SessionID')],
-                                  ['tblclassfinal_group.groupname', $grp->group_name],
-                                  ['tblclassfinal.status', '!=', 3]
-                                ])->exists())
-                                  @if(DB::table('tblclassmarks')->where([
-                                  ['course_id', request()->id],
-                                  ['assessment', 'final']
-                                  ])->first() != null)
-                                    @foreach ((array) $overallfinal[$ky][$key] as $ag)
+                                @if (count($final[$ky]) > 0)
+                                  @if ($groupcheck = DB::table('tblclassfinal')->join('tblclassfinal_group', 'tblclassfinal.id', 'tblclassfinal_group.finalid')
+                                  ->where([
+                                    ['tblclassfinal.classid', request()->id],
+                                    ['tblclassfinal.sessionid', Session::get('SessionID')],
+                                    ['tblclassfinal_group.groupname', $grp->group_name],
+                                    ['tblclassfinal.status', '!=', 3]
+                                  ])->exists())
+                                    @if(DB::table('tblclassmarks')->where([
+                                    ['course_id', request()->id],
+                                    ['assessment', 'final']
+                                    ])->first() != null)
+                                      @foreach ((array) $overallfinal[$ky][$key] as $ag)
+                                      <td style="background-color: #677ee2">
+                                        <span >{{ $ag }}</span>
+                                      </td> 
+                                      @endforeach
+                                    @else
                                     <td style="background-color: #677ee2">
-                                      <span >{{ $ag }}</span>
+                                      <span >0</span>
                                     </td> 
-                                    @endforeach
+                                    @endif
                                   @else
                                   <td style="background-color: #677ee2">
                                     <span >0</span>
                                   </td> 
                                   @endif
-                                @else
-                                <td style="background-color: #677ee2">
-                                  <span >0</span>
-                                </td> 
                                 @endif
                                 
                                 <td >
