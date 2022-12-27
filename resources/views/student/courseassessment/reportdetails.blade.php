@@ -337,7 +337,7 @@
 
 					<!-- final -->
 
-					@if ($percentagefinal != "")
+					<!--@if ($percentagefinal != "")
 					<div class="col-12">
 						<div class="box">
 							<div class="card-header">
@@ -432,6 +432,8 @@
 						</div>
 					</div>
 					@endif
+
+					-->
 
 					<!-- paperwork -->
 					@if ($percentagepaperwork != "")
