@@ -1694,6 +1694,57 @@ class LecturerController extends Controller
 
                 $totalextra = $extras->sum('tblclassextra.total_mark');
 
+                //OTHER
+
+                $others = DB::table('tblclassother')
+                        ->join('tblclassother_group', 'tblclassother.id', 'tblclassother_group.otherid')
+                        ->where([
+                            ['tblclassother.classid', request()->id],
+                            ['tblclassother.sessionid', Session::get('SessionID')],
+                            ['tblclassother_group.groupname', $grp->group_name],
+                            ['tblclassother.status', '!=', 3]
+                        ]);
+
+                $other[] = $others->get();
+
+                $otherid = $others->pluck('tblclassother.id');
+
+                $totalother = $others->sum('tblclassother.total_mark');
+
+                //MIDTERM
+
+                $midterms = DB::table('tblclassmidterm')
+                        ->join('tblclassmidterm_group', 'tblclassmidterm.id', 'tblclassmidterm_group.midtermid')
+                        ->where([
+                            ['tblclassmidterm.classid', request()->id],
+                            ['tblclassmidterm.sessionid', Session::get('SessionID')],
+                            ['tblclassmidterm_group.groupname', $grp->group_name],
+                            ['tblclassmidterm.status', '!=', 3]
+                        ]);
+
+                $midterm[] = $midterms->get();
+
+                $midtermid = $midterms->pluck('tblclassmidterm.id');
+
+                $totalmidterm = $midterms->sum('tblclassmidterm.total_mark');
+
+                //FINAL
+
+                $finals = DB::table('tblclassfinal')
+                        ->join('tblclassfinal_group', 'tblclassfinal.id', 'tblclassfinal_group.finalid')
+                        ->where([
+                            ['tblclassfinal.classid', request()->id],
+                            ['tblclassfinal.sessionid', Session::get('SessionID')],
+                            ['tblclassfinal_group.groupname', $grp->group_name],
+                            ['tblclassfinal.status', '!=', 3]
+                        ]);
+
+                $final[] = $finals->get();
+
+                $finalid = $finals->pluck('tblclassfinal.id');
+
+                $totalfinal = $finals->sum('tblclassfinal.total_mark');
+
                 //////////////////////////////////////////////////////////////////////////////////////////
             
                 foreach($students[$ky] as $keys => $std)
@@ -1881,7 +1932,142 @@ class LecturerController extends Controller
                         $overallextra[$ky][$keys] = 0;
                     }
 
-                    $overallall[$ky][$keys] = $overallquiz[$ky][$keys] + $overalltest[$ky][$keys] + $overallassign[$ky][$keys] + $overallextra[$ky][$keys];
+                    // OTHER
+                    
+                    foreach($other[$ky] as $key =>$qz)
+                    {
+                    
+                    $otheranswer[$ky][$keys][$key] = DB::table('tblclassstudentother')->where('userid', $std->ic)->where('otherid', $qz->otherid)->first();
+
+                    }
+
+                    $sumother[$ky][$keys] = DB::table('tblclassstudentother')->where('userid', $std->ic)->whereIn('otherid', $otherid)->sum('total_mark');
+
+                    $percentother = DB::table('tblclassmarks')
+                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
+                                ['subjek.id', request()->id],
+                                ['assessment', 'other']
+                                ])->first();
+
+                    if($others = DB::table('tblclassother')
+                    ->join('tblclassother_group', 'tblclassother.id', 'tblclassother_group.otherid')
+                    ->where([
+                        ['tblclassother.classid', request()->id],
+                        ['tblclassother.sessionid', Session::get('SessionID')],
+                        ['tblclassother_group.groupname', $grp->group_name],
+                        ['tblclassother.status', '!=', 3]
+                    ])->exists()){
+                        if($percentother != null)
+                        {
+                            if(DB::table('tblclassother')
+                            ->where([
+                                ['classid', request()->id],
+                                ['sessionid', Session::get('SessionID')]
+                            ])->exists()){
+                                //dd($totalother);
+                                $overallother[$ky][$keys] = number_format((float)$sumother[$ky][$keys] / $totalother * $percentother->mark_percentage, 2, '.', '');
+                            }else{
+                                $overallother[$ky][$keys] = 0;
+                            }
+            
+                        }else{
+                            $overallother[$ky][$keys] = 0;
+                        }
+                    }else{
+                        $overallother[$ky][$keys] = 0;
+                    }
+
+                    // MIDTERM
+                    
+                    foreach($midterm[$ky] as $key =>$qz)
+                    {
+                    
+                    $midtermanswer[$ky][$keys][$key] = DB::table('tblclassstudentmidterm')->where('userid', $std->ic)->where('midtermid', $qz->midtermid)->first();
+
+                    }
+
+                    $summidterm[$ky][$keys] = DB::table('tblclassstudentmidterm')->where('userid', $std->ic)->whereIn('midtermid', $midtermid)->sum('total_mark');
+
+                    $percentmidterm = DB::table('tblclassmarks')
+                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
+                                ['subjek.id', request()->id],
+                                ['assessment', 'midterm']
+                                ])->first();
+
+                    if($midterms = DB::table('tblclassmidterm')
+                    ->join('tblclassmidterm_group', 'tblclassmidterm.id', 'tblclassmidterm_group.midtermid')
+                    ->where([
+                        ['tblclassmidterm.classid', request()->id],
+                        ['tblclassmidterm.sessionid', Session::get('SessionID')],
+                        ['tblclassmidterm_group.groupname', $grp->group_name],
+                        ['tblclassmidterm.status', '!=', 3]
+                    ])->exists()){
+                        if($percentmidterm != null)
+                        {
+                            if(DB::table('tblclassmidterm')
+                            ->where([
+                                ['classid', request()->id],
+                                ['sessionid', Session::get('SessionID')]
+                            ])->exists()){
+                                //dd($totalmidterm);
+                                $overallmidterm[$ky][$keys] = number_format((float)$summidterm[$ky][$keys] / $totalmidterm * $percentmidterm->mark_percentage, 2, '.', '');
+                            }else{
+                                $overallmidterm[$ky][$keys] = 0;
+                            }
+            
+                        }else{
+                            $overallmidterm[$ky][$keys] = 0;
+                        }
+                    }else{
+                        $overallmidterm[$ky][$keys] = 0;
+                    }
+
+                    // FINAL
+                    
+                    foreach($final[$ky] as $key =>$qz)
+                    {
+                    
+                    $finalanswer[$ky][$keys][$key] = DB::table('tblclassstudentfinal')->where('userid', $std->ic)->where('finalid', $qz->finalid)->first();
+
+                    }
+
+                    $sumfinal[$ky][$keys] = DB::table('tblclassstudentfinal')->where('userid', $std->ic)->whereIn('finalid', $finalid)->sum('total_mark');
+
+                    $percentfinal = DB::table('tblclassmarks')
+                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
+                                ['subjek.id', request()->id],
+                                ['assessment', 'final']
+                                ])->first();
+
+                    if($finals = DB::table('tblclassfinal')
+                    ->join('tblclassfinal_group', 'tblclassfinal.id', 'tblclassfinal_group.finalid')
+                    ->where([
+                        ['tblclassfinal.classid', request()->id],
+                        ['tblclassfinal.sessionid', Session::get('SessionID')],
+                        ['tblclassfinal_group.groupname', $grp->group_name],
+                        ['tblclassfinal.status', '!=', 3]
+                    ])->exists()){
+                        if($percentfinal != null)
+                        {
+                            if(DB::table('tblclassfinal')
+                            ->where([
+                                ['classid', request()->id],
+                                ['sessionid', Session::get('SessionID')]
+                            ])->exists()){
+                                //dd($totalfinal);
+                                $overallfinal[$ky][$keys] = number_format((float)$sumfinal[$ky][$keys] / $totalfinal * $percentfinal->mark_percentage, 2, '.', '');
+                            }else{
+                                $overallfinal[$ky][$keys] = 0;
+                            }
+            
+                        }else{
+                            $overallfinal[$ky][$keys] = 0;
+                        }
+                    }else{
+                        $overallfinal[$ky][$keys] = 0;
+                    }
+
+                    $overallall[$ky][$keys] = $overallquiz[$ky][$keys] + $overalltest[$ky][$keys] + $overallassign[$ky][$keys] + $overallextra[$ky][$keys] + $overallother[$ky][$keys] + $overallmidterm[$ky][$keys] + $overallfinal[$ky][$keys];
             
                 }
 
@@ -1894,6 +2080,9 @@ class LecturerController extends Controller
                                                                        'test', 'testanswer','overalltest',
                                                                        'assign', 'assignanswer','overallassign',
                                                                        'extra', 'extraanswer','overallextra',
+                                                                       'other', 'otheranswer','overallother',
+                                                                       'midterm', 'midtermanswer','overallmidterm',
+                                                                       'final', 'finalanswer','overallfinal',
                                                                        'overallall'
                                                                     ));
 
