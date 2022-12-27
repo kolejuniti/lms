@@ -358,9 +358,6 @@
 												Title
 												</th>
 												<th style="width: 20%">
-												Duration
-												</th>
-												<th style="width: 20%">
 												Total Mark
 												</th>
 												<td style="width: 20%">
@@ -376,9 +373,6 @@
 													</td>
 													<td >
 													{{ $midterm->title }}
-													</td>
-													<td>
-													{{ $midterm->duration }}
 													</td>
 													<td>
 													{{ $midterm->total_mark }}
@@ -456,9 +450,6 @@
 												Title
 												</th>
 												<th style="width: 20%">
-												Duration
-												</th>
-												<th style="width: 20%">
 												Total Mark
 												</th>
 												<td style="width: 20%">
@@ -474,9 +465,6 @@
 													</td>
 													<td >
 													{{ $final->title }}
-													</td>
-													<td>
-													{{ $final->duration }}
 													</td>
 													<td>
 													{{ $final->total_mark }}
