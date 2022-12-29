@@ -119,7 +119,11 @@
                                     @if (empty($sts))
                                       -
                                     @else
+                                      @if ($sts->content == null)
+                                      -
+                                      @else
                                       <a href="{{ Storage::disk('linode')->url($sts->content) }}"><i class="fa fa-file-pdf-o fa-3x"></i></a>
+                                      @endif
                                     @endif
                                 </td>
                                   <td>
