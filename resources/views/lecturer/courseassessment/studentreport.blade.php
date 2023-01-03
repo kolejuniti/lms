@@ -1,5 +1,6 @@
 
-@extends('layouts.lecturer.lecturer')
+@extends((Auth::user()->usrtype == "LCT") ? 'layouts.lecturer.lecturer' : (Auth::user()->usrtype == "PL" ? 'layouts.ketua_program' : (Auth::user()->usrtype == "AO" ? 'layouts.ketua_program' : (Auth::user()->usrtype == "ADM" ? 'layouts.admin' : (Auth::user()->usrtype == "DN" ? 'layouts.dekan' : '')))))
+
 
 @section('main')
 
@@ -627,6 +628,394 @@
                                 </td> 
                               </tr> 
                               @endforeach
+                              <tr>
+                                <td colspan="4" style="text-align-last: right">
+                                  Maximum Mark :
+                                </td>
+                                @foreach ($quiz[$ky] as $keyss => $qz)
+                                <td>
+                                  {{ $quizmax[$ky][$keyss] }}
+                                </td>
+                                @endforeach
+                                
+                                @if (count($quiz[$ky]) > 0)
+                                  @if ($groupcheck = DB::table('tblclassquiz')->join('tblclassquiz_group', 'tblclassquiz.id', 'tblclassquiz_group.quizid')
+                                  ->where([
+                                    ['tblclassquiz.classid', request()->id],
+                                    ['tblclassquiz.sessionid', Session::get('SessionID')],
+                                    ['tblclassquiz_group.groupname', $grp->group_name],
+                                    ['tblclassquiz.status', '!=', 3]
+                                  ])->exists())
+                                    @if(DB::table('tblclassmarks')->where([
+                                    ['course_id', request()->id],
+                                    ['assessment', 'quiz']
+                                    ])->first() != null)
+                                      <td style="background-color: #677ee2">{{ $quizcollection->max() }}</td>
+                                    @else
+                                    <td style="background-color: #677ee2">
+                                      <span >0</span>
+                                    </td> 
+                                    @endif
+                                  @else
+                                  <td style="background-color: #677ee2">
+                                    <span >0</span>
+                                  </td> 
+                                  @endif
+                                @endif
+
+                                @foreach ($test[$ky] as $keyss => $qz)
+                                <td>
+                                  {{ $testmax[$ky][$keyss] }}
+                                </td>
+                                @endforeach
+
+                                @if (count($test[$ky]) > 0)
+                                  @if ($groupcheck = DB::table('tblclasstest')->join('tblclasstest_group', 'tblclasstest.id', 'tblclasstest_group.testid')
+                                  ->where([
+                                    ['tblclasstest.classid', request()->id],
+                                    ['tblclasstest.sessionid', Session::get('SessionID')],
+                                    ['tblclasstest_group.groupname', $grp->group_name],
+                                    ['tblclasstest.status', '!=', 3]
+                                  ])->exists())
+                                    @if(DB::table('tblclassmarks')->where([
+                                    ['course_id', request()->id],
+                                    ['assessment', 'test']
+                                    ])->first() != null)
+                                      <td style="background-color: #677ee2">{{ $testcollection->max() }}</td>
+                                    @else
+                                    <td style="background-color: #677ee2">
+                                      <span >0</span>
+                                    </td> 
+                                    @endif
+                                  @else
+                                  <td style="background-color: #677ee2">
+                                    <span >0</span>
+                                  </td> 
+                                  @endif
+                                @endif
+
+                                @foreach ($assign[$ky] as $keyss => $qz)
+                                <td>
+                                  {{ $assignmax[$ky][$keyss] }}
+                                </td>
+                                @endforeach
+
+                                @if (count($assign[$ky]) > 0)
+                                  @if ($groupcheck = DB::table('tblclassassign')->join('tblclassassign_group', 'tblclassassign.id', 'tblclassassign_group.assignid')
+                                  ->where([
+                                    ['tblclassassign.classid', request()->id],
+                                    ['tblclassassign.sessionid', Session::get('SessionID')],
+                                    ['tblclassassign_group.groupname', $grp->group_name],
+                                    ['tblclassassign.status', '!=', 3]
+                                  ])->exists())
+                                    @if(DB::table('tblclassmarks')->where([
+                                    ['course_id', request()->id],
+                                    ['assessment', 'assign']
+                                    ])->first() != null)
+                                      <td style="background-color: #677ee2">{{ $assigncollection->max() }}</td>
+                                    @else
+                                    <td style="background-color: #677ee2">
+                                      <span >0</span>
+                                    </td> 
+                                    @endif
+                                  @else
+                                  <td style="background-color: #677ee2">
+                                    <span >0</span>
+                                  </td> 
+                                  @endif
+                                @endif
+
+                                @foreach ($extra[$ky] as $keyss => $qz)
+                                <td>
+                                  {{ $extramax[$ky][$keyss] }}
+                                </td>
+                                @endforeach
+
+                                @if (count($extra[$ky]) > 0)
+                                  @if ($groupcheck = DB::table('tblclassextra')->join('tblclassextra_group', 'tblclassextra.id', 'tblclassextra_group.extraid')
+                                  ->where([
+                                    ['tblclassextra.classid', request()->id],
+                                    ['tblclassextra.sessionid', Session::get('SessionID')],
+                                    ['tblclassextra_group.groupname', $grp->group_name],
+                                    ['tblclassextra.status', '!=', 3]
+                                  ])->exists())
+                                    @if(DB::table('tblclassmarks')->where([
+                                    ['course_id', request()->id],
+                                    ['assessment', 'extra']
+                                    ])->first() != null)
+                                      <td style="background-color: #677ee2">{{ $extracollection->max() }}</td>
+                                    @else
+                                    <td style="background-color: #677ee2">
+                                      <span >0</span>
+                                    </td> 
+                                    @endif
+                                  @else
+                                  <td style="background-color: #677ee2">
+                                    <span >0</span>
+                                  </td> 
+                                  @endif
+                                @endif
+
+                                @foreach ($other[$ky] as $keyss => $qz)
+                                <td>
+                                  {{ $othermax[$ky][$keyss] }}
+                                </td>
+                                @endforeach
+
+                                @if (count($other[$ky]) > 0)
+                                  @if ($groupcheck = DB::table('tblclassother')->join('tblclassother_group', 'tblclassother.id', 'tblclassother_group.otherid')
+                                  ->where([
+                                    ['tblclassother.classid', request()->id],
+                                    ['tblclassother.sessionid', Session::get('SessionID')],
+                                    ['tblclassother_group.groupname', $grp->group_name],
+                                    ['tblclassother.status', '!=', 3]
+                                  ])->exists())
+                                    @if(DB::table('tblclassmarks')->where([
+                                    ['course_id', request()->id],
+                                    ['assessment', 'other']
+                                    ])->first() != null)
+                                      <td style="background-color: #677ee2">{{ $othercollection->max() }}</td>
+                                    @else
+                                    <td style="background-color: #677ee2">
+                                      <span >0</span>
+                                    </td> 
+                                    @endif
+                                  @else
+                                  <td style="background-color: #677ee2">
+                                    <span >0</span>
+                                  </td> 
+                                  @endif
+                                @endif
+
+                                @foreach ($final[$ky] as $keyss => $qz)
+                                <td>
+                                  {{ $finalmax[$ky][$keyss] }}
+                                </td>
+                                @endforeach
+
+                                @if (count($final[$ky]) > 0)
+                                  @if ($groupcheck = DB::table('tblclassfinal')->join('tblclassfinal_group', 'tblclassfinal.id', 'tblclassfinal_group.finalid')
+                                  ->where([
+                                    ['tblclassfinal.classid', request()->id],
+                                    ['tblclassfinal.sessionid', Session::get('SessionID')],
+                                    ['tblclassfinal_group.groupname', $grp->group_name],
+                                    ['tblclassfinal.status', '!=', 3]
+                                  ])->exists())
+                                    @if(DB::table('tblclassmarks')->where([
+                                    ['course_id', request()->id],
+                                    ['assessment', 'final']
+                                    ])->first() != null)
+                                      <td style="background-color: #677ee2">{{ $finalcollection->max() }}</td>
+                                    @else
+                                    <td style="background-color: #677ee2">
+                                      <span >0</span>
+                                    </td> 
+                                    @endif
+                                  @else
+                                  <td style="background-color: #677ee2">
+                                    <span >0</span>
+                                  </td> 
+                                  @endif
+                                @endif
+
+                                <td>
+                                  {{ max($overallall[$ky]) }}%
+                                </td>
+                              </tr>
+                              <tr>
+                                <td colspan="4" style="text-align-last: right">
+                                  Minimum Mark :
+                                </td>
+                                @foreach ($quiz[$ky] as $keyss => $qz)
+                                <td>
+                                  {{ $quizmin[$ky][$keyss] }}
+                                </td>
+                                @endforeach
+
+                                @if (count($quiz[$ky]) > 0)
+                                  @if ($groupcheck = DB::table('tblclassquiz')->join('tblclassquiz_group', 'tblclassquiz.id', 'tblclassquiz_group.quizid')
+                                  ->where([
+                                    ['tblclassquiz.classid', request()->id],
+                                    ['tblclassquiz.sessionid', Session::get('SessionID')],
+                                    ['tblclassquiz_group.groupname', $grp->group_name],
+                                    ['tblclassquiz.status', '!=', 3]
+                                  ])->exists())
+                                    @if(DB::table('tblclassmarks')->where([
+                                    ['course_id', request()->id],
+                                    ['assessment', 'quiz']
+                                    ])->first() != null)
+                                      <td style="background-color: #677ee2">{{ $quizcollection->min() }}</td>
+                                    @else
+                                    <td style="background-color: #677ee2">
+                                      <span >0</span>
+                                    </td> 
+                                    @endif
+                                  @else
+                                  <td style="background-color: #677ee2">
+                                    <span >0</span>
+                                  </td> 
+                                  @endif
+                                @endif
+
+                                @foreach ($test[$ky] as $keyss => $qz)
+                                <td>
+                                  {{ $testmin[$ky][$keyss] }}
+                                </td>
+                                @endforeach
+
+                                @if (count($test[$ky]) > 0)
+                                  @if ($groupcheck = DB::table('tblclasstest')->join('tblclasstest_group', 'tblclasstest.id', 'tblclasstest_group.testid')
+                                  ->where([
+                                    ['tblclasstest.classid', request()->id],
+                                    ['tblclasstest.sessionid', Session::get('SessionID')],
+                                    ['tblclasstest_group.groupname', $grp->group_name],
+                                    ['tblclasstest.status', '!=', 3]
+                                  ])->exists())
+                                    @if(DB::table('tblclassmarks')->where([
+                                    ['course_id', request()->id],
+                                    ['assessment', 'test']
+                                    ])->first() != null)
+                                      <td style="background-color: #677ee2">{{ $testcollection->min() }}</td>
+                                    @else
+                                    <td style="background-color: #677ee2">
+                                      <span >0</span>
+                                    </td> 
+                                    @endif
+                                  @else
+                                  <td style="background-color: #677ee2">
+                                    <span >0</span>
+                                  </td> 
+                                  @endif
+                                @endif
+
+                                @foreach ($assign[$ky] as $keyss => $qz)
+                                <td>
+                                  {{ $assignmin[$ky][$keyss] }}
+                                </td>
+                                @endforeach
+
+                                @if (count($assign[$ky]) > 0)
+                                  @if ($groupcheck = DB::table('tblclassassign')->join('tblclassassign_group', 'tblclassassign.id', 'tblclassassign_group.assignid')
+                                  ->where([
+                                    ['tblclassassign.classid', request()->id],
+                                    ['tblclassassign.sessionid', Session::get('SessionID')],
+                                    ['tblclassassign_group.groupname', $grp->group_name],
+                                    ['tblclassassign.status', '!=', 3]
+                                  ])->exists())
+                                    @if(DB::table('tblclassmarks')->where([
+                                    ['course_id', request()->id],
+                                    ['assessment', 'assign']
+                                    ])->first() != null)
+                                      <td style="background-color: #677ee2">{{ $assigncollection->min() }}</td>
+                                    @else
+                                    <td style="background-color: #677ee2">
+                                      <span >0</span>
+                                    </td> 
+                                    @endif
+                                  @else
+                                  <td style="background-color: #677ee2">
+                                    <span >0</span>
+                                  </td> 
+                                  @endif
+                                @endif
+
+                                @foreach ($extra[$ky] as $keyss => $qz)
+                                <td>
+                                  {{ $extramin[$ky][$keyss] }}
+                                </td>
+                                @endforeach
+
+                                @if (count($extra[$ky]) > 0)
+                                  @if ($groupcheck = DB::table('tblclassextra')->join('tblclassextra_group', 'tblclassextra.id', 'tblclassextra_group.extraid')
+                                  ->where([
+                                    ['tblclassextra.classid', request()->id],
+                                    ['tblclassextra.sessionid', Session::get('SessionID')],
+                                    ['tblclassextra_group.groupname', $grp->group_name],
+                                    ['tblclassextra.status', '!=', 3]
+                                  ])->exists())
+                                    @if(DB::table('tblclassmarks')->where([
+                                    ['course_id', request()->id],
+                                    ['assessment', 'extra']
+                                    ])->first() != null)
+                                      <td style="background-color: #677ee2">{{ $extracollection->min() }}</td>
+                                    @else
+                                    <td style="background-color: #677ee2">
+                                      <span >0</span>
+                                    </td> 
+                                    @endif
+                                  @else
+                                  <td style="background-color: #677ee2">
+                                    <span >0</span>
+                                  </td> 
+                                  @endif
+                                @endif
+
+                                @foreach ($other[$ky] as $keyss => $qz)
+                                <td>
+                                  {{ $othermin[$ky][$keyss] }}
+                                </td>
+                                @endforeach
+
+                                @if (count($other[$ky]) > 0)
+                                  @if ($groupcheck = DB::table('tblclassother')->join('tblclassother_group', 'tblclassother.id', 'tblclassother_group.otherid')
+                                  ->where([
+                                    ['tblclassother.classid', request()->id],
+                                    ['tblclassother.sessionid', Session::get('SessionID')],
+                                    ['tblclassother_group.groupname', $grp->group_name],
+                                    ['tblclassother.status', '!=', 3]
+                                  ])->exists())
+                                    @if(DB::table('tblclassmarks')->where([
+                                    ['course_id', request()->id],
+                                    ['assessment', 'other']
+                                    ])->first() != null)
+                                      <td style="background-color: #677ee2">{{ $othercollection->min() }}</td>
+                                    @else
+                                    <td style="background-color: #677ee2">
+                                      <span >0</span>
+                                    </td> 
+                                    @endif
+                                  @else
+                                  <td style="background-color: #677ee2">
+                                    <span >0</span>
+                                  </td> 
+                                  @endif
+                                @endif
+
+                                @foreach ($final[$ky] as $keyss => $qz)
+                                <td>
+                                  {{ $finalmin[$ky][$keyss] }}
+                                </td>
+                                @endforeach
+
+                                @if (count($final[$ky]) > 0)
+                                  @if ($groupcheck = DB::table('tblclassfinal')->join('tblclassfinal_group', 'tblclassfinal.id', 'tblclassfinal_group.finalid')
+                                  ->where([
+                                    ['tblclassfinal.classid', request()->id],
+                                    ['tblclassfinal.sessionid', Session::get('SessionID')],
+                                    ['tblclassfinal_group.groupname', $grp->group_name],
+                                    ['tblclassfinal.status', '!=', 3]
+                                  ])->exists())
+                                    @if(DB::table('tblclassmarks')->where([
+                                    ['course_id', request()->id],
+                                    ['assessment', 'final']
+                                    ])->first() != null)
+                                      <td style="background-color: #677ee2">{{ $finalcollection->min() }}</td>
+                                    @else
+                                    <td style="background-color: #677ee2">
+                                      <span >0</span>
+                                    </td> 
+                                    @endif
+                                  @else
+                                  <td style="background-color: #677ee2">
+                                    <span >0</span>
+                                  </td> 
+                                  @endif
+                                @endif
+
+                                <td>
+                                  {{ min($overallall[$ky]) }}%
+                                </td>
+                              </tr>
                             </tbody>
                           </table>
                         </div>
