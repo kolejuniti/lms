@@ -1574,31 +1574,49 @@ class LecturerController extends Controller
     {
         $overallquiz = [];
         $quizanswer = [];
+        $quizmax = [];
+        $quizmin = [];
 
         $overalltest = [];
         $testanswer = [];
+        $testmax = [];
+        $testmin = [];
 
         $overallassign = [];
         $assignanswer = [];
+        $assignmax = [];
+        $assignmin = [];
 
         $overallmidterm = [];
         $midtermanswer = [];
+        $midtermmax = [];
+        $midtermmin = [];
 
         $overallfinal = [];
         $finalanswer = [];
+        $finalmax = [];
+        $finalmin = [];
 
         $overallpaperwork = [];
         $paperworkanswer = [];
+        $paperworkmax = [];
+        $paperworkmin = [];
 
         $overallpractical = [];
         $practicalanswer = [];
+        $practicalmax = [];
+        $practicalmin = [];
 
         $overallother = [];
         $otheranswer = [];
+        $othermax = [];
+        $othermin = [];
 
         $overallextra = [];
         $extraanswer = [];
-
+        $extramax = [];
+        $extramin = [];
+        
         $user = Auth::user();
 
         $groups = DB::table('user_subjek')
@@ -1626,6 +1644,8 @@ class LecturerController extends Controller
                 ['subjek.id', request()->id]
                 ])->where('student_subjek.group_name', $grp->group_name)->get();
 
+                $collection = collect($students[$ky]);
+
                 //QUIZ
 
                 $quizs = DB::table('tblclassquiz')
@@ -1642,6 +1662,21 @@ class LecturerController extends Controller
                 $quizid = $quizs->pluck('tblclassquiz.id');
 
                 $totalquiz = $quizs->sum('tblclassquiz.total_mark');
+
+                foreach($quiz[$ky] as $key => $qz)
+                {
+
+                    $quizarray = DB::table('tblclassstudentquiz')
+                                            ->join('tblclassquiz', 'tblclassstudentquiz.quizid', 'tblclassquiz.id')
+                                            ->where('quizid', $qz->quizid)
+                                            ->whereIn('userid', $collection->pluck('ic'));
+
+                    $quizmax[$ky][$key] = $quizarray->max('final_mark');
+                    
+
+                    $quizmin[$ky][$key] = $quizarray->min('final_mark');
+
+                }
 
                 //TEST
 
@@ -1660,6 +1695,21 @@ class LecturerController extends Controller
 
                 $totaltest = $tests->sum('tblclasstest.total_mark');
 
+                foreach($test[$ky] as $key => $qz)
+                {
+
+                    $testarray = DB::table('tblclassstudenttest')
+                                            ->join('tblclasstest', 'tblclassstudenttest.testid', 'tblclasstest.id')
+                                            ->where('testid', $qz->testid)
+                                            ->whereIn('userid', $collection->pluck('ic'));
+
+                    $testmax[$ky][$key] = $testarray->max('final_mark');
+                    
+
+                    $testmin[$ky][$key] = $testarray->min('final_mark');
+
+                }
+
                 //ASSIGNMENT
 
                 $assigns = DB::table('tblclassassign')
@@ -1676,6 +1726,21 @@ class LecturerController extends Controller
                 $assignid = $assigns->pluck('tblclassassign.id');
 
                 $totalassign = $assigns->sum('tblclassassign.total_mark');
+
+                foreach($assign[$ky] as $key => $qz)
+                {
+
+                    $assignarray = DB::table('tblclassstudentassign')
+                                            ->join('tblclassassign', 'tblclassstudentassign.assignid', 'tblclassassign.id')
+                                            ->where('assignid', $qz->assignid)
+                                            ->whereIn('userid', $collection->pluck('ic'));
+
+                    $assignmax[$ky][$key] = $assignarray->max('final_mark');
+                    
+
+                    $assignmin[$ky][$key] = $assignarray->min('final_mark');
+
+                }
 
                 //EXTRA
 
@@ -1694,6 +1759,21 @@ class LecturerController extends Controller
 
                 $totalextra = $extras->sum('tblclassextra.total_mark');
 
+                foreach($extra[$ky] as $key => $qz)
+                {
+
+                    $extraarray = DB::table('tblclassstudentextra')
+                                            ->join('tblclassextra', 'tblclassstudentextra.extraid', 'tblclassextra.id')
+                                            ->where('extraid', $qz->extraid)
+                                            ->whereIn('userid', $collection->pluck('ic'));
+
+                    $extramax[$ky][$key] = $extraarray->max('tblclassstudentextra.total_mark');
+                    
+
+                    $extramin[$ky][$key] = $extraarray->min('tblclassstudentextra.total_mark');
+
+                }
+
                 //OTHER
 
                 $others = DB::table('tblclassother')
@@ -1710,6 +1790,21 @@ class LecturerController extends Controller
                 $otherid = $others->pluck('tblclassother.id');
 
                 $totalother = $others->sum('tblclassother.total_mark');
+
+                foreach($other[$ky] as $key => $qz)
+                {
+
+                    $otherarray = DB::table('tblclassstudentother')
+                                            ->join('tblclassother', 'tblclassstudentother.otherid', 'tblclassother.id')
+                                            ->where('otherid', $qz->otherid)
+                                            ->whereIn('userid', $collection->pluck('ic'));
+
+                    $othermax[$ky][$key] = $otherarray->max('tblclassstudentother.total_mark');
+                    
+
+                    $othermin[$ky][$key] = $otherarray->min('tblclassstudentother.total_mark');
+
+                }
 
                 //MIDTERM
 
@@ -1728,6 +1823,21 @@ class LecturerController extends Controller
 
                 $totalmidterm = $midterms->sum('tblclassmidterm.total_mark');
 
+                foreach($midterm[$ky] as $key => $qz)
+                {
+
+                    $midtermarray = DB::table('tblclassstudentmidterm')
+                                            ->join('tblclassmidterm', 'tblclassstudentmidterm.midtermid', 'tblclassmidterm.id')
+                                            ->where('midtermid', $qz->midtermid)
+                                            ->whereIn('userid', $collection->pluck('ic'));
+
+                    $midtermmax[$ky][$key] = $midtermarray->max('final_mark');
+                    
+
+                    $midtermmin[$ky][$key] = $midtermarray->min('final_mark');
+
+                }
+
                 //FINAL
 
                 $finals = DB::table('tblclassfinal')
@@ -1744,6 +1854,21 @@ class LecturerController extends Controller
                 $finalid = $finals->pluck('tblclassfinal.id');
 
                 $totalfinal = $finals->sum('tblclassfinal.total_mark');
+
+                foreach($final[$ky] as $key => $qz)
+                {
+
+                    $finalarray = DB::table('tblclassstudentfinal')
+                                            ->join('tblclassfinal', 'tblclassstudentfinal.finalid', 'tblclassfinal.id')
+                                            ->where('finalid', $qz->finalid)
+                                            ->whereIn('userid', $collection->pluck('ic'));
+
+                    $finalmax[$ky][$key] = $finalarray->max('final_mark');
+                    
+
+                    $finalmin[$ky][$key] = $finalarray->min('final_mark');
+
+                }
 
                 //////////////////////////////////////////////////////////////////////////////////////////
             
@@ -1784,15 +1909,23 @@ class LecturerController extends Controller
                             ])->exists()){
                                 //dd($totalquiz);
                                 $overallquiz[$ky][$keys] = number_format((float)$sumquiz[$ky][$keys] / $totalquiz * $percentquiz->mark_percentage, 2, '.', '');
+
+                                $quizcollection = collect($overallquiz[$ky]);
                             }else{
                                 $overallquiz[$ky][$keys] = 0;
+
+                                $quizcollection = collect($overallquiz[$ky]);
                             }
             
                         }else{
                             $overallquiz[$ky][$keys] = 0;
+
+                            $quizcollection = collect($overallquiz[$ky]);
                         }
                     }else{
                         $overallquiz[$ky][$keys] = 0;
+
+                        $quizcollection = collect($overallquiz[$ky]);
                     }
 
 
@@ -1830,15 +1963,23 @@ class LecturerController extends Controller
                             ])->exists()){
                                 //dd($totaltest);
                                 $overalltest[$ky][$keys] = number_format((float)$sumtest[$ky][$keys] / $totaltest * $percenttest->mark_percentage, 2, '.', '');
+
+                                $testcollection = collect($overalltest[$ky]);
                             }else{
                                 $overalltest[$ky][$keys] = 0;
+
+                                $testcollection = collect($overalltest[$ky]);
                             }
             
                         }else{
                             $overalltest[$ky][$keys] = 0;
+
+                            $testcollection = collect($overalltest[$ky]);
                         }
                     }else{
                         $overalltest[$ky][$keys] = 0;
+
+                        $testcollection = collect($overalltest[$ky]);
                     }
 
 
@@ -1876,15 +2017,23 @@ class LecturerController extends Controller
                             ])->exists()){
                                 //dd($totalassign);
                                 $overallassign[$ky][$keys] = number_format((float)$sumassign[$ky][$keys] / $totalassign * $percentassign->mark_percentage, 2, '.', '');
+
+                                $assigncollection = collect($overallassign[$ky]);
                             }else{
                                $overallassign[$ky][$keys] = 0;
+
+                               $assigncollection = collect($overallassign[$ky]);
                             }
             
                         }else{
                             $overallassign[$ky][$keys] = 0;
+
+                            $assigncollection = collect($overallassign[$ky]);
                         }
                     }else{
                         $overallassign[$ky][$keys] = 0;
+
+                        $assigncollection = collect($overallassign[$ky]);
                     }
 
                     // EXTRA
@@ -1921,15 +2070,23 @@ class LecturerController extends Controller
                             ])->exists()){
                                 //dd($totalextra);
                                 $overallextra[$ky][$keys] = number_format((float)$sumextra[$ky][$keys] / $totalextra * $percentextra->mark_percentage, 2, '.', '');
+
+                                $extracollection = collect($overallextra[$ky]);
                             }else{
                                 $overallextra[$ky][$keys] = 0;
+
+                                $extracollection = collect($overallextra[$ky]);
                             }
             
                         }else{
                             $overallextra[$ky][$keys] = 0;
+
+                            $extracollection = collect($overallextra[$ky]);
                         }
                     }else{
                         $overallextra[$ky][$keys] = 0;
+
+                        $extracollection = collect($overallextra[$ky]);
                     }
 
                     // OTHER
@@ -1966,15 +2123,23 @@ class LecturerController extends Controller
                             ])->exists()){
                                 //dd($totalother);
                                 $overallother[$ky][$keys] = number_format((float)$sumother[$ky][$keys] / $totalother * $percentother->mark_percentage, 2, '.', '');
+
+                                $othercollection = collect($overallother[$ky]);
                             }else{
                                 $overallother[$ky][$keys] = 0;
+
+                                $othercollection = collect($overallother[$ky]);
                             }
             
                         }else{
                             $overallother[$ky][$keys] = 0;
+
+                            $othercollection = collect($overallother[$ky]);
                         }
                     }else{
                         $overallother[$ky][$keys] = 0;
+
+                        $othercollection = collect($overallother[$ky]);
                     }
 
                     // MIDTERM
@@ -2011,15 +2176,23 @@ class LecturerController extends Controller
                             ])->exists()){
                                 //dd($totalmidterm);
                                 $overallmidterm[$ky][$keys] = number_format((float)$summidterm[$ky][$keys] / $totalmidterm * $percentmidterm->mark_percentage, 2, '.', '');
+
+                                $midtermcollection = collect($overallmidterm[$ky]);
                             }else{
                                 $overallmidterm[$ky][$keys] = 0;
+
+                                $midtermcollection = collect($overallmidterm[$ky]);
                             }
             
                         }else{
                             $overallmidterm[$ky][$keys] = 0;
+
+                            $midtermcollection = collect($overallmidterm[$ky]);
                         }
                     }else{
                         $overallmidterm[$ky][$keys] = 0;
+
+                        $midtermcollection = collect($overallmidterm[$ky]);
                     }
 
                     // FINAL
@@ -2056,15 +2229,23 @@ class LecturerController extends Controller
                             ])->exists()){
                                 //dd($totalfinal);
                                 $overallfinal[$ky][$keys] = number_format((float)$sumfinal[$ky][$keys] / $totalfinal * $percentfinal->mark_percentage, 2, '.', '');
+
+                                $finalcollection = collect($overallfinal[$ky]);
                             }else{
                                 $overallfinal[$ky][$keys] = 0;
+
+                                $finalcollection = collect($overallfinal[$ky]);
                             }
             
                         }else{
                             $overallfinal[$ky][$keys] = 0;
+
+                            $finalcollection = collect($overallfinal[$ky]);
                         }
                     }else{
                         $overallfinal[$ky][$keys] = 0;
+
+                        $finalcollection = collect($overallfinal[$ky]);
                     }
 
                     $overallall[$ky][$keys] = $overallquiz[$ky][$keys] + $overalltest[$ky][$keys] + $overallassign[$ky][$keys] + $overallextra[$ky][$keys] + $overallother[$ky][$keys] + $overallmidterm[$ky][$keys] + $overallfinal[$ky][$keys];
@@ -2073,17 +2254,18 @@ class LecturerController extends Controller
 
         }
 
-        //dd($overallall);
+        //dd(min($overallall));
+
 
         return view('lecturer.courseassessment.studentreport', compact('groups', 'students',
-                                                                       'quiz', 'quizanswer','overallquiz',
-                                                                       'test', 'testanswer','overalltest',
-                                                                       'assign', 'assignanswer','overallassign',
-                                                                       'extra', 'extraanswer','overallextra',
-                                                                       'other', 'otheranswer','overallother',
-                                                                       'midterm', 'midtermanswer','overallmidterm',
-                                                                       'final', 'finalanswer','overallfinal',
-                                                                       'overallall'
+                                                                       'quiz', 'quizanswer','overallquiz', 'quizmax', 'quizmin', 'quizcollection',
+                                                                       'test', 'testanswer','overalltest', 'testmax', 'testmin', 'testcollection',
+                                                                       'assign', 'assignanswer','overallassign', 'assignmax', 'assignmin', 'assigncollection',
+                                                                       'extra', 'extraanswer','overallextra', 'extramax', 'extramin', 'extracollection',
+                                                                       'other', 'otheranswer','overallother', 'othermax', 'othermin', 'othercollection',
+                                                                       'midterm', 'midtermanswer','overallmidterm', 'midtermmax', 'midtermmin', 'midtermcollection',
+                                                                       'final', 'finalanswer','overallfinal', 'finalmax', 'finalmin', 'finalcollection',
+                                                                       'overallall' 
                                                                     ));
 
     }
