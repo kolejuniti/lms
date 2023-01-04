@@ -196,7 +196,7 @@
             </svg>
             
             <div class="p-3">
-                ASESSMENT
+                STUDENT REPORT
             </div>
         </a>  
     </div>
