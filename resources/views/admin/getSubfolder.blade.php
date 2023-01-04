@@ -164,7 +164,7 @@
     </div>
 
     <div class="col-md-3 text-center">
-        <a data-toggle="modal" data-target="#uploadModal">
+        <a href="/admin/report/student">
             <svg xmlns="http://www.w3.org/2000/svg" version="1.0" width="4em" height="4em" viewBox="0 0 1300.000000 1300.000000" preserveAspectRatio="xMidYMid meet">
 
                 <g transform="translate(0.000000,1300.000000) scale(0.100000,-0.100000)" fill="#000000" stroke="none">
