@@ -49,6 +49,8 @@ Route::get('/admin/attendance/report', [App\Http\Controllers\AdminController::cl
 Route::get('/admin/report/assessment', [App\Http\Controllers\AdminController::class, 'assessment'])->name('admin.report.assessment');
 Route::post('/admin/report/assessment/getAssessment', [App\Http\Controllers\AdminController::class, 'getAssessment']);
 Route::post('/admin/report/lecturer/getUserLog', [App\Http\Controllers\AdminController::class, 'getUserLog']);
+Route::get('/admin/report/student', [App\Http\Controllers\AdminController::class, 'assessmentreport'])->name('admin.report.student');
+
 
 
 Route::get('/KP', [App\Http\Controllers\KP_Controller::class, 'index'])->name('ketua_program');
