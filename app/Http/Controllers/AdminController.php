@@ -564,20 +564,40 @@ class AdminController extends Controller
     public function getAssessment(Request $request)
     {
 
-        $data['assessment'] = DB::table('tblclassquiz')
+        $data['quiz'] = DB::table('tblclassquiz')
         ->join('users', 'tblclassquiz.addby', 'users.ic')
         ->whereBetween('tblclassquiz.created_at', [$request->from, $request->to])
         ->select('tblclassquiz.*', 'users.name')->get();
 
-        $data['assessment2'] = DB::table('tblclasstest')
+        $data['test'] = DB::table('tblclasstest')
         ->join('users', 'tblclasstest.addby', 'users.ic')
         ->whereBetween('tblclasstest.created_at', [$request->from, $request->to])
         ->select('tblclasstest.*', 'users.name')->get();
 
-        $data['assessment3'] = DB::table('tblclassassign')
+        $data['assign'] = DB::table('tblclassassign')
         ->join('users', 'tblclassassign.addby', 'users.ic')
         ->whereBetween('tblclassassign.created_at', [$request->from, $request->to])
         ->select('tblclassassign.*', 'users.name')->get();
+
+        $data['other'] = DB::table('tblclassother')
+        ->join('users', 'tblclassother.addby', 'users.ic')
+        ->whereBetween('tblclassother.created_at', [$request->from, $request->to])
+        ->select('tblclassother.*', 'users.name')->get();
+
+        $data['extra'] = DB::table('tblclassextra')
+        ->join('users', 'tblclassextra.addby', 'users.ic')
+        ->whereBetween('tblclassextra.created_at', [$request->from, $request->to])
+        ->select('tblclassextra.*', 'users.name')->get();
+
+        $data['midterm'] = DB::table('tblclassmidterm')
+        ->join('users', 'tblclassmidterm.addby', 'users.ic')
+        ->whereBetween('tblclassmidterm.created_at', [$request->from, $request->to])
+        ->select('tblclassmidterm.*', 'users.name')->get();
+
+        $data['final'] = DB::table('tblclassfinal')
+        ->join('users', 'tblclassfinal.addby', 'users.ic')
+        ->whereBetween('tblclassfinal.created_at', [$request->from, $request->to])
+        ->select('tblclassfinal.*', 'users.name')->get();
 
         return view('admin.report.getAssessment', compact('data'));
 

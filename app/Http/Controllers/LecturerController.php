@@ -164,10 +164,19 @@ class LecturerController extends Controller
                   ->join('tblprogramme', 'subjek.prgid', 'tblprogramme.id')
                   ->where('subjek.id', request()->id)->first();
 
-        //dd($course);
+        $program = DB::table('tblprogramme')->join('subjek', 'tblprogramme.id', 'subjek.prgid')->where('subjek.sub_id', $course->sub_id)->get();
+
+        $collection = collect($program);
+
+        $summary = DB::table('subjek')
+                ->join('tblprogramme', 'subjek.prgid', 'tblprogramme.id')
+                ->whereIn('subjek.sub_id', $collection->pluck('sub_id'))
+                ->whereIn('subjek.prgid', $collection->pluck('prgid'))->get();
+
+        //dd($summary);
 
 
-        return view('lecturer.coursesummary.coursesummary', compact('course'))->with('course_id', request()->id);
+        return view('lecturer.coursesummary.coursesummary', compact('course','program','summary'))->with('course_id', request()->id);
     }
 
     public function deleteContent(Request $request)
@@ -1616,7 +1625,7 @@ class LecturerController extends Controller
         $extraanswer = [];
         $extramax = [];
         $extramin = [];
-        
+
         $user = Auth::user();
 
         $groups = DB::table('user_subjek')

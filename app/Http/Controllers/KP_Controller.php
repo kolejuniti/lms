@@ -680,9 +680,11 @@ class KP_Controller extends Controller
 
         $faculty = DB::table('tblfaculty')->where('id', $user->faculty)->get();
 
+        $usrtype = ['LCT', 'KP'];
+
         foreach($faculty as $key => $fcl)
         {
-            $lecturer[] = DB::table('users')->where('status', 'ACTIVE')->where('faculty', $fcl->id)->where('usrtype', 'LCT')->get();
+            $lecturer[] = DB::table('users')->where('status', 'ACTIVE')->where('faculty', $fcl->id)->whereIn('usrtype', $usrtype)->get();
 
             //dd($lecturer);
 
@@ -702,6 +704,64 @@ class KP_Controller extends Controller
         //dd($course);
 
         return view('ketua_program.report.lecturerReport', compact('faculty','lecturer','course'));
+
+    }
+
+    public function assessment2()
+    {
+
+        return view('ketua_program.report.assessment2');
+
+    }
+
+    public function getAssessment(Request $request)
+    {
+
+        $user = Auth::user();
+
+        $data['quiz'] = DB::table('tblclassquiz')
+        ->join('users', 'tblclassquiz.addby', 'users.ic')
+        ->where('users.faculty', $user->faculty)
+        ->whereBetween('tblclassquiz.created_at', [$request->from, $request->to])
+        ->select('tblclassquiz.*', 'users.name')->get();
+
+        $data['test'] = DB::table('tblclasstest')
+        ->join('users', 'tblclasstest.addby', 'users.ic')
+        ->where('users.faculty', $user->faculty)
+        ->whereBetween('tblclasstest.created_at', [$request->from, $request->to])
+        ->select('tblclasstest.*', 'users.name')->get();
+
+        $data['assign'] = DB::table('tblclassassign')
+        ->join('users', 'tblclassassign.addby', 'users.ic')
+        ->where('users.faculty', $user->faculty)
+        ->whereBetween('tblclassassign.created_at', [$request->from, $request->to])
+        ->select('tblclassassign.*', 'users.name')->get();
+
+        $data['other'] = DB::table('tblclassother')
+        ->join('users', 'tblclassother.addby', 'users.ic')
+        ->where('users.faculty', $user->faculty)
+        ->whereBetween('tblclassother.created_at', [$request->from, $request->to])
+        ->select('tblclassother.*', 'users.name')->get();
+
+        $data['extra'] = DB::table('tblclassextra')
+        ->join('users', 'tblclassextra.addby', 'users.ic')
+        ->where('users.faculty', $user->faculty)
+        ->whereBetween('tblclassextra.created_at', [$request->from, $request->to])
+        ->select('tblclassextra.*', 'users.name')->get();
+
+        $data['midterm'] = DB::table('tblclassmidterm')
+        ->join('users', 'tblclassmidterm.addby', 'users.ic')
+        ->where('users.faculty', $user->faculty)
+        ->whereBetween('tblclassmidterm.created_at', [$request->from, $request->to])
+        ->select('tblclassmidterm.*', 'users.name')->get();
+
+        $data['final'] = DB::table('tblclassfinal')
+        ->join('users', 'tblclassfinal.addby', 'users.ic')
+        ->where('users.faculty', $user->faculty)
+        ->whereBetween('tblclassfinal.created_at', [$request->from, $request->to])
+        ->select('tblclassfinal.*', 'users.name')->get();
+
+        return view('ketua_program.report.getAssessment', compact('data'));
 
     }
 }
