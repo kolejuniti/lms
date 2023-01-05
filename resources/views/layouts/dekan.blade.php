@@ -243,46 +243,10 @@
 	  	<div class="multinav">
 		  <div class="multinav-scroll" style="height: 97%;">	
 			  <!-- sidebar menu-->
-			  <ul class="sidebar-menu" data-widget="tree">	
-				@if (Auth::user()->usrtype == 'PL' || Auth::user()->usrtype == 'AO')
+			  <ul class="sidebar-menu" data-widget="tree">
 				<li>
-					<a href="{{ (Auth::user()->usrtype == 'PL') ? route('ketua_program') : route('pegawai_takbir') }}" class="{{ (route('ketua_program') == Request::url()) ? 'active' : ''}}"><i data-feather="home"></i><span>Dashboard</span></a>
+					<a href="{{ route('dekan') }}" class="{{ (route('dekan') == Request::url()) ? 'active' : ''}}"><i data-feather="home"></i><span>Dashboard</span></a>
 				</li>
-				<li class="treeview">
-					<a href="#"><i data-feather="clipboard"></i><span>Reporting</span>
-						<span class="pull-right-container">
-							<i class="fa fa-angle-left pull-right"></i>
-						</span>
-					</a>
-					<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
-						<li><a href="{{ route('kp.lecturer') }}" class="{{ (route('kp.lecturer') == Request::url()) ? 'active' : ''}}" class="">Lecturer</a></li>
-						<!--<li><a href="" class="">Students</a></li>-->
-					</ul>
-				</li>
-				<li class="treeview">
-					<a href="#"><i data-feather="user"></i><span>Assign</span>
-						<span class="pull-right-container">
-							<i class="fa fa-angle-left pull-right"></i>
-						</span>
-					</a>
-					<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
-						@if (Auth::user()->usrtype == "AO")
-						<li><a href="{{ route('kp.create') }}" class="{{ (route('kp.create') == Request::url()) ? 'active' : ''}}">Lecturer</a></li>
-						@endif
-						@if (Auth::user()->usrtype != "AO")
-						<li class="treeview">
-							<a href="#"><span>Students</span>
-							</a>
-							<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
-								<li><a href="{{ route('kp.group') }}" class="{{ (route('kp.group') == Request::url()) ? 'active' : ''}}">Group</a></li>
-								<li><a href="" class="">Subject</a></li>
-							</ul>
-						</li>
-						<li><a href="{{ route('kp.coursemark') }}" class="{{ (route('kp.coursemark') == Request::url()) ? 'active' : ''}}">Marks</a></li>
-						@endif
-					</ul>
-				</li>  	
-				@endif
 				<li class="treeview">
 				    <a href="#"><i data-feather="archive"></i><span>Archive & Report</span>
 						<span class="pull-right-container">

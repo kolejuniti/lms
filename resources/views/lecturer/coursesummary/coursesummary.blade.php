@@ -35,16 +35,38 @@
             </button>
           </div>-->
         </div>
+        <ul class="nav nav-tabs nav-bordered mb-4 center">
+          @foreach ($program as $prg)
+          <li class="nav-item col-3" style="text-align:center">
+            <a class="nav-link" data-toggle="tab" href="#{{ $prg->progcode }}">
+              <div class=" d-md-block">
+                <i class="fa fa-group"></i>
+                <span class="hidden-sm-down ml-1">&nbsp {{ $prg->progcode }}</span>
+              </div>
+            </a>
+          </li>
+          @endforeach
+        </ul>
         <div class="card-body p-0">
-          <!-- //asset('storage/coursesummary/'.$course->progcode.'/'.str_replace(" ","_", $course->course_code).'.pdf') -->
-          @if (Storage::disk('linode')->exists('coursesummary/'.$course->progcode.'/'.str_replace(" ","_", $course->course_code).'.pdf'))
-          <iframe src="{{ Storage::disk('linode')->temporaryUrl('coursesummary/'.$course->progcode.'/'.str_replace(" ","_", $course->course_code).'.pdf',now()->addMinutes(5)) }}" width="100%" height="1000" style="border:1px solid black;">
-          </iframe>
-          @else
-          <div class=" d-flex justify-content-center align-items-center box-header bg-secondary-light" style="height:20em">
-            <h1 class="text-muted ">-- Course Summary not set --</h1>
+          <div class="tab-content">
+            @foreach ($summary as $sum)
+            <div id="{{ $sum->progcode }}" class="tab-pane">
+            {{ $sum->progcode }} {{ $sum->course_code }}
+              <!-- //asset('storage/coursesummary/'.$course->progcode.'/'.str_replace(" ","_", $course->course_code).'.pdf') -->
+              @if (Storage::disk('linode')->exists('coursesummary/'.$sum->progcode.'/'.str_replace(" ","_", $sum->course_code).'.pdf'))
+              <iframe src="{{ Storage::disk('linode')->temporaryUrl('coursesummary/'.$sum->progcode.'/'.str_replace(" ","_", $sum->course_code).'.pdf',now()->addMinutes(5)) }}" width="100%" height="1000" style="border:1px solid black;">
+              </iframe>
+              @else
+              <div class=" d-flex justify-content-center align-items-center box-header bg-secondary-light" style="height:20em">
+                <h1 class="text-muted ">-- Course Summary not set --</h1>
+              </div>
+              @endif
+            </div>
+            @endforeach
           </div>
-          @endif
+        </div>
+        <div class="card-body p-0">
+         
           
         </div>
         <!-- /.card-body -->
