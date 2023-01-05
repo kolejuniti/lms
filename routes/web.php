@@ -75,6 +75,8 @@ Route::post('/KP/lecturer/filter', [App\Http\Controllers\KP_Controller::class, '
 Route::get('/KP/lecturer/report/{id}', [App\Http\Controllers\KP_Controller::class, 'lecturer_report'])->name('kp.lecturer.report');
 Route::get('/KP/marks', [App\Http\Controllers\KP_Controller::class, 'courseMark'])->name('kp.coursemark');
 Route::get('/KP/report/file', [App\Http\Controllers\KP_Controller::class, 'lecturerReportFile'])->name('kp.report.file');
+Route::get('/KP/report/assessment2', [App\Http\Controllers\KP_Controller::class, 'assessment2'])->name('kp.report.assessment2');
+Route::post('/KP/report/assessment/getAssessment', [App\Http\Controllers\KP_Controller::class, 'getAssessment']);
 
 Route::get('/AO', [App\Http\Controllers\AO_Controller::class, 'index'])->name('pegawai_takbir');
 
