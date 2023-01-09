@@ -695,7 +695,7 @@ class KP_Controller extends Controller
                     ->join('sessions', 'user_subjek.session_id','sessions.SessionID')
                     ->where('user_subjek.user_ic', $lct->ic)
                     ->select('subjek.*','user_subjek.course_id','sessions.SessionName','sessions.SessionID')
-                    ->groupBy('user_subjek.course_id')
+                    ->groupBy('subjek.sub_id', 'user_subjek.session_id')
                     ->get();
 
             }
