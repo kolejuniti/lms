@@ -1628,6 +1628,8 @@ class LecturerController extends Controller
 
         $user = Auth::user();
 
+        $id = request()->id;
+
         $groups = DB::table('user_subjek')
                   ->join('student_subjek', 'user_subjek.id', 'student_subjek.group_id')
                   ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
@@ -2266,7 +2268,7 @@ class LecturerController extends Controller
         //dd(min($overallall));
 
 
-        return view('lecturer.courseassessment.studentreport', compact('groups', 'students',
+        return view('lecturer.courseassessment.studentreport', compact('groups', 'students', 'id',
                                                                        'quiz', 'quizanswer','overallquiz', 'quizmax', 'quizmin', 'quizcollection',
                                                                        'test', 'testanswer','overalltest', 'testmax', 'testmin', 'testcollection',
                                                                        'assign', 'assignanswer','overallassign', 'assignmax', 'assignmin', 'assigncollection',
