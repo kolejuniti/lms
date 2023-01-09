@@ -1,5 +1,5 @@
 
-@extends((Auth::user()->usrtype == "LCT") ? 'layouts.lecturer.lecturer' : (Auth::user()->usrtype == "PL" ? 'layouts.ketua_program' : (Auth::user()->usrtype == "AO" ? 'layouts.ketua_program' : (Auth::user()->usrtype == "ADM" ? 'layouts.admin' : (Auth::user()->usrtype == "DN" ? 'layouts.dekan' : '')))))
+@extends((Auth::user()->usrtype == "LCT") ? 'layouts.lecturer' : (Auth::user()->usrtype == "PL" ? 'layouts.ketua_program' : (Auth::user()->usrtype == "AO" ? 'layouts.ketua_program' : (Auth::user()->usrtype == "ADM" ? 'layouts.admin' : (Auth::user()->usrtype == "DN" ? 'layouts.dekan' : '')))))
 
 
 @section('main')
@@ -90,7 +90,7 @@
                                 <th >
                                   @php
                                   $markpercen = DB::table('tblclassmarks')->where([
-                                  ['course_id', request()->id],
+                                  ['course_id', $id],
                                   ['assessment', 'quiz']
                                   ])->first();
                                   @endphp
@@ -114,7 +114,7 @@
                                 <th >
                                   @php
                                   $markpercen = DB::table('tblclassmarks')->where([
-                                  ['course_id', request()->id],
+                                  ['course_id', $id],
                                   ['assessment', 'test']
                                   ])->first();
                                   @endphp
@@ -138,7 +138,7 @@
                                 <th >
                                   @php
                                   $markpercen = DB::table('tblclassmarks')->where([
-                                  ['course_id', request()->id],
+                                  ['course_id', $id],
                                   ['assessment', 'assignment']
                                   ])->first();
                                   @endphp
@@ -162,7 +162,7 @@
                                 <th >
                                   @php
                                   $markpercen = DB::table('tblclassmarks')->where([
-                                  ['course_id', request()->id],
+                                  ['course_id', $id],
                                   ['assessment', 'extra']
                                   ])->first();
                                   @endphp
@@ -186,7 +186,7 @@
                                 <th >
                                   @php
                                   $markpercen = DB::table('tblclassmarks')->where([
-                                  ['course_id', request()->id],
+                                  ['course_id', $id],
                                   ['assessment', 'other']
                                   ])->first();
                                   @endphp
@@ -210,7 +210,7 @@
                                 <th >
                                   @php
                                   $markpercen = DB::table('tblclassmarks')->where([
-                                  ['course_id', request()->id],
+                                  ['course_id', $id],
                                   ['assessment', 'midterm']
                                   ])->first();
                                   @endphp
@@ -234,7 +234,7 @@
                                 <th >
                                   @php
                                   $markpercen = DB::table('tblclassmarks')->where([
-                                  ['course_id', request()->id],
+                                  ['course_id', $id],
                                   ['assessment', 'final']
                                   ])->first();
                                   @endphp
@@ -257,7 +257,7 @@
                                     {{ $key+1 }}
                                 </td>
                                 <td>
-                                  <a class="btn btn-success btn-sm mr-2" href="/lecturer/report/{{ request()->id }}/{{ $std->ic }}">{{ $std->name }}</a>
+                                  <a class="btn btn-success btn-sm mr-2" href="/lecturer/report/{{ $id }}/{{ $std->ic }}">{{ $std->name }}</a>
                                 </td>
                                 <td>
                                   <span >{{ $std->no_matric }}</span>
@@ -291,13 +291,13 @@
                                 @if (count($quiz[$ky]) > 0)
                                   @if ($groupcheck = DB::table('tblclassquiz')->join('tblclassquiz_group', 'tblclassquiz.id', 'tblclassquiz_group.quizid')
                                   ->where([
-                                    ['tblclassquiz.classid', request()->id],
+                                    ['tblclassquiz.classid', $id],
                                     ['tblclassquiz.sessionid', Session::get('SessionID')],
                                     ['tblclassquiz_group.groupname', $grp->group_name],
                                     ['tblclassquiz.status', '!=', 3]
                                   ])->exists())
                                     @if(DB::table('tblclassmarks')->where([
-                                    ['course_id', request()->id],
+                                    ['course_id', $id],
                                     ['assessment', 'quiz']
                                     ])->first() != null)
                                       @foreach ((array) $overallquiz[$ky][$key] as $ag)
@@ -342,13 +342,13 @@
                                 @if (count($test[$ky]) > 0)
                                   @if ($groupcheck = DB::table('tblclasstest')->join('tblclasstest_group', 'tblclasstest.id', 'tblclasstest_group.testid')
                                   ->where([
-                                    ['tblclasstest.classid', request()->id],
+                                    ['tblclasstest.classid', $id],
                                     ['tblclasstest.sessionid', Session::get('SessionID')],
                                     ['tblclasstest_group.groupname', $grp->group_name],
                                     ['tblclasstest.status', '!=', 3]
                                   ])->exists())
                                     @if(DB::table('tblclassmarks')->where([
-                                    ['course_id', request()->id],
+                                    ['course_id', $id],
                                     ['assessment', 'test']
                                     ])->first() != null)
                                       @foreach ((array) $overalltest[$ky][$key] as $ag)
@@ -393,13 +393,13 @@
                                 @if (count($assign[$ky]) > 0)
                                   @if ($groupcheck = DB::table('tblclassassign')->join('tblclassassign_group', 'tblclassassign.id', 'tblclassassign_group.assignid')
                                   ->where([
-                                    ['tblclassassign.classid', request()->id],
+                                    ['tblclassassign.classid', $id],
                                     ['tblclassassign.sessionid', Session::get('SessionID')],
                                     ['tblclassassign_group.groupname', $grp->group_name],
                                     ['tblclassassign.status', '!=', 3]
                                   ])->exists())
                                     @if(DB::table('tblclassmarks')->where([
-                                    ['course_id', request()->id],
+                                    ['course_id', $id],
                                     ['assessment', 'assignment']
                                     ])->first() != null)
                                       @foreach ((array) $overallassign[$ky][$key] as $ag)
@@ -444,13 +444,13 @@
                                 @if (count($extra[$ky]) > 0)
                                   @if ($groupcheck = DB::table('tblclassextra')->join('tblclassextra_group', 'tblclassextra.id', 'tblclassextra_group.extraid')
                                   ->where([
-                                    ['tblclassextra.classid', request()->id],
+                                    ['tblclassextra.classid', $id],
                                     ['tblclassextra.sessionid', Session::get('SessionID')],
                                     ['tblclassextra_group.groupname', $grp->group_name],
                                     ['tblclassextra.status', '!=', 3]
                                   ])->exists())
                                     @if(DB::table('tblclassmarks')->where([
-                                    ['course_id', request()->id],
+                                    ['course_id', $id],
                                     ['assessment', 'extra']
                                     ])->first() != null)
                                       @foreach ((array) $overallextra[$ky][$key] as $ag)
@@ -495,13 +495,13 @@
                                 @if (count($other[$ky]) > 0)
                                   @if ($groupcheck = DB::table('tblclassother')->join('tblclassother_group', 'tblclassother.id', 'tblclassother_group.otherid')
                                   ->where([
-                                    ['tblclassother.classid', request()->id],
+                                    ['tblclassother.classid', $id],
                                     ['tblclassother.sessionid', Session::get('SessionID')],
                                     ['tblclassother_group.groupname', $grp->group_name],
                                     ['tblclassother.status', '!=', 3]
                                   ])->exists())
                                     @if(DB::table('tblclassmarks')->where([
-                                    ['course_id', request()->id],
+                                    ['course_id', $id],
                                     ['assessment', 'other']
                                     ])->first() != null)
                                       @foreach ((array) $overallother[$ky][$key] as $ag)
@@ -546,13 +546,13 @@
                                 @if (count($midterm[$ky]) > 0)
                                   @if ($groupcheck = DB::table('tblclassmidterm')->join('tblclassmidterm_group', 'tblclassmidterm.id', 'tblclassmidterm_group.midtermid')
                                   ->where([
-                                    ['tblclassmidterm.classid', request()->id],
+                                    ['tblclassmidterm.classid', $id],
                                     ['tblclassmidterm.sessionid', Session::get('SessionID')],
                                     ['tblclassmidterm_group.groupname', $grp->group_name],
                                     ['tblclassmidterm.status', '!=', 3]
                                   ])->exists())
                                     @if(DB::table('tblclassmarks')->where([
-                                    ['course_id', request()->id],
+                                    ['course_id', $id],
                                     ['assessment', 'midterm']
                                     ])->first() != null)
                                       @foreach ((array) $overallmidterm[$ky][$key] as $ag)
@@ -597,13 +597,13 @@
                                 @if (count($final[$ky]) > 0)
                                   @if ($groupcheck = DB::table('tblclassfinal')->join('tblclassfinal_group', 'tblclassfinal.id', 'tblclassfinal_group.finalid')
                                   ->where([
-                                    ['tblclassfinal.classid', request()->id],
+                                    ['tblclassfinal.classid', $id],
                                     ['tblclassfinal.sessionid', Session::get('SessionID')],
                                     ['tblclassfinal_group.groupname', $grp->group_name],
                                     ['tblclassfinal.status', '!=', 3]
                                   ])->exists())
                                     @if(DB::table('tblclassmarks')->where([
-                                    ['course_id', request()->id],
+                                    ['course_id', $id],
                                     ['assessment', 'final']
                                     ])->first() != null)
                                       @foreach ((array) $overallfinal[$ky][$key] as $ag)
@@ -641,13 +641,13 @@
                                 @if (count($quiz[$ky]) > 0)
                                   @if ($groupcheck = DB::table('tblclassquiz')->join('tblclassquiz_group', 'tblclassquiz.id', 'tblclassquiz_group.quizid')
                                   ->where([
-                                    ['tblclassquiz.classid', request()->id],
+                                    ['tblclassquiz.classid', $id],
                                     ['tblclassquiz.sessionid', Session::get('SessionID')],
                                     ['tblclassquiz_group.groupname', $grp->group_name],
                                     ['tblclassquiz.status', '!=', 3]
                                   ])->exists())
                                     @if(DB::table('tblclassmarks')->where([
-                                    ['course_id', request()->id],
+                                    ['course_id', $id],
                                     ['assessment', 'quiz']
                                     ])->first() != null)
                                       <td style="background-color: #677ee2">{{ $quizcollection->max() }}</td>
@@ -672,13 +672,13 @@
                                 @if (count($test[$ky]) > 0)
                                   @if ($groupcheck = DB::table('tblclasstest')->join('tblclasstest_group', 'tblclasstest.id', 'tblclasstest_group.testid')
                                   ->where([
-                                    ['tblclasstest.classid', request()->id],
+                                    ['tblclasstest.classid', $id],
                                     ['tblclasstest.sessionid', Session::get('SessionID')],
                                     ['tblclasstest_group.groupname', $grp->group_name],
                                     ['tblclasstest.status', '!=', 3]
                                   ])->exists())
                                     @if(DB::table('tblclassmarks')->where([
-                                    ['course_id', request()->id],
+                                    ['course_id', $id],
                                     ['assessment', 'test']
                                     ])->first() != null)
                                       <td style="background-color: #677ee2">{{ $testcollection->max() }}</td>
@@ -703,13 +703,13 @@
                                 @if (count($assign[$ky]) > 0)
                                   @if ($groupcheck = DB::table('tblclassassign')->join('tblclassassign_group', 'tblclassassign.id', 'tblclassassign_group.assignid')
                                   ->where([
-                                    ['tblclassassign.classid', request()->id],
+                                    ['tblclassassign.classid', $id],
                                     ['tblclassassign.sessionid', Session::get('SessionID')],
                                     ['tblclassassign_group.groupname', $grp->group_name],
                                     ['tblclassassign.status', '!=', 3]
                                   ])->exists())
                                     @if(DB::table('tblclassmarks')->where([
-                                    ['course_id', request()->id],
+                                    ['course_id', $id],
                                     ['assessment', 'assign']
                                     ])->first() != null)
                                       <td style="background-color: #677ee2">{{ $assigncollection->max() }}</td>
@@ -734,13 +734,13 @@
                                 @if (count($extra[$ky]) > 0)
                                   @if ($groupcheck = DB::table('tblclassextra')->join('tblclassextra_group', 'tblclassextra.id', 'tblclassextra_group.extraid')
                                   ->where([
-                                    ['tblclassextra.classid', request()->id],
+                                    ['tblclassextra.classid', $id],
                                     ['tblclassextra.sessionid', Session::get('SessionID')],
                                     ['tblclassextra_group.groupname', $grp->group_name],
                                     ['tblclassextra.status', '!=', 3]
                                   ])->exists())
                                     @if(DB::table('tblclassmarks')->where([
-                                    ['course_id', request()->id],
+                                    ['course_id', $id],
                                     ['assessment', 'extra']
                                     ])->first() != null)
                                       <td style="background-color: #677ee2">{{ $extracollection->max() }}</td>
@@ -765,13 +765,13 @@
                                 @if (count($other[$ky]) > 0)
                                   @if ($groupcheck = DB::table('tblclassother')->join('tblclassother_group', 'tblclassother.id', 'tblclassother_group.otherid')
                                   ->where([
-                                    ['tblclassother.classid', request()->id],
+                                    ['tblclassother.classid', $id],
                                     ['tblclassother.sessionid', Session::get('SessionID')],
                                     ['tblclassother_group.groupname', $grp->group_name],
                                     ['tblclassother.status', '!=', 3]
                                   ])->exists())
                                     @if(DB::table('tblclassmarks')->where([
-                                    ['course_id', request()->id],
+                                    ['course_id', $id],
                                     ['assessment', 'other']
                                     ])->first() != null)
                                       <td style="background-color: #677ee2">{{ $othercollection->max() }}</td>
@@ -796,13 +796,13 @@
                                 @if (count($final[$ky]) > 0)
                                   @if ($groupcheck = DB::table('tblclassfinal')->join('tblclassfinal_group', 'tblclassfinal.id', 'tblclassfinal_group.finalid')
                                   ->where([
-                                    ['tblclassfinal.classid', request()->id],
+                                    ['tblclassfinal.classid', $id],
                                     ['tblclassfinal.sessionid', Session::get('SessionID')],
                                     ['tblclassfinal_group.groupname', $grp->group_name],
                                     ['tblclassfinal.status', '!=', 3]
                                   ])->exists())
                                     @if(DB::table('tblclassmarks')->where([
-                                    ['course_id', request()->id],
+                                    ['course_id', $id],
                                     ['assessment', 'final']
                                     ])->first() != null)
                                       <td style="background-color: #677ee2">{{ $finalcollection->max() }}</td>
@@ -835,13 +835,13 @@
                                 @if (count($quiz[$ky]) > 0)
                                   @if ($groupcheck = DB::table('tblclassquiz')->join('tblclassquiz_group', 'tblclassquiz.id', 'tblclassquiz_group.quizid')
                                   ->where([
-                                    ['tblclassquiz.classid', request()->id],
+                                    ['tblclassquiz.classid', $id],
                                     ['tblclassquiz.sessionid', Session::get('SessionID')],
                                     ['tblclassquiz_group.groupname', $grp->group_name],
                                     ['tblclassquiz.status', '!=', 3]
                                   ])->exists())
                                     @if(DB::table('tblclassmarks')->where([
-                                    ['course_id', request()->id],
+                                    ['course_id', $id],
                                     ['assessment', 'quiz']
                                     ])->first() != null)
                                       <td style="background-color: #677ee2">{{ $quizcollection->min() }}</td>
@@ -866,13 +866,13 @@
                                 @if (count($test[$ky]) > 0)
                                   @if ($groupcheck = DB::table('tblclasstest')->join('tblclasstest_group', 'tblclasstest.id', 'tblclasstest_group.testid')
                                   ->where([
-                                    ['tblclasstest.classid', request()->id],
+                                    ['tblclasstest.classid', $id],
                                     ['tblclasstest.sessionid', Session::get('SessionID')],
                                     ['tblclasstest_group.groupname', $grp->group_name],
                                     ['tblclasstest.status', '!=', 3]
                                   ])->exists())
                                     @if(DB::table('tblclassmarks')->where([
-                                    ['course_id', request()->id],
+                                    ['course_id', $id],
                                     ['assessment', 'test']
                                     ])->first() != null)
                                       <td style="background-color: #677ee2">{{ $testcollection->min() }}</td>
@@ -897,13 +897,13 @@
                                 @if (count($assign[$ky]) > 0)
                                   @if ($groupcheck = DB::table('tblclassassign')->join('tblclassassign_group', 'tblclassassign.id', 'tblclassassign_group.assignid')
                                   ->where([
-                                    ['tblclassassign.classid', request()->id],
+                                    ['tblclassassign.classid', $id],
                                     ['tblclassassign.sessionid', Session::get('SessionID')],
                                     ['tblclassassign_group.groupname', $grp->group_name],
                                     ['tblclassassign.status', '!=', 3]
                                   ])->exists())
                                     @if(DB::table('tblclassmarks')->where([
-                                    ['course_id', request()->id],
+                                    ['course_id', $id],
                                     ['assessment', 'assign']
                                     ])->first() != null)
                                       <td style="background-color: #677ee2">{{ $assigncollection->min() }}</td>
@@ -928,13 +928,13 @@
                                 @if (count($extra[$ky]) > 0)
                                   @if ($groupcheck = DB::table('tblclassextra')->join('tblclassextra_group', 'tblclassextra.id', 'tblclassextra_group.extraid')
                                   ->where([
-                                    ['tblclassextra.classid', request()->id],
+                                    ['tblclassextra.classid', $id],
                                     ['tblclassextra.sessionid', Session::get('SessionID')],
                                     ['tblclassextra_group.groupname', $grp->group_name],
                                     ['tblclassextra.status', '!=', 3]
                                   ])->exists())
                                     @if(DB::table('tblclassmarks')->where([
-                                    ['course_id', request()->id],
+                                    ['course_id', $id],
                                     ['assessment', 'extra']
                                     ])->first() != null)
                                       <td style="background-color: #677ee2">{{ $extracollection->min() }}</td>
@@ -959,13 +959,13 @@
                                 @if (count($other[$ky]) > 0)
                                   @if ($groupcheck = DB::table('tblclassother')->join('tblclassother_group', 'tblclassother.id', 'tblclassother_group.otherid')
                                   ->where([
-                                    ['tblclassother.classid', request()->id],
+                                    ['tblclassother.classid', $id],
                                     ['tblclassother.sessionid', Session::get('SessionID')],
                                     ['tblclassother_group.groupname', $grp->group_name],
                                     ['tblclassother.status', '!=', 3]
                                   ])->exists())
                                     @if(DB::table('tblclassmarks')->where([
-                                    ['course_id', request()->id],
+                                    ['course_id', $id],
                                     ['assessment', 'other']
                                     ])->first() != null)
                                       <td style="background-color: #677ee2">{{ $othercollection->min() }}</td>
@@ -990,13 +990,13 @@
                                 @if (count($final[$ky]) > 0)
                                   @if ($groupcheck = DB::table('tblclassfinal')->join('tblclassfinal_group', 'tblclassfinal.id', 'tblclassfinal_group.finalid')
                                   ->where([
-                                    ['tblclassfinal.classid', request()->id],
+                                    ['tblclassfinal.classid', $id],
                                     ['tblclassfinal.sessionid', Session::get('SessionID')],
                                     ['tblclassfinal_group.groupname', $grp->group_name],
                                     ['tblclassfinal.status', '!=', 3]
                                   ])->exists())
                                     @if(DB::table('tblclassmarks')->where([
-                                    ['course_id', request()->id],
+                                    ['course_id', $id],
                                     ['assessment', 'final']
                                     ])->first() != null)
                                       <td style="background-color: #677ee2">{{ $finalcollection->min() }}</td>
