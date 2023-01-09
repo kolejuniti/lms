@@ -1,4 +1,5 @@
-@extends('../layouts.ketua_program')
+@extends((Auth::user()->usrtype == "DN") ? '../layouts.dekan' : '../layouts.ketua_program')
+
 
 @section('main')
 <!-- Content Header (Page header) -->
@@ -63,7 +64,7 @@
                               <td>
                                   <div style="margin-left: 40px;">
                                       <i class="ti-folder" style="margin-right: 5px;"></i>
-                                      {{ $crs->course_name }}
+                                      {{ $crs->course_name }} ({{ $crs->course_code }} / {{ $crs->SessionName }})
                                   </div>
                               </td>
                           </tr>
