@@ -67,39 +67,6 @@ class OtherController extends Controller
         return view('lecturer.courseassessment.other', compact('data', 'group', 'chapter'));
     }
 
-    public function othercreate()
-    {
-        $user = Auth::user();
-
-        $courseid = Session::get('CourseIDS');
-
-        $sessionid = Session::get('SessionIDS');
-
-        $group = subject::join('student_subjek', 'user_subjek.id', 'student_subjek.group_id')
-        ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
-        ->where([
-            ['subjek.id', $courseid],
-            ['user_subjek.session_id', $sessionid],
-            ['user_subjek.user_ic', $user->ic]
-        ])->groupBy('student_subjek.group_name')
-        ->select('user_subjek.*', 'subjek.course_name', 'student_subjek.group_name')->get();
-
-        //dd(Session::get('CourseIDS'));
-
-        $subid = DB::table('subjek')->where('id', $courseid)->pluck('sub_id');
-
-        $folder = DB::table('lecturer_dir')
-                  ->join('subjek', 'lecturer_dir.CourseID','subjek.id')
-                  ->where('subjek.sub_id', $subid)
-                  ->where('Addby', $user->ic)->get();
-
-        $title = DB::table('tblextra_title')->get();
-
-        //dd($folder);
-
-        return view('lecturer.courseassessment.othercreate', compact(['group', 'folder', 'title']));
-    }
-
     public function getChapters(Request $request)
     {
 
@@ -143,31 +110,52 @@ class OtherController extends Controller
 
     }
 
-    public function deleteother(Request $request)
+    public function othercreate()
     {
+        $user = Auth::user();
 
-        try {
+        $courseid = Session::get('CourseIDS');
 
-            $other = DB::table('tblclassother')->where('id', $request->id)->first();
+        $sessionid = Session::get('SessionIDS');
 
-            if($other->status != 3)
-            {
-            DB::table('tblclassother')->where('id', $request->id)->update([
-                'status' => 3
-            ]);
+        $data['other'] = null;
 
-            return true;
+        $data['folder'] = null;
 
-            }else{
+        $data['chapter'] = null;
 
-                die;
+        $group = subject::join('student_subjek', 'user_subjek.id', 'student_subjek.group_id')
+        ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+        ->where([
+            ['subjek.id', $courseid],
+            ['user_subjek.session_id', $sessionid],
+            ['user_subjek.user_ic', $user->ic]
+        ])->groupBy('student_subjek.group_name')
+        ->select('user_subjek.*', 'subjek.course_name', 'student_subjek.group_name')->get();
 
-            }
-          
-          } catch (\Exception $e) {
-          
-              return $e->getMessage();
-          }
+        //dd(Session::get('CourseIDS'));
+
+        $subid = DB::table('subjek')->where('id', $courseid)->pluck('sub_id');
+
+        $folder = DB::table('lecturer_dir')
+                  ->join('subjek', 'lecturer_dir.CourseID','subjek.id')
+                  ->where('subjek.sub_id', $subid)
+                  ->where('Addby', $user->ic)->get();
+
+        $title = DB::table('tblextra_title')->get();
+
+        if(isset(request()->otherid))
+        {
+
+            $data['other'] = DB::table('tblclassother')->where('id', request()->otherid)->first();
+
+            //dd($data['folder']);
+            
+        }
+
+        //dd($folder);
+
+        return view('lecturer.courseassessment.othercreate', compact(['group', 'folder', 'title', 'data']));
     }
 
     public function insertother(Request $request)
@@ -189,12 +177,39 @@ class OtherController extends Controller
         {
         
             if( !empty($otherid) ){
+      
+                $other = DB::table('tblclassother')->where('id', $otherid)->first();
+
+                DB::table('tblclassother_group')->where('otherid', $otherid)->delete();
+
+                DB::table('tblclassother_chapter')->where('otherid', $otherid)->delete();
+
                 $q = DB::table('tblclassother')->where('id', $otherid)->update([
                     "title" => $title,
                     "total_mark" => $marks,
                     "addby" => $user->ic,
                     "status" => 2
                 ]);
+
+                foreach($group as $grp)
+                {
+                    $gp = explode('|', $grp);
+                    
+                    DB::table('tblclassother_group')->insert([
+                        "groupid" => $gp[0],
+                        "groupname" => $gp[1],
+                        "otherid" => $otherid
+                    ]);
+                }
+
+                foreach($chapter as $chp)
+                {
+                    DB::table('tblclassother_chapter')->insert([
+                        "chapterid" => $chp,
+                        "otherid" => $otherid
+                    ]);
+                }
+
             }else{
                 $q = DB::table('tblclassother')->insertGetId([
                     "classid" => $classid,
@@ -233,6 +248,33 @@ class OtherController extends Controller
         
         return redirect(route('lecturer.other', ['id' => $classid]));
 
+    }
+
+    public function deleteother(Request $request)
+    {
+
+        try {
+
+            $other = DB::table('tblclassother')->where('id', $request->id)->first();
+
+            if($other->status != 3)
+            {
+            DB::table('tblclassother')->where('id', $request->id)->update([
+                'status' => 3
+            ]);
+
+            return true;
+
+            }else{
+
+                die;
+
+            }
+          
+          } catch (\Exception $e) {
+          
+              return $e->getMessage();
+          }
     }
 
     public function backupinsertother ()

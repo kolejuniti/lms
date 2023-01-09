@@ -85,37 +85,6 @@ class AssignmentController extends Controller
           }
     }
 
-    public function assigncreate()
-    {
-        $user = Auth::user();
-
-        $courseid = Session::get('CourseIDS');
-
-        $sessionid = Session::get('SessionIDS');
-
-        $group = subject::join('student_subjek', 'user_subjek.id', 'student_subjek.group_id')
-        ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
-        ->where([
-            ['subjek.id', $courseid],
-            ['user_subjek.session_id', $sessionid],
-            ['user_subjek.user_ic', $user->ic]
-        ])->groupBy('student_subjek.group_name')
-        ->select('user_subjek.*', 'subjek.course_name', 'student_subjek.group_name')->get();
-
-        //dd(Session::get('CourseIDS'));
-
-        $subid = DB::table('subjek')->where('id', $courseid)->pluck('sub_id');
-
-        $folder = DB::table('lecturer_dir')
-                  ->join('subjek', 'lecturer_dir.CourseID','subjek.id')
-                  ->where('subjek.sub_id', $subid)
-                  ->where('Addby', $user->ic)->get();
-
-        //dd($folder);
-
-        return view('lecturer.courseassessment.assignmentcreate', compact(['group', 'folder']));
-    }
-
     public function getChapters(Request $request)
     {
 
@@ -159,6 +128,50 @@ class AssignmentController extends Controller
 
     }
 
+    public function assigncreate()
+    {
+        $user = Auth::user();
+
+        $courseid = Session::get('CourseIDS');
+
+        $sessionid = Session::get('SessionIDS');
+
+        $data['assign'] = null;
+
+        $data['folder'] = null;
+
+        $data['chapter'] = null;
+
+        $group = subject::join('student_subjek', 'user_subjek.id', 'student_subjek.group_id')
+        ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+        ->where([
+            ['subjek.id', $courseid],
+            ['user_subjek.session_id', $sessionid],
+            ['user_subjek.user_ic', $user->ic]
+        ])->groupBy('student_subjek.group_name')
+        ->select('user_subjek.*', 'subjek.course_name', 'student_subjek.group_name')->get();
+
+        //dd(Session::get('CourseIDS'));
+
+        $subid = DB::table('subjek')->where('id', $courseid)->pluck('sub_id');
+
+        $folder = DB::table('lecturer_dir')
+                  ->join('subjek', 'lecturer_dir.CourseID','subjek.id')
+                  ->where('subjek.sub_id', $subid)
+                  ->where('Addby', $user->ic)->get();
+
+        if(isset(request()->assignid))
+        {
+
+            $data['assign'] = DB::table('tblclassassign')->where('id', request()->assignid)->first();
+
+            //dd($data['folder']);
+            
+        }
+
+        return view('lecturer.courseassessment.assignmentcreate', compact(['group', 'folder', 'data']));
+    }
+
     public function insertassign(Request $request)
     {
 
@@ -180,6 +193,8 @@ class AssignmentController extends Controller
 
         $file = $request->file('myPdf');
 
+        $assignid = empty($request->assign) ? '' : $request->assign;
+
         //dd($file);
 
         $file_name = $file->getClientOriginalName();
@@ -192,45 +207,96 @@ class AssignmentController extends Controller
         if($request->chapter != null && $request->chapter != null)
         {
 
-            if(! file_exists($newname)){
-                Storage::disk('linode')->putFileAs(
-                    $dir,
-                    $file,
-                    $newname,
-                    'public'
-                );
+            if( !empty($assignid) ){
+                
+                if(! file_exists($newname)){
+                    $assign = DB::table('tblclassassign')->where('id', $assignid)->first();
 
-                $q = DB::table('tblclassassign')->insertGetId([
-                    'classid' => $classid,
-                    'sessionid' => $sessionid,
-                    'status' => 2,
-                    'title' => $data['assign-title'],
-                    'content' => $newpath,
-                    'deadline' => $data['assign-duration'],
-                    'total_mark' => $data['total-marks'],
-                    'addby' => $user->ic
-                ]);
+                    Storage::disk('linode')->delete($assign->content);
 
-                foreach($request->group as $grp)
-                {
-                    $gp = explode('|', $grp);
+                    DB::table('tblclassassign_group')->where('assignid', $assignid)->delete();
 
-                    DB::table('tblclassassign_group')->insert([
-                        "groupid" => $gp[0],
-                        "groupname" => $gp[1],
-                        "assignid" => $q
+                    DB::table('tblclassassign_chapter')->where('assignid', $assignid)->delete();
+
+                    Storage::disk('linode')->putFileAs(
+                        $dir,
+                        $file,
+                        $newname,
+                        'public'
+                    );
+
+                    $q = DB::table('tblclassassign')->where('id', $assignid)->update([
+                        'status' => 2,
+                        'title' => $data['assign-title'],
+                        'content' => $newpath,
+                        'deadline' => $data['assign-duration'],
+                        'total_mark' => $data['total-marks']
                     ]);
+
+                    foreach($request->group as $grp)
+                    {
+                        $gp = explode('|', $grp);
+
+                        DB::table('tblclassassign_group')->insert([
+                            "groupid" => $gp[0],
+                            "groupname" => $gp[1],
+                            "assignid" => $assignid
+                        ]);
+                    }
+
+                    foreach($request->chapter as $chp)
+                    {
+                        DB::table('tblclassassign_chapter')->insert([
+                            "chapterid" => $chp,
+                            "assignid" => $assignid
+                        ]);
+                    }
+
+                    return redirect(route('lecturer.assign', ['id' => $classid]));
                 }
 
-                foreach($request->chapter as $chp)
-                {
-                    DB::table('tblclassassign_chapter')->insert([
-                        "chapterid" => $chp,
-                        "assignid" => $q
-                    ]);
-                }
+            }else{
 
-                return redirect(route('lecturer.assign', ['id' => $classid]));
+                if(! file_exists($newname)){
+                    Storage::disk('linode')->putFileAs(
+                        $dir,
+                        $file,
+                        $newname,
+                        'public'
+                    );
+
+                    $q = DB::table('tblclassassign')->insertGetId([
+                        'classid' => $classid,
+                        'sessionid' => $sessionid,
+                        'status' => 2,
+                        'title' => $data['assign-title'],
+                        'content' => $newpath,
+                        'deadline' => $data['assign-duration'],
+                        'total_mark' => $data['total-marks'],
+                        'addby' => $user->ic
+                    ]);
+
+                    foreach($request->group as $grp)
+                    {
+                        $gp = explode('|', $grp);
+
+                        DB::table('tblclassassign_group')->insert([
+                            "groupid" => $gp[0],
+                            "groupname" => $gp[1],
+                            "assignid" => $q
+                        ]);
+                    }
+
+                    foreach($request->chapter as $chp)
+                    {
+                        DB::table('tblclassassign_chapter')->insert([
+                            "chapterid" => $chp,
+                            "assignid" => $q
+                        ]);
+                    }
+
+                    return redirect(route('lecturer.assign', ['id' => $classid]));
+                }
             }
 
         }else{
@@ -652,6 +718,12 @@ class AssignmentController extends Controller
 
         $sessionid = Session::get('SessionIDS');
 
+        $data['assign'] = null;
+
+        $data['folder'] = null;
+
+        $data['chapter'] = null;
+
         //$totalpercent = 0;
 
         $group = subject::join('student_subjek', 'user_subjek.id', 'student_subjek.group_id')
@@ -672,29 +744,18 @@ class AssignmentController extends Controller
                   ->where('subjek.sub_id', $subid)
                   ->where('Addby', $user->ic)->get();
 
-        //dd($folder);
+        if(isset(request()->assignid))
+        {
 
-        //$percentage = DB::table('tblclassmarks')->where([
-            //['course_id', $courseid],
-            //['assessment', 'assign']
-        //])->first();
+            $data['assign'] = DB::table('tblclassassign')->where('id', request()->assignid)->first();
 
-        //$markassign =  DB::table('tblclassassign')->where([
-           // ['classid', $courseid],
-           // ['sessionid', $sessionid],
-            //['addby', $user->ic]
-        //])->sum('total_mark');
+            //dd($data['folder']);
+            
+        }
 
-        //if($markassign != null)
-        //{
-         //   $totalpercent = $percentage->mark_percentage - $markassign;
-        //}else{
-        //    $totalpercent = $percentage->mark_percentage;
-        //}
+     
 
-        //dd($totalpercent);
-
-        return view('lecturer.courseassessment.assignment2create', compact(['group', 'folder']));
+        return view('lecturer.courseassessment.assignment2create', compact(['group', 'folder', 'data']));
     }
 
 
@@ -723,12 +784,58 @@ class AssignmentController extends Controller
         {
         
             if( !empty($assignid) ){
-                $q = DB::table('tblclassassign')->where('id', $assignid)->update([
-                    "title" => $title,
-                    "total_mark" => $marks,
-                    "addby" => $user->ic,
-                    "status" => 2
-                ]);
+                
+                $assign = DB::table('tblclassassign')->where('id', $assignid)->first();
+
+                Storage::disk('linode')->delete($assign->content);
+
+                DB::table('tblclassassign_group')->where('assignid', $assignid)->delete();
+
+                DB::table('tblclassassign_chapter')->where('assignid', $assignid)->delete();
+
+                $file_name = $file->getClientOriginalName();
+                $file_ext = $file->getClientOriginalExtension();
+                $fileInfo = pathinfo($file_name);
+                $filename = $fileInfo['filename'];
+                $newname = $filename . "." . $file_ext;
+                $newpath = "classassign2/" .  $classid . "/" . $user->name . "/" . $title . "/" . $newname;
+
+                if(!file_exists($newname)){
+                    Storage::disk('linode')->putFileAs(
+                        $dir,
+                        $file,
+                        $newname,
+                        'public'
+                    );
+
+                    $q = DB::table('tblclassassign')->where('id', $assignid)->update([
+                        "title" => $title,
+                        'content' => $newpath,
+                        "total_mark" => $marks,
+                        "status" => 2
+                    ]);
+
+                    foreach($request->group as $grp)
+                    {
+                        $gp = explode('|', $grp);
+
+                        DB::table('tblclassassign_group')->insert([
+                            "groupid" => $gp[0],
+                            "groupname" => $gp[1],
+                            "assignid" => $assignid
+                        ]);
+                    }
+
+                    foreach($request->chapter as $chp)
+                    {
+                        DB::table('tblclassassign_chapter')->insert([
+                            "chapterid" => $chp,
+                            "assignid" => $assignid
+                        ]);
+                    }
+
+                }
+
             }else{
                 $file_name = $file->getClientOriginalName();
                 $file_ext = $file->getClientOriginalExtension();
@@ -783,6 +890,7 @@ class AssignmentController extends Controller
             return redirect()->back()->withErrors(['Please fill in the group and sub-chapter checkbox !']);
 
         }
+        
         
         return redirect(route('lecturer.assign2', ['id' => $classid]));
     }

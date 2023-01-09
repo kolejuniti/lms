@@ -1022,6 +1022,12 @@ class QuizController extends Controller
 
         $sessionid = Session::get('SessionIDS');
 
+        $data['quiz'] = null;
+
+        $data['folder'] = null;
+
+        $data['chapter'] = null;
+
         //$totalpercent = 0;
 
         $group = subject::join('student_subjek', 'user_subjek.id', 'student_subjek.group_id')
@@ -1042,29 +1048,18 @@ class QuizController extends Controller
                   ->where('subjek.sub_id', $subid)
                   ->where('Addby', $user->ic)->get();
 
-        //dd($folder);
+        if(isset(request()->quizid))
+        {
 
-        //$percentage = DB::table('tblclassmarks')->where([
-            //['course_id', $courseid],
-            //['assessment', 'quiz']
-        //])->first();
+            $data['quiz'] = DB::table('tblclassquiz')->where('id', request()->quizid)->first();
 
-        //$markquiz =  DB::table('tblclassquiz')->where([
-           // ['classid', $courseid],
-           // ['sessionid', $sessionid],
-            //['addby', $user->ic]
-        //])->sum('total_mark');
+            //dd($data['folder']);
+            
+        }
 
-        //if($markquiz != null)
-        //{
-         //   $totalpercent = $percentage->mark_percentage - $markquiz;
-        //}else{
-        //    $totalpercent = $percentage->mark_percentage;
-        //}
+     
 
-        //dd($totalpercent);
-
-        return view('lecturer.courseassessment.quiz2create', compact(['group', 'folder']));
+        return view('lecturer.courseassessment.quiz2create', compact(['group', 'folder', 'data']));
     }
 
 
@@ -1093,12 +1088,58 @@ class QuizController extends Controller
         {
         
             if( !empty($quizid) ){
-                $q = DB::table('tblclassquiz')->where('id', $quizid)->update([
-                    "title" => $title,
-                    "total_mark" => $marks,
-                    "addby" => $user->ic,
-                    "status" => 2
-                ]);
+                
+                $quiz = DB::table('tblclassquiz')->where('id', $quizid)->first();
+
+                Storage::disk('linode')->delete($quiz->content);
+
+                DB::table('tblclassquiz_group')->where('quizid', $quizid)->delete();
+
+                DB::table('tblclassquiz_chapter')->where('quizid', $quizid)->delete();
+
+                $file_name = $file->getClientOriginalName();
+                $file_ext = $file->getClientOriginalExtension();
+                $fileInfo = pathinfo($file_name);
+                $filename = $fileInfo['filename'];
+                $newname = $filename . "." . $file_ext;
+                $newpath = "classquiz2/" .  $classid . "/" . $user->name . "/" . $title . "/" . $newname;
+
+                if(!file_exists($newname)){
+                    Storage::disk('linode')->putFileAs(
+                        $dir,
+                        $file,
+                        $newname,
+                        'public'
+                    );
+
+                    $q = DB::table('tblclassquiz')->where('id', $quizid)->update([
+                        "title" => $title,
+                        'content' => $newpath,
+                        "total_mark" => $marks,
+                        "status" => 2
+                    ]);
+
+                    foreach($request->group as $grp)
+                    {
+                        $gp = explode('|', $grp);
+
+                        DB::table('tblclassquiz_group')->insert([
+                            "groupid" => $gp[0],
+                            "groupname" => $gp[1],
+                            "quizid" => $quizid
+                        ]);
+                    }
+
+                    foreach($request->chapter as $chp)
+                    {
+                        DB::table('tblclassquiz_chapter')->insert([
+                            "chapterid" => $chp,
+                            "quizid" => $quizid
+                        ]);
+                    }
+
+                }
+
             }else{
                 $file_name = $file->getClientOriginalName();
                 $file_ext = $file->getClientOriginalExtension();

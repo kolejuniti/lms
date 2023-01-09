@@ -70,6 +70,12 @@ class FinalController extends Controller
 
         $sessionid = Session::get('SessionIDS');
 
+        $data['final'] = null;
+
+        $data['folder'] = null;
+
+        $data['chapter'] = null;
+
         //$totalpercent = 0;
 
         $group = subject::join('student_subjek', 'user_subjek.id', 'student_subjek.group_id')
@@ -90,56 +96,18 @@ class FinalController extends Controller
                   ->where('subjek.sub_id', $subid)
                   ->where('Addby', $user->ic)->get();
 
-        //dd($folder);
+        if(isset(request()->finalid))
+        {
 
-        //$percentage = DB::table('tblclassmarks')->where([
-            //['course_id', $courseid],
-            //['assessment', 'final']
-        //])->first();
+            $data['final'] = DB::table('tblclassfinal')->where('id', request()->finalid)->first();
 
-        //$markfinal =  DB::table('tblclassfinal')->where([
-           // ['classid', $courseid],
-           // ['sessionid', $sessionid],
-            //['addby', $user->ic]
-        //])->sum('total_mark');
+            //dd($data['folder']);
+            
+        }
 
-        //if($markfinal != null)
-        //{
-         //   $totalpercent = $percentage->mark_percentage - $markfinal;
-        //}else{
-        //    $totalpercent = $percentage->mark_percentage;
-        //}
+     
 
-        //dd($totalpercent);
-
-        return view('lecturer.courseassessment.finalcreate', compact(['group', 'folder']));
-    }
-
-    public function deletefinal(Request $request)
-    {
-
-        try {
-
-            $final = DB::table('tblclassfinal')->where('id', $request->id)->first();
-
-            if($final->status != 3)
-            {
-            DB::table('tblclassfinal')->where('id', $request->id)->update([
-                'status' => 3
-            ]);
-
-            return true;
-
-            }else{
-
-                die;
-
-            }
-          
-          } catch (\Exception $e) {
-          
-              return $e->getMessage();
-          }
+        return view('lecturer.courseassessment.finalcreate', compact(['group', 'folder', 'data']));
     }
 
 
@@ -168,12 +136,58 @@ class FinalController extends Controller
         {
         
             if( !empty($finalid) ){
-                $q = DB::table('tblclassfinal')->where('id', $finalid)->update([
-                    "title" => $title,
-                    "total_mark" => $marks,
-                    "addby" => $user->ic,
-                    "status" => 2
-                ]);
+                
+                $final = DB::table('tblclassfinal')->where('id', $finalid)->first();
+
+                Storage::disk('linode')->delete($final->content);
+
+                DB::table('tblclassfinal_group')->where('finalid', $finalid)->delete();
+
+                DB::table('tblclassfinal_chapter')->where('finalid', $finalid)->delete();
+
+                $file_name = $file->getClientOriginalName();
+                $file_ext = $file->getClientOriginalExtension();
+                $fileInfo = pathinfo($file_name);
+                $filename = $fileInfo['filename'];
+                $newname = $filename . "." . $file_ext;
+                $newpath = "classfinal/" .  $classid . "/" . $user->name . "/" . $title . "/" . $newname;
+
+                if(!file_exists($newname)){
+                    Storage::disk('linode')->putFileAs(
+                        $dir,
+                        $file,
+                        $newname,
+                        'public'
+                    );
+
+                    $q = DB::table('tblclassfinal')->where('id', $finalid)->update([
+                        "title" => $title,
+                        'content' => $newpath,
+                        "total_mark" => $marks,
+                        "status" => 2
+                    ]);
+
+                    foreach($request->group as $grp)
+                    {
+                        $gp = explode('|', $grp);
+
+                        DB::table('tblclassfinal_group')->insert([
+                            "groupid" => $gp[0],
+                            "groupname" => $gp[1],
+                            "finalid" => $finalid
+                        ]);
+                    }
+
+                    foreach($request->chapter as $chp)
+                    {
+                        DB::table('tblclassfinal_chapter')->insert([
+                            "chapterid" => $chp,
+                            "finalid" => $finalid
+                        ]);
+                    }
+
+                }
+
             }else{
                 $file_name = $file->getClientOriginalName();
                 $file_ext = $file->getClientOriginalExtension();
@@ -229,7 +243,35 @@ class FinalController extends Controller
 
         }
         
+        
         return redirect(route('lecturer.final', ['id' => $classid]));
+    }
+
+    public function deletefinal(Request $request)
+    {
+
+        try {
+
+            $final = DB::table('tblclassfinal')->where('id', $request->id)->first();
+
+            if($final->status != 3)
+            {
+            DB::table('tblclassfinal')->where('id', $request->id)->update([
+                'status' => 3
+            ]);
+
+            return true;
+
+            }else{
+
+                die;
+
+            }
+          
+          } catch (\Exception $e) {
+          
+              return $e->getMessage();
+          }
     }
 
     public function lecturerfinalstatus()

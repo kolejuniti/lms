@@ -70,6 +70,12 @@ class MidtermController extends Controller
 
         $sessionid = Session::get('SessionIDS');
 
+        $data['midterm'] = null;
+
+        $data['folder'] = null;
+
+        $data['chapter'] = null;
+
         //$totalpercent = 0;
 
         $group = subject::join('student_subjek', 'user_subjek.id', 'student_subjek.group_id')
@@ -90,56 +96,18 @@ class MidtermController extends Controller
                   ->where('subjek.sub_id', $subid)
                   ->where('Addby', $user->ic)->get();
 
-        //dd($folder);
+        if(isset(request()->midtermid))
+        {
 
-        //$percentage = DB::table('tblclassmarks')->where([
-            //['course_id', $courseid],
-            //['assessment', 'midterm']
-        //])->first();
+            $data['midterm'] = DB::table('tblclassmidterm')->where('id', request()->midtermid)->first();
 
-        //$markmidterm =  DB::table('tblclassmidterm')->where([
-           // ['classid', $courseid],
-           // ['sessionid', $sessionid],
-            //['addby', $user->ic]
-        //])->sum('total_mark');
+            //dd($data['folder']);
+            
+        }
 
-        //if($markmidterm != null)
-        //{
-         //   $totalpercent = $percentage->mark_percentage - $markmidterm;
-        //}else{
-        //    $totalpercent = $percentage->mark_percentage;
-        //}
+     
 
-        //dd($totalpercent);
-
-        return view('lecturer.courseassessment.midtermcreate', compact(['group', 'folder']));
-    }
-
-    public function deletemidterm(Request $request)
-    {
-
-        try {
-
-            $midterm = DB::table('tblclassmidterm')->where('id', $request->id)->first();
-
-            if($midterm->status != 3)
-            {
-            DB::table('tblclassmidterm')->where('id', $request->id)->update([
-                'status' => 3
-            ]);
-
-            return true;
-
-            }else{
-
-                die;
-
-            }
-          
-          } catch (\Exception $e) {
-          
-              return $e->getMessage();
-          }
+        return view('lecturer.courseassessment.midtermcreate', compact(['group', 'folder', 'data']));
     }
 
 
@@ -168,12 +136,58 @@ class MidtermController extends Controller
         {
         
             if( !empty($midtermid) ){
-                $q = DB::table('tblclassmidterm')->where('id', $midtermid)->update([
-                    "title" => $title,
-                    "total_mark" => $marks,
-                    "addby" => $user->ic,
-                    "status" => 2
-                ]);
+                
+                $midterm = DB::table('tblclassmidterm')->where('id', $midtermid)->first();
+
+                Storage::disk('linode')->delete($midterm->content);
+
+                DB::table('tblclassmidterm_group')->where('midtermid', $midtermid)->delete();
+
+                DB::table('tblclassmidterm_chapter')->where('midtermid', $midtermid)->delete();
+
+                $file_name = $file->getClientOriginalName();
+                $file_ext = $file->getClientOriginalExtension();
+                $fileInfo = pathinfo($file_name);
+                $filename = $fileInfo['filename'];
+                $newname = $filename . "." . $file_ext;
+                $newpath = "classmidterm/" .  $classid . "/" . $user->name . "/" . $title . "/" . $newname;
+
+                if(!file_exists($newname)){
+                    Storage::disk('linode')->putFileAs(
+                        $dir,
+                        $file,
+                        $newname,
+                        'public'
+                    );
+
+                    $q = DB::table('tblclassmidterm')->where('id', $midtermid)->update([
+                        "title" => $title,
+                        'content' => $newpath,
+                        "total_mark" => $marks,
+                        "status" => 2
+                    ]);
+
+                    foreach($request->group as $grp)
+                    {
+                        $gp = explode('|', $grp);
+
+                        DB::table('tblclassmidterm_group')->insert([
+                            "groupid" => $gp[0],
+                            "groupname" => $gp[1],
+                            "midtermid" => $midtermid
+                        ]);
+                    }
+
+                    foreach($request->chapter as $chp)
+                    {
+                        DB::table('tblclassmidterm_chapter')->insert([
+                            "chapterid" => $chp,
+                            "midtermid" => $midtermid
+                        ]);
+                    }
+
+                }
+
             }else{
                 $file_name = $file->getClientOriginalName();
                 $file_ext = $file->getClientOriginalExtension();
@@ -229,7 +243,35 @@ class MidtermController extends Controller
 
         }
         
+        
         return redirect(route('lecturer.midterm', ['id' => $classid]));
+    }
+
+    public function deletemidterm(Request $request)
+    {
+
+        try {
+
+            $midterm = DB::table('tblclassmidterm')->where('id', $request->id)->first();
+
+            if($midterm->status != 3)
+            {
+            DB::table('tblclassmidterm')->where('id', $request->id)->update([
+                'status' => 3
+            ]);
+
+            return true;
+
+            }else{
+
+                die;
+
+            }
+          
+          } catch (\Exception $e) {
+          
+              return $e->getMessage();
+          }
     }
 
     public function lecturermidtermstatus()
@@ -338,7 +380,7 @@ class MidtermController extends Controller
 
     }
 
-    //This is midterm 2 Student Controller
+    //This is midterm Student Controller
 
 
     public function studentmidtermlist()

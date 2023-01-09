@@ -1010,6 +1010,12 @@ class TestController extends Controller
 
         $sessionid = Session::get('SessionIDS');
 
+        $data['test'] = null;
+
+        $data['folder'] = null;
+
+        $data['chapter'] = null;
+
         //$totalpercent = 0;
 
         $group = subject::join('student_subjek', 'user_subjek.id', 'student_subjek.group_id')
@@ -1030,29 +1036,18 @@ class TestController extends Controller
                   ->where('subjek.sub_id', $subid)
                   ->where('Addby', $user->ic)->get();
 
-        //dd($folder);
+        if(isset(request()->testid))
+        {
 
-        //$percentage = DB::table('tblclassmarks')->where([
-            //['course_id', $courseid],
-            //['assessment', 'test']
-        //])->first();
+            $data['test'] = DB::table('tblclasstest')->where('id', request()->testid)->first();
 
-        //$marktest =  DB::table('tblclasstest')->where([
-           // ['classid', $courseid],
-           // ['sessionid', $sessionid],
-            //['addby', $user->ic]
-        //])->sum('total_mark');
+            //dd($data['folder']);
+            
+        }
 
-        //if($marktest != null)
-        //{
-         //   $totalpercent = $percentage->mark_percentage - $marktest;
-        //}else{
-        //    $totalpercent = $percentage->mark_percentage;
-        //}
+     
 
-        //dd($totalpercent);
-
-        return view('lecturer.courseassessment.test2create', compact(['group', 'folder']));
+        return view('lecturer.courseassessment.test2create', compact(['group', 'folder', 'data']));
     }
 
 
@@ -1079,14 +1074,60 @@ class TestController extends Controller
 
         if($group != null && $chapter != null)
         {
-
+        
             if( !empty($testid) ){
-                $q = DB::table('tblclasstest')->where('id', $testid)->update([
-                    "title" => $title,
-                    "total_mark" => $marks,
-                    "addby" => $user->ic,
-                    "status" => 2
-                ]);
+                
+                $test = DB::table('tblclasstest')->where('id', $testid)->first();
+
+                Storage::disk('linode')->delete($test->content);
+
+                DB::table('tblclasstest_group')->where('testid', $testid)->delete();
+
+                DB::table('tblclasstest_chapter')->where('testid', $testid)->delete();
+
+                $file_name = $file->getClientOriginalName();
+                $file_ext = $file->getClientOriginalExtension();
+                $fileInfo = pathinfo($file_name);
+                $filename = $fileInfo['filename'];
+                $newname = $filename . "." . $file_ext;
+                $newpath = "classtest2/" .  $classid . "/" . $user->name . "/" . $title . "/" . $newname;
+
+                if(!file_exists($newname)){
+                    Storage::disk('linode')->putFileAs(
+                        $dir,
+                        $file,
+                        $newname,
+                        'public'
+                    );
+
+                    $q = DB::table('tblclasstest')->where('id', $testid)->update([
+                        "title" => $title,
+                        'content' => $newpath,
+                        "total_mark" => $marks,
+                        "status" => 2
+                    ]);
+
+                    foreach($request->group as $grp)
+                    {
+                        $gp = explode('|', $grp);
+
+                        DB::table('tblclasstest_group')->insert([
+                            "groupid" => $gp[0],
+                            "groupname" => $gp[1],
+                            "testid" => $testid
+                        ]);
+                    }
+
+                    foreach($request->chapter as $chp)
+                    {
+                        DB::table('tblclasstest_chapter')->insert([
+                            "chapterid" => $chp,
+                            "testid" => $testid
+                        ]);
+                    }
+
+                }
+
             }else{
                 $file_name = $file->getClientOriginalName();
                 $file_ext = $file->getClientOriginalExtension();
@@ -1135,12 +1176,13 @@ class TestController extends Controller
                 }
 
             }
-            
+
         }else{
 
             return redirect()->back()->withErrors(['Please fill in the group and sub-chapter checkbox !']);
 
         }
+        
         
         return redirect(route('lecturer.test2', ['id' => $classid]));
     }

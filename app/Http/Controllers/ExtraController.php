@@ -71,7 +71,11 @@ class ExtraController extends Controller
 
         $sessionid = Session::get('SessionIDS');
 
-        $totalpercent = 0;
+        $data['extra'] = null;
+
+        $data['folder'] = null;
+
+        $data['chapter'] = null;
 
         $group = subject::join('student_subjek', 'user_subjek.id', 'student_subjek.group_id')
         ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
@@ -93,65 +97,23 @@ class ExtraController extends Controller
 
         $title = DB::table('tblextra_title')->get();
 
-        //dd($folder);
-
-        $percentage = DB::table('tblclassmarks')->where([
-            ['course_id', $courseid],
-            ['assessment', 'extra']
-        ])->first();
-
-        $markextra =  DB::table('tblclassextra')->where([
-            ['classid', $courseid],
-            ['sessionid', $sessionid],
-            ['addby', $user->ic]
-        ])->sum('total_mark');
-
-        /*if($percentage != null)
+        if(isset(request()->extraid))
         {
 
-            if($markextra != null)
-            {
-                $totalpercent = $percentage->mark_percentage - $markextra;
-            }else{
-                $totalpercent = $percentage->mark_percentage;
-            }
+            $data['extra'] = DB::table('tblclassextra')->where('id', request()->extraid)->first();
 
-            return view('lecturer.courseassessment.extracreate', compact(['group', 'folder', 'title', 'totalpercent']));
-        }else{
-            return redirect()->back()->with('alert', 'Your Program Lead have not yet set the Percentage mark!');
-        }*/
+            //dd($data['folder']);
+            
+        }
 
-        return view('lecturer.courseassessment.extracreate', compact(['group', 'folder', 'title', 'totalpercent']));
+        //dd($folder);
+
+        return view('lecturer.courseassessment.extracreate', compact(['group', 'folder', 'title', 'data']));
     }
 
-    public function deleteextra(Request $request)
+    public function insertextra(Request $request)
     {
 
-        try {
-
-            $extra = DB::table('tblclassextra')->where('id', $request->id)->first();
-
-            if($extra->status != 3)
-            {
-            DB::table('tblclassextra')->where('id', $request->id)->update([
-                'status' => 3
-            ]);
-
-            return true;
-
-            }else{
-
-                die;
-
-            }
-          
-          } catch (\Exception $e) {
-          
-              return $e->getMessage();
-          }
-    }
-
-    public function insertextra(Request $request){
         //$data = $request->data;
         $classid = Session::get('CourseIDS');
         $sessionid = Session::get('SessionIDS');
@@ -168,12 +130,39 @@ class ExtraController extends Controller
         {
         
             if( !empty($extraid) ){
+      
+                $extra = DB::table('tblclassextra')->where('id', $extraid)->first();
+
+                DB::table('tblclassextra_group')->where('extraid', $extraid)->delete();
+
+                DB::table('tblclassextra_chapter')->where('extraid', $extraid)->delete();
+
                 $q = DB::table('tblclassextra')->where('id', $extraid)->update([
                     "title" => $title,
                     "total_mark" => $marks,
                     "addby" => $user->ic,
                     "status" => 2
                 ]);
+
+                foreach($group as $grp)
+                {
+                    $gp = explode('|', $grp);
+                    
+                    DB::table('tblclassextra_group')->insert([
+                        "groupid" => $gp[0],
+                        "groupname" => $gp[1],
+                        "extraid" => $extraid
+                    ]);
+                }
+
+                foreach($chapter as $chp)
+                {
+                    DB::table('tblclassextra_chapter')->insert([
+                        "chapterid" => $chp,
+                        "extraid" => $extraid
+                    ]);
+                }
+
             }else{
                 $q = DB::table('tblclassextra')->insertGetId([
                     "classid" => $classid,
@@ -211,6 +200,34 @@ class ExtraController extends Controller
         }
         
         return redirect(route('lecturer.extra', ['id' => $classid]));
+
+    }
+
+    public function deleteextra(Request $request)
+    {
+
+        try {
+
+            $extra = DB::table('tblclassextra')->where('id', $request->id)->first();
+
+            if($extra->status != 3)
+            {
+            DB::table('tblclassextra')->where('id', $request->id)->update([
+                'status' => 3
+            ]);
+
+            return true;
+
+            }else{
+
+                die;
+
+            }
+          
+          } catch (\Exception $e) {
+          
+              return $e->getMessage();
+          }
     }
 
     public function lecturerextrastatus()
