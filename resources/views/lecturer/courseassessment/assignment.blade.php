@@ -59,25 +59,25 @@
                               <th style="width: 1%">
                                 No.
                               </th>
-                              <th style="width: 15%">
+                              <th>
                                 Title
                               </th>
-                              <th style="width: 10%">
+                              <th>
                                 Groups
                               </th>
-                              <th style="width: 20%">
+                              <th>
                                 Chapters
                               </th>
-                              <th style="width: 15%">
+                              <th>
                                 Attachment
                               </th>
-                              <th style="width: 5%">
-                                Deadline
+                              <th>
+                                Full Mark
                               </th>
                               <th>
                                 Status
                               </th>
-                              <th style="width: 20%">
+                              <th>
                               </th>
                             </tr>
                           </thead>
@@ -87,10 +87,10 @@
                               <td style="width: 1%">
                                   {{ $key+1 }}
                               </td>
-                              <td style="width: 15%">
+                              <td>
                                   {{ $dt->title }}
                               </td>
-                              <td style="width: 10%">
+                              <td>
                                   @foreach ($group[$key] as $grp)
                                     Group {{ $grp->groupname }},
                                   @endforeach
@@ -103,8 +103,11 @@
                               <td class="align-items-center">
                                 <a href="{{ Storage::disk('linode')->url($dt->content) }}"><i class="fa fa-file-pdf-o fa-3x"></i></a>
                               </td>
+                              <!--<td class="align-items-center">
+                                <a href=""><i class="fa fa-file-pdf-o fa-3x"></i></a>
+                              </td>-->
                               <td>
-                                {{ $dt->deadline }}
+                                {{ $dt->total_mark }}
                               </td>
                               <td>
                                 {{ $dt->statusname }}
@@ -115,10 +118,10 @@
                                     </i>
                                     Students
                                 </a>
-                                <a class="btn btn-info btn-sm btn-sm mr-2" href="#">
-                                    <i class="ti-pencil-alt">
-                                    </i>
-                                    Edit
+                                <a class="btn btn-info btn-sm btn-sm mr-2" href="/lecturer/assign/{{ Session::get('CourseID') }}/create?assignid={{ $dt->id }}">
+                                  <i class="ti-pencil-alt">
+                                  </i>
+                                  Edit
                                 </a>
                                 <a class="btn btn-danger btn-sm" href="#" onclick="deleteAssign('{{ $dt->id }}')">
                                     <i class="ti-trash">
@@ -152,7 +155,7 @@ $(document).ready( function () {
 } );
 
     $(document).on('click', '#newFolder', function() {
-        location.href = "/lecturer/assign/{{ Session::get('CourseID') }}/create";
+        location.href = "/lecturer/assign2/{{ Session::get('CourseID') }}/create";
     })
 
     function deleteAssign(id){     

@@ -118,6 +118,11 @@
                                     </i>
                                     Students
                                 </a>
+                                <a class="btn btn-info btn-sm btn-sm mr-2" href="/lecturer/quiz2/{{ Session::get('CourseID') }}/create?quizid={{ $dt->id }}">
+                                  <i class="ti-pencil-alt">
+                                  </i>
+                                  Edit
+                                </a>
                                 <a class="btn btn-danger btn-sm" href="#" onclick="deleteQuiz('{{ $dt->id }}')">
                                     <i class="ti-trash">
                                     </i>

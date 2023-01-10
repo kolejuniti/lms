@@ -67,14 +67,8 @@ div.form-actions.btn-group > button{
                         </nav>
                     </div>
                 </div>
+                
             </div>
-            @if($errors->any())
-            <a class="btn btn-danger btn-sm md-12 ">
-                <i class="ti-na">
-                </i>
-                {{$errors->first()}}
-            </a>
-            @endif
         </div>
 
         <!-- Main content -->
@@ -87,18 +81,13 @@ div.form-actions.btn-group > button{
                         <div class="box-body">
                             <div class="header-setting row">
                                 <div class="row col-md-12">
-                                    <!--<div class="col-md-3 mb-4">
-                                        <label for="extra-title" class="form-label "><strong>Extra Title</strong></label>
-                                        <input type="text" oninput="this.value = this.value.toUpperCase()"  id="extra-title" name="extra-title" class="form-control"
-                                            value="{{ empty($data['extra']->title) ? "" : $data['extra']->title }}" required>
-                                    </div>-->
                                     <div class="col-md-3 mb-4">
                                         <div class="form-group">
                                           <label class="form-label" for="title"><strong>Extra Title</strong></label>
                                           <select class="form-select" id="title" name="title" required>
                                               <option value="" disabled selected>-</option>
                                               @foreach ($title as $tt)
-                                              <option value="{{ $tt->id }}">{{ $tt->name }}</option>
+                                              <option value="{{ $tt->id }}" {{ ($data['extra']->title == $tt->id) ? "SELECTED" : "" }}>{{ $tt->name }}</option>
                                               @endforeach
                                           </select>
                                           <span class="text-danger">@error('title')
@@ -106,11 +95,7 @@ div.form-actions.btn-group > button{
                                           @enderror</span>
                                         </div>
                                     </div>
-                                    <!--<div class="col-md-2 mb-4">
-                                        <label for="extra-duration" class="form-label "><strong>extra Deadline</strong></label>
-                                        <input type="datetime-local" oninput="this.value = this.value.toUpperCase()"  id="extra-duration" name="extra-duration" class="form-control"
-                                            value="" required>
-                                    </div>-->
+                                    <input type="text" id="extra" name="extra" value="{{ empty($data['extra']->id) ? "" : $data['extra']->id }}" hidden>
                                     <div class="col-md-2 mb-4">
                                         <div class="form-group">
                                           <label class="form-label" for="folder">Lecturer Folder</label>
@@ -128,11 +113,8 @@ div.form-actions.btn-group > button{
                                     <div class="col-md-3 mb-4">
                                         <label for="total-marks" class="form-label "><strong>Total Marks</strong><span> (%)</span></label>
                                         <input type="number" id="total-marks" name="marks" class="form-control" 
-                                            value="" required>
+                                        value="{{ empty($data['extra']->total_mark) ? "" : $data['extra']->total_mark }}" required>
                                     </div>
-
-                                    <!--max="{{ $totalpercent }}"  -->
-                                    
                                 </div>
                                 <div class="row col-md-12">
                                     <div class="col-md-6 mb-4">
@@ -180,7 +162,14 @@ div.form-actions.btn-group > button{
                                         <input type="file" id="myPdf" name="myPdf" class="form-control"><br required>
                                     </div>-->
                                 </div>
+
+
+                                <div class="col-md-12" style="float: center">
+                                    <canvas id="pdfViewer"></canvas>
+                                </div>
+                                
                             </div>
+
                         </div>
                     </div>
                 </div>
@@ -238,6 +227,58 @@ function getChapters(folder)
 
 }
 </script>
+
+<script>
+// Loaded via <script> tag, create shortcut to access PDF.js exports.
+    var pdfjsLib = window['pdfjs-dist/build/pdf'];
+// The workerSrc property shall be specified.
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://mozilla.github.io/pdf.js/build/pdf.worker.js';
+
+$("#myPdf").on("change", function(e){
+	var file = e.target.files[0]
+	if(file.type == "application/pdf"){
+		var fileReader = new FileReader();  
+		fileReader.onload = function() {
+			var pdfData = new Uint8Array(this.result);
+			// Using DocumentInitParameters object to load binary data.
+			var loadingTask = pdfjsLib.getDocument({data: pdfData});
+			loadingTask.promise.then(function(pdf) {
+			  console.log('PDF loaded');
+			  
+			  // Fetch the first page
+			  var pageNumber = 1;
+			  pdf.getPage(pageNumber).then(function(page) {
+				console.log('Page loaded');
+				
+				var scale = 1.5;
+				var viewport = page.getViewport({scale: scale});
+
+				// Prepare canvas using PDF page dimensions
+				var canvas = $("#pdfViewer")[0];
+				var context = canvas.getContext('2d');
+				canvas.height = viewport.height;
+				canvas.width = viewport.width;
+
+				// Render PDF page into canvas context
+				var renderContext = {
+				  canvasContext: context,
+				  viewport: viewport
+				};
+				var renderTask = page.render(renderContext);
+				renderTask.promise.then(function () {
+				  console.log('Page rendered');
+				});
+			  });
+			}, function (reason) {
+			  // PDF loading error
+			  console.error(reason);
+			});
+		};
+		fileReader.readAsArrayBuffer(file);
+	}
+});
+</script>
+
 
 
 

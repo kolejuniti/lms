@@ -112,6 +112,11 @@
                                     </i>
                                     Students
                                 </a>
+                                <a class="btn btn-info btn-sm btn-sm mr-2" href="/lecturer/extra/{{ Session::get('CourseID') }}/create?extraid={{ $dt->id }}">
+                                  <i class="ti-pencil-alt">
+                                  </i>
+                                  Edit
+                                </a>
                                 <a class="btn btn-danger btn-sm" href="#" onclick="deleteExtra('{{ $dt->id }}')">
                                     <i class="ti-trash">
                                     </i>

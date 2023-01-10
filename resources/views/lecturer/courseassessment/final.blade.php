@@ -118,6 +118,11 @@
                                     </i>
                                     Students
                                 </a>
+                                <a class="btn btn-info btn-sm btn-sm mr-2" href="/lecturer/final/{{ Session::get('CourseID') }}/create?finalid={{ $dt->id }}">
+                                  <i class="ti-pencil-alt">
+                                  </i>
+                                  Edit
+                                </a>
                                 <a class="btn btn-danger btn-sm" href="#" onclick="deleteFinal('{{ $dt->id }}')">
                                     <i class="ti-trash">
                                     </i>

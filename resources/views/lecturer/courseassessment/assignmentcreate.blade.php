@@ -92,10 +92,11 @@ div.form-actions.btn-group > button{
                                         <input type="text" oninput="this.value = this.value.toUpperCase()"  id="assign-title" name="assign-title" class="form-control"
                                             value="{{ empty($data['assign']->title) ? "" : $data['assign']->title }}" required>
                                     </div>
+                                    <input type="text" id="assign" name="assign" value="{{ empty($data['assign']->id) ? "" : $data['assign']->id }}" hidden>
                                     <div class="col-md-2 mb-4">
                                         <label for="assign-duration" class="form-label "><strong>Assignment Deadline</strong></label>
                                         <input type="datetime-local" oninput="this.value = this.value.toUpperCase()"  id="assign-duration" name="assign-duration" class="form-control"
-                                            value="" required>
+                                        value="{{ empty($data['assign']->deadline) ? "" : $data['assign']->deadline }}" required>
                                     </div>
                                     <div class="col-md-2 mb-4">
                                         <div class="form-group">
@@ -114,7 +115,7 @@ div.form-actions.btn-group > button{
                                     <div class="col-md-3 mb-4">
                                         <label for="total-marks" class="form-label "><strong>Total Marks</strong></label>
                                         <input type="number" id="total-marks" name="total-marks" class="form-control"
-                                            value="" required>
+                                        value="{{ empty($data['assign']->total_mark) ? "" : $data['assign']->total_mark }}" required>
                                     </div>
                                     
                                 </div>

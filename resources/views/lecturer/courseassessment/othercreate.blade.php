@@ -87,7 +87,7 @@ div.form-actions.btn-group > button{
                                           <select class="form-select" id="title" name="title" required>
                                               <option value="" disabled selected>-</option>
                                               @foreach ($title as $tt)
-                                              <option value="{{ $tt->id }}">{{ $tt->name }}</option>
+                                              <option value="{{ $tt->id }}" {{ ($data['other']->title == $tt->id) ? "SELECTED" : "" }}>{{ $tt->name }}</option>
                                               @endforeach
                                           </select>
                                           <span class="text-danger">@error('title')
@@ -95,6 +95,7 @@ div.form-actions.btn-group > button{
                                           @enderror</span>
                                         </div>
                                     </div>
+                                    <input type="text" id="other" name="other" value="{{ empty($data['other']->id) ? "" : $data['other']->id }}" hidden>
                                     <div class="col-md-2 mb-4">
                                         <div class="form-group">
                                           <label class="form-label" for="folder">Lecturer Folder</label>
@@ -112,9 +113,8 @@ div.form-actions.btn-group > button{
                                     <div class="col-md-3 mb-4">
                                         <label for="total-marks" class="form-label "><strong>Total Marks</strong><span> (%)</span></label>
                                         <input type="number" id="total-marks" name="marks" class="form-control" 
-                                            value="" required>
+                                        value="{{ empty($data['other']->total_mark) ? "" : $data['other']->total_mark }}" required>
                                     </div>
-                                    
                                 </div>
                                 <div class="row col-md-12">
                                     <div class="col-md-6 mb-4">

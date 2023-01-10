@@ -17,12 +17,12 @@
     <div class="content-header">
         <div class="d-flex align-items-center">
             <div class="me-auto">
-                <h4 class="page-title">Others</h4>
+                <h4 class="page-title">Other</h4>
                 <div class="d-inline-block align-items-center">
                     <nav>
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item"><a href="#"><i class="mdi mdi-home-outline"></i></a></li>
-                            <li class="breadcrumb-item" aria-current="page">Others</li>
+                            <li class="breadcrumb-item" aria-current="page">Other</li>
                         </ol>
                     </nav>
                 </div>
@@ -37,14 +37,14 @@
           <div class="col-12">
             <div class="box">
               <div class="card-header mb-4">
-                <h3 class="card-title">Others List</h3>
+                <h3 class="card-title">Other List</h3>
               </div>
               <div class="box-body">
                 <div class="row mb-3">
                     <div class="col-md-12 mb-3">
                         <div class="pull-right">
                             <button id="newFolder" class="waves-effect waves-light btn btn-primary btn-sm">
-                                <i class="fa fa-plus"></i> <i class="fa fa-folder"></i> &nbsp New Others
+                                <i class="fa fa-plus"></i> <i class="fa fa-folder"></i> &nbsp New Other
                             </button>
                         </div>
                     </div>
@@ -59,25 +59,22 @@
                               <th style="width: 1%">
                                 No.
                               </th>
-                              <th style="width: 15%">
+                              <th>
                                 Title
                               </th>
-                              <th style="width: 5%">
+                              <th>
                                 Creator
                               </th>
-                              <th style="width: 10%">
+                              <th>
                                 Groups
                               </th>
-                              <th style="width: 20%">
+                              <th>
                                 Chapters
                               </th>
-                              <!--<th style="width: 15%">
-                                Attachment
+                              <th>
+                                Full Mark
                               </th>
-                              <th style="width: 5%">
-                                Deadline
-                              </th>-->
-                              <th style="width: 20%">
+                              <th>
                               </th>
                             </tr>
                           </thead>
@@ -87,13 +84,13 @@
                               <td style="width: 1%">
                                   {{ $key+1 }}
                               </td>
-                              <td style="width: 15%">
+                              <td>
                                   {{ $dt->title }}
                               </td>
-                              <td style="width: 5%">
+                              <td>
                                   {{ $dt->addby }}
                               </td>
-                              <td style="width: 10%">
+                              <td>
                                   @foreach ($group[$key] as $grp)
                                     Group {{ $grp->groupname }},
                                   @endforeach
@@ -104,16 +101,21 @@
                                 @endforeach
                               </td>
                               <!--<td class="align-items-center">
-                                <a href=" Storage::disk('linode')->url($dt->content) "><i class="fa fa-file-pdf-o fa-3x"></i></a>
-                              </td>
-                              <td>*/
-                                {{ $dt->deadline }}
+                                <a href=""><i class="fa fa-file-pdf-o fa-3x"></i></a>
                               </td>-->
+                              <td>
+                                {{ $dt->total_mark }}
+                              </td>
                               <td class="project-actions text-right" >
                                 <a class="btn btn-success btn-sm mr-2" href="/lecturer/other/{{ Session::get('CourseIDS') }}/{{ $dt->id }}">
                                     <i class="ti-user">
                                     </i>
                                     Students
+                                </a>
+                                <a class="btn btn-info btn-sm btn-sm mr-2" href="/lecturer/other/{{ Session::get('CourseID') }}/create?otherid={{ $dt->id }}">
+                                  <i class="ti-pencil-alt">
+                                  </i>
+                                  Edit
                                 </a>
                                 <a class="btn btn-danger btn-sm" href="#" onclick="deleteOther('{{ $dt->id }}')">
                                     <i class="ti-trash">
@@ -140,6 +142,13 @@
 </div>
 <!-- /.content-wrapper -->
 <script src="{{ asset('assets/src/js/pages/data-table.js') }}"></script>
+<script type="text/javascript">
+  var msg = '{{Session::get('alert')}}';
+  var exist = '{{Session::has('alert')}}';
+  if(exist){
+    alert(msg);
+  }
+</script>
 
 <script type="text/javascript">
 $(document).ready( function () {
@@ -149,33 +158,6 @@ $(document).ready( function () {
     $(document).on('click', '#newFolder', function() {
         location.href = "/lecturer/other/{{ Session::get('CourseID') }}/create";
     })
-
-    function deleteMaterial(dir){     
-        Swal.fire({
-			title: "Are you sure?",
-			text: "This will be permanent",
-			showCancelButton: true,
-			confirmButtonText: "Yes, delete it!"
-		}).then(function(res){
-			
-			if (res.isConfirmed){
-                $.ajax({
-                    headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
-                    url      : "{{ url('lecturer/content/delete') }}",
-                    method   : 'DELETE',
-                    data 	 : {dir:dir},
-                    error:function(err){
-                        alert("Error");
-                        console.log(err);
-                    },
-                    success  : function(data){
-                        window.location.reload();
-                        alert("success");
-                    }
-                });
-            }
-        });
-    }
 
     function deleteOther(id){     
       Swal.fire({

@@ -62,6 +62,7 @@ div.form-actions.btn-group > button{
                                         <li class="breadcrumb-item active" aria-current="page">{{ $data['test']->title }}</li>
                                     @endif
                                 </li>
+                              
                             </ol>
                         </nav>
                     </div>
@@ -89,8 +90,9 @@ div.form-actions.btn-group > button{
                                     <div class="col-md-3 mb-4">
                                         <label for="title" class="form-label "><strong>Test Title</strong></label>
                                         <input type="text" oninput="this.value = this.value.toUpperCase()"  id="title" name="title" class="form-control"
-                                            value="" required>
+                                            value="{{ empty($data['test']->title) ? "" : $data['test']->title }}" required>
                                     </div>
+                                    <input type="text" id="test" name="test" value="{{ empty($data['test']->id) ? "" : $data['test']->id }}" hidden>
                                     <!--<div class="col-md-2 mb-4">
                                         <label for="extra-duration" class="form-label "><strong>extra Deadline</strong></label>
                                         <input type="datetime-local" oninput="this.value = this.value.toUpperCase()"  id="extra-duration" name="extra-duration" class="form-control"
@@ -102,7 +104,7 @@ div.form-actions.btn-group > button{
                                           <select class="form-select" id="folder" name="folder" required>
                                               <option value="" disabled selected>-</option>
                                               @foreach ($folder as $fold)
-                                              <option value="{{ $fold->DrID }}">{{ $fold->DrName }}</option>
+                                              <option value="{{ $fold->DrID }}" >{{ $fold->DrName }}</option>
                                               @endforeach
                                           </select>
                                           <span class="text-danger">@error('folder')
@@ -113,7 +115,7 @@ div.form-actions.btn-group > button{
                                     <div class="col-md-3 mb-4">
                                         <label for="total-marks" class="form-label "><strong>Total Marks</strong><span></span></label>
                                         <input type="number" id="total-marks" name="marks" class="form-control"
-                                            value="" required>
+                                        value="{{ empty($data['test']->total_mark) ? "" : $data['test']->total_mark }}" required>
                                     </div>
                                     
                                 </div>
