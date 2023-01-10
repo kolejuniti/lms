@@ -1,5 +1,5 @@
 
-@extends((Auth::user()->usrtype == "LCT" && isset(request()->id)) ? 'layouts.lecturer.lecturer' : (Auth::user()->usrtype == "LCT" ? 'layouts.lecturer' : (Auth::user()->usrtype == "PL" ? 'layouts.ketua_program' : (Auth::user()->usrtype == "AO" ? 'layouts.ketua_program' : (Auth::user()->usrtype == "ADM" ? 'layouts.admin' : (Auth::user()->usrtype == "DN" ? 'layouts.dekan' : ''))))))
+@extends((Auth::user()->usrtype == "LCT" && isset(request()->id)) ? 'layouts.lecturer.lecturer' : (Auth::user()->usrtype == "LCT" ? 'layouts.lecturer' : (Auth::user()->usrtype == "PL" && isset(request()->id) ? 'layouts.lecturer.lecturer' : (Auth::user()->usrtype == "PL" ? 'layouts.ketua_program' : (Auth::user()->usrtype == "AO" && isset(request()->id) ? 'layouts.lecturer.lecturer' : (Auth::user()->usrtype == "AO" ? 'layouts.ketua_program' : (Auth::user()->usrtype == "ADM" ? 'layouts.admin' : (Auth::user()->usrtype == "DN" ? 'layouts.dekan' : ''))))))))
 
 
 @section('main')
@@ -699,7 +699,7 @@
                                   {{ $assignmax[$ky][$keyss] }}
                                 </td>
                                 @endforeach
-
+                                
                                 @if (count($assign[$ky]) > 0)
                                   @if ($groupcheck = DB::table('tblclassassign')->join('tblclassassign_group', 'tblclassassign.id', 'tblclassassign_group.assignid')
                                   ->where([
@@ -710,7 +710,7 @@
                                   ])->exists())
                                     @if(DB::table('tblclassmarks')->where([
                                     ['course_id', $id],
-                                    ['assessment', 'assign']
+                                    ['assessment', 'assignment']
                                     ])->first() != null)
                                       <td style="background-color: #677ee2">{{ $assigncollection->max() }}</td>
                                     @else
@@ -775,6 +775,37 @@
                                     ['assessment', 'other']
                                     ])->first() != null)
                                       <td style="background-color: #677ee2">{{ $othercollection->max() }}</td>
+                                    @else
+                                    <td style="background-color: #677ee2">
+                                      <span >0</span>
+                                    </td> 
+                                    @endif
+                                  @else
+                                  <td style="background-color: #677ee2">
+                                    <span >0</span>
+                                  </td> 
+                                  @endif
+                                @endif
+
+                                @foreach ($midterm[$ky] as $keyss => $qz)
+                                <td>
+                                  {{ $midtermmax[$ky][$keyss] }}
+                                </td>
+                                @endforeach
+
+                                @if (count($midterm[$ky]) > 0)
+                                  @if ($groupcheck = DB::table('tblclassmidterm')->join('tblclassmidterm_group', 'tblclassmidterm.id', 'tblclassmidterm_group.midtermid')
+                                  ->where([
+                                    ['tblclassmidterm.classid', $id],
+                                    ['tblclassmidterm.sessionid', Session::get('SessionID')],
+                                    ['tblclassmidterm_group.groupname', $grp->group_name],
+                                    ['tblclassmidterm.status', '!=', 3]
+                                  ])->exists())
+                                    @if(DB::table('tblclassmarks')->where([
+                                    ['course_id', $id],
+                                    ['assessment', 'midterm']
+                                    ])->first() != null)
+                                      <td style="background-color: #677ee2">{{ $midtermcollection->max() }}</td>
                                     @else
                                     <td style="background-color: #677ee2">
                                       <span >0</span>
@@ -904,7 +935,7 @@
                                   ])->exists())
                                     @if(DB::table('tblclassmarks')->where([
                                     ['course_id', $id],
-                                    ['assessment', 'assign']
+                                    ['assessment', 'assignment']
                                     ])->first() != null)
                                       <td style="background-color: #677ee2">{{ $assigncollection->min() }}</td>
                                     @else
@@ -969,6 +1000,37 @@
                                     ['assessment', 'other']
                                     ])->first() != null)
                                       <td style="background-color: #677ee2">{{ $othercollection->min() }}</td>
+                                    @else
+                                    <td style="background-color: #677ee2">
+                                      <span >0</span>
+                                    </td> 
+                                    @endif
+                                  @else
+                                  <td style="background-color: #677ee2">
+                                    <span >0</span>
+                                  </td> 
+                                  @endif
+                                @endif
+
+                                @foreach ($midterm[$ky] as $keyss => $qz)
+                                <td>
+                                  {{ $midtermmin[$ky][$keyss] }}
+                                </td>
+                                @endforeach
+
+                                @if (count($midterm[$ky]) > 0)
+                                  @if ($groupcheck = DB::table('tblclassmidterm')->join('tblclassmidterm_group', 'tblclassmidterm.id', 'tblclassmidterm_group.midtermid')
+                                  ->where([
+                                    ['tblclassmidterm.classid', $id],
+                                    ['tblclassmidterm.sessionid', Session::get('SessionID')],
+                                    ['tblclassmidterm_group.groupname', $grp->group_name],
+                                    ['tblclassmidterm.status', '!=', 3]
+                                  ])->exists())
+                                    @if(DB::table('tblclassmarks')->where([
+                                    ['course_id', $id],
+                                    ['assessment', 'midterm']
+                                    ])->first() != null)
+                                      <td style="background-color: #677ee2">{{ $midtermcollection->min() }}</td>
                                     @else
                                     <td style="background-color: #677ee2">
                                       <span >0</span>
