@@ -1581,50 +1581,91 @@ class LecturerController extends Controller
 
     public function assessmentreport()
     {
+        $students = [];
+
+        $quiz = [];
+        $quizcollection = [];
         $overallquiz = [];
         $quizanswer = [];
+        $quizavg = [];
         $quizmax = [];
         $quizmin = [];
+        $quizavgoverall = [];
 
+        $test = [];
+        $testcollection = [];
         $overalltest = [];
         $testanswer = [];
+        $testavg = [];
         $testmax = [];
         $testmin = [];
+        $testavgoverall = [];
 
+        $assign = [];
+        $assigncollection = [];
         $overallassign = [];
         $assignanswer = [];
+        $assignavg = [];
         $assignmax = [];
         $assignmin = [];
+        $assignavgoverall = [];
 
+        $midterm = [];
+        $midtermcollection = [];
         $overallmidterm = [];
         $midtermanswer = [];
+        $midtermavg = [];
         $midtermmax = [];
         $midtermmin = [];
+        $midtermavgoverall = [];
 
+        $final = [];
+        $finalcollection = [];
         $overallfinal = [];
         $finalanswer = [];
+        $finalavg = [];
         $finalmax = [];
         $finalmin = [];
+        $finalavgoverall = [];
 
+        $paperwork = [];
+        $paperworkcollection = [];
         $overallpaperwork = [];
         $paperworkanswer = [];
+        $paperworkavg = [];
         $paperworkmax = [];
         $paperworkmin = [];
+        $paperworkavgoverall = [];
 
+        $practical = [];
+        $practicalcollection = [];
         $overallpractical = [];
         $practicalanswer = [];
+        $practicalavg = [];
         $practicalmax = [];
         $practicalmin = [];
+        $practicalavgoverall = [];
 
+        $other = [];
+        $othercollection = [];
         $overallother = [];
         $otheranswer = [];
+        $otheravg = [];
         $othermax = [];
         $othermin = [];
+        $otheravgoverall = [];
 
+        $extra = [];
+        $extracollection = [];
         $overallextra = [];
         $extraanswer = [];
+        $extraavg = [];
         $extramax = [];
         $extramin = [];
+        $extraavgoverall = [];
+
+        $overallall = [];
+        $avgoverall = [];
 
         $user = Auth::user();
 
@@ -1682,12 +1723,14 @@ class LecturerController extends Controller
                                             ->where('quizid', $qz->quizid)
                                             ->whereIn('userid', $collection->pluck('ic'));
 
+                    $quizavg[$ky][$key] = number_format((float)$quizarray->sum('final_mark') / count($collection->pluck('ic')), 2, '.', '');
+
                     $quizmax[$ky][$key] = $quizarray->max('final_mark');
                     
-
                     $quizmin[$ky][$key] = $quizarray->min('final_mark');
 
                 }
+
 
                 //TEST
 
@@ -1714,9 +1757,10 @@ class LecturerController extends Controller
                                             ->where('testid', $qz->testid)
                                             ->whereIn('userid', $collection->pluck('ic'));
 
+                    $testavg[$ky][$key] = number_format((float)$testarray->sum('final_mark') / count($collection->pluck('ic')), 2, '.', '');
+
                     $testmax[$ky][$key] = $testarray->max('final_mark');
                     
-
                     $testmin[$ky][$key] = $testarray->min('final_mark');
 
                 }
@@ -1746,9 +1790,10 @@ class LecturerController extends Controller
                                             ->where('assignid', $qz->assignid)
                                             ->whereIn('userid', $collection->pluck('ic'));
 
+                    $assignavg[$ky][$key] = number_format((float)$assignarray->sum('final_mark') / count($collection->pluck('ic')), 2, '.', '');
+
                     $assignmax[$ky][$key] = $assignarray->max('final_mark');
                     
-
                     $assignmin[$ky][$key] = $assignarray->min('final_mark');
 
                 }
@@ -1778,9 +1823,10 @@ class LecturerController extends Controller
                                             ->where('extraid', $qz->extraid)
                                             ->whereIn('userid', $collection->pluck('ic'));
 
+                    $extraavg[$ky][$key] = number_format((float)$extraarray->sum('tblclassstudentextra.total_mark') / count($collection->pluck('ic')), 2, '.', '');
+
                     $extramax[$ky][$key] = $extraarray->max('tblclassstudentextra.total_mark');
                     
-
                     $extramin[$ky][$key] = $extraarray->min('tblclassstudentextra.total_mark');
 
                 }
@@ -1810,9 +1856,10 @@ class LecturerController extends Controller
                                             ->where('otherid', $qz->otherid)
                                             ->whereIn('userid', $collection->pluck('ic'));
 
+                    $otheravg[$ky][$key] = number_format((float)$otherarray->sum('tblclassstudentother.total_mark') / count($collection->pluck('ic')), 2, '.', '');
+
                     $othermax[$ky][$key] = $otherarray->max('tblclassstudentother.total_mark');
                     
-
                     $othermin[$ky][$key] = $otherarray->min('tblclassstudentother.total_mark');
 
                 }
@@ -1842,9 +1889,10 @@ class LecturerController extends Controller
                                             ->where('midtermid', $qz->midtermid)
                                             ->whereIn('userid', $collection->pluck('ic'));
 
+                    $midtermavg[$ky][$key] = number_format((float)$midtermarray->sum('final_mark') / count($collection->pluck('ic')), 2, '.', '');
+
                     $midtermmax[$ky][$key] = $midtermarray->max('final_mark');
                     
-
                     $midtermmin[$ky][$key] = $midtermarray->min('final_mark');
 
                 }
@@ -1874,9 +1922,10 @@ class LecturerController extends Controller
                                             ->where('finalid', $qz->finalid)
                                             ->whereIn('userid', $collection->pluck('ic'));
 
+                    $finalavg[$ky][$key] = number_format((float)$finalarray->sum('final_mark') / count($collection->pluck('ic')), 2, '.', '');
+
                     $finalmax[$ky][$key] = $finalarray->max('final_mark');
                     
-
                     $finalmin[$ky][$key] = $finalarray->min('final_mark');
 
                 }
@@ -2260,23 +2309,42 @@ class LecturerController extends Controller
                     }
 
                     $overallall[$ky][$keys] = $overallquiz[$ky][$keys] + $overalltest[$ky][$keys] + $overallassign[$ky][$keys] + $overallextra[$ky][$keys] + $overallother[$ky][$keys] + $overallmidterm[$ky][$keys] + $overallfinal[$ky][$keys];
+
+                    $collectionall = collect($overallall[$ky]);
             
                 }
 
+            $quizavgoverall = number_format((float)$quizcollection->sum() / count($collection->pluck('ic')), 2, '.', '');
+
+            $testavgoverall = number_format((float)$testcollection->sum() / count($collection->pluck('ic')), 2, '.', '');
+
+            $assignavgoverall = number_format((float)$assigncollection->sum() / count($collection->pluck('ic')), 2, '.', '');
+
+            $extraavgoverall = number_format((float)$extracollection->sum() / count($collection->pluck('ic')), 2, '.', '');
+
+            $otheravgoverall = number_format((float)$othercollection->sum() / count($collection->pluck('ic')), 2, '.', '');
+
+            $midtermavgoverall = number_format((float)$midtermcollection->sum() / count($collection->pluck('ic')), 2, '.', '');
+
+            $finalavgoverall = number_format((float)$finalcollection->sum() / count($collection->pluck('ic')), 2, '.', '');
+
+            $avgoverall = number_format((float)$collectionall->sum() / count($collection->pluck('ic')), 2, '.', '');
         }
 
-        //dd(min($overallall));
+        
+
+        //dd($avgoverall);
 
 
         return view('lecturer.courseassessment.studentreport', compact('groups', 'students', 'id',
-                                                                       'quiz', 'quizanswer','overallquiz', 'quizmax', 'quizmin', 'quizcollection',
-                                                                       'test', 'testanswer','overalltest', 'testmax', 'testmin', 'testcollection',
-                                                                       'assign', 'assignanswer','overallassign', 'assignmax', 'assignmin', 'assigncollection',
-                                                                       'extra', 'extraanswer','overallextra', 'extramax', 'extramin', 'extracollection',
-                                                                       'other', 'otheranswer','overallother', 'othermax', 'othermin', 'othercollection',
-                                                                       'midterm', 'midtermanswer','overallmidterm', 'midtermmax', 'midtermmin', 'midtermcollection',
-                                                                       'final', 'finalanswer','overallfinal', 'finalmax', 'finalmin', 'finalcollection',
-                                                                       'overallall' 
+                                                                       'quiz', 'quizanswer', 'overallquiz', 'quizavg', 'quizmax', 'quizmin', 'quizcollection', 'quizavgoverall',
+                                                                       'test', 'testanswer', 'overalltest', 'testavg', 'testmax', 'testmin', 'testcollection','testavgoverall',
+                                                                       'assign', 'assignanswer', 'overallassign', 'assignavg', 'assignmax', 'assignmin', 'assigncollection','assignavgoverall',
+                                                                       'extra', 'extraanswer', 'overallextra', 'extraavg', 'extramax', 'extramin', 'extracollection','extraavgoverall',
+                                                                       'other', 'otheranswer', 'overallother', 'otheravg', 'othermax', 'othermin', 'othercollection','otheravgoverall',
+                                                                       'midterm', 'midtermanswer', 'overallmidterm', 'midtermavg', 'midtermmax', 'midtermmin', 'midtermcollection','midtermavgoverall',
+                                                                       'final', 'finalanswer', 'overallfinal', 'finalavg', 'finalmax', 'finalmin', 'finalcollection','finalavgoverall',
+                                                                       'overallall', 'avgoverall'
                                                                     ));
 
     }
