@@ -664,50 +664,91 @@ class AdminController extends Controller
 
     public function assessmentreport()
     {
+        $students = [];
+
+        $quiz = [];
+        $quizcollection = [];
         $overallquiz = [];
         $quizanswer = [];
+        $quizavg = [];
         $quizmax = [];
         $quizmin = [];
+        $quizavgoverall = [];
 
+        $test = [];
+        $testcollection = [];
         $overalltest = [];
         $testanswer = [];
+        $testavg = [];
         $testmax = [];
         $testmin = [];
+        $testavgoverall = [];
 
+        $assign = [];
+        $assigncollection = [];
         $overallassign = [];
         $assignanswer = [];
+        $assignavg = [];
         $assignmax = [];
         $assignmin = [];
+        $assignavgoverall = [];
 
+        $midterm = [];
+        $midtermcollection = [];
         $overallmidterm = [];
         $midtermanswer = [];
+        $midtermavg = [];
         $midtermmax = [];
         $midtermmin = [];
+        $midtermavgoverall = [];
 
+        $final = [];
+        $finalcollection = [];
         $overallfinal = [];
         $finalanswer = [];
+        $finalavg = [];
         $finalmax = [];
         $finalmin = [];
+        $finalavgoverall = [];
 
+        $paperwork = [];
+        $paperworkcollection = [];
         $overallpaperwork = [];
         $paperworkanswer = [];
+        $paperworkavg = [];
         $paperworkmax = [];
         $paperworkmin = [];
+        $paperworkavgoverall = [];
 
+        $practical = [];
+        $practicalcollection = [];
         $overallpractical = [];
         $practicalanswer = [];
+        $practicalavg = [];
         $practicalmax = [];
         $practicalmin = [];
+        $practicalavgoverall = [];
 
+        $other = [];
+        $othercollection = [];
         $overallother = [];
         $otheranswer = [];
+        $otheravg = [];
         $othermax = [];
         $othermin = [];
+        $otheravgoverall = [];
 
+        $extra = [];
+        $extracollection = [];
         $overallextra = [];
         $extraanswer = [];
+        $extraavg = [];
         $extramax = [];
         $extramin = [];
+        $extraavgoverall = [];
+
+        $overallall = [];
+        $avgoverall = [];
 
         $user = User::where('ic', Session::get('LectIC'))->first();
 
@@ -720,7 +761,7 @@ class AdminController extends Controller
                   ->where([
                      ['user_subjek.user_ic', $user->ic],
                      ['user_subjek.session_id', Session::get('SessionID')],
-                     ['subjek.id', Session::get('CourseID')]
+                     ['subjek.id', $id]
                   ])->groupBy('student_subjek.group_name')->get();
 
         foreach($groups as $ky => $grp)
@@ -735,7 +776,7 @@ class AdminController extends Controller
                 ->where([
                 ['user_subjek.user_ic', $user->ic],
                 ['user_subjek.session_id', Session::get('SessionID')],
-                ['subjek.id', Session::get('CourseID')]
+                ['subjek.id', $id]
                 ])->where('student_subjek.group_name', $grp->group_name)->get();
 
                 $collection = collect($students[$ky]);
@@ -745,7 +786,7 @@ class AdminController extends Controller
                 $quizs = DB::table('tblclassquiz')
                         ->join('tblclassquiz_group', 'tblclassquiz.id', 'tblclassquiz_group.quizid')
                         ->where([
-                            ['tblclassquiz.classid', Session::get('CourseID')],
+                            ['tblclassquiz.classid', $id],
                             ['tblclassquiz.sessionid', Session::get('SessionID')],
                             ['tblclassquiz_group.groupname', $grp->group_name],
                             ['tblclassquiz.status', '!=', 3]
@@ -765,19 +806,21 @@ class AdminController extends Controller
                                             ->where('quizid', $qz->quizid)
                                             ->whereIn('userid', $collection->pluck('ic'));
 
+                    $quizavg[$ky][$key] = number_format((float)$quizarray->sum('final_mark') / count($collection->pluck('ic')), 2, '.', '');
+
                     $quizmax[$ky][$key] = $quizarray->max('final_mark');
                     
-
                     $quizmin[$ky][$key] = $quizarray->min('final_mark');
 
                 }
+
 
                 //TEST
 
                 $tests = DB::table('tblclasstest')
                         ->join('tblclasstest_group', 'tblclasstest.id', 'tblclasstest_group.testid')
                         ->where([
-                            ['tblclasstest.classid', Session::get('CourseID')],
+                            ['tblclasstest.classid', $id],
                             ['tblclasstest.sessionid', Session::get('SessionID')],
                             ['tblclasstest_group.groupname', $grp->group_name],
                             ['tblclasstest.status', '!=', 3]
@@ -797,9 +840,10 @@ class AdminController extends Controller
                                             ->where('testid', $qz->testid)
                                             ->whereIn('userid', $collection->pluck('ic'));
 
+                    $testavg[$ky][$key] = number_format((float)$testarray->sum('final_mark') / count($collection->pluck('ic')), 2, '.', '');
+
                     $testmax[$ky][$key] = $testarray->max('final_mark');
                     
-
                     $testmin[$ky][$key] = $testarray->min('final_mark');
 
                 }
@@ -809,7 +853,7 @@ class AdminController extends Controller
                 $assigns = DB::table('tblclassassign')
                         ->join('tblclassassign_group', 'tblclassassign.id', 'tblclassassign_group.assignid')
                         ->where([
-                            ['tblclassassign.classid', Session::get('CourseID')],
+                            ['tblclassassign.classid', $id],
                             ['tblclassassign.sessionid', Session::get('SessionID')],
                             ['tblclassassign_group.groupname', $grp->group_name],
                             ['tblclassassign.status', '!=', 3]
@@ -829,9 +873,10 @@ class AdminController extends Controller
                                             ->where('assignid', $qz->assignid)
                                             ->whereIn('userid', $collection->pluck('ic'));
 
+                    $assignavg[$ky][$key] = number_format((float)$assignarray->sum('final_mark') / count($collection->pluck('ic')), 2, '.', '');
+
                     $assignmax[$ky][$key] = $assignarray->max('final_mark');
                     
-
                     $assignmin[$ky][$key] = $assignarray->min('final_mark');
 
                 }
@@ -841,7 +886,7 @@ class AdminController extends Controller
                 $extras = DB::table('tblclassextra')
                         ->join('tblclassextra_group', 'tblclassextra.id', 'tblclassextra_group.extraid')
                         ->where([
-                            ['tblclassextra.classid', Session::get('CourseID')],
+                            ['tblclassextra.classid', $id],
                             ['tblclassextra.sessionid', Session::get('SessionID')],
                             ['tblclassextra_group.groupname', $grp->group_name],
                             ['tblclassextra.status', '!=', 3]
@@ -861,9 +906,10 @@ class AdminController extends Controller
                                             ->where('extraid', $qz->extraid)
                                             ->whereIn('userid', $collection->pluck('ic'));
 
+                    $extraavg[$ky][$key] = number_format((float)$extraarray->sum('tblclassstudentextra.total_mark') / count($collection->pluck('ic')), 2, '.', '');
+
                     $extramax[$ky][$key] = $extraarray->max('tblclassstudentextra.total_mark');
                     
-
                     $extramin[$ky][$key] = $extraarray->min('tblclassstudentextra.total_mark');
 
                 }
@@ -873,7 +919,7 @@ class AdminController extends Controller
                 $others = DB::table('tblclassother')
                         ->join('tblclassother_group', 'tblclassother.id', 'tblclassother_group.otherid')
                         ->where([
-                            ['tblclassother.classid', Session::get('CourseID')],
+                            ['tblclassother.classid', $id],
                             ['tblclassother.sessionid', Session::get('SessionID')],
                             ['tblclassother_group.groupname', $grp->group_name],
                             ['tblclassother.status', '!=', 3]
@@ -893,9 +939,10 @@ class AdminController extends Controller
                                             ->where('otherid', $qz->otherid)
                                             ->whereIn('userid', $collection->pluck('ic'));
 
+                    $otheravg[$ky][$key] = number_format((float)$otherarray->sum('tblclassstudentother.total_mark') / count($collection->pluck('ic')), 2, '.', '');
+
                     $othermax[$ky][$key] = $otherarray->max('tblclassstudentother.total_mark');
                     
-
                     $othermin[$ky][$key] = $otherarray->min('tblclassstudentother.total_mark');
 
                 }
@@ -905,7 +952,7 @@ class AdminController extends Controller
                 $midterms = DB::table('tblclassmidterm')
                         ->join('tblclassmidterm_group', 'tblclassmidterm.id', 'tblclassmidterm_group.midtermid')
                         ->where([
-                            ['tblclassmidterm.classid', Session::get('CourseID')],
+                            ['tblclassmidterm.classid', $id],
                             ['tblclassmidterm.sessionid', Session::get('SessionID')],
                             ['tblclassmidterm_group.groupname', $grp->group_name],
                             ['tblclassmidterm.status', '!=', 3]
@@ -925,9 +972,10 @@ class AdminController extends Controller
                                             ->where('midtermid', $qz->midtermid)
                                             ->whereIn('userid', $collection->pluck('ic'));
 
+                    $midtermavg[$ky][$key] = number_format((float)$midtermarray->sum('final_mark') / count($collection->pluck('ic')), 2, '.', '');
+
                     $midtermmax[$ky][$key] = $midtermarray->max('final_mark');
                     
-
                     $midtermmin[$ky][$key] = $midtermarray->min('final_mark');
 
                 }
@@ -937,7 +985,7 @@ class AdminController extends Controller
                 $finals = DB::table('tblclassfinal')
                         ->join('tblclassfinal_group', 'tblclassfinal.id', 'tblclassfinal_group.finalid')
                         ->where([
-                            ['tblclassfinal.classid', Session::get('CourseID')],
+                            ['tblclassfinal.classid', $id],
                             ['tblclassfinal.sessionid', Session::get('SessionID')],
                             ['tblclassfinal_group.groupname', $grp->group_name],
                             ['tblclassfinal.status', '!=', 3]
@@ -957,9 +1005,10 @@ class AdminController extends Controller
                                             ->where('finalid', $qz->finalid)
                                             ->whereIn('userid', $collection->pluck('ic'));
 
+                    $finalavg[$ky][$key] = number_format((float)$finalarray->sum('final_mark') / count($collection->pluck('ic')), 2, '.', '');
+
                     $finalmax[$ky][$key] = $finalarray->max('final_mark');
                     
-
                     $finalmin[$ky][$key] = $finalarray->min('final_mark');
 
                 }
@@ -982,14 +1031,14 @@ class AdminController extends Controller
 
                     $percentquiz = DB::table('tblclassmarks')
                                 ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
-                                ['subjek.id', Session::get('CourseID')],
+                                ['subjek.id', $id],
                                 ['assessment', 'quiz']
                                 ])->first();
 
                     if($quizs = DB::table('tblclassquiz')
                     ->join('tblclassquiz_group', 'tblclassquiz.id', 'tblclassquiz_group.quizid')
                     ->where([
-                        ['tblclassquiz.classid', Session::get('CourseID')],
+                        ['tblclassquiz.classid', $id],
                         ['tblclassquiz.sessionid', Session::get('SessionID')],
                         ['tblclassquiz_group.groupname', $grp->group_name],
                         ['tblclassquiz.status', '!=', 3]
@@ -998,7 +1047,7 @@ class AdminController extends Controller
                         {
                             if(DB::table('tblclassquiz')
                             ->where([
-                                ['classid', Session::get('CourseID')],
+                                ['classid', $id],
                                 ['sessionid', Session::get('SessionID')]
                             ])->exists()){
                                 //dd($totalquiz);
@@ -1036,14 +1085,14 @@ class AdminController extends Controller
 
                     $percenttest = DB::table('tblclassmarks')
                                 ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
-                                ['subjek.id', Session::get('CourseID')],
+                                ['subjek.id', $id],
                                 ['assessment', 'test']
                                 ])->first();
 
                     if($tests = DB::table('tblclasstest')
                     ->join('tblclasstest_group', 'tblclasstest.id', 'tblclasstest_group.testid')
                     ->where([
-                        ['tblclasstest.classid', Session::get('CourseID')],
+                        ['tblclasstest.classid', $id],
                         ['tblclasstest.sessionid', Session::get('SessionID')],
                         ['tblclasstest_group.groupname', $grp->group_name],
                         ['tblclasstest.status', '!=', 3]
@@ -1052,7 +1101,7 @@ class AdminController extends Controller
                         {
                             if(DB::table('tblclasstest')
                             ->where([
-                                ['classid', Session::get('CourseID')],
+                                ['classid', $id],
                                 ['sessionid', Session::get('SessionID')]
                             ])->exists()){
                                 //dd($totaltest);
@@ -1090,14 +1139,14 @@ class AdminController extends Controller
 
                     $percentassign = DB::table('tblclassmarks')
                                 ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
-                                ['subjek.id', Session::get('CourseID')],
+                                ['subjek.id', $id],
                                 ['assessment', 'assignment']
                                 ])->first();
 
                     if($assigns = DB::table('tblclassassign')
                     ->join('tblclassassign_group', 'tblclassassign.id', 'tblclassassign_group.assignid')
                     ->where([
-                        ['tblclassassign.classid', Session::get('CourseID')],
+                        ['tblclassassign.classid', $id],
                         ['tblclassassign.sessionid', Session::get('SessionID')],
                         ['tblclassassign_group.groupname', $grp->group_name],
                         ['tblclassassign.status', '!=', 3]
@@ -1106,7 +1155,7 @@ class AdminController extends Controller
                         {
                             if(DB::table('tblclassassign')
                             ->where([
-                                ['classid', Session::get('CourseID')],
+                                ['classid', $id],
                                 ['sessionid', Session::get('SessionID')]
                             ])->exists()){
                                 //dd($totalassign);
@@ -1143,14 +1192,14 @@ class AdminController extends Controller
 
                     $percentextra = DB::table('tblclassmarks')
                                 ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
-                                ['subjek.id', Session::get('CourseID')],
+                                ['subjek.id', $id],
                                 ['assessment', 'extra']
                                 ])->first();
 
                     if($extras = DB::table('tblclassextra')
                     ->join('tblclassextra_group', 'tblclassextra.id', 'tblclassextra_group.extraid')
                     ->where([
-                        ['tblclassextra.classid', Session::get('CourseID')],
+                        ['tblclassextra.classid', $id],
                         ['tblclassextra.sessionid', Session::get('SessionID')],
                         ['tblclassextra_group.groupname', $grp->group_name],
                         ['tblclassextra.status', '!=', 3]
@@ -1159,7 +1208,7 @@ class AdminController extends Controller
                         {
                             if(DB::table('tblclassextra')
                             ->where([
-                                ['classid', Session::get('CourseID')],
+                                ['classid', $id],
                                 ['sessionid', Session::get('SessionID')]
                             ])->exists()){
                                 //dd($totalextra);
@@ -1196,14 +1245,14 @@ class AdminController extends Controller
 
                     $percentother = DB::table('tblclassmarks')
                                 ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
-                                ['subjek.id', Session::get('CourseID')],
+                                ['subjek.id', $id],
                                 ['assessment', 'other']
                                 ])->first();
 
                     if($others = DB::table('tblclassother')
                     ->join('tblclassother_group', 'tblclassother.id', 'tblclassother_group.otherid')
                     ->where([
-                        ['tblclassother.classid', Session::get('CourseID')],
+                        ['tblclassother.classid', $id],
                         ['tblclassother.sessionid', Session::get('SessionID')],
                         ['tblclassother_group.groupname', $grp->group_name],
                         ['tblclassother.status', '!=', 3]
@@ -1212,7 +1261,7 @@ class AdminController extends Controller
                         {
                             if(DB::table('tblclassother')
                             ->where([
-                                ['classid', Session::get('CourseID')],
+                                ['classid', $id],
                                 ['sessionid', Session::get('SessionID')]
                             ])->exists()){
                                 //dd($totalother);
@@ -1249,14 +1298,14 @@ class AdminController extends Controller
 
                     $percentmidterm = DB::table('tblclassmarks')
                                 ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
-                                ['subjek.id', Session::get('CourseID')],
+                                ['subjek.id', $id],
                                 ['assessment', 'midterm']
                                 ])->first();
 
                     if($midterms = DB::table('tblclassmidterm')
                     ->join('tblclassmidterm_group', 'tblclassmidterm.id', 'tblclassmidterm_group.midtermid')
                     ->where([
-                        ['tblclassmidterm.classid', Session::get('CourseID')],
+                        ['tblclassmidterm.classid', $id],
                         ['tblclassmidterm.sessionid', Session::get('SessionID')],
                         ['tblclassmidterm_group.groupname', $grp->group_name],
                         ['tblclassmidterm.status', '!=', 3]
@@ -1265,7 +1314,7 @@ class AdminController extends Controller
                         {
                             if(DB::table('tblclassmidterm')
                             ->where([
-                                ['classid', Session::get('CourseID')],
+                                ['classid', $id],
                                 ['sessionid', Session::get('SessionID')]
                             ])->exists()){
                                 //dd($totalmidterm);
@@ -1302,14 +1351,14 @@ class AdminController extends Controller
 
                     $percentfinal = DB::table('tblclassmarks')
                                 ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
-                                ['subjek.id', Session::get('CourseID')],
+                                ['subjek.id', $id],
                                 ['assessment', 'final']
                                 ])->first();
 
                     if($finals = DB::table('tblclassfinal')
                     ->join('tblclassfinal_group', 'tblclassfinal.id', 'tblclassfinal_group.finalid')
                     ->where([
-                        ['tblclassfinal.classid', Session::get('CourseID')],
+                        ['tblclassfinal.classid', $id],
                         ['tblclassfinal.sessionid', Session::get('SessionID')],
                         ['tblclassfinal_group.groupname', $grp->group_name],
                         ['tblclassfinal.status', '!=', 3]
@@ -1318,7 +1367,7 @@ class AdminController extends Controller
                         {
                             if(DB::table('tblclassfinal')
                             ->where([
-                                ['classid', Session::get('CourseID')],
+                                ['classid', $id],
                                 ['sessionid', Session::get('SessionID')]
                             ])->exists()){
                                 //dd($totalfinal);
@@ -1343,24 +1392,42 @@ class AdminController extends Controller
                     }
 
                     $overallall[$ky][$keys] = $overallquiz[$ky][$keys] + $overalltest[$ky][$keys] + $overallassign[$ky][$keys] + $overallextra[$ky][$keys] + $overallother[$ky][$keys] + $overallmidterm[$ky][$keys] + $overallfinal[$ky][$keys];
+
+                    $collectionall = collect($overallall[$ky]);
             
                 }
 
+            $quizavgoverall = number_format((float)$quizcollection->sum() / count($collection->pluck('ic')), 2, '.', '');
+
+            $testavgoverall = number_format((float)$testcollection->sum() / count($collection->pluck('ic')), 2, '.', '');
+
+            $assignavgoverall = number_format((float)$assigncollection->sum() / count($collection->pluck('ic')), 2, '.', '');
+
+            $extraavgoverall = number_format((float)$extracollection->sum() / count($collection->pluck('ic')), 2, '.', '');
+
+            $otheravgoverall = number_format((float)$othercollection->sum() / count($collection->pluck('ic')), 2, '.', '');
+
+            $midtermavgoverall = number_format((float)$midtermcollection->sum() / count($collection->pluck('ic')), 2, '.', '');
+
+            $finalavgoverall = number_format((float)$finalcollection->sum() / count($collection->pluck('ic')), 2, '.', '');
+
+            $avgoverall = number_format((float)$collectionall->sum() / count($collection->pluck('ic')), 2, '.', '');
         }
 
         //dd(min($overallall));
 
 
         return view('lecturer.courseassessment.studentreport', compact('groups', 'students', 'id',
-                                                                       'quiz', 'quizanswer','overallquiz', 'quizmax', 'quizmin', 'quizcollection',
-                                                                       'test', 'testanswer','overalltest', 'testmax', 'testmin', 'testcollection',
-                                                                       'assign', 'assignanswer','overallassign', 'assignmax', 'assignmin', 'assigncollection',
-                                                                       'extra', 'extraanswer','overallextra', 'extramax', 'extramin', 'extracollection',
-                                                                       'other', 'otheranswer','overallother', 'othermax', 'othermin', 'othercollection',
-                                                                       'midterm', 'midtermanswer','overallmidterm', 'midtermmax', 'midtermmin', 'midtermcollection',
-                                                                       'final', 'finalanswer','overallfinal', 'finalmax', 'finalmin', 'finalcollection',
-                                                                       'overallall' 
+                                                                       'quiz', 'quizanswer', 'overallquiz', 'quizavg', 'quizmax', 'quizmin', 'quizcollection', 'quizavgoverall',
+                                                                       'test', 'testanswer', 'overalltest', 'testavg', 'testmax', 'testmin', 'testcollection','testavgoverall',
+                                                                       'assign', 'assignanswer', 'overallassign', 'assignavg', 'assignmax', 'assignmin', 'assigncollection','assignavgoverall',
+                                                                       'extra', 'extraanswer', 'overallextra', 'extraavg', 'extramax', 'extramin', 'extracollection','extraavgoverall',
+                                                                       'other', 'otheranswer', 'overallother', 'otheravg', 'othermax', 'othermin', 'othercollection','otheravgoverall',
+                                                                       'midterm', 'midtermanswer', 'overallmidterm', 'midtermavg', 'midtermmax', 'midtermmin', 'midtermcollection','midtermavgoverall',
+                                                                       'final', 'finalanswer', 'overallfinal', 'finalavg', 'finalmax', 'finalmin', 'finalcollection','finalavgoverall',
+                                                                       'overallall', 'avgoverall'
                                                                     ));
+
 
     }
 }
