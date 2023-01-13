@@ -110,7 +110,7 @@
                               <strong>Code</strong> {{ ucwords($key->course_code) }}
                             </p>
                             <p class="card-text text-gray-600 pt-5">
-                              <strong>Lecturer</strong> {{ ucwords($key->name) }}
+                              <strong>Lecturer</strong> {{ ucwords($key->course_code) }}
                             </p>
                             <!--<p class="card-text text-gray-600">
                               <strong>Program</strong> {{ ucwords($key->progname) }}
