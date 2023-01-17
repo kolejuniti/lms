@@ -2883,12 +2883,11 @@ class LecturerController extends Controller
     {
 
         $quiz = DB::table('tblclassquiz')
-                ->join('tblclassquiz_group', 'tblclassquiz.id', 'tblclassquiz_group.quizid')
-                ->join('tblclassquiz_chapter', 'tblclassquiz.id', 'tblclassquiz_chapter.quizid')
+                ->join('tblclassquizstatus', 'tblclassquiz.id', 'tblclassquizstatus.id')
                 ->where([
                     ['tblclassquiz.addby', $request->ic],
                     ['tblclassquiz.classid', Session::get('CourseID')]
-                ])->select('tblclassquiz.*')->get();
+                ])->get();
 
 
         return view('lecturer.library.getQuiz', compact('quiz'));
@@ -2899,12 +2898,11 @@ class LecturerController extends Controller
     {
 
         $test = DB::table('tblclasstest')
-                ->join('tblclasstest_group', 'tblclasstest.id', 'tblclasstest_group.testid')
-                ->join('tblclasstest_chapter', 'tblclasstest.id', 'tblclasstest_chapter.testid')
+                ->join('tblclassteststatus', 'tblclasstest.id', 'tblclassteststatus.id')
                 ->where([
                     ['tblclasstest.addby', $request->ic],
                     ['tblclasstest.classid', Session::get('CourseID')]
-                ])->select('tblclasstest.*')->get();
+                ])->get();
 
 
         return view('lecturer.library.getTest', compact('test'));
@@ -2915,12 +2913,11 @@ class LecturerController extends Controller
     {
 
         $assign = DB::table('tblclassassign')
-                ->join('tblclassassign_group', 'tblclassassign.id', 'tblclassassign_group.assignid')
-                ->join('tblclassassign_chapter', 'tblclassassign.id', 'tblclassassign_chapter.assignid')
+                ->join('tblclassassignstatus', 'tblclassassign.id', 'tblclassassignstatus.id')
                 ->where([
                     ['tblclassassign.addby', $request->ic],
                     ['tblclassassign.classid', Session::get('CourseID')]
-                ])->select('tblclassassign.*')->get();
+                ])->get();
 
 
         return view('lecturer.library.getAssignment', compact('assign'));
@@ -2931,15 +2928,11 @@ class LecturerController extends Controller
     {
 
         $midterm = DB::table('tblclassmidterm')
-                ->join('tblclassmidterm_group', 'tblclassmidterm.id', 'tblclassmidterm_group.midtermid')
-                ->join('tblclassmidterm_chapter', 'tblclassmidterm.id', 'tblclassmidterm_chapter.midtermid')
+                ->join('tblclassmidtermstatus', 'tblclassmidterm.id', 'tblclassmidtermstatus.id')
                 ->where([
                     ['tblclassmidterm.addby', $request->ic],
                     ['tblclassmidterm.classid', Session::get('CourseID')]
-                ])->select('tblclassmidterm.*')->get();
-
-
-        return view('lecturer.library.getMidterm', compact('midterm'));
+                ])->get();
 
     }
 
@@ -2947,12 +2940,11 @@ class LecturerController extends Controller
     {
 
         $final = DB::table('tblclassfinal')
-                ->join('tblclassfinal_group', 'tblclassfinal.id', 'tblclassfinal_group.finalid')
-                ->join('tblclassfinal_chapter', 'tblclassfinal.id', 'tblclassfinal_chapter.finalid')
+                ->join('tblclassfinalstatus', 'tblclassfinal.id', 'tblclassfinalstatus.id')
                 ->where([
                     ['tblclassfinal.addby', $request->ic],
                     ['tblclassfinal.classid', Session::get('CourseID')]
-                ])->select('tblclassfinal.*')->get();
+                ])->get();
 
 
         return view('lecturer.library.getFinal', compact('final'));
