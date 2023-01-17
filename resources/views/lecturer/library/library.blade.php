@@ -83,6 +83,22 @@
                                 </div>
                             </td>
                           </tr>
+                          <tr id="demo-assessment-{{ $key }}" class="collapse cell-1 row-child" data-toggle="collapse" data-target="#demo-" onclick="getMidterm('{{ $lct->ic }}')">
+                            <td>
+                                <div style="margin-left: 60px;">
+                                    <i class="ti-folder" style="margin-right: 5px;"></i>
+                                    Midterm
+                                </div>
+                            </td>
+                          </tr>
+                          <tr id="demo-assessment-{{ $key }}" class="collapse cell-1 row-child" data-toggle="collapse" data-target="#demo-" onclick="getFinal('{{ $lct->ic }}')">
+                            <td>
+                                <div style="margin-left: 60px;">
+                                    <i class="ti-folder" style="margin-right: 5px;"></i>
+                                    Final
+                                </div>
+                            </td>
+                          </tr>
                           @endforeach
                       </tbody>
                     </table>
@@ -253,6 +269,50 @@ function getAssignment(ic)
   return $.ajax({
         headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
         url      : "{{ url('lecturer/library/getAssignment') }}",
+        method   : 'POST',
+        data 	 : {ic: ic},
+        error:function(err){
+            alert("Error");
+            console.log(err);
+        },
+        success  : function(data){
+       
+          $('#showMaterial').html(data);
+          $('html, body').animate({ scrollTop: 0 });
+          //$('#chapter').selectpicker('refresh');
+        }
+    });
+
+}
+
+function getMidterm(ic)
+{
+  //alert(id);
+  return $.ajax({
+        headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
+        url      : "{{ url('lecturer/library/getMidterm') }}",
+        method   : 'POST',
+        data 	 : {ic: ic},
+        error:function(err){
+            alert("Error");
+            console.log(err);
+        },
+        success  : function(data){
+       
+          $('#showMaterial').html(data);
+          $('html, body').animate({ scrollTop: 0 });
+          //$('#chapter').selectpicker('refresh');
+        }
+    });
+
+}
+
+function getFinal(ic)
+{
+  //alert(id);
+  return $.ajax({
+        headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
+        url      : "{{ url('lecturer/library/getFinal') }}",
         method   : 'POST',
         data 	 : {ic: ic},
         error:function(err){
