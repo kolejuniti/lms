@@ -187,6 +187,10 @@ Route::post('/lecturer/library/getSubfolder/getSubfolder2/getMaterial', [App\Htt
 Route::post('/lecturer/library/getQuiz', [App\Http\Controllers\LecturerController::class, 'getQuiz'])->name('lecturer.library.quiz');
 Route::post('/lecturer/library/getTest', [App\Http\Controllers\LecturerController::class, 'getTest'])->name('lecturer.library.test');
 Route::post('/lecturer/library/getAssignment', [App\Http\Controllers\LecturerController::class, 'getAssignment'])->name('lecturer.library.assignment');
+Route::post('/lecturer/library/getOther', [App\Http\Controllers\LecturerController::class, 'getOther'])->name('lecturer.library.other');
+Route::post('/lecturer/library/getExtra', [App\Http\Controllers\LecturerController::class, 'getExtra'])->name('lecturer.library.extra');
+Route::post('/lecturer/library/getMidterm', [App\Http\Controllers\LecturerController::class, 'getMidterm'])->name('lecturer.library.midterm');
+Route::post('/lecturer/library/getFinal', [App\Http\Controllers\LecturerController::class, 'getFinal'])->name('lecturer.library.final');
 
 Route::get('/lecturer/class/announcement', [App\Http\Controllers\LecturerController::class, 'announcement'])->name('lecturer.class.announcement');
 Route::get('/lecturer/class/announcement/getGroupList', [App\Http\Controllers\LecturerController::class, 'announcementGetGroupList']);
