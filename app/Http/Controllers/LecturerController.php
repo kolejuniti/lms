@@ -2333,7 +2333,7 @@ class LecturerController extends Controller
 
         
 
-        //dd($avgoverall);
+        //dd($midtermavgoverall);
 
 
         return view('lecturer.courseassessment.studentreport', compact('groups', 'students', 'id',
@@ -2816,12 +2816,14 @@ class LecturerController extends Controller
 
     public function getContent(Request $request)
     {
+        $subid = DB::table('subjek')->where('id', Session::get('CourseID'))->pluck('sub_id');
+
+        $id = DB::table('subjek')->where('sub_id', $subid)->pluck('id');
 
         $folder = DB::table('lecturer_dir')
                    ->where([
-                    ['Addby', $request->ic],
-                    ['CourseID', Session::get('CourseID')]
-                    ])->get();
+                    ['Addby', $request->ic]
+                    ])->whereIn('CourseID', $id)->get();
 
         return view('lecturer.library.getSubfolder', compact('folder'));
 
@@ -2922,6 +2924,38 @@ class LecturerController extends Controller
 
 
         return view('lecturer.library.getAssignment', compact('assign'));
+
+    }
+
+    public function getMidterm(Request $request)
+    {
+
+        $midterm = DB::table('tblclassmidterm')
+                ->join('tblclassmidterm_group', 'tblclassmidterm.id', 'tblclassmidterm_group.midtermid')
+                ->join('tblclassmidterm_chapter', 'tblclassmidterm.id', 'tblclassmidterm_chapter.midtermid')
+                ->where([
+                    ['tblclassmidterm.addby', $request->ic],
+                    ['tblclassmidterm.classid', Session::get('CourseID')]
+                ])->select('tblclassmidterm.*')->get();
+
+
+        return view('lecturer.library.getMidterm', compact('midterm'));
+
+    }
+
+    public function getFinal(Request $request)
+    {
+
+        $final = DB::table('tblclassfinal')
+                ->join('tblclassfinal_group', 'tblclassfinal.id', 'tblclassfinal_group.finalid')
+                ->join('tblclassfinal_chapter', 'tblclassfinal.id', 'tblclassfinal_chapter.finalid')
+                ->where([
+                    ['tblclassfinal.addby', $request->ic],
+                    ['tblclassfinal.classid', Session::get('CourseID')]
+                ])->select('tblclassfinal.*')->get();
+
+
+        return view('lecturer.library.getFinal', compact('final'));
 
     }
   
