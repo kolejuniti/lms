@@ -8,9 +8,9 @@
                         <h3 class="d-flex justify-content-center">
                             {{ $ag->title }}
                         </h3>
-                        <!--<p class="d-flex justify-content-center">
-                            OFFLINE
-                        </p>-->
+                        <p class="d-flex justify-content-center">
+                            {{ $ag->statusname }} 
+                        </p>
 
             
                         <p class="d-flex justify-content-center">

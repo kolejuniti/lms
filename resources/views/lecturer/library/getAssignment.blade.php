@@ -1,4 +1,4 @@
-<div id="material-directory" class='row'>
+<div id="material-directory" class='d-flex'>
 @foreach ($assign as $ag)
     <div class="col-md-3">
         <a href="#">
@@ -8,13 +8,13 @@
                         <h3 class="d-flex justify-content-center">
                             {{ $ag->title }}
                         </h3>
-                        <!--<p class="d-flex justify-content-center">
-                            OFFLINE
-                        </p>-->
+                        <p class="d-flex justify-content-center">
+                            {{ $ag->statusname }} 
+                        </p>
 
             
                         <p class="d-flex justify-content-center">
-                            <a href="{{ Storage::disk('linode')->url($ag->content) }}" class="btn btn-primary m-1" target="_blank" data-toggle="tooltip" data-placement="auto" title="Use"><i class="fa fa-download "></i></a>
+                            <a href="{{ Storage::disk('linode')->url($ag->content) }}" target="_blank" class="btn btn-primary m-1" data-toggle="tooltip" data-placement="auto" title="Use"><i class="fa fa-download "></i></a>
                         </p>
                     </div>
                 </div>

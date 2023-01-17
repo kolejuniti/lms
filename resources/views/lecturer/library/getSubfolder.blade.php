@@ -10,7 +10,7 @@
                     <path d="m19.329 91.814h270.61c10.67 0 19.329 8.65 19.329 19.329l-19.329 164.3c0 10.67-8.659 19.329-19.329 19.329h-231.95c-10.67 0-19.329-8.659-19.329-19.329l-19.329-164.3c0-10.68 8.659-19.329 19.329-19.329z" fill="#F4B459"/>
                 </svg>
                 <div class="p-3">
-                    {{ $fdr->DrName }}  &nbsp <i class="{{ ($fdr->Password != null) ? 'fa fa-lock' : '' }}"></i>
+                    {{ $fdr->DrName }}ss  &nbsp <i class="{{ ($fdr->Password != null) ? 'fa fa-lock' : '' }}"></i>
                 </div>
             </a>  
         </div>
