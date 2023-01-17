@@ -2883,7 +2883,7 @@ class LecturerController extends Controller
     {
 
         $quiz = DB::table('tblclassquiz')
-                ->join('tblclassquizstatus', 'tblclassquiz.id', 'tblclassquizstatus.id')
+                ->join('tblclassquizstatus', 'tblclassquiz.status', 'tblclassquizstatus.id')
                 ->where([
                     ['tblclassquiz.addby', $request->ic],
                     ['tblclassquiz.classid', Session::get('CourseID')]
@@ -2898,7 +2898,7 @@ class LecturerController extends Controller
     {
 
         $test = DB::table('tblclasstest')
-                ->join('tblclassteststatus', 'tblclasstest.id', 'tblclassteststatus.id')
+                ->join('tblclassteststatus', 'tblclasstest.status', 'tblclassteststatus.id')
                 ->where([
                     ['tblclasstest.addby', $request->ic],
                     ['tblclasstest.classid', Session::get('CourseID')]
@@ -2913,7 +2913,7 @@ class LecturerController extends Controller
     {
 
         $assign = DB::table('tblclassassign')
-                ->join('tblclassassignstatus', 'tblclassassign.id', 'tblclassassignstatus.id')
+                ->join('tblclassassignstatus', 'tblclassassign.status', 'tblclassassignstatus.id')
                 ->where([
                     ['tblclassassign.addby', $request->ic],
                     ['tblclassassign.classid', Session::get('CourseID')]
@@ -2928,7 +2928,7 @@ class LecturerController extends Controller
     {
 
         $midterm = DB::table('tblclassmidterm')
-                ->join('tblclassmidtermstatus', 'tblclassmidterm.id', 'tblclassmidtermstatus.id')
+                ->join('tblclassmidtermstatus', 'tblclassmidterm.status', 'tblclassmidtermstatus.id')
                 ->where([
                     ['tblclassmidterm.addby', $request->ic],
                     ['tblclassmidterm.classid', Session::get('CourseID')]
@@ -2940,7 +2940,7 @@ class LecturerController extends Controller
     {
 
         $final = DB::table('tblclassfinal')
-                ->join('tblclassfinalstatus', 'tblclassfinal.id', 'tblclassfinalstatus.id')
+                ->join('tblclassfinalstatus', 'tblclassfinal.status', 'tblclassfinalstatus.id')
                 ->where([
                     ['tblclassfinal.addby', $request->ic],
                     ['tblclassfinal.classid', Session::get('CourseID')]
