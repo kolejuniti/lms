@@ -29,7 +29,12 @@ class StudentController extends Controller
         $subject = student::join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
         ->join('tblprogramme', 'subjek.prgid', 'tblprogramme.id')
         ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
-        ->select('subjek.*','student_subjek.courseid','sessions.SessionName','sessions.SessionID','tblprogramme.progname')
+        ->join('user_subjek', function($join){
+            $join->on('student_subjek.courseid', 'user_subjek.course_id');
+            $join->on('student_subjek.sessionid', 'user_subjek.session_id');
+        })
+        ->join('users', 'user_subjek.user_ic', 'users.ic')
+        ->select('subjek.*','student_subjek.courseid','sessions.SessionName','sessions.SessionID','tblprogramme.progname', 'users.name')
         ->groupBy('student_subjek.courseid')
         ->where('student_subjek.student_ic', $student->ic)
         ->get();
