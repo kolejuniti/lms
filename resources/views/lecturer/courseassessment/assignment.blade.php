@@ -155,7 +155,7 @@ $(document).ready( function () {
 } );
 
     $(document).on('click', '#newFolder', function() {
-        location.href = "/lecturer/assign2/{{ Session::get('CourseID') }}/create";
+        location.href = "/lecturer/assign/{{ Session::get('CourseID') }}/create";
     })
 
     function deleteAssign(id){     
