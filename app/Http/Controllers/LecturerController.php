@@ -2887,7 +2887,8 @@ class LecturerController extends Controller
                 ->where([
                     ['tblclassquiz.addby', $request->ic],
                     ['tblclassquiz.classid', Session::get('CourseID')]
-                ])->get();
+                ])
+                ->select('tblclassquiz.*', 'tblclassquizstatus.statusname')->get();
 
 
         return view('lecturer.library.getQuiz', compact('quiz'));
@@ -2902,7 +2903,8 @@ class LecturerController extends Controller
                 ->where([
                     ['tblclasstest.addby', $request->ic],
                     ['tblclasstest.classid', Session::get('CourseID')]
-                ])->get();
+                ])
+                ->select('tblclasstest.*', 'tblclassteststatus.statusname')->get();
 
 
         return view('lecturer.library.getTest', compact('test'));
@@ -2917,7 +2919,8 @@ class LecturerController extends Controller
                 ->where([
                     ['tblclassassign.addby', $request->ic],
                     ['tblclassassign.classid', Session::get('CourseID')]
-                ])->get();
+                ])
+                ->select('tblclassassign.*', 'tblclassassignstatus.statusname')->get();
 
 
         return view('lecturer.library.getAssignment', compact('assign'));
@@ -2932,7 +2935,8 @@ class LecturerController extends Controller
                 ->where([
                     ['tblclassmidterm.addby', $request->ic],
                     ['tblclassmidterm.classid', Session::get('CourseID')]
-                ])->get();
+                ])
+                ->select('tblclassmidterm.*', 'tblclassmidtermstatus.statusname')->get();
 
     }
 
@@ -2944,7 +2948,8 @@ class LecturerController extends Controller
                 ->where([
                     ['tblclassfinal.addby', $request->ic],
                     ['tblclassfinal.classid', Session::get('CourseID')]
-                ])->get();
+                ])
+                ->select('tblclassfinal.*', 'tblclassfinalstatus.statusname')->get();
 
 
         return view('lecturer.library.getFinal', compact('final'));
