@@ -87,7 +87,7 @@ div.form-actions.btn-group > button{
                                           <select class="form-select" id="title" name="title" required>
                                               <option value="" disabled selected>-</option>
                                               @foreach ($title as $tt)
-                                              <option value="{{ $tt->id }}" {{ ($data['extra']->title == $tt->id) ? "SELECTED" : "" }}>{{ $tt->name }}</option>
+                                              <option value="{{ $tt->id }}" {{ empty($data['extra']->title) ? "" : (($data['extra']->title == $tt->id) ? "SELECTED" : "") }}>{{ $tt->name }}</option>
                                               @endforeach
                                           </select>
                                           <span class="text-danger">@error('title')
