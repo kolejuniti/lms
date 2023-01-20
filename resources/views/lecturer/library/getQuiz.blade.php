@@ -2,7 +2,7 @@
     <div class="row">
     @foreach ($quiz as $key => $qz)
         @if ($qz->date_from != null)
-        <div class="col-md-3 mb-2">
+        <div class="col-md-3 mb-4">
             <a href="#">
                 <div class="box m-1 b-1 border-primary shadow-sm">
                     <div class="box-body h-150">
@@ -27,7 +27,7 @@
         </div>
         &nbsp&nbsp&nbsp&nbsp
         @else
-        <div class="col-md-3 mb-2">
+        <div class="col-md-3 mb-4">
             <a href="#">
                 <div class="box m-1 b-1 border-primary shadow-sm">
                     <div class="box-body h-150">

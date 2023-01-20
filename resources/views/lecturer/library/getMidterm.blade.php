@@ -1,7 +1,7 @@
 <div id="material-directory">
     <div class="row">
         @foreach ($midterm as $ag)
-            <div class="col-md-3">
+            <div class="col-md-3 mb-4">
                 <a href="#">
                     <div class="box m-1 b-1 border-primary shadow-sm">
                         <div class="box-body h-150">
