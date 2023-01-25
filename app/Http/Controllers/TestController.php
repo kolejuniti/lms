@@ -615,7 +615,9 @@ class TestController extends Controller
                     ['tblclasstest.classid', Session::get('CourseIDS')],
                     ['tblclasstest.sessionid', Session::get('SessionIDS')],
                     ['student_subjek.student_ic', $student->ic],
-                    ['tblclasstest.status','!=', 3]
+                    ['tblclasstest.content','!=', null],
+                    ['tblclasstest.status','!=', 3],
+                    ['tblclasstest.date_from','!=', null]
                 ])->get();
 
         //dd($data);

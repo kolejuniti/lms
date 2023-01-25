@@ -617,7 +617,8 @@ class QuizController extends Controller
                     ['tblclassquiz.sessionid', Session::get('SessionIDS')],
                     ['student_subjek.student_ic', $student->ic],
                     ['tblclassquiz.content','!=', null],
-                    ['tblclassquiz.status','!=', 3]
+                    ['tblclassquiz.status','!=', 3],
+                    ['tblclassquiz.date_from','!=', null]
                 ])->get();
 
         //dd($data);
