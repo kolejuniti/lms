@@ -95,9 +95,9 @@ class TestController extends Controller
 
         $data['reuse'] = null;
 
-        $courseid = Session::get('CourseIDS');
+        $courseid = Session::get('CourseID');
 
-        $sessionid = Session::get('SessionIDS');
+        $sessionid = Session::get('SessionID');
 
         $group = subject::join('student_subjek', 'user_subjek.id', 'student_subjek.group_id')
         ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')

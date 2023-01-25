@@ -132,9 +132,9 @@ class AssignmentController extends Controller
     {
         $user = Auth::user();
 
-        $courseid = Session::get('CourseIDS');
+        $courseid = Session::get('CourseID');
 
-        $sessionid = Session::get('SessionIDS');
+        $sessionid = Session::get('SessionID');
 
         $data['assign'] = null;
 
