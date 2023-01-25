@@ -1694,7 +1694,8 @@ class LecturerController extends Controller
                 ['user_subjek.user_ic', $user->ic],
                 ['user_subjek.session_id', Session::get('SessionID')],
                 ['subjek.id', request()->id]
-                ])->where('student_subjek.group_name', $grp->group_name)->get();
+                ])->where('student_subjek.group_name', $grp->group_name)
+                ->orderBy('students.name')->get();
 
                 $collection = collect($students[$ky]);
 
