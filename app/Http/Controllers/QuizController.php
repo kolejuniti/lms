@@ -672,22 +672,44 @@ class QuizController extends Controller
         //dd(Session::get('StudInfo')->ic)
 
         $id = $request->quiz;
-        $quiz = DB::table('tblclassquiz')
+
+        if(DB::table('tblclassstudentquiz')
+        ->where([
+            ['userid', Session::get('StudInfo')->ic],
+            ['quizid', $id]
+         ])->exists()) {
+
+            $quiz = DB::table('tblclassquiz')
             ->leftjoin('tblclassstudentquiz', function($join) 
             {
                 $join->on('tblclassquiz.id', '=', 'tblclassstudentquiz.quizid');
                 $join->on('tblclassstudentquiz.userid',  '=', DB::raw(Session::get('StudInfo')->ic));
-            })
-            ->leftJoin('students', 'tblclassstudentquiz.userid', 'students.ic')
-            ->leftJoin('tblclassquizstatus', 'tblclassquiz.status', 'tblclassquizstatus.id')
-            ->select('tblclassquiz.*', 'tblclassstudentquiz.userid', 'tblclassstudentquiz.quizid','students.name', 
-                DB::raw('tblclassquiz.status as classquizstatus'),
-                DB::raw('tblclassstudentquiz.status as studentquizstatus'), 'tblclassstudentquiz.endtime', 'tblclassstudentquiz.starttime' , 
-                DB::raw('TIMESTAMPDIFF(SECOND, now(), endtime) as timeleft'),
-                DB::raw('tblclassstudentquiz.content as studentquizcontent')
-            )
-            ->where('tblclassquiz.id', $id)
-            ->get()->first();
+            });
+
+         }else{
+
+
+            $quiz = DB::table('tblclassquiz')
+            ->leftjoin('tblclassstudentquiz', function($join) 
+            {
+                $join->on('tblclassquiz.id', '=', 'tblclassstudentquiz.quizid');
+                $join->on('tblclassstudentquiz.userid',  '=', DB::raw('1234'));
+            });
+
+         }
+
+         $quiz = $quiz->leftJoin('students', 'tblclassstudentquiz.userid', 'students.ic')
+         ->leftJoin('tblclassquizstatus', 'tblclassquiz.status', 'tblclassquizstatus.id')
+         ->select('tblclassquiz.*', 'tblclassstudentquiz.userid', 'tblclassstudentquiz.quizid','students.name', 
+             DB::raw('tblclassquiz.status as classquizstatus'),
+             DB::raw('tblclassstudentquiz.status as studentquizstatus'), 'tblclassstudentquiz.endtime', 'tblclassstudentquiz.starttime' , 
+             DB::raw('TIMESTAMPDIFF(SECOND, now(), endtime) as timeleft'),
+             DB::raw('tblclassstudentquiz.content as studentquizcontent')
+         )
+         ->where('tblclassquiz.id', $id)
+         ->get()->first();
+
+        
 
         //dd($quiz);
 

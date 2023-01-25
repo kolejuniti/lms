@@ -667,22 +667,42 @@ class TestController extends Controller
     public function testview(Request $request){
 
         $id = $request->test;
-        $test = DB::table('tblclasstest')
+
+        if(DB::table('tblclassstudenttest')
+        ->where([
+            ['userid', Session::get('StudInfo')->ic],
+            ['testid', $id]
+         ])->exists()) {
+
+            $test = DB::table('tblclasstest')
             ->leftjoin('tblclassstudenttest', function($join) 
             {
                 $join->on('tblclasstest.id', '=', 'tblclassstudenttest.testid');
                 $join->on('tblclassstudenttest.userid',  '=', DB::raw(Session::get('StudInfo')->ic));
-            })
-            ->leftJoin('students', 'tblclassstudenttest.userid', 'students.ic')
-            ->leftJoin('tblclassteststatus', 'tblclasstest.status', 'tblclassteststatus.id')
-            ->select('tblclasstest.*', 'tblclassstudenttest.userid', 'tblclassstudenttest.testid','students.name', 
-                DB::raw('tblclasstest.status as classteststatus'),
-                DB::raw('tblclassstudenttest.status as studentteststatus'), 'tblclassstudenttest.endtime', 'tblclassstudenttest.starttime' , 
-                DB::raw('TIMESTAMPDIFF(SECOND, now(), endtime) as timeleft'),
-                DB::raw('tblclassstudenttest.content as studenttestcontent')
-            )
-            ->where('tblclasstest.id', $id)
-            ->get()->first();
+            });
+
+         }else{
+
+
+            $test = DB::table('tblclasstest')
+            ->leftjoin('tblclassstudenttest', function($join) 
+            {
+                $join->on('tblclasstest.id', '=', 'tblclassstudenttest.testid');
+                $join->on('tblclassstudenttest.userid',  '=', DB::raw('1234'));
+            });
+
+         }
+
+         $test = $test->leftJoin('students', 'tblclassstudenttest.userid', 'students.ic')
+         ->leftJoin('tblclassteststatus', 'tblclasstest.status', 'tblclassteststatus.id')
+         ->select('tblclasstest.*', 'tblclassstudenttest.userid', 'tblclassstudenttest.testid','students.name', 
+             DB::raw('tblclasstest.status as classteststatus'),
+             DB::raw('tblclassstudenttest.status as studentteststatus'), 'tblclassstudenttest.endtime', 'tblclassstudenttest.starttime' , 
+             DB::raw('TIMESTAMPDIFF(SECOND, now(), endtime) as timeleft'),
+             DB::raw('tblclassstudenttest.content as studenttestcontent')
+         )
+         ->where('tblclasstest.id', $id)
+         ->get()->first();
 
         //dd($test);
 
