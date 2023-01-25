@@ -684,7 +684,7 @@ class QuizController extends Controller
             {
                 $join->on('tblclassquiz.id', '=', 'tblclassstudentquiz.quizid');
             })
-            ->where('tblclassstudentquiz.userid',  '=', DB::raw(Session::get('StudInfo')->ic));
+            ->where('tblclassstudentquiz.userid',  '=', Session::get('StudInfo')->ic);
 
          }else{
 

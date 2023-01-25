@@ -679,7 +679,8 @@ class TestController extends Controller
             {
                 $join->on('tblclasstest.id', '=', 'tblclassstudenttest.testid');
             })
-            ->where('tblclassstudenttest.userid',  '=', DB::raw(Session::get('StudInfo')->ic));
+            ->where('tblclassstudenttest.userid',  '=', Session::get('StudInfo')->ic);
+
          }else{
 
 
