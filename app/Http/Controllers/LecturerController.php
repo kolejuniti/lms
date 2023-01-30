@@ -1260,14 +1260,21 @@ class LecturerController extends Controller
             'classstarttime' => $data['time_from'],
             'classendtime' => $data['time_to']
         ]);
+        //dd($request->chapter);
 
-        foreach($request->chapter as $chp)
+        if(is_array($request->chapter))
         {
-            DB::table('classchapter')->insert([
-                'chapterid' => $chp,
-                'classid' => $id
-            ]);
+
+            foreach($request->chapter as $chp)
+            {
+                DB::table('classchapter')->insert([
+                    'chapterid' => $chp,
+                    'classid' => $id
+                ]);
+            }
         }
+
+        
 
         return redirect()->back()->with('message', 'Online Class has successfully submitted, please check online class table!');
         
