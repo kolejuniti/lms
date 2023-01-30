@@ -427,7 +427,8 @@ class TestController extends Controller
                 'tblclassstudenttest.userid',
                 'tblclassstudenttest.submittime',
                 DB::raw('tblclassstudenttest.status as studentteststatus'),
-                'tblclasstest.duration','students.name')
+                'tblclasstest.duration','students.name',
+                'tblclasstest.total_mark')
             ->where('tblclassstudenttest.testid', $id)
             ->where('tblclassstudenttest.userid', $userid)->get()->first();
        
@@ -544,6 +545,7 @@ class TestController extends Controller
        
         $data['test'] = $testformdata;
         $data['comments'] = $test->comments;
+        $data['totalmark'] = $quiz->total_mark;
         $data['testid'] = $test->testid;
         $data['testtitle'] = $test->title;
         $data['testduration'] = $test->duration;
@@ -727,6 +729,11 @@ class TestController extends Controller
 
                 if(str_contains($testformdata[$index]->className, "feedback-text")){
                     $testformdata[$index]->className = "feedback-text d-none";
+                    unset($testformdata[$index]->label);
+                }
+
+                if(str_contains($testformdata[$index]->className, "inputmark")){
+                    $testformdata[$index]->className = "inputmark d-none";
                     unset($testformdata[$index]->label);
                 }
             }

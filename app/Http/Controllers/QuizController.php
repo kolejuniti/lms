@@ -428,7 +428,8 @@ class QuizController extends Controller
                 'tblclassstudentquiz.userid',
                 'tblclassstudentquiz.submittime',
                 DB::raw('tblclassstudentquiz.status as studentquizstatus'),
-                'tblclassquiz.duration','students.name')
+                'tblclassquiz.duration','students.name',
+                'tblclassquiz.total_mark')
             ->where('tblclassstudentquiz.quizid', $id)
             ->where('tblclassstudentquiz.userid', $userid)->get()->first();
        
@@ -545,6 +546,7 @@ class QuizController extends Controller
        
         $data['quiz'] = $quizformdata;
         $data['comments'] = $quiz->comments;
+        $data['totalmark'] = $quiz->total_mark;
         $data['quizid'] = $quiz->quizid;
         $data['quiztitle'] = $quiz->title;
         $data['quizduration'] = $quiz->duration;
@@ -734,6 +736,11 @@ class QuizController extends Controller
 
                 if(str_contains($quizformdata[$index]->className, "feedback-text")){
                     $quizformdata[$index]->className = "feedback-text d-none";
+                    unset($quizformdata[$index]->label);
+                }
+
+                if(str_contains($quizformdata[$index]->className, "inputmark")){
+                    $quizformdata[$index]->className = "inputmark d-none";
                     unset($quizformdata[$index]->label);
                 }
             }

@@ -69,6 +69,29 @@ class LecturerController extends Controller
 
     }
 
+    public function settingTheme(Request $request)
+    {
+        $user = Auth::user();
+
+        if(DB::table('user_setting')->where('user_ic', $user->ic)->exists())
+        {
+
+            DB::table('user_setting')->where('user_ic', $user->ic)->update([
+                'theme' => $request->theme
+            ]);
+
+        }else{
+
+            DB::table('user_setting')->insert([
+                'user_ic' => $user->ic,
+                'theme' => $request->theme
+            ]);
+
+        }
+
+
+    }
+
     public function getCourseList(Request $request)
     {
         if(isset($request->search) && isset($request->session))
@@ -1500,10 +1523,12 @@ class LecturerController extends Controller
             }
         }
 
-        Mail::send('emails.welcome', $data, function($message) use ($test)
-        {    
-            $message->to($test)->subject('Test');    
-        });
+        //$temp = ['hafiyyaimann1998@gmail.com'];
+
+        //Mail::send('emails.welcome', $data, function($message) use ($temp)
+        //{    
+        //    $message->to($temp)->subject('Test');    
+        //});
 
         //dd($data);
 
