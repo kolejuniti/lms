@@ -128,6 +128,7 @@ Route::post('/AR/schedule/store', [App\Http\Controllers\AR_Controller::class, 'd
 Route::get('/lecturer', [App\Http\Controllers\LecturerController::class, 'index'])->name('lecturer');
 Route::get('/lecturer/setting', [App\Http\Controllers\LecturerController::class, 'setting'])->name('lecturer.setting');
 Route::post('/lecturer/update', [App\Http\Controllers\LecturerController::class, 'updateSetting']);
+Route::post('/lecturer/update/theme', [App\Http\Controllers\LecturerController::class, 'settingTheme']);
 Route::post('/lecturer/course/filter', [App\Http\Controllers\LecturerController::class, 'getCourseList']);
 Route::delete('/lecturer/content/delete', [App\Http\Controllers\LecturerController::class, 'deleteContent']);
 Route::post('/lecturer/content/rename', [App\Http\Controllers\LecturerController::class, 'renameContent']);
