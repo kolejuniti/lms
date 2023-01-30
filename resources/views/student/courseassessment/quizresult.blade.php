@@ -266,7 +266,7 @@ function renderForm(formdata){
 }
 
 function renderMark(){
-    var total_mark = 0, total_correct_mark = 0;
+    var total_mark = 0, total_correct_mark = 0; total_correct_input = 0; total_all = 0;
    
     $('.collected-marks').each((i)=>{
         var checkbox = $($('.collected-marks')[i]);
@@ -281,7 +281,16 @@ function renderMark(){
         total_mark = total_mark + mark;
     });
 
-    $('#participant-mark').html(total_correct_mark + " Mark");
+   
+    $('.inputmark').each(function() {
+        total_correct_input += parseInt($(this).val());
+    });
+
+    //alert(total_correct_input);
+
+    total_all = total_correct_mark + total_correct_input;
+
+    $('#participant-mark').html(total_all + " Mark");
     //$('#total_mark').html(total_mark + " Mark");
 }
 </script>
