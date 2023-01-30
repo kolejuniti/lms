@@ -116,7 +116,10 @@
 	<input type="hidden" id="custom_progress_width" value="0">
 </div>
 
-<body class="hold-transition light-skin sidebar-mini theme-primary fixed sidebar-collapse">
+@php
+	$theme = DB::table('user_setting')->where('user_ic', Auth::user()->ic)->first();
+@endphp
+<body class="hold-transition {{ (empty($theme->theme) ? 'light' : $theme->theme) }}-skin sidebar-mini theme-primary fixed sidebar-collapse">
 	
 <div class="wrapper">
 	<div id="loader"></div>
@@ -170,8 +173,8 @@
               <a href="javascript:void(0)" title="skin Change" class="waves-effect skin-toggle waves-light">
 			  	<label class="switch">
 					<input type="checkbox" data-mainsidebarskin="toggle" id="toggle_left_sidebar_skin">
-					<span class="switch-on"><i data-feather="moon"></i></span>
-					<span class="switch-off"><i data-feather="sun"></i></span>
+					<span class="switch-on" onclick="clickFn('dark')"><i data-feather="moon"></i></span>
+					<span class="switch-off" onclick="clickFn('light')"><i data-feather="sun"></i></span>
 				</label>
 			  </a>				
             </li>
@@ -261,9 +264,9 @@
         		<li>
 					<a href="{{ route('lecturer') }}" class="{{ (route('lecturer') == Request::url()) ? 'active' : ''}}"><i data-feather="bookmark"></i><span>Course</span></a>
 				</li>
-        		<li>
+				<li>
 					<a href="{{ Storage::disk('linode')->url('classschedule/index.htm') }}" target="_blank" class="{{ (route('lecturer') == Request::url()) ? 'active' : ''}}"><i data-feather="layout"></i><span>Schedule</span></a>
-				</li>  
+				</li>    
 			  </ul>
 			  <div class="sidebar-widgets">
 				  <div class="mx-25 mb-30 pb-20 side-bx bg-primary-light rounded20">
@@ -434,6 +437,38 @@
 <script src="{{ asset('assets/assets/vendor_components/select2/dist/js/select2.full.js')}}"></script>
  --}}
 
+ <script>
+
+	function clickFn(event) {
+	
+		var theme = event;
+		
+		//alert(event);
+	
+		return $.ajax({
+				headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
+				url      : "{{ url('lecturer/update/theme') }}",
+				method   : 'POST',
+				data 	 : {theme: theme},
+				error:function(err){
+					alert("Error");
+					console.log(err);
+				},
+				success  : function(data){
+					
+					//$('#lecturer-selection-div').removeAttr('hidden');
+					//$('#lecturer').selectpicker('refresh');
+		  
+					//$('#chapter').removeAttr('hidden');
+						//$('#status').html(data);
+						//$('#myTable').DataTable();
+						//$('#group').selectpicker('refresh');
+				}
+			});
+	
+	}
+	
+</script>
 
 @yield('content')
 

@@ -8,7 +8,7 @@
     <meta name="author" content="">
 	<meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="icon" href="{{ asset('assets/images/favicon.ico') }}">
-    <title>UCMS - @yield('title')</title>
+    <title>EduHub - @yield('title')</title>
 	<!-- Vendors Style-->
 	<link rel="stylesheet" href="{{ asset('assets/src/css/vendors_css.css') }}">
 	<!-- Style-->  
@@ -21,11 +21,10 @@
 	{{-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/css-skeletons@1.0.3/css/css-skeletons.min.css"/> --}}
 	<link rel="stylesheet" href="https://unpkg.com/css-skeletons@1.0.3/css/css-skeletons.min.css" />
 
-
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.8.2/dist/alpine.min.js" defer></script>
 	
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
   </head>
 
 <style>
@@ -104,7 +103,10 @@
 	<input type="hidden" id="custom_progress_width" value="0">
 </div>
 
-<body class="hold-transition light-skin sidebar-mini theme-primary fixed sidebar-collapse">
+@php
+	$theme = DB::table('user_setting')->where('user_ic', Auth::user()->ic)->first();
+@endphp
+<body class="hold-transition {{ (empty($theme->theme) ? 'light' : $theme->theme) }}-skin sidebar-mini theme-primary fixed sidebar-collapse">
 	
 <div class="wrapper">
 	<div id="loader"></div>
@@ -119,8 +121,8 @@
 			  <span class="dark-logo"><img src="{{ asset('assets/images/logo-letter-white.png') }}" alt="logo"></span>
 		  </div>
 		  <div class="logo-lg">
-			  <span class="light-logo"><img src="{{ asset('assets/images/logo_ucms.png') }}" alt="logo" class="eduhub"></span>
-			  <span class="dark-logo"><img src="{{ asset('assets/images/logo_ucms.png') }}" alt="logo"></span>
+			  <span class="light-logo"><img src="{{ asset('assets/images/logo-dark-text.png') }}" alt="logo" class="eduhub"></span>
+			  <span class="dark-logo"><img src="{{ asset('assets/images/logo-light-text.png') }}" alt="logo"></span>
 		  </div>
 		</a>	
 	</div>   
@@ -158,8 +160,8 @@
               <a href="javascript:void(0)" title="skin Change" class="waves-effect skin-toggle waves-light">
 			  	<label class="switch">
 					<input type="checkbox" data-mainsidebarskin="toggle" id="toggle_left_sidebar_skin">
-					<span class="switch-on"><i data-feather="moon"></i></span>
-					<span class="switch-off"><i data-feather="sun"></i></span>
+					<span class="switch-on" onclick="clickFn('dark')"><i data-feather="moon"></i></span>
+					<span class="switch-off" onclick="clickFn('light')"><i data-feather="sun"></i></span>
 				</label>
 			  </a>				
             </li>
@@ -216,7 +218,7 @@
 							<p class="pt-5 fs-14 mb-0 fw-700"></p>
 							<small class="fs-10 mb-0 text-uppercase text-mute"></small>
 						</div>
-						<img src="{{ asset('assets/images/avatar/avatar-13.png') }}" class="avatar rounded-circle bg-primary-light h-40 w-40" alt="" />
+						<img src="{{ (Session::get('User')->image != null) ? Storage::disk('linode')->url(Session::get('User')->image) : asset('assets/images/avatar/avatar-13.png') }}" class="avatar rounded-circle bg-primary-light h-40 w-40" alt="" />
 					</div>
 				</a>
 			</li>		  
@@ -232,15 +234,18 @@
 	  	<div class="multinav">
 		  <div class="multinav-scroll" style="height: 97%;">	
 			  <!-- sidebar menu-->
-			  <ul class="sidebar-menu" data-widget="tree">	
+			  <ul class="sidebar-menu" data-widget="tree">
 				<li>
-				  <a href="{{ route('admin') }}"><i data-feather="home"></i><span>Dashboard</span></a>
+					<a href="{{ route('admin.dashboard') }}"><i data-feather="home"></i><span>Dashboard</span></a>
+				</li>	
+				<li>
+				  <a href="{{ route('admin') }}"><i data-feather="users"></i><span>User List</span></a>
 				</li>
 				<li>
 					<a href="{{ route('admin.create') }}"><i data-feather="user"></i><span>User</span></a>
 				</li>
 
-			<li class="treeview">
+				<li class="treeview">
 				    <a href="#"><i data-feather="clipboard"></i><span>Report</span>
 						<span class="pull-right-container">
 							<i class="fa fa-angle-left pull-right"></i>
@@ -250,10 +255,7 @@
 						<li><a href="/admin/report/lecturer">Lecturer</a></li>
 						<li><a href="/admin/report/assessment">Assessment</a></li>
 					</ul>
-				</li>
-				<li>
-					<a href="{{ Storage::disk('linode')->url('classschedule/index.htm') }}" target="_blank" class="{{ (route('lecturer') == Request::url()) ? 'active' : ''}}"><i data-feather="layout"></i><span>Schedule</span></a>
-				</li>  
+				</li> 
 
 				<!--<li>
 					<a href="" class=""><i data-feather="video"></i><span>Web Conferencing</span></a>
@@ -310,7 +312,7 @@
 			</div>
             <div>
                 <div class="d-flex flex-row">
-                    <div class=""><img src="{{ asset('assets/images/avatar/avatar-13.png') }}" alt="user" class="rounded bg-danger-light w-150" width="100"></div>
+                    <div class=""><img src="{{ (Session::get('User')->image != null) ? Storage::disk('linode')->url(Session::get('User')->image) : asset('assets/images/avatar/avatar-13.png') }}" alt="user" class="rounded bg-danger-light w-150" width="100"></div>
                     <div class="ps-20">
                         <h5 class="mb-0"></h5>
                         <p class="my-5 text-fade"></p>
@@ -434,6 +436,38 @@
 <script src="{{ asset('assets/assets/vendor_components/select2/dist/js/select2.full.js')}}"></script>
  --}}
 
+ <script>
+
+	function clickFn(event) {
+	
+		var theme = event;
+		
+		//alert(event);
+	
+		return $.ajax({
+				headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
+				url      : "{{ url('lecturer/update/theme') }}",
+				method   : 'POST',
+				data 	 : {theme: theme},
+				error:function(err){
+					alert("Error");
+					console.log(err);
+				},
+				success  : function(data){
+					
+					//$('#lecturer-selection-div').removeAttr('hidden');
+					//$('#lecturer').selectpicker('refresh');
+		  
+					//$('#chapter').removeAttr('hidden');
+						//$('#status').html(data);
+						//$('#myTable').DataTable();
+						//$('#group').selectpicker('refresh');
+				}
+			});
+	
+	}
+	
+	</script>
 
 @yield('content')
 

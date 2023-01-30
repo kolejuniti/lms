@@ -27,10 +27,6 @@
 
   	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
-	{{-- link for css bootstrap --}}
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.css" integrity="sha512-jU/7UFiaW5UBGODEopEqnbIAHOI8fO6T99m7Tsmqs2gkdujByJfkCbbfPSN4Wlqlb9TGnsuC0YgUgWkRBK7B9A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-	
-	
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.15.1/moment.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
@@ -39,7 +35,6 @@
 
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.8.2/dist/alpine.min.js" defer></script>
-	
   </head>
 
 <style>
@@ -123,6 +118,7 @@
 	{
 		opacity:0.5 !important;
 	}
+	
 </style>
 
 
@@ -248,7 +244,7 @@
 							<p class="pt-5 fs-14 mb-0 fw-700"></p>
 							<small class="fs-10 mb-0 text-uppercase text-mute"></small>
 						</div>
-						<img src="{{ (Session::get('User')->image != null) ? Storage::disk('linode')->url(Session::get('User')->image) : asset('assets/images/avatar/avatar-13.png') }}" class="avatar rounded-circle bg-primary-light h-40 w-40" alt="" />
+						<img src="{{ (Auth::user()->image != null) ? Storage::disk('linode')->url(Auth::user()->image) : asset('assets/images/avatar/avatar-13.png') }}" class="avatar rounded-circle bg-primary-light h-40 w-40" alt="" />
 					</div>
 				</a>
 			</li>		  
@@ -264,37 +260,55 @@
 	  	<div class="multinav">
 		  <div class="multinav-scroll" style="height: 97%;">	
 			  <!-- sidebar menu-->
-			  <ul class="sidebar-menu" data-widget="tree">	
-				<li>
-					<a href="{{ route('pendaftar_akademik.dashboard') }}"><i data-feather="home"></i><span>Dashboard</span></a>
-				</li>	
-				<li>
-				  <a href="{{ route('pendaftar_akademik') }}" class="{{ (route('pendaftar_akademik') == Request::url()) ? 'active' : ''}}"><i data-feather="clipboard"></i><span>Assigned Subject List</span></a>
-				</li>
-				<li>
-				  <a href="{{ route('pendaftar_akademik.student') }}" class="{{ (route('pendaftar_akademik.student') == Request::url()) ? 'active' : ''}}"><i data-feather="airplay"></i><span>Assign Subject</span></a>
-				</li>
-				<li>
-					<a href="{{ route('pendaftar_akademik.session') }}" class="{{ (route('pendaftar_akademik.session') == Request::url()) ? 'active' : ''}}"><i data-feather="trello"></i><span>Session List</span></a>
-				</li>
-				<li class="treeview">
-					<li>
-						<a href="{{ Storage::disk('linode')->url('classschedule/index.htm') }}" target="_blank" class="{{ (route('lecturer') == Request::url()) ? 'active' : ''}}"><i data-feather="layout"></i><span>Schedule</span></a>
-					</li>   
-					<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
-						<li><a href="{{ Storage::disk('linode')->url('classschedule/index.htm') }}" target="_blank" class="">View</a></li>
-						<li><a href="/AR/schedule/index" class="{{ (route('pendaftar_akademik.schedule') == Request::url()) ? 'active' : ''}}">Upload</a></li>
-					</ul>
-				</li>
-			  </ul>
-			  <div class="sidebar-widgets">
-				  <div class="mx-25 mb-30 pb-20 side-bx bg-primary-light rounded20">
-					<div class="text-center">
-						<img src="{{ asset('assets/images/svg-icon/color-svg/custom-24.svg') }}" class="sideimg p-5" alt="">
-						<h4 class="title-bx text-primary">Best Education Platform</h4>
-					</div>
-				  </div>
-			  </div>
+			  <ul class="sidebar-menu" data-widget="tree">
+			  <li>
+				<a href="{{ route('finance.dashboard') }}"><i data-feather="home"></i><span>Dashboard</span></a>
+			  </li>
+			  <li class="treeview">
+				<a href="#"><i data-feather="package"></i><span>Claims</span>
+					<span class="pull-right-container">
+						<i class="fa fa-angle-left pull-right"></i>
+					</span>
+				</a>
+				<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
+					<li><a href="{{ route('finance') }}" class="{{ (route('finance') == Request::url()) ? 'active' : ''}}">Claims Library</a></li>
+					<li><a href="{{ route('claimpackage') }}" class="{{ (route('claimpackage') == Request::url()) ? 'active' : ''}}">Claims Package</a></li>
+				</ul>
+			  </li>
+			  <li class="treeview">
+				<a href="#"><i data-feather="dollar-sign"></i><span>Payment</span>
+					<span class="pull-right-container">
+						<i class="fa fa-angle-left pull-right"></i>
+					</span>
+				</a>
+				<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
+					<li><a href="{{ route('finance.payment') }}" class="{{ (route('finance.payment') == Request::url()) ? 'active' : ''}}">Pre-Registration</a></li>
+					<li><a href="{{ route('finance.payment.claim') }}" class="{{ (route('finance.payment.claim') == Request::url()) ? 'active' : ''}}">Claims</a></li>
+					<li><a href="{{ route('finance.payment.tuition') }}" class="{{ (route('finance.payment.tuition') == Request::url()) ? 'active' : ''}}">Daily Payment</a></li>
+				</ul>
+			  </li>
+			  <li class="treeview">
+				<a href="#"><i data-feather="gift"></i><span>Sponsorship</span>
+					<span class="pull-right-container">
+						<i class="fa fa-angle-left pull-right"></i>
+					</span>
+				</a>
+				<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
+					<li><a href="{{ route('sponsorship.library') }}" class="{{ (route('sponsorship.library') == Request::url()) ? 'active' : ''}}">Sponsor Library</a></li>
+					<li><a href="{{ route('sponsorship.payment') }}" class="{{ (route('sponsorship.payment') == Request::url()) ? 'active' : ''}}">Sponsor Payment</a></li>
+				</ul>
+			  </li>
+			  <li class="treeview">
+				<a href="#"><i data-feather="clipboard"></i><span>Report</span>
+					<span class="pull-right-container">
+						<i class="fa fa-angle-left pull-right"></i>
+					</span>
+				</a>
+				<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
+					<li><a href="{{ route('finance.statement') }}" class="{{ (route('finance.statement') == Request::url()) ? 'active' : ''}}">Student Account Statement</a></li>
+					<li><a href="{{ route('finance.receiptList') }}" class="{{ (route('finance.receiptList') == Request::url()) ? 'active' : ''}}">Receipt Report</a></li>
+				</ul>
+			  </li>
 		  </div>
 		</div>
     </section>
@@ -332,7 +346,7 @@
 			</div>
             <div>
                 <div class="d-flex flex-row">
-                    <div class=""><img src="{{ (Session::get('User')->image != null) ? Storage::disk('linode')->url(Session::get('User')->image) : asset('assets/images/avatar/avatar-13.png') }}" alt="user" class="rounded bg-danger-light w-150" width="100"></div>
+                    <div class=""><img src="{{ (Auth::user()->image != null) ? Storage::disk('linode')->url(Auth::user()->image) : asset('assets/images/avatar/avatar-13.png') }}" alt="user" class="rounded bg-danger-light w-150" width="100"></div>
                     <div class="ps-20">
                         <h5 class="mb-0"></h5>
                         <p class="my-5 text-fade"></p>
@@ -445,10 +459,7 @@
 
 	
 <script src="{{ asset('assets/src/js/pages/component-animations-css3.js')}}"></script>
-
-
-{{-- js for bootstrap --}}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.js" integrity="sha512-U2WE1ktpMTuRBPoCFDzomoIorbOyUv0sP8B+INA3EzNAhehbzED1rOJg6bCqPf/Tuposxb5ja/MAUnC8THSbLQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>	
+	
 
 {{-- 
 <script src="{{ asset('assets/src/js/datagrid/datatables/datatables.bundle.js') }}"></script>

@@ -121,7 +121,10 @@
 	<input type="hidden" id="custom_progress_width" value="0">
 </div>
 
-<body class="hold-transition light-skin sidebar-mini theme-primary fixed sidebar-collapse">
+@php
+	$theme = DB::table('user_setting')->where('user_ic', Auth::user()->ic)->first();
+@endphp
+<body class="hold-transition {{ (empty($theme->theme) ? 'light' : $theme->theme) }}-skin sidebar-mini theme-primary fixed sidebar-collapse">
 	
 <div class="wrapper">
 	<div id="loader"></div>
@@ -172,13 +175,14 @@
       <div class="navbar-custom-menu r-side">
         <ul class="nav navbar-nav">
 			<li class="btn-group d-md-inline-flex d-none">
-              <a href="javascript:void(0)" title="skin Change" class="waves-effect skin-toggle waves-light">
-			  	<label class="switch">
-					<input type="checkbox" data-mainsidebarskin="toggle" id="toggle_left_sidebar_skin">
-					<span class="switch-on"><i data-feather="moon"></i></span>
-					<span class="switch-off"><i data-feather="sun"></i></span>
-				</label>
-			  </a>				
+				<a href="javascript:void(0)" title="skin Change" class="waves-effect skin-toggle waves-light">
+					<label class="switch">
+						<input type="checkbox" data-mainsidebarskin="toggle" name="theme" id="toggle_left_sidebar_skin">
+						<span class="switch-on" onclick="clickFn('dark')"><i data-feather="moon"></i></span>
+						<span class="switch-off" onclick="clickFn('light')"><i data-feather="sun"></i></span>
+						
+					</label>
+				</a>			
             </li>
 			<!--<li class="dropdown notifications-menu btn-group">
 				<a href="#" class="waves-effect waves-light btn-primary-light svg-bt-icon bg-transparent" data-bs-toggle="dropdown" title="Notifications">
@@ -300,7 +304,7 @@
 					<li><a href="/lecturer/final/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Final</a></li>
 					<!--<li><a href="/lecturer/paperwork/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Paperwork</a></li>
 					<li><a href="/lecturer/practical/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Practical</a></li>-->
-					<li><a href="/lecturer/other/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Others</a></li>
+					<li><a href="/lecturer/other/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Lain-Lain</a></li>
 					<li><a href="/lecturer/extra/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Extra</a></li>
 					<li><a href="/lecturer/report/{{ Session::get('CourseID') }}" class="">Report</a></li>
 					</ul>
@@ -313,7 +317,7 @@
 					</a>
 					<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
 						<!--<li><a href="/lecturer/class/schedule" class="">Manage Scedule</a></li>-->
-						<!--<li><a href="https://uniti.edu.my/wp-content/uploads/2022/08/index.htm" target="_blank" class="">Scedule</a></li>-->
+						<li><a href="https://uniti.edu.my/wp-content/uploads/2022/08/index.htm" target="_blank" class="">Scedule</a></li>
 						<li class="treeview">
 									<a href="#"><span>Attendance</span>
 									</a>
@@ -536,6 +540,38 @@
 <script src="{{ asset('assets/assets/vendor_components/select2/dist/js/select2.full.js')}}"></script>
  --}}
 
+<script>
+
+function clickFn(event) {
+
+	var theme = event;
+	
+	//alert(event);
+
+	return $.ajax({
+            headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
+            url      : "{{ url('lecturer/update/theme') }}",
+            method   : 'POST',
+            data 	 : {theme: theme},
+            error:function(err){
+                alert("Error");
+                console.log(err);
+            },
+            success  : function(data){
+                
+                //$('#lecturer-selection-div').removeAttr('hidden');
+                //$('#lecturer').selectpicker('refresh');
+      
+                //$('#chapter').removeAttr('hidden');
+                    $('#status').html(data);
+                    $('#myTable').DataTable();
+                    //$('#group').selectpicker('refresh');
+            }
+        });
+
+}
+
+</script>
 
 
 @yield('javascript')

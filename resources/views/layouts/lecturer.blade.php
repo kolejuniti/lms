@@ -8,7 +8,7 @@
     <meta name="author" content="">
 	<meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="icon" href="{{ asset('assets/images/favicon.ico') }}">
-    <title>UCMS - @yield('title')</title>
+    <title>EduHub - @yield('title')</title>
 	<!-- Vendors Style-->
 	<link rel="stylesheet" href="{{ asset('assets/src/css/vendors_css.css') }}">
 	<!-- Style-->  
@@ -104,7 +104,10 @@
 	<input type="hidden" id="custom_progress_width" value="0">
 </div>
 
-<body class="hold-transition light-skin sidebar-mini theme-primary fixed sidebar-collapse">
+@php
+	$theme = DB::table('user_setting')->where('user_ic', Auth::user()->ic)->first();
+@endphp
+<body class="hold-transition {{ (empty($theme->theme) ? 'light' : $theme->theme) }}-skin sidebar-mini theme-primary fixed sidebar-collapse">
 	
 <div class="wrapper">
 	<div id="loader"></div>
@@ -119,8 +122,8 @@
 			  <span class="dark-logo"><img src="{{ asset('assets/images/logo-letter-white.png') }}" alt="logo"></span>
 		  </div>
 		  <div class="logo-lg">
-			  <span class="light-logo"><img src="{{ asset('assets/images/logo_ucms.png') }}" alt="logo" class="eduhub"></span>
-			  <span class="dark-logo"><img src="{{ asset('assets/images/logo_ucms.png') }}" alt="logo"></span>
+			  <span class="light-logo"><img src="{{ asset('assets/images/logo-dark-text.png') }}" alt="logo" class="eduhub"></span>
+			  <span class="dark-logo"><img src="{{ asset('assets/images/logo-light-text.png') }}" alt="logo"></span>
 		  </div>
 		</a>	
 	</div>   
@@ -158,8 +161,8 @@
               <a href="javascript:void(0)" title="skin Change" class="waves-effect skin-toggle waves-light">
 			  	<label class="switch">
 					<input type="checkbox" data-mainsidebarskin="toggle" id="toggle_left_sidebar_skin">
-					<span class="switch-on"><i data-feather="moon"></i></span>
-					<span class="switch-off"><i data-feather="sun"></i></span>
+					<span class="switch-on" onclick="clickFn('dark')"><i data-feather="moon"></i></span>
+					<span class="switch-off" onclick="clickFn('light')"><i data-feather="sun"></i></span>
 				</label>
 			  </a>				
             </li>
@@ -236,12 +239,9 @@
         		<li>
 					<a href="{{ route('lecturer') }}" class="{{ (route('lecturer') == Request::url()) ? 'active' : ''}}"><i data-feather="bookmark"></i><span>Course</span></a>
 				</li>
-        		<li>
+				<li>
 					<a href="{{ Storage::disk('linode')->url('classschedule/index.htm') }}" target="_blank" class="{{ (route('lecturer') == Request::url()) ? 'active' : ''}}"><i data-feather="layout"></i><span>Schedule</span></a>
-				</li>   
-        		<!--<li>
-					<a href="{{ url('storage/classschedule/index.htm') }}" target="_blank" class="{{ (route('lecturer') == Request::url()) ? 'active' : ''}}"><i data-feather="layout"></i><span>Schedule</span></a>
-				</li>-->
+				</li>    
 			  </ul>
 			  <div class="sidebar-widgets">
 				  <div class="mx-25 mb-30 pb-20 side-bx bg-primary-light rounded20">
@@ -314,12 +314,12 @@
 			  <div>
 				  <div class="col-sm-12 d-flex justify-content-center">
 					<a href="/lecturer/setting" type="button" class="waves-effect waves-light btn btn-secondary btn-rounded mb-5" style="margin-right:10px;"><i class="mdi mdi-account-edit"></i> Edit</a>
-					<a href="{{ route('logout') }}" type="button" class="waves-effect waves-light btn btn-secondary btn-rounded mb-5"
+					<a href="{{ route('custom_logout') }}" type="button" class="waves-effect waves-light btn btn-secondary btn-rounded mb-5"
 					onclick="event.preventDefault();
 					document.getElementById('logout-form').submit();">
 					<i class="mdi mdi-logout"></i>{{ __('Logout') }}</a>
   
-              <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+              <form id="logout-form" action="{{ route('custom_logout') }}" method="POST" class="d-none">
               @csrf
               </form>
 			  	  </div>
@@ -412,6 +412,38 @@
 <script src="{{ asset('assets/assets/vendor_components/select2/dist/js/select2.full.js')}}"></script>
  --}}
 
+ <script>
+
+	function clickFn(event) {
+	
+		var theme = event;
+		
+		//alert(event);
+	
+		return $.ajax({
+				headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
+				url      : "{{ url('lecturer/update/theme') }}",
+				method   : 'POST',
+				data 	 : {theme: theme},
+				error:function(err){
+					alert("Error");
+					console.log(err);
+				},
+				success  : function(data){
+					
+					//$('#lecturer-selection-div').removeAttr('hidden');
+					//$('#lecturer').selectpicker('refresh');
+		  
+					//$('#chapter').removeAttr('hidden');
+						$('#status').html(data);
+						$('#myTable').DataTable();
+						//$('#group').selectpicker('refresh');
+				}
+			});
+	
+	}
+	
+	</script>
 
 @yield('content')
 
