@@ -156,6 +156,7 @@ var selected_test = {{ json_encode($data['testid']) }};
 var selected_participant = {!! json_encode($data['testuserid']) !!};
 var test_status = {{ json_encode($data['studentteststatus']) }};
 var index = "{{ $data['questionindex'] }}";
+var total = "{{ $data['totalmark'] }}";
 
 $(document).ready(function(){
 
@@ -177,6 +178,13 @@ jQuery(function($) {
     /* On Clicks */
     document.getElementById('publish-result-btn').addEventListener('click', function() {
     
+        if(total_all > total)
+        {
+
+            alert('Please make sure the total mark does not exceed ' + total)
+
+        }else{
+
             $('[name="radio-question"]').removeAttr('disabled');
             $('[name="checkbox-question[]"]').removeAttr('disabled');
 
@@ -201,6 +209,8 @@ jQuery(function($) {
                     location.href = "/lecturer/test/"+ selected_test +"/"+selected_participant+"/result";
                 }
             });
+
+        }
     }, false);
     
    
@@ -228,6 +238,16 @@ jQuery(function($) {
     $(document).on('change', '.collected-marks', function(e){
         renderMark();
     });
+
+    $(document).on('keyup', '.inputmark', function(e){
+        renderMark();
+    });
+
+
+
+    
+
+    
 });
 
 
@@ -259,7 +279,7 @@ function renderForm(formdata){
 }
 
 function renderMark(){
-    var total_mark = 0, total_correct_mark = 0;
+    var total_mark = 0, total_correct_mark = 0; total_correct_input = 0; total_all = 0;
    
     $('.collected-marks').each((i)=>{
         var checkbox = $($('.collected-marks')[i]);
@@ -274,7 +294,16 @@ function renderMark(){
         total_mark = total_mark + mark;
     });
 
-    $('#participant-mark').html(total_correct_mark + " Mark");
+   
+    $('.inputmark').each(function() {
+        total_correct_input += parseInt($(this).val());
+    });
+
+    //alert(total_correct_input);
+
+    total_all = total_correct_mark + total_correct_input;
+
+    $('#participant-mark').html(total_all + " Mark");
     //$('#total_mark').html(total_mark + " Mark");
 }
 </script>

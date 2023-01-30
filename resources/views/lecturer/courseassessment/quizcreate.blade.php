@@ -184,6 +184,11 @@ div.form-actions.btn-group > button{
                                         <a id="appendfield2" class="appendfield4 waves-effect waves-light btn btn-app btn-success-light " data-label="Question" type="button">
                                             <i class="fa fa-plus"></i> <b>Subjective Question</b></a>
                                     </div>
+                                    <div class="pull-right  badge badge-xl badge-success" style="font-size:1.2em">
+                                        <label id="participant-mark"></label> 
+                                        <input type="text" id="collectmark" name="collectmark" hidden>
+                                        <!--/<label id="total_mark" ></label>-->
+                                </div>
                                 </div>
 
                                 <div class="col-md-12">
@@ -230,6 +235,7 @@ div.form-actions.btn-group > button{
 <script>
 var selected_from = '';
 var selected_to = '';
+var total_correct_mark = 0;
 
 $(document).ready(function(){
     if('{{ $data['quizid'] }}' != '')
@@ -279,7 +285,30 @@ function getDuration(from,to)
 
 }
 
+var intervalId = window.setInterval(function(){
+    total_correct_mark = 0;
+    renderMark();
+}, 500);
 
+
+
+function renderMark(){
+    
+   
+    $('.collected-marks').each((i)=>{
+        var checkbox = $($('.collected-marks')[i]);
+
+        var mark = checkbox.val();
+        mark = parseInt(mark);
+
+        
+        total_correct_mark = total_correct_mark + mark;
+        
+    });
+
+    $('#participant-mark').html(total_correct_mark + " Mark");
+    $('#collectmark').val(total_correct_mark);
+}
 </script>
 
 <script>
@@ -336,6 +365,8 @@ var quiz            = {!! empty($data['quiz']) ? "''" : json_encode($data['quiz'
 var quiz_status  = {!! empty($data['quizstatus']) ? "''" : $data['quizstatus'] !!};
 var quizFormData    = [];
 var i = 0;
+
+var formRenderInstance;
 
 jQuery(function($) {
 
@@ -396,6 +427,7 @@ jQuery(function($) {
                     i = 1;
                 },
                 onSave: function() {
+                    clearInterval(intervalId);
                     $fbEditor.toggle();
                     $formContainer.toggle();
                     $('#form-div').hide();
@@ -647,6 +679,17 @@ jQuery(function($) {
                     }
                 ]
             };
+
+            formBuilder.actions.addField(field, index);
+
+            field = {
+                type: 'number',
+                className: 'inputmark form-control',
+                placeholder: 'Mark',
+                value: '0',
+                min: '0',
+                label: '',
+            };
             
             formBuilder.actions.addField(field, index);
 
@@ -666,6 +709,7 @@ jQuery(function($) {
     $('.edit-form', $formContainer).click(function() {
         $fbEditor.toggle();
         $formContainer.toggle();
+
     });
 
     document.getElementById('publish-quiz').addEventListener('click', function() {
@@ -688,8 +732,15 @@ jQuery(function($) {
     }, false);
     
     $(document).on('click', '.edit-form', function(e){
+        
+        $('#fb-render').empty();
         $('#form-div').show();
         $('.addFieldWrap').show();
+        
+        intervalId = window.setInterval(function(){
+            total_correct_mark = 0;
+            renderMark();
+        }, 500);
     });
 
     /* On Keyups */
@@ -702,36 +753,45 @@ jQuery(function($) {
         if($('input[name="group[]"]').is(':checked') && $('input[name="chapter[]"]').is(':checked'))
         {
 
-            $.ajax({
-                headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
-                url: "{{ url('lecturer/quiz/insert') }}",
-                type: 'POST',
-                data:  { 
-                    class: selected_class, 
-                    quiz: selected_quiz,
-                    reuse: reuse,
-                    title: $("#quiz-title").val(),
-                    duration: $("#quiz-duration").val(),
-                    questionindex: $("#question-index").val(),
-                    from: $("#from").val(),
-                    to: $("#to").val(),
-                    marks: $("#total-marks").val(),
-                    group: $('input[name="group[]"]:checked').map(function(){ 
-                        return this.value; 
-                    }).get(),
-                    chapter: $('input[name="chapter[]"]:checked').map(function(){ 
-                        return this.value; 
-                    }).get(),
-                    status: status,
-                    data:window.JSON.stringify({formData: $fbEditor.formRender("userData") })
-                },
-                error:function(err){
-                    console.log(err);
-                },
-                success:function(res){
-                    location.href= "/lecturer/quiz/{{ Session::get('CourseIDS') }}";
-                }
-            });
+            if($("#total-marks").val() == $("#collectmark").val())
+            {
+
+                $.ajax({
+                    headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
+                    url: "{{ url('lecturer/quiz/insert') }}",
+                    type: 'POST',
+                    data:  { 
+                        class: selected_class, 
+                        quiz: selected_quiz,
+                        reuse: reuse,
+                        title: $("#quiz-title").val(),
+                        duration: $("#quiz-duration").val(),
+                        questionindex: $("#question-index").val(),
+                        from: $("#from").val(),
+                        to: $("#to").val(),
+                        marks: $("#total-marks").val(),
+                        group: $('input[name="group[]"]:checked').map(function(){ 
+                            return this.value; 
+                        }).get(),
+                        chapter: $('input[name="chapter[]"]:checked').map(function(){ 
+                            return this.value; 
+                        }).get(),
+                        status: status,
+                        data:window.JSON.stringify({formData: $fbEditor.formRender("userData") })
+                    },
+                    error:function(err){
+                        console.log(err);
+                    },
+                    success:function(res){
+                        location.href= "/lecturer/quiz/{{ Session::get('CourseIDS') }}";
+                    }
+                });
+
+            }else{
+
+                alert('Please mark sure that collected mark and input mark are the same!');
+
+            }
 
         }else{
 
