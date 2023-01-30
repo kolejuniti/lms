@@ -131,6 +131,8 @@ class TestController extends Controller
                 ['id', $testid]
             ])->get()->first();
 
+            //dd($data['test']);
+
             $data['teststatus'] = $data['test']->status;
 
             if(isset(request()->REUSE))
@@ -246,7 +248,6 @@ class TestController extends Controller
 
         $statusReuse = empty($request->reuse) ? '' : $request->reuse;
 
-        
         if( !empty($statusReuse))
         {
             $q = DB::table('tblclasstest')->insertGetId([
@@ -512,6 +513,18 @@ class TestController extends Controller
                     $testformdata[$index]->className = "bg-red mb-4 text-danger";
                 }
 
+                if(str_contains($original_testformdata[$index]->className, "inputmark")){
+                    $testformdata[$index]->type = "number";
+
+                    if(!empty($q->userData[0])){
+                        $testformdata[$index]->label = $q->userData[0];
+                    }else{
+                        $testformdata[$index]->label = " ";
+                    }
+
+                    $testformdata[$index]->className = "inputmark form-control";
+                }
+
                 if(str_contains($original_testformdata[$index]->className, "collected-marks")){
 
                     $mark_label           = $original_testformdata[$index]->values[0]->label;
@@ -545,7 +558,7 @@ class TestController extends Controller
        
         $data['test'] = $testformdata;
         $data['comments'] = $test->comments;
-        $data['totalmark'] = $quiz->total_mark;
+        $data['totalmark'] = $test->total_mark;
         $data['testid'] = $test->testid;
         $data['testtitle'] = $test->title;
         $data['testduration'] = $test->duration;
@@ -650,7 +663,7 @@ class TestController extends Controller
                     ['student_subjek.student_ic', Session::get('StudInfos')->ic]
                 ])->get();
 
-        //dd($test);
+        //dd(Session::get('StudInfos')->ic);
 
         foreach($test as $qz)
         {
@@ -667,6 +680,10 @@ class TestController extends Controller
     }
 
     public function testview(Request $request){
+
+        //dd(str_replace('"', '', Session::get('StudInfos')->ic));
+
+        //dd(Session::get('StudInfo')->ic)
 
         $id = $request->test;
 
@@ -705,6 +722,8 @@ class TestController extends Controller
          )
          ->where('tblclasstest.id', $id)
          ->get()->first();
+
+        
 
         //dd($test);
 
@@ -854,10 +873,11 @@ class TestController extends Controller
                 'tblclasstest.duration','students.name')
             ->where('tblclassstudenttest.testid', $id)
             ->where('tblclassstudenttest.userid', $userid)->get()->first();
+
+        //dd($test);
        
         $testformdata = json_decode($test->content)->formData;
         $original_testformdata = json_decode($test->original_content)->formData;
-        
 
         $gain_mark = false;
         $correct_label = " <i style='font-size:1.5em' class='fa fa-check text-success'></i>";
@@ -935,6 +955,19 @@ class TestController extends Controller
                     $testformdata[$index]->className = "bg-red mb-4 text-danger";
                 }
 
+                if(str_contains($original_testformdata[$index]->className, "inputmark")){
+                    $testformdata[$index]->type = "number";
+
+                    if(!empty($q->userData[0])){
+                        $testformdata[$index]->label = $q->userData[0];
+                    }else{
+                        $testformdata[$index]->label = " ";
+                    }
+                    $testformdata[$index]->className = "inputmark form-control";
+
+                    //dd($testformdata[$index]);
+                }
+
                 if(str_contains($original_testformdata[$index]->className, "collected-marks")){
 
                     $mark_label           = $original_testformdata[$index]->values[0]->label;
@@ -980,10 +1013,14 @@ class TestController extends Controller
         $data['questionindex'] = $test->questionindex;
         $data['studentteststatus'] = $test->studentteststatus;
 
+        //dd($data);
+
         return view('student.courseassessment.testresult', compact('data'));
     }
 
-    //THIS IS TEST PART 2
+
+
+    //THIS IS test PART 2
 
 
     public function test2list()
@@ -1003,7 +1040,8 @@ class TestController extends Controller
         //dd(Session::get('CourseIDS'));
 
         $data = DB::table('tblclasstest')
-                ->join('users', 'tblclasstest.addby', 'users.ic')->join('tblclassteststatus', 'tblclasstest.status', 'tblclassteststatus.id')
+                ->join('users', 'tblclasstest.addby', 'users.ic')
+                ->join('tblclassteststatus', 'tblclasstest.status', 'tblclassteststatus.id')
                 ->where([
                     ['tblclasstest.classid', Session::get('CourseIDS')],
                     ['tblclasstest.sessionid', Session::get('SessionIDS')],
@@ -1322,6 +1360,7 @@ class TestController extends Controller
 
     }
 
+
     //This is test 2 Student Controller
 
 
@@ -1330,7 +1369,7 @@ class TestController extends Controller
         $chapter = [];
 
         $marks = [];
-        
+
         Session::put('CourseIDS', request()->id);
 
         if(Session::get('SessionIDS') == null)

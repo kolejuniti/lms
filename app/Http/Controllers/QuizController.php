@@ -513,6 +513,18 @@ class QuizController extends Controller
                     $quizformdata[$index]->className = "bg-red mb-4 text-danger";
                 }
 
+                if(str_contains($original_quizformdata[$index]->className, "inputmark")){
+                    $quizformdata[$index]->type = "number";
+
+                    if(!empty($q->userData[0])){
+                        $quizformdata[$index]->label = $q->userData[0];
+                    }else{
+                        $quizformdata[$index]->label = " ";
+                    }
+
+                    $quizformdata[$index]->className = "inputmark form-control";
+                }
+
                 if(str_contains($original_quizformdata[$index]->className, "collected-marks")){
 
                     $mark_label           = $original_quizformdata[$index]->values[0]->label;
@@ -941,6 +953,19 @@ class QuizController extends Controller
                         $quizformdata[$index]->label = " ";
                     }
                     $quizformdata[$index]->className = "bg-red mb-4 text-danger";
+                }
+
+                if(str_contains($original_quizformdata[$index]->className, "inputmark")){
+                    $quizformdata[$index]->type = "number";
+
+                    if(!empty($q->userData[0])){
+                        $quizformdata[$index]->label = $q->userData[0];
+                    }else{
+                        $quizformdata[$index]->label = " ";
+                    }
+                    $quizformdata[$index]->className = "inputmark form-control";
+
+                    //dd($quizformdata[$index]);
                 }
 
                 if(str_contains($original_quizformdata[$index]->className, "collected-marks")){
