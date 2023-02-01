@@ -8,7 +8,7 @@
     <meta name="author" content="">
 	<meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="icon" href="{{ asset('assets/images/favicon.ico') }}">
-    <title>UCMS - @yield('title')</title>
+    <title>EduHub - @yield('title')</title>
 	<!-- Vendors Style-->
 	<link rel="stylesheet" href="{{ asset('assets/src/css/vendors_css.css') }}">
      <!-- DataTables -->
@@ -125,8 +125,8 @@
 			  <span class="dark-logo"><img src="{{ asset('assets/images/logo-letter-white.png') }}" alt="logo"></span>
 		  </div>
 		  <div class="logo-lg">
-			  <span class="light-logo"><img src="{{ asset('assets/images/logo_ucms.png') }}" alt="logo" class="eduhub"></span>
-			  <span class="dark-logo"><img src="{{ asset('assets/images/logo_ucms.png') }}" alt="logo"></span>
+			  <span class="light-logo"><img src="{{ asset('assets/images/logo-dark-text.png') }}" alt="logo" class="eduhub"></span>
+			  <span class="dark-logo"><img src="{{ asset('assets/images/logo-light-text.png') }}" alt="logo"></span>
 		  </div>
 		</a>	
 	</div>   
@@ -222,7 +222,7 @@
 							<p class="pt-5 fs-14 mb-0 fw-700"></p>
 							<small class="fs-10 mb-0 text-uppercase text-mute"></small>
 						</div>
-						<img src="{{ Storage::disk('linode')->temporaryUrl('storage/student_image/' . Session::get('User')->ic . '.jpg',now()->addMinutes(5)) }}" class="avatar rounded-circle bg-primary-light h-40 w-40" alt="" />
+						<img src="{{ Storage::disk('linode')->url('storage/student_image/' . Session::get('User')->ic . '.jpg') }}" class="avatar rounded-circle bg-primary-light h-40 w-40" alt="" />
 					</div>
 				</a>
 			</li>		  
@@ -296,6 +296,8 @@
 					</span>
 				</a>
 				<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
+					<!--<li><a href="/student/class/schedule" class="">Manage Scedule</a></li>-->
+					<li><a href="https://uniti.edu.my/wp-content/uploads/2022/08/index.htm" target="_blank" class="">Scedule</a></li>
 					<li class="treeview">
 						<a href="#"><span>Online Class</span>
 						</a>
@@ -368,12 +370,12 @@
 			</div>
             <div>
                 <div class="d-flex flex-row">
-                    <div class=""><img src="{{ Storage::disk('linode')->temporaryUrl('storage/student_image/' . Session::get('User')->ic . '.jpg',now()->addMinutes(5)) }}" alt="user" class="rounded bg-danger-light w-150" width="100"></div>
+                    <div class=""><img src="{{ Storage::disk('linode')->url('storage/student_image/' . Session::get('User')->ic . '.jpg') }}" alt="user" class="rounded bg-danger-light w-150" width="100"></div>
                     <div class="ps-20">
                         <h5 class="mb-0"></h5>
                         <p class="my-5 text-fade"></p>
                         <a href="mailto:">
-							<span class="icon-Mail-notification me-5 text-success"><span class="path1"></span><span class="path2"></span></span> 
+							<span class="icon-Mail-notification me-5 text-success"><span class="path1"></span><span class="path2">{{ Session::get('User')->email }}</span></span> 
 						</a>
                     </div>
                 </div>
