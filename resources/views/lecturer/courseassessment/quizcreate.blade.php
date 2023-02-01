@@ -404,6 +404,7 @@ jQuery(function($) {
                     i = 1;
                 },
                 onSave: function() {
+                    clearInterval(intervalId);
                     $fbEditor.toggle();
                     $formContainer.toggle();
                     $('#form-div').hide();

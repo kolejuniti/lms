@@ -404,6 +404,7 @@ jQuery(function($) {
                     i = 1;
                 },
                 onSave: function() {
+                    clearInterval(intervalId);
                     $fbEditor.toggle();
                     $formContainer.toggle();
                     $('#form-div').hide();
@@ -789,7 +790,7 @@ jQuery(function($) {
 
             }else{
 
-                alert('Please mark sure that collected mark and input mark are the same!');
+                alert('Please make sure that collected mark and input mark are the same!');
 
             }
 
