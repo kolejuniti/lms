@@ -163,7 +163,7 @@
 				</label>
 			  </a>				
             </li>
-			<li class="dropdown notifications-menu btn-group">
+			<!--<li class="dropdown notifications-menu btn-group">
 				<a href="#" class="waves-effect waves-light btn-primary-light svg-bt-icon bg-transparent" data-bs-toggle="dropdown" title="Notifications">
 					<i data-feather="bell"></i>
 					<div class="pulse-wave"></div>
@@ -182,7 +182,7 @@
 					</div>
 				  </li>
 				  <li>
-					<!-- inner menu: contains the actual data -->
+					inner menu: contains the actual data
 					<ul class="menu sm-scrol">
 					  <li>
 						<a href="#">
@@ -205,7 +205,7 @@
 					  <a href="#">View all</a>
 				  </li>
 				</ul>
-			</li>
+			</li>-->
 			
 			
 			<!-- User Account-->
