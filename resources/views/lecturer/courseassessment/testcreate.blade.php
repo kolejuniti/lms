@@ -378,7 +378,7 @@ jQuery(function($) {
         testFormData = JSON.parse(testFormData).formData;
     }
 
-    if(reuse == null)
+    if(reuse == '')
     {
         if(test_status == 2){
             Swal.fire({

@@ -378,7 +378,7 @@ jQuery(function($) {
         quizFormData = JSON.parse(quizFormData).formData;
     }
 
-    if(reuse == null)
+    if(reuse == '')
     {
         if(quiz_status == 2){
             Swal.fire({
@@ -415,7 +415,6 @@ jQuery(function($) {
             formBuilder = $fbEditor.formBuilder(fbOptions);
         }
     }else{
-
         fbOptions = {
                 formData: quizFormData,
                 dataType: 'xml',
@@ -789,7 +788,7 @@ jQuery(function($) {
 
             }else{
 
-                alert('Please mark sure that collected mark and input mark are the same!');
+                alert('Please make sure that collected mark and input mark are the same!');
 
             }
 
