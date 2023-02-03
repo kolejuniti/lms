@@ -1069,9 +1069,36 @@ class LecturerController extends Controller
             <th>Session</th>
             <th>Status</th>
             <th></th>
+            <th>Excuse</th>
             </thead>
             <tbody>
         ';
+        $content .= '
+            <tr>
+                <td >
+                    <label class="text-dark"><strong>SELECT ALL</strong></label><br>
+                </td>
+                <td >
+                    <label></label>
+                </td>
+                <td >
+                    <p class="text-bold text-fade"></p>
+                </td>
+                <td >
+                    <p class="text-bold text-fade"></p>
+                </td>
+                <td >
+                    <div class="pull-right" >
+                        <input type="checkbox" id="checkboxAll"
+                            class="filled-in" name="checkall"
+                            onclick="CheckAll(this)"
+                        >
+                        <label for="checkboxAll"> </label>
+                    </div>
+                </td>
+            </tr>
+            ';
+
         foreach($students as $student){
             //$registered = ($student->status == 'ACTIVE') ? 'checked' : '';
             $content .= '
@@ -1091,15 +1118,51 @@ class LecturerController extends Controller
                 </td>
                 <td >
                     <div class="pull-right" >
-                        <input type="checkbox" id="student_checkbox_'.$student->student_ic.'"
+                        <input type="checkbox" id="student_checkbox_'.$student->no_matric.'"
                             class="filled-in" name="student[]" value="'.$student->student_ic.'" 
                         >
-                        <label for="student_checkbox_'.$student->student_ic.'"> </label>
+                        <label for="student_checkbox_'.$student->no_matric.'"></label>
+                    </div>
+                </td>
+                <td >
+                    <div>
+                        <input type="text" id="excuse_'.$student->no_matric.'"
+                            class="form-control" name="excuse[]" onkeyup="getExcuse('.$student->no_matric.')">
+                        <input type="hidden" id="ic_'.$student->no_matric.'"
+                        class="form-control" name="ic[]" value="'.$student->student_ic.'" disabled>
+                        <label for="checkboxAll"> </label>
                     </div>
                 </td>
             </tr>
             ';
             }
+
+            $content .= '
+            <tr>
+                <td >
+                    <label class="text-dark"><strong>ALL ABSENT</strong></label><br>
+                </td>
+                <td >
+                    <label></label>
+                </td>
+                <td >
+                    <p class="text-bold text-fade"></p>
+                </td>
+                <td >
+                    <p class="text-bold text-fade"></p>
+                </td>
+                <td >
+                    <div class="pull-right" >
+                        <input type="checkbox" id="AbsentAlls"
+                            class="filled-in" name="absentall"
+                            onclick="AbsentAll(this)"
+                        >
+                        <label for="AbsentAlls"> </label>
+                    </div>
+                </td>
+            </tr>
+            ';
+            
             $content .= '</tbody></table>';
 
             return $content;
@@ -1125,31 +1188,74 @@ class LecturerController extends Controller
     public function storeAttendance(Request $request)
     {
 
+        //dd($request->student);
+
         $data = $request->validate([
             'group' => ['required'],
             'date' => ['required'],
             //'schedule' => ['required'],
-            'student' => ['required']
+            'student' => [],
+            'absentall' => [],
+            'excuse' => [],
+            'ic' => [],
         ]);
 
         $group = explode('|', $data['group']);
 
         //$date = Carbon::createFromFormat('d/m/Y', $data['date'])->format('Y-m-d');
 
-        foreach($data['student'] as $std)
-        {
-            if(DB::table('tblclassattendance')->where([['student_ic', $std],['groupid', $group[0]],['groupname', $group[1]],['classdate', $data['date']]])->exists())
+        if(isset($data['absentall'])){
+
+            //dd($data['absentall']);
+
+            DB::table('tblclassattendance')->insert([
+                'groupid' => $group[0],
+                'groupname' => $group[1],
+                //'classscheduleid' => $data['schedule'],
+                'classdate' => $data['date']
+            ]);
+
+        }else{
+
+            foreach($data['student'] as $std)
             {
-                
-            }else{
-                DB::table('tblclassattendance')->insert([
-                    'student_ic' => $std,
-                    'groupid' => $group[0],
-                    'groupname' => $group[1],
-                    //'classscheduleid' => $data['schedule'],
-                    'classdate' => $data['date']
-                ]);
+                if(DB::table('tblclassattendance')->where([['student_ic', $std],['groupid', $group[0]],['groupname', $group[1]],['classdate', $data['date']]])->exists())
+                {
+                    
+                }else{
+                    DB::table('tblclassattendance')->insert([
+                        'student_ic' => $std,
+                        'groupid' => $group[0],
+                        'groupname' => $group[1],
+                        //'classscheduleid' => $data['schedule'],
+                        'classdate' => $data['date']
+                    ]);
+                }
             }
+
+            
+            $filtered_excuse = array_filter($data['excuse'], function ($value) {
+                return !is_null($value);
+            });
+
+            $reindexed_excuse = array_values($filtered_excuse);
+
+            foreach($reindexed_excuse as $key => $exs)
+            {
+                if(DB::table('tblclassattendance')->where([['student_ic', $data['ic'][$key]],['groupid', $group[0]],['groupname', $group[1]],['classdate', $data['date']]])->exists())
+                {
+                    
+                }else{
+                    DB::table('tblclassattendance')->insert([
+                        'student_ic' => $data['ic'][$key],
+                        'groupid' => $group[0],
+                        'groupname' => $group[1],
+                        'excuse' => $exs,
+                        'classdate' => $data['date']
+                    ]);
+                }
+            }
+
         }
 
         return redirect()->back()->with('message', 'Student attendance has been submitted!');
@@ -2752,6 +2858,112 @@ class LecturerController extends Controller
                                                                                   'extralist', 'totalextra', 'markextra', 'percentageextra', 'total_allextra'));
     }
 
+    public function reportAttendance()
+    {
+        $user = Auth::user();
+
+        $courseid = Session::get('CourseID');
+
+        $sessionid = Session::get('SessionID');
+
+        $students = [];
+        $list = [];
+        $status = [];
+
+
+
+        $groups = DB::table('user_subjek')
+                  ->join('student_subjek', 'user_subjek.id', 'student_subjek.group_id')
+                  ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+                  ->select('user_subjek.*','student_subjek.group_name','student_subjek.group_id')
+                  ->where([
+                     ['user_subjek.user_ic', $user->ic],
+                     ['user_subjek.session_id', Session::get('SessionID')],
+                     ['subjek.id', $courseid]
+                  ])->groupBy('student_subjek.group_name')->get();
+
+        foreach($groups as $ky => $grp)
+        {
+
+
+                $students[] = $data = DB::table('user_subjek')
+                ->join('student_subjek', 'user_subjek.id', 'student_subjek.group_id')
+                ->join('students', 'student_subjek.student_ic', 'students.ic')
+                ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+                ->select('user_subjek.*','student_subjek.group_name','student_subjek.group_id','students.*')
+                ->where([
+                ['user_subjek.user_ic', $user->ic],
+                ['user_subjek.session_id', $sessionid],
+                ['subjek.id', $courseid]
+                ])->where('student_subjek.group_name', $grp->group_name)
+                ->orderBy('students.name')->get();
+
+                $collection = collect($students[$ky]);
+
+                $list[] = DB::table('tblclassattendance')
+                ->join('user_subjek', 'tblclassattendance.groupid', 'user_subjek.id')
+                ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+                ->where([
+                    ['subjek.id', $courseid],
+                    ['user_subjek.session_id', $sessionid],
+                    ['user_subjek.user_ic', $user->ic],
+                    ['tblclassattendance.groupname', $grp->group_name]
+                ])->groupBy('tblclassattendance.classdate')
+                ->orderBy('tblclassattendance.classdate', 'ASC')
+                ->select('tblclassattendance.*')->get();
+
+                //dd($list);
+
+                foreach($students[$ky] as $key => $std)
+                {
+
+                    foreach($list[$ky] as $keys => $ls)
+                    {
+                        $atten = DB::table('tblclassattendance')
+                        ->where([
+                            ['tblclassattendance.groupid', $ls->groupid],
+                            ['tblclassattendance.groupname', $grp->group_name],
+                            ['tblclassattendance.student_ic', $std->ic],
+                            ['tblclassattendance.classdate', $ls->classdate]
+                        ])->select('tblclassattendance.*');
+                        
+                        $attendance = $atten->first();
+
+                        if($atten->exists())
+                        {
+
+                            if($attendance->excuse == null)
+                            {
+
+                                $status[$ky][$key][$keys] = 'Present';
+
+                            }else{
+
+                                $status[$ky][$key][$keys] = 'THB';
+
+                            }
+
+
+                        }else{
+
+                            $status[$ky][$key][$keys] = 'Absent';
+
+                        }
+                        
+
+                    }
+
+
+                }
+
+        }
+
+        //dd($status[$ky][$key]);
+
+        return view('lecturer.class.attendancereport', compact('groups', 'students', 'list', 'status'));
+
+    }
+
 
     public function listAttendance()
     {
@@ -2775,7 +2987,7 @@ class LecturerController extends Controller
 
     }
 
-    public function reportAttendance(Request $request)
+    public function reportAttendance2(Request $request)
     {
 
         $courseid = Session::get('CourseID');
@@ -2789,7 +3001,9 @@ class LecturerController extends Controller
         
         $students = $student->get();
 
-        $group = $student->join('user_subjek', 'student_subjek.group_id', 'user_subjek.id')->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')->select('user_subjek.*', 'student_subjek.group_name', 'subjek.*')->first();
+        $group = $student->join('user_subjek', 'student_subjek.group_id', 'user_subjek.id')
+        ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+        ->select('user_subjek.*', 'student_subjek.group_name', 'subjek.*')->first();
 
         $date = $request->date;
 
