@@ -419,7 +419,7 @@
                         <h5 class="mb-0"></h5>
                         <p class="my-5 text-fade"></p>
                         <a href="mailto:">
-							<span class="icon-Mail-notification me-5 text-success"><span class="path1"></span><span class="path2"></span></span> 
+							<span class="icon-Mail-notification me-5 text-success"><span class="path1"></span><span class="path2">{{ Session::get('User')->email }}</span></span> 
 						</a>
                     </div>
                 </div>

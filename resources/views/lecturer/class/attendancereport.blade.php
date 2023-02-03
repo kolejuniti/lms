@@ -1,185 +1,200 @@
+
 @extends('layouts.lecturer.lecturer')
 
+
 @section('main')
-	
-  <!-- Content Wrapper. Contains page content -->
-  <div class="content-wrapper">
-	  <div class="container-full">
-		  <!-- Content Header (Page header) -->	  
-		<div class="content-header">
-			<div class="d-flex align-items-center">
-				<div class="me-auto">
-					<h4 class="page-title">Attendance Reports</h4>
-					<div class="d-inline-block align-items-center">
-						<nav>
-							<ol class="breadcrumb">
-								<li class="breadcrumb-item"><a href="#"><i class="mdi mdi-home-outline"></i></a></li>
-								<li class="breadcrumb-item" aria-current="page">Academics</li>
-								<li class="breadcrumb-item" aria-current="page">Courses</li>
-								<li class="breadcrumb-item active" aria-current="page">Subjects</li>
-							</ol>
-						</nav>
-					</div>
-				</div>
-				
-			</div>
-		</div>
-		<!-- Main content -->
-		<section class="content">
-			<div class="row">
-				<div class="col-xl-12 col-12">
-					<div class="box bg-success">
-						<div class="box-body d-flex p-0">
-							<div class="flex-grow-1 p-30 flex-grow-1 bg-img bg-none-md" style="background-position: right bottom; background-size: auto 100%; background-image: url(images/svg-icon/color-svg/custom-30.svg)">
-								<div class="row">
-									<div class="col-12 col-xl-12">
-										<h1 class="mb-0 fw-600">GROUP {{ $group->group_name }}</h1>
-										<p class="my-10 fs-16"><strong>Course :</strong> {{ $group->course_name }}</p>
-										<p class="my-10 fs-16"><strong>Code :</strong> {{ $group->course_code }}</p>
-										<p class="my-10 fs-16"><strong>Session :</strong> {{ $group->session_id }}</p>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-					<div class="col-12">
-						<div class="box">
-							<div class="card-header">
-							<h3 class="card-title d-flex">ATTENDANCE ( {{ $date }} )</h3>
-							</div>
-							<div class="box-body">
-								<div class="table-responsive">
-									<div id="complex_header_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap4 no-footer">
-									<div class="row">
-										<div class="col-sm-12">
-										<table id="attendance_report" class="table table-striped projects display dataTable no-footer " style="width: 100%;">
-											<thead class="thead-themed">
-											<tr>
-												<th style="width: 1%">
-												No.
-												</th>
-												<th style="width: 20%">
-												Name
-												</th>
-												<th style="width: 20%">
-												IC
-												</th>
-												<th style="width: 20%">
-												No Matric
-												</th>
-												<td style="width: 20%">
-												Status
-												</td>
-											</tr>
-											</thead>
-											<tbody>
-											@foreach($students as $keys=>$std)
-												<tr>
-													<td>
-													{{ $keys+1 }}
-													</td>
-													<td >
-													{{ $std->name }}
-													</td>
-													<td>
-													{{ $std->ic }}
-													</td>
-													<td>
-													{{ $std->no_matric }}
-													</td>
-													@if (count($lists[$keys]) > 0)
-													<td>
-														<span class="badge bg-success">Checked</span>
-													</td>
-													@else
-													<td>
-														<span class="badge bg-danger">Absent</span>
-													</td>
-													@endif
-												</tr>
-											@endforeach
-											</tbody>
-											<tfoot class="tfoot-themed">
-												<tr>
-													
-												</tr>
-											</tfoot>
-										</table>
-										</div>
-									</div>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</section>
-		<!-- /.content -->
-	  </div>
-  </div>
-  <!-- /.content-wrapper -->
 
-  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-  <script src="{{ asset('assets/src/js/pages/data-table.js') }}"></script>
-  <script>
-	$(document).ready(function() {
-		CreateTable('attendance_report');  
-	});
+<style>
+    .cke_chrome{
+        border:1px solid #eee;
+        box-shadow: 0 0 0 #eee;
+    }
 
-  </script>
-  <script>
-	  function CreateTable(divid) {
-		  
-		  var w_table 		= [];
-		  var export_table 	= [ 0,1,2,3,4 ];
-		  
-		  if ( $.fn.dataTable.isDataTable( '#' + divid ) ) {
-			  return false;
-		  }
-  
-		  $('#' + divid).dataTable({
-			  responsive: true,
-			  columnDefs: [{ width:"5%", targets: [0,2] }, { width:"20%", targets: [3] }],
-			  dom:
-				  "<'row mb-3'<'col-sm-6 col-md-3 d-flex align-items-center justify-content-start'f><'col-sm-12 col-md-3 d-flex align-items-center justify-content-start'l><'col-sm-12 col-md-6 d-flex align-items-center justify-content-end'B>>" +
-				  "<'row'<'col-sm-12'tr>>" +
-				  "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
-			  buttons: [
-				  {
-					  extend: 'excelHtml5',
-					  text: 'Excel',
-					  titleAttr: 'Generate Excel',
-					  className: 'waves-effect waves-light btn btn-outline btn-sm  btn-primary-light  mr-1',
-					  exportOptions: {
-						  columns: export_table
-					  }
-				  }
-			  ],
-			  order: [[ 0, "asc" ]],
-			  pageLength: 100,
-			  drawCallback: function() {
-			  }
-		  });
-  
-		  $('#' + divid).DataTable();
-		  $('#' + divid).on( 'page.dt', function () {
-			  var table = $('#' + divid).DataTable();
-			  table.responsive.recalc();
-		  });
-		  
-		  $('[data-toggle="tooltip"]').tooltip();
-	  }
-  
-  </script>
+    div.dt-buttons {
+    float: right;
+    margin-left:10px;
+    }
+</style>
 
-<script>
-	$(document).ready(function(){
-		$("#collapsee").hide();
-		$("#myButton").click(function(){
-			$("#collapsee").slideToggle(500);
-		});
-	});
-	</script>
-  @stop
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+    <div class="container-full">
+    <!-- Content Header (Page header) -->	  
+    <div class="content-header">
+        <div class="d-flex align-items-center">
+            <div class="me-auto">
+                <h4 class="page-title">Report</h4>
+                <div class="d-inline-block align-items-center">
+                    <nav>
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="#"><i class="mdi mdi-home-outline"></i></a></li>
+                            <li class="breadcrumb-item" aria-current="page">Report</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="row">
+          <div class="col-12">
+            @if(count($groups) > 0)
+              @foreach ($groups as $ky => $grp)
+              <div class="box">
+                <div class="card-header mb-4">
+                  <h3 class="card-title">Student List : Group {{ $grp->group_name }}</h3>
+                </div>
+                <div class="box-body">
+                  <div class="table-responsive">
+                    <div id="complex_header_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap4 no-footer">
+                      <div class="row">
+                        <div id = "status">
+                          <div class="col-sm-12">
+                            <table id="myTable{{$grp->group_name}}" class="table table-striped projects display dataTable no-footer" style="width: 100%;" role="grid" aria-describedby="complex_header_info">
+                              <script>
+                                $(document).ready( function () {
+                                    $('#myTable{{$grp->group_name}}').DataTable({
+                                      dom: 'lBfrtip', // if you remove this line you will see the show entries dropdown
+                                      
+                                      buttons: [
+                                          { extend: 'copyHtml5', footer: true },
+                                          { extend: 'excelHtml5', footer: true },
+                                          { extend: 'csvHtml5', footer: true },
+                                          { extend: 'pdfHtml5', footer: true }
+                                      ],
+
+                                    });
+                                } );
+                              </script>
+                              <thead>
+                                <tr>
+                                  <th >
+                                    No.
+                                  </th>
+                                  <th >
+                                    Name
+                                  </th>
+                                  <th >
+                                    IC
+                                  </th>
+                                  <th >
+                                    Matric No.
+                                  </th>
+                                  <th >
+                                    Group Name
+                                  </th>
+                                  <!--<th>
+                                    LIST
+                                  </th>-->
+                                  @foreach ($list[$ky] as $key=>$ls)
+                                  <th>
+                                    DATE : {{ $ls->classdate }}
+                                  </th>
+                                  @endforeach
+                                </tr>
+                              </thead>
+                              <tbody>
+                                @foreach ($students[$ky] as $key => $std)
+                                <tr>
+                                  <td>
+                                      {{ $key+1 }}
+                                  </td>
+                                  <td>
+                                    <a class="btn btn-success btn-sm mr-2">{{ $std->name }}</a>
+                                  </td>
+                                  <td>
+                                    <span >{{ $std->ic }}</span>
+                                  </td>
+                                  <td>
+                                    <span >{{ $std->no_matric }}</span>
+                                  </td>
+                                  <td>
+                                    <span >{{ $std->group_name }}</span>
+                                  </td>
+                              
+                                  <!-- QUIZ -->
+
+      
+                                    @foreach ($list[$ky] as $keys => $ls)
+                                     
+                                      <td>
+                                        <span >{{ $status[$ky][$key][$keys] }}</span>
+                                      </td>
+                                    @endforeach
+                                </tr>
+                                @endforeach
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              @endforeach
+            @else
+              <div class="box bg-danger">
+                <div class="box-body d-flex p-0">
+                  <div class="flex-grow-1 p-30 flex-grow-1 bg-img bg-none-md" style="background-position: right bottom; background-size: auto 100%; background-image: url(images/svg-icon/color-svg/custom-30.svg)">
+                    <div class="row">
+                      <div class="col-12 col-xl-12">
+                        <h1 class="mb-0 fw-600">No Group available.</h1>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            @endif
+          </div>
+        </div>
+      </section>
+        <!-- /.content -->
+    
+    </div>
+</div>
+<!-- /.content-wrapper -->
+<script src="{{ asset('assets/src/js/pages/data-table.js') }}"></script>
+
+<script type="text/javascript">
+    var selected_group = "";
+    var selected_quiz = "{{ request()->quiz }}";
+    
+
+    $(document).on('change', '#group', function(e) {
+        selected_group = $(e.target).val();
+
+        getGroup(selected_group,selected_quiz);
+    });
+
+    function getGroup(group,quiz)
+    {
+
+      return $.ajax({
+            headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
+            url      : "{{ url('lecturer/quiz/getStatus') }}",
+            method   : 'POST',
+            data 	 : {group: group,quiz: quiz },
+            error:function(err){
+                alert("Error");
+                console.log(err);
+            },
+            success  : function(data){
+                
+                //$('#lecturer-selection-div').removeAttr('hidden');
+                //$('#lecturer').selectpicker('refresh');
+      
+                //$('#chapter').removeAttr('hidden');
+                    $('#status').html(data);
+                    $('#myTable').DataTable();
+                    //$('#group').selectpicker('refresh');
+            }
+        });
+
+    }
+
+</script>
+@stop

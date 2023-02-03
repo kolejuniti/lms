@@ -164,9 +164,40 @@ function getStudents(group)
             $('#attendance').removeAttr('hidden');
                 $('#attendance').html(data);
                 $('#attendance').selectpicker('refresh');
+
+                
         }
     });
 }
+
+function CheckAll(elem) {
+   $('[name="student[]"]').prop("checked", $(elem).prop('checked'));
+ }
+
+ function AbsentAll(elem) {
+  $('[name="student[]"]').each(function() {
+			this.checked = false;
+		});
+ }
+
+ function getExcuse(data) {
+    var value = data;
+
+    if($('#excuse_'+value).val() == '')
+    {
+
+      $('#student_checkbox_'+value).prop("disabled", false);
+
+      $('#ic_'+value).prop("disabled", true);
+
+    }else{
+
+      $('#student_checkbox_'+value).prop("disabled", true);
+
+      $('#ic_'+value).prop("disabled", false);
+
+    }
+ }
 
 //$(document).on('change', '#date', async function(e){
    // input_date = $(e.target).val();
