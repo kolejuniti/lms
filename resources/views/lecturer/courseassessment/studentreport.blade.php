@@ -54,22 +54,8 @@
                         <div id = "status">
                           <div class="col-sm-12">
                             <table id="myTable{{$grp->group_name}}" class="table table-striped projects display dataTable no-footer" style="width: 100%;" role="grid" aria-describedby="complex_header_info">
-                              <script>
-                                $(document).ready( function () {
-                                    $('#myTable{{$grp->group_name}}').DataTable({
-                                      dom: 'lBfrtip', // if you remove this line you will see the show entries dropdown
-                                      
-                                      buttons: [
-                                          'copy', 'csv', 'excel'
-                                      ],
-                                    });
-                                } );
-                              </script>
                               <thead>
                                 <tr>
-                                  <th >
-                                    No.
-                                  </th>
                                   <th >
                                     Name
                                   </th>
@@ -249,14 +235,14 @@
                                   <th>
                                     OVERALL PERCENTAGE
                                   </th>
+                                  <th>
+                                    GRADE
+                                  </th>
                                 </tr>
                               </thead>
                               <tbody>
                                 @foreach ($students[$ky] as $key => $std)
                                 <tr>
-                                  <td>
-                                      {{ $key+1 }}
-                                  </td>
                                   <td>
                                     <a class="btn btn-success btn-sm mr-2" href="/lecturer/report/{{ $id }}/{{ $std->ic }}">{{ $std->name }}</a>
                                   </td>
@@ -627,10 +613,21 @@
                                   <td >
                                     <span >{{ $overallall[$ky][$key] }}%</span>
                                   </td> 
+                                  <td>
+                                    <span >{{ $valGrade[$ky][$key] }}</span>
+                                  </td>
                                 </tr> 
                                 @endforeach
+                              </tbody>
+                              <tbody>
                                 <tr>
-                                  <td colspan="4" style="text-align-last: right">
+                                  <td>
+
+                                  </td>
+                                  <td>
+
+                                  </td>
+                                  <td  style="text-align-last: right">
                                     Average Mark :
                                   </td>
                                   @foreach ($quiz[$ky] as $keyss => $qz)
@@ -853,9 +850,18 @@
                                   <td>
                                     {{ $avgoverall }}%
                                   </td>
+                                  <td>
+                                    
+                                  </td>
                                 </tr>
                                 <tr>
-                                  <td colspan="4" style="text-align-last: right">
+                                  <td>
+
+                                  </td>
+                                  <td>
+
+                                  </td>
+                                  <td style="text-align-last: right">
                                     Maximum Mark :
                                   </td>
                                   @foreach ($quiz[$ky] as $keyss => $qz)
@@ -1078,9 +1084,18 @@
                                   <td>
                                     {{ max($overallall[$ky]) }}%
                                   </td>
+                                  <td>
+                                    
+                                  </td>
                                 </tr>
                                 <tr>
-                                  <td colspan="4" style="text-align-last: right">
+                                  <td>
+
+                                  </td>
+                                  <td>
+
+                                  </td>
+                                  <td  style="text-align-last: right">
                                     Minimum Mark :
                                   </td>
                                   @foreach ($quiz[$ky] as $keyss => $qz)
@@ -1303,6 +1318,9 @@
                                   <td>
                                     {{ min($overallall[$ky]) }}%
                                   </td>
+                                  <td>
+
+                                  </td>
                                 </tr>
                               </tbody>
                             </table>
@@ -1313,6 +1331,40 @@
                   </div>
                 </div>
               </div>
+              
+              <script>
+                $(document).ready( function () {
+                    $('#myTable{{$grp->group_name}}').DataTable({
+                      dom: 'lBfrtip', // if you remove this line you will see the show entries dropdown
+                      
+                      buttons: [
+                          {
+                            text: 'Excel',
+                            action: function () {
+                              getExcel('{{$grp->group_name}}');
+                            }
+                          }
+                      ]
+
+                    });
+                } );
+              </script>
+              <script>
+                function getExcel(group) {
+                  // get the HTML table to export
+                  const table = document.getElementById("myTable" + group);
+                  
+                  // create a new Workbook object
+                  const wb = XLSX.utils.book_new();
+                  
+                  // add a new worksheet to the Workbook object
+                  const ws = XLSX.utils.table_to_sheet(table);
+                  XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
+                  
+                  // trigger the download of the Excel file
+                  XLSX.writeFile(wb, "exported-data.xlsx");
+                };
+              </script>
               @endforeach
             @else
               <div class="box bg-danger">
@@ -1367,12 +1419,21 @@
       
                 //$('#chapter').removeAttr('hidden');
                     $('#status').html(data);
-                    $('#myTable').DataTable();
+                    $('#myTable').DataTable( {
+                        dom: 'Bfrtip',
+                        buttons: [
+                            {
+                                extend: 'excelHtml5',
+                                footer: true, // Enable footer callback function
+                            }
+                        ]
+                    } );
                     //$('#group').selectpicker('refresh');
             }
         });
 
     }
+
 
 </script>
 @stop
