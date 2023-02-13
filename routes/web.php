@@ -124,6 +124,15 @@ Route::post('/AR/session/update', [App\Http\Controllers\AR_Controller::class, 'u
 Route::delete('/AR/session/delete', [App\Http\Controllers\AR_Controller::class, 'deleteDelete'])->name('pendaftar_akademik.session.delete');
 Route::get('/AR/schedule/index', [App\Http\Controllers\AR_Controller::class, 'scheduleIndex'])->name('pendaftar_akademik.schedule');
 Route::post('/AR/schedule/store', [App\Http\Controllers\AR_Controller::class, 'dropzoneStore'])->name('pendaftar_akademik.schedule.store');
+Route::get('/AR/leave', [App\Http\Controllers\AR_Controller::class, 'studentLeave'])->name('pendaftar_akademik.leave');
+Route::get('/AR/leave/getStudentLeave', [App\Http\Controllers\AR_Controller::class, 'getStudentLeave']);
+Route::post('/AR/leave/updateLeave', [App\Http\Controllers\AR_Controller::class, 'updateLeave']);
+Route::post('/AR/campus/updatecampus', [App\Http\Controllers\AR_Controller::class, 'updateCampus']);
+Route::get('/AR/semester', [App\Http\Controllers\AR_Controller::class, 'studentSemester'])->name('pendaftar_akademik.semester');
+Route::get('/AR/semester/getStudentSemester', [App\Http\Controllers\AR_Controller::class, 'getStudentSemester']);
+Route::post('/AR/semester/updatesemester', [App\Http\Controllers\AR_Controller::class, 'updateSemester']);
+
+
 
 Route::get('/lecturer', [App\Http\Controllers\LecturerController::class, 'index'])->name('lecturer');
 Route::get('/lecturer/setting', [App\Http\Controllers\LecturerController::class, 'setting'])->name('lecturer.setting');
@@ -204,6 +213,8 @@ Route::patch('/lecturer/class/announcement/list/update/{id}', [App\Http\Controll
 
 Route::get('/lecturer/report/{id}', [App\Http\Controllers\LecturerController::class, 'assessmentreport'])->name('lecturer.report');
 Route::get('/lecturer/report/{id}/{student}', [App\Http\Controllers\LecturerController::class, 'studentreport'])->name('lecturer.report.student');
+
+Route::post('/update-data', [App\Http\Controllers\LecturerController::class, 'autoudateData']);
 
 Route::get('/lecturer/quiz/{id}', [App\Http\Controllers\QuizController::class, 'quizlist'])->name('lecturer.quiz');
 Route::get('/lecturer/quiz/{id}/create', [App\Http\Controllers\QuizController::class, 'quizcreate'])->name('lecturer.quiz.create');
