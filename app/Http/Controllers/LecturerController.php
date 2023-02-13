@@ -2460,6 +2460,11 @@ class LecturerController extends Controller
                         if($overallall[$ky][$keys] >= $grd->mark_start && $overallall[$ky][$keys] <= $grd->mark_end)
                         {
                             $valGrade[$ky][$keys] = $grd->code;
+
+                            break;
+                        }else{
+
+                            $valGrade[$ky][$keys] = null;
                         }
 
                     }
