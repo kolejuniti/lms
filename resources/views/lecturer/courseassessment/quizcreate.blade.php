@@ -752,8 +752,12 @@ jQuery(function($) {
 
         if($('input[name="group[]"]').is(':checked') && $('input[name="chapter[]"]').is(':checked'))
         {
+            
+            var total = Number($("#total-marks").val()).toFixed(2);
 
-            if($("#total-marks").val() == $("#collectmark").val())
+            var collect = Number($("#collectmark").val()).toFixed(2);
+
+            if(total == collect)
             {
 
                 $.ajax({
