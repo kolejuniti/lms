@@ -58,21 +58,21 @@
     <body>
         <p>UNITI/KUSB/2023/040729050173</p>
         <br>
-        <p>31/JAN/2023</p>
+        <p>{{ date('Y-m-d') }}</p>
         <br>
-        <p>MUHAMMAD HAKIM BIN AMAN SHAH</p>
-        <p>NO 206</p>
-        <p>BLOK 17</p>
-        <p>PALONG 3</p>
-        <p>73460</p>
-        <p>GEMAS, NEGERI SEMBILAN</p>
-        <p>MALAYSIA</p>
+        <p>{{ strtoupper($data['student']->name) }}</p>
+        <p>{{ strtoupper($data['address']->address1) }}</p>
+        <p>{{ strtoupper($data['address']->address2) }}</p>
+        <p>{{ strtoupper($data['address']->address3) }}</p>
+        <p>{{ $data['address']->postcode }}</p>
+        <p>{{ strtoupper($data['address']->state) }}</p>
+        <p>{{ strtoupper($data['address']->country) }}</p>
         <br>
         <h2>MAKLUMAT PENDAFTARAN</h2>
         <br>
         <div class="col-3">
             <div style="border: 1px solid black; padding: 10px;">
-            <p>Tarikh : 14/FEB/2023</p>
+            <p>Tarikh : {{ $data['student']->date_offer }}</p>
             <p>Masa : 9.00 Pagi - 3.00 petang</p>
             <p>Tempat : PEJABAT UNITI VILLAGE</p>
             </div>
@@ -82,7 +82,7 @@
         <br>
         <p>TAWARAN KEMASUKAN KE PROGRAM AKADEMIK KOLEJ UNITI SESI MAC 2022/2023</p>
         <br>
-        <p>TAHNIAH dan SUKACITA di maklumkan, saudara/saudari di tawarkan untuk mengikuti pengajian program DIPLOMA PENDIDIKAN AWAL KANAK-KANAK di KOLEJ UNITI.</p>
+        <p>TAHNIAH dan SUKACITA di maklumkan, saudara/saudari di tawarkan untuk mengikuti pengajian program {{ $data['student']->program }} di KOLEJ UNITI.</p>
         <br>
         <p>Untuk pengetahuan saudara/saudari, program yang diikuti adalah program akademik yang dikendalikan oleh KOLEJ UNITI di PERSIARAN UNITI VILLAGE, TANJUNG AGAS, 71250 PORT DICKSON, NEGERI SEMBILAN DARUL KHUSUS. Setelah memenuhi semua keperluan, saudara/saudari akan DIANUGERAHKAN DIPLOMA OLEH KOLEJ UNITI ATAU UiTM DAN UPM.</p>
         <br>
@@ -127,6 +127,8 @@
         <p class="mt-1">Sekian, terima kasih.</p>
         <br>
         <p>Yang benar,</p>
+        <img src="{{ asset('storage/signature/signature1.png') }}" alt="Image" width="5%" height="5%">
+
         <p>AMIR HAMZAH BIN MD. ISA<br>
         KETUA EKSEKUTIF<br>
         KOLEJ UNITI</p>
