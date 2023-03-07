@@ -18,7 +18,7 @@ class LoginStudentController extends Controller
         {
                return redirect()->route('student');
         }else{
-            return back()->with(["message"=>"Incorrect No. Matric or Password!"]);
+            return back()->with(["message"=>"Incorrect IC or Password!"]);
         }
     }
 

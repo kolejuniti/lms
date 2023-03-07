@@ -2,21 +2,32 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use App\Models\User;
 use App\Models\subject;
 use App\Models\student;
-use App\Models\User;
 use App\Models\UserStudent;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Session;
-use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Validator;
+use Carbon\Carbon;
+use League\Flysystem\AwsS3V3\PortableVisibilityConverter;
 
 class AR_Controller extends Controller
 {
-    public function courseList()
+    public function dashboard()
     {
         Session::put('User', Auth::user());
+
+        return view('dashboard');
+    }
+    
+    public function courseList()
+    {
 
         $data = [
             'course' => DB::table('subjek')->join('tblprogramme', 'subjek.prgid', 'tblprogramme.id')->select('subjek.*', 'tblprogramme.progname')->get(),
@@ -279,7 +290,11 @@ class AR_Controller extends Controller
 
         //dd($student);
 
-        $getCourse =  DB::table('student_subjek')->join('students', 'student_subjek.student_ic', 'students.ic')->join('subjek', 'student_subjek.courseid', 'subjek.sub_id')->where('students.ic', $data['student']->ic);
+        $getCourse =  DB::table('student_subjek')
+                      ->join('students', 'student_subjek.student_ic', 'students.ic')
+                      ->join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
+                      ->where('students.ic', $data['student']->ic)
+                      ->where('subjek.prgid', $data['student']->program);
 
         $data['allCourse'] = $getCourse->select('student_subjek.id as IDS','student_subjek.courseid', 'subjek.*')->orderBy('subjek.semesterid')->get();
 
@@ -305,7 +320,11 @@ class AR_Controller extends Controller
 
         //dd($student);
 
-        $getCourse =  DB::table('student_subjek')->join('students', 'student_subjek.student_ic', 'students.ic')->join('subjek', 'student_subjek.courseid', 'subjek.sub_id')->where('students.ic', $data['student']->ic);
+        $getCourse =  DB::table('student_subjek')
+                      ->join('students', 'student_subjek.student_ic', 'students.ic')
+                      ->join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
+                      ->where('students.ic', $data['student']->ic)
+                      ->where('subjek.prgid', $data['student']->program);
 
         $data['allCourse'] = $getCourse->select('student_subjek.id as IDS','student_subjek.courseid', 'subjek.*')->orderBy('subjek.semesterid')->get();
 
@@ -314,6 +333,313 @@ class AR_Controller extends Controller
         $data['regCourse'] = DB::table('subjek')->whereNotIn('sub_id', $crsExists)->whereIn('semesterid', $loop)->where('prgid', $data['student']->program)->orderBy('semesterid')->get();
 
         return view('pendaftar_akademik.getAllCourse', compact('data'));
+
+    }
+
+    public function sessionList()
+    {
+        $data = [
+            'session' => DB::table('sessions')->get()
+        ];
+
+        return view('pendaftar_akademik.session', compact('data'));
+
+    }
+
+    public function createSession(Request $request)
+    {
+        $data = $request->validate([
+            'month' => ['required'],
+            'start' => ['required'],
+            'end' => ['required']
+        ]);
+
+        $start = $this->getYear($data['start']);
+        $end = $this->getYear($data['end']);
+
+        $name = $data['month'] . ' ' . $start . '/' . $end;
+
+        //dd($name);
+
+        if(isset($request->idS))
+        {
+
+            DB::table('sessions')->where('SessionID', $request->idS)->update([
+                'SessionName' => $name,
+                'Start' => $data['start'],
+                'End' => $data['end'],
+                'Status' => $request->status
+                
+            ]);
+
+        }else{
+
+            DB::table('sessions')->insert([
+                'SessionName' => $name,
+                'Start' => $data['start'],
+                'End' => $data['end'],
+                'Status' => 'ACTIVE'
+            ]);
+        }
+
+        return redirect(route('pendaftar_akademik.session'));
+
+    }
+
+    private function getYear($date)
+    {
+
+        $string = substr($date, 0, 4);
+
+        return $string;
+    }
+
+    public function updateSession(Request $request)
+    {
+
+        $data = [
+            'course' => DB::table('sessions')->where('SessionID', $request->id)->first()
+        ];
+
+        return view('pendaftar_akademik.getSession', compact('data'))->with('id', $request->id);
+
+    }
+
+    public function deleteDelete(Request $request)
+    {
+
+        DB::table('sessions')->where('SessionID', $request->id)->delete();
+
+        return true;
+
+    }
+
+    public function scheduleIndex()
+    {
+
+        $path = "classschedule/";
+
+        $files  = Storage::disk('linode')->allFiles($path);
+
+        return view('pendaftar_akademik.schedule.schedule', compact('files'));
+
+    }
+
+    public function dropzoneStore(Request $request)
+    {
+
+        $file = $request->file('file');
+
+        $file_name = $file->getClientOriginalName();
+        $file_ext = $file->getClientOriginalExtension();
+        $fileInfo = pathinfo($file_name);
+        $filename = $fileInfo['filename'];
+        $newname = $filename . "." . $file_ext;
+
+        //dd($file_name);
+
+        $classmaterial = "classschedule/";
+        
+
+        if(! file_exists($newname)){
+            Storage::disk('linode')->putFileAs(
+                $classmaterial,
+                $file,
+                $newname,
+                'public'
+              );
+
+              return response()->json(['success' => $imageName]);
+        }
+
+
+    }
+
+    public function studentLeave()
+    {
+        $data['programs'] = DB::table('tblprogramme')->get();
+
+        $data['sessions'] = DB::table('sessions')->get();
+
+        $data['semesters'] = DB::table('semester')->get();
+
+        return view('pendaftar_akademik.leave.studentLeave', compact('data'));
+
+    }
+
+    public function getStudentLeave(Request $request)
+    {
+
+        $program = $request->program;
+        $session = $request->session;
+        $semester = $request->semester;
+
+        $query = DB::table('students')->where(function($query) {
+            $query->where('campus_id', 1)
+                  ->orWhereNull('campus_id');
+        });
+
+        $query2 = DB::table('students')->where('campus_id', 0);
+
+        if($program != '' && $session != '' && $semester != '')
+        {
+
+            $data['campus'] = $query->where([
+                ['program', $program],
+                ['session', $session],
+                ['semester', $semester]
+            ])->get();
+
+            $data['leave'] = $query2->where([
+                ['program', $program],
+                ['session', $session],
+                ['semester', $semester]
+            ])->get();
+
+        }elseif($program != '' && $session != '')
+        {
+
+            $data['campus'] = $query->where([
+                ['program', $program],
+                ['session', $session]
+            ])->get();
+
+            $data['leave'] = $query2->where([
+                ['program', $program],
+                ['session', $session]
+            ])->get();
+
+        }elseif($program != '' && $semester != '')
+        {
+
+            $data['campus'] = $query->where([
+                ['program', $program],
+                ['semester', $semester]
+            ])->get();
+
+            $data['leave'] = $query2->where([
+                ['program', $program],
+                ['semester', $semester]
+            ])->get();
+
+        }elseif($session != '' && $semester != '')
+        {
+
+            $data['campus'] = $query->where([
+                ['session', $session],
+                ['semester', $semester]
+            ])->get();
+
+            $data['leave'] = $query2->where([
+                ['session', $session],
+                ['semester', $semester]
+            ])->get();
+
+        }elseif($program != '')
+        {
+
+            $data['campus'] = $query->where([
+                ['program', $program]
+            ])->get();
+
+            $data['leave'] = $query2->where([
+                ['program', $program]
+            ])->get();
+
+        }elseif($session != '')
+        {
+
+            $data['campus'] = $query->where([
+                ['session', $session]
+            ])->get();
+
+            $data['leave'] = $query2->where([
+                ['session', $session]
+            ])->get();
+
+        }elseif($semester != '')
+        {
+
+            $data['campus'] = $query->where([
+                ['semester', $semester]
+            ])->get();
+
+            $data['leave'] = $query2->where([
+                ['semester', $semester]
+            ])->get();
+
+        }
+
+
+        return view('pendaftar_akademik.leave.getStudents', compact('data'));
+    }
+
+    public function updateLeave(Request $request)
+    {
+
+        DB::table('students')->whereIn('no_matric', $request->leave)->update([
+            'campus_id' => 0,
+        ]);
+
+        return ['message' => 'success'];
+
+    }
+
+    public function updateCampus(Request $request)
+    {
+
+        DB::table('students')->whereIn('no_matric', $request->campus)->update([
+            'campus_id' => 1,
+        ]);
+
+        return ['message' => 'success'];
+
+    }
+
+    public function studentSemester()
+    {
+
+        return view('pendaftar_akademik.semester.semester');
+
+    }
+
+    public function getStudentSemester(Request $request)
+    {
+
+        $data['student'] = DB::table('students')
+                           ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
+                           ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+                           ->select('students.*', 'tblstudent_status.name AS status', 'tblprogramme.progname AS program')
+                           ->where('ic', $request->student)->first();
+
+        $data['session'] = DB::table('sessions')->get();
+
+        $data['semester'] = DB::table('semester')->get();
+
+        return view('pendaftar_akademik.semester.semesterGetStudent', compact('data'));
+        
+    }
+
+    public function updateSemester(Request $request)
+    {
+
+        $student = DB::table('students')->where('no_matric', $request->no_matric)->first();
+
+        if($request->session != '')
+        {
+
+            DB::table('students')->where('no_matric', $request->no_matric)->update([
+                'session' => $request->session,
+                'semester' => $student->semester + 1
+            ]);
+
+        }else{
+
+            return ['message' => 'Please fill all required field!'];
+
+        }
+
+        return ['message' => 'Success'];
 
     }
 }

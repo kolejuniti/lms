@@ -37,28 +37,27 @@ class SuperAdminController extends Controller
             //this is to preserve number '0' infront of excel data column !
             //dd(str_pad($line['no_tel1'],11,"0", STR_PAD_LEFT));
 
-            return DB::table('student_subjek')->insert([
-                //'id'  => $line['id'],
-                //'name'  => $line['nama'],
-                //'address1' => $line['alamat_1'],
-                //'address2' => $line['alamat_2'],
-                //'address3' => $line['alamat_3'],
-                //'city'  => $line['bandar'],
-                //'postcode'  => $line['poskod'],
-                //'state_id'  => $line['id_negeri'],
-                //'statelevel_id'  => $line['id_tarafNegara'],
-                //'citizenship_id' => $line['id_wargaNegara'],
+            return DB::table('tblpaymentmethod')->insert([
+                'id'  => $line['id'],  
+                'payment_id'  => $line['bayaran_id'],  
+                'claim_method_id'  => $line['kaedah_bayaran_id'],
+                'bank_id' => $line['bank_id'],
+                'no_document' => $line['no_dokumen'],
+                'amount' => $line['amaun'],
+                //'ref_no'  => $line['no_rujukan'],
+                //'session_id'  => $line['sesi_id'],
+                //'semester_id'  => $line['semester_id'],
+                //'amount'  => $line['jumlah'],
+                //'process_status_id'  => $line['status_proses_id'],
+                //'process_type_id'  => $line['jenis_proses_id'],
+                'add_staffID'  => $line['stafID_add'],
+                'add_date' => $line['tarikh_add'],
+                'mod_staffID' => $line['stafID_mod'],
+                'mod_staffID' => $line['tarikh_mod'],
                 //'no_tel' => str_pad($line['no_tel1'],11,"0", STR_PAD_LEFT),
                 //'no_tel2'  => str_pad($line['no_tel2'],11,"0", STR_PAD_LEFT),
                 //'password' => Hash::make('12345678'),
                 //'no_telhome' => str_pad($line['no_tel_rumah'],11,"0", STR_PAD_LEFT),
-                //student_subjek
-                'student_ic' =>$line['student_ic'],
-                'courseid' =>$line['courseid'],
-                'sessionid' =>$line['sessionid'],
-                'semesterid' =>$line['semesterid'],
-                'group_id' =>$line['group_id'],
-                'group_name' =>$line['group_name'],
             ]);
             
         //}

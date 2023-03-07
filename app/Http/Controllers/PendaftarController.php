@@ -11,12 +11,19 @@ use Illuminate\Support\Facades\Session;
 use App\Models\student;
 use App\Models\User;
 use App\Models\subject;
+use Input;
 
 class PendaftarController extends Controller
 {
-    public function index()
+    public function dashboard()
     {
         Session::put('User', Auth::user());
+
+        return view('dashboard');
+    }
+    
+    public function index()
+    {
         
         $student = DB::table('students')->get();
 
@@ -47,6 +54,12 @@ class PendaftarController extends Controller
 
         $data['mstatus'] = DB::table('tblmarriage')->get();
 
+        $data['EA'] = DB::table('tbledu_advisor')->get();
+
+        $data['pass'] = DB::table('tblpass_type')->get();
+
+        $data['country'] = DB::table('tblcountry')->get();
+
         //dd($data['race']);
 
         return view('pendaftar.create', compact(['program','session','data']));
@@ -56,29 +69,47 @@ class PendaftarController extends Controller
     {
         $data = $request->validate([
             'name' => ['required','string'],
-            'ic' => ['required','string'],
-            'matric' => ['required','string'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:students'],
             'session' => ['required'],
             'batch' => ['required'],
             'program' => ['required'],
         ]);
 
+        if($request->ic != '')
+        {
+
+            $data['id'] = $request->ic;
+
+        }elseif($request->passport != '')
+        {
+
+            $data['id'] = $request->passport;
+
+        }
+
+        //dd($request);
+
         DB::table('students')->insert([
             'name' => $data['name'],
-            'ic' => $data['ic'],
-            'no_matric' => $data['matric'],
+            'ic' => $data['id'],
+            'no_matric' => null,
             'email' => $data['email'],
             'intake' => $data['session'],
             'batch' => $data['batch'],
             'semester' => 1,
             'program' => $data['program'],
             'password' => Hash::make('12345678'),
-            'status' => 'ACTIVE',
+            'status' => 1,
         ]);
 
         DB::table('tblstudent_personal')->insert([
-            'student_ic' => $data['ic'],
+            'student_ic' => $data['id'],
+            'date_birth' => $request->birth_date,
+            'advisor_ic' => $request->EA,
+            'bank_name' => $request->bank_name,
+            'bank_no' => $request->bank_number,
+            'ptptn_no' => $request->PN,
+            'datetime' => $request->dt,
             'religion_id' => $request->religion,
             'nationality_id' => $request->race,
             'sex_id' => $request->gender,
@@ -91,8 +122,188 @@ class PendaftarController extends Controller
             'no_telhome' => $request->np3
         ]);
 
+        DB::table('tblstudent_pass')->insert([
+            'student_ic' => $data['id'],
+            'pass_type' => $request->pt,
+            'pass_no' => $request->spn,
+            'date_issued' => $request->di,
+            'date_expired' => $request->de
+        ]);
+
         DB::table('tblstudent_address')->insert([
-            'student_ic' => $data['ic'],
+            'student_ic' => $data['id'],
+            'address1' => $request->address1,
+            'address2' => $request->address2,
+            'address3' => $request->address3,
+            'city' => $request->city,
+            'postcode' => $request->postcode,
+            'state_id' => $request->state,
+            'country_id' => $request->country
+        ]);
+
+        DB::table('student_form')->insert([
+            'student_ic' => $data['id'],
+            'main' => $request->main,
+            'pre_registration' => $request->PR,
+            'c19' => $request->c19,
+            'complete_form' => $request->CF,
+            'copy_ic' => $request->copyic,
+            'copy_birth' => $request->copybc,
+            'copy_spm' => $request->copyspm,
+            'copy_school' => $request->coppysc,
+            'copy_pic' => $request->copypic,
+            'copy_pincome' => $request->copypp
+        ]);
+
+        /*$subject = DB::table('subjek')->where([
+            ['prgid','=', $data['program']],
+            ['semesterid','=', 1],
+        ])->get();
+
+        foreach($subject as $key)
+        {
+            student::create([
+                'student_ic' => $data['id'],
+                'courseid' => $key->sub_id,
+                'sessionid' => $data['session'],
+                'semesterid' => 1,
+                'status' => 'ACTIVE'
+            ]);
+        }*/
+
+        $this->suratTawaran();
+
+        //return redirect(route('pendaftar'));
+    }
+
+    public function edit()
+    {
+        $student = DB::table('students')
+                   ->leftjoin('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
+                   ->leftjoin('tblstudent_address', 'students.ic', 'tblstudent_address.student_ic')
+                   ->where('ic',request()->ic)->first();
+
+        $program = DB::table('tblprogramme')->get();
+
+        $session = DB::table('sessions')->get();
+
+        $data['state'] = DB::table('tblstate')->get();
+
+        $data['gender'] = DB::table('tblsex')->get();
+
+        $data['race'] = DB::table('tblnationality')->get();
+
+        $data['religion'] =  DB::table('tblreligion')->get();
+
+        $data['CL'] = DB::table('tblcitizenship_level')->get();
+
+        $data['citizen'] = DB::table('tblcitizenship')->get();
+
+        $data['mstatus'] = DB::table('tblmarriage')->get();
+
+        $data['EA'] = DB::table('tbledu_advisor')->get();
+
+        $data['pass'] = DB::table('tblpass_type')->get();
+
+        $data['country'] = DB::table('tblcountry')->get();
+
+        return view('pendaftar.update', compact(['student','program','session','data']));
+
+    }
+
+    public function update(Request $request)
+    {
+        if($request->ic == null)
+        {
+            $ic = $request->passport;
+        }else{
+            $ic = $request->ic;
+        }
+
+        $oldstd = DB::table('students')->where('ic', $ic)->first();
+
+        //dd($oldstd);
+
+        $data = $request->validate([
+            'name' => ['required','string'],
+            'matric' => ['required','string'],
+            'email' => ['required', 'string', 'email', 'max:255'],
+            'session' => ['required'],
+            'batch' => ['required'],
+            'program' => ['required'],
+        ]);
+
+        //dd($data);
+
+        if($oldstd->program != $data['program'])
+        {
+
+            DB::table('student_program')->insert([
+                'student_ic' => $oldstd->ic,
+                'program_id' => $oldstd->program,
+                'comment' => $request->comment,
+                'intake' => $oldstd->intake,
+                'batch' => $oldstd->batch,
+                'session' => $oldstd->session
+            ]);
+
+            $subject = DB::table('subjek')->where([
+                ['prgid','=', $data['program']]
+            ])->get();
+
+            foreach($subject as $key)
+            {
+                student::create([
+                    'student_ic' => $oldstd->ic,
+                    'courseid' => $key->sub_id,
+                    'sessionid' => $data['session'],
+                    'semesterid' => $key->semesterid,
+                    'status' => 'ACTIVE'
+                ]);
+            }
+
+        }
+
+        DB::table('students')->where('ic', $ic)->update([
+            'name' => $data['name'],
+            'ic' => $ic,
+            'no_matric' => null,
+            'email' => $data['email'],
+            'intake' => $data['session'],
+            'batch' => $data['batch'],
+            'program' => $data['program']
+        ]);
+
+        DB::table('tblstudent_personal')->where('student_ic', $ic)->update([
+            'student_ic' => $ic,
+            'date_birth' => $request->birth_date,
+            'advisor_ic' => $request->EA,
+            'bank_name' => $request->bank_name,
+            'bank_no' => $request->bank_number,
+            'ptptn_no' => $request->PN,
+            'datetime' => $request->dt,
+            'religion_id' => $request->religion,
+            'nationality_id' => $request->race,
+            'sex_id' => $request->gender,
+            'state_id' => $request->birth_place,
+            'marriage_id' => $request->mstatus,
+            'statelevel_id' => $request->CL,
+            'citizenship_id' => $request->citizen,
+            'no_tel' => $request->np1,
+            'no_tel2' => $request->np2,
+            'no_telhome' => $request->np3
+        ]);
+
+        DB::table('tblstudent_pass')->where('student_ic', $ic)->update([
+            'student_ic' => $ic,
+            'pass_type' => $request->pt,
+            'pass_no' => $request->spn,
+            'date_issued' => $request->di,
+            'date_expired' => $request->de
+        ]);
+
+        DB::table('tblstudent_address')->where('student_ic', $ic)->update([
+            'student_ic' => $ic,
             'address1' => $request->address1,
             'address2' => $request->address2,
             'address3' => $request->address3,
@@ -101,23 +312,31 @@ class PendaftarController extends Controller
             'state_id' => $request->state
         ]);
 
-        $subject = DB::table('subjek')->where([
-            ['prgid','=', $data['program']],
-            ['semesterid','=', 1],
-        ])->get();
 
-        foreach($subject as $key)
-        {
-            student::create([
-                'student_ic' => $data['ic'],
-                'courseid' => $key->sub_id,
-                'sessionid' => $data['session'],
-                'semesterid' => 1,
-                'status' => 'ACTIVE'
-            ]);
-        }
 
-        return redirect(route('pendaftar'));
+        return back();
+
+    }
+
+    public function getProgram(Request $request)
+    {
+
+        $programs = DB::table('student_program')
+                    ->join('students', 'student_program.student_ic', 'students.ic')
+                    ->join('tblprogramme', 'student_program.program_id', 'tblprogramme.id')
+                    ->where('student_ic', $request->ic)->get();
+        
+        $intake = DB::table('student_program')
+                  ->join('sessions', 'student_program.intake', 'sessions.SessionID')
+                  ->where('student_ic', $request->ic)->get();
+
+        $batch = DB::table('student_program')
+                 ->join('sessions', 'student_program.batch', 'sessions.SessionID')
+                 ->where('student_ic', $request->ic)->get();
+                   
+
+        return view('pendaftar.getProgram', compact(['programs', 'intake', 'batch']));
+
     }
 
 
@@ -149,21 +368,13 @@ class PendaftarController extends Controller
 
     public function getStudentTableIndex(Request $request)
     {
-        //if(isset($request->session))
-        //{
-            //if(isset($request->group))
-            //{
-                //$students = student::where('courseid', $request->subject)->where('sessionid', $request->session)->where('group_id', $request->group)->get();
-            //}else
-            //{
-                //$students = student::where('courseid', $request->subject)->where('sessionid', $request->session)->get();
-            //}
-        //}else
-        //{
-            //$students = student::where('courseid', $request->subject)->get();
-        //}
-
-        $students = DB::table('students')->where('program', $request->program)->get();
+        if(isset($request->session))
+        {
+            $students = DB::table('students')->where([['program', $request->program],['session', $request->session]])->get();
+        }else
+        {
+            $students = DB::table('students')->where('program', $request->program)->get();
+        }
 
         $content = "";
         $content .= '<thead>
@@ -209,16 +420,26 @@ class PendaftarController extends Controller
                 '. $student->program .'
                 </td>
                 <td class="project-actions text-right" >
-                <a class="btn btn-info btn-sm btn-sm mr-2" href="#">
-                    <i class="ti-pencil-alt">
+                  <a class="btn btn-info btn-sm btn-sm mr-2" href="/pendaftar/edit/'. $student->ic .'">
+                      <i class="ti-pencil-alt">
+                      </i>
+                      Edit
+                  </a>
+                  <a class="btn btn-primary btn-sm btn-sm mr-2" href="/pendaftar/spm/'. $student->ic .'">
+                      <i class="ti-ruler-pencil">
+                      </i>
+                      SPM
+                  </a>
+                  <a class="btn btn-secondary btn-sm btn-sm mr-2" href="#" onclick="getProgram('. $student->ic .')">
+                    <i class="ti-eye">
                     </i>
-                    Edit
-                </a>
-                <a class="btn btn-danger btn-sm" href="#" onclick="deleteMaterial(\''. $student->ic .'\')">
-                    <i class="ti-trash">
-                    </i>
-                    Delete
-                </a>
+                    Program History
+                  </a>
+                  <a class="btn btn-danger btn-sm" href="#" onclick="deleteMaterial('. $student->ic .')">
+                      <i class="ti-trash">
+                      </i>
+                      Delete
+                  </a>
                 </td>
             </tr>
             ';
@@ -241,4 +462,403 @@ class PendaftarController extends Controller
         return true;
 
     }
+
+    public function spmIndex()
+    {
+
+        $data['spm'] = DB::table('tblstudent_spm')
+                       ->join('tblspm_dtl', 'tblstudent_spm.id', 'tblspm_dtl.student_spm_id')
+                       ->where('tblstudent_spm.student_ic', request()->ic)->get();
+
+        $data['subject'] = DB::table('tblsubject_spm')->get();
+
+        $data['grade'] = DB::table('tblgrade_spm')->get();
+
+        return view('pendaftar.spm.spm', compact('data'));
+
+    }
+
+    public function spmStore(Request $request)
+    {
+
+        //dd($request->subject);
+
+        $student = DB::table('tblstudent_spm')->where('student_ic', $request->ic)->first();
+
+        //dd($request->grade);
+
+        $filter = array_filter($request->subject);
+
+        if(count($filter) !== count(array_unique($filter)))
+        {
+            return back()->with('error', 'Cannot have same subject! Please check and re-submit.')->withInput();
+        }else{
+
+            if(DB::table('tblspm_dtl')->where('student_spm_id',$student->id)->exists())
+            {
+                
+                DB::table('tblspm_dtl')->where('student_spm_id',$student->id)->delete();
+
+            }
+
+            foreach($request->subject as $key => $sub)
+            {
+                
+                DB::table('tblspm_dtl')->insert([
+                    'student_spm_id' => $student->id,
+                    'subject_spm_id' => $sub,
+                    'grade_spm_id' => $request->grade[$key]
+                ]);
+
+            }
+
+            return back()->with('success', 'Successfully saved SPM data')->withInput();
+        }
+
+    }
+
+    public function studentEdit()
+    {
+
+        $student = DB::table('students')->get();
+
+        $program = DB::table('tblprogramme')->get();
+
+        $session = DB::table('sessions')->get();
+
+        return view('pendaftar.studentEdit', compact('student', 'program', 'session'));
+
+    }
+
+    public function studentStatus()
+    {
+
+        return view('pendaftar.updateStatus');
+
+    }
+
+    public function getStudentList(Request $request)
+    {
+        $students = DB::table('students')->where('name', 'LIKE', $request->search."%")
+                                         ->orwhere('ic', 'LIKE', $request->search."%")
+                                         ->orwhere('no_matric', 'LIKE', $request->search."%")->get();
+
+        $content = "";
+
+        $content .= "<option value='0' selected disabled>-</option>";
+        foreach($students as $std){
+
+            $content .= '<option data-style="btn-inverse"
+            data-content=\'<div class="row" >
+                <div class="col-md-2">
+                <div class="d-flex justify-content-center">
+                    <img src="" 
+                        height="auto" width="70%" class="bg-light ms-0 me-2 rounded-circle">
+                        </div>
+                </div>
+                <div class="col-md-10 align-self-center lh-lg">
+                    <span><strong>'. $std->name .'</strong></span><br>
+                    <span>'. $std->email .' | <strong class="text-fade"">'.$std->ic .'</strong></span><br>
+                    <span class="text-fade"></span>
+                </div>
+            </div>\' value='. $std->ic .' ></option>';
+        }
+        
+        return $content;
+
+    }
+
+    public function getStudentInfo(Request $request)
+    {
+
+        $data['student'] = DB::table('students')
+                           ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
+                           ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+                           ->select('students.*', 'tblstudent_status.name AS status', 'tblprogramme.progname AS program')
+                           ->where('ic', $request->student)->first();
+
+        $data['history'] = DB::table('tblstudent_log')->where('student_ic', $request->student)->get();
+
+        $data['session'] = DB::table('sessions')->get();
+
+        $data['semester'] = DB::table('semester')->get();
+
+        $data['status'] = DB::table('tblstudent_status')->get();
+
+        return view('pendaftar.updateGetStudent', compact('data'));
+
+    }
+
+    public function storeStudentInfo(Request $request)
+    {
+
+        $studentData = $request->studentData;
+
+        $validator = Validator::make($request->all(), [
+            'studentData' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return ["message"=>"Field Error", "error" => $validator->messages()->get('*')];
+        }
+
+        try{ 
+            DB::beginTransaction();
+            DB::connection()->enableQueryLog();
+
+            try{
+                $student = json_decode($studentData);
+                
+                DB::table('students')->update([
+                    'intake' => $student->intake,
+                    'batch' => $student->batch,
+                    'session' => $student->session,
+                    'semester' => $student->semester,
+                    'status' => $student->status
+                ]);
+
+                DB::table('tblstudent_log')->insert([
+                    'student_ic' => $student->ic,
+                    'session_id' => $student->session,
+                    'semester_id' => $student->semester,
+                    'status_id' => $student->status,
+                    'date' => date("Y-m-d H:i:s"),
+                    'remark' => $student->comment
+                ]);
+
+                $std_log = DB::table('tblstudent_log')->where('student_ic', $student->ic)->get();
+
+                $content = "";
+                $content .= '<thead>
+                                <tr>
+                                    <th style="width: 1%">
+                                        No.
+                                    </th>
+                                    <th style="width: 10%">
+                                        No. IC
+                                    </th>
+                                    <th style="width: 15%">
+                                        Semester
+                                    </th>
+                                    <th style="width: 10%">
+                                        Session
+                                    </th>
+                                    <th style="width: 10%">
+                                        Status
+                                    </th>
+                                    <th style="width: 10%">
+                                        Date
+                                    </th>
+                                    <th style="width: 20%">
+                                        Remark
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="table">';
+                            
+                foreach($std_log as $key => $std){
+                    //$registered = ($std->status == 'ACTIVE') ? 'checked' : '';
+                    $content .= '
+                    <tr>
+                        <td style="width: 1%">
+                        '. $key+1 .'
+                        </td>
+                        <td style="width: 15%">
+                        '. $std->student_ic .'
+                        </td>
+                        <td style="width: 15%">
+                        '. $std->semester_id .'
+                        </td>
+                        <td style="width: 30%">
+                        '. $std->session_id .'
+                        </td>
+                        <td>
+                        '. $std->status_id .'
+                        </td>
+                        <td>
+                        '. $std->date .'
+                        </td>
+                        <td>
+                        '. $std->remark .'
+                        </td>
+                    </tr>
+                    ';
+                    }
+                $content .= '</tbody>';
+                
+            }catch(QueryException $ex){
+                DB::rollback();
+                if($ex->getCode() == 23000){
+                    return ["message"=>"Class code already existed inside the system"];
+                }else{
+                    \Log::debug($ex);
+                    return ["message"=>"DB Error"];
+                }
+            }
+
+            DB::commit();
+        }catch(Exception $ex){
+            return ["message"=>"Error"];
+        }
+
+        return ["message"=>"Success", "data" => $content];
+
+    }
+
+    public function viewStatus()
+    {
+
+        return view('pendaftar.viewStatus');
+
+    }
+
+    public function getReportStd(Request $request)
+    {
+
+        $data['dismissed'] = DB::table('students')->whereBetween('date', [$request->from,$request->to])->where('status', '3')->get();
+
+        $data['active'] = DB::table('students')->whereBetween('date', [$request->from,$request->to])->where('status', '2')->get();
+
+        return view('pendaftar.getReportStudent', compact('data'));
+        
+    }
+
+    public function studentReport()
+    {
+        $data['ms1'] = [];
+
+        $data['sum'] = [];
+
+        $data['program'] = DB::table('tblprogramme')->join('tblfaculty', 'tblprogramme.facultyid', 'tblfaculty.id')->select('tblprogramme.*', 'tblfaculty.facultyname')->get();
+
+        $data['faculty'] = DB::table('tblfaculty')->get();
+
+        foreach($data['faculty'] as $fcl)
+        {
+
+            $data['count'][] = count(DB::table('tblprogramme')->where('facultyid', $fcl->id)->get());
+
+        }
+
+        //dd($data['count']);
+
+        foreach($data['program'] as $key => $prg)
+        {
+
+            $data['sum'][$key] = count(DB::table('students')
+                                       ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+                                       ->join('tblfaculty', 'tblprogramme.facultyid', 'tblfaculty.id')
+                                       ->where('tblfaculty.id', $prg->facultyid)
+                                       ->get());
+
+
+            $data['ms1'][$key] = count(DB::table('students')
+                                 ->where([
+                                    ['students.program', $prg->id],
+                                    ['students.semester', 1]
+                                    ])->get());
+            
+            $data['ms2'][$key] = count(DB::table('students')
+                                    ->where([
+                                    ['students.program', $prg->id],
+                                    ['students.semester', 2]
+                                    ])->get());
+
+            $data['ms3'][$key] = count(DB::table('students')
+                                    ->where([
+                                    ['students.program', $prg->id],
+                                    ['students.semester', 3]
+                                    ])->get());
+                                    
+            $data['ms4'][$key] = count(DB::table('students')
+                                    ->where([
+                                    ['students.program', $prg->id],
+                                    ['students.semester', 4]
+                                    ])->get());
+
+            $data['ms5'][$key] = count(DB::table('students')
+                                     ->where([
+                                    ['students.program', $prg->id],
+                                    ['students.semester', 5]
+                                    ])->get());
+
+            $data['ms6'][$key] = count(DB::table('students')
+                                    ->where([
+                                    ['students.program', $prg->id],
+                                    ['students.semester', 6]
+                                    ])->get());
+
+
+            $data['holding_m1'][$key] = count(DB::table('students')
+                                    ->where([
+                                    ['students.program', $prg->id],
+                                    ['students.status', 2],
+                                    ['students.student_status', 1],
+                                    //['students.campus_id', 1]
+                                    ])->get());
+
+            $data['holding_f1'][$key] = count(DB::table('students')
+                                    ->where([
+                                    ['students.program', $prg->id],
+                                    ['students.status', 2],
+                                    ['students.student_status', 1],
+                                    //['students.campus_id', 1]
+                                    ])->get());
+
+            $data['industry'][$key] = count(DB::table('students')
+                                    ->where([
+                                    ['students.program', $prg->id],
+                                    ['students.status', 2],
+                                    ['students.student_status', 4],
+                                    //['students.campus_id', 1]
+                                    ])->get());
+
+            $data['active'][$key] = count(DB::table('students')
+                                    ->where([
+                                    ['students.program', $prg->id],
+                                    ['students.status', 2],
+                                    //['students.campus_id', 1]
+                                    ])->get());
+
+            $data['active_leave'][$key] = count(DB::table('students')
+                                    ->where([
+                                    ['students.program', $prg->id],
+                                    ['students.status', 2],
+                                    ['students.campus_id', 0]
+                                    ])->get());
+                                    
+            $data['postpone'][$key] = count(DB::table('students')
+                                    ->where([
+                                    ['students.program', $prg->id],
+                                    ['students.status', 2],
+                                    ['students.campus_id', 2]
+                                    ])->get());
+
+            $data['dismissed'][$key] = count(DB::table('students')
+                                    ->where([
+                                    ['students.program', $prg->id],
+                                    ['students.status', 3]
+                                    ])->get());
+
+                                 
+
+        }
+
+        return view('pendaftar.studentReport', compact('data'));
+
+    }
+
+    public function suratTawaran()
+    {
+
+        return view('pendaftar.surat_tawaran.surat_tawaran');
+
+    }
+
+    //public function getStudentReport(Request $request)
+    //{
+
+        
+        
+    //}
 }
