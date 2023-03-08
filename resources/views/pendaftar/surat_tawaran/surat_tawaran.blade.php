@@ -82,7 +82,7 @@
         <br>
         <p>TAWARAN KEMASUKAN KE PROGRAM AKADEMIK KOLEJ UNITI SESI MAC 2022/2023</p>
         <br>
-        <p>TAHNIAH dan SUKACITA di maklumkan, saudara/saudari di tawarkan untuk mengikuti pengajian program {{ $data['student']->program }} di KOLEJ UNITI.</p>
+        <p>TAHNIAH dan SUKACITA di maklumkan, saudara/saudari di tawarkan untuk mengikuti pengajian program {{ $data['student']->progname }} di KOLEJ UNITI.</p>
         <br>
         <p>Untuk pengetahuan saudara/saudari, program yang diikuti adalah program akademik yang dikendalikan oleh KOLEJ UNITI di PERSIARAN UNITI VILLAGE, TANJUNG AGAS, 71250 PORT DICKSON, NEGERI SEMBILAN DARUL KHUSUS. Setelah memenuhi semua keperluan, saudara/saudari akan DIANUGERAHKAN DIPLOMA OLEH KOLEJ UNITI ATAU UiTM DAN UPM.</p>
         <br>
@@ -102,26 +102,26 @@
         <p>Semasa mendaftar saudara/i dikehendaki membawa dokumen asal dan salinan yang disahkan berikut :</p>
         <div class="row">
             <div class="d-flex p-2">
-            <div class="col-md-6">
-                <div class="form-group">
-                    <ul>
-                        <li>Surat tawaran</li>
-                        <li>Kad Pengenalan pemohon dan ibubapa (1 salinan)</li>
-                        <li>4 keping gambar ukuran pasport</li>
-                        <li>Slip gaji penjaga/ibubapa terkini (1 salinan)</li>
-                    </ul>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <ul>
+                            <li>Surat tawaran</li>
+                            <li>Kad Pengenalan pemohon dan ibubapa (1 salinan)</li>
+                            <li>4 keping gambar ukuran pasport</li>
+                            <li>Slip gaji penjaga/ibubapa terkini (1 salinan)</li>
+                        </ul>
+                    </div>
                 </div>
-            </div>
-            <div class="col-md-6">
-                <div class="form-group">
-                    <ul>
-                        <li>Salinan kelahiran pemohon dan ibubapa (1 salinan)</li>
-                        <li>Slip peperiksaan yang berkenaan (1 salinan)</li>
-                        <li>Borang J (jika perlu)</li>
-                        <li>Buku Pendaftaran Pelajar</li>
-                    </ul>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <ul>
+                            <li>Salinan kelahiran pemohon dan ibubapa (1 salinan)</li>
+                            <li>Slip peperiksaan yang berkenaan (1 salinan)</li>
+                            <li>Borang J (jika perlu)</li>
+                            <li>Buku Pendaftaran Pelajar</li>
+                        </ul>
+                    </div>
                 </div>
-            </div>
             </div>
         </div>
         <p class="mt-1">Sekian, terima kasih.</p>
