@@ -873,7 +873,7 @@ class PendaftarController extends Controller
 
             return view('pendaftar.surat_tawaran.surat_tawaran2', compact('data'));
 
-       
+        }
 
         
 
