@@ -140,15 +140,15 @@
   <header class="main-header">
 	<div class="d-flex align-items-center logo-box justify-content-start">	
 		<!-- Logo -->
-		<a href="{{ url('pendaftar') }}" class="logo">
+		<a href="{{ url('finance') }}" class="logo">
 		  <!-- logo-->
 		  <div class="logo-mini w-30">
 			  <span class="light-logo"><img src="{{ asset('assets/images/logo/Kolej-UNITI.png')}}" alt="logo" class="unity"></span>
 			  <span class="dark-logo"><img src="{{ asset('assets/images/logo-letter-white.png') }}" alt="logo"></span>
 		  </div>
 		  <div class="logo-lg">
-			  <span class="light-logo"><img src="{{ asset('assets/images/logo-dark-text.png') }}" alt="logo" class="eduhub"></span>
-			  <span class="dark-logo"><img src="{{ asset('assets/images/logo-light-text.png') }}" alt="logo"></span>
+			  <span class="light-logo"><img src="{{ asset('assets/images/logo_ucms2.png') }}" alt="logo" class="eduhub"></span>
+			  <span class="dark-logo"><img src="{{ asset('assets/images/logo_ucms2.png') }}" alt="logo" class="eduhub"></span>
 		  </div>
 		</a>	
 	</div>   
@@ -265,7 +265,7 @@
 				<a href="{{ route('finance.dashboard') }}"><i data-feather="home"></i><span>Dashboard</span></a>
 			  </li>
 			  <li class="treeview">
-				<a href="#"><i data-feather="package"></i><span>Claims</span>
+				<a href="#"><i data-feather="folder"></i><span>Claims</span>
 					<span class="pull-right-container">
 						<i class="fa fa-angle-left pull-right"></i>
 					</span>
@@ -273,6 +273,18 @@
 				<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
 					<li><a href="{{ route('finance') }}" class="{{ (route('finance') == Request::url()) ? 'active' : ''}}">Claims Library</a></li>
 					<li><a href="{{ route('claimpackage') }}" class="{{ (route('claimpackage') == Request::url()) ? 'active' : ''}}">Claims Package</a></li>
+				</ul>
+			  </li>
+			  <li class="treeview">
+				<a href="#"><i data-feather="package"></i><span>Package</span>
+					<span class="pull-right-container">
+						<i class="fa fa-angle-left pull-right"></i>
+					</span>
+				</a>
+				<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
+					<li><a href="{{ route('finance.package.incentive') }}" class="{{ (route('finance.package.incentive') == Request::url()) ? 'active' : ''}}">Incentives</a></li>
+					<li><a href="{{ route('finance.package.tabungkhas') }}" class="{{ (route('finance.package.tabungkhas') == Request::url()) ? 'active' : ''}}">Tabung Khas</a></li>
+					<li><a href="{{ route('finance.package.sponsorPackage') }}" class="{{ (route('finance.package.sponsorPackage') == Request::url()) ? 'active' : ''}}">Sponsorship</a></li>
 				</ul>
 			  </li>
 			  <li class="treeview">
@@ -285,6 +297,7 @@
 					<li><a href="{{ route('finance.payment') }}" class="{{ (route('finance.payment') == Request::url()) ? 'active' : ''}}">Pre-Registration</a></li>
 					<li><a href="{{ route('finance.payment.claim') }}" class="{{ (route('finance.payment.claim') == Request::url()) ? 'active' : ''}}">Claims</a></li>
 					<li><a href="{{ route('finance.payment.tuition') }}" class="{{ (route('finance.payment.tuition') == Request::url()) ? 'active' : ''}}">Daily Payment</a></li>
+					<li><a href="{{ route('finance.payment.other') }}" class="{{ (route('finance.payment.other') == Request::url()) ? 'active' : ''}}">Other Payment</a></li>
 				</ul>
 			  </li>
 			  <li class="treeview">
@@ -307,6 +320,8 @@
 				<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
 					<li><a href="{{ route('finance.statement') }}" class="{{ (route('finance.statement') == Request::url()) ? 'active' : ''}}">Student Account Statement</a></li>
 					<li><a href="{{ route('finance.receiptList') }}" class="{{ (route('finance.receiptList') == Request::url()) ? 'active' : ''}}">Receipt Report</a></li>
+					<li><a href="{{ route('finance.dailyReport') }}" class="{{ (route('finance.dailyReport') == Request::url()) ? 'active' : ''}}">Daily Report</a></li>
+					<li><a href="{{ route('finance.chargeReport') }}" class="{{ (route('finance.chargeReport') == Request::url()) ? 'active' : ''}}">Charge Report</a></li>
 				</ul>
 			  </li>
 		  </div>

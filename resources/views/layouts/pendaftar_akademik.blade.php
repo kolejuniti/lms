@@ -8,7 +8,7 @@
     <meta name="author" content="">
 	<meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="icon" href="{{ asset('assets/images/favicon.ico') }}">
-    <title>UCMS - @yield('title')</title>
+    <title>EduHub - @yield('title')</title>
 	<!-- Vendors Style-->
 	<link rel="stylesheet" href="{{ asset('assets/src/css/vendors_css.css') }}">
      <!-- DataTables -->
@@ -151,11 +151,11 @@
 			  <span class="dark-logo"><img src="{{ asset('assets/images/logo-letter-white.png') }}" alt="logo"></span>
 		  </div>
 		  <div class="logo-lg">
-			  <span class="light-logo"><img src="{{ asset('assets/images/logo-dark-text.png') }}" alt="logo" class="eduhub"></span>
-			  <span class="dark-logo"><img src="{{ asset('assets/images/logo-light-text.png') }}" alt="logo"></span>
+			  <span class="light-logo"><img src="{{ asset('assets/images/logo_ucms2.png') }}" alt="logo" class="eduhub"></span>
+			  <span class="dark-logo"><img src="{{ asset('assets/images/logo_ucms2.png') }}" alt="logo" class="eduhub"></span>
 		  </div>
 		</a>	
-	</div>   
+	</div>    
     <!-- Header Navbar -->
     <nav class="navbar navbar-static-top">
       <!-- Sidebar toggle button-->
@@ -278,9 +278,22 @@
 					<a href="{{ route('pendaftar_akademik.session') }}" class="{{ (route('pendaftar_akademik.session') == Request::url()) ? 'active' : ''}}"><i data-feather="trello"></i><span>Session List</span></a>
 				</li>
 				<li class="treeview">
-					<li>
-						<a href="{{ Storage::disk('linode')->url('classschedule/index.htm') }}" target="_blank" class="{{ (route('lecturer') == Request::url()) ? 'active' : ''}}"><i data-feather="layout"></i><span>Schedule</span></a>
-					</li>   
+					<a href="#"><i data-feather="users"></i><span>Student</span>
+						<span class="pull-right-container">
+							<i class="fa fa-angle-left pull-right"></i>
+						</span>
+					</a>
+					<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
+						<li><a href="{{ route('pendaftar_akademik.leave') }}" class="{{ (route('pendaftar_akademik.leave') == Request::url()) ? 'active' : ''}}">Student Leave</a></li>
+						<li><a href="{{ route('pendaftar_akademik.semester') }}" class="{{ (route('pendaftar_akademik.semester') == Request::url()) ? 'active' : ''}}">Student Semester</a></li>
+					</ul>
+				</li>
+				<li class="treeview">
+					<a href="#"><i data-feather="video"></i><span>Schedle</span>
+						<span class="pull-right-container">
+							<i class="fa fa-angle-left pull-right"></i>
+						</span>
+					</a>
 					<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
 						<li><a href="{{ Storage::disk('linode')->url('classschedule/index.htm') }}" target="_blank" class="">View</a></li>
 						<li><a href="/AR/schedule/index" class="{{ (route('pendaftar_akademik.schedule') == Request::url()) ? 'active' : ''}}">Upload</a></li>

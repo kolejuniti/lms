@@ -8,7 +8,7 @@
     <meta name="author" content="">
 	<meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="icon" href="{{ asset('assets/images/favicon.ico') }}">
-    <title>UCMS - @yield('title')</title>
+    <title>EduHub - @yield('title')</title>
 	<!-- Vendors Style-->
 	<link rel="stylesheet" href="{{ asset('assets/src/css/vendors_css.css') }}">
 	<!-- Style-->  
@@ -121,8 +121,8 @@
 			  <span class="dark-logo"><img src="{{ asset('assets/images/logo-letter-white.png') }}" alt="logo"></span>
 		  </div>
 		  <div class="logo-lg">
-			  <span class="light-logo"><img src="{{ asset('assets/images/logo-dark-text.png') }}" alt="logo" class="eduhub"></span>
-			  <span class="dark-logo"><img src="{{ asset('assets/images/logo-light-text.png') }}" alt="logo"></span>
+			  <span class="light-logo"><img src="{{ asset('assets/images/logo_ucms2.png') }}" alt="logo" class="eduhub"></span>
+			  <span class="dark-logo"><img src="{{ asset('assets/images/logo_ucms2.png') }}" alt="logo" class="eduhub"></span>
 		  </div>
 		</a>	
 	</div>   
