@@ -86,6 +86,7 @@ Route::get('/pendaftar_dashboard', [App\Http\Controllers\PendaftarController::cl
 Route::get('/pendaftar', [App\Http\Controllers\PendaftarController::class, 'index'])->name('pendaftar');
 Route::get('/pendaftar/create', [App\Http\Controllers\PendaftarController::class, 'create'])->name('pendaftar.create');
 Route::post('/pendaftar/store', [App\Http\Controllers\PendaftarController::class, 'store'])->name('pendaftar.store');
+Route::get('/pendaftar/surat_tawaran', [App\Http\Controllers\PendaftarController::class, 'suratTawaran'])->name('pendaftar.surat_tawaran');
 Route::get('/pendaftar/edit/{ic}', [App\Http\Controllers\PendaftarController::class, 'edit'])->name('pendaftar.edit');
 Route::post('/pendaftar/edit/update', [App\Http\Controllers\PendaftarController::class, 'update'])->name('pendaftar.update');
 Route::post('/pendaftar/getProgram', [App\Http\Controllers\PendaftarController::class, 'getProgram'])->name('pendaftar.getProgram');
@@ -500,6 +501,34 @@ Route::post('/finance/report/statement/getStudent', [App\Http\Controllers\Financ
 Route::get('/finance/report/receiptlist', [App\Http\Controllers\FinanceController::class, 'receiptList'])->name('finance.receiptList');
 Route::post('/finance/report/receiptlist/getReceiptList', [App\Http\Controllers\FinanceController::class, 'getReceiptList']);
 Route::get('/finance/report/receiptlist/getReceiptProof', [App\Http\Controllers\FinanceController::class, 'getReceiptProof']);
+Route::get('/finance/report/dailyreport', [App\Http\Controllers\FinanceController::class, 'dailyReport'])->name('finance.dailyReport');
+Route::get('/finance/report/dailyreport/getDailyReport', [App\Http\Controllers\FinanceController::class, 'getDailyReport']);
+Route::get('/finance/report/chargeReport', [App\Http\Controllers\FinanceController::class, 'chargeReport'])->name('finance.chargeReport');
+Route::get('/finance/report/chargeReport/getChargeReport', [App\Http\Controllers\FinanceController::class, 'getChargeReport']);
+Route::get('/finance/payment/other', [App\Http\Controllers\FinanceController::class, 'studentOtherPayment'])->name('finance.payment.other');
+Route::post('/finance/payment/other/getStudent', [App\Http\Controllers\FinanceController::class, 'getOtherStudentPayment']);
+Route::post('/finance/payment/other/storePayment', [App\Http\Controllers\FinanceController::class, 'storeOtherPayment']);
+Route::post('/finance/payment/other/storePaymentDtl', [App\Http\Controllers\FinanceController::class, 'storeOtherPaymentDtl']);
+Route::post('/finance/payment/other/deletePayment', [App\Http\Controllers\FinanceController::class, 'deleteOtherPayment']);
+Route::post('/finance/payment/other/confirmPayment', [App\Http\Controllers\FinanceController::class, 'confirmOtherPayment']);
+Route::get('/finance/package/incentive', [App\Http\Controllers\FinanceController::class, 'incentive'])->name('finance.package.incentive');
+Route::get('/finance/package/incentive/getIncentive', [App\Http\Controllers\FinanceController::class, 'getIncentive']);
+Route::post('/finance/package/incentive/storeIncentive', [App\Http\Controllers\FinanceController::class, 'storeIncentive']);
+Route::post('/finance/package/incentive/getProgram', [App\Http\Controllers\FinanceController::class, 'getProgram']);
+Route::post('/finance/package/incentive/registerPRG', [App\Http\Controllers\FinanceController::class, 'registerPRG']);
+Route::post('/finance/package/incentive/unregisterPRG', [App\Http\Controllers\FinanceController::class, 'unregisterPRG']);
+Route::get('/finance/package/tabungkhas', [App\Http\Controllers\FinanceController::class, 'tabungkhas'])->name('finance.package.tabungkhas');
+Route::get('/finance/package/tabungkhas/getTabungkhas', [App\Http\Controllers\FinanceController::class, 'getTabungkhas']);
+Route::post('/finance/package/tabungkhas/storeTabungkhas', [App\Http\Controllers\FinanceController::class, 'storeTabungkhas']);
+Route::post('/finance/package/tabungkhas/getProgram2', [App\Http\Controllers\FinanceController::class, 'getProgram2']);
+Route::post('/finance/package/tabungkhas/registerPRG2', [App\Http\Controllers\FinanceController::class, 'registerPRG2']);
+Route::post('/finance/package/tabungkhas/unregisterPRG2', [App\Http\Controllers\FinanceController::class, 'unregisterPRG2']);
+Route::get('/finance/package/sponsorPackage', [App\Http\Controllers\FinanceController::class, 'sponsorPackage'])->name('finance.package.sponsorPackage');
+Route::get('/finance/package/sponsorPackage/getsponsorPackage', [App\Http\Controllers\FinanceController::class, 'getsponsorPackage']);
+Route::post('/finance/package/sponsorPackage/storeSponsorPackage', [App\Http\Controllers\FinanceController::class, 'storeSponsorPackage']);
+Route::post('/finance/package/sponsorPackage/getEditPackage', [App\Http\Controllers\FinanceController::class, 'getEditPackage']);
+Route::post('/finance/package/sponsorPackage/updateSponsorPackage', [App\Http\Controllers\FinanceController::class, 'updateSponsorPackage']);
+Route::delete('/finance/package/sponsorPackage/deleteSponsorPackage', [App\Http\Controllers\FinanceController::class, 'deleteSponsorPackage']);
 
 
 Route::get('/treasurer_dashboard', [App\Http\Controllers\TreasurerController::class, 'dashboard'])->name('treasurer.dashboard');
