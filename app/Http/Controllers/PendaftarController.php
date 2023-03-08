@@ -100,6 +100,7 @@ class PendaftarController extends Controller
             'program' => $data['program'],
             'password' => Hash::make('12345678'),
             'status' => 1,
+            'date_offer' => date('Y-m-d')
         ]);
 
         DB::table('tblstudent_personal')->insert([
@@ -171,9 +172,9 @@ class PendaftarController extends Controller
             ]);
         }*/
 
-        $this->suratTawaran();
+        //$this->suratTawaran($data['id']);
 
-        //return redirect(route('pendaftar'));
+        return redirect(route('pendaftar'))->with('newStud', $data['id']);
     }
 
     public function edit()
@@ -848,10 +849,33 @@ class PendaftarController extends Controller
 
     }
 
-    public function suratTawaran()
+    public function suratTawaran(Request $request)
     {
+        $data['student'] = DB::table('students')
+                            ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
+                            ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+                            ->join('sessions', 'students.intake', 'sessions.SessionID')
+                            ->select('students.*', 'tblstudent_status.name AS status', 'tblprogramme.progname', 'sessions.SessionName AS intake')
+                            ->where('ic', $request->ic)->first();
 
-        return view('pendaftar.surat_tawaran.surat_tawaran');
+        $data['address'] = DB::table('tblstudent_address')
+                           ->leftJoin('tblstate', 'tblstudent_address.state_id', 'tblstate.id')
+                           ->leftJoin('tblcountry', 'tblstudent_address.country_id', 'tblcountry.id')
+                           ->select('tblstudent_address.*', 'tblstate.state_name AS state', 'tblcountry.name AS country')
+                           ->where('tblstudent_address.student_ic', $request->ic)->first();
+
+        if($data['student']->program != 7 && $data['student']->program != 8)
+        {
+
+            return view('pendaftar.surat_tawaran.surat_tawaran', compact('data'));
+
+        }else{
+
+            return view('pendaftar.surat_tawaran.surat_tawaran2', compact('data'));
+
+       
+
+        
 
     }
 
