@@ -269,7 +269,8 @@
                               $total = count(DB::table('students')
                               ->where([
                                 ['semester', $sem->id],
-                                ['status', 2]
+                                ['status', 2],
+                                ['student_status', 2]
                                 ])->get())
                             @endphp
                             <td colspan="{{ ($sem->id == 1) ? '4' : '2' }}" style="text-align: center">
