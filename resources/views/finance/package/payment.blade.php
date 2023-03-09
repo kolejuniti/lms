@@ -8,14 +8,14 @@
     <div class="content-header">
       <div class="d-flex align-items-center">
         <div class="me-auto">
-          <h4 class="page-title">Tabungkhas</h4>
+          <h4 class="page-title">Payment</h4>
           <div class="d-inline-block align-items-center">
             <nav>
               <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="#"><i class="mdi mdi-home-outline"></i></a></li>
                 <li class="breadcrumb-item" aria-current="page">Dashboard</li>
                 <li class="breadcrumb-item" aria-current="page">Package</li>
-                <li class="breadcrumb-item active" aria-current="page">Tabungkhas</li>
+                <li class="breadcrumb-item active" aria-current="page">Payment</li>
               </ol>
             </nav>
           </div>
@@ -39,61 +39,75 @@
             <!-- general form elements -->
             <div class="card card-primary">
               <div class="card-header">
-                <h3 class="card-title">Create Tabungkhas</h3>
+                <h3 class="card-title">Create Payment</h3>
               </div>
               <!-- /.card-header -->
               <!-- form start -->
               <div class="card-body">
                 <div class="row">
-                  <div class="col-md-6" id="program-card">
-                    <div class="form-group">
-                      <label class="form-label" for="from">FROM</label>
-                      <select class="form-select" id="from" name="from">
-                        <option value="" selected disabled>-</option>
-                        @foreach ($data['session'] as $ses)
-                          <option value="{{ $ses->SessionID }}">{{ $ses->SessionName }}</option>
-                        @endforeach
-                      </select>
-                    </div>
-                  </div>       
-                  <div class="col-md-6" id="intake-card">
-                    <div class="form-group">
-                      <label class="form-label" for="to">TO</label>
-                      <select class="form-select" id="to" name="to">
-                        <option value="" selected disabled>-</option>
-                        @foreach ($data['session'] as $ses)
-                          <option value="{{ $ses->SessionID }}">{{ $ses->SessionName }}</option>
-                        @endforeach
-                      </select>
-                    </div>
-                  </div>
-                  <div class="col-md-6" id="package-card">
+                  <div class="col-md-6" id="ptptn-card">
                     <div class="form-group">
                       <label class="form-label" for="package">Package PTPTN</label>
                       <select class="form-select" id="package" name="package">
                         <option value="" selected disabled>-</option>
-                        @foreach ($data['package'] as $pcg)
-                          <option value="{{ $pcg->id }}">{{ $pcg->name }}</option>
+                        @foreach ($data['package'] as $pkg)
+                          <option value="{{ $pkg->id }}">{{ $pkg->name }}</option>
                         @endforeach
                       </select>
                     </div>
-                  </div> 
-                  <div class="col-md-6" id="type-card">
+                  </div>        
+                  <div class="col-md-6" id="intake-card">
                     <div class="form-group">
-                      <label class="form-label" for="type">Insentif Type</label>
+                      <label class="form-label" for="type">Payment Type</label>
                       <select class="form-select" id="type" name="type">
-                        <option value="" selected disabled>-</option>
-                        @foreach ($data['type'] as $tp)
-                          <option value="{{ $tp->id }}">{{ $tp->name }}</option>
+                        <option value="" selected>-</option>
+                        @foreach ($data['type'] as $mth)
+                          <option value="{{ $mth->id }}">{{ $mth->name }}</option>
                         @endforeach
                       </select>
                     </div>
-                  </div> 
-                  <div class="col-md-6" id="claim-card">
-                    <div class="form-group">
-                      <label class="form-label" for="amount">Amount (RM)</label>
-                      <input type="number" id="amount" name="amount" class="form-control">
-                    </div>
+                  </div>
+                </div>
+                <hr>
+                <div class="col-md-6" id="semester-card">
+                  <div class="form-group">
+                    <label class="form-label" for="sem1">Semester 1</label>
+                    <input type="number" id="sem1" name="sem1" step="0.01" value="0.00" class="form-control">
+                  </div>
+                </div>
+                <br>
+                <div class="col-md-6" id="semester-card">
+                  <div class="form-group">
+                    <label class="form-label" for="sem2">Semester 2</label>
+                    <input type="number" id="sem2" name="sem2" step="0.01" value="0.00" class="form-control">
+                  </div>
+                </div>
+                <br>
+                <div class="col-md-6" id="semester-card">
+                  <div class="form-group">
+                    <label class="form-label" for="sem3">Semester 3</label>
+                    <input type="number" id="sem3" name="sem3" step="0.01" value="0.00" class="form-control">
+                  </div>
+                </div>
+                <br>
+                <div class="col-md-6" id="semester-card">
+                  <div class="form-group">
+                    <label class="form-label" for="sem4">Semester 4</label>
+                    <input type="number" id="sem4" name="sem4" step="0.01" value="0.00" class="form-control">
+                  </div>
+                </div>
+                <br>
+                <div class="col-md-6" id="semester-card">
+                  <div class="form-group">
+                    <label class="form-label" for="sem5">Semester 5</label>
+                    <input type="number" id="sem5" name="sem5" step="0.01" value="0.00" class="form-control">
+                  </div>
+                </div>
+                <br>
+                <div class="col-md-6" id="semester-card">
+                  <div class="form-group">
+                    <label class="form-label" for="sem6">Semester 6</label>
+                    <input type="number" id="sem6" name="sem6" step="0.01" value="0.00" class="form-control">
                   </div>
                 </div>
                 <div class="row">
@@ -138,15 +152,15 @@
 
   $(document).ready(function(){
 
-    getTabungkhas();
+    getPayment();
 
   });
 
-  function getTabungkhas()
+  function getPayment()
   {
     return $.ajax({
             headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
-            url      : "{{ url('finance/package/tabungkhas/getTabungkhas') }}",
+            url      : "{{ url('finance/package/payment/getPayment') }}",
             method   : 'GET',
             error:function(err){
                 alert("Error");
@@ -167,16 +181,19 @@
     getInput = {
       package : $('#package').val(),
       type : $('#type').val(),
-      from : $('#from').val(),
-      to : $('#to').val(),
-      amount : $('#amount').val()
+      sem1 : $('#sem1').val(),
+      sem2 : $('#sem2').val(),
+      sem3 : $('#sem3').val(),
+      sem4 : $('#sem4').val(),
+      sem5 : $('#sem5').val(),
+      sem6 : $('#sem6').val()
     };
     
     formData.append('formData', JSON.stringify(getInput));
 
     $.ajax({
         headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
-        url: "{{ url('finance/package/tabungkhas/storeTabungkhas') }}",
+        url: "{{ url('finance/package/payment/storePaymentPKG') }}",
         type: 'POST',
         data: formData,
         cache : false,
@@ -188,17 +205,14 @@
         success:function(res){
             try{
                 if(res.message == "Success"){
-                    alert("Success! Tabung Khas has been added/created!")
-                    getTabungkhas();
+                    alert("Success! Payment Package has been added/created!")
+                    getPayment();
                 }else{
                     $('.error-field').html('');
                     if(res.message == "Field Error"){
                         for (f in res.error) {
                             $('#'+f+'_error').html(res.error[f]);
                         }
-                    }
-                    else if(res.message == "Group code already existed inside the system"){
-                        $('#classcode_error').html(res.message);
                     }
                     else{
                         alert(res.message);
@@ -218,7 +232,7 @@ function getProgram(id)
 
   return $.ajax({
       headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
-      url      : "{{ url('/finance/package/tabungkhas/getProgram2') }}",
+      url      : "{{ url('/finance/package/payment/getProgramPayment') }}",
       method   : 'POST',
       data 	 : {id: id},
       error:function(err){
@@ -236,11 +250,16 @@ function getProgram(id)
 function Register(prg,id)
 {
 
-  return $.ajax({
+  var session = $('#session').val();
+
+  if(session != null)
+  {
+
+    return $.ajax({
       headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
-      url      : "{{ url('/finance/package/tabungkhas/registerPRG2') }}",
+      url      : "{{ url('/finance/package/payment/registerPRGPYM') }}",
       method   : 'POST',
-      data 	 : {prg: prg,id: id},
+      data 	 : {prg: prg, id: id, session: session},
       error:function(err){
           alert("Error");
           console.log(err);
@@ -248,16 +267,22 @@ function Register(prg,id)
       success  : function(data){
           getProgram(data)
       }
-  });
+    });
+
+  }else{
+
+    alert('Please select Session!');
+
+  }
 
 }
 
-function unRegister(prg,id)
+function deleteReg(prg,id)
 {
 
   return $.ajax({
       headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
-      url      : "{{ url('/finance/package/tabungkhas/unregisterPRG2') }}",
+      url      : "{{ url('/finance/package/payment/deletePRGPYM') }}",
       method   : 'POST',
       data 	 : {prg: prg,id: id},
       error:function(err){

@@ -86,11 +86,13 @@
                 </div>
               </div>
               <!-- /.card-body -->
-              <div id="uploadModal" class="modal" class="modal fade" role="dialog">
+              <div id="uploadModal" class="modal fade" class="modal fade" role="dialog">
                 <div class="modal-dialog">
                   <!-- modal content-->
                   <div class="modal-content" id="getModal">
-                    <div class="card-body p-0">
+                    <div class="modal-header">
+                    </div>
+                    <div class="modal-body">
                       <div id="program_list">
 
                       </div>
