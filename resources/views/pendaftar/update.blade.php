@@ -189,9 +189,9 @@
                             <label class="form-label" for="EA">Education Advisor</label>
                             <select class="form-select" id="EA" name="EA">
                               <option value="-" selected disabled>-</option>
-                                @foreach ($session as $ses)
-                                <option value="{{ $ses->SessionID }}">{{ $ses->SessionName}}</option> 
-                                @endforeach
+                              @foreach ($data['EA'] as $ea)
+                                <option value="{{ $ea->id }}" {{ ($student->advisor_id == $ea->id) ? 'selected' : '' }}>{{ $ea->name}}</option> 
+                              @endforeach
                             </select>
                           </div>
                         </div>
@@ -238,9 +238,9 @@
                             <label class="form-label" for="pt">Pass Type</label>
                             <select class="form-select" id="pt" name="pt">
                               <option value="-" selected disabled>-</option>
-                              @foreach ($program as $prg)
-                                <option value="{{ $prg->id }}">{{$prg->progname }}</option> 
-                                @endforeach
+                              @foreach ($data['pass'] as $pss)
+                                <option value="{{ $pss->id }}">{{$pss->name }}</option> 
+                              @endforeach
                             </select>
                           </div>
                         </div>
@@ -328,9 +328,9 @@
                             <label class="form-label" for="country">Country</label>
                             <select class="form-select" id="country" name="country">
                               <option value="-" selected disabled>-</option>
-                              @foreach ($program as $prg)
-                                <option value="{{ $prg->id }}">{{$prg->progname }}</option> 
-                                @endforeach
+                              @foreach ($data['country'] as $cry)
+                                <option value="{{ $cry->id }}">{{$cry->name }}</option> 
+                              @endforeach
                             </select>
                           </div>
                         </div>

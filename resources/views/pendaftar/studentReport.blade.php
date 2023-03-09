@@ -34,20 +34,19 @@
               </div>
               <!-- /.card-header -->
               <div class="card-body">
-                <div class="row">
+                {{-- <div class="row">
                   <div class="col-md-3">
                       <div class="form-group">
                       <label class="form-label" for="name">Date</label>
                       <input type="date" class="form-control" id="date" name="date">
                       </div>
                   </div>
-                </div>
-                <div class="card-body">
-                    <table id="table_dismissed" class="w-100 table table-bordered display margin-top-10 w-p100 table-layout: fixed;">
+                </div> --}}
+                <div class="card-body" style="width: 100%; overflow-x: auto;">
+                    <table id="table_dismissed" class="w-100 table table-bordered display margin-top-10 w-p100 table-layout: fixed;" style="width: 100%;">
                       <thead>
                         <tr>
-                          <th colspan="2"></th>
-                          <th colspan="2"></th>
+                          <th style="text-align: center" colspan="2"> </th>
                           <th style="text-align: center" colspan="2">Holding</th>
                           <th style="text-align: center" colspan="2">40</th>
                           <th style="text-align: center" colspan="2">40</th>
@@ -55,9 +54,7 @@
                           <th style="text-align: center" colspan="2">6</th>
                           <th style="text-align: center" colspan="2">2</th>
                           <th style="text-align: center" colspan="2">0</th>
-                          <th colspan="2"></th>
-                          <th colspan="2"></th>
-                          <th colspan="2"></th>
+                          <th style="text-align: center" colspan="6"> </th>
                         </tr>
                         <tr>
                           <th style="text-align: center; width: 1%" rowspan="2">
@@ -84,8 +81,20 @@
                           <th style="text-align: center; width: 5%" colspan="2">
                           Sem 6
                           </th>
+                          <th style="text-align: center; width: 5%" colspan="2">
+                          Sem 7
+                          </th>
+                          <th style="text-align: center; width: 5%" colspan="2">
+                          Sem 8
+                          </th>
+                          <th style="width: 10%; text-align: center" rowspan="2">
+                          Industry Training
+                          </th>
                           <th style="width: 10%; text-align: center" rowspan="2">
                           Active
+                          </th>
+                          <th style="width: 10%; text-align: center" rowspan="2">
+                          Active on Leave
                           </th>
                           <th style="width: 10%; text-align: center" rowspan="2">
                           Postpone
@@ -95,6 +104,10 @@
                           </th>
                         </tr>
                         <tr>
+                          <th>L</th>
+                          <th>P</th>
+                          <th>L</th>
+                          <th>P</th>
                           <th>L</th>
                           <th>P</th>
                           <th>L</th>
@@ -122,12 +135,12 @@
                           {{ $prg->progname }}
                           </td>
                           <td>
-                          @foreach ((array) $data['ms1'][$key] as $ms1)
-                          {{ $ms1 }}
-                          @endforeach
+                            @foreach ((array) $data['holding_m1'][$key] as $ms1)
+                            {{ $ms1 }}
+                            @endforeach
                           </td>
                           <td>
-                            @foreach ((array) $data['ms1'][$key] as $ms1)
+                            @foreach ((array) $data['holding_f1'][$key] as $ms1)
                             {{ $ms1 }}
                             @endforeach
                           </td>
@@ -137,14 +150,9 @@
                             @endforeach
                           </td>
                           <td>
-                            @foreach ((array) $data['ms1'][$key] as $ms1)
-                            {{ $ms1 }}
+                            @foreach ((array) $data['fs1'][$key] as $fs1)
+                            {{ $fs1 }}
                             @endforeach
-                          </td>
-                          <td>
-                          @foreach ((array) $data['ms2'][$key] as $ms2)
-                          {{ $ms2 }}
-                          @endforeach
                           </td>
                           <td>
                             @foreach ((array) $data['ms2'][$key] as $ms2)
@@ -152,9 +160,9 @@
                             @endforeach
                           </td>
                           <td>
-                          @foreach ((array) $data['ms3'][$key] as $ms3)
-                          {{ $ms3 }}
-                          @endforeach
+                            @foreach ((array) $data['fs2'][$key] as $fs2)
+                            {{ $fs2 }}
+                            @endforeach
                           </td>
                           <td>
                             @foreach ((array) $data['ms3'][$key] as $ms3)
@@ -162,9 +170,9 @@
                             @endforeach
                           </td>
                           <td>
-                          @foreach ((array) $data['ms4'][$key] as $ms4)
-                          {{ $ms4 }}
-                          @endforeach
+                            @foreach ((array) $data['fs3'][$key] as $fs3)
+                            {{ $fs3 }}
+                            @endforeach
                           </td>
                           <td>
                             @foreach ((array) $data['ms4'][$key] as $ms4)
@@ -172,9 +180,9 @@
                             @endforeach
                           </td>
                           <td>
-                          @foreach ((array) $data['ms5'][$key] as $ms5)
-                          {{ $ms5 }}
-                          @endforeach
+                            @foreach ((array) $data['fs4'][$key] as $fs4)
+                            {{ $fs4 }}
+                            @endforeach
                           </td>
                           <td>
                             @foreach ((array) $data['ms5'][$key] as $ms5)
@@ -182,29 +190,64 @@
                             @endforeach
                           </td>
                           <td>
-                          @foreach ((array) $data['ms6'][$key] as $ms6)
-                          {{ $ms6 }}
-                          @endforeach
+                            @foreach ((array) $data['fs5'][$key] as $fs5)
+                            {{ $fs5 }}
+                            @endforeach
                           </td>
                           <td>
                             @foreach ((array) $data['ms6'][$key] as $ms6)
                             {{ $ms6 }}
                             @endforeach
                           </td>
-                          <td style="text-align: center">
-                          @foreach ((array) $data['active'][$key] as $active)
-                          {{ $active }}
-                          @endforeach
+                          <td>
+                            @foreach ((array) $data['fs6'][$key] as $fs6)
+                            {{ $fs6 }}
+                            @endforeach
+                          </td>
+                          <td>
+                            @foreach ((array) $data['ms7'][$key] as $ms7)
+                            {{ $ms7 }}
+                            @endforeach
+                          </td>
+                          <td>
+                            @foreach ((array) $data['fs7'][$key] as $fs7)
+                            {{ $fs7 }}
+                            @endforeach
+                          </td>
+                          <td>
+                            @foreach ((array) $data['ms8'][$key] as $ms8)
+                            {{ $ms8 }}
+                            @endforeach
+                          </td>
+                          <td>
+                            @foreach ((array) $data['fs8'][$key] as $fs8)
+                            {{ $fs8 }}
+                            @endforeach
                           </td>
                           <td style="text-align: center">
-                          @foreach ((array) $data['postpone'][$key] as $postpone)
-                          {{ $postpone }}
-                          @endforeach
+                            @foreach ((array) $data['industry'][$key] as $industry)
+                            {{ $industry }}
+                            @endforeach
                           </td>
                           <td style="text-align: center">
-                          @foreach ((array) $data['dismissed'][$key] as $dismissed)
-                          {{ $dismissed }}
-                          @endforeach
+                            @foreach ((array) $data['active'][$key] as $active)
+                            {{ $active }}
+                            @endforeach
+                          </td>
+                          <td style="text-align: center">
+                            @foreach ((array) $data['active_leave'][$key] as $aol)
+                            {{ $aol }}
+                            @endforeach
+                          </td>
+                          <td style="text-align: center">
+                            @foreach ((array) $data['postpone'][$key] as $postpone)
+                            {{ $postpone }}
+                            @endforeach
+                          </td>
+                          <td style="text-align: center">
+                            @foreach ((array) $data['dismissed'][$key] as $dismissed)
+                            {{ $dismissed }}
+                            @endforeach
                           </td>
                         </tr>
                         @endforeach
@@ -222,28 +265,52 @@
                             $semester = DB::table('semester')->get();
                           @endphp
                           @foreach ($semester as $sem)
-                          @php
-                            $total = count(DB::table('students')->where('semester', $sem->id)->get())
-                          @endphp
-                          <td colspan="2" style="text-align: center">
-                            {{ $total }}
-                          </td>
+                            @php
+                              $total = count(DB::table('students')
+                              ->where([
+                                ['semester', $sem->id],
+                                ['status', 2]
+                                ])->get())
+                            @endphp
+                            <td colspan="{{ ($sem->id == 1) ? '4' : '2' }}" style="text-align: center">
+                              {{ $total }}
+                            </td>
                           @endforeach
+                          <td style="text-align: center">
+                            @php
+                              $industry = count(DB::table('students')->where([
+                                    ['students.status', 2],
+                                    ['students.student_status', 4],
+                                    ])->get());
+                            @endphp
+                            {{ $industry }}
+                          </td>
                           <td style="text-align: center">
                             @php
                               $active = count(DB::table('students')->where([
                                     ['students.status', 2],
-                                    //['students.campus_id', 1]
+                                    ['students.campus_id', 1],
+                                    ['students.student_status', 2]
                                     ])->get());
                             @endphp
                             {{ $active }}
                           </td>
                           <td style="text-align: center">
                             @php
-                              $postpone = count(DB::table('students')->where([
+                              $aol = count(DB::table('students')->where([
                                     ['students.status', 2],
-                                    ['students.campus_id', 2]
-                                    //['students.campus_id', 1]
+                                    ['students.campus_id', 0],
+                                    ['students.student_status', 2]
+                                    ])->get());
+                            @endphp
+                            {{ $aol }}
+                          </td>
+                          <td style="text-align: center">
+                            @php
+                              $postpone = count(DB::table('students')->where([
+                                    ['students.status', 3],
+                                    ['students.campus_id', 0],
+                                    ['students.student_status', 2]
                                     ])->get());
                             @endphp
                             {{ $postpone }}
@@ -272,80 +339,126 @@
   </div>
 </div>
 
-<script type="text/javascript">
-
-
-$(document).ready(function () {
-      var d = new Date();
-
-      var month = d.getMonth()+1;
-      var day = d.getDate();
-
-      var output = d.getFullYear() + '/' +
-      (month<10 ? '0' : '') + month + '/' +
-      (day<10 ? '0' : '') + day;
-
+<script>
+  $(document).ready( function () {
       $('#table_dismissed').DataTable({
         dom: 'lBfrtip', // if you remove this line you will see the show entries dropdown
-        aLengthMenu: [
-        [25, 50, 100, 200, -1],
-        [25, 50, 100, 200, "All"]
-        ],
-        iDisplayLength: -1,
-        fixedHeader: true,
-        "ordering": false,
+        paging: false,
+
         buttons: [
-          {
-              extend: 'excelHtml5',
-              messageTop: output,
-              title: 'Excel' + '-' + output,
-              text:'Export to excel'
-              //Columns to export
-              //exportOptions: {
-              //     columns: [0, 1, 2, 3,4,5,6]
-              // }
-          },
-          {
-              extend: 'pdfHtml5',
-              title: 'PDF' + '-' + output,
-              text: 'Export to PDF'
-              //Columns to export
-              //exportOptions: {
-              //     columns: [0, 1, 2, 3, 4, 5, 6]
-            //  }
-          }
+            {
+              text: 'Excel',
+              action: function () {
+                // get the HTML table to export
+                const table = document.getElementById("table_dismissed");
+                
+                // create a new Workbook object
+                const wb = XLSX.utils.book_new();
+                
+                // add a new worksheet to the Workbook object
+                const ws = XLSX.utils.table_to_sheet(table);
+                XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
+                
+                // trigger the download of the Excel file
+                XLSX.writeFile(wb, "exported-data.xlsx");
+              }
+            }
         ],
+
       });
 
-      mergeCells();
+      let db = document.getElementById("table_dismissed");
+      let dbRows = db.rows;
+      let lastValue = "";
+      let lastCounter = 1;
+      let lastRow = 0;
+      for (let i = 0; i < dbRows.length; i++) {
+        let thisValue = dbRows[i].cells[0].innerHTML;
+        if (thisValue == lastValue) {
+          lastCounter++;
+          dbRows[lastRow].cells[0].rowSpan = lastCounter;
+          dbRows[i].cells[0].style.display = "none";
+        } else {
+          dbRows[i].cells[0].style.display = "table-cell";
+          lastValue = thisValue;
+          lastCounter = 1;
+          lastRow = i;
+        }
+      }
 
+      // Remove the cells that are hidden
+      $("#table_dismissed td:first-child:hidden").remove();
+        } );
+</script>
 
-     
+<script type="text/javascript">
+
+/*$(document).on('change', '#date', function(){
+
+    var date = $(this).val();
+
+    getReport(date);
+
 });
 
+function getReport(date)
+{
 
-function mergeCells() {
-  let db = document.getElementById("table_dismissed");
-  let dbRows = db.rows;
-  let lastValue = "";
-  let lastCounter = 1;
-  let lastRow = 0;
-  for (let i = 0; i < dbRows.length; i++) {
-    let thisValue = dbRows[i].cells[0].innerHTML;
-    if (thisValue == lastValue) {
-      lastCounter++;
-      dbRows[lastRow].cells[0].rowSpan = lastCounter;
-      dbRows[i].cells[0].style.display = "none";
-    } else {
-      dbRows[i].cells[0].style.display = "table-cell";
-      lastValue = thisValue;
-      lastCounter = 1;
-      lastRow = i;
-    }
-  }
-}
+  $('#table_dismissed').DataTable().destroy();
 
-window.onload = mergeCells;
+    return $.ajax({
+            headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
+            url      : "{{ url('pendaftar/student/report/getStudentReport') }}",
+            method   : 'POST',
+            data 	 : {date: date},
+            beforeSend:function(xhr){
+              $("#table_dismissed").LoadingOverlay("show", {
+                image: `<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="24px" height="30px" viewBox="0 0 24 30" style="enable-background:new 0 0 50 50;" xml:space="preserve">
+                  <rect x="0" y="10" width="4" height="10" fill="#333" opacity="0.2">
+                  <animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0s" dur="0.6s" repeatCount="indefinite"></animate>
+                  <animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0s" dur="0.6s" repeatCount="indefinite"></animate>
+                  <animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0s" dur="0.6s" repeatCount="indefinite"></animate>
+                  </rect>
+                  <rect x="8" y="10" width="4" height="10" fill="#333" opacity="0.2">
+                  <animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0.15s" dur="0.6s" repeatCount="indefinite"></animate>
+                  <animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0.15s" dur="0.6s" repeatCount="indefinite"></animate>
+                  <animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0.15s" dur="0.6s" repeatCount="indefinite"></animate>
+                  </rect>
+                  <rect x="16" y="10" width="4" height="10" fill="#333" opacity="0.2">
+                  <animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0.3s" dur="0.6s" repeatCount="indefinite"></animate>
+                  <animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0.3s" dur="0.6s" repeatCount="indefinite"></animate>
+                  <animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0.3s" dur="0.6s" repeatCount="indefinite"></animate>
+                  </rect>
+                </svg>`,
+                background:"rgba(255,255,255, 0.3)",
+                imageResizeFactor : 1,    
+                imageAnimation : "2000ms pulse" , 
+                imageColor: "#019ff8",
+                text : "Please wait...",
+                textResizeFactor: 0.15,
+                textColor: "#019ff8",
+                textColor: "#019ff8"
+              });
+              $("#table_dismissed").LoadingOverlay("hide");
+            },
+            error:function(err){
+                alert("Error");
+                console.log(err);
+            },
+            success  : function(data){
+                $('#table_dismissed').removeAttr('hidden');
+                $('#table_dismissed').html(data);
+                
+                $('#table_dismissed').DataTable();
+                //window.location.reload();
+            }
+        });
+  
+}*/
+
+
+
+ window.onload = mergeCells;
  
 
 </script>

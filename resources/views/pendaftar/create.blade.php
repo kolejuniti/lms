@@ -234,7 +234,7 @@
                               <option value="-" selected disabled>-</option>
                               @foreach ($data['pass'] as $pss)
                                 <option value="{{ $pss->id }}">{{$pss->name }}</option> 
-                                @endforeach
+                              @endforeach
                             </select>
                           </div>
                         </div>
@@ -324,7 +324,7 @@
                               <option value="-" selected disabled>-</option>
                               @foreach ($data['country'] as $cry)
                                 <option value="{{ $cry->id }}">{{$cry->name }}</option> 
-                                @endforeach
+                              @endforeach
                             </select>
                           </div>
                         </div>
