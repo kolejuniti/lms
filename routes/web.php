@@ -529,6 +529,12 @@ Route::post('/finance/package/sponsorPackage/storeSponsorPackage', [App\Http\Con
 Route::post('/finance/package/sponsorPackage/getEditPackage', [App\Http\Controllers\FinanceController::class, 'getEditPackage']);
 Route::post('/finance/package/sponsorPackage/updateSponsorPackage', [App\Http\Controllers\FinanceController::class, 'updateSponsorPackage']);
 Route::delete('/finance/package/sponsorPackage/deleteSponsorPackage', [App\Http\Controllers\FinanceController::class, 'deleteSponsorPackage']);
+Route::get('/finance/package/payment', [App\Http\Controllers\FinanceController::class, 'Payment'])->name('finance.package.payment');
+Route::get('/finance/package/payment/getPayment', [App\Http\Controllers\FinanceController::class, 'getPayment']);
+Route::post('/finance/package/payment/storePaymentPKG', [App\Http\Controllers\FinanceController::class, 'storePaymentPKG']);
+Route::post('/finance/package/payment/getProgramPayment', [App\Http\Controllers\FinanceController::class, 'getProgramPayment']);
+Route::post('/finance/package/payment/registerPRGPYM', [App\Http\Controllers\FinanceController::class, 'registerPRGPYM']);
+Route::post('/finance/package/payment/deletePRGPYM', [App\Http\Controllers\FinanceController::class, 'deletePRGPYM']);
 
 
 Route::get('/treasurer_dashboard', [App\Http\Controllers\TreasurerController::class, 'dashboard'])->name('treasurer.dashboard');
