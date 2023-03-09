@@ -106,7 +106,7 @@ class PendaftarController extends Controller
         DB::table('tblstudent_personal')->insert([
             'student_ic' => $data['id'],
             'date_birth' => $request->birth_date,
-            'advisor_ic' => $request->EA,
+            'advisor_id' => $request->EA,
             'bank_name' => $request->bank_name,
             'bank_no' => $request->bank_number,
             'ptptn_no' => $request->PN,
@@ -278,7 +278,7 @@ class PendaftarController extends Controller
         DB::table('tblstudent_personal')->where('student_ic', $ic)->update([
             'student_ic' => $ic,
             'date_birth' => $request->birth_date,
-            'advisor_ic' => $request->EA,
+            'advisor_id' => $request->EA,
             'bank_name' => $request->bank_name,
             'bank_no' => $request->bank_number,
             'ptptn_no' => $request->PN,
@@ -752,58 +752,182 @@ class PendaftarController extends Controller
                                        ->where('tblfaculty.id', $prg->facultyid)
                                        ->get());
 
+            $data['holding_m1'][$key] = count(DB::table('students')
+                                       ->join('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
+                                       ->where([
+                                       ['students.program', $prg->id],
+                                       ['students.status', 2],
+                                       ['students.student_status', 1],
+                                       ['tblstudent_personal.sex_id', 1]
+                                       ])->get());
+   
+            $data['holding_f1'][$key] = count(DB::table('students')
+                                       ->join('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
+                                       ->where([
+                                       ['students.program', $prg->id],
+                                       ['students.status', 2],
+                                       ['students.student_status', 1],
+                                       ['tblstudent_personal.sex_id', 2]
+                                       ])->get());
 
             $data['ms1'][$key] = count(DB::table('students')
+                                 ->join('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
                                  ->where([
                                     ['students.program', $prg->id],
-                                    ['students.semester', 1]
+                                    ['students.semester', 1],
+                                    ['students.status', 2],
+                                    ['students.student_status', 2],
+                                    ['tblstudent_personal.sex_id', 1]
+                                    ])->get());
+            
+            $data['fs1'][$key] = count(DB::table('students')
+                                 ->join('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
+                                 ->where([
+                                    ['students.program', $prg->id],
+                                    ['students.semester', 1],
+                                    ['students.status', 2],
+                                    ['students.student_status', 2],
+                                    ['tblstudent_personal.sex_id', 2]
                                     ])->get());
             
             $data['ms2'][$key] = count(DB::table('students')
+                                    ->join('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
                                     ->where([
                                     ['students.program', $prg->id],
-                                    ['students.semester', 2]
+                                    ['students.semester', 2],
+                                    ['students.status', 2],
+                                    ['students.student_status', 2],
+                                    ['tblstudent_personal.sex_id', 1]
+                                    ])->get());
+
+            $data['fs2'][$key] = count(DB::table('students')
+                                    ->join('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
+                                    ->where([
+                                    ['students.program', $prg->id],
+                                    ['students.semester', 2],
+                                    ['students.status', 2],
+                                    ['students.student_status', 2],
+                                    ['tblstudent_personal.sex_id', 2]
                                     ])->get());
 
             $data['ms3'][$key] = count(DB::table('students')
+                                    ->join('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
                                     ->where([
                                     ['students.program', $prg->id],
-                                    ['students.semester', 3]
+                                    ['students.semester', 3],
+                                    ['students.status', 2],
+                                    ['students.student_status', 2],
+                                    ['tblstudent_personal.sex_id', 1]
+                                    ])->get());
+
+            $data['fs3'][$key] = count(DB::table('students')
+                                    ->join('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
+                                    ->where([
+                                    ['students.program', $prg->id],
+                                    ['students.semester', 3],
+                                    ['students.status', 2],
+                                    ['students.student_status', 2],
+                                    ['tblstudent_personal.sex_id', 2]
                                     ])->get());
                                     
             $data['ms4'][$key] = count(DB::table('students')
+                                    ->join('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
                                     ->where([
                                     ['students.program', $prg->id],
-                                    ['students.semester', 4]
+                                    ['students.semester', 4],
+                                    ['students.status', 2],
+                                    ['students.student_status', 2],
+                                    ['tblstudent_personal.sex_id', 1]
+                                    ])->get());
+
+            $data['fs4'][$key] = count(DB::table('students')
+                                    ->join('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
+                                    ->where([
+                                    ['students.program', $prg->id],
+                                    ['students.semester', 4],
+                                    ['students.status', 2],
+                                    ['students.student_status', 2],
+                                    ['tblstudent_personal.sex_id', 2]
                                     ])->get());
 
             $data['ms5'][$key] = count(DB::table('students')
+                                    ->join('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
                                      ->where([
                                     ['students.program', $prg->id],
-                                    ['students.semester', 5]
+                                    ['students.semester', 5],
+                                    ['students.status', 2],
+                                    ['students.student_status', 2],
+                                    ['tblstudent_personal.sex_id', 1]
+                                    ])->get());
+
+            $data['fs5'][$key] = count(DB::table('students')
+                                    ->join('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
+                                     ->where([
+                                    ['students.program', $prg->id],
+                                    ['students.semester', 5],
+                                    ['students.status', 2],
+                                    ['students.student_status', 2],
+                                    ['tblstudent_personal.sex_id', 2]
                                     ])->get());
 
             $data['ms6'][$key] = count(DB::table('students')
+                                    ->join('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
                                     ->where([
                                     ['students.program', $prg->id],
-                                    ['students.semester', 6]
+                                    ['students.semester', 6],
+                                    ['students.status', 2],
+                                    ['students.student_status', 2],
+                                    ['tblstudent_personal.sex_id', 1]
                                     ])->get());
 
-
-            $data['holding_m1'][$key] = count(DB::table('students')
+            $data['fs6'][$key] = count(DB::table('students')
+                                    ->join('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
                                     ->where([
                                     ['students.program', $prg->id],
+                                    ['students.semester', 6],
                                     ['students.status', 2],
-                                    ['students.student_status', 1],
-                                    //['students.campus_id', 1]
+                                    ['students.student_status', 2],
+                                    ['tblstudent_personal.sex_id', 2]
                                     ])->get());
 
-            $data['holding_f1'][$key] = count(DB::table('students')
+            $data['ms7'][$key] = count(DB::table('students')
+                                    ->join('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
                                     ->where([
                                     ['students.program', $prg->id],
+                                    ['students.semester', 7],
                                     ['students.status', 2],
-                                    ['students.student_status', 1],
-                                    //['students.campus_id', 1]
+                                    ['students.student_status', 2],
+                                    ['tblstudent_personal.sex_id', 1]
+                                    ])->get());
+
+            $data['fs7'][$key] = count(DB::table('students')
+                                    ->join('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
+                                    ->where([
+                                    ['students.program', $prg->id],
+                                    ['students.semester', 7],
+                                    ['students.status', 2],
+                                    ['students.student_status', 2],
+                                    ['tblstudent_personal.sex_id', 2]
+                                    ])->get());
+
+            $data['ms8'][$key] = count(DB::table('students')
+                                    ->join('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
+                                    ->where([
+                                    ['students.program', $prg->id],
+                                    ['students.semester', 8],
+                                    ['students.status', 2],
+                                    ['students.student_status', 2],
+                                    ['tblstudent_personal.sex_id', 1]
+                                    ])->get());
+
+            $data['fs8'][$key] = count(DB::table('students')
+                                    ->join('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
+                                    ->where([
+                                    ['students.program', $prg->id],
+                                    ['students.semester', 8],
+                                    ['students.status', 2],
+                                    ['students.student_status', 2],
+                                    ['tblstudent_personal.sex_id', 2]
                                     ])->get());
 
             $data['industry'][$key] = count(DB::table('students')
@@ -818,21 +942,24 @@ class PendaftarController extends Controller
                                     ->where([
                                     ['students.program', $prg->id],
                                     ['students.status', 2],
-                                    //['students.campus_id', 1]
+                                    ['students.campus_id', 1],
+                                    ['students.student_status', 2]
                                     ])->get());
 
             $data['active_leave'][$key] = count(DB::table('students')
                                     ->where([
                                     ['students.program', $prg->id],
                                     ['students.status', 2],
-                                    ['students.campus_id', 0]
+                                    ['students.campus_id', 0],
+                                    ['students.student_status', 2]
                                     ])->get());
                                     
             $data['postpone'][$key] = count(DB::table('students')
                                     ->where([
                                     ['students.program', $prg->id],
-                                    ['students.status', 2],
-                                    ['students.campus_id', 2]
+                                    ['students.status', 3],
+                                    ['students.campus_id', 0],
+                                    ['students.student_status', 2]
                                     ])->get());
 
             $data['dismissed'][$key] = count(DB::table('students')
@@ -848,6 +975,13 @@ class PendaftarController extends Controller
         return view('pendaftar.studentReport', compact('data'));
 
     }
+
+    //public function getStudentReport(Request $request)
+    //{
+
+        
+        
+    //}
 
     public function suratTawaran(Request $request)
     {
@@ -879,10 +1013,5 @@ class PendaftarController extends Controller
 
     }
 
-    //public function getStudentReport(Request $request)
-    //{
-
-        
-        
-    //}
+    
 }
