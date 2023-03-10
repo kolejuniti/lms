@@ -1235,7 +1235,7 @@ class FinanceController extends Controller
 
                         foreach($tabung as $key => $tbg)
                         {
-                            if(($student->intake >= $tbg->session_from && $student->intake <= $tbg->session_to) || ($student->intake >= $tbg->session_from && $tbg->session_to == null))
+                            if($student->intake == $tbg->intake_id)
                             {
                                 $ref_no = DB::table('tblref_no')->where('id', 8)->first();
 
@@ -4236,11 +4236,10 @@ class FinanceController extends Controller
     {
 
         $data['tabungkhas'] = DB::table('tbltabungkhas AS t1')
-                             ->join('sessions AS t2_from', 't1.session_from', 't2_from.SessionID')
-                             ->leftjoin('sessions AS t2_to', 't1.session_to', 't2_to.SessionID')
+                             ->join('sessions AS t2_intake', 't1.intake_id', 't2_intake.SessionID')
                              ->join('tblpackage', 't1.package_id', 'tblpackage.id')
                              ->join('tblprocess_type', 't1.process_type_id', 'tblprocess_type.id')
-                             ->select('t1.*', 't2_from.SessionName AS from', 't2_to.SessionName AS to', 'tblpackage.name AS package', 'tblprocess_type.name AS type')
+                             ->select('t1.*', 't2_intake.SessionName AS intake', 'tblpackage.name AS package', 'tblprocess_type.name AS type')
                              ->get();
 
         return view('finance.package.getTabungkhas', compact('data'));
@@ -4252,7 +4251,7 @@ class FinanceController extends Controller
 
         $data = json_decode($request->formData);
 
-        if($data->from != null && $data->amount != null)
+        if($data->intake != null)
         {
 
             //$session = DB::table('sessions')
@@ -4269,8 +4268,7 @@ class FinanceController extends Controller
             //}
 
             DB::table('tbltabungkhas')->insert([
-                'session_from' => $data->from,
-                'session_to' => $data->to,
+                'intake_id' => $data->intake,
                 'package_id' => $data->package,
                 'process_type_id' => $data->type,
                 'amount' => $data->amount
@@ -4324,6 +4322,102 @@ class FinanceController extends Controller
         ->where([
             ['tabungkhas_id', $request->id],
             ['program_id', $request->prg]
+        ])->delete();
+
+        return response()->json($request->id);
+
+    }
+
+    public function Payment()
+    {
+        $data['package'] = DB::table('tblpackage')->get();
+
+        $data['type'] = DB::table('tblpayment_type')->get();
+
+        return view('finance.package.payment', compact('data'));
+
+    }
+
+    public function getPayment()
+    {
+
+        $data['payment'] = DB::table('tblpayment_package AS t1')
+                             ->join('tblpackage', 't1.package_id', 'tblpackage.id')
+                             ->join('tblpayment_type', 't1.payment_type_id', 'tblpayment_type.id')
+                             ->select('t1.*', 'tblpackage.name AS package', 'tblpayment_type.name AS type')
+                             ->get();
+                           
+
+        return view('finance.package.getPayment', compact('data'));
+
+    }
+
+    public function storePaymentPKG(Request $request)
+    {
+
+        $data = json_decode($request->formData);
+
+        if($data->package != null && $data->type != null && $data->sem1 != null && $data->sem2 != null && $data->sem3 != null && $data->sem4 != null && $data->sem5 != null && $data->sem6 != null)
+        {
+
+            DB::table('tblpayment_package')->insert([
+                'package_id' => $data->package,
+                'payment_type_id' => $data->type,
+                'semester_1' => $data->sem1,
+                'semester_2' => $data->sem2,
+                'semester_3' => $data->sem3,
+                'semester_4' => $data->sem4,
+                'semester_5' => $data->sem5,
+                'semester_6' => $data->sem6
+            ]);
+
+            return ["message"=>"Success"];
+
+        }else{
+
+            return ["message"=>"Please select all required field!"];
+
+        }
+    }
+
+    public function getProgramPayment(Request $request)
+    {
+
+        $data['registered'] = DB::table('tblprogramme')
+                              ->join('tblpayment_program', 'tblprogramme.id', 'tblpayment_program.program_id')
+                              ->join('sessions', 'tblpayment_program.session_id', 'sessions.SessionID')
+                              ->where('tblpayment_program.payment_package_id', $request->id)
+                              ->select('tblprogramme.*', 'sessions.SessionName', 'tblpayment_program.id')
+                              ->get();
+
+        $data['unregistered'] = DB::table('tblprogramme')->get();
+
+        $data['session'] = DB::table('sessions')->get();
+
+        $data['id'] = $request->id;
+
+        return view('finance.package.getProgramPayment', compact('data'));
+    }
+
+    public function registerPRGPYM(Request $request)
+    {
+   
+        DB::table('tblpayment_program')->insert([
+            'payment_package_id' => $request->id,
+            'program_id' => $request->prg,
+            'session_id' => $request->session
+        ]);
+
+        return response()->json($request->id);
+
+    }
+
+    public function deletePRGPYM(Request $request)
+    {
+
+        DB::table('tblpayment_program')
+        ->where([
+            ['id', $request->prg]
         ])->delete();
 
         return response()->json($request->id);
