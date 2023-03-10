@@ -468,7 +468,7 @@ class PendaftarController extends Controller
     {
 
         $data['spm'] = DB::table('tblstudent_spm')
-                       ->join('tblspm_dtl', 'tblstudent_spm.id', 'tblspm_dtl.student_spm_id')
+                       ->join('tblspm_dtl', 'tblstudent_spm.student_ic', 'tblspm_dtl.student_spm_ic')
                        ->where('tblstudent_spm.student_ic', request()->ic)->get();
 
         $data['subject'] = DB::table('tblsubject_spm')->get();
@@ -484,7 +484,7 @@ class PendaftarController extends Controller
 
         //dd($request->subject);
 
-        $student = DB::table('tblstudent_spm')->where('student_ic', $request->ic)->first();
+        //$student = DB::table('tblstudent_spm')->where('student_ic', $request->ic)->first();
 
         //dd($request->grade);
 
@@ -493,12 +493,13 @@ class PendaftarController extends Controller
         if(count($filter) !== count(array_unique($filter)))
         {
             return back()->with('error', 'Cannot have same subject! Please check and re-submit.')->withInput();
+
         }else{
 
-            if(DB::table('tblspm_dtl')->where('student_spm_id',$student->id)->exists())
+            if(DB::table('tblspm_dtl')->where('student_spm_ic',$request->ic)->exists())
             {
                 
-                DB::table('tblspm_dtl')->where('student_spm_id',$student->id)->delete();
+                DB::table('tblspm_dtl')->where('student_spm_ic',$request->ic)->delete();
 
             }
 
@@ -506,7 +507,7 @@ class PendaftarController extends Controller
             {
                 
                 DB::table('tblspm_dtl')->insert([
-                    'student_spm_id' => $student->id,
+                    'student_spm_ic' => $request->ic,
                     'subject_spm_id' => $sub,
                     'grade_spm_id' => $request->grade[$key]
                 ]);
