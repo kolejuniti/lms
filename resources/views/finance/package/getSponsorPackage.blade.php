@@ -45,6 +45,7 @@
                     </thead>
                     <tbody>
                     @foreach($data['sponsorPackage'] as $key => $spn)
+                    <tr>
                         <td>
                             {{ $key+1 }}
                         </td>
@@ -84,6 +85,7 @@
                                 Delete
                             </a>
                         </td>
+                    </tr>
                     @endforeach
                     </tbody>
                     <tfoot class="tfoot-themed">
