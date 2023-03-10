@@ -47,19 +47,8 @@
                 <div class="row">
                   <div class="col-md-6" id="program-card">
                     <div class="form-group">
-                      <label class="form-label" for="from">FROM</label>
-                      <select class="form-select" id="from" name="from">
-                        <option value="" selected disabled>-</option>
-                        @foreach ($data['session'] as $ses)
-                          <option value="{{ $ses->SessionID }}">{{ $ses->SessionName }}</option>
-                        @endforeach
-                      </select>
-                    </div>
-                  </div>       
-                  <div class="col-md-6" id="intake-card">
-                    <div class="form-group">
-                      <label class="form-label" for="to">TO</label>
-                      <select class="form-select" id="to" name="to">
+                      <label class="form-label" for="intake">INTAKE</label>
+                      <select class="form-select" id="intake" name="intake">
                         <option value="" selected disabled>-</option>
                         @foreach ($data['session'] as $ses)
                           <option value="{{ $ses->SessionID }}">{{ $ses->SessionName }}</option>
@@ -167,8 +156,7 @@
     getInput = {
       package : $('#package').val(),
       type : $('#type').val(),
-      from : $('#from').val(),
-      to : $('#to').val(),
+      intake : $('#intake').val(),
       amount : $('#amount').val()
     };
     

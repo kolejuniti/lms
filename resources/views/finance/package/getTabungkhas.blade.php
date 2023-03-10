@@ -15,10 +15,7 @@
                         No.
                         </th>
                         <th>
-                        Session From
-                        </th>
-                        <th>
-                        Session To
+                        Intake
                         </th>
                         <th>
                         Package PTPTN
@@ -41,10 +38,7 @@
                             {{ $keys+1 }}
                             </td>
                             <td >
-                            {{ $dt->from }}
-                            </td>
-                            <td >
-                            {{ $dt->to }}
+                            {{ $dt->intake }}
                             </td>
                             <td >
                             {{ $dt->package }}
