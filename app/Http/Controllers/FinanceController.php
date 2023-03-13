@@ -2510,8 +2510,6 @@ class FinanceController extends Controller
         ->orderBy('date')
         ->get();
 
-        dd($data['record']);
-
         $val = 0;
         $data['sum1'] = 0;
         $data['sum2'] = 0;
