@@ -98,9 +98,9 @@
                             <label class="form-label" for="race">Race <p style="color:red; display:inline-block;">*</p></label>
                             <select class="form-select" id="race" name="race" required>
                               <option value="-" selected disabled>-</option>
-                                @foreach ($data['race'] as $ny)
-                                <option value="{{ $ny->id }}">{{ $ny->nationality_name }}</option> 
-                                @endforeach
+                              @foreach ($data['race'] as $rc)
+                                <option value="{{ $rc->id }}">{{ $rc->nationality_name }}</option> 
+                              @endforeach
                             </select>
                           </div>
                         </div>
@@ -110,7 +110,7 @@
                             <select class="form-select" id="religion" name="religion" required>
                               <option value="-" selected disabled>-</option>
                                 @foreach ($data['religion'] as $religion)
-                                <option value="{{ $religion->id }}">{{ $religion->religion_name }}</option> 
+                                  <option value="{{ $religion->id }}">{{ $religion->religion_name }}</option> 
                                 @endforeach
                             </select>
                           </div>
@@ -332,161 +332,97 @@
                     </div>
                   </div>
 
-                  <div class="card mb-3">
-                    <div class="card-header">
-                      <b>Heir (Waris)</b>
-                    </div>
-                    <div class="card-body">
-                      <div class="row">
-                        <div class="col-md-6">
-                          <div class="form-group">
-                            <label class="form-label" for="w_name">Name <p style="color:red; display:inline-block;">*</p></label>
-                            <input type="text" class="form-control" id="w_name" placeholder="Enter Name" name="w_name" required>
+                  <div id="forms-container">
+                    <div class="card mb-3" id="card-1">
+                      <div class="card-header">
+                        <b>Heir (Waris)</b>
+                      </div>
+                      <div class="card-body">
+                        <div class="row">
+                          <div class="col-md-6">
+                            <div class="form-group">
+                              <label class="form-label" for="w_name">Name <p style="color:red; display:inline-block;">*</p></label>
+                              <input type="text" class="form-control" id="w_name" placeholder="Enter Name" name="w_name[]" required>
+                            </div>
                           </div>
-                        </div>
-                        <div class="col-md-6">
-                          <div class="form-group">
-                            <label class="form-label" for="w_ic">IC <p style="color:red; display:inline-block;">*</p></label>
-                            <input type="text" class="form-control" id="w_ic" placeholder="Enter IC" name="w_ic" required>
+                          <div class="col-md-6">
+                            <div class="form-group">
+                              <label class="form-label" for="w_ic">IC <p style="color:red; display:inline-block;">*</p></label>
+                              <input type="text" class="form-control" id="w_ic" placeholder="Enter IC" name="w_ic[]" required>
+                            </div>
                           </div>
-                        </div>
-                        <div class="col-md-6">
-                          <div class="form-group">
-                            <label class="form-label" for="w_notel_home">Home No. Tel <p style="color:red; display:inline-block;">*</p></label>
-                            <input type="text" class="form-control" id="w_notel_home" placeholder="Enter No. Tel Home" name="w_notel_home" required>
+                          <div class="col-md-6">
+                            <div class="form-group">
+                              <label class="form-label" for="w_notel_home">Home No. Tel <p style="color:red; display:inline-block;">*</p></label>
+                              <input type="text" class="form-control" id="w_notel_home" placeholder="Enter No. Tel Home" name="w_notel_home[]" required>
+                            </div>
                           </div>
-                        </div>
-                        <div class="col-md-6">
-                          <div class="form-group">
-                            <label class="form-label" for="w_notel">Phone No. Tel <p style="color:red; display:inline-block;">*</p></label>
-                            <input type="text" class="form-control" id="w_notel" placeholder="Enter No. Tel" name="w_notel" required>
+                          <div class="col-md-6">
+                            <div class="form-group">
+                              <label class="form-label" for="w_notel">Phone No. Tel <p style="color:red; display:inline-block;">*</p></label>
+                              <input type="text" class="form-control" id="w_notel" placeholder="Enter No. Tel" name="w_notel[]" required>
+                            </div>
                           </div>
-                        </div>
-                        <div class="col-md-6">
-                          <div class="form-group">
-                            <label class="form-label" for="occupation">Occupation <p style="color:red; display:inline-block;">*</p></label>
-                            <input type="text" class="form-control" id="occupation" name="occupation" placeholder="Enter Occupation" required>
+                          <div class="col-md-6">
+                            <div class="form-group">
+                              <label class="form-label" for="occupation">Occupation <p style="color:red; display:inline-block;">*</p></label>
+                              <select class="form-select" id="occupation" name="occupation[]" required>
+                                <option value="-" selected disabled>-</option>
+                                <option value="SEKTOR KERAJAAN">SEKTOR KERAJAAN</option>
+                                <option value="SEKTOR SWASTA">SEKTOR SWASTA</option>
+                                <option value="BEKERJA SENDIRI">BEKERJA SENDIRI</option>
+                                <option value="PESARA">PESARA</option>
+                                <option value="TIDAK BEKERJA">TIDAK BEKERJA</option>
+                              </select>
+                            </div>
                           </div>
-                        </div>
-                        <div class="col-md-6">
-                          <div class="form-group">
-                            <label class="form-label" for="dependent">No. Dependent <p style="color:red; display:inline-block;">*</p></label>
-                            <input type="text" class="form-control" id="dependent" name="dependent" placeholder="Enter Dependent" required>
+                          <div class="col-md-6">
+                            <div class="form-group">
+                              <label class="form-label" for="dependent">No. Dependent <p style="color:red; display:inline-block;">*</p></label>
+                              <input type="text" class="form-control" id="dependent" name="dependent[]" placeholder="Enter Dependent" required>
+                            </div>
                           </div>
-                        </div>
-                        <div class="col-md-6">
-                          <div class="form-group">
-                            <label class="form-label" for="relationship">Relationship <p style="color:red; display:inline-block;">*</p></label>
-                            <select class="form-select" id="relationship" name="relationship" required>
-                              <option value="-" selected disabled>-</option>
-                              @foreach ($data['country'] as $cry)
-                                <option value="{{ $cry->id }}">{{$cry->name }}</option> 
+                          <div class="col-md-6">
+                            <div class="form-group">
+                              <label class="form-label" for="relationship">Relationship <p style="color:red; display:inline-block;">*</p></label>
+                              <select class="form-select" id="relationship" name="relationship[]" required>
+                                <option value="-" selected disabled>-</option>
+                                @foreach ($data['relationship'] as $rlp)
+                                  <option value="{{ $rlp->id }}">{{$rlp->name }}</option> 
                                 @endforeach
-                            </select>
+                              </select>
+                            </div>
                           </div>
-                        </div>
-                        <div class="col-md-6">
-                          <div class="form-group">
-                            <label class="form-label" for="w_race">Race <p style="color:red; display:inline-block;">*</p></label>
-                            <select class="form-select" id="w_race" name="w_race" required>
-                              <option value="-" selected disabled>-</option>
-                              @foreach ($data['country'] as $cry)
-                                <option value="{{ $cry->id }}">{{$cry->name }}</option> 
+                          <div class="col-md-6">
+                            <div class="form-group">
+                              <label class="form-label" for="w_race">Race <p style="color:red; display:inline-block;">*</p></label>
+                              <select class="form-select" id="w_race" name="w_race[]" required>
+                                <option value="-" selected disabled>-</option>
+                                @foreach ($data['race'] as $rc)
+                                  <option value="{{ $rc->id }}">{{ $rc->nationality_name }}</option> 
                                 @endforeach
-                            </select>
+                              </select>
+                            </div>
                           </div>
-                        </div>
-                        <div class="col-md-6">
-                          <div class="form-group">
-                            <label class="form-label" for="w_status">Status <p style="color:red; display:inline-block;">*</p></label>
-                            <select class="form-select" id="w_status" name="w_status" required>
-                              <option value="-" selected disabled>-</option>
-                              @foreach ($data['country'] as $cry)
-                                <option value="{{ $cry->id }}">{{$cry->name }}</option> 
+                          <div class="col-md-6">
+                            <div class="form-group">
+                              <label class="form-label" for="w_status">Status <p style="color:red; display:inline-block;">*</p></label>
+                              <select class="form-select" id="w_status" name="w_status[]" required>
+                                <option value="-" selected disabled>-</option>
+                                @foreach ($data['wstatus'] as $sts)
+                                  <option value="{{ $sts->id }}">{{$sts->name }}</option> 
                                 @endforeach
-                            </select>
+                              </select>
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
-
-                  <div class="card mb-3">
-                    <div class="card-header">
-                      <b>Heir 2 (Waris 2)</b>
-                    </div>
-                    <div class="card-body">
-                      <div class="row">
-                        <div class="col-md-6">
-                          <div class="form-group">
-                            <label class="form-label" for="w_name">Name</label>
-                            <input type="text" class="form-control" id="w_name" placeholder="Enter Name" name="w_name">
-                          </div>
-                        </div>
-                        <div class="col-md-6">
-                          <div class="form-group">
-                            <label class="form-label" for="w_ic">IC</label>
-                            <input type="text" class="form-control" id="w_ic" placeholder="Enter IC" name="w_ic">
-                          </div>
-                        </div>
-                        <div class="col-md-6">
-                          <div class="form-group">
-                            <label class="form-label" for="w_notel_home">Home No. Tel</label>
-                            <input type="text" class="form-control" id="w_notel_home" placeholder="Enter No. Tel Home" name="w_notel_home">
-                          </div>
-                        </div>
-                        <div class="col-md-6">
-                          <div class="form-group">
-                            <label class="form-label" for="w_notel">Phone No. Tel</label>
-                            <input type="text" class="form-control" id="w_notel" placeholder="Enter No. Tel" name="w_notel">
-                          </div>
-                        </div>
-                        <div class="col-md-6">
-                          <div class="form-group">
-                            <label class="form-label" for="occupation">Occupation</label>
-                            <input type="text" class="form-control" id="occupation" name="occupation" placeholder="Enter Occupation">
-                          </div>
-                        </div>
-                        <div class="col-md-6">
-                          <div class="form-group">
-                            <label class="form-label" for="dependent">No. Dependent</label>
-                            <input type="text" class="form-control" id="dependent" name="dependent" placeholder="Enter Dependent">
-                          </div>
-                        </div>
-                        <div class="col-md-6">
-                          <div class="form-group">
-                            <label class="form-label" for="relationship">Relationship</label>
-                            <select class="form-select" id="relationship" name="relationship">
-                              <option value="-" selected disabled>-</option>
-                              @foreach ($data['country'] as $cry)
-                                <option value="{{ $cry->id }}">{{$cry->name }}</option> 
-                                @endforeach
-                            </select>
-                          </div>
-                        </div>
-                        <div class="col-md-6">
-                          <div class="form-group">
-                            <label class="form-label" for="w_race">Race</label>
-                            <select class="form-select" id="w_race" name="w_race">
-                              <option value="-" selected disabled>-</option>
-                              @foreach ($data['country'] as $cry)
-                                <option value="{{ $cry->id }}">{{$cry->name }}</option> 
-                                @endforeach
-                            </select>
-                          </div>
-                        </div>
-                        <div class="col-md-6">
-                          <div class="form-group">
-                            <label class="form-label" for="w_status">Status</label>
-                            <select class="form-select" id="w_status" name="w_status">
-                              <option value="-" selected disabled>-</option>
-                              @foreach ($data['country'] as $cry)
-                                <option value="{{ $cry->id }}">{{$cry->name }}</option> 
-                                @endforeach
-                            </select>
-                          </div>
-                        </div>
-                      </div>
+                  
+                  <div class="row">
+                    <div class="form-group">
+                      <button id="add-form" class="btn btn-primary pull-right" type="button">Add Waris</button>
                     </div>
                   </div>
 
@@ -616,6 +552,27 @@
     <!-- /.content -->
   </div>
 </div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+  $(document).ready(function() {
+    $('#add-form').click(function() {
+      // Clone the card element with ID #card-1
+      var newForm = $('#card-1').clone();
+      // Clear the input values in the cloned form
+      newForm.find('input, select').val('');
+      // Add a delete button to the new form
+      newForm.append('<div class="form-group" style="margin-left: 10px"><button class="btn btn-danger delete-form" type="button">Delete Form</button></div>');
+      // Append the new form to the forms container
+      $('#forms-container').append(newForm);
+    });
+
+    // Attach a click event listener to the delete buttons
+    $('#forms-container').on('click', '.delete-form', function() {
+      // Remove the parent card element
+      $(this).closest('.card').remove();
+    });
+  });
+</script>
 
 <script type="text/javascript">
 
