@@ -2496,14 +2496,14 @@ class FinanceController extends Controller
                            ->where('ic', $request->student)->first();
 
         $record = DB::table('tblpaymentdtl')
-        ->join('tblpayment', 'tblpaymentdtl.payment_id', 'tblpayment.id')
-        ->join('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
+        ->leftJoin('tblpayment', 'tblpaymentdtl.payment_id', 'tblpayment.id')
+        ->leftJoin('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
         ->where([['tblpayment.student_ic', $request->student],['tblpayment.process_status_id', 2], ['tblpaymentdtl.amount', '!=', 0]])
         ->select('tblpayment.ref_no','tblpayment.date', 'tblstudentclaim.name', 'tblpaymentdtl.amount', 'tblpayment.process_type_id');
 
         $data['record'] = DB::table('tblclaimdtl')
-        ->join('tblclaim', 'tblclaimdtl.claim_id', 'tblclaim.id')
-        ->join('tblstudentclaim', 'tblclaimdtl.claim_package_id', 'tblstudentclaim.id')
+        ->leftJoin('tblclaim', 'tblclaimdtl.claim_id', 'tblclaim.id')
+        ->leftJoin('tblstudentclaim', 'tblclaimdtl.claim_package_id', 'tblstudentclaim.id')
         ->where([['tblclaim.student_ic', $request->student],['tblclaim.process_status_id', 2], ['tblclaimdtl.amount', '!=', 0]])
         ->unionALL($record)
         ->select('tblclaim.ref_no','tblclaim.date', 'tblstudentclaim.name', 'tblclaimdtl.amount', 'tblclaim.process_type_id')
