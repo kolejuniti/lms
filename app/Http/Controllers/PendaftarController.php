@@ -46,6 +46,10 @@ class PendaftarController extends Controller
 
         $data['race'] = DB::table('tblnationality')->get();
 
+        $data['relationship'] = DB::table('tblrelationship')->get();
+
+        $data['wstatus'] = DB::table('tblwaris_status')->get();
+
         $data['religion'] =  DB::table('tblreligion')->get();
 
         $data['CL'] = DB::table('tblcitizenship_level')->get();
@@ -141,6 +145,23 @@ class PendaftarController extends Controller
             'state_id' => $request->state,
             'country_id' => $request->country
         ]);
+
+        $numWaris = count($request->input('w_name'));
+        for ($i = 0; $i < $numWaris; $i++) {
+            $data = array(
+                'student_ic' => $data['id'],
+                'name' => $request->input('w_name')[$i],
+                'ic' => $request->input('w_ic')[$i],
+                'home_tel' => $request->input('w_notel_home')[$i],
+                'phone_tel' => $request->input('w_notel')[$i],
+                'occupation' => $request->input('occupation')[$i],
+                'dependent_no' => $request->input('dependent')[$i],
+                'relationship' => $request->input('relationship')[$i],
+                'race' => $request->input('w_race')[$i],
+                'status' => $request->input('w_status')[$i],
+            );
+            DB::table('tblstudent_waris')->insert($data);
+        }
 
         DB::table('student_form')->insert([
             'student_ic' => $data['id'],
@@ -371,10 +392,22 @@ class PendaftarController extends Controller
     {
         if(isset($request->session))
         {
-            $students = DB::table('students')->where([['program', $request->program],['session', $request->session]])->get();
+
+            $students = DB::table('students')
+            ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+            ->where([['students.program', $request->program],['students.session', $request->session]])
+            ->select('students.*', 'tblprogramme.progname')
+            ->get();
+
         }else
         {
-            $students = DB::table('students')->where('program', $request->program)->get();
+
+            $students = DB::table('students')
+            ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+            ->where('students.program', $request->program)
+            ->select('students.*', 'tblprogramme.progname')
+            ->get();
+
         }
 
         $content = "";
@@ -383,19 +416,19 @@ class PendaftarController extends Controller
                             <th style="width: 1%">
                             No.
                             </th>
-                            <th style="width: 15%">
+                            <th>
                                 Name
                             </th>
-                            <th style="width: 15%">
+                            <th>
                                 No. IC
                             </th>
-                            <th style="width: 30%">
+                            <th>
                                 No. Matric
                             </th>
-                            <th style="width: 10%">
+                            <th>
                                 Program
                             </th>
-                            <th style="width: 20%">
+                            <th>
                             </th>
                         </tr>
                     </thead>
@@ -408,17 +441,17 @@ class PendaftarController extends Controller
                 <td style="width: 1%">
                 '. $key+1 .'
                 </td>
-                <td style="width: 15%">
+                <td>
                 '. $student->name .'
                 </td>
-                <td style="width: 15%">
+                <td>
                 '. $student->ic .'
                 </td>
-                <td style="width: 30%">
+                <td>
                 '. $student->no_matric .'
                 </td>
                 <td>
-                '. $student->program .'
+                '. $student->progname .'
                 </td>
                 <td class="project-actions text-right" >
                   <a class="btn btn-info btn-sm btn-sm mr-2" href="/pendaftar/edit/'. $student->ic .'">
