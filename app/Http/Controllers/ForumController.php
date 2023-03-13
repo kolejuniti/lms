@@ -80,6 +80,7 @@ class ForumController extends Controller
             'TopicID' => $request->tpcID,
             'Content' => $data['upforum'],
             'CourseID' => $request->id,
+            'DateTime' => date('Y-m-d H:i:s'), 
             'UpdatedBy' => $user->ic
         ]);
 
@@ -133,6 +134,7 @@ class ForumController extends Controller
             'TopicID' => $request->tpcID,
             'Content' => $data['upforum'],
             'CourseID' => $request->id,
+            'DateTime' => date('Y-m-d H:i:s'), 
             'UpdatedBy' => $user->ic
         ]);
 
