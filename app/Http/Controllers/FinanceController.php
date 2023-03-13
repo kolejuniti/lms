@@ -2520,7 +2520,7 @@ class FinanceController extends Controller
             if(array_intersect([2,3,4,5,6], (array) $req->process_type_id))
             {
 
-                $data['total'][] = $val + $req->amount;
+                $data['total'][$key] = $val + $req->amount;
 
                 $val = $val + $req->amount;
 
@@ -2530,7 +2530,7 @@ class FinanceController extends Controller
             }elseif(array_intersect([1,7,8,9], (array) $req->process_type_id))
             {
 
-                $data['total'][] = $val - $req->amount;
+                $data['total'][$key] = $val - $req->amount;
 
                 $val = $val - $req->amount;
 
