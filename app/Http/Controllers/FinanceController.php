@@ -2517,7 +2517,7 @@ class FinanceController extends Controller
         foreach($data['record'] as $key => $req)
         {
 
-            if(array_intersect([2,3,4,5,6], (array) $req->process_type_id))
+            if(array_intersect([2,3,4,5], (array) $req->process_type_id))
             {
 
                 $data['total'][$key] = $val + $req->amount;
@@ -2527,7 +2527,7 @@ class FinanceController extends Controller
                 $data['sum1'] += $req->amount;
                 
 
-            }elseif(array_intersect([1,7,8,9], (array) $req->process_type_id))
+            }elseif(array_intersect([1,6,7,8,9,15,16], (array) $req->process_type_id))
             {
 
                 $data['total'][$key] = $val - $req->amount;
@@ -2619,12 +2619,12 @@ class FinanceController extends Controller
     public function getReceiptProof(Request $request)
     {
 
-        if(array_intersect([2,3,4,5,6], (array) $request->type))
+        if(array_intersect([2,3,4,5], (array) $request->type))
         {
 
             return redirect()->route('receipt3', ['id' => $request->id]);
 
-        }elseif(array_intersect([1,7,8,9], (array) $request->type)){
+        }elseif(array_intersect([1,6,7,8,9,15,16], (array) $request->type)){
 
             if(array_intersect([7], (array) $request->type))
             {
