@@ -257,6 +257,10 @@
 					</ul>
 				</li> 
 
+				<li>
+					<a href="{{ Storage::disk('linode')->url('classschedule/index.htm') }}" target="_blank"><i data-feather="layout"></i><span>Schedule</span></a>
+				</li> 
+
 				<!--<li>
 					<a href="" class=""><i data-feather="video"></i><span>Web Conferencing</span></a>
 				</li>
