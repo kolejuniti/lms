@@ -100,11 +100,18 @@ class PendaftarController extends Controller
             'email' => $data['email'],
             'intake' => $data['session'],
             'batch' => $data['batch'],
+            'session' => $data['session'],
             'semester' => 1,
             'program' => $data['program'],
             'password' => Hash::make('12345678'),
             'status' => 1,
-            'date_offer' => date('Y-m-d')
+            'campus_id' => 0,
+            'date_offer' => $request->dol,
+            'student_status' => 1,
+            'stafID_add' => Auth::user()->ic,
+            'date_add' => date('Y-m-d'),
+            'stafID_mod' => Auth::user()->ic,
+            'date_mod' => date('Y-m-d')
         ]);
 
         DB::table('tblstudent_personal')->insert([
@@ -148,7 +155,7 @@ class PendaftarController extends Controller
 
         $numWaris = count($request->input('w_name'));
         for ($i = 0; $i < $numWaris; $i++) {
-            $data = array(
+            DB::table('tblstudent_waris')->insert([
                 'student_ic' => $data['id'],
                 'name' => $request->input('w_name')[$i],
                 'ic' => $request->input('w_ic')[$i],
@@ -158,9 +165,8 @@ class PendaftarController extends Controller
                 'dependent_no' => $request->input('dependent')[$i],
                 'relationship' => $request->input('relationship')[$i],
                 'race' => $request->input('w_race')[$i],
-                'status' => $request->input('w_status')[$i],
-            );
-            DB::table('tblstudent_waris')->insert($data);
+                'status' => $request->input('w_status')[$i]
+            ]);
         }
 
         DB::table('student_form')->insert([
