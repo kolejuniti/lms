@@ -40,6 +40,8 @@ class PendaftarController extends Controller
 
         $session = DB::table('sessions')->get();
 
+        $data['batch'] = DB::table('tblbatch')->get();
+
         $data['state'] = DB::table('tblstate')->get();
 
         $data['gender'] = DB::table('tblsex')->get();
@@ -209,17 +211,29 @@ class PendaftarController extends Controller
         $student = DB::table('students')
                    ->leftjoin('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
                    ->leftjoin('tblstudent_address', 'students.ic', 'tblstudent_address.student_ic')
+                   ->leftjoin('tblstudent_pass', 'students.ic', 'tblstudent_pass.student_ic')
+                   ->leftjoin('student_form', 'students.ic', 'student_form.student_ic')
                    ->where('ic',request()->ic)->first();
+
+        $data['waris'] = DB::table('tblstudent_waris')->where('student_ic', $student->ic)->get();
+
+        //dd($data['waris']);
 
         $program = DB::table('tblprogramme')->get();
 
         $session = DB::table('sessions')->get();
+
+        $data['batch'] = DB::table('tblbatch')->get();
 
         $data['state'] = DB::table('tblstate')->get();
 
         $data['gender'] = DB::table('tblsex')->get();
 
         $data['race'] = DB::table('tblnationality')->get();
+
+        $data['relationship'] = DB::table('tblrelationship')->get();
+
+        $data['wstatus'] = DB::table('tblwaris_status')->get();
 
         $data['religion'] =  DB::table('tblreligion')->get();
 
@@ -241,27 +255,30 @@ class PendaftarController extends Controller
 
     public function update(Request $request)
     {
-        if($request->ic == null)
-        {
-            $ic = $request->passport;
-        }else{
-            $ic = $request->ic;
-        }
 
-        $oldstd = DB::table('students')->where('ic', $ic)->first();
-
-        //dd($oldstd);
+        //dd($request->name);
 
         $data = $request->validate([
             'name' => ['required','string'],
-            'matric' => ['required','string'],
             'email' => ['required', 'string', 'email', 'max:255'],
             'session' => ['required'],
             'batch' => ['required'],
             'program' => ['required'],
         ]);
 
-        //dd($data);
+        if($request->ic != '')
+        {
+
+            $data['id'] = $request->ic;
+
+        }elseif($request->passport != '')
+        {
+
+            $data['id'] = $request->passport;
+
+        }
+
+        $oldstd = DB::table('students')->where('ic', $data['id'])->first();
 
         if($oldstd->program != $data['program'])
         {
@@ -275,35 +292,19 @@ class PendaftarController extends Controller
                 'session' => $oldstd->session
             ]);
 
-            $subject = DB::table('subjek')->where([
-                ['prgid','=', $data['program']]
-            ])->get();
-
-            foreach($subject as $key)
-            {
-                student::create([
-                    'student_ic' => $oldstd->ic,
-                    'courseid' => $key->sub_id,
-                    'sessionid' => $data['session'],
-                    'semesterid' => $key->semesterid,
-                    'status' => 'ACTIVE'
-                ]);
-            }
-
         }
 
-        DB::table('students')->where('ic', $ic)->update([
+        DB::table('students')->where('ic', $data['id'])->update([
             'name' => $data['name'],
-            'ic' => $ic,
-            'no_matric' => null,
             'email' => $data['email'],
             'intake' => $data['session'],
             'batch' => $data['batch'],
-            'program' => $data['program']
+            'program' => $data['program'],
+            'date_offer' => $request->dol
         ]);
 
-        DB::table('tblstudent_personal')->where('student_ic', $ic)->update([
-            'student_ic' => $ic,
+        DB::table('tblstudent_personal')->where('student_ic', $data['id'])->update([
+            'student_ic' => $data['id'],
             'date_birth' => $request->birth_date,
             'advisor_id' => $request->EA,
             'bank_name' => $request->bank_name,
@@ -322,22 +323,55 @@ class PendaftarController extends Controller
             'no_telhome' => $request->np3
         ]);
 
-        DB::table('tblstudent_pass')->where('student_ic', $ic)->update([
-            'student_ic' => $ic,
+        DB::table('tblstudent_pass')->where('student_ic', $data['id'])->update([
+            'student_ic' => $data['id'],
             'pass_type' => $request->pt,
             'pass_no' => $request->spn,
             'date_issued' => $request->di,
             'date_expired' => $request->de
         ]);
 
-        DB::table('tblstudent_address')->where('student_ic', $ic)->update([
-            'student_ic' => $ic,
+        DB::table('tblstudent_address')->where('student_ic', $data['id'])->update([
+            'student_ic' => $data['id'],
             'address1' => $request->address1,
             'address2' => $request->address2,
             'address3' => $request->address3,
             'city' => $request->city,
             'postcode' => $request->postcode,
-            'state_id' => $request->state
+            'state_id' => $request->state,
+            'country_id' => $request->country
+        ]);
+
+        DB::table('tblstudent_waris')->where('student_ic', $data['id'])->delete();
+
+        $numWaris = count($request->input('w_name'));
+        for ($i = 0; $i < $numWaris; $i++) {
+            DB::table('tblstudent_waris')->insert([
+                'student_ic' => $data['id'],
+                'name' => $request->input('w_name')[$i],
+                'ic' => $request->input('w_ic')[$i],
+                'home_tel' => $request->input('w_notel_home')[$i],
+                'phone_tel' => $request->input('w_notel')[$i],
+                'occupation' => $request->input('occupation')[$i],
+                'dependent_no' => $request->input('dependent')[$i],
+                'relationship' => $request->input('relationship')[$i],
+                'race' => $request->input('w_race')[$i],
+                'status' => $request->input('w_status')[$i]
+            ]);
+        }
+
+        DB::table('student_form')->where('student_ic', $data['id'])->update([
+            'student_ic' => $data['id'],
+            'main' => $request->main,
+            'pre_registration' => $request->PR,
+            // 'c19' => $request->c19,
+            'complete_form' => $request->CF,
+            'copy_ic' => $request->copyic,
+            'copy_birth' => $request->copybc,
+            'copy_spm' => $request->copyspm,
+            'copy_school' => $request->coppysc,
+            'copy_pic' => $request->copypic,
+            'copy_pincome' => $request->copypp
         ]);
 
 
@@ -510,6 +544,8 @@ class PendaftarController extends Controller
                        ->join('tblspm_dtl', 'tblstudent_spm.student_ic', 'tblspm_dtl.student_spm_ic')
                        ->where('tblstudent_spm.student_ic', request()->ic)->get();
 
+        $data['info'] = DB::table('tblstudent_spm')->where('student_ic', request()->ic)->first();
+
         $data['subject'] = DB::table('tblsubject_spm')->get();
 
         $data['grade'] = DB::table('tblgrade_spm')->get();
@@ -526,6 +562,13 @@ class PendaftarController extends Controller
         //$student = DB::table('tblstudent_spm')->where('student_ic', $request->ic)->first();
 
         //dd($request->grade);
+
+        DB::table('tblstudent_spm')->updateOrInsert(
+            ['student_ic' => $request->ic], 
+            [
+                'year' => $request->year,
+                'number_turn' => $request->turn
+            ]);
 
         $filter = array_filter($request->subject);
 
