@@ -552,7 +552,16 @@
                 </div>
                 <!-- /.card-body -->
                 <div class="card-footer">
-                  <button type="submit" class="btn btn-primary pull-right mb-3">Submit</button>
+                  <div class="row pull-right">
+                    <div class="d-flex ">
+                      <div class="form-group" style="margin-right: 5px">
+                        <a class="btn btn-info mb-3" type="button" href="/pendaftar/surat_tawaran?ic={{ $student->ic }}" target="_blank">Edit</a>
+                      </div>
+                      <div class="form-group">
+                        <button type="submit" class="btn btn-primary mb-3">Submit</button>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </form>
             </div>
