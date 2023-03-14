@@ -167,7 +167,7 @@ class PendaftarController extends Controller
             'student_ic' => $data['id'],
             'main' => $request->main,
             'pre_registration' => $request->PR,
-            'c19' => $request->c19,
+            // 'c19' => $request->c19,
             'complete_form' => $request->CF,
             'copy_ic' => $request->copyic,
             'copy_birth' => $request->copybc,
