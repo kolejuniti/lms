@@ -180,7 +180,10 @@
 </div>
 
 @if(session('newStud'))
-    <script>window.open('/pendaftar/surat_tawaran?ic={{ session("newStud") }}')</script>
+    <script>
+      alert('Success! Student has been registered!')
+      window.open('/pendaftar/surat_tawaran?ic={{ session("newStud") }}')
+    </script>
 @endif
 
 <!-- DataTables  & Plugins -->
