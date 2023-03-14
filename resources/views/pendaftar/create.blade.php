@@ -459,8 +459,8 @@
                             <label class="form-label" for="batch">Batch</label>
                             <select class="form-select" id="batch" name="batch">
                               <option value="-" selected disabled>-</option>
-                                @foreach ($session as $ses)
-                                <option value="{{ $ses->SessionID }}">{{ $ses->SessionName}}</option> 
+                                @foreach ($data['batch'] as $bch)
+                                <option value="{{ $bch->BatchID }}">{{ $bch->BatchName}}</option> 
                                 @endforeach
                             </select>
                           </div>

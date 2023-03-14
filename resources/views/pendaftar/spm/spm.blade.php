@@ -53,7 +53,33 @@
                 @csrf
                 <div class="card-header">
                     <h3 class="card-title">SPM</h3>
-                  </div>
+                </div>
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <b>Student Info</b>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label" for="year">Year</label>
+                                    <select class="form-select" id="year" name="year" required>
+                                    <option value="" selected disabled>-</option>
+                                    @for ($year = date('Y'); $year >= 1900; $year--)
+                                        <option value="{{ $year }}" {{ isset($data['info']->year) ? (($data['info']->year == $year) ? 'selected' : '') : '' }}>{{ $year }}</option>
+                                    @endfor
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label" for="turn">Turn</label>
+                                    <input type="text" class="form-control" id="turn" name="turn" value="{{ isset($data['info']->number_turn) ? $data['info']->number_turn : '' }}">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="card-body">
                     <div class="row mb-2">
                         @if (count($data['spm']) == 0)
