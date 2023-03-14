@@ -353,8 +353,8 @@
                           </div>
                           <div class="col-md-6">
                             <div class="form-group">
-                              <label class="form-label" for="w_notel_home">Home No. Tel <p style="color:red; display:inline-block;">*</p></label>
-                              <input type="text" class="form-control" id="w_notel_home" placeholder="Enter No. Tel Home" name="w_notel_home[]" required>
+                              <label class="form-label" for="w_notel_home">Home No. Tel</label>
+                              <input type="text" class="form-control" id="w_notel_home" placeholder="Enter No. Tel Home" name="w_notel_home[]">
                             </div>
                           </div>
                           <div class="col-md-6">
@@ -483,10 +483,10 @@
                               <input type="checkbox" id="PR" class="filled-in" name="PR" value="1">
                               <label for="PR">Pre-Registration</label>
                             </div>
-                            <div class="ml-2">
+                            {{-- <div class="ml-2">
                               <input type="checkbox" id="c19" class="filled-in" name="c19" value="1">
                               <label for="c19">C19</label>
-                            </div>
+                            </div> --}}
                             <div class="ml-2">
                               <input type="checkbox" id="CF" class="filled-in" name="CF" value="1">
                               <label for="CF">Complete Form</label>
