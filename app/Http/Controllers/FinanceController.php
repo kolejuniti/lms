@@ -1809,8 +1809,13 @@ class FinanceController extends Controller
 
         $data['total2'] = $method->sum('tblpaymentmethod.amount');
 
-        $data['student'] = DB::table('tblprogramme')->join('students', 'tblprogramme.id', 'students.program')
-                                       ->where('students.ic', $data['payment']->student_ic)->first();
+        $data['student'] = DB::table('students')
+                           ->join('sessions AS A1', 'students.intake', 'A1.SessionID')
+                           ->join('sessions AS A2', 'students.session', 'A2.SessionID')
+                           ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+                           ->select('students.*', 'tblprogramme.progname AS program', 'A1.SessionName AS intake', 'A2.SessionName AS session')
+                           ->where('students.ic', $data['payment']->student_ic)
+                           ->first();
 
         return view('finance.payment.receipt', compact('data'));
 
@@ -1829,8 +1834,13 @@ class FinanceController extends Controller
 
         $data['total'] = $detail->sum('tblpaymentdtl.amount');
 
-        $data['student'] = DB::table('tblprogramme')->join('students', 'tblprogramme.id', 'students.program')
-                                       ->where('students.ic', $data['payment']->student_ic)->first();
+        $data['student'] = DB::table('students')
+                           ->join('sessions AS A1', 'students.intake', 'A1.SessionID')
+                           ->join('sessions AS A2', 'students.session', 'A2.SessionID')
+                           ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+                           ->select('students.*', 'tblprogramme.progname AS program', 'A1.SessionName AS intake', 'A2.SessionName AS session')
+                           ->where('students.ic', $data['payment']->student_ic)
+                           ->first();
 
         return view('finance.sponsorship.receipt', compact('data'));
 
@@ -1849,8 +1859,13 @@ class FinanceController extends Controller
 
         $data['total'] = $detail->sum('tblclaimdtl.amount');
 
-        $data['student'] = DB::table('tblprogramme')->join('students', 'tblprogramme.id', 'students.program')
-                                       ->where('students.ic', $data['payment']->student_ic)->first();
+        $data['student'] = DB::table('students')
+                           ->join('sessions AS A1', 'students.intake', 'A1.SessionID')
+                           ->join('sessions AS A2', 'students.session', 'A2.SessionID')
+                           ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+                           ->select('students.*', 'tblprogramme.progname AS program', 'A1.SessionName AS intake', 'A2.SessionName AS session')
+                           ->where('students.ic', $data['payment']->student_ic)
+                           ->first();
 
         return view('finance.sponsorship.receipt', compact('data'))->with('invois', '1');
 
