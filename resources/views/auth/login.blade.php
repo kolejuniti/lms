@@ -7,7 +7,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="icon" href="{{ asset('assets/images/favicon.ico') }}">
-    <title>UCMS - Log in </title>
+    <title>EDUHUB - Log in </title>
   
 	<!-- Vendors Style-->
 	<link rel="stylesheet" href="{{ asset('assets/src/css/vendors_css.css') }}">
@@ -42,7 +42,7 @@
 								{{-- <h2 class="text-primary fw-600">Let's Get Started</h2> --}}
 								<div class="container mb-5">
 									<img src="{{ asset('assets/images/logo/Kolej-UNITI.png')}}" height="60em" width="auto" >
-									<img src="{{ asset('assets/images/logo_ucms.png')}}" height="30em" width="auto"  class="">
+									<img src="{{ asset('assets/images/logo_ucms2.png')}}" height="30em" width="auto"  class="">
 								</div>
 								<p class="mb-0 text-fade p-3 pb-0 ">Sign in to continue.</p>							
 							</div>
