@@ -19,7 +19,7 @@
         </div>
       </div>
       <div class="col-md-12">
-        <span class="badge badge-warning pull-right" >ACTIVE</span>
+        <span class="badge badge-warning pull-right">ACTIVE</span>
         <div class="card-body">
           <div class="p-2">
             <div class="row">
@@ -33,9 +33,6 @@
                   </p>-->
                   <p class="card-text text-gray-600">
                     <strong>Session</strong> {{ ucwords($key->SessionName) }}
-                  </p>
-                  <p class="card-text text-gray-600">
-                    <strong>Program</strong> {{ ucwords($key->progname) }}
                   </p>
                 </div>
               </div>
