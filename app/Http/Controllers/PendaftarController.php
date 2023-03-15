@@ -623,9 +623,9 @@ class PendaftarController extends Controller
 
     public function getStudentList(Request $request)
     {
-        $students = DB::table('students')->where('name', 'LIKE', $request->search."%")
-                                         ->orwhere('ic', 'LIKE', $request->search."%")
-                                         ->orwhere('no_matric', 'LIKE', $request->search."%")->get();
+        $students = DB::table('students')->where('name', 'LIKE', "%".$request->search."%")
+                                         ->orwhere('ic', 'LIKE', "%".$request->search."%")
+                                         ->orwhere('no_matric', 'LIKE', "%".$request->search."%")->get();
 
         $content = "";
 
