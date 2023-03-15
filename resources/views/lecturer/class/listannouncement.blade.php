@@ -1,6 +1,19 @@
 @extends('layouts.lecturer.lecturer')
 
 @section('main')
+
+<style>
+  .auto-height-card {
+    min-height: 100px; /* Adjust this value to set a minimum height for the card */
+    display: flex;
+    flex-direction: column;
+  }
+
+  .auto-height-card .card-body {
+    flex-grow: 1;
+  }
+</style>
+
 <!-- Content Header (Page header) -->
 <div class="content-wrapper" style="min-height: 695.8px;">
   <div class="container-full">
