@@ -114,11 +114,11 @@
                             @endforeach
 
                             
-                            <div class="card">
+                            <div class="card auto-height-card">
                               <div class="card-body col-md-12">
-                              <p>
-                                {!! $cls->classdescription !!}
-                              </p>
+                                <p>
+                                  {!! $cls->classdescription !!}
+                                </p>
                               </div>
                             </div>
                           
