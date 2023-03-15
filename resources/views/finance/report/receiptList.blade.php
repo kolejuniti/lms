@@ -93,19 +93,19 @@
 var refno = '';
 var search = '';
 
-$(document).on('keyup', '#refno', async function(e){
-  refno = $(e.target).val();
-
-    await getStudent(refno,search);
+  $(document).on('keyup', '#refno', async function(e){
+    if (event.keyCode === 13) { // 13 is the code for the "Enter" key
+      refno = $(e.target).val();
+      await getStudent(refno,search);
+    } 
   });
 
   $(document).on('keyup', '#search', async function(e){
-    search = $(e.target).val();
-
-    await getStudent(refno,search);
+    if (event.keyCode === 13) { // 13 is the code for the "Enter" key
+      search = $(e.target).val();
+      await getStudent(refno,search);
+    }
   });
-
-
 
 
 function getStudent(refno,search)
