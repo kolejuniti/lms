@@ -1813,9 +1813,12 @@ class FinanceController extends Controller
                            ->join('sessions AS A1', 'students.intake', 'A1.SessionID')
                            ->join('sessions AS A2', 'students.session', 'A2.SessionID')
                            ->join('tblprogramme', 'students.program', 'tblprogramme.id')
-                           ->select('students.*', 'tblprogramme.progname AS program', 'A1.SessionName AS intake', 'A2.SessionName AS session')
+                           ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
+                           ->select('students.*', 'tblprogramme.progname AS program', 'tblstudent_status.name AS status', 'A1.SessionName AS intake', 'A2.SessionName AS session')
                            ->where('students.ic', $data['payment']->student_ic)
                            ->first();
+
+        $data['date'] = Carbon::createFromFormat('Y-m-d', $data['student']->date)->format('d/m/Y');
 
         return view('finance.payment.receipt', compact('data'));
 
@@ -1838,9 +1841,12 @@ class FinanceController extends Controller
                            ->join('sessions AS A1', 'students.intake', 'A1.SessionID')
                            ->join('sessions AS A2', 'students.session', 'A2.SessionID')
                            ->join('tblprogramme', 'students.program', 'tblprogramme.id')
-                           ->select('students.*', 'tblprogramme.progname AS program', 'A1.SessionName AS intake', 'A2.SessionName AS session')
+                           ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
+                           ->select('students.*', 'tblprogramme.progname AS program', 'tblstudent_status.name AS status', 'A1.SessionName AS intake', 'A2.SessionName AS session')
                            ->where('students.ic', $data['payment']->student_ic)
                            ->first();
+
+        $data['date'] = Carbon::createFromFormat('Y-m-d', $data['student']->date)->format('d/m/Y');
 
         return view('finance.sponsorship.receipt', compact('data'));
 
@@ -1863,9 +1869,12 @@ class FinanceController extends Controller
                            ->join('sessions AS A1', 'students.intake', 'A1.SessionID')
                            ->join('sessions AS A2', 'students.session', 'A2.SessionID')
                            ->join('tblprogramme', 'students.program', 'tblprogramme.id')
-                           ->select('students.*', 'tblprogramme.progname AS program', 'A1.SessionName AS intake', 'A2.SessionName AS session')
+                           ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
+                           ->select('students.*', 'tblprogramme.progname AS program', 'tblstudent_status.name AS status', 'A1.SessionName AS intake', 'A2.SessionName AS session')
                            ->where('students.ic', $data['payment']->student_ic)
                            ->first();
+
+        $data['date'] = Carbon::createFromFormat('Y-m-d', $data['student']->date)->format('d/m/Y');
 
         return view('finance.sponsorship.receipt', compact('data'))->with('invois', '1');
 
