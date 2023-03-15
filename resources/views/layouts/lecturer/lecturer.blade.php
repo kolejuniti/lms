@@ -111,6 +111,16 @@
 	{
 		opacity:0.5 !important;
 	}
+
+	.auto-height-card {
+		min-height: 100px; /* Adjust this value to set a minimum height for the card */
+		display: flex;
+		flex-direction: column;
+	}
+
+	.auto-height-card .card-body {
+		flex-grow: 1;
+	}
 	</style>
 
 
