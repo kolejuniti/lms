@@ -36,6 +36,8 @@ class StudentController extends Controller
         ->join('users', 'user_subjek.user_ic', 'users.ic')
         ->select('subjek.*','student_subjek.courseid','sessions.SessionName','sessions.SessionID','tblprogramme.progname', 'users.name')
         ->groupBy('student_subjek.courseid')
+        ->where('sessions.Status', 'ACTIVE')
+        ->where('tblprogramme.progstatusid', 1)
         ->where('student_subjek.student_ic', $student->ic)
         ->get();
 
