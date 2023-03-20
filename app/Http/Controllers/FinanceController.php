@@ -2517,6 +2517,8 @@ class FinanceController extends Controller
     public function statementGetStudent(Request $request)
     {
         $data['total'] = [];
+        $data['total2'] = [];
+        $data['total3'] = [];
 
         $data['student'] = DB::table('students')
                            ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
