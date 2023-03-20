@@ -2516,6 +2516,7 @@ class FinanceController extends Controller
 
     public function statementGetStudent(Request $request)
     {
+        $data['total'] = [];
 
         $data['student'] = DB::table('students')
                            ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
@@ -2526,13 +2527,23 @@ class FinanceController extends Controller
         $record = DB::table('tblpaymentdtl')
         ->leftJoin('tblpayment', 'tblpaymentdtl.payment_id', 'tblpayment.id')
         ->leftJoin('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
-        ->where([['tblpayment.student_ic', $request->student],['tblpayment.process_status_id', 2], ['tblpaymentdtl.amount', '!=', 0]])
+        ->where([
+            ['tblpayment.student_ic', $request->student],
+            ['tblpayment.process_status_id', 2], 
+            ['tblstudentclaim.groupid', 1], 
+            ['tblpaymentdtl.amount', '!=', 0]
+            ])
         ->select('tblpayment.ref_no','tblpayment.date', 'tblstudentclaim.name', 'tblpaymentdtl.amount', 'tblpayment.process_type_id');
 
         $data['record'] = DB::table('tblclaimdtl')
         ->leftJoin('tblclaim', 'tblclaimdtl.claim_id', 'tblclaim.id')
         ->leftJoin('tblstudentclaim', 'tblclaimdtl.claim_package_id', 'tblstudentclaim.id')
-        ->where([['tblclaim.student_ic', $request->student],['tblclaim.process_status_id', 2], ['tblclaimdtl.amount', '!=', 0]])
+        ->where([
+            ['tblclaim.student_ic', $request->student],
+            ['tblclaim.process_status_id', 2],  
+            ['tblstudentclaim.groupid', 1],
+            ['tblclaimdtl.amount', '!=', 0]
+            ])
         ->unionALL($record)
         ->select('tblclaim.ref_no','tblclaim.date', 'tblstudentclaim.name', 'tblclaimdtl.amount', 'tblclaim.process_type_id')
         ->orderBy('date')
@@ -2569,6 +2580,123 @@ class FinanceController extends Controller
         }
 
         $data['sum3'] = end($data['total']);
+
+
+        //FINE
+
+        $record2 = DB::table('tblpaymentdtl')
+        ->leftJoin('tblpayment', 'tblpaymentdtl.payment_id', 'tblpayment.id')
+        ->leftJoin('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
+        ->where([
+            ['tblpayment.student_ic', $request->student],
+            ['tblpayment.process_status_id', 2],  
+            ['tblstudentclaim.groupid', 4],
+            ['tblpaymentdtl.amount', '!=', 0]
+            ])
+        ->select('tblpayment.ref_no','tblpayment.date', 'tblstudentclaim.name', 'tblpaymentdtl.amount', 'tblpayment.process_type_id');
+
+        $data['record2'] = DB::table('tblclaimdtl')
+        ->leftJoin('tblclaim', 'tblclaimdtl.claim_id', 'tblclaim.id')
+        ->leftJoin('tblstudentclaim', 'tblclaimdtl.claim_package_id', 'tblstudentclaim.id')
+        ->where([
+            ['tblclaim.student_ic', $request->student],
+            ['tblclaim.process_status_id', 2],  
+            ['tblstudentclaim.groupid', 4],
+            ['tblclaimdtl.amount', '!=', 0]
+            ])        ->unionALL($record2)
+        ->select('tblclaim.ref_no','tblclaim.date', 'tblstudentclaim.name', 'tblclaimdtl.amount', 'tblclaim.process_type_id')
+        ->orderBy('date')
+        ->get();
+
+        $val = 0;
+        $data['sum1_2'] = 0;
+        $data['sum2_2'] = 0;
+
+        foreach($data['record2'] as $key => $req)
+        {
+
+            if(array_intersect([2,3,4,5], (array) $req->process_type_id))
+            {
+
+                $data['total2'][$key] = $val + $req->amount;
+
+                $val = $val + $req->amount;
+
+                $data['sum1_2'] += $req->amount;
+                
+
+            }elseif(array_intersect([1,6,7,8,9,15,16], (array) $req->process_type_id))
+            {
+
+                $data['total2'][$key] = $val - $req->amount;
+
+                $val = $val - $req->amount;
+
+                $data['sum2_2'] += $req->amount;
+
+            }
+
+        }
+
+        $data['sum3_2'] = end($data['total2']);
+
+        //OTHER
+
+        $record3 = DB::table('tblpaymentdtl')
+        ->leftJoin('tblpayment', 'tblpaymentdtl.payment_id', 'tblpayment.id')
+        ->leftJoin('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
+        ->where([
+            ['tblpayment.student_ic', $request->student],
+            ['tblpayment.process_status_id', 2],  
+            ['tblstudentclaim.groupid', 5],
+            ['tblpaymentdtl.amount', '!=', 0]
+            ])
+        ->select('tblpayment.ref_no','tblpayment.date', 'tblstudentclaim.name', 'tblpaymentdtl.amount', 'tblpayment.process_type_id');
+
+        $data['record3'] = DB::table('tblclaimdtl')
+        ->leftJoin('tblclaim', 'tblclaimdtl.claim_id', 'tblclaim.id')
+        ->leftJoin('tblstudentclaim', 'tblclaimdtl.claim_package_id', 'tblstudentclaim.id')
+        ->where([
+            ['tblclaim.student_ic', $request->student],
+            ['tblclaim.process_status_id', 2],  
+            ['tblstudentclaim.groupid', 5],
+            ['tblclaimdtl.amount', '!=', 0]
+            ])        ->unionALL($record3)
+        ->select('tblclaim.ref_no','tblclaim.date', 'tblstudentclaim.name', 'tblclaimdtl.amount', 'tblclaim.process_type_id')
+        ->orderBy('date')
+        ->get();
+
+        $val = 0;
+        $data['sum1_3'] = 0;
+        $data['sum2_3'] = 0;
+
+        foreach($data['record3'] as $key => $req)
+        {
+
+            if(array_intersect([2,3,4,5], (array) $req->process_type_id))
+            {
+
+                $data['total3'][$key] = $val + $req->amount;
+
+                $val = $val + $req->amount;
+
+                $data['sum1_3'] += $req->amount;
+                
+
+            }elseif(array_intersect([1,6,7,8,9,15,16], (array) $req->process_type_id))
+            {
+
+                $data['total3'][$key] = $val - $req->amount;
+
+                $val = $val - $req->amount;
+
+                $data['sum2_3'] += $req->amount;
+
+            }
+
+        }
+
+        $data['sum3_3'] = end($data['total3']);
 
         return view('finance.report.statementGetStudent', compact('data'));
 
