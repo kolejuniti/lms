@@ -197,7 +197,7 @@ class StudentController extends Controller
                         ['student_subjek.sessionid', Session::get('SessionID')],
                     ])->select('user_subjek.*')->first();
         
-        //dd($lecturer);
+        dd(Session::get('SessionID'));
 
         if($lecturer != null)
         {
@@ -208,7 +208,6 @@ class StudentController extends Controller
                   ->join('subjek', 'lecturer_dir.CourseID','subjek.id')
                   ->where('subjek.sub_id', $subid)
                   ->where('Addby', $lecturer->user_ic)
-                  ->where('SessionID', Session::get('SessionID'))
                   ->get();
 
         }else{
