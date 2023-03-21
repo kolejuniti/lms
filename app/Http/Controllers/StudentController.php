@@ -197,7 +197,7 @@ class StudentController extends Controller
                         ['student_subjek.sessionid', Session::get('SessionID')],
                     ])->select('user_subjek.*')->first();
         
-        dd(Session::get('SessionID'));
+        //dd($lecturer);
 
         if($lecturer != null)
         {
