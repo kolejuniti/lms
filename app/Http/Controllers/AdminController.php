@@ -423,22 +423,107 @@ class AdminController extends Controller
 
     public function listAttendance(Request $request)
     {
+        $user = Session::get('LectIC');
+
         $courseid = Session::get('CourseID');
 
         $sessionid = Session::get('SessionID');
 
-        $list = DB::table('tblclassattendance')
+        $students = [];
+        $list = [];
+        $status = [];
+
+
+
+        $groups = DB::table('user_subjek')
+                  ->join('student_subjek', 'user_subjek.id', 'student_subjek.group_id')
+                  ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+                  ->select('user_subjek.*','student_subjek.group_name','student_subjek.group_id')
+                  ->where([
+                     ['user_subjek.user_ic', $user],
+                     ['user_subjek.session_id', Session::get('SessionID')],
+                     ['subjek.id', $courseid]
+                  ])->groupBy('student_subjek.group_name')->get();
+
+        foreach($groups as $ky => $grp)
+        {
+
+
+                $students[] = $data = DB::table('user_subjek')
+                ->join('student_subjek', 'user_subjek.id', 'student_subjek.group_id')
+                ->join('students', 'student_subjek.student_ic', 'students.ic')
+                ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+                ->select('user_subjek.*','student_subjek.group_name','student_subjek.group_id','students.*')
+                ->where([
+                ['user_subjek.user_ic', $user],
+                ['user_subjek.session_id', $sessionid],
+                ['subjek.id', $courseid]
+                ])->where('student_subjek.group_name', $grp->group_name)
+                ->orderBy('students.name')->get();
+
+                $collection = collect($students[$ky]);
+
+                $list[] = DB::table('tblclassattendance')
                 ->join('user_subjek', 'tblclassattendance.groupid', 'user_subjek.id')
                 ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
                 ->where([
                     ['subjek.id', $courseid],
-                    ['user_subjek.session_id', $sessionid]
-                ])->groupBy('tblclassattendance.groupname')->groupBy('tblclassattendance.classdate')
-                ->orderBy('tblclassattendance.classdate', 'ASC')->get();
+                    ['user_subjek.session_id', $sessionid],
+                    ['user_subjek.user_ic', $user],
+                    ['tblclassattendance.groupname', $grp->group_name]
+                ])->groupBy('tblclassattendance.classdate')
+                ->orderBy('tblclassattendance.classdate', 'ASC')
+                ->select('tblclassattendance.*')->get();
 
-        //dd($list);
+                //dd($list);
 
-        return view('lecturer.class.attendancelist', compact('list'));
+                foreach($students[$ky] as $key => $std)
+                {
+
+                    foreach($list[$ky] as $keys => $ls)
+                    {
+                        $atten = DB::table('tblclassattendance')
+                        ->where([
+                            ['tblclassattendance.groupid', $ls->groupid],
+                            ['tblclassattendance.groupname', $grp->group_name],
+                            ['tblclassattendance.student_ic', $std->ic],
+                            ['tblclassattendance.classdate', $ls->classdate]
+                        ])->select('tblclassattendance.*');
+                        
+                        $attendance = $atten->first();
+
+                        if($atten->exists())
+                        {
+
+                            if($attendance->excuse == null)
+                            {
+
+                                $status[$ky][$key][$keys] = 'Present';
+
+                            }else{
+
+                                $status[$ky][$key][$keys] = 'THB';
+
+                            }
+
+
+                        }else{
+
+                            $status[$ky][$key][$keys] = 'Absent';
+
+                        }
+                        
+
+                    }
+
+
+                }
+
+        }
+
+        //dd($status[$ky][$key]);
+
+        return view('lecturer.class.attendancereport', compact('groups', 'students', 'list', 'status'));
 
     }
 
@@ -749,7 +834,7 @@ class AdminController extends Controller
 
         $overallall = [];
         $avgoverall = [];
-
+        $valGrade = [];
         $user = User::where('ic', Session::get('LectIC'))->first();
 
         $id = Session::get('CourseID');
@@ -761,7 +846,7 @@ class AdminController extends Controller
                   ->where([
                      ['user_subjek.user_ic', $user->ic],
                      ['user_subjek.session_id', Session::get('SessionID')],
-                     ['subjek.id', $id]
+                     ['subjek.id',$id]
                   ])->groupBy('student_subjek.group_name')->get();
 
         foreach($groups as $ky => $grp)
@@ -776,8 +861,9 @@ class AdminController extends Controller
                 ->where([
                 ['user_subjek.user_ic', $user->ic],
                 ['user_subjek.session_id', Session::get('SessionID')],
-                ['subjek.id', $id]
-                ])->where('student_subjek.group_name', $grp->group_name)->get();
+                ['subjek.id',$id]
+                ])->where('student_subjek.group_name', $grp->group_name)
+                ->orderBy('students.name')->get();
 
                 $collection = collect($students[$ky]);
 
@@ -786,7 +872,7 @@ class AdminController extends Controller
                 $quizs = DB::table('tblclassquiz')
                         ->join('tblclassquiz_group', 'tblclassquiz.id', 'tblclassquiz_group.quizid')
                         ->where([
-                            ['tblclassquiz.classid', $id],
+                            ['tblclassquiz.classid',$id],
                             ['tblclassquiz.sessionid', Session::get('SessionID')],
                             ['tblclassquiz_group.groupname', $grp->group_name],
                             ['tblclassquiz.status', '!=', 3]
@@ -820,7 +906,7 @@ class AdminController extends Controller
                 $tests = DB::table('tblclasstest')
                         ->join('tblclasstest_group', 'tblclasstest.id', 'tblclasstest_group.testid')
                         ->where([
-                            ['tblclasstest.classid', $id],
+                            ['tblclasstest.classid',$id],
                             ['tblclasstest.sessionid', Session::get('SessionID')],
                             ['tblclasstest_group.groupname', $grp->group_name],
                             ['tblclasstest.status', '!=', 3]
@@ -853,7 +939,7 @@ class AdminController extends Controller
                 $assigns = DB::table('tblclassassign')
                         ->join('tblclassassign_group', 'tblclassassign.id', 'tblclassassign_group.assignid')
                         ->where([
-                            ['tblclassassign.classid', $id],
+                            ['tblclassassign.classid',$id],
                             ['tblclassassign.sessionid', Session::get('SessionID')],
                             ['tblclassassign_group.groupname', $grp->group_name],
                             ['tblclassassign.status', '!=', 3]
@@ -886,7 +972,7 @@ class AdminController extends Controller
                 $extras = DB::table('tblclassextra')
                         ->join('tblclassextra_group', 'tblclassextra.id', 'tblclassextra_group.extraid')
                         ->where([
-                            ['tblclassextra.classid', $id],
+                            ['tblclassextra.classid',$id],
                             ['tblclassextra.sessionid', Session::get('SessionID')],
                             ['tblclassextra_group.groupname', $grp->group_name],
                             ['tblclassextra.status', '!=', 3]
@@ -919,7 +1005,7 @@ class AdminController extends Controller
                 $others = DB::table('tblclassother')
                         ->join('tblclassother_group', 'tblclassother.id', 'tblclassother_group.otherid')
                         ->where([
-                            ['tblclassother.classid', $id],
+                            ['tblclassother.classid',$id],
                             ['tblclassother.sessionid', Session::get('SessionID')],
                             ['tblclassother_group.groupname', $grp->group_name],
                             ['tblclassother.status', '!=', 3]
@@ -952,7 +1038,7 @@ class AdminController extends Controller
                 $midterms = DB::table('tblclassmidterm')
                         ->join('tblclassmidterm_group', 'tblclassmidterm.id', 'tblclassmidterm_group.midtermid')
                         ->where([
-                            ['tblclassmidterm.classid', $id],
+                            ['tblclassmidterm.classid',$id],
                             ['tblclassmidterm.sessionid', Session::get('SessionID')],
                             ['tblclassmidterm_group.groupname', $grp->group_name],
                             ['tblclassmidterm.status', '!=', 3]
@@ -985,7 +1071,7 @@ class AdminController extends Controller
                 $finals = DB::table('tblclassfinal')
                         ->join('tblclassfinal_group', 'tblclassfinal.id', 'tblclassfinal_group.finalid')
                         ->where([
-                            ['tblclassfinal.classid', $id],
+                            ['tblclassfinal.classid',$id],
                             ['tblclassfinal.sessionid', Session::get('SessionID')],
                             ['tblclassfinal_group.groupname', $grp->group_name],
                             ['tblclassfinal.status', '!=', 3]
@@ -1031,14 +1117,14 @@ class AdminController extends Controller
 
                     $percentquiz = DB::table('tblclassmarks')
                                 ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
-                                ['subjek.id', $id],
+                                ['subjek.id',$id],
                                 ['assessment', 'quiz']
                                 ])->first();
 
                     if($quizs = DB::table('tblclassquiz')
                     ->join('tblclassquiz_group', 'tblclassquiz.id', 'tblclassquiz_group.quizid')
                     ->where([
-                        ['tblclassquiz.classid', $id],
+                        ['tblclassquiz.classid',$id],
                         ['tblclassquiz.sessionid', Session::get('SessionID')],
                         ['tblclassquiz_group.groupname', $grp->group_name],
                         ['tblclassquiz.status', '!=', 3]
@@ -1047,7 +1133,7 @@ class AdminController extends Controller
                         {
                             if(DB::table('tblclassquiz')
                             ->where([
-                                ['classid', $id],
+                                ['classid',$id],
                                 ['sessionid', Session::get('SessionID')]
                             ])->exists()){
                                 //dd($totalquiz);
@@ -1085,14 +1171,14 @@ class AdminController extends Controller
 
                     $percenttest = DB::table('tblclassmarks')
                                 ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
-                                ['subjek.id', $id],
+                                ['subjek.id',$id],
                                 ['assessment', 'test']
                                 ])->first();
 
                     if($tests = DB::table('tblclasstest')
                     ->join('tblclasstest_group', 'tblclasstest.id', 'tblclasstest_group.testid')
                     ->where([
-                        ['tblclasstest.classid', $id],
+                        ['tblclasstest.classid',$id],
                         ['tblclasstest.sessionid', Session::get('SessionID')],
                         ['tblclasstest_group.groupname', $grp->group_name],
                         ['tblclasstest.status', '!=', 3]
@@ -1101,7 +1187,7 @@ class AdminController extends Controller
                         {
                             if(DB::table('tblclasstest')
                             ->where([
-                                ['classid', $id],
+                                ['classid',$id],
                                 ['sessionid', Session::get('SessionID')]
                             ])->exists()){
                                 //dd($totaltest);
@@ -1139,14 +1225,14 @@ class AdminController extends Controller
 
                     $percentassign = DB::table('tblclassmarks')
                                 ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
-                                ['subjek.id', $id],
+                                ['subjek.id',$id],
                                 ['assessment', 'assignment']
                                 ])->first();
 
                     if($assigns = DB::table('tblclassassign')
                     ->join('tblclassassign_group', 'tblclassassign.id', 'tblclassassign_group.assignid')
                     ->where([
-                        ['tblclassassign.classid', $id],
+                        ['tblclassassign.classid',$id],
                         ['tblclassassign.sessionid', Session::get('SessionID')],
                         ['tblclassassign_group.groupname', $grp->group_name],
                         ['tblclassassign.status', '!=', 3]
@@ -1155,7 +1241,7 @@ class AdminController extends Controller
                         {
                             if(DB::table('tblclassassign')
                             ->where([
-                                ['classid', $id],
+                                ['classid',$id],
                                 ['sessionid', Session::get('SessionID')]
                             ])->exists()){
                                 //dd($totalassign);
@@ -1192,14 +1278,14 @@ class AdminController extends Controller
 
                     $percentextra = DB::table('tblclassmarks')
                                 ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
-                                ['subjek.id', $id],
+                                ['subjek.id',$id],
                                 ['assessment', 'extra']
                                 ])->first();
 
                     if($extras = DB::table('tblclassextra')
                     ->join('tblclassextra_group', 'tblclassextra.id', 'tblclassextra_group.extraid')
                     ->where([
-                        ['tblclassextra.classid', $id],
+                        ['tblclassextra.classid',$id],
                         ['tblclassextra.sessionid', Session::get('SessionID')],
                         ['tblclassextra_group.groupname', $grp->group_name],
                         ['tblclassextra.status', '!=', 3]
@@ -1208,7 +1294,7 @@ class AdminController extends Controller
                         {
                             if(DB::table('tblclassextra')
                             ->where([
-                                ['classid', $id],
+                                ['classid',$id],
                                 ['sessionid', Session::get('SessionID')]
                             ])->exists()){
                                 //dd($totalextra);
@@ -1245,14 +1331,14 @@ class AdminController extends Controller
 
                     $percentother = DB::table('tblclassmarks')
                                 ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
-                                ['subjek.id', $id],
+                                ['subjek.id',$id],
                                 ['assessment', 'other']
                                 ])->first();
 
                     if($others = DB::table('tblclassother')
                     ->join('tblclassother_group', 'tblclassother.id', 'tblclassother_group.otherid')
                     ->where([
-                        ['tblclassother.classid', $id],
+                        ['tblclassother.classid',$id],
                         ['tblclassother.sessionid', Session::get('SessionID')],
                         ['tblclassother_group.groupname', $grp->group_name],
                         ['tblclassother.status', '!=', 3]
@@ -1261,7 +1347,7 @@ class AdminController extends Controller
                         {
                             if(DB::table('tblclassother')
                             ->where([
-                                ['classid', $id],
+                                ['classid',$id],
                                 ['sessionid', Session::get('SessionID')]
                             ])->exists()){
                                 //dd($totalother);
@@ -1298,14 +1384,14 @@ class AdminController extends Controller
 
                     $percentmidterm = DB::table('tblclassmarks')
                                 ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
-                                ['subjek.id', $id],
+                                ['subjek.id',$id],
                                 ['assessment', 'midterm']
                                 ])->first();
 
                     if($midterms = DB::table('tblclassmidterm')
                     ->join('tblclassmidterm_group', 'tblclassmidterm.id', 'tblclassmidterm_group.midtermid')
                     ->where([
-                        ['tblclassmidterm.classid', $id],
+                        ['tblclassmidterm.classid',$id],
                         ['tblclassmidterm.sessionid', Session::get('SessionID')],
                         ['tblclassmidterm_group.groupname', $grp->group_name],
                         ['tblclassmidterm.status', '!=', 3]
@@ -1314,7 +1400,7 @@ class AdminController extends Controller
                         {
                             if(DB::table('tblclassmidterm')
                             ->where([
-                                ['classid', $id],
+                                ['classid',$id],
                                 ['sessionid', Session::get('SessionID')]
                             ])->exists()){
                                 //dd($totalmidterm);
@@ -1351,14 +1437,14 @@ class AdminController extends Controller
 
                     $percentfinal = DB::table('tblclassmarks')
                                 ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
-                                ['subjek.id', $id],
+                                ['subjek.id',$id],
                                 ['assessment', 'final']
                                 ])->first();
 
                     if($finals = DB::table('tblclassfinal')
                     ->join('tblclassfinal_group', 'tblclassfinal.id', 'tblclassfinal_group.finalid')
                     ->where([
-                        ['tblclassfinal.classid', $id],
+                        ['tblclassfinal.classid',$id],
                         ['tblclassfinal.sessionid', Session::get('SessionID')],
                         ['tblclassfinal_group.groupname', $grp->group_name],
                         ['tblclassfinal.status', '!=', 3]
@@ -1367,7 +1453,7 @@ class AdminController extends Controller
                         {
                             if(DB::table('tblclassfinal')
                             ->where([
-                                ['classid', $id],
+                                ['classid',$id],
                                 ['sessionid', Session::get('SessionID')]
                             ])->exists()){
                                 //dd($totalfinal);
@@ -1394,6 +1480,33 @@ class AdminController extends Controller
                     $overallall[$ky][$keys] = $overallquiz[$ky][$keys] + $overalltest[$ky][$keys] + $overallassign[$ky][$keys] + $overallextra[$ky][$keys] + $overallother[$ky][$keys] + $overallmidterm[$ky][$keys] + $overallfinal[$ky][$keys];
 
                     $collectionall = collect($overallall[$ky]);
+
+                    //check grade
+                    $grade = DB::table('tblsubject_grade')->get();
+
+                    foreach($grade as $grd)
+                    {
+
+                        if($overallall[$ky][$keys] >= $grd->mark_start && $overallall[$ky][$keys] <= $grd->mark_end)
+                        {
+                            $valGrade[$ky][$keys] = $grd->code;
+
+                            break;
+                        }else{
+
+                            $valGrade[$ky][$keys] = null;
+                        }
+
+                    }
+
+                    DB::table('student_subjek')
+                    ->where([
+                        ['student_ic', $std->ic],
+                        ['sessionid', $std->session_id],
+                        ['courseid', $std->course_id]
+                        ])->update([
+                            'grade' => $valGrade[$ky][$keys]
+                        ]);
             
                 }
 
@@ -1414,7 +1527,9 @@ class AdminController extends Controller
             $avgoverall = number_format((float)$collectionall->sum() / count($collection->pluck('ic')), 2, '.', '');
         }
 
-        //dd(min($overallall));
+        
+
+        //dd($valGrade);
 
 
         return view('lecturer.courseassessment.studentreport', compact('groups', 'students', 'id',
@@ -1425,9 +1540,8 @@ class AdminController extends Controller
                                                                        'other', 'otheranswer', 'overallother', 'otheravg', 'othermax', 'othermin', 'othercollection','otheravgoverall',
                                                                        'midterm', 'midtermanswer', 'overallmidterm', 'midtermavg', 'midtermmax', 'midtermmin', 'midtermcollection','midtermavgoverall',
                                                                        'final', 'finalanswer', 'overallfinal', 'finalavg', 'finalmax', 'finalmin', 'finalcollection','finalavgoverall',
-                                                                       'overallall', 'avgoverall'
+                                                                       'overallall', 'avgoverall', 'valGrade'
                                                                     ));
-
 
     }
 }
