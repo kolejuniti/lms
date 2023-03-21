@@ -58,7 +58,7 @@
                                 $(document).ready( function () {
                                     $('#myTable{{$grp->group_name}}').DataTable({
                                       dom: 'lBfrtip', // if you remove this line you will see the show entries dropdown
-                                      
+                                      paging: false, // Add this line to disable pagination
                                       buttons: [
                                           { extend: 'copyHtml5', footer: true },
                                           { extend: 'excelHtml5', footer: true },
@@ -71,27 +71,24 @@
                               </script>
                               <thead>
                                 <tr>
-                                  <th >
+                                  <th style="text-align: center">
                                     No.
                                   </th>
-                                  <th >
+                                  <th style="text-align: center">
                                     Name
                                   </th>
-                                  <th >
+                                  <th style="text-align: center">
                                     IC
                                   </th>
-                                  <th >
+                                  <th style="text-align: center">
                                     Matric No.
                                   </th>
-                                  <th >
+                                  <th style="text-align: center">
                                     Group Name
                                   </th>
-                                  <!--<th>
-                                    LIST
-                                  </th>-->
                                   @foreach ($list[$ky] as $key=>$ls)
-                                  <th>
-                                    DATE : {{ $ls->classdate }}
+                                  <th style="text-align: center">
+                                    {{ $ls->classdate }}
                                   </th>
                                   @endforeach
                                 </tr>
@@ -99,19 +96,19 @@
                               <tbody>
                                 @foreach ($students[$ky] as $key => $std)
                                 <tr>
-                                  <td>
+                                  <td style="text-align: center">
                                       {{ $key+1 }}
                                   </td>
-                                  <td>
+                                  <td style="text-align: center">
                                     <a class="btn btn-success btn-sm mr-2">{{ $std->name }}</a>
                                   </td>
-                                  <td>
+                                  <td style="text-align: center">
                                     <span >{{ $std->ic }}</span>
                                   </td>
-                                  <td>
+                                  <td style="text-align: center">
                                     <span >{{ $std->no_matric }}</span>
                                   </td>
-                                  <td>
+                                  <td style="text-align: center">
                                     <span >{{ $std->group_name }}</span>
                                   </td>
                               
@@ -120,13 +117,41 @@
       
                                     @foreach ($list[$ky] as $keys => $ls)
                                      
-                                      <td>
+                                      <td style="text-align: center">
                                         <span >{{ $status[$ky][$key][$keys] }}</span>
                                       </td>
                                     @endforeach
                                 </tr>
                                 @endforeach
                               </tbody>
+                              <tfoot>
+                                <tr>
+                                  <th>
+                                    
+                                  </th>
+                                  <th>
+                                   
+                                  </th>
+                                  <th>
+                                    
+                                  </th>
+                                  <th>
+                                    
+                                  </th>
+                                  <th>
+                                    
+                                  </th>
+                                  @foreach ($list[$ky] as $key=>$ls)
+                                  <th style="text-align: center">
+                                    <a class="btn btn-danger btn-sm" href="#" onclick="deleteMaterial('{{ $ls->classdate }}', '{{ $ls->groupid }}', '{{ $ls->groupname }}')" data-order="">
+                                      <i class="ti-trash">
+                                      </i>
+                                      Delete
+                                    </a>
+                                  </th>
+                                  @endforeach
+                                </tr>
+                              </tfoot>
                             </table>
                           </div>
                         </div>
@@ -194,6 +219,33 @@
             }
         });
 
+    }
+
+    function deleteMaterial(date,group,name){     
+      Swal.fire({
+      title: "Are you sure?",
+      text: "This will be permanent",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!"
+    }).then(function(res){
+      
+      if (res.isConfirmed){
+                $.ajax({
+                    headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
+                    url      : "{{ url('/lecturer/class/attendance/deleteAttendance') }}",
+                    method   : 'POST',
+                    data 	 : {date:date, group:group, name:name},
+                    error:function(err){
+                        alert("Error");
+                        console.log(err);
+                    },
+                    success  : function(data){
+                        alert(data.message);
+                        window.location.reload();
+                    }
+                });
+            }
+        });
     }
 
 </script>
