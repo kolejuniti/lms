@@ -3054,7 +3054,7 @@ class LecturerController extends Controller
 
     }
 
-    public function deletAttendance(Request $request)
+    public function deleteAttendance(Request $request)
     {
 
         DB::table('tblclassattendance')->where([
@@ -3063,7 +3063,7 @@ class LecturerController extends Controller
             ['groupname', $request->name]
         ])->delete();
 
-        return back()->with('message', 'Attendance have successfully deleted!');
+        return response()->json(['message' => 'Attendance has been successfully deleted!']);
 
     }
 
