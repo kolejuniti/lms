@@ -31,34 +31,42 @@
     </div>
 
     <!-- Main content -->
-    <section class="content">
-      <!-- /.card-header -->
-      <div class="card card-primary">
-        <div class="card-header">
-          <b>Search Student</b>
-        </div>
-        <div class="card-body">
-          <div class="row">
-              <div class="col-md-6">
-                  <div class="form-group">
-                  <label class="form-label" for="from">FROM</label>
-                  <input type="date" class="form-control" id="from" name="from">
-                  </div>
-              </div>
-              <div class="col-md-6">
-                  <div class="form-group">
-                  <label class="form-label" for="name">TO</label>
-                  <input type="date" class="form-control" id="to" name="to">
-                  </div>
-              </div>
-          </div>
-          <div id="form-student">
+   
 
+    <div id="printableArea">
+      <!-- Main content -->
+      <section class="content">
+        <!-- /.card-header -->
+        <div class="card card-primary">
+          <div class="card-header">
+            <b>Search Student</b>
+            <button id="printButton" class="waves-effect waves-light btn btn-primary btn-sm">
+              <i class="ti-printer"></i>&nbsp Print
+            </button>
+          </div>
+          <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                    <label class="form-label" for="from">FROM</label>
+                    <input type="date" class="form-control" id="from" name="from">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                    <label class="form-label" for="name">TO</label>
+                    <input type="date" class="form-control" id="to" name="to">
+                    </div>
+                </div>
+            </div>
+            <div id="form-student">
+  
+            </div>
           </div>
         </div>
-      </div>
-      <!-- /.card -->
-    </section>
+        <!-- /.card -->
+      </section>
+    </div>
     <!-- /.content -->
   </div>
 </div>
@@ -126,7 +134,33 @@
         });
 
   }
-  
 
+  $(document).ready(function() {
+    $('#printButton').on('click', function(e) {
+      e.preventDefault();
+      printReport();
+    });
+  });
+
+  function printReport() {
+    var from = $('#from').val();
+    var to = $('#to').val();
+
+    return $.ajax({
+      headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+      url: "{{ url('finance/report/chargeReport/getChargeReport?print=true') }}",
+      method: 'GET',
+      data: { from: from, to: to },
+      error: function(err) {
+        alert("Error");
+        console.log(err);
+      },
+      success: function(data) {
+        var newWindow = window.open();
+        newWindow.document.write(data);
+        newWindow.document.close();
+      }
+    });
+  }
   </script>
 @endsection

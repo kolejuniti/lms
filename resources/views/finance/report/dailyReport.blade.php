@@ -36,6 +36,9 @@
       <div class="card card-primary">
         <div class="card-header">
           <b>Search Student</b>
+          <button id="printButton" class="waves-effect waves-light btn btn-primary btn-sm">
+            <i class="ti-printer"></i>&nbsp Print
+          </button>
         </div>
         <div class="card-body">
           <div class="row">
@@ -128,6 +131,32 @@
 
   }
   
+  $(document).ready(function() {
+    $('#printButton').on('click', function(e) {
+      e.preventDefault();
+      printReport();
+    });
+  });
 
+  function printReport() {
+    var from = $('#from').val();
+    var to = $('#to').val();
+
+    return $.ajax({
+      headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+      url: "{{ url('finance/report/dailyreport/getDailyReport?print=true') }}",
+      method: 'GET',
+      data: { from: from, to: to },
+      error: function(err) {
+        alert("Error");
+        console.log(err);
+      },
+      success: function(data) {
+        var newWindow = window.open();
+        newWindow.document.write(data);
+        newWindow.document.close();
+      }
+    });
+  }
   </script>
 @endsection
