@@ -35,7 +35,8 @@
 
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.8.2/dist/alpine.min.js" defer></script>
-	
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
   </head>
 
 <style>
@@ -280,6 +281,17 @@
 						<li><a href="{{ route('pendaftar.student.studentreport') }}" class="{{ (route('pendaftar.student.studentreport') == Request::url()) ? 'active' : ''}}">Student Report</a></li>
 					</ul>
 				</li>
+
+				<li class="treeview">
+				    <a href="#"><i data-feather="archive"></i><span>Report</span>
+						<span class="pull-right-container">
+							<i class="fa fa-angle-left pull-right"></i>
+						</span>
+				    </a>
+					<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
+						<li><a href="/admin/report/lecturer">Lecturer</a></li>
+					</ul>
+				</li> 
 			  </ul>
 			  <div class="sidebar-widgets">
 				  <div class="mx-25 mb-30 pb-20 side-bx bg-primary-light rounded20">
