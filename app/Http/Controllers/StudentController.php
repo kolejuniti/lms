@@ -208,6 +208,7 @@ class StudentController extends Controller
                   ->join('subjek', 'lecturer_dir.CourseID','subjek.id')
                   ->where('subjek.sub_id', $subid)
                   ->where('Addby', $lecturer->user_ic)
+                  ->where('SessionID', Session::get('SessionID'))
                   ->get();
 
         }else{
