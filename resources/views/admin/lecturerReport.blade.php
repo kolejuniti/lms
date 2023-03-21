@@ -1,4 +1,5 @@
-@extends('../layouts.admin')
+@extends((Auth::user()->usrtype == "ADM") ? 'layouts.admin' : (Auth::user()->usrtype == "RGS" ? 'layouts.pendaftar' : ''))
+
 
 @section('main')
 <!-- Content Header (Page header) -->

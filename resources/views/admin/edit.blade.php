@@ -79,9 +79,13 @@
                           <option value="" disabled selected>Please choose type</option>
                           <option value="ADM" {{ ($id->usrtype == "ADM") ? 'selected' : '' }}>Admin</option>
                           <option value="PL" {{ ($id->usrtype == "PL") ? 'selected' : '' }}>Program Lead</option>
+                          <option value="DN" {{ ($id->usrtype == "DN") ? 'selected' : '' }}>Deen</option>
                           <option value="AO" {{ ($id->usrtype == "AO") ? 'selected' : '' }}>Administrative Officer</option>
-                          <option value="HEA" {{ ($id->usrtype == "HEA") ? 'selected' : '' }}>HEA</option>
+                          <option value="RGS" {{ ($id->usrtype == "RGS") ? 'selected' : '' }}>HEA</option>
+                          <option value="AR" {{ ($id->usrtype == "AR") ? 'selected' : '' }}>Academic Registrar</option>
                           <option value="LCT" {{ ($id->usrtype == "LCT") ? 'selected' : '' }}>Lecturer</option>
+                          <option value="FN" {{ ($id->usrtype == "FN") ? 'selected' : '' }}>Finance</option>
+                          <option value="TS" {{ ($id->usrtype == "TS") ? 'selected' : '' }}>Treasurer</option>
                         </select>
                       </div>
                     </div>

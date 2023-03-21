@@ -69,10 +69,13 @@
                         <select class="form-select" id="usrtype" name="usrtype">
                           <option value="-" selected disabled>-</option>
                           <option value="PL">Program Lead</option>
+                          <option value="DN">Deen</option>
                           <option value="AO">Administrative Officer</option>
                           <option value="RGS">HEA</option>
                           <option value="AR">Academic Registrar</option>
                           <option value="LCT">Lecturer</option>
+                          <option value="FN">Finance</option>
+                          <option value="TS">Treasurer</option>
                         </select>
                       </div>
                     </div>
@@ -173,7 +176,7 @@ var check = "";
 $(document).on('change', '#usrtype', async function(e){
     usertype = $(e.target).val();
 
-    if(usertype == 'PL' || usertype == 'AO')
+    if(usertype == 'PL' || usertype == 'AO' || usertype == 'DN')
     {
       document.getElementById('program-card').hidden = false;
       document.getElementById('program').required = true;
