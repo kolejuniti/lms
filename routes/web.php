@@ -181,7 +181,7 @@ Route::post('/lecturer/class/attendance/store', [App\Http\Controllers\LecturerCo
 Route::get('/lecturer/class/attendance/report', [App\Http\Controllers\LecturerController::class, 'reportAttendance'])->name('lecturer.attendance.report');
 //Route::get('/lecturer/class/attendance/report', [App\Http\Controllers\LecturerController::class, 'listAttendance'])->name('lecturer.attendance.report');
 //Route::get('/lecturer/class/attendance/report/{date}/{group}', [App\Http\Controllers\LecturerController::class, 'reportAttendance']);
-Route::post('/lecturer/class/attendance/deletAttendance', [App\Http\Controllers\LecturerController::class, 'deletAttendance']);
+Route::post('/lecturer/class/attendance/deleteAttendance', [App\Http\Controllers\LecturerController::class, 'deleteAttendance']);
 Route::get('/lecturer/class/onlineclass', [App\Http\Controllers\LecturerController::class, 'onlineClass'])->name('lecturer.class.onlineclass');
 Route::post('lecturer/class/onlineclass/getChapters', [App\Http\Controllers\LecturerController::class, 'getChapters']);
 Route::post('lecturer/class/onlineclass/getSubChapters', [App\Http\Controllers\LecturerController::class, 'getSubChapters']);
