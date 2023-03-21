@@ -1,6 +1,5 @@
 
-@extends('layouts.lecturer.lecturer')
-
+@extends((Auth::user()->usrtype == "LCT") ? 'layouts.lecturer.lecturer' : (Auth::user()->usrtype == "PL" ? 'layouts.ketua_program' : (Auth::user()->usrtype == "AO" ? 'layouts.ketua_program' : (Auth::user()->usrtype == "ADM" ? 'layouts.admin' : (Auth::user()->usrtype == "DN" ? 'layouts.dekan' : '')))))
 
 @section('main')
 
@@ -124,6 +123,7 @@
                                 </tr>
                                 @endforeach
                               </tbody>
+                              @if(Auth::user()->usrtype == "LCT")
                               <tfoot>
                                 <tr>
                                   <th>
@@ -152,6 +152,7 @@
                                   @endforeach
                                 </tr>
                               </tfoot>
+                              @endif
                             </table>
                           </div>
                         </div>
