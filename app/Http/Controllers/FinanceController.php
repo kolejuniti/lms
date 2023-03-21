@@ -3642,10 +3642,16 @@ class FinanceController extends Controller
 
         }
         
+        if(isset($request->print))
+        {
 
-        //dd($other);
+            return view('finance.report.printDailyReport', compact('data'));
 
-        return view('finance.report.getDailyReport', compact('data'));
+        }else{
+
+            return view('finance.report.getDailyReport', compact('data'));
+            
+        }
 
     }
 
@@ -3891,7 +3897,16 @@ class FinanceController extends Controller
             
         }
 
-        return view('finance.report.getChargeReport', compact('data'));
+        if(isset($request->print))
+        {
+
+            return view('finance.report.printChargeReport', compact('data'));
+
+        }else{
+
+            return view('finance.report.getChargeReport', compact('data'));
+            
+        }
 
     }
 
