@@ -171,7 +171,7 @@ class QuizController extends Controller
                     <label>'.$sub->ChapterNo.'</label>
                 </td>
                 <td >
-                    <label>'. ($sub->newDrName != null) ? $sub->newDrName : $sub->DrName.'</label>
+                    <label>'. (($sub->newDrName != null) ? $sub->newDrName : $sub->DrName) .'</label>
                 </td>
                 <td >
                     <div class="pull-right" >
