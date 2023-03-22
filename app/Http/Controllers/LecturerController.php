@@ -1286,7 +1286,7 @@ class LecturerController extends Controller
 
             //$lecturer = User::where('ic', $grp->user_ic)->first();
 
-            $content .= '<option value='. $chp->DrID .'> Chapter '. $chp->ChapterNo .' : '. $chp->DrName .'</option>';
+            $content .= '<option value='. $chp->DrID .'> Chapter '. $chp->ChapterNo .' : '. (($chp->newDrName != null) ? $chp->newDrName : $chp->DrName) .'</option>';
         }
         
         return $content;
