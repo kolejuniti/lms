@@ -442,31 +442,51 @@ class FinanceController extends Controller
 
                     }else{
 
-                        DB::table('tblpaymentmethod')->insertGetId([
-                            'payment_id' => $payment->id,
-                            'claim_method_id' => $payment->method,
-                            'bank_id' => $payment->bank,
-                            'no_document' => $payment->nodoc,
-                            'amount' => $payment->amount,
-                            'add_staffID' => Auth::user()->ic,
-                            'add_date' => date('Y-m-d'),
-                            'mod_staffID' => Auth::user()->ic,
-                            'mod_date' => date('Y-m-d')
-                        ]);
+                        // if(($payment->nodoc != null) ? DB::table('tblpaymentmethod')
+                        //                                ->join('tblpayment', 'tblpaymentmethod.payment_id', 'tblpayment.id')
+                        //                                ->where([
+                        //                                 ['no_document', $payment->nodoc],
+                        //                                 ['tblpayment.process_status_id',2]
+                        //                                 ])->exists() : '')
+                        // {
 
-                        DB::table('tblpaymentdtl')->insert([
-                            'payment_id' => $payment->id,
-                            'claim_type_id' => $payment->type,
-                            'amount' => $payment->amount,
-                            'add_staffID' => Auth::user()->ic,
-                            'add_date' => date('Y-m-d'),
-                            'mod_staffID' => Auth::user()->ic,
-                            'mod_date' => date('Y-m-d')
-                        ]);
+                        if(($payment->nodoc != null) ? DB::table('tblpaymentmethod')->where('no_document', $payment->nodoc)->exists() : '')
+                        {
+
+                            return ["message" => "Document with the same number already used! Please use a different document no."];
+
+                        }else{
+
+                            DB::table('tblpaymentmethod')->insertGetId([
+                                'payment_id' => $payment->id,
+                                'claim_method_id' => $payment->method,
+                                'bank_id' => $payment->bank,
+                                'no_document' => $payment->nodoc,
+                                'amount' => $payment->amount,
+                                'add_staffID' => Auth::user()->ic,
+                                'add_date' => date('Y-m-d'),
+                                'mod_staffID' => Auth::user()->ic,
+                                'mod_date' => date('Y-m-d')
+                            ]);
+
+                            DB::table('tblpaymentdtl')->insert([
+                                'payment_id' => $payment->id,
+                                'claim_type_id' => $payment->type,
+                                'amount' => $payment->amount,
+                                'add_staffID' => Auth::user()->ic,
+                                'add_date' => date('Y-m-d'),
+                                'mod_staffID' => Auth::user()->ic,
+                                'mod_date' => date('Y-m-d')
+                            ]);
+
+                        }
 
                     }
 
-                    $details = DB::table('tblpaymentdtl')->where('payment_id', $payment->id)->get();
+                    $details = DB::table('tblpaymentdtl')
+                               ->join('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
+                               ->where('tblpaymentdtl.payment_id', $payment->id)
+                               ->select('tblpaymentdtl.*', 'tblstudentclaim.name AS claim_type_id')->get();
 
                     $sum = DB::table('tblpaymentdtl')->where('payment_id', $payment->id)->sum('amount');
 
@@ -520,7 +540,9 @@ class FinanceController extends Controller
                         </tr>
                         ';
                         }
-                    $content .= '<tr>
+                    $content .= '</tbody>';
+                    $content .= '<tfoot>
+                        <tr>
                             <td style="width: 1%">
                             
                             </td>
@@ -536,8 +558,8 @@ class FinanceController extends Controller
                             <td>
                         
                             </td>
-                        </tr>';
-                    $content .= '</tbody>';
+                        </tr>
+                    </tfoot>';
 
                 
                 }else{
@@ -572,7 +594,10 @@ class FinanceController extends Controller
 
         $main = DB::table('tblpayment')->where('id', $request->id)->first();
 
-        $details = DB::table('tblpaymentdtl')->where('payment_id', $request->id)->get();
+        $details = DB::table('tblpaymentdtl')
+                               ->join('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
+                               ->where('tblpaymentdtl.payment_id', $request->id)
+                               ->select('tblpaymentdtl.*', 'tblstudentclaim.name AS claim_type_id')->get();
 
         $sum = DB::table('tblpaymentdtl')->where('payment_id', $request->id)->sum('amount');
 
@@ -1473,21 +1498,33 @@ class FinanceController extends Controller
 
                     }else{
 
-                        DB::table('tblpaymentmethod')->insert([
-                            'payment_id' => $payment->id,
-                            'claim_method_id' => $payment->method,
-                            'bank_id' => $payment->bank,
-                            'no_document' => $payment->nodoc,
-                            'amount' => $payment->amount,
-                            'add_staffID' => Auth::user()->ic,
-                            'add_date' => date('Y-m-d'),
-                            'mod_staffID' => Auth::user()->ic,
-                            'mod_date' => date('Y-m-d')
-                        ]);
+                        if(($payment->nodoc != null) ? DB::table('tblpaymentmethod')->where('no_document', $payment->nodoc)->exists() : '')
+                        {
+
+                            return ["message" => "Document with the same number already used! Please use a different document no."];
+
+                        }else{
+
+                            DB::table('tblpaymentmethod')->insert([
+                                'payment_id' => $payment->id,
+                                'claim_method_id' => $payment->method,
+                                'bank_id' => $payment->bank,
+                                'no_document' => $payment->nodoc,
+                                'amount' => $payment->amount,
+                                'add_staffID' => Auth::user()->ic,
+                                'add_date' => date('Y-m-d'),
+                                'mod_staffID' => Auth::user()->ic,
+                                'mod_date' => date('Y-m-d')
+                            ]);
+
+                        }
 
                     }
 
-                    $methods = DB::table('tblpaymentmethod')->where('payment_id', $payment->id)->get();
+                    $methods = DB::table('tblpaymentmethod')
+                               ->join('tblpayment_method', 'tblpaymentmethod.claim_method_id', 'tblpayment_method.id')
+                               ->where('tblpaymentmethod.payment_id', $payment->id)
+                               ->select('tblpaymentmethod.*', 'tblpayment_method.name AS claim_method_id')->get();
 
                     $sum = DB::table('tblpaymentmethod')->where('payment_id', $payment->id)->sum('amount');
 
@@ -1706,10 +1743,13 @@ class FinanceController extends Controller
         DB::table('tblpaymentmethod')->where('id', $request->dtl)->delete();
 
         $main = DB::table('tblpayment')->where('id', $request->id)->first();
+        
+        $methods = DB::table('tblpaymentmethod')
+                               ->join('tblpayment_method', 'tblpaymentmethod.claim_method_id', 'tblpayment_method.id')
+                               ->where('tblpaymentmethod.payment_id', $request->id)
+                               ->select('tblpaymentmethod.*', 'tblpayment_method.name AS claim_method_id')->get();
 
-        $methods = DB::table('tblpaymentmethod')->where('payment_id', $request->dtl)->get();
-
-        $sum = DB::table('tblpaymentmethod')->where('payment_id', $request->dtl)->sum('amount');
+        $sum = DB::table('tblpaymentmethod')->where('payment_id', $request->id)->sum('amount');
 
         $content = "";
         $content .= '<thead>
@@ -1744,7 +1784,7 @@ class FinanceController extends Controller
                 '. $main->date .'
                 </td>
                 <td style="width: 15%">
-                '. $dtl->claim_type_id .'
+                '. $dtl->claim_method_id .'
                 </td>
                 <td style="width: 30%">
                 '. $dtl->amount .'
@@ -2059,21 +2099,33 @@ class FinanceController extends Controller
 
                     }else{
 
-                        DB::table('tblpaymentmethod')->insert([
-                            'payment_id' => $payment->id,
-                            'claim_method_id' => $payment->method,
-                            'bank_id' => $payment->bank,
-                            'no_document' => $payment->nodoc,
-                            'amount' => $payment->amount,
-                            'add_staffID' => Auth::user()->ic,
-                            'add_date' => date('Y-m-d'),
-                            'mod_staffID' => Auth::user()->ic,
-                            'mod_date' => date('Y-m-d')
-                        ]);
+                        if(($payment->nodoc != null) ? DB::table('tblpaymentmethod')->where('no_document', $payment->nodoc)->exists() : '')
+                        {
+
+                            return ["message" => "Document with the same number already used! Please use a different document no."];
+
+                        }else{
+
+                            DB::table('tblpaymentmethod')->insert([
+                                'payment_id' => $payment->id,
+                                'claim_method_id' => $payment->method,
+                                'bank_id' => $payment->bank,
+                                'no_document' => $payment->nodoc,
+                                'amount' => $payment->amount,
+                                'add_staffID' => Auth::user()->ic,
+                                'add_date' => date('Y-m-d'),
+                                'mod_staffID' => Auth::user()->ic,
+                                'mod_date' => date('Y-m-d')
+                            ]);
+
+                        }
 
                     }
 
-                    $methods = DB::table('tblpaymentmethod')->where('payment_id', $payment->id)->get();
+                    $methods = DB::table('tblpaymentmethod')
+                               ->join('tblpayment_method', 'tblpaymentmethod.claim_method_id', 'tblpayment_method.id')
+                               ->where('tblpaymentmethod.payment_id', $payment->id)
+                               ->select('tblpaymentmethod.*', 'tblpayment_method.name AS claim_method_id')->get();
 
                     $sum = DB::table('tblpaymentmethod')->where('payment_id', $payment->id)->sum('amount');
 
@@ -2180,7 +2232,10 @@ class FinanceController extends Controller
 
         $sum = DB::table('tblpaymentmethod')->where('payment_id', $request->id)->sum('amount');
 
-        $methods = DB::table('tblpaymentmethod')->where('payment_id', $request->id)->get();
+        $methods = DB::table('tblpaymentmethod')
+                               ->join('tblpayment_method', 'tblpaymentmethod.claim_method_id', 'tblpayment_method.id')
+                               ->where('tblpaymentmethod.payment_id', $request->id)
+                               ->select('tblpaymentmethod.*', 'tblpayment_method.name AS claim_method_id')->get();
 
         $content = "";
         $content .= '<thead>
@@ -4041,31 +4096,43 @@ class FinanceController extends Controller
 
                     }else{
 
-                        DB::table('tblpaymentmethod')->insertGetId([
-                            'payment_id' => $payment->id,
-                            'claim_method_id' => $payment->method,
-                            'bank_id' => $payment->bank,
-                            'no_document' => $payment->nodoc,
-                            'amount' => $payment->amount,
-                            'add_staffID' => Auth::user()->ic,
-                            'add_date' => date('Y-m-d'),
-                            'mod_staffID' => Auth::user()->ic,
-                            'mod_date' => date('Y-m-d')
-                        ]);
+                        if(($payment->nodoc != null) ? DB::table('tblpaymentmethod')->where('no_document', $payment->nodoc)->exists() : '')
+                        {
 
-                        DB::table('tblpaymentdtl')->insert([
-                            'payment_id' => $payment->id,
-                            'claim_type_id' => $payment->type,
-                            'amount' => $payment->amount,
-                            'add_staffID' => Auth::user()->ic,
-                            'add_date' => date('Y-m-d'),
-                            'mod_staffID' => Auth::user()->ic,
-                            'mod_date' => date('Y-m-d')
-                        ]);
+                            return ["message" => "Document with the same number already used! Please use a different document no."];
+
+                        }else{
+
+                            DB::table('tblpaymentmethod')->insertGetId([
+                                'payment_id' => $payment->id,
+                                'claim_method_id' => $payment->method,
+                                'bank_id' => $payment->bank,
+                                'no_document' => $payment->nodoc,
+                                'amount' => $payment->amount,
+                                'add_staffID' => Auth::user()->ic,
+                                'add_date' => date('Y-m-d'),
+                                'mod_staffID' => Auth::user()->ic,
+                                'mod_date' => date('Y-m-d')
+                            ]);
+
+                            DB::table('tblpaymentdtl')->insert([
+                                'payment_id' => $payment->id,
+                                'claim_type_id' => $payment->type,
+                                'amount' => $payment->amount,
+                                'add_staffID' => Auth::user()->ic,
+                                'add_date' => date('Y-m-d'),
+                                'mod_staffID' => Auth::user()->ic,
+                                'mod_date' => date('Y-m-d')
+                            ]);
+
+                        }
 
                     }
 
-                    $details = DB::table('tblpaymentdtl')->where('payment_id', $payment->id)->get();
+                    $details = DB::table('tblpaymentdtl')
+                               ->join('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
+                               ->where('tblpaymentdtl.payment_id', $payment->id)
+                               ->select('tblpaymentdtl.*', 'tblstudentclaim.name AS claim_type_id')->get();
 
                     $sum = DB::table('tblpaymentdtl')->where('payment_id', $payment->id)->sum('amount');
 
@@ -4171,7 +4238,10 @@ class FinanceController extends Controller
 
         $main = DB::table('tblpayment')->where('id', $request->id)->first();
 
-        $details = DB::table('tblpaymentdtl')->where('payment_id', $request->id)->get();
+        $details = DB::table('tblpaymentdtl')
+                               ->join('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
+                               ->where('tblpaymentdtl.payment_id', $request->id)
+                               ->select('tblpaymentdtl.*', 'tblstudentclaim.name AS claim_type_id')->get();
 
         $sum = DB::table('tblpaymentdtl')->where('payment_id', $request->id)->sum('amount');
 
