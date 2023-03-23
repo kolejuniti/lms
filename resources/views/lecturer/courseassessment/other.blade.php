@@ -85,7 +85,7 @@
                                   {{ $key+1 }}
                               </td>
                               <td>
-                                  {{ $dt->title }}
+                                  {{ $dt->title }} {{ $dt->no }}
                               </td>
                               <td>
                                   {{ $dt->addby }}

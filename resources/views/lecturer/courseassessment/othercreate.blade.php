@@ -95,6 +95,11 @@ div.form-actions.btn-group > button{
                                           @enderror</span>
                                         </div>
                                     </div>
+                                    <div class="col-md-1 mb-4">
+                                        <label for="no" class="form-label "><strong>No</strong></label>
+                                        <input type="number" id="no" name="no" class="form-control" 
+                                        value="{{ empty($data['extra']->no) ? "" : $data['extra']->no }}" required>
+                                    </div>
                                     <input type="text" id="other" name="other" value="{{ empty($data['other']->id) ? "" : $data['other']->id }}" hidden>
                                     <div class="col-md-2 mb-4">
                                         <div class="form-group">
