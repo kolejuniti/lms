@@ -282,12 +282,14 @@ class StudentController extends Controller
 
             $mat_directory = DB::table('materialsub_dir')->where('MaterialDirID', $directory->DrID)->get();
 
+            $url = DB::table('materialsub_url')->where('MaterialDirID', $directory->DrID)->get();
+
             $dir = "classmaterial/" . Session::get('CourseID') . "/" . $directory->A . "/" . $directory->B;
 
             //this is to get file in the specific folder, unlike AllFiles to get everything from all folder
             $classmaterial  = Storage::disk('linode')->files($dir);
 
-            return view('student.coursecontent.materialsubdirectory', compact('mat_directory', 'classmaterial'))->with('dirid', $directory->DrID)->with('prev', $directory->LecturerDirID);
+            return view('student.coursecontent.materialsubdirectory', compact('mat_directory', 'url', 'classmaterial'))->with('dirid', $directory->DrID)->with('prev', $directory->LecturerDirID);
         }
     }
 
@@ -304,12 +306,14 @@ class StudentController extends Controller
 
             $mat_directory = DB::table('materialsub_dir')->where('MaterialDirID', $password->DrID)->get();
 
+            $url = DB::table('materialsub_url')->where('MaterialDirID', $password->DrID)->get();
+
             $dir = "classmaterial/" . Session::get('CourseID') . "/" . $password->A . "/" . $password->B;
 
             //this is to get file in the specific folder, unlike AllFiles to get everything from all folder
             $classmaterial  = Storage::disk('linode')->files($dir);
 
-            return view('student.coursecontent.materialsubdirectory', compact('mat_directory', 'classmaterial'))->with('dirid', $password->DrID)->with('prev', $password->LecturerDirID);
+            return view('student.coursecontent.materialsubdirectory', compact('mat_directory', 'url', 'classmaterial'))->with('dirid', $password->DrID)->with('prev', $password->LecturerDirID);
         }else{
 
             return redirect()->back() ->with('alert', 'Wrong Password! Please try again.');
@@ -326,12 +330,14 @@ class StudentController extends Controller
 
         $mat_directory = DB::table('materialsub_dir')->where('MaterialDirID', $directory->DrID)->get();
 
+        $url = DB::table('materialsub_url')->where('MaterialDirID', $directory->DrID)->get();
+
         $dir = "classmaterial/" . Session::get('CourseID') . "/" . $directory->A . "/" . $directory->B;
 
         //this is to get file in the specific folder, unlike AllFiles to get everything from all folder
         $classmaterial  = Storage::disk('linode')->files($dir);
 
-        return view('student.coursecontent.materialsubdirectory', compact('mat_directory', 'classmaterial'))->with('dirid', $directory->DrID)->with('prev', $directory->LecturerDirID);
+        return view('student.coursecontent.materialsubdirectory', compact('mat_directory', 'url', 'classmaterial'))->with('dirid', $directory->DrID)->with('prev', $directory->LecturerDirID);
 
     }
 
@@ -355,7 +361,9 @@ class StudentController extends Controller
 
             $classmaterial  = Storage::disk('linode')->allFiles( $dir );
 
-            return view('student.coursecontent.coursematerial', compact('classmaterial'))->with('dirid', $directory->DrID)->with('prev', $directory->MaterialDirID);
+            $url = DB::table('materialsub_url')->where('MaterialSubDirID', $directory->DrID)->get();
+
+            return view('student.coursecontent.coursematerial', compact('classmaterial', 'url'))->with('dirid', $directory->DrID)->with('prev', $directory->MaterialDirID);
         }
     }
 
@@ -376,8 +384,10 @@ class StudentController extends Controller
             $dir = "classmaterial/" . Session::get('CourseID') . "/" . $password->A . "/" . $password->B . "/" . $password->C;
 
             $classmaterial  = Storage::disk('linode')->allFiles( $dir );
+
+            $url = DB::table('materialsub_url')->where('MaterialSubDirID', $password->DrID)->get();
     
-            return view('student.coursecontent.coursematerial', compact('classmaterial'))->with('dirid', $password->DrID)->with('prev', $password->MaterialDirID);
+            return view('student.coursecontent.coursematerial', compact('classmaterial', 'url'))->with('dirid', $password->DrID)->with('prev', $password->MaterialDirID);
         }else{
 
             return redirect()->back() ->with('alert', 'Wrong Password! Please try again.');

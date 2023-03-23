@@ -321,6 +321,15 @@ class LecturerController extends Controller
         return true;
 
     }
+    
+    public function deleteUrl(Request $request)
+    {
+
+        DB::table('materialsub_url')->where('DrID', $request->id)->delete();
+
+        return true;
+
+    }
 
     public function renameSubfolder(Request $request)
     {
@@ -578,6 +587,8 @@ class LecturerController extends Controller
 
             $mat_directory = DB::table('materialsub_dir')->where('MaterialDirID', $directory->DrID)->get();
 
+            $url = DB::table('materialsub_url')->where('MaterialDirID', $directory->DrID)->get();
+
             $course = DB::table('subjek')->where('id', Session::get('CourseID'))->first();
 
             $dir = "classmaterial/" . Session::get('CourseID') . "/" . $directory->A . "/" . $directory->B;
@@ -585,7 +596,7 @@ class LecturerController extends Controller
             //this is to get file in the specific folder, unlike AllFiles to get everything from all folder
             $classmaterial  = Storage::disk('linode')->files($dir);
 
-            return view('lecturer.coursecontent.materialsubdirectory', compact('mat_directory', 'course', 'classmaterial'))->with('dirid', $directory->DrID)->with('prev', $directory->LecturerDirID);
+            return view('lecturer.coursecontent.materialsubdirectory', compact('mat_directory', 'url', 'course', 'classmaterial'))->with('dirid', $directory->DrID)->with('prev', $directory->LecturerDirID);
         }
     }
 
@@ -666,38 +677,55 @@ class LecturerController extends Controller
     public function storefileSubDirectory(Request $request)
     {
 
-        $directory = DB::table('lecturer_dir')
-                ->join('material_dir', 'lecturer_dir.DrID', 'material_dir.LecturerDirID')
-                ->select('lecturer_dir.DrName as A', 'material_dir.DrName as B', 'material_dir.*', 'lecturer_dir.CourseID')
-                ->where('material_dir.DrID', $request->dir)->first();
-        
-        //dd($dirName);
+        if (isset($request->fileUpload)) {
 
-        $file = $request->file('fileUpload');
+            $directory = DB::table('lecturer_dir')
+                    ->join('material_dir', 'lecturer_dir.DrID', 'material_dir.LecturerDirID')
+                    ->select('lecturer_dir.DrName as A', 'material_dir.DrName as B', 'material_dir.*', 'lecturer_dir.CourseID')
+                    ->where('material_dir.DrID', $request->dir)->first();
 
-        $file_name = $file->getClientOriginalName();
-        $file_ext = $file->getClientOriginalExtension();
-        $fileInfo = pathinfo($file_name);
-        $filename = $fileInfo['filename'];
-        $newname = $filename . "." . $file_ext;
+            //dd($dirName);
 
-        //dd($file_name);
+            $file = $request->file('fileUpload');
 
-        $classmaterial = "classmaterial/" . Session::get('CourseID') . "/" . $directory->A . "/" . $directory->B;
+            $file_name = $file->getClientOriginalName();
+            $file_ext = $file->getClientOriginalExtension();
+            $fileInfo = pathinfo($file_name);
+            $filename = $fileInfo['filename'];
+            $newname = $filename . "." . $file_ext;
 
-        $dirpath = "classmaterial/" . Session::get('CourseID') . "/" . $directory->A . "/" . $directory->B . "/" .$newname;
+            //dd($file_name);
 
-        
+            $classmaterial = "classmaterial/" . Session::get('CourseID') . "/" . $directory->A . "/" . $directory->B;
 
-        if(! file_exists($newname)){
-            Storage::disk('linode')->putFileAs(
-                $classmaterial,
-                $file,
-                $newname,
-                'public'
-              );
+            $dirpath = "classmaterial/" . Session::get('CourseID') . "/" . $directory->A . "/" . $directory->B . "/" .$newname;
+
+
+
+            if (! file_exists($newname)) {
+                Storage::disk('linode')->putFileAs(
+                    $classmaterial,
+                    $file,
+                    $newname,
+                    'public'
+                );
+
+                return redirect(route('lecturer.subdirectory.prev', ['dir' =>  $request->dir]));
+            }
+
+        }elseif(isset($request->url))
+        {
+            $user = auth()->user()->ic;
+
+            DB::table('materialsub_url')->insert([
+                'url' => $request->url,
+                'description' => $request->description,
+                'MaterialDirID' => $request->dir,
+                'Addby' => $user,
+            ]);
 
             return redirect(route('lecturer.subdirectory.prev', ['dir' =>  $request->dir]));
+
         }
 
     }
@@ -712,6 +740,8 @@ class LecturerController extends Controller
 
         $mat_directory = DB::table('materialsub_dir')->where('MaterialDirID', $directory->DrID)->get();
 
+        $url = DB::table('materialsub_url')->where('MaterialDirID', $directory->DrID)->get();
+
         $course = DB::table('subjek')->where('id', Session::get('CourseID'))->first();
 
         $dir = "classmaterial/" . Session::get('CourseID') . "/" . $directory->A . "/" . $directory->B;
@@ -719,7 +749,7 @@ class LecturerController extends Controller
         //this is to get file in the specific folder, unlike AllFiles to get everything from all folder
         $classmaterial  = Storage::disk('linode')->files($dir);
 
-        return view('lecturer.coursecontent.materialsubdirectory', compact('mat_directory', 'course', 'classmaterial'))->with('dirid', $directory->DrID)->with('prev', $directory->LecturerDirID);
+        return view('lecturer.coursecontent.materialsubdirectory', compact('mat_directory', 'url', 'course', 'classmaterial'))->with('dirid', $directory->DrID)->with('prev', $directory->LecturerDirID);
 
     }
 
@@ -737,6 +767,8 @@ class LecturerController extends Controller
 
             $mat_directory = DB::table('materialsub_dir')->where('MaterialDirID', $password->DrID)->get();
 
+            $url = DB::table('materialsub_url')->where('MaterialDirID', $password->DrID)->get();
+
             $course = DB::table('subjek')->where('id', Session::get('CourseID'))->first();
 
             $dir = "classmaterial/" . Session::get('CourseID') . "/" . $password->A . "/" . $password->B;
@@ -744,7 +776,7 @@ class LecturerController extends Controller
             //this is to get file in the specific folder, unlike AllFiles to get everything from all folder
             $classmaterial  = Storage::disk('linode')->files($dir);
 
-            return view('lecturer.coursecontent.materialsubdirectory', compact('mat_directory', 'course', 'classmaterial'))->with('dirid', $password->DrID)->with('prev', $password->LecturerDirID);
+            return view('lecturer.coursecontent.materialsubdirectory', compact('mat_directory', 'url', 'course', 'classmaterial'))->with('dirid', $password->DrID)->with('prev', $password->LecturerDirID);
         }else{
 
             return redirect()->back() ->with('alert', 'Wrong Password! Please try again.');
@@ -774,11 +806,9 @@ class LecturerController extends Controller
 
             $classmaterial  = Storage::disk('linode')->allFiles($dir);
 
-            //$url = Storage::disk('linode')->url($classmaterial);
+            $url = DB::table('materialsub_url')->where('MaterialSubDirID', $directory->DrID)->get();
 
-            //dd($classmaterial);
-
-            return view('lecturer.coursecontent.coursematerial', compact('classmaterial', 'course'))->with('dirid', $directory->DrID)->with('prev', $directory->MaterialDirID);
+            return view('lecturer.coursecontent.coursematerial', compact('classmaterial', 'course', 'url'))->with('dirid', $directory->DrID)->with('prev', $directory->MaterialDirID);
         }
     }
 
@@ -792,31 +822,50 @@ class LecturerController extends Controller
         
         //dd($dirName);
 
-        $file = $request->file('fileUpload');
+        if(isset($request->fileUpload))
+        {
 
-        $file_name = $file->getClientOriginalName();
-        $file_ext = $file->getClientOriginalExtension();
-        $fileInfo = pathinfo($file_name);
-        $filename = $fileInfo['filename'];
-        $newname = $filename . "." . $file_ext;
+            $file = $request->file('fileUpload');
 
-        //dd($file_name);
+            $file_name = $file->getClientOriginalName();
+            $file_ext = $file->getClientOriginalExtension();
+            $fileInfo = pathinfo($file_name);
+            $filename = $fileInfo['filename'];
+            $newname = $filename . "." . $file_ext;
 
-        $classmaterial = "classmaterial/" . Session::get('CourseID') . "/" . $dirName->A . "/" . $dirName->B . "/" . $dirName->C;
+            //dd($file_name);
 
-        $dirpath = "classmaterial/" . Session::get('CourseID') . "/" . $dirName->A . "/" . $dirName->B . "/" . $dirName->C . "/" .$newname;
+            $classmaterial = "classmaterial/" . Session::get('CourseID') . "/" . $dirName->A . "/" . $dirName->B . "/" . $dirName->C;
 
-        
+            $dirpath = "classmaterial/" . Session::get('CourseID') . "/" . $dirName->A . "/" . $dirName->B . "/" . $dirName->C . "/" .$newname;
 
-        if(! file_exists($newname)){
-            Storage::disk('linode')->putFileAs(
-                $classmaterial,
-                $file,
-                $newname,
-                'public'
-              );
+            
+
+            if(! file_exists($newname)){
+                Storage::disk('linode')->putFileAs(
+                    $classmaterial,
+                    $file,
+                    $newname,
+                    'public'
+                );
+
+                return redirect(route('lecturer.directory.content.prev', ['dir' =>  $request->id]));
+            }
+
+        }elseif(isset($request->url))
+        {
+
+            $user = auth()->user()->ic;
+
+            DB::table('materialsub_url')->insert([
+                'url' => $request->url,
+                'description' => $request->description,
+                'MaterialSubDirID' => $request->id,
+                'Addby' => $user,
+            ]);
 
             return redirect(route('lecturer.directory.content.prev', ['dir' =>  $request->id]));
+
         }
     }
 
@@ -835,7 +884,9 @@ class LecturerController extends Controller
 
         $course = DB::table('subjek')->where('id', Session::get('CourseID'))->first();
 
-        return view('lecturer.coursecontent.coursematerial', compact('classmaterial','course'))->with('dirid', $directory->DrID)->with('prev', $directory->MaterialDirID);
+        $url = DB::table('materialsub_url')->where('MaterialSubDirID', $directory->DrID)->get();
+
+        return view('lecturer.coursecontent.coursematerial', compact('classmaterial', 'course', 'url'))->with('dirid', $directory->DrID)->with('prev', $directory->MaterialDirID);
 
     }
 
@@ -858,8 +909,11 @@ class LecturerController extends Controller
             $classmaterial  = Storage::disk('linode')->allFiles( $dir );
 
             $course = DB::table('subjek')->where('id', Session::get('CourseID'))->first();
-    
-            return view('lecturer.coursecontent.coursematerial', compact('classmaterial', 'course'))->with('dirid', $password->DrID)->with('prev', $password->MaterialDirID);
+
+            $url = DB::table('materialsub_url')->where('MaterialSubDirID', $password->DrID)->get();
+
+            return view('lecturer.coursecontent.coursematerial', compact('classmaterial', 'course', 'url'))->with('dirid', $password->DrID)->with('prev', $password->MaterialDirID);
+
         }else{
 
             return redirect()->back() ->with('alert', 'Wrong Password! Please try again.');
