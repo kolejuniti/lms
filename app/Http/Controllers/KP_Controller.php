@@ -684,7 +684,9 @@ class KP_Controller extends Controller
 
         foreach($faculty as $key => $fcl)
         {
-            $lecturer[] = DB::table('users')->where('status', 'ACTIVE')->where('faculty', $fcl->id)->whereIn('usrtype', $usrtype)->get();
+            //$lecturer[] = DB::table('users')->where('status', 'ACTIVE')->where('faculty', $fcl->id)->whereIn('usrtype', $usrtype)->get();
+
+            $lecturer[] = DB::table('users')->where('status', 'ACTIVE')->where('faculty', $fcl->id)->get();
 
             //dd($lecturer);
 
