@@ -10,6 +10,12 @@
     }
 </style>
 
+<style>
+    .modal-body-centered-text p {
+        text-align: center;
+    }
+</style>
+
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
     <div class="container-full">
@@ -51,6 +57,10 @@
 
                                         <a type="button" class="waves-effect waves-light btn btn-info btn-sm" data-toggle="modal" data-target="#uploadModal">
                                             <i class="fa fa-plus"></i> <i class="fa fa-folder"></i> &nbsp Upload File
+                                        </a>
+
+                                        <a type="button" class="waves-effect waves-light btn btn-light btn-sm" data-toggle="modal" data-target="#uploadLink">
+                                            <i class="fa fa-plus"></i> <i class="fa fa-link"></i> &nbsp Link
                                         </a>
                                     </div>
                                 </div>
@@ -149,6 +159,53 @@
                                 </div>
                                 @endforeach
 
+                                @if($url != null)
+                                    @foreach($url as $key => $ul)
+                                        @php
+                                            $originalURL = $ul->url;
+                                            $search = 'https://www.youtube.com/watch?v=';
+                                            $replace = 'https://www.youtube.com/embed/';
+
+                                            $newURL = str_replace($search, $replace, $originalURL);
+                                        @endphp     
+                                        <div class="col-md-3 text-center">
+                                            <iframe style="width:100%; height:90%;" src="{{ $newURL }}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                                            <button type="button" class="btn btn-info btn-sm" id="infoButton{{ $key }}">
+                                                i
+                                            </button>
+
+                                            <div id="descriptionModal{{ $key }}" class="modal" class="modal fade" role="dialog">
+                                                <div class="modal-dialog modal-dialog-centered">
+                                                    <!-- modal content-->
+                                                    <div class="modal-content">
+                                                        <div class="modal-body modal-body-centered-text">
+                                                            <p>{!! $ul->description !!}</p>
+                                                        </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <button type="button" class="btn btn-danger btn-sm" onclick="deleteUrl('{{ $ul->DrID }}')">
+                                                <i class="mdi mdi-delete"></i>
+                                            </button>
+                                        </div>
+                                        <script>
+                                            $(document).ready(function(){
+                                                $('#infoButton{{ $key }}').click(function() {
+                                                    $('#descriptionModal{{ $key }}').show();
+                                                });
+
+                                                $(document).click(function(event) {
+                                                    if ($(event.target).closest('#descriptionModal{{ $key }} .custom-modal-content').length === 0 && !$(event.target).is('#infoButton{{ $key }}')) {
+                                                        $('#descriptionModal{{ $key }}').hide();
+                                                    }
+                                                });
+                                            });
+                                        </script>
+                                    @endforeach
+                                @endif
+
 
                                 <div id="uploadModal" class="modal" class="modal fade" role="dialog">
                                     <div class="modal-dialog">
@@ -179,6 +236,44 @@
                                         </div>
                                     </div>
                                 </div>
+
+                                <div id="uploadLink" class="modal" class="modal fade" role="dialog">
+                                    <div class="modal-dialog">
+                                        <!-- modal content-->
+                                        <div class="modal-content">
+                                            <form action="/lecturer/content/material/sub/storefile/{{ $dirid }}" method="post" role="form" enctype="multipart/form-data">
+                                            @csrf
+                                            @method('POST')
+                                            <div class="modal-header">
+                                                <div class="">
+                                                    <button class="close waves-effect waves-light btn btn-danger btn-sm pull-right" data-dismiss="modal">
+                                                        &times;
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="form-group">
+                                                    <label>Link Upload</label>
+                                                    <input type="url" name="url" id="url" placeholder="https://example.com" class="form-control">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="form-label">Description</label>
+                                                    <textarea id="classdescriptiontxt" name="description" class="mt-2" rows="10" cols="80">
+                                                    </textarea>
+                                                    <span class="text-danger">@error('description')
+                                                      {{ $message }}
+                                                    @enderror</span>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <div class="form-group pull-right">
+                                                    <input type="submit" name="addtopic" class="form-controlwaves-effect waves-light btn btn-primary btn-sm pull-right" value="submit">
+                                                </div>
+                                            </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
                             </div> 
                         </div>
                     </div>
@@ -190,7 +285,22 @@
     </div>
 </div>
 <!-- /.content-wrapper -->
+<script src="{{ asset('assets/assets/vendor_components/ckeditor/ckeditor.js') }}"></script>
+<script src="https://cdn.ckeditor.com/ckeditor5/31.0.0/classic/ckeditor.js"></script>
+<script src="{{ asset('assets/assets/vendor_plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.all.js') }}"></script>
+
+<script src="{{ asset('assets/assets/vendor_components/dropzone/dropzone.js') }}"></script>
+
 <script type="text/javascript">
+    $(document).ready(function(){
+
+    "use strict";
+        ClassicEditor
+        .create( document.querySelector( '#classdescriptiontxt' ),{ height: '25em' } )
+        .then(newEditor =>{editor = newEditor;})
+        .catch( error => { console.log( error );});
+
+    })
 
     $(document).on('click', '#newFolder', function() {
         location.href = "/lecturer/content/material/sub/create/{{ $dirid }}";
@@ -210,6 +320,33 @@
                     url      : "{{ url('lecturer/content/folder/subfolder/delete') }}",
                     method   : 'DELETE',
                     data 	 : {dir:dir},
+                    error:function(err){
+                        alert("Error");
+                        console.log(err);
+                    },
+                    success  : function(data){
+                        window.location.reload();
+                        alert("success");
+                    }
+                });
+            }
+        });
+    }
+
+    function deleteUrl(id){     
+        Swal.fire({
+			title: "Are you sure?",
+			text: "This will be permanent",
+			showCancelButton: true,
+			confirmButtonText: "Yes, delete it!"
+		}).then(function(res){
+			
+			if (res.isConfirmed){
+                $.ajax({
+                    headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
+                    url      : "{{ url('lecturer/content/folder/subfolder/material/url/delete') }}",
+                    method   : 'DELETE',
+                    data 	 : {id:id},
                     error:function(err){
                         alert("Error");
                         console.log(err);
