@@ -10,6 +10,12 @@
     }
 </style>
 
+<style>
+    .modal-body-centered-text p {
+        text-align: center;
+    }
+</style>
+
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
     <div class="container-full">
@@ -78,6 +84,53 @@
                                             </a>
                                         </div>
                                     @endforeach
+
+                                    @if($url != null)
+                                        @foreach($url as $key => $ul)
+                                            @php
+                                                $originalURL = $ul->url;
+                                                $search = 'https://www.youtube.com/watch?v=';
+                                                $replace = 'https://www.youtube.com/embed/';
+
+                                                $newURL = str_replace($search, $replace, $originalURL);
+                                            @endphp     
+                                            <div class="col-md-3 text-center">
+                                                <iframe style="width:100%; height:90%;" src="{{ $newURL }}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                                                <button type="button" class="btn btn-info btn-sm" id="infoButton{{ $key }}">
+                                                    i
+                                                </button>
+
+                                                <div id="descriptionModal{{ $key }}" class="modal" class="modal fade" role="dialog">
+                                                    <div class="modal-dialog modal-dialog-centered">
+                                                        <!-- modal content-->
+                                                        <div class="modal-content">
+                                                            <div class="modal-body modal-body-centered-text">
+                                                                <p>{!! $ul->description !!}</p>
+                                                            </div>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <button type="button" class="btn btn-danger btn-sm" onclick="deleteUrl('{{ $ul->DrID }}')">
+                                                    <i class="mdi mdi-delete"></i>
+                                                </button>
+                                            </div>
+                                            <script>
+                                                $(document).ready(function(){
+                                                    $('#infoButton{{ $key }}').click(function() {
+                                                        $('#descriptionModal{{ $key }}').show();
+                                                    });
+
+                                                    $(document).click(function(event) {
+                                                        if ($(event.target).closest('#descriptionModal{{ $key }} .custom-modal-content').length === 0 && !$(event.target).is('#infoButton{{ $key }}')) {
+                                                            $('#descriptionModal{{ $key }}').hide();
+                                                        }
+                                                    });
+                                                });
+                                            </script>
+                                            @endforeach
+                                    @endif
                                     <!-- /.card-body -->
                                 </div> 
                             </form>
