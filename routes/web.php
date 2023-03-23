@@ -149,6 +149,7 @@ Route::delete('/lecturer/content/folder/subfolder/deletefile', [App\Http\Control
 Route::post('/lecturer/content/folder/subfolder/rename', [App\Http\Controllers\LecturerController::class, 'renameSubfolder']);
 Route::post('/lecturer/content/folder/subfolder/renameFile', [App\Http\Controllers\LecturerController::class, 'renameFileSubfolder']);
 Route::delete('/lecturer/content/folder/subfolder/material/delete', [App\Http\Controllers\LecturerController::class, 'deleteMaterial']);
+Route::delete('/lecturer/content/folder/subfolder/material/url/delete', [App\Http\Controllers\LecturerController::class, 'deleteUrl']);
 Route::post('/lecturer/content/folder/subfolder/material/renameFile', [App\Http\Controllers\LecturerController::class, 'renameMaterial']);
 Route::get('/lecturer/content/{id}', [App\Http\Controllers\LecturerController::class, 'courseContent'])->name('lecturer.content');
 Route::get('/lecturer/content/{id}/create', [App\Http\Controllers\LecturerController::class, 'createContent']);
