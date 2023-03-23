@@ -136,10 +136,11 @@
 
   });
 
-  $('#search').keyup(function(){
-
-    getStudent($(this).val());
-
+  $('#search').keyup(function(event){
+      if (event.keyCode === 13) { // 13 is the code for the "Enter" key
+          var searchTerm = $(this).val();
+          getStudent(searchTerm);
+      }
   });
 
   function getStudent(search)
