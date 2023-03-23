@@ -165,6 +165,7 @@ class OtherController extends Controller
         $classid = Session::get('CourseIDS');
         $sessionid = Session::get('SessionIDS');
         $title = $request->title;
+        $no = $request->no;
         $group = $request->group;
         $chapter = $request->chapter;
         $marks = $request->marks;
@@ -186,6 +187,7 @@ class OtherController extends Controller
 
                 $q = DB::table('tblclassother')->where('id', $otherid)->update([
                     "title" => $title,
+                    "no" => $no,
                     "total_mark" => $marks,
                     "addby" => $user->ic,
                     "status" => 2
@@ -215,6 +217,7 @@ class OtherController extends Controller
                     "classid" => $classid,
                     "sessionid" => $sessionid,
                     "title" => $title,
+                    "no" => $no,
                     "total_mark" => $marks,
                     "addby" => $user->ic,
                     "status" => 2

@@ -118,6 +118,7 @@ class ExtraController extends Controller
         $classid = Session::get('CourseIDS');
         $sessionid = Session::get('SessionIDS');
         $title = $request->title;
+        $no = $request->no;
         $group = $request->group;
         $chapter = $request->chapter;
         $marks = $request->marks;
@@ -139,6 +140,7 @@ class ExtraController extends Controller
 
                 $q = DB::table('tblclassextra')->where('id', $extraid)->update([
                     "title" => $title,
+                    "no" => $no,
                     "total_mark" => $marks,
                     "addby" => $user->ic,
                     "status" => 2
@@ -168,6 +170,7 @@ class ExtraController extends Controller
                     "classid" => $classid,
                     "sessionid" => $sessionid,
                     "title" => $title,
+                    "no" => $no,
                     "total_mark" => $marks,
                     "addby" => $user->ic,
                     "status" => 2
