@@ -352,8 +352,8 @@
                         console.log(err);
                     },
                     success  : function(data){
-                        window.location.reload();
                         alert("success");
+                        window.location.reload();
                     }
                 });
             }
