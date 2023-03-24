@@ -486,6 +486,7 @@ class AssignmentController extends Controller
                     ['tblclassassign.classid', Session::get('CourseIDS')],
                     ['tblclassassign.sessionid', Session::get('SessionIDS')],
                     ['student_subjek.student_ic', $student->ic],
+                    ['tblclassassign.deadline','!=', null],
                     ['tblclassassign.status','!=', 3]
                 ])->get();
 
