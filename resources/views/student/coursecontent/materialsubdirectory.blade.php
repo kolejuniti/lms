@@ -108,7 +108,7 @@
                                             $newURL = str_replace($search, $replace, $originalURL);
                                         @endphp     
                                         <div class="col-md-3 text-center">
-                                            <iframe style="width:100%; height:90%;" src="{{ $newURL }}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                                            <iframe style="width:100%; height:75%;" src="{{ $newURL }}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                                             <button type="button" class="btn btn-info btn-sm" id="infoButton{{ $key }}">
                                                 i
                                             </button>
