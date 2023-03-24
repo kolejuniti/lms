@@ -85,7 +85,7 @@
                                 @endforeach
                               </td>
                               <td class="align-items-center">
-                                <a href="{{ Storage::disk('linode')->url($dt->content) }}" target="_blank" download><i class="fa fa-file-pdf-o fa-3x"></i></a>
+                                <a href="{{ Storage::disk('linode')->url($dt->content) }}" download><i class="fa fa-file-pdf-o fa-3x"></i></a>
                               </td>
                               <!--<td class="align-items-center">
                                 <a href=""><i class="fa fa-file-pdf-o fa-3x"></i></a>
