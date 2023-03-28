@@ -475,13 +475,14 @@ class AssignmentController extends Controller
         //dd(Session::get('CourseIDS'));
 
         $data = DB::table('tblclassassign')
+                ->join('users', 'tblclassassign.addby', 'users.ic')
                 ->join('tblclassassign_group', 'tblclassassign.id', 'tblclassassign_group.assignid')
                 ->join('student_subjek', function($join){
                     $join->on('tblclassassign_group.groupid', 'student_subjek.group_id');
                     $join->on('tblclassassign_group.groupname', 'student_subjek.group_name');
                 })
                 ->join('user_subjek', 'tblclassassign_group.groupid', 'user_subjek.id')
-                ->select('tblclassassign.*', 'tblclassassign_group.groupname')
+                ->select('tblclassassign.*', 'tblclassassign_group.groupname', 'users.name AS addby')
                 ->where([
                     ['tblclassassign.classid', Session::get('CourseIDS')],
                     ['tblclassassign.sessionid', Session::get('SessionIDS')],
