@@ -619,13 +619,14 @@ class QuizController extends Controller
         //dd($student->ic);
 
         $data = DB::table('tblclassquiz')
+                ->join('users', 'tblclassquiz.addby', 'users.ic')
                 ->join('tblclassquiz_group', 'tblclassquiz.id', 'tblclassquiz_group.quizid')
                 ->join('student_subjek', function($join){
                     $join->on('tblclassquiz_group.groupid', 'student_subjek.group_id');
                     $join->on('tblclassquiz_group.groupname', 'student_subjek.group_name');
                 })
                 ->join('user_subjek', 'tblclassquiz_group.groupid', 'user_subjek.id')
-                ->select('tblclassquiz.*', 'tblclassquiz_group.groupname')
+                ->select('tblclassquiz.*', 'tblclassquiz_group.groupname', 'users.name AS addby')
                 ->where([
                     ['tblclassquiz.classid', Session::get('CourseIDS')],
                     ['tblclassquiz.sessionid', Session::get('SessionIDS')],

@@ -619,13 +619,14 @@ class TestController extends Controller
         //dd($student->ic);
 
         $data = DB::table('tblclasstest')
+                ->join('users', 'tblclasstest.addby', 'users.ic')
                 ->join('tblclasstest_group', 'tblclasstest.id', 'tblclasstest_group.testid')
                 ->join('student_subjek', function($join){
                     $join->on('tblclasstest_group.groupid', 'student_subjek.group_id');
                     $join->on('tblclasstest_group.groupname', 'student_subjek.group_name');
                 })
                 ->join('user_subjek', 'tblclasstest_group.groupid', 'user_subjek.id')
-                ->select('tblclasstest.*', 'tblclasstest_group.groupname')
+                ->select('tblclasstest.*', 'tblclasstest_group.groupname', 'users.name AS addby')
                 ->where([
                     ['tblclasstest.classid', Session::get('CourseIDS')],
                     ['tblclasstest.sessionid', Session::get('SessionIDS')],
