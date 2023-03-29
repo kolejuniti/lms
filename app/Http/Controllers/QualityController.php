@@ -39,7 +39,9 @@ class QualityController extends Controller
                             ->where([
                                 ['user_subjek.session_id', $request->session],
                                 ['users.faculty', $request->faculty]
-                            ])->select('user_subjek.id', 'subjek.course_name AS course', 'subjek.course_code AS code', 'users.name')->get();
+                            ])->select('user_subjek.id', 'subjek.course_name AS course', 'subjek.course_code AS code', 'users.name')
+                            ->orderBy('users.name')
+                            ->get();
 
 
         foreach($data['lecturer'] as $key => $lect)
