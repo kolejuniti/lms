@@ -549,6 +549,10 @@ Route::post('/treasurer/payment/debit/storeDebit', [App\Http\Controllers\Treasur
 Route::post('/treasurer/payment/credit/getStatement', [App\Http\Controllers\TreasurerController::class, 'getStatement']);
 
 
+Route::get('/quality/report/attendance', [App\Http\Controllers\QualityController::class, 'attendanceReport'])->name('quality.report.attendance');
+Route::post('/quality/report/attendance/getLecturer', [App\Http\Controllers\QualityController::class, 'getLectAttendance'])->name('quality.report.attendance.getLecturer');
+
+
 Route::middleware(['preventBackHistory'])->group(function () {
     Route::post('/login/custom', [App\Http\Controllers\LoginController::class, 'login'])->name('login.custom');
     Route::post('/loginAdmin/custom', [App\Http\Controllers\LoginController::class, 'loginAdmin'])->name('loginAdmin.custom');
