@@ -25,14 +25,14 @@
                                 @foreach ($data['lecturer'] as $key => $lct)
                                 <tr>
                                     <td>
-                                    @if(count($data['attendance'][$key]) > 0)
-                                    <a class="btn btn-success btn-sm mr-2">{{ $lct->name }}</a>
-                                    @else
-                                    <a class="btn btn-danger btn-sm mr-2">{{ $lct->name }}</a>
-                                    @endif
+                                    {{ $lct->name }}
                                     </td>
                                     <td>
-                                    {{ $lct->course }} ({{ $lct->code }})
+                                    @if(count($data['attendance'][$key]) > 0)
+                                    <a class="btn btn-success btn-sm mr-2">{{ $lct->course }} ({{ $lct->code }})</a>
+                                    @else
+                                    <a class="btn btn-danger btn-sm mr-2">{{ $lct->course }} ({{ $lct->code }})</a>
+                                    @endif
                                     </td>
                                     <td>
                                     @foreach($data['attendance'][$key] as $att)
