@@ -36,7 +36,7 @@
                                     </td>
                                     <td>
                                     @foreach($data['attendance'][$key] as $att)
-                                    <a class="btn btn-info btn-sm mr-2">{{ $att->classdate }}</a>
+                                    <a class="btn btn-info btn-sm mr-2 mb-2">Group {{ $att->groupname }} ({{ $att->classdate }})</a>
                                     @endforeach
                                     </td>
                                 </tr>
