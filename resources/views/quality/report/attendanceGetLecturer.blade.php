@@ -36,7 +36,7 @@
                                     </td>
                                     <td>
                                     @foreach($data['attendance'][$key] as $att)
-                                    {{ $att->classdate }}
+                                    <a class="btn btn-info btn-sm mr-2">{{ $att->classdate }}</a>
                                     @endforeach
                                     </td>
                                 </tr>
