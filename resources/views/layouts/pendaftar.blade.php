@@ -290,6 +290,7 @@
 				    </a>
 					<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
 						<li><a href="/admin/report/lecturer">Lecturer</a></li>
+						<li><a href="/quality/report/attendance">Attendance</a></li>
 					</ul>
 				</li> 
 			  </ul>
