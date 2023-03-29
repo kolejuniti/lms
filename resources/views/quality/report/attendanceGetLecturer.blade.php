@@ -7,7 +7,7 @@
             <div class="row">
                 <div class="col-md-12 mt-3">
                     <div class="form-group mt-3">
-                        <table class="w-100 table table-bordered display margin-top-10 w-p100">
+                        <table id="table_dismissed" class="w-100 table table-bordered display margin-top-10 w-p100">
                             <thead>
                                 <tr>
                                     <th>
