@@ -52,86 +52,59 @@
     </div>
 
     <script>
-        $(document).ready( function () {
-
-            function generateAttendanceColumns(ws, attendanceData) {
-            let currentColumn = 3; // Start at column C (column 0 is Lecturer, column 1 is Subject)
-            let attendanceRow = 1; // Row index for the attendance data (header row)
-
-                for (const att of attendanceData) {
-                    // Set the header
-                    ws[XLSX.utils.encode_cell({ c: currentColumn, r: attendanceRow - 1 })] = {
-                    t: "s",
-                    v: `Group ${att.groupname} (${att.classdate})`,
-                    };
-
-                    // Set the attendance data for each row
-                    for (let rowIndex = 1; rowIndex < ws["!ref"].split(":")[1].split(/[A-Z]+/)[1]; rowIndex++) {
-                    ws[XLSX.utils.encode_cell({ c: currentColumn, r: rowIndex })] = {
-                        t: "s",
-                        v: att.attendance,
-                    };
+        function tableTo2DArray(table) {
+            const rows = table.querySelectorAll('tr');
+            const data = [];
+            rows.forEach((row, rowIndex) => {
+                const rowData = [];
+                row.querySelectorAll('td').forEach((cell, cellIndex) => {
+                    if (cellIndex === 2) {
+                        const groups = cell.querySelectorAll('a');
+                        groups.forEach((group, groupIndex) => {
+                            rowData.push(group.textContent.trim());
+                        });
+                    } else {
+                        rowData.push(cell.textContent.trim());
                     }
-
-                    currentColumn++; // Move to the next column
+                });
+                if (rowData.length > 0) {
+                    data.push(rowData);
                 }
-            }
-
-            $('#table_dismissed').DataTable({
-              dom: 'lBfrtip', // if you remove this line you will see the show entries dropdown
-              paging: false,
-      
-              buttons: [
-                {
-                    text: 'Excel',
-                    action: function () {
-                    // get the HTML table to export
-                    const table = document.getElementById("table_dismissed");
-
-                    // create a new Workbook object
-                    const wb = XLSX.utils.book_new();
-
-                    // add a new worksheet to the Workbook object
-                    const ws = XLSX.utils.table_to_sheet(table);
-                    
-                    // Get the attendance data from the Blade template
-                    const attendanceData = @json($data['attendance']);
-                    
-                    // Generate the attendance columns
-                    generateAttendanceColumns(ws, attendanceData);
-
-                    XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
-
-                    // trigger the download of the Excel file
-                    XLSX.writeFile(wb, "exported-data.xlsx");
-                    }
-                }
-                ],
-      
             });
-      
-            let db = document.getElementById("table_dismissed");
-            let dbRows = db.rows;
-            let lastValue = "";
-            let lastCounter = 1;
-            let lastRow = 0;
-            for (let i = 0; i < dbRows.length; i++) {
-              let thisValue = dbRows[i].cells[0].innerHTML;
-              if (thisValue == lastValue) {
-                lastCounter++;
-                dbRows[lastRow].cells[0].rowSpan = lastCounter;
-                dbRows[i].cells[0].style.display = "none";
-              } else {
-                dbRows[i].cells[0].style.display = "table-cell";
-                lastValue = thisValue;
-                lastCounter = 1;
-                lastRow = i;
-              }
-            }
-      
-            // Remove the cells that are hidden
-            $("#table_dismissed td:first-child:hidden").remove();
-              } );
-      </script>
+            return data;
+        }
+    
+        $(document).ready(function () {
+            $('#table_dismissed').DataTable({
+                dom: 'lBfrtip',
+                paging: false,
+                buttons: [
+                    {
+                        text: 'Excel',
+                        action: function () {
+                            // get the HTML table to export
+                            const table = document.getElementById("table_dismissed");
+    
+                            // convert the HTML table into a 2D array
+                            const data = tableTo2DArray(table);
+    
+                            // create a new Workbook object
+                            const wb = XLSX.utils.book_new();
+    
+                            // add a new worksheet to the Workbook object
+                            const ws = XLSX.utils.aoa_to_sheet(data);
+                            XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
+    
+                            // trigger the download of the Excel file
+                            XLSX.writeFile(wb, "exported-data.xlsx");
+                        }
+                    }
+                ],
+            });
+    
+            // ... The rest of the existing script code ...
+        });
+    </script>
+    
     
     
