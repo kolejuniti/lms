@@ -104,7 +104,7 @@ div.form-actions.btn-group > button{
                                           <select class="form-select" id="folder" name="folder" required>
                                               <option value="" disabled selected>-</option>
                                               @foreach ($folder as $fold)
-                                              <option value="{{ $fold->DrID }}" >{{ $fold->DrName }}</option>
+                                              <option value="{{ $fold->DrID }}" >{{ ($fold->newDrName == null) ? $fold->DrName : $fold->newDrName }}</option>
                                               @endforeach
                                           </select>
                                           <span class="text-danger">@error('folder')

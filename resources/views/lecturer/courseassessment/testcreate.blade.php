@@ -116,7 +116,7 @@ div.form-actions.btn-group > button{
                                           <select class="form-select" id="folder" name="folder" required>
                                               <option value="" disabled selected>-</option>
                                               @foreach ($folder as $fold)
-                                              <option value="{{ $fold->DrID }}" {{ empty($data['folder']->DrID) ? '' : (($fold->DrID == $data['folder']->DrID) ? 'selected' : '' )}}>{{ $fold->DrName }}</option>
+                                              <option value="{{ $fold->DrID }}" {{ empty($data['folder']->DrID) ? '' : (($fold->DrID == $data['folder']->DrID) ? 'selected' : '' )}}>{{ ($fold->newDrName == null) ? $fold->DrName : $fold->newDrName }}</option>
                                               @endforeach
                                           </select>
                                           <span class="text-danger">@error('folder')
