@@ -108,27 +108,7 @@
                 ],
             });
 
-            let db = document.getElementById("table_dismissed");
-            let dbRows = db.rows;
-            let lastValue = "";
-            let lastCounter = 1;
-            let lastRow = 0;
-            for (let i = 0; i < dbRows.length; i++) {
-                let thisValue = dbRows[i].cells[0].innerHTML;
-                if (thisValue == lastValue) {
-                lastCounter++;
-                dbRows[lastRow].cells[0].rowSpan = lastCounter;
-                dbRows[i].cells[0].style.display = "none";
-                } else {
-                dbRows[i].cells[0].style.display = "table-cell";
-                lastValue = thisValue;
-                lastCounter = 1;
-                lastRow = i;
-                }
-            }
-
-            // Remove the cells that are hidden
-            $("#table_dismissed td:first-child:hidden").remove();
+          
         });
     </script>
     
