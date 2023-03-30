@@ -304,7 +304,7 @@ class FinalController extends Controller
                     ['tblclassfinal.sessionid', Session::get('SessionIDS')],
                     ['tblclassfinal.id', request()->final],
                     ['tblclassfinal.addby', $user->ic]
-                ])->get();
+                ])->whereNotIn('students.status', [4,5,7])->get();
         
         
         

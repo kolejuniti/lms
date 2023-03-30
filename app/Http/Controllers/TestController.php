@@ -390,7 +390,7 @@ class TestController extends Controller
                     ['tblclasstest.sessionid', Session::get('SessionIDS')],
                     ['tblclasstest.id', request()->test],
                     ['tblclasstest.addby', $user->ic]
-                ])->orderBy('students.name')->get();
+                ])->whereNotIn('students.status', [4,5,7])->orderBy('students.name')->get();
         
         
         
@@ -1285,7 +1285,7 @@ class TestController extends Controller
                     ['tblclasstest.sessionid', Session::get('SessionIDS')],
                     ['tblclasstest.id', request()->test],
                     ['tblclasstest.addby', $user->ic]
-                ])->orderBy('students.name')->get();
+                ])->whereNotIn('students.status', [4,5,7])->orderBy('students.name')->get();
         
         
         

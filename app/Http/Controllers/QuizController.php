@@ -390,7 +390,7 @@ class QuizController extends Controller
                     ['tblclassquiz.sessionid', Session::get('SessionIDS')],
                     ['tblclassquiz.id', request()->quiz],
                     ['tblclassquiz.addby', $user->ic]
-                ])->orderBy('students.name')->get();
+                ])->whereNotIn('students.status', [4,5,7])->orderBy('students.name')->get();
         
         
         
@@ -1285,7 +1285,7 @@ class QuizController extends Controller
                     ['tblclassquiz.sessionid', Session::get('SessionIDS')],
                     ['tblclassquiz.id', request()->quiz],
                     ['tblclassquiz.addby', $user->ic]
-                ])->orderBy('students.name')->get();
+                ])->whereNotIn('students.status', [4,5,7])->orderBy('students.name')->get();
         
         
         
