@@ -81,18 +81,6 @@
         }
 
         $(document).ready(function () {
-        // Find the maximum number of groups in attendance records
-        let maxGroups = 0;
-        $('#table_dismissed tbody tr').each(function () {
-            const groupCount = $(this).find('td:nth-child(3) a').length;
-            if (groupCount > maxGroups) {
-                maxGroups = groupCount;
-            }
-        });
-
-        // Set the colspan attribute of the "Attendance Record" header
-        $('#table_dismissed thead th:nth-child(3)').attr('colspan', maxGroups);
-
             $('#table_dismissed').DataTable({
                 dom: 'lBfrtip',
                 paging: false,
