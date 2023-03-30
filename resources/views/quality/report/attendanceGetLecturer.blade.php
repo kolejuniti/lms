@@ -79,7 +79,7 @@
             });
             return data;
         }
-    
+
         $(document).ready(function () {
             $('#table_dismissed').DataTable({
                 dom: 'lBfrtip',
@@ -90,27 +90,47 @@
                         action: function () {
                             // get the HTML table to export
                             const table = document.getElementById("table_dismissed");
-    
+
                             // convert the HTML table into a 2D array
                             const data = tableTo2DArray(table);
-    
+
                             // create a new Workbook object
                             const wb = XLSX.utils.book_new();
-    
+
                             // add a new worksheet to the Workbook object
                             const ws = XLSX.utils.aoa_to_sheet(data);
                             XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
-    
+
                             // trigger the download of the Excel file
                             XLSX.writeFile(wb, "exported-data.xlsx");
                         }
                     }
                 ],
             });
-    
-            // ... The rest of the existing script code ...
+
+            let db = document.getElementById("table_dismissed");
+            let dbRows = db.rows;
+            let lastValue = "";
+            let lastCounter = 1;
+            let lastRow = 0;
+            for (let i = 0; i < dbRows.length; i++) {
+                let thisValue = dbRows[i].cells[0].innerHTML;
+                if (thisValue == lastValue) {
+                lastCounter++;
+                dbRows[lastRow].cells[0].rowSpan = lastCounter;
+                dbRows[i].cells[0].style.display = "none";
+                } else {
+                dbRows[i].cells[0].style.display = "table-cell";
+                lastValue = thisValue;
+                lastCounter = 1;
+                lastRow = i;
+                }
+            }
+        
+            // Remove the cells that are hidden
+            $("#table_dismissed td:first-child:hidden").remove();
+
         });
     </script>
-    
     
     
