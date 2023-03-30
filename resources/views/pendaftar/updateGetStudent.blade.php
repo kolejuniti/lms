@@ -139,10 +139,10 @@
                         {{ $hs->semester_id }}
                     </td>
                     <td>
-                        {{ $hs->session_id }}
+                        {{ $hs->SessionName }}
                     </td>
                     <td>
-                        {{ $hs->status_id }}
+                        {{ $hs->name }}
                     </td>
                     <td>
                         {{ $hs->date }}
