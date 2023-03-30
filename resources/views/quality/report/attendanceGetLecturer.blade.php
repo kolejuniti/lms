@@ -52,35 +52,53 @@
     </div>
 
     <script>
-        function tableTo2DArray(table) {
-            const rows = table.querySelectorAll('tr');
-            const data = [];
-            rows.forEach((row, rowIndex) => {
-                const rowData = [];
-                if (rowIndex === 0) {
-                    row.querySelectorAll('th').forEach((cell) => {
-                        rowData.push(cell.textContent.trim());
-                    });
-                } else {
-                    row.querySelectorAll('td').forEach((cell, cellIndex) => {
-                        if (cellIndex === 2) {
-                            const groups = cell.querySelectorAll('a');
-                            groups.forEach((group, groupIndex) => {
-                                rowData.push(group.textContent.trim());
-                            });
-                        } else {
+        function tableTo2DArray(table, maxGroups) {
+        const rows = table.querySelectorAll('tr');
+        const data = [];
+        rows.forEach((row, rowIndex) => {
+            const rowData = [];
+            if (rowIndex === 0) {
+                row.querySelectorAll('th').forEach((cell, cellIndex) => {
+                    if (cellIndex === 2) {
+                        for (let i = 0; i < maxGroups; i++) {
                             rowData.push(cell.textContent.trim());
                         }
-                    });
-                }
-                if (rowData.length > 0) {
-                    data.push(rowData);
-                }
-            });
-            return data;
-        }
+                    } else {
+                        rowData.push(cell.textContent.trim());
+                    }
+                });
+            } else {
+                row.querySelectorAll('td').forEach((cell, cellIndex) => {
+                    if (cellIndex === 2) {
+                        const groups = cell.querySelectorAll('a');
+                        groups.forEach((group, groupIndex) => {
+                            rowData.push(group.textContent.trim());
+                        });
+                    } else {
+                        rowData.push(cell.textContent.trim());
+                    }
+                });
+            }
+            if (rowData.length > 0) {
+                data.push(rowData);
+            }
+        });
+        return data;
+    }
 
         $(document).ready(function () {
+        // Find the maximum number of groups in attendance records
+        let maxGroups = 0;
+        $('#table_dismissed tbody tr').each(function () {
+            const groupCount = $(this).find('td:nth-child(3) a').length;
+            if (groupCount > maxGroups) {
+                maxGroups = groupCount;
+            }
+        });
+
+        // Set the colspan attribute of the "Attendance Record" header
+        $('#table_dismissed thead th:nth-child(3)').attr('colspan', maxGroups);
+
             $('#table_dismissed').DataTable({
                 dom: 'lBfrtip',
                 paging: false,
@@ -92,7 +110,7 @@
                             const table = document.getElementById("table_dismissed");
 
                             // convert the HTML table into a 2D array
-                            const data = tableTo2DArray(table);
+                            const data = tableTo2DArray(table, maxGroups);
 
                             // create a new Workbook object
                             const wb = XLSX.utils.book_new();
@@ -108,28 +126,7 @@
                 ],
             });
 
-            let db = document.getElementById("table_dismissed");
-            let dbRows = db.rows;
-            let lastValue = "";
-            let lastCounter = 1;
-            let lastRow = 0;
-            for (let i = 0; i < dbRows.length; i++) {
-                let thisValue = dbRows[i].cells[0].innerHTML;
-                if (thisValue == lastValue) {
-                lastCounter++;
-                dbRows[lastRow].cells[0].rowSpan = lastCounter;
-                dbRows[i].cells[0].style.display = "none";
-                } else {
-                dbRows[i].cells[0].style.display = "table-cell";
-                lastValue = thisValue;
-                lastCounter = 1;
-                lastRow = i;
-                }
-            }
-        
-            // Remove the cells that are hidden
-            $("#table_dismissed td:first-child:hidden").remove();
-
+            // ... The rest of the existing script code ...
         });
     </script>
     
