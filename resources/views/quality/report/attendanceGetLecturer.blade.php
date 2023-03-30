@@ -51,15 +51,10 @@
         </div>
     </div>
 
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/rowgroup/1.1.3/css/rowGroup.dataTables.min.css"/>
-    <script type="text/javascript" src="https://cdn.datatables.net/rowgroup/1.1.3/js/dataTables.rowGroup.min.js"></script>
-
     <script>
         function tableTo2DArray(table) {
             const rows = table.querySelectorAll('tr');
             const data = [];
-            let prevLecturer = '';
-
             rows.forEach((row, rowIndex) => {
                 const rowData = [];
                 if (rowIndex === 0) {
@@ -67,18 +62,8 @@
                         rowData.push(cell.textContent.trim());
                     });
                 } else {
-                    let isFirstLecturerRow = true;
-
                     row.querySelectorAll('td').forEach((cell, cellIndex) => {
-                        if (cellIndex === 0) {
-                            const lecturer = cell.textContent.trim();
-                            if (lecturer === prevLecturer) {
-                                isFirstLecturerRow = false;
-                            } else {
-                                prevLecturer = lecturer;
-                            }
-                            if (isFirstLecturerRow) rowData.push(lecturer);
-                        } else if (cellIndex === 2) {
+                        if (cellIndex === 2) {
                             const groups = cell.querySelectorAll('a');
                             groups.forEach((group, groupIndex) => {
                                 rowData.push(group.textContent.trim());
@@ -87,13 +72,9 @@
                             rowData.push(cell.textContent.trim());
                         }
                     });
-
-                    if (isFirstLecturerRow && rowData.length > 0) {
-                        data.push(rowData);
-                    } else if (rowData.length > 0) {
-                        const lastRow = data[data.length - 1];
-                        lastRow[2] = lastRow[2] + ', ' + rowData[2];
-                    }
+                }
+                if (rowData.length > 0) {
+                    data.push(rowData);
                 }
             });
             return data;
@@ -125,12 +106,6 @@
                         }
                     }
                 ],
-                rowGroup: {
-                    dataSrc: 0, // Merge cells based on the first (Lecturer) column
-                    startRender: function (rows, group) {
-                        return group;
-                    },
-                },
             });
 
           
