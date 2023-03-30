@@ -47,9 +47,6 @@
             <div class="card card-primary">
               <div class="card-header">
                 <h3 class="card-title">Lecturer Attendance</h3>
-                <a type="button" class="waves-effect waves-light btn btn-primary btn-sm" onclick="printDiv('printableArea')">
-                  <i class="ti-printer"></i>&nbsp Print
-                </a>
               </div>
               <!-- /.card-header -->
               <div class="card mb-3">

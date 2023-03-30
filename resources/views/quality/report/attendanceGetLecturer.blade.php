@@ -10,15 +10,11 @@
                         <table id="table_dismissed" class="w-100 table table-bordered display margin-top-10 w-p100">
                             <thead>
                                 <tr>
-                                    <th>
-                                        Lecturer
-                                    </th>
-                                    <th>
-                                        Subject
-                                    </th>
-                                    <th>
-                                        Attendance Record
-                                    </th>
+                                    <th>Lecturer</th>
+                                    <th>Subject</th>
+                                    <th>Attendance Record</th>
+                                </tr>
+                                <tr id="groupHeader" style="display:none;">
                                 </tr>
                             </thead>
                             <tbody id="table">
@@ -55,18 +51,17 @@
         function tableTo2DArray(table, maxGroups) {
         const rows = table.querySelectorAll('tr');
         const data = [];
+        let headerRowIndex = 0;
         rows.forEach((row, rowIndex) => {
             const rowData = [];
-            if (rowIndex === 0) {
-                row.querySelectorAll('th').forEach((cell, cellIndex) => {
-                    if (cellIndex === 2) {
-                        for (let i = 0; i < maxGroups; i++) {
-                            rowData.push(cell.textContent.trim());
-                        }
-                    } else {
-                        rowData.push(cell.textContent.trim());
-                    }
+            if (rowIndex === headerRowIndex) {
+                // Skip the original header row
+                headerRowIndex++;
+            } else if (rowIndex === headerRowIndex) {
+                row.querySelectorAll('th').forEach((cell) => {
+                    rowData.push(cell.textContent.trim());
                 });
+                headerRowIndex++;
             } else {
                 row.querySelectorAll('td').forEach((cell, cellIndex) => {
                     if (cellIndex === 2) {
@@ -86,6 +81,7 @@
         return data;
     }
 
+
         $(document).ready(function () {
         // Find the maximum number of groups in attendance records
         let maxGroups = 0;
@@ -95,6 +91,13 @@
                 maxGroups = groupCount;
             }
         });
+
+        // Populate the groupHeader row with group header cells
+        const groupHeader = $('#groupHeader');
+        for (let i = 0; i < maxGroups; i++) {
+            groupHeader.append('<th>Group ' + (i + 1) + '</th>');
+        }
+        groupHeader.show();
 
         // Set the colspan attribute of the "Attendance Record" header
         $('#table_dismissed thead th:nth-child(3)').attr('colspan', maxGroups);
