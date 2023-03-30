@@ -450,7 +450,7 @@
                           <td style="text-align: center">
                             @php
                               $dismissed = count(DB::table('students')->where([
-                                    ['students.status', 3]
+                                    ['students.status', 4]
                                     //['students.campus_id', 1]
                                     ])->get());
                             @endphp
