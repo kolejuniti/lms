@@ -661,7 +661,11 @@ class PendaftarController extends Controller
                            ->select('students.*', 'tblstudent_status.name AS status', 'tblprogramme.progname AS program')
                            ->where('ic', $request->student)->first();
 
-        $data['history'] = DB::table('tblstudent_log')->where('student_ic', $request->student)->get();
+        $data['history'] = DB::table('tblstudent_log')
+                           ->join('session', 'tblstudent_log.session_id', 'session.SessionID')
+                           ->join('tblstudent_status', 'tblstudent_log.status_id', 'tblstudent_status.id')
+                           ->where('student_ic', $request->student)
+                           ->get();
 
         $data['session'] = DB::table('sessions')->get();
 
