@@ -57,16 +57,22 @@
             const data = [];
             rows.forEach((row, rowIndex) => {
                 const rowData = [];
-                row.querySelectorAll('td').forEach((cell, cellIndex) => {
-                    if (cellIndex === 2) {
-                        const groups = cell.querySelectorAll('a');
-                        groups.forEach((group, groupIndex) => {
-                            rowData.push(group.textContent.trim());
-                        });
-                    } else {
+                if (rowIndex === 0) {
+                    row.querySelectorAll('th').forEach((cell) => {
                         rowData.push(cell.textContent.trim());
-                    }
-                });
+                    });
+                } else {
+                    row.querySelectorAll('td').forEach((cell, cellIndex) => {
+                        if (cellIndex === 2) {
+                            const groups = cell.querySelectorAll('a');
+                            groups.forEach((group, groupIndex) => {
+                                rowData.push(group.textContent.trim());
+                            });
+                        } else {
+                            rowData.push(cell.textContent.trim());
+                        }
+                    });
+                }
                 if (rowData.length > 0) {
                     data.push(rowData);
                 }
