@@ -34,11 +34,13 @@
                                     <a class="btn btn-danger btn-sm mr-2">{{ $lct->course }} ({{ $lct->code }})</a>
                                     @endif
                                     </td>
-                                    <td>
+                                    
                                     @foreach($data['attendance'][$key] as $att)
-                                    <a class="btn btn-info btn-sm mr-2 mb-2">Group {{ $att->groupname }} ({{ $att->classdate }})</a>
-                                    @endforeach
+                                    <td>
+                                        <a class="btn btn-info btn-sm mr-2 mb-2">Group {{ $att->groupname }} ({{ $att->classdate }})</a>
                                     </td>
+                                    @endforeach
+                                    
                                 </tr>
                                 @endforeach
                                 <tfoot>
