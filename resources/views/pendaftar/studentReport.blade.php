@@ -125,6 +125,27 @@
                       </tr>
                       </thead>
                       <tbody id="table">
+                        @php
+                        $totalSum_m1 = 0;
+                        $totalSum_f1 = 0;
+                        $totalSum_ms1 = 0;
+                        $totalSum_fs1 = 0;
+                        $totalSum_ms2 = 0;
+                        $totalSum_fs2 = 0;
+                        $totalSum_ms3 = 0;
+                        $totalSum_fs3 = 0;
+                        $totalSum_ms4 = 0;
+                        $totalSum_fs4 = 0;
+                        $totalSum_ms5 = 0;
+                        $totalSum_fs5 = 0;
+                        $totalSum_ms6 = 0;
+                        $totalSum_fs6 = 0;
+                        $totalSum_ms7 = 0;
+                        $totalSum_fs7 = 0;
+                        $totalSum_ms8 = 0;
+                        $totalSum_fs8 = 0;
+
+                        @endphp
                         @foreach ($data['program'] as $key=>$prg)
                         <tr>
                           <td style="text-align: center">
@@ -138,91 +159,163 @@
                             @foreach ((array) $data['holding_m1'][$key] as $ms1)
                             {{ $ms1 }}
                             @endforeach
+                            @php
+                                $sum_m1 = array_sum((array) $data['holding_m1'][$key]);
+                                $totalSum_m1 += $sum_m1;
+                            @endphp
                           </td>
                           <td>
                             @foreach ((array) $data['holding_f1'][$key] as $ms1)
                             {{ $ms1 }}
                             @endforeach
+                            @php
+                                $sum_f1 = array_sum((array) $data['holding_f1'][$key]);
+                                $totalSum_f1 += $sum_f1;
+                            @endphp
                           </td>
                           <td>
                             @foreach ((array) $data['ms1'][$key] as $ms1)
                             {{ $ms1 }}
                             @endforeach
+                            @php
+                                $sum_ms1 = array_sum((array) $data['ms1'][$key]);
+                                $totalSum_ms1 += $sum_ms1;
+                            @endphp
                           </td>
                           <td>
                             @foreach ((array) $data['fs1'][$key] as $fs1)
                             {{ $fs1 }}
                             @endforeach
+                            @php
+                                $sum_fs1 = array_sum((array) $data['fs1'][$key]);
+                                $totalSum_fs1 += $sum_fs1;
+                            @endphp
                           </td>
                           <td>
                             @foreach ((array) $data['ms2'][$key] as $ms2)
                             {{ $ms2 }}
                             @endforeach
+                            @php
+                                $sum_ms2 = array_sum((array) $data['ms2'][$key]);
+                                $totalSum_ms2 += $sum_ms2;
+                            @endphp
                           </td>
                           <td>
                             @foreach ((array) $data['fs2'][$key] as $fs2)
                             {{ $fs2 }}
                             @endforeach
+                            @php
+                                $sum_fs2 = array_sum((array) $data['fs2'][$key]);
+                                $totalSum_fs2 += $sum_fs2;
+                            @endphp
                           </td>
                           <td>
                             @foreach ((array) $data['ms3'][$key] as $ms3)
                             {{ $ms3 }}
                             @endforeach
+                            @php
+                                $sum_ms3 = array_sum((array) $data['ms3'][$key]);
+                                $totalSum_ms3 += $sum_ms3;
+                            @endphp
                           </td>
                           <td>
                             @foreach ((array) $data['fs3'][$key] as $fs3)
                             {{ $fs3 }}
                             @endforeach
+                            @php
+                                $sum_fs3 = array_sum((array) $data['fs3'][$key]);
+                                $totalSum_fs3 += $sum_fs3;
+                            @endphp
                           </td>
                           <td>
                             @foreach ((array) $data['ms4'][$key] as $ms4)
                             {{ $ms4 }}
                             @endforeach
+                            @php
+                                $sum_ms4 = array_sum((array) $data['ms4'][$key]);
+                                $totalSum_ms4 += $sum_ms4;
+                            @endphp
                           </td>
                           <td>
                             @foreach ((array) $data['fs4'][$key] as $fs4)
                             {{ $fs4 }}
                             @endforeach
+                            @php
+                                $sum_fs4 = array_sum((array) $data['fs4'][$key]);
+                                $totalSum_fs4 += $sum_fs4;
+                            @endphp
                           </td>
                           <td>
                             @foreach ((array) $data['ms5'][$key] as $ms5)
                             {{ $ms5 }}
                             @endforeach
+                            @php
+                                $sum_ms5 = array_sum((array) $data['ms5'][$key]);
+                                $totalSum_ms5 += $sum_ms5;
+                            @endphp
                           </td>
                           <td>
                             @foreach ((array) $data['fs5'][$key] as $fs5)
                             {{ $fs5 }}
                             @endforeach
+                            @php
+                                $sum_fs5 = array_sum((array) $data['fs5'][$key]);
+                                $totalSum_fs5 += $sum_fs5;
+                            @endphp
                           </td>
                           <td>
                             @foreach ((array) $data['ms6'][$key] as $ms6)
                             {{ $ms6 }}
                             @endforeach
+                            @php
+                                $sum_ms6 = array_sum((array) $data['ms6'][$key]);
+                                $totalSum_ms6 += $sum_ms6;
+                            @endphp
                           </td>
                           <td>
                             @foreach ((array) $data['fs6'][$key] as $fs6)
                             {{ $fs6 }}
                             @endforeach
+                            @php
+                                $sum_fs6 = array_sum((array) $data['fs6'][$key]);
+                                $totalSum_fs6 += $sum_fs6;
+                            @endphp
                           </td>
                           <td>
                             @foreach ((array) $data['ms7'][$key] as $ms7)
                             {{ $ms7 }}
                             @endforeach
+                            @php
+                                $sum_ms7 = array_sum((array) $data['ms7'][$key]);
+                                $totalSum_ms7 += $sum_ms7;
+                            @endphp
                           </td>
                           <td>
                             @foreach ((array) $data['fs7'][$key] as $fs7)
                             {{ $fs7 }}
                             @endforeach
+                            @php
+                                $sum_fs7 = array_sum((array) $data['fs7'][$key]);
+                                $totalSum_fs7 += $sum_fs7;
+                            @endphp
                           </td>
                           <td>
                             @foreach ((array) $data['ms8'][$key] as $ms8)
                             {{ $ms8 }}
                             @endforeach
+                            @php
+                                $sum_ms8 = array_sum((array) $data['ms8'][$key]);
+                                $totalSum_ms8 += $sum_ms8;
+                            @endphp
                           </td>
                           <td>
                             @foreach ((array) $data['fs8'][$key] as $fs8)
                             {{ $fs8 }}
                             @endforeach
+                            @php
+                                $sum_fs8 = array_sum((array) $data['fs8'][$key]);
+                                $totalSum_fs8 += $sum_fs8;
+                            @endphp
                           </td>
                           <td style="text-align: center">
                             @foreach ((array) $data['industry'][$key] as $industry)
@@ -261,22 +354,60 @@
                           <td >
                             TOTAL STUDENT
                           </td>
-                          @php
-                            $semester = DB::table('semester')->get();
-                          @endphp
-                          @foreach ($semester as $sem)
-                            @php
-                              $total = count(DB::table('students')
-                              ->where([
-                                ['semester', $sem->id],
-                                ['status', 2],
-                                ['student_status', 2]
-                                ])->get())
-                            @endphp
-                            <td colspan="{{ ($sem->id == 1) ? '4' : '2' }}" style="text-align: center">
-                              {{ $total }}
-                            </td>
-                          @endforeach
+                          <td>
+                            {{ $totalSum_m1 }}
+                          </td>
+                          <td>
+                            {{ $totalSum_f1 }}
+                          </td>
+                          <td>
+                            {{ $totalSum_ms1 }}
+                          </td>
+                          <td>
+                            {{ $totalSum_fs1 }}
+                          </td>
+                          <td>
+                            {{ $totalSum_ms2 }}
+                          </td>
+                          <td>
+                            {{ $totalSum_fs2 }}
+                          </td>
+                          <td>
+                            {{ $totalSum_ms3 }}
+                          </td>
+                          <td>
+                            {{ $totalSum_fs3 }}
+                          </td>
+                          <td>
+                            {{ $totalSum_ms4 }}
+                          </td>
+                          <td>
+                            {{ $totalSum_fs4 }}
+                          </td>
+                          <td>
+                            {{ $totalSum_ms5 }}
+                          </td>
+                          <td>
+                            {{ $totalSum_fs5 }}
+                          </td>
+                          <td>
+                            {{ $totalSum_ms6 }}
+                          </td>
+                          <td>
+                            {{ $totalSum_fs6 }}
+                          </td>
+                          <td>
+                            {{ $totalSum_ms7 }}
+                          </td>
+                          <td>
+                            {{ $totalSum_fs7 }}
+                          </td>
+                          <td>
+                            {{ $totalSum_ms8 }}
+                          </td>
+                          <td>
+                            {{ $totalSum_fs8 }}
+                          </td>
                           <td style="text-align: center">
                             @php
                               $industry = count(DB::table('students')->where([
@@ -324,6 +455,81 @@
                                     ])->get());
                             @endphp
                             {{ $dismissed }}
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>
+                            
+                          </td>
+                          <td >
+
+                          </td>
+                          @php
+                            $semester = DB::table('semester')->get();
+                          @endphp
+                          @foreach ($semester as $sem)
+                            @php
+                              $total = count(DB::table('students')
+                              ->where([
+                                ['semester', $sem->id],
+                                ['status', 2],
+                                ['student_status', 2]
+                                ])->get())
+                            @endphp
+                            <td colspan="{{ ($sem->id == 1) ? '4' : '2' }}" style="text-align: center">
+                              {{ $total }}
+                            </td>
+                          @endforeach
+                          <td style="text-align: center">
+                            @php
+                              $industry = count(DB::table('students')->where([
+                                    ['students.status', 2],
+                                    ['students.student_status', 4],
+                                    ])->get());
+                            @endphp
+                            {{ $industry }}
+                          </td>
+                          @php
+
+                          $total_all = $active + $aol + $postpone;
+
+                          @endphp
+                          <td style="text-align: center" colspan="3">
+                            {{ $total_all }}
+                          </td>
+                          <td style="text-align: center">
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>
+                            
+                          </td>
+                          <td >
+                            
+                          </td>
+                          @php
+                            $total = count(DB::table('students')
+                            ->where([
+                              ['semester', 1],
+                              ['status', 2],
+                              ['student_status', 2]
+                              ])->get())
+                          @endphp
+                          <td colspan="4" style="text-align: center">
+                            {{ $total }}
+                          </td>
+                          <td colspan="14">
+
+                          </td>
+                          @php
+
+                          $total_all = $industry + $active + $aol + $postpone;
+
+                          @endphp
+                          <td style="text-align: center" colspan="4">
+                            {{ $total_all }}
+                          </td>
+                          <td style="text-align: center">
                           </td>
                         </tr>
                       </tfoot>
