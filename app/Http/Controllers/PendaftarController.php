@@ -662,7 +662,7 @@ class PendaftarController extends Controller
                            ->where('ic', $request->student)->first();
 
         $data['history'] = DB::table('tblstudent_log')
-                           ->join('session', 'tblstudent_log.session_id', 'session.SessionID')
+                           ->join('sessions', 'tblstudent_log.session_id', 'sessions.SessionID')
                            ->join('tblstudent_status', 'tblstudent_log.status_id', 'tblstudent_status.id')
                            ->where('student_ic', $request->student)
                            ->get();
