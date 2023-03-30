@@ -1048,7 +1048,7 @@ class PendaftarController extends Controller
             $data['dismissed'][$key] = count(DB::table('students')
                                     ->where([
                                     ['students.program', $prg->id],
-                                    ['students.status', 3]
+                                    ['students.status', 4]
                                     ])->get());
 
                                  
