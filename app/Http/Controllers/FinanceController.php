@@ -2948,7 +2948,7 @@ class FinanceController extends Controller
         foreach($payment as $pym)
         {
 
-            if($pym->status == 1 && $pym->payment_sponsor_id != null)
+            if($pym->status == 1 && $pym->sponsor_id != null)
             {
 
                 if(DB::table('tblpaymentdtl')
@@ -3002,7 +3002,7 @@ class FinanceController extends Controller
                     }
                 }
 
-            }elseif($pym->status == 2 && $pym->payment_sponsor_id == null && $pym->semester == 1)
+            }elseif($pym->status == 2 && $pym->sponsor_id == null && $pym->semester == 1)
             {
 
                 //newstudent
@@ -3230,7 +3230,7 @@ class FinanceController extends Controller
                     }
                 }
 
-            }elseif($pym->status == 2 && $pym->payment_sponsor_id == null && $pym->semester != 1)
+            }elseif($pym->status == 2 && $pym->sponsor_id == null && $pym->semester != 1)
             {
 
                 //oldstudent
@@ -3460,7 +3460,7 @@ class FinanceController extends Controller
                     }
                 }
 
-            }elseif($pym->status == 4 && $pym->payment_sponsor_id == null)
+            }elseif($pym->status == 4 && $pym->sponsor_id == null)
             {
 
                 //withdraw
@@ -3507,7 +3507,7 @@ class FinanceController extends Controller
 
                 }
 
-            }elseif($pym->status == 8 && $pym->payment_sponsor_id == null)
+            }elseif($pym->status == 8 && $pym->sponsor_id == null)
             {
 
                 //graduate
@@ -3561,7 +3561,7 @@ class FinanceController extends Controller
         foreach($sponsor as $key => $spn)
         {
 
-            if($spn->status == 2 && $spn->payment_sponsor_id != null && $spn->semester == 1)
+            if($spn->status == 2 && $spn->sponsor_id != null && $spn->semester == 1)
             {
 
                 //newsponsor
@@ -3612,7 +3612,7 @@ class FinanceController extends Controller
                     }
                 }
 
-            }elseif($spn->status == 2 && $spn->payment_sponsor_id != null && $spn->semester != 1)
+            }elseif($spn->status == 2 && $spn->sponsor_id != null && $spn->semester != 1)
             {
 
                 //oldsponsor
