@@ -1122,6 +1122,7 @@ class LecturerController extends Controller
             <th>Status</th>
             <th></th>
             <th>Excuse</th>
+            <th>MC</th>
             </thead>
             <tbody>
         ';
@@ -1147,6 +1148,12 @@ class LecturerController extends Controller
                         >
                         <label for="checkboxAll"> </label>
                     </div>
+                </td>
+                <td >
+                    <p class="text-bold text-fade"></p>
+                </td>
+                <td >
+                    <p class="text-bold text-fade"></p>
                 </td>
             </tr>
             ';
@@ -1183,6 +1190,14 @@ class LecturerController extends Controller
                         <input type="hidden" id="ic_'.$student->no_matric.'"
                         class="form-control" name="ic[]" value="'.$student->student_ic.'" disabled>
                         <label for="checkboxAll"> </label>
+                    </div>
+                </td>
+                <td >
+                    <div class="pull-right" >
+                        <input type="checkbox" id="mc_'.$student->no_matric.'"
+                            class="filled-in" name="mc[]" value="'.$student->student_ic.'" onclick="getMC('.$student->no_matric.')"
+                        >
+                        <label for="mc_'.$student->no_matric.'"></label>
                     </div>
                 </td>
             </tr>
@@ -1250,6 +1265,7 @@ class LecturerController extends Controller
             'absentall' => [],
             'excuse' => [],
             'ic' => [],
+            'mc' => [],
         ]);
 
         $group = explode('|', $data['group']);
@@ -1303,6 +1319,22 @@ class LecturerController extends Controller
                         'groupid' => $group[0],
                         'groupname' => $group[1],
                         'excuse' => $exs,
+                        'classdate' => $data['date']
+                    ]);
+                }
+            }
+
+            foreach($data['mc'] as $std)
+            {
+                if(DB::table('tblclassattendance')->where([['student_ic', $std],['groupid', $group[0]],['groupname', $group[1]],['classdate', $data['date']]])->exists())
+                {
+                    
+                }else{
+                    DB::table('tblclassattendance')->insert([
+                        'student_ic' => $std,
+                        'groupid' => $group[0],
+                        'groupname' => $group[1],
+                        'mc' => TRUE,
                         'classdate' => $data['date']
                     ]);
                 }
@@ -3013,14 +3045,18 @@ class LecturerController extends Controller
                         if($atten->exists())
                         {
 
-                            if($attendance->excuse == null)
+                            if($attendance->excuse == null && $attendance->mc == null)
                             {
 
                                 $status[$ky][$key][$keys] = 'Present';
 
-                            }else{
+                            }elseif($attendance->excuse != null){
 
                                 $status[$ky][$key][$keys] = 'THB';
+
+                            }elseif($attendance->mc != null){
+
+                                $status[$ky][$key][$keys] = 'MC';
 
                             }
 
