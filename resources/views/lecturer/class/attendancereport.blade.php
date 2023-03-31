@@ -123,7 +123,7 @@
                                 </tr>
                                 @endforeach
                               </tbody>
-                              @if(isset($guess))
+                              @if(!isset($guess))
                               <tfoot>
                                 <tr>
                                   <th>
