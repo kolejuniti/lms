@@ -40,6 +40,7 @@ class QualityController extends Controller
                                 ['user_subjek.session_id', $request->session],
                                 ['users.faculty', $request->faculty]
                             ])->select('user_subjek.id', 'subjek.course_name AS course', 'subjek.course_code AS code', 'users.name')
+                            ->groupBy('subjek.sub_id', 'user_subjek.session_id')
                             ->orderBy('users.name')
                             ->get();
 
