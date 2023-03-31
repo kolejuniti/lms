@@ -48,12 +48,24 @@ class QualityController extends Controller
         foreach($data['lecturer'] as $key => $lect)
         {
 
-            $data['attendance'][$key] = DB::table('tblclassattendance')
-                                        ->where('groupid', $lect->id)
-                                        ->whereBetween('classdate', [$request->from, $request->to])
-                                        ->groupBy('classdate')
-                                        ->groupBy('groupname')
-                                        ->get();
+            if (isset($request->from) && isset($request->to)) {
+
+                $data['attendance'][$key] = DB::table('tblclassattendance')
+                                            ->where('groupid', $lect->id)
+                                            ->whereBetween('classdate', [$request->from, $request->to])
+                                            ->groupBy('classdate')
+                                            ->groupBy('groupname')
+                                            ->get();
+
+            }else{
+
+                $data['attendance'][$key] = DB::table('tblclassattendance')
+                                            ->where('groupid', $lect->id)
+                                            ->groupBy('classdate')
+                                            ->groupBy('groupname')
+                                            ->get();
+
+            }
 
         }
 
