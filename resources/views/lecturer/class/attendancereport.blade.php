@@ -123,7 +123,7 @@
                                 </tr>
                                 @endforeach
                               </tbody>
-                              @if(Auth::user()->usrtype == "LCT" || Auth::user()->usrtype == "PL" || Auth::user()->usrtype == "AO")
+                              @if(isset($guess))
                               <tfoot>
                                 <tr>
                                   <th>
