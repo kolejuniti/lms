@@ -78,6 +78,20 @@
                       </div>
                     </div>
                   </div>
+                  <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                        <label class="form-label" for="from">FROM</label>
+                        <input type="date" class="form-control" id="from" name="from">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                        <label class="form-label" for="name">TO</label>
+                        <input type="date" class="form-control" id="to" name="to">
+                        </div>
+                    </div>
+                  </div>
                   <div id="form-student">
               
                   </div>
@@ -100,26 +114,38 @@
 
 var faculty;
 var session;
+var from;
+var to;
 
 $('#faculty').on('change', function(){
     faculty = $(this).val();
-    getAttendance(faculty,session);
+    getAttendance(faculty,session,from,to);
     //alert(faculty);
 });
 
 $('#session').on('change', function(){
     session = $(this).val();
-    getAttendance(faculty,session);
+    getAttendance(faculty,session,from,to);
 });
 
-function getAttendance(faculty,session)
+$('#from').on('change', function(){
+    from = $(this).val();
+    getAttendance(faculty,session,from,to);
+});
+
+$('#to').on('change', function(){
+    to = $(this).val();
+    getAttendance(faculty,session,from,to);
+});
+
+function getAttendance(faculty,session,from,to)
 {
 
         return $.ajax({
             headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
             url      : "{{ url('quality/report/attendance/getLecturer') }}",
             method   : 'POST',
-            data 	 : {faculty: faculty, session: session},
+            data 	 : {faculty: faculty, session: session, from: from, to: to},
             error:function(err){
                 alert("Error");
                 console.log(err);
