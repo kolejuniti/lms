@@ -190,11 +190,38 @@ function CheckAll(elem) {
 
       $('#ic_'+value).prop("disabled", true);
 
+      $('#mc_'+value).prop("disabled", false);
+
     }else{
 
       $('#student_checkbox_'+value).prop("disabled", true);
 
       $('#ic_'+value).prop("disabled", false);
+
+      $('#mc_'+value).prop("disabled", true);
+
+    }
+ }
+
+ function getMC(data) {
+    var value = data;
+
+    if($('#mc_'+value).prop("checked"))
+    {
+
+      $('#student_checkbox_'+value).prop("disabled", true);
+
+      $('#ic_'+value).attr("disabled", true);
+
+      $('#excuse_'+value).attr("disabled", true);
+
+    }else{
+
+      $('#student_checkbox_'+value).prop("disabled", false);
+
+      $('#ic_'+value).prop("disabled", false);
+
+      $('#excuse_'+value).attr("disabled", false);
 
     }
  }
