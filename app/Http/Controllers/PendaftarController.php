@@ -697,7 +697,7 @@ class PendaftarController extends Controller
             try{
                 $student = json_decode($studentData);
                 
-                DB::table('students')->update([
+                DB::table('students')->where('ic', $student->ic)->update([
                     'intake' => $student->intake,
                     'batch' => $student->batch,
                     'session' => $student->session,
