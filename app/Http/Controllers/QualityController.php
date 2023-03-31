@@ -50,6 +50,7 @@ class QualityController extends Controller
 
             $data['attendance'][$key] = DB::table('tblclassattendance')
                                         ->where('groupid', $lect->id)
+                                        ->whereBetween('classdate', [$request->from, $request->to])
                                         ->groupBy('classdate')
                                         ->groupBy('groupname')
                                         ->get();
