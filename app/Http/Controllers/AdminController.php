@@ -529,7 +529,7 @@ class AdminController extends Controller
 
         //dd($status[$ky][$key]);
 
-        return view('lecturer.class.attendancereport', compact('groups', 'students', 'list', 'status'. 'guess'));
+        return view('lecturer.class.attendancereport', compact('groups', 'students', 'list', 'status', 'guess'));
 
     }
 
