@@ -423,6 +423,8 @@ class AdminController extends Controller
 
     public function listAttendance(Request $request)
     {
+        $guess = 1;
+        
         $user = Session::get('LectIC');
 
         $courseid = Session::get('CourseID');
@@ -495,14 +497,18 @@ class AdminController extends Controller
                         if($atten->exists())
                         {
 
-                            if($attendance->excuse == null)
+                            if($attendance->excuse == null && $attendance->mc == null)
                             {
 
                                 $status[$ky][$key][$keys] = 'Present';
 
-                            }else{
+                            }elseif($attendance->excuse != null){
 
                                 $status[$ky][$key][$keys] = 'THB';
+
+                            }elseif($attendance->mc != null){
+
+                                $status[$ky][$key][$keys] = 'MC';
 
                             }
 
@@ -523,7 +529,7 @@ class AdminController extends Controller
 
         //dd($status[$ky][$key]);
 
-        return view('lecturer.class.attendancereport', compact('groups', 'students', 'list', 'status'));
+        return view('lecturer.class.attendancereport', compact('groups', 'students', 'list', 'status'. 'guess'));
 
     }
 
