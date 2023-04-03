@@ -457,10 +457,12 @@ class AdminController extends Controller
                 ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
                 ->select('user_subjek.*','student_subjek.group_name','student_subjek.group_id','students.*')
                 ->where([
-                ['user_subjek.user_ic', $user],
+                ['user_subjek.user_ic', $user->ic],
                 ['user_subjek.session_id', $sessionid],
                 ['subjek.id', $courseid]
-                ])->where('student_subjek.group_name', $grp->group_name)
+                ])
+                ->whereNotIn('students.status', [4,5,7])
+                ->where('student_subjek.group_name', $grp->group_name)
                 ->orderBy('students.name')->get();
 
                 $collection = collect($students[$ky]);
