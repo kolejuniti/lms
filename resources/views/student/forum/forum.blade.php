@@ -126,7 +126,6 @@
                             <tr>
                                 <th style="width: 10px">No</th>
                                 <th>Topic</th>
-                                <th style="width: 40px">Delete</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -136,19 +135,16 @@
                                         <tr class="col-md-6">
                                             <td>{{ $key+1 }}</a></td>
                                             <td><a href="/student/forum/{{ Session::get('CourseIDS') }}?TopicID={{ $tpc->TopicID }}">{{ $tpc->TopicName }}</td>
-                                            <td><a class="btn btn-danger btn-sm" href="#"><i class="ti-trash"></i>Delete</a></td>
                                         </tr>
                                     @endforeach
                                 @else
                                 <tr class="col-md-6">
                                     <td>-</td>
                                     <td>-</td>
-                                    <td>-</td>
                                 </tr>
                                 @endif
                             @else
                                 <tr class="col-md-6">
-                                <td>-</td>
                                 <td>-</td>
                                 <td>-</td>
                                 </tr>

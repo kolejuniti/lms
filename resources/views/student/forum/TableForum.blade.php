@@ -49,7 +49,7 @@
                 <td width="20%">
                     <strong  class="hidden-sm-down"><a style="color: {{ $clrupby }};text-decoration: none" href="#">{!! wordwrap($usrnm,20,"<br>\n",TRUE); !!}</a></strong>
                 </td>
-                <td width="75%"><div width="100%" align="left">{{ $content }}</div><div width="100%" align="right"><strong style="font-size: 15px;color: #43b51c"><i><?php echo $datetime;?></i></strong></div></td>
+                <td width="75%"><div width="100%" align="left">{!! $content !!}</div><div width="100%" align="right"><strong style="font-size: 15px;color: #43b51c"><i><?php echo $datetime;?></i></strong></div></td>
                 <td width="5%">
                     <a href="ForumDB.php?crsid=&frmid=&tpcID=&DEL">
                         <img style="height: 35px;" src="images/bin.png" data-toggle="tooltip" title="Edit">
