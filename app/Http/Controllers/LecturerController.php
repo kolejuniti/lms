@@ -1324,22 +1324,25 @@ class LecturerController extends Controller
                 }
             }
 
-            foreach($data['mc'] as $std)
+            if(isset($data['mc']))
             {
-                if(DB::table('tblclassattendance')->where([['student_ic', $std],['groupid', $group[0]],['groupname', $group[1]],['classdate', $data['date']]])->exists())
+
+                foreach($data['mc'] as $std)
                 {
-                    
-                }else{
-                    DB::table('tblclassattendance')->insert([
-                        'student_ic' => $std,
-                        'groupid' => $group[0],
-                        'groupname' => $group[1],
-                        'mc' => TRUE,
-                        'classdate' => $data['date']
-                    ]);
+                    if(DB::table('tblclassattendance')->where([['student_ic', $std],['groupid', $group[0]],['groupname', $group[1]],['classdate', $data['date']]])->exists())
+                    {
+                        
+                    }else{
+                        DB::table('tblclassattendance')->insert([
+                            'student_ic' => $std,
+                            'groupid' => $group[0],
+                            'groupname' => $group[1],
+                            'mc' => TRUE,
+                            'classdate' => $data['date']
+                        ]);
+                    }
                 }
             }
-
         }
 
         return redirect()->back()->with('message', 'Student attendance has been submitted!');
