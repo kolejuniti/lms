@@ -450,14 +450,13 @@ class AdminController extends Controller
         foreach($groups as $ky => $grp)
         {
 
-
                 $students[] = $data = DB::table('user_subjek')
                 ->join('student_subjek', 'user_subjek.id', 'student_subjek.group_id')
                 ->join('students', 'student_subjek.student_ic', 'students.ic')
                 ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
                 ->select('user_subjek.*','student_subjek.group_name','student_subjek.group_id','students.*')
                 ->where([
-                ['user_subjek.user_ic', $user->ic],
+                ['user_subjek.user_ic', $user],
                 ['user_subjek.session_id', $sessionid],
                 ['subjek.id', $courseid]
                 ])
