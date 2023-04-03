@@ -632,20 +632,21 @@ class PendaftarController extends Controller
         $content .= "<option value='0' selected disabled>-</option>";
         foreach($students as $std){
 
-            $content .= '<option data-style="btn-inverse"
-            data-content=\'<div class="row" >
-                <div class="col-md-2">
-                <div class="d-flex justify-content-center">
-                    <img src="" 
-                        height="auto" width="70%" class="bg-light ms-0 me-2 rounded-circle">
+            $content .= "<option data-style=\"btn-inverse\"
+            data-content=\"<div class='row'>
+                <div class='col-md-2'>
+                <div class='d-flex justify-content-center'>
+                    <img src='' 
+                        height='auto' width='70%' class='bg-light ms-0 me-2 rounded-circle'>
                         </div>
                 </div>
-                <div class="col-md-10 align-self-center lh-lg">
-                    <span><strong>'. $std->name .'</strong></span><br>
-                    <span>'. $std->email .' | <strong class="text-fade"">'.$std->ic .'</strong></span><br>
-                    <span class="text-fade"></span>
+                <div class='col-md-10 align-self-center lh-lg'>
+                    <span><strong>". $std->name ."</strong></span><br>
+                    <span>". $std->email ." | <strong class='text-fade'>". $std->ic ."</strong></span><br>
+                    <span class='text-fade'></span>
                 </div>
-            </div>\' value='. $std->ic .' ></option>';
+            </div>\" value='". $std->ic ."' ></option>";
+
         }
         
         return $content;
