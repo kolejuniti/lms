@@ -200,33 +200,7 @@ function submitForm(ic)
                 if(res.message == "Success"){
                     alert("Success! Status & Student info has been updated!")
                     $('#complex_header').html(res.data);
-
-                    $('#complex_header').DataTable({
-                      dom: 'lBfrtip', // if you remove this line you will see the show entries dropdown
-                      
-                      buttons: [
-                        {
-                            extend: 'excelHtml5',
-                            messageTop: output,
-                            title: 'Excel' + '-' + output,
-                            text:'Export to excel'
-                            //Columns to export
-                            //exportOptions: {
-                          //     columns: [0, 1, 2, 3,4,5,6]
-                          // }
-                        },
-                        {
-                            extend: 'pdfHtml5',
-                            title: 'PDF' + '-' + output,
-                            text: 'Export to PDF'
-                            //Columns to export
-                            //exportOptions: {
-                          //     columns: [0, 1, 2, 3, 4, 5, 6]
-                          //  }
-                        }
-                      ],
-                    });
-                
+                    
                 }else{
                     $('.error-field').html('');
                     if(res.message == "Field Error"){
