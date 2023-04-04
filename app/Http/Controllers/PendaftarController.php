@@ -753,16 +753,16 @@ class PendaftarController extends Controller
                     //$registered = ($std->status == 'ACTIVE') ? 'checked' : '';
                     $content .= '
                     <tr>
-                        <td style="width: 1%">
+                        <td>
                         '. $key+1 .'
                         </td>
-                        <td style="width: 15%">
+                        <td>
                         '. $std->student_ic .'
                         </td>
-                        <td style="width: 15%">
+                        <td>
                         '. $std->semester_id .'
                         </td>
-                        <td style="width: 30%">
+                        <td>
                         '. $std->SessionName .'
                         </td>
                         <td>
