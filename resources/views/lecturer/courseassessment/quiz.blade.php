@@ -27,9 +27,14 @@
                     </nav>
                 </div>
             </div>
-            
         </div>
     </div>
+
+    @if(session('message'))
+      <script>
+        alert('{{ session("message") }}');
+      </script>
+    @endif
 
     <!-- Main content -->
     <section class="content">
@@ -126,6 +131,13 @@
                                     </i>
                                     Edit
                                 </a>
+                                @if($dt->statusname == 'published')
+                                <a class="btn btn-warning btn-sm btn-sm mr-2" href="#" onclick="getExtend('{{ $dt->id }}')">
+                                    <i class="ti-shift-right">
+                                    </i>
+                                    Extend
+                                </a>
+                                @endif
                                 <a class="btn btn-danger btn-sm" href="#" onclick="deleteQuiz('{{ $dt->id }}')">
                                     <i class="ti-trash">
                                     </i>
@@ -146,6 +158,15 @@
         </div>
       </section>
         <!-- /.content -->
+
+        <div id="uploadModal" class="modal" class="modal fade" role="dialog">
+          <div class="modal-dialog">
+              <!-- modal content-->
+              <div class="modal-content" id="getModal">
+                  
+              </div>
+          </div>
+        </div>
     
     </div>
 </div>
@@ -167,25 +188,45 @@ $(document).ready( function () {
     text: "This will be permanent",
     showCancelButton: true,
     confirmButtonText: "Yes, delete it!"
-  }).then(function(res){
-    
-    if (res.isConfirmed){
-              $.ajax({
-                  headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
-                  url      : "{{ url('lecturer/quiz/deletequiz') }}",
-                  method   : 'POST',
-                  data 	 : {id:id},
-                  error:function(err){
-                      alert("Error");
-                      console.log(err);
-                  },
-                  success  : function(data){
-                      window.location.reload();
-                      alert("success");
-                  }
+    }).then(function(res){
+      
+      if (res.isConfirmed){
+                $.ajax({
+                    headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
+                    url      : "{{ url('lecturer/quiz/deletequiz') }}",
+                    method   : 'POST',
+                    data 	 : {id:id},
+                    error:function(err){
+                        alert("Error");
+                        console.log(err);
+                    },
+                    success  : function(data){
+                        window.location.reload();
+                        alert("success");
+                    }
               });
           }
       });
+  }
+
+  function getExtend(id)
+  {
+
+    return $.ajax({
+            headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
+            url      : "{{ url('lecturer/quiz/getextend') }}",
+            method   : 'POST',
+            data 	 : {id: id},
+            error:function(err){
+                alert("Error");
+                console.log(err);
+            },
+            success  : function(data){
+                $('#getModal').html(data);
+                $('#uploadModal').modal('show');
+            }
+        });
+
   }
 
 </script>
