@@ -715,7 +715,11 @@ class PendaftarController extends Controller
                     'remark' => $student->comment
                 ]);
 
-                $std_log = DB::table('tblstudent_log')->where('student_ic', $student->ic)->get();
+                $std_log = DB::table('tblstudent_log')
+                           ->join('sessions', 'tblstudent_log.session_id', 'sessions.SessionID')
+                           ->join('tblstudent_status', 'tblstudent_log.status_id', 'tblstudent_status.id')
+                           ->where('student_ic', $student->ic)
+                           ->get();
 
                 $content = "";
                 $content .= '<thead>
@@ -759,10 +763,10 @@ class PendaftarController extends Controller
                         '. $std->semester_id .'
                         </td>
                         <td style="width: 30%">
-                        '. $std->session_id .'
+                        '. $std->SessionName .'
                         </td>
                         <td>
-                        '. $std->status_id .'
+                        '. $std->name .'
                         </td>
                         <td>
                         '. $std->date .'
