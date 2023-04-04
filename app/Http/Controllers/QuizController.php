@@ -384,7 +384,7 @@ class QuizController extends Controller
                 })
                 ->join('tblclassquiz', 'tblclassquiz_group.quizid', 'tblclassquiz.id')
                 ->join('students', 'student_subjek.student_ic', 'students.ic')
-                ->select('student_subjek.*', 'tblclassquiz.id AS clssid', 'tblclassquiz.total_mark', 'students.no_matric', 'students.name')
+                ->select('student_subjek.*', 'tblclassquiz.id AS clssid', 'tblclassquiz.total_mark', 'tblclassquiz.date_from', 'tblclassquiz.date_to', 'students.no_matric', 'students.name')
                 ->where([
                     ['tblclassquiz.classid', Session::get('CourseIDS')],
                     ['tblclassquiz.sessionid', Session::get('SessionIDS')],
@@ -409,6 +409,15 @@ class QuizController extends Controller
 
         return view('lecturer.courseassessment.quizstatus', compact('quiz', 'status', 'group'));
 
+    }
+
+    public function deletequizstatus(Request $request)
+    {
+
+        DB::table('tblclassstudentquiz')->where('id', $request->id)->delete();
+
+        return true;
+        
     }
 
     public function quizresult(Request $request){

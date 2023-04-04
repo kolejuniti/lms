@@ -354,6 +354,20 @@ class AssignmentController extends Controller
 
     }
 
+    public function deleteassignstatus(Request $request)
+    {
+        $data = DB::table('tblclassstudentassign')->where('id', $request->id)->first();
+
+        Storage::disk('linode')->delete($data->content);
+
+        Storage::disk('linode')->delete($data->return_content);
+
+        DB::table('tblclassstudentassign')->where('id', $request->id)->delete();
+
+        return true;
+        
+    }
+
     public function assignresult(Request $request){
         
         $id = $request->assignid;

@@ -384,7 +384,7 @@ class TestController extends Controller
                 })
                 ->join('tblclasstest', 'tblclasstest_group.testid', 'tblclasstest.id')
                 ->join('students', 'student_subjek.student_ic', 'students.ic')
-                ->select('student_subjek.*', 'tblclasstest.id AS clssid', 'tblclasstest.total_mark', 'students.no_matric', 'students.name')
+                ->select('student_subjek.*', 'tblclasstest.id AS clssid', 'tblclasstest.total_mark', 'tblclasstest.date_from', 'tblclasstest.date_to', 'students.no_matric', 'students.name')
                 ->where([
                     ['tblclasstest.classid', Session::get('CourseIDS')],
                     ['tblclasstest.sessionid', Session::get('SessionIDS')],
@@ -409,6 +409,15 @@ class TestController extends Controller
 
         return view('lecturer.courseassessment.teststatus', compact('test', 'status', 'group'));
 
+    }
+
+    public function deleteteststatus(Request $request)
+    {
+
+        DB::table('tblclassstudenttest')->where('id', $request->id)->delete();
+
+        return true;
+        
     }
 
     public function testresult(Request $request){
