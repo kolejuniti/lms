@@ -219,6 +219,8 @@ Route::get('/lecturer/report/{id}/{student}', [App\Http\Controllers\LecturerCont
 Route::post('/update-data', [App\Http\Controllers\LecturerController::class, 'autoudateData']);
 
 Route::get('/lecturer/quiz/{id}', [App\Http\Controllers\QuizController::class, 'quizlist'])->name('lecturer.quiz');
+Route::post('/lecturer/quiz/getextend', [App\Http\Controllers\QuizController::class, 'getExtendQuiz']);
+Route::post('/lecturer/quiz/updateExtend', [App\Http\Controllers\QuizController::class, 'updateExtendQuiz']);
 Route::get('/lecturer/quiz/{id}/create', [App\Http\Controllers\QuizController::class, 'quizcreate'])->name('lecturer.quiz.create');
 Route::post('/lecturer/quiz/insert', [App\Http\Controllers\QuizController::class, 'insertquiz']);
 Route::post('/lecturer/quiz/getStatus', [App\Http\Controllers\QuizController::class, 'getStatus']);
@@ -249,6 +251,8 @@ Route::post('/lecturer/quiz2/getChapters', [App\Http\Controllers\QuizController:
 
 
 Route::get('/lecturer/test/{id}', [App\Http\Controllers\TestController::class, 'testlist'])->name('lecturer.test');
+Route::post('/lecturer/test/getextend', [App\Http\Controllers\TestController::class, 'getExtendTest']);
+Route::post('/lecturer/test/updateExtend', [App\Http\Controllers\TestController::class, 'updateExtendTest']);
 Route::get('/lecturer/test/{id}/create', [App\Http\Controllers\TestController::class, 'testcreate'])->name('lecturer.test.create');
 Route::post('/lecturer/test/insert', [App\Http\Controllers\TestController::class, 'inserttest']);
 Route::post('/lecturer/test/getStatus', [App\Http\Controllers\TestController::class, 'getStatus']);
