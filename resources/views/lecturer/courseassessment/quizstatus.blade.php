@@ -109,22 +109,29 @@
                                 </td>
                                 @if (count($status[$key]) > 0)
                                   @foreach ($status[$key] as $keys => $sts)
-                                  <td style="width: 20%">
-                                        {{ empty($sts) ? '-' : $sts->submittime }}
-                                  </td>
-                                  <td>
-                                        {{ empty($sts) ? '-' : $sts->status }}
-                                  </td>
-                                  <td>
-                                        {{ empty($sts) ? '-' : $sts->final_mark }} / {{ $qz->total_mark }}
-                                  </td>
-                                  <td class="project-actions text-center" >
-                                    <a class="btn btn-success btn-sm mr-2" href="/lecturer/quiz/{{ request()->quiz }}/{{ $sts->userid }}/result">
-                                        <i class="ti-user">
-                                        </i>
-                                        Students
-                                    </a>
-                                  </td>                                               
+                                    <td style="width: 20%">
+                                          {{ empty($sts) ? '-' : $sts->submittime }}
+                                    </td>
+                                    <td>
+                                          {{ empty($sts) ? '-' : $sts->status }}
+                                    </td>
+                                    <td>
+                                          {{ empty($sts) ? '-' : $sts->final_mark }} / {{ $qz->total_mark }}
+                                    </td>
+                                    <td class="project-actions text-center" >
+                                      <a class="btn btn-success btn-sm mr-2" href="/lecturer/quiz/{{ request()->quiz }}/{{ $sts->userid }}/result">
+                                          <i class="ti-pencil-alt">
+                                          </i>
+                                          Answer
+                                      </a>
+                                      @if(date('Y-m-d H:i:s') >= $qz->date_from && date('Y-m-d H:i:s') <= $qz->date_to)
+                                      <a class="btn btn-danger btn-sm mr-2" onclick="deleteStdQuiz('{{ $sts->id }}')">
+                                          <i class="ti-trash">
+                                          </i>
+                                          Delete
+                                      </a>
+                                      @endif
+                                    </td>
                                   @endforeach
                                 @else
                                   <td style="width: 20%">
@@ -140,9 +147,7 @@
 
                                   </td>
                                 @endif
-                              
-                            
-                            </tr> 
+                              </tr> 
                             
                               @endforeach
                             </tbody>
@@ -204,6 +209,33 @@
             }
         });
 
+    }
+
+    function deleteStdQuiz(id){     
+      Swal.fire({
+    title: "Are you sure?",
+    text: "This will be permanent",
+    showCancelButton: true,
+    confirmButtonText: "Yes, delete it!"
+    }).then(function(res){
+      
+      if (res.isConfirmed){
+                $.ajax({
+                    headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
+                    url      : "{{ url('lecturer/quiz/status/delete') }}",
+                    method   : 'DELETE',
+                    data 	 : {id:id},
+                    error:function(err){
+                        alert("Error");
+                        console.log(err);
+                    },
+                    success  : function(data){
+                        window.location.reload();
+                        alert("success");
+                    }
+                });
+            }
+        });
     }
 
 </script>

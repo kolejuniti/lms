@@ -142,9 +142,14 @@
                                   </td>
                                   <td class="project-actions text-center" >
                                     <a class="btn btn-success btn-sm mr-2" href="/lecturer/assign/{{ request()->assign }}/{{ $sts->userid }}/result">
-                                        <i class="ti-user">
+                                        <i class="ti-pencil-alt">
                                         </i>
-                                        Students
+                                        Answer
+                                    </a>
+                                    <a class="btn btn-danger btn-sm mr-2" onclick="deleteStdAssign('{{ $sts->id }}')">
+                                      <i class="ti-trash">
+                                      </i>
+                                      Delete
                                     </a>
                                   </td>                                               
                                   @endforeach
@@ -229,6 +234,33 @@
             }
         });
 
+    }
+
+    function deleteStdAssign(id){     
+      Swal.fire({
+    title: "Are you sure?",
+    text: "This will be permanent",
+    showCancelButton: true,
+    confirmButtonText: "Yes, delete it!"
+    }).then(function(res){
+      
+      if (res.isConfirmed){
+                $.ajax({
+                    headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
+                    url      : "{{ url('lecturer/assign/status/delete') }}",
+                    method   : 'DELETE',
+                    data 	 : {id:id},
+                    error:function(err){
+                        alert("Error");
+                        console.log(err);
+                    },
+                    success  : function(data){
+                        window.location.reload();
+                        alert("success");
+                    }
+                });
+            }
+        });
     }
 
 </script>
