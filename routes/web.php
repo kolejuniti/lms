@@ -224,6 +224,7 @@ Route::post('/lecturer/quiz/insert', [App\Http\Controllers\QuizController::class
 Route::post('/lecturer/quiz/getStatus', [App\Http\Controllers\QuizController::class, 'getStatus']);
 Route::post('/lecturer/quiz/updatequizresult', [App\Http\Controllers\QuizController::class, 'updatequizresult']);
 Route::get('/lecturer/quiz/{id}/{quiz}', [App\Http\Controllers\QuizController::class, 'lecturerquizstatus'])->name('lecturer.quiz.status');
+Route::delete('/lecturer/quiz/status/delete', [App\Http\Controllers\QuizController::class, 'deletequizstatus']);
 Route::get('/lecturer/quiz/{quizid}/{userid}/result', [App\Http\Controllers\QuizController::class, 'quizresult']);
 Route::post('/lecturer/quiz/getChapters', [App\Http\Controllers\QuizController::class, 'getChapters']);
 Route::post('/lecturer/quiz/deletequiz', [App\Http\Controllers\QuizController::class, 'deletequiz']);
@@ -253,6 +254,7 @@ Route::post('/lecturer/test/insert', [App\Http\Controllers\TestController::class
 Route::post('/lecturer/test/getStatus', [App\Http\Controllers\TestController::class, 'getStatus']);
 Route::post('/lecturer/test/updatetestresult', [App\Http\Controllers\TestController::class, 'updatetestresult']);
 Route::get('/lecturer/test/{id}/{test}', [App\Http\Controllers\TestController::class, 'lecturerteststatus'])->name('lecturer.test.status');
+Route::delete('/lecturer/test/status/delete', [App\Http\Controllers\TestController::class, 'deleteteststatus']);
 Route::get('/lecturer/test/{testid}/{userid}/result', [App\Http\Controllers\TestController::class, 'testresult']);
 Route::post('/lecturer/test/getChapters', [App\Http\Controllers\TestController::class, 'getChapters']);
 Route::post('/lecturer/test/deletetest', [App\Http\Controllers\TestController::class, 'deletetest']);
@@ -274,6 +276,7 @@ Route::post('/lecturer/assign/insert', [App\Http\Controllers\AssignmentControlle
 Route::post('/lecturer/assign/getStatus', [App\Http\Controllers\AssignmentController::class, 'getStatus']);
 Route::post('/lecturer/assign/updateassignresult', [App\Http\Controllers\AssignmentController::class, 'updateassignresult']);
 Route::get('/lecturer/assign/{id}/{assign}', [App\Http\Controllers\AssignmentController::class, 'lecturerassignstatus'])->name('lecturer.assign.status');
+Route::delete('/lecturer/assign/status/delete', [App\Http\Controllers\AssignmentController::class, 'deleteassignstatus']);
 Route::get('/lecturer/assign/{assignid}/{userid}/result', [App\Http\Controllers\AssignmentController::class, 'assignresult']);
 Route::post('/lecturer/assign/getChapters', [App\Http\Controllers\AssignmentController::class, 'getChapters']);
 Route::post('/lecturer/assign/deleteassign', [App\Http\Controllers\AssignmentController::class, 'deleteassign']);
