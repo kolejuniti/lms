@@ -60,6 +60,28 @@ class QuizController extends Controller
         return view('lecturer.courseassessment.quiz', compact('data', 'group', 'chapter'));
     }
 
+    public function getExtendQuiz(Request $request)
+    {
+
+        $data['quiz'] = DB::table('tblclassquiz')->where('id', $request->id)->first();
+
+        return view('lecturer.courseassessment.quizGetExtend', compact('data'));
+
+    }
+
+    public function updateExtendQuiz(Request $request)
+    {
+
+        DB::table('tblclassquiz')->where('id', $request->id)->update([
+            'date_from' => $request->from,
+            'date_to' => $request->to,
+            'duration' => $request->duration
+        ]);
+
+        return back()->with('message', 'Success!');
+
+    }
+
     public function deletequiz(Request $request)
     {
 

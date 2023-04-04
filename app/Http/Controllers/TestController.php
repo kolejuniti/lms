@@ -60,6 +60,28 @@ class TestController extends Controller
         return view('lecturer.courseassessment.test', compact('data', 'group', 'chapter'));
     }
 
+    public function getExtendTest(Request $request)
+    {
+
+        $data['test'] = DB::table('tblclasstest')->where('id', $request->id)->first();
+
+        return view('lecturer.courseassessment.testGetExtend', compact('data'));
+
+    }
+
+    public function updateExtendTest(Request $request)
+    {
+
+        DB::table('tblclasstest')->where('id', $request->id)->update([
+            'date_from' => $request->from,
+            'date_to' => $request->to,
+            'duration' => $request->duration
+        ]);
+
+        return back()->with('message', 'Success!');
+
+    }
+
     public function deletetest(Request $request)
     {
 
