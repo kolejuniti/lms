@@ -36,7 +36,7 @@ class StudentController extends Controller
                 ['tblprogramme.progstatusid', 1],
                 ['student_subjek.student_ic', $student->ic]
                 ])
-        ->select('subjek.course_name','subjek.course_code','student_subjek.courseid','sessions.SessionName','sessions.SessionID')
+        ->select('subjek.id','subjek.course_name','subjek.course_code','student_subjek.courseid','sessions.SessionName','sessions.SessionID')
         ->groupBy('student_subjek.courseid')
         ->get();
 
