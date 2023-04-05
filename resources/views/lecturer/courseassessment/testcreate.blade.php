@@ -299,7 +299,7 @@ function renderMark(){
         var checkbox = $($('.collected-marks')[i]);
 
         var mark = checkbox.val();
-        mark = parseInt(mark);
+        mark = parseFloat(mark);
 
         
         total_correct_mark = total_correct_mark + mark;

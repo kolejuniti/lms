@@ -285,7 +285,7 @@ function renderMark(){
         var checkbox = $($('.collected-marks')[i]);
 
         var mark = checkbox.val();
-        mark = parseInt(mark);
+        mark = parseFloat(mark);
 
         if(checkbox.is(':checked')){
             total_correct_mark = total_correct_mark + mark;
@@ -296,7 +296,7 @@ function renderMark(){
 
    
     $('.inputmark').each(function() {
-        total_correct_input += parseInt($(this).val());
+        total_correct_input += parseFloat($(this).val());
     });
 
     //alert(total_correct_input);
