@@ -28,22 +28,26 @@ class StudentController extends Controller
 
         //dd($student);
 
-        $subject = student::join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
-        ->join('tblprogramme', 'subjek.prgid', 'tblprogramme.id')
-        ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
-        ->join('user_subjek', function($join){
-            $join->on('student_subjek.courseid', 'user_subjek.course_id');
-            $join->on('student_subjek.sessionid', 'user_subjek.session_id');
-        })
-        ->join('users', 'user_subjek.user_ic', 'users.ic')
-        ->where([
-            ['sessions.Status', 'ACTIVE'],
-            ['tblprogramme.progstatusid', 1],
-            ['student_subjek.student_ic', $student->ic]
-            ])
-        ->select('subjek.course_name','subjek.course_code','student_subjek.courseid','sessions.SessionName','sessions.SessionID', 'users.name')
-        ->groupBy('student_subjek.courseid')
-        ->get();
+        $subject = student::where('student_ic', $student->ic)->get();
+
+        dd($subject);
+
+        // $subject = student::join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
+        // ->join('tblprogramme', 'subjek.prgid', 'tblprogramme.id')
+        // ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
+        // ->join('user_subjek', function($join){
+        //     $join->on('student_subjek.courseid', 'user_subjek.course_id');
+        //     $join->on('student_subjek.sessionid', 'user_subjek.session_id');
+        // })
+        // ->join('users', 'user_subjek.user_ic', 'users.ic')
+        // ->where([
+        //     ['sessions.Status', 'ACTIVE'],
+        //     ['tblprogramme.progstatusid', 1],
+        //     ['student_subjek.student_ic', $student->ic]
+        //     ])
+        // ->select('subjek.course_name','subjek.course_code','student_subjek.courseid','sessions.SessionName','sessions.SessionID', 'users.name')
+        // ->groupBy('student_subjek.courseid')
+        // ->get();
 
         //dd($subject);
 
