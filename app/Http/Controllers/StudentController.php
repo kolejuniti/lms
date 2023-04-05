@@ -122,81 +122,126 @@ class StudentController extends Controller
         if(isset($request->search) && isset($request->session))
         {
 
-        $data = student::join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
+            $data = student::join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
             ->join('tblprogramme', 'subjek.prgid', 'tblprogramme.id')
             ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
-            ->join('user_subjek', function($join){
-                $join->on('student_subjek.courseid', 'user_subjek.course_id');
-                $join->on('student_subjek.sessionid', 'user_subjek.session_id');
-            })
-            ->join('users', 'user_subjek.user_ic', 'users.ic')
-            ->select('subjek.*','student_subjek.courseid','sessions.SessionName','sessions.SessionID','tblprogramme.progname', 'users.name')
-            ->groupBy('student_subjek.courseid')
-            ->where('sessions.Status', 'ACTIVE')
-            ->where('tblprogramme.progstatusid', 1)
-            ->where('student_subjek.student_ic', $student->ic)
+            ->where([
+                    ['sessions.Status', 'ACTIVE'],
+                    ['tblprogramme.progstatusid', 1],
+                    ['student_subjek.student_ic', $student->ic]
+                    ])
             ->where('student_subjek.sessionid','LIKE','%'.$request->session.'%')
             ->where('subjek.course_name','LIKE','%'.$request->search."%")
+            ->select('subjek.id','subjek.course_name','subjek.course_code','student_subjek.courseid','sessions.SessionName','sessions.SessionID')
+            ->groupBy('student_subjek.courseid')
             ->get();
+
+            foreach($data as $key => $sub)
+            {
+
+                $lecturer[$key] = DB::table('user_subjek')
+                        ->join('users', 'user_subjek.user_ic', 'users.ic')
+                        ->where([
+                            ['user_subjek.course_id', $sub->courseid],
+                            ['user_subjek.session_id', $sub->SessionID]
+                            ])
+                        ->select('users.name')
+                        ->first();
+
+            }
 
         }elseif(isset($request->search))
         {
 
-        $data = student::join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
+            $data = student::join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
             ->join('tblprogramme', 'subjek.prgid', 'tblprogramme.id')
             ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
-            ->join('user_subjek', function($join){
-                $join->on('student_subjek.courseid', 'user_subjek.course_id');
-                $join->on('student_subjek.sessionid', 'user_subjek.session_id');
-            })
-            ->join('users', 'user_subjek.user_ic', 'users.ic')
-            ->select('subjek.*','student_subjek.courseid','sessions.SessionName','sessions.SessionID','tblprogramme.progname', 'users.name')
-            ->groupBy('student_subjek.courseid')
-            ->where('sessions.Status', 'ACTIVE')
-            ->where('tblprogramme.progstatusid', 1)
-            ->where('student_subjek.student_ic', $student->ic)
+            ->where([
+                    ['sessions.Status', 'ACTIVE'],
+                    ['tblprogramme.progstatusid', 1],
+                    ['student_subjek.student_ic', $student->ic]
+                    ])
             ->where('subjek.course_name','LIKE','%'.$request->search."%")
+            ->select('subjek.id','subjek.course_name','subjek.course_code','student_subjek.courseid','sessions.SessionName','sessions.SessionID')
+            ->groupBy('student_subjek.courseid')
             ->get();
+
+            foreach($data as $key => $sub)
+            {
+
+                $lecturer[$key] = DB::table('user_subjek')
+                        ->join('users', 'user_subjek.user_ic', 'users.ic')
+                        ->where([
+                            ['user_subjek.course_id', $sub->courseid],
+                            ['user_subjek.session_id', $sub->SessionID]
+                            ])
+                        ->select('users.name')
+                        ->first();
+
+            }
+            
 
         }elseif(isset($request->session))
         {
 
-        $data = student::join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
+            $data = student::join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
             ->join('tblprogramme', 'subjek.prgid', 'tblprogramme.id')
             ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
-            ->join('user_subjek', function($join){
-                $join->on('student_subjek.courseid', 'user_subjek.course_id');
-                $join->on('student_subjek.sessionid', 'user_subjek.session_id');
-            })
-            ->join('users', 'user_subjek.user_ic', 'users.ic')
-            ->select('subjek.*','student_subjek.courseid','sessions.SessionName','sessions.SessionID','tblprogramme.progname', 'users.name')
-            ->groupBy('student_subjek.courseid')
-            ->where('sessions.Status', 'ACTIVE')
-            ->where('tblprogramme.progstatusid', 1)
-            ->where('student_subjek.student_ic', $student->ic)
+            ->where([
+                    ['sessions.Status', 'ACTIVE'],
+                    ['tblprogramme.progstatusid', 1],
+                    ['student_subjek.student_ic', $student->ic]
+                    ])
             ->where('student_subjek.sessionid','LIKE','%'.$request->session.'%')
+            ->select('subjek.id','subjek.course_name','subjek.course_code','student_subjek.courseid','sessions.SessionName','sessions.SessionID')
+            ->groupBy('student_subjek.courseid')
             ->get();
+
+            foreach($data as $key => $sub)
+            {
+
+                $lecturer[$key] = DB::table('user_subjek')
+                        ->join('users', 'user_subjek.user_ic', 'users.ic')
+                        ->where([
+                            ['user_subjek.course_id', $sub->courseid],
+                            ['user_subjek.session_id', $sub->SessionID]
+                            ])
+                        ->select('users.name')
+                        ->first();
+
+            }
 
         }else{
 
-        $data = student::join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
+            $data = student::join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
             ->join('tblprogramme', 'subjek.prgid', 'tblprogramme.id')
             ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
-            ->join('user_subjek', function($join){
-                $join->on('student_subjek.courseid', 'user_subjek.course_id');
-                $join->on('student_subjek.sessionid', 'user_subjek.session_id');
-            })
-            ->join('users', 'user_subjek.user_ic', 'users.ic')
-            ->select('subjek.*','student_subjek.courseid','sessions.SessionName','sessions.SessionID','tblprogramme.progname', 'users.name')
+            ->where([
+                    ['sessions.Status', 'ACTIVE'],
+                    ['tblprogramme.progstatusid', 1],
+                    ['student_subjek.student_ic', $student->ic]
+                    ])
+            ->select('subjek.id','subjek.course_name','subjek.course_code','student_subjek.courseid','sessions.SessionName','sessions.SessionID')
             ->groupBy('student_subjek.courseid')
-            ->where('sessions.Status', 'ACTIVE')
-            ->where('tblprogramme.progstatusid', 1)
-            ->where('student_subjek.student_ic', $student->ic)
             ->get();
+
+            foreach($data as $key => $sub)
+            {
+
+                $lecturer[$key] = DB::table('user_subjek')
+                        ->join('users', 'user_subjek.user_ic', 'users.ic')
+                        ->where([
+                            ['user_subjek.course_id', $sub->courseid],
+                            ['user_subjek.session_id', $sub->SessionID]
+                            ])
+                        ->select('users.name')
+                        ->first();
+
+            }
 
         }
 
-        return view('studentgetcourse', compact('data'));
+        return view('studentgetcourse', compact('data', 'lecturer'));
 
 
     }
