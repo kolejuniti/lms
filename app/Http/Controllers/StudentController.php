@@ -26,6 +26,8 @@ class StudentController extends Controller
 
         $user = Session::put('StudInfo', $student);
 
+        dd($user);
+
         $subject = student::join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
         ->join('tblprogramme', 'subjek.prgid', 'tblprogramme.id')
         ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
