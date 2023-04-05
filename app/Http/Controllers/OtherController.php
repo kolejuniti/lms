@@ -382,7 +382,7 @@ class OtherController extends Controller
                     ['tblclassother.sessionid', Session::get('SessionIDS')],
                     ['tblclassother.id', request()->other],
                     ['tblclassother.addby', $user->ic]
-                ])->whereNotIn('students.status', [4,5,7])->orderBy('students.name')->get();
+                ])->whereNotIn('students.status', [4,5,6,7,16])->orderBy('students.name')->get();
         
         
         

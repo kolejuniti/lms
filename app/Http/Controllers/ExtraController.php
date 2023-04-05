@@ -263,7 +263,7 @@ class ExtraController extends Controller
                     ['tblclassextra.sessionid', Session::get('SessionIDS')],
                     ['tblclassextra.id', request()->extra],
                     ['tblclassextra.addby', $user->ic]
-                ])->whereNotIn('students.status', [4,5,7])->orderBy('students.name')->get();
+                ])->whereNotIn('students.status', [4,5,6,7,16])->orderBy('students.name')->get();
         
         
         

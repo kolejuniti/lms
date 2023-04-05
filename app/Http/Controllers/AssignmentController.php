@@ -335,7 +335,7 @@ class AssignmentController extends Controller
                     ['tblclassassign.sessionid', Session::get('SessionIDS')],
                     ['tblclassassign.id', request()->assign],
                     ['tblclassassign.addby', $user->ic]
-                ])->whereNotIn('students.status', [4,5,7])->orderBy('students.name')->get();
+                ])->whereNotIn('students.status', [4,5,6,7,16])->orderBy('students.name')->get();
         
         //dd($assign);
 
@@ -941,7 +941,7 @@ class AssignmentController extends Controller
                     ['tblclassassign.sessionid', Session::get('SessionIDS')],
                     ['tblclassassign.id', request()->assign],
                     ['tblclassassign.addby', $user->ic]
-                ])->whereNotIn('students.status', [4,5,7])->get();
+                ])->whereNotIn('students.status', [4,5,6,7,16])->get();
         
         
         

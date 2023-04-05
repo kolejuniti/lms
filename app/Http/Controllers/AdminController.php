@@ -460,7 +460,7 @@ class AdminController extends Controller
                 ['user_subjek.session_id', $sessionid],
                 ['subjek.id', $courseid]
                 ])
-                ->whereNotIn('students.status', [4,5,7])
+                ->whereNotIn('students.status', [4,5,6,7,16])
                 ->where('student_subjek.group_name', $grp->group_name)
                 ->orderBy('students.name')->get();
 

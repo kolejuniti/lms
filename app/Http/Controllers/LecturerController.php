@@ -1107,7 +1107,7 @@ class LecturerController extends Controller
                     ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
                     ->where('group_id', $group[0])->where('group_name', $group[1])
                     ->where('student_subjek.sessionid', Session::get('SessionID'))
-                    ->whereNotIn('students.status', [4,5,7])
+                    ->whereNotIn('students.status', [4,5,6,7,16])
                     ->orderBy('students.name')
                     ->get();
 
@@ -3010,7 +3010,7 @@ class LecturerController extends Controller
                 ['user_subjek.session_id', $sessionid],
                 ['subjek.id', $courseid]
                 ])
-                ->whereNotIn('students.status', [4,5,7])
+                ->whereNotIn('students.status', [4,5,6,7,16])
                 ->where('student_subjek.group_name', $grp->group_name)
                 ->orderBy('students.name')->get();
 

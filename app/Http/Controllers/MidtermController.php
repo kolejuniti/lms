@@ -304,7 +304,7 @@ class MidtermController extends Controller
                     ['tblclassmidterm.sessionid', Session::get('SessionIDS')],
                     ['tblclassmidterm.id', request()->midterm],
                     ['tblclassmidterm.addby', $user->ic]
-                ])->whereNotIn('students.status', [4,5,7])->get();
+                ])->whereNotIn('students.status', [4,5,6,7,16])->get();
         
         
         
