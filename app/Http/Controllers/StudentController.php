@@ -28,7 +28,7 @@ class StudentController extends Controller
 
         //dd($student);
 
-        $subject = student::where('student_ic', $student->ic)->get();
+        $subject = student::where('student_ic', $student->ic)->groupBy('courseid')->get();
 
         dd($subject);
 
