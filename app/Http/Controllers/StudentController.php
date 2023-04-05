@@ -20,24 +20,32 @@ class StudentController extends Controller
 {
     public function index()
     {
+        Session::put('User', Auth::guard('student')->user());
+
         $student = auth()->guard('student')->user();
 
-        $subjects = Subject::with(['course', 'programme', 'sessions', 'users'])
-            ->whereHas('sessions', function ($query) {
-                $query->where('Status', 'ACTIVE');
-            })
-            ->whereHas('programme', function ($query) {
-                $query->where('progstatusid', 1);
-            })
-            ->whereHas('course.students', function ($query) use ($student) {
-                $query->where('student_ic', $student->ic);
-            })
-            ->groupBy('courseid')
-            ->get();
+        $user = Session::put('StudInfo', $student);
 
-        $sessions = Session::where('Status', 'ACTIVE')->get();
+        $subject = student::join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
+        ->join('tblprogramme', 'subjek.prgid', 'tblprogramme.id')
+        ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
+        ->join('user_subjek', function($join){
+            $join->on('student_subjek.courseid', 'user_subjek.course_id');
+            $join->on('student_subjek.sessionid', 'user_subjek.session_id');
+        })
+        ->join('users', 'user_subjek.user_ic', 'users.ic')
+        ->select('subjek.course_name','subjek.course_code','student_subjek.courseid','sessions.SessionName','sessions.SessionID','tblprogramme.progname', 'users.name')
+        ->groupBy('student_subjek.courseid')
+        ->where('sessions.Status', 'ACTIVE')
+        ->where('tblprogramme.progstatusid', 1)
+        ->where('student_subjek.student_ic', $student->ic)
+        ->get();
 
-        return view('student', compact(['subjects', 'sessions']));
+        //return dd($subject);
+
+        $sessions = DB::table('sessions')->where('Status', 'ACTIVE')->get();
+
+        return view('student', compact(['subject','sessions']));
     }
 
     public function setting()
