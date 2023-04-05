@@ -24,27 +24,12 @@ class StudentController extends Controller
         Session::put('User', Auth::guard('student')->user());
 
         $minutes = 60; // Set the cache duration to 60 minutes
-        
+
         $student = auth()->guard('student')->user();
 
         $user = Session::put('StudInfo', $student);
 
-        $subject = Cache::remember('subject_' . $student->ic, $minutes, function() use ($student) {
-            return student::join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
-                ->join('tblprogramme', 'subjek.prgid', 'tblprogramme.id')
-                ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
-                ->join('user_subjek', function($join){
-                    $join->on('student_subjek.courseid', 'user_subjek.course_id');
-                    $join->on('student_subjek.sessionid', 'user_subjek.session_id');
-                })
-                ->join('users', 'user_subjek.user_ic', 'users.ic')
-                ->select('subjek.*','student_subjek.courseid','sessions.SessionName','sessions.SessionID','tblprogramme.progname', 'users.name')
-                ->groupBy('student_subjek.courseid')
-                ->where('sessions.Status', 'ACTIVE')
-                ->where('tblprogramme.progstatusid', 1)
-                ->where('student_subjek.student_ic', $student->ic)
-                ->get();
-        });
+        $subject = [];
 
         //return dd($subject);
 
