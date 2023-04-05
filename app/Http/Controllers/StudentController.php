@@ -20,19 +20,24 @@ class StudentController extends Controller
 {
     public function index()
     {
-        Session::put('User', Auth::guard('student')->user());
-
         $student = auth()->guard('student')->user();
 
-        $user = Session::put('StudInfo', $student);
+        $subjects = Subject::with(['course', 'programme', 'sessions', 'users'])
+            ->whereHas('sessions', function ($query) {
+                $query->where('Status', 'ACTIVE');
+            })
+            ->whereHas('programme', function ($query) {
+                $query->where('progstatusid', 1);
+            })
+            ->whereHas('course.students', function ($query) use ($student) {
+                $query->where('student_ic', $student->ic);
+            })
+            ->groupBy('courseid')
+            ->get();
 
-        $subject = [];
+        $sessions = Session::where('Status', 'ACTIVE')->get();
 
-        //return dd($subject);
-
-        $sessions = DB::table('sessions')->where('Status', 'ACTIVE')->get();
-
-        return view('student', compact(['subject','sessions']));
+        return view('student', compact(['subjects', 'sessions']));
     }
 
     public function setting()
