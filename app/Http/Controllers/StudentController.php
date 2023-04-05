@@ -119,6 +119,8 @@ class StudentController extends Controller
     {
         $student = Session::get('StudInfo');
 
+        $lecturer = [];
+
         if(isset($request->search) && isset($request->session))
         {
 
