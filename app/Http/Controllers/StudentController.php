@@ -40,6 +40,20 @@ class StudentController extends Controller
         ->groupBy('student_subjek.courseid')
         ->get();
 
+        foreach($subject as $key => $sub)
+        {
+
+            $lecturer[$key] = DB::table('user_subjek')
+                    ->join('users', 'user_subjek.user_ic', 'users.ic')
+                    ->where([
+                        ['user_subjek.course_id', $sub->courseid],
+                        ['user_subjek.session_id', $sub->SessionID]
+                        ])
+                    ->select('users.name')
+                    ->first();
+
+        }
+
         //dd($subject);
 
         // $subject = student::join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
@@ -63,7 +77,7 @@ class StudentController extends Controller
 
         $sessions = DB::table('sessions')->where('Status', 'ACTIVE')->get();
 
-        return view('student', compact(['subject','sessions']));
+        return view('student', compact(['subject','sessions', 'lecturer']));
     }
 
     public function setting()
