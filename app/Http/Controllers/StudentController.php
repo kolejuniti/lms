@@ -29,9 +29,11 @@ class StudentController extends Controller
         //dd($student);
 
         $subject = student::join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
+        ->join('tblprogramme', 'subjek.prgid', 'tblprogramme.id')
         ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
         ->where([
                 ['sessions.Status', 'ACTIVE'],
+                ['tblprogramme.progstatusid', 1],
                 ['student_subjek.student_ic', $student->ic]
                 ])
         ->select('subjek.course_name','subjek.course_code','student_subjek.courseid','sessions.SessionName','sessions.SessionID')
