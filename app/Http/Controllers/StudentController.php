@@ -28,8 +28,6 @@ class StudentController extends Controller
 
         //dd($student);
 
-     
-
         $subject = student::join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
         ->join('tblprogramme', 'subjek.prgid', 'tblprogramme.id')
         ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
@@ -47,7 +45,7 @@ class StudentController extends Controller
         ->groupBy('student_subjek.courseid')
         ->get();
 
-        dd($subject);
+        //dd($subject);
 
         $sessions = DB::table('sessions')->where('Status', 'ACTIVE')->get();
 
