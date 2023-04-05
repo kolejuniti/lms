@@ -79,7 +79,7 @@
       </div>
       <div id="courselist">
         <div class="row">
-          @foreach ($subject as $key)
+          @foreach ($subject as $ky => $key)
           
           <div class="col-md-4">
             <div class="card" style="padding:0 !important; height:30em">
@@ -109,9 +109,9 @@
                             <p class="card-text text-gray-600 pt-5">
                               <strong>Code</strong> {{ ucwords($key->course_code) }}
                             </p>
-                            {{-- <p class="card-text text-gray-600 pt-5">
-                              <strong>Lecturer</strong> {{ ucwords($key->name) }}
-                            </p> --}}
+                            <p class="card-text text-gray-600 pt-5">
+                              <strong>Lecturer</strong> {{ ucwords($lecturer[$ky]->name) }}
+                            </p>
                             {{-- <p class="card-text text-gray-600">
                               <strong>Program</strong> {{ ucwords($key->progname) }}
                             </p> --}}
