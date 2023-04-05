@@ -37,9 +37,10 @@ class StudentController extends Controller
                 ['student_subjek.student_ic', $student->ic]
                 ])
         ->select('subjek.course_name','subjek.course_code','student_subjek.courseid','sessions.SessionName','sessions.SessionID')
-        ->groupBy('student_subjek.courseid')->get();
+        ->groupBy('student_subjek.courseid')
+        ->get();
 
-        dd($subject);
+        //dd($subject);
 
         // $subject = student::join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
         // ->join('tblprogramme', 'subjek.prgid', 'tblprogramme.id')
