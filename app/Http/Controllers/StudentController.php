@@ -28,7 +28,13 @@ class StudentController extends Controller
 
         //dd($student);
 
-        $subject = student::where('student_ic', $student->ic)->groupBy('courseid')->get();
+        $subject = student::
+        join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
+        ->where([
+                ['sessions.Status', 'ACTIVE'],
+                ['student_subjek.student_ic', $student->ic]
+                ])
+        ->groupBy('student_subjek.courseid')->get();
 
         dd($subject);
 
