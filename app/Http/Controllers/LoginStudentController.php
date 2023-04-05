@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use Auth;
+use Hash;
 use App\Models\UserStudent;
 use Illuminate\Http\Request;
 
@@ -14,12 +15,16 @@ class LoginStudentController extends Controller
 
     public function login(Request $request)
     {
-        if(Auth::guard('student')->attempt(['no_matric' => $request->ic, 'password' => $request->password]))
-        {
-               return redirect()->route('student');
-        }else{
-            return back()->with(["message"=>"Incorrect IC or Password!"]);
+        $students = UserStudent::where('no_matric', $request->ic)->paginate(10);
+
+        foreach ($students as $student) {
+            if (Hash::check($request->password, $student->password)) {
+                Auth::guard('student')->login($student);
+                return redirect()->route('student');
+            }
         }
+
+        return redirect()->route('login')->with(["message"=>"Incorrect IC or Password!"]);
     }
 
     public function username(){
