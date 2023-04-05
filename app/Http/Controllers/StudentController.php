@@ -26,7 +26,7 @@ class StudentController extends Controller
 
         $user = Session::put('StudInfo', $student);
 
-        dd($user);
+        //dd($student);
 
         $subject = student::join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
         ->join('tblprogramme', 'subjek.prgid', 'tblprogramme.id')
@@ -36,14 +36,16 @@ class StudentController extends Controller
             $join->on('student_subjek.sessionid', 'user_subjek.session_id');
         })
         ->join('users', 'user_subjek.user_ic', 'users.ic')
+        ->where([
+            ['sessions.Status', 'ACTIVE'],
+            ['tblprogramme.progstatusid', 1],
+            ['student_subjek.student_ic', $student->ic]
+            ])
         ->select('subjek.course_name','subjek.course_code','student_subjek.courseid','sessions.SessionName','sessions.SessionID', 'users.name')
         ->groupBy('student_subjek.courseid')
-        ->where('sessions.Status', 'ACTIVE')
-        ->where('tblprogramme.progstatusid', 1)
-        ->where('student_subjek.student_ic', $student->ic)
         ->get();
 
-        dd($subject);
+        //dd($subject);
 
         $sessions = DB::table('sessions')->where('Status', 'ACTIVE')->get();
 
