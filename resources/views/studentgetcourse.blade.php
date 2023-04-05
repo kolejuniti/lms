@@ -1,5 +1,5 @@
 <div class="row">
-@foreach ($data as $key)
+@foreach ($data as $ky => $key)
 <div class="col-md-4">
   <div class="card" style="padding:0 !important; height:30em">
     <div class="row g-0 fx-element-overlay g-0 align-items-center">
@@ -29,7 +29,7 @@
                     <strong>Code</strong> {{ ucwords($key->course_code) }}
                   </p>
                   <p class="card-text text-gray-600 pt-5">
-                    <strong>Lecturer</strong> {{ ucwords($key->name) }}
+                    <strong>Lecturer</strong> {{ (isset($lecturer[$ky]->name)) ? ucwords($lecturer[$ky]->name) : 'NOT ASSIGNED' }}
                   </p>
                   <!--<p class="card-text text-gray-600">
                     <strong>Program</strong> {{ ucwords($key->progname) }}
