@@ -182,45 +182,54 @@ function submitForm(ic)
         comment: editor.getData(),
       };
 
-    formData.append('studentData', JSON.stringify(forminput));
+    if(forminput.status == '' || forminput.comment == '')
+    {
 
-    $.ajax({
-        headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
-        url: '{{ url('/pendaftar/student/status/storeStudent') }}',
-        type: 'POST',
-        data: formData,
-        cache : false,
-        processData: false,
-        contentType: false,
-        error:function(err){
-            console.log(err);
-        },
-        success:function(res){
-            try{
-                if(res.message == "Success"){
-                    alert("Success! Status & Student info has been updated!")
-                    $('#complex_header').html(res.data);
-                    
-                }else{
-                    $('.error-field').html('');
-                    if(res.message == "Field Error"){
-                        for (f in res.error) {
-                            $('#'+f+'_error').html(res.error[f]);
-                        }
-                    }
-                    else if(res.message == "Group code already existed inside the system"){
-                        $('#classcode_error').html(res.message);
-                    }
-                    else{
-                        alert(res.message);
-                    }
-                    $("html, body").animate({ scrollTop: 0 }, "fast");
-                }
-            }catch(err){
-                alert("Ops sorry, there is an error");
-            }
-        }
-    });
+      alert('Please fill in Student Status & Comment before submit!')
+
+    }else{
+
+      formData.append('studentData', JSON.stringify(forminput));
+
+      $.ajax({
+          headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
+          url: '{{ url('/pendaftar/student/status/storeStudent') }}',
+          type: 'POST',
+          data: formData,
+          cache : false,
+          processData: false,
+          contentType: false,
+          error:function(err){
+              console.log(err);
+          },
+          success:function(res){
+              try{
+                  if(res.message == "Success"){
+                      alert("Success! Status & Student info has been updated!")
+                      $('#complex_header').html(res.data);
+                      
+                  }else{
+                      $('.error-field').html('');
+                      if(res.message == "Field Error"){
+                          for (f in res.error) {
+                              $('#'+f+'_error').html(res.error[f]);
+                          }
+                      }
+                      else if(res.message == "Group code already existed inside the system"){
+                          $('#classcode_error').html(res.message);
+                      }
+                      else{
+                          alert(res.message);
+                      }
+                      $("html, body").animate({ scrollTop: 0 }, "fast");
+                  }
+              }catch(err){
+                  alert("Ops sorry, there is an error");
+              }
+          }
+      });
+
+    }
 
 }
 </script>
