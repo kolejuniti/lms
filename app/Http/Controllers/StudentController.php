@@ -14,7 +14,6 @@ use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Cache;
 
 
 class StudentController extends Controller
@@ -23,15 +22,26 @@ class StudentController extends Controller
     {
         Session::put('User', Auth::guard('student')->user());
 
-        $minutes = 60; // Set the cache duration to 60 minutes
-
         $student = auth()->guard('student')->user();
 
         $user = Session::put('StudInfo', $student);
 
-        $subject = [];
+        $subject = student::join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
+        ->join('tblprogramme', 'subjek.prgid', 'tblprogramme.id')
+        ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
+        ->join('user_subjek', function($join){
+            $join->on('student_subjek.courseid', 'user_subjek.course_id');
+            $join->on('student_subjek.sessionid', 'user_subjek.session_id');
+        })
+        ->join('users', 'user_subjek.user_ic', 'users.ic')
+        ->select('subjek.course_name','subjek.course_code','student_subjek.courseid','sessions.SessionName','sessions.SessionID', 'users.name')
+        ->groupBy('student_subjek.courseid')
+        ->where('sessions.Status', 'ACTIVE')
+        ->where('tblprogramme.progstatusid', 1)
+        ->where('student_subjek.student_ic', $student->ic)
+        ->get();
 
-        //return dd($subject);
+        dd($subject);
 
         $sessions = DB::table('sessions')->where('Status', 'ACTIVE')->get();
 
