@@ -110,7 +110,7 @@
                               <strong>Code</strong> {{ ucwords($key->course_code) }}
                             </p>
                             <p class="card-text text-gray-600 pt-5">
-                              <strong>Lecturer</strong> {{ ucwords($lecturer[$ky]->name) }}
+                              <strong>Lecturer</strong> {{ ($lecturer[$ky]->name != null) ? ucwords($lecturer[$ky]->name) : 'NOT ASSIGNED' }}
                             </p>
                             {{-- <p class="card-text text-gray-600">
                               <strong>Program</strong> {{ ucwords($key->progname) }}
