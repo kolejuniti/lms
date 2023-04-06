@@ -405,18 +405,22 @@ class PendaftarController extends Controller
 
         $numWaris = count($request->input('w_name'));
         for ($i = 0; $i < $numWaris; $i++) {
-            DB::table('tblstudent_waris')->insert([
-                'student_ic' => $data['id'],
-                'name' => $request->input('w_name')[$i],
-                'ic' => $request->input('w_ic')[$i],
-                'home_tel' => $request->input('w_notel_home')[$i],
-                'phone_tel' => $request->input('w_notel')[$i],
-                'occupation' => $request->input('occupation')[$i],
-                'dependent_no' => $request->input('dependent')[$i],
-                'relationship' => $request->input('relationship')[$i],
-                'race' => $request->input('w_race')[$i],
-                'status' => $request->input('w_status')[$i]
-            ]);
+
+            if($request->input('w_name')[$i] != '')
+            {
+                DB::table('tblstudent_waris')->insert([
+                    'student_ic' => $data['id'],
+                    'name' => $request->input('w_name')[$i],
+                    'ic' => $request->input('w_ic')[$i],
+                    'home_tel' => $request->input('w_notel_home')[$i],
+                    'phone_tel' => $request->input('w_notel')[$i],
+                    'occupation' => $request->input('occupation')[$i],
+                    'dependent_no' => $request->input('dependent')[$i],
+                    'relationship' => $request->input('relationship')[$i],
+                    'race' => $request->input('w_race')[$i],
+                    'status' => $request->input('w_status')[$i]
+                ]);
+            }
         }
 
         DB::table('student_form')->insert([
@@ -594,18 +598,22 @@ class PendaftarController extends Controller
 
         $numWaris = count($request->input('w_name'));
         for ($i = 0; $i < $numWaris; $i++) {
-            DB::table('tblstudent_waris')->insert([
-                'student_ic' => $data['id'],
-                'name' => $request->input('w_name')[$i],
-                'ic' => $request->input('w_ic')[$i],
-                'home_tel' => $request->input('w_notel_home')[$i],
-                'phone_tel' => $request->input('w_notel')[$i],
-                'occupation' => $request->input('occupation')[$i],
-                'dependent_no' => $request->input('dependent')[$i],
-                'relationship' => $request->input('relationship')[$i],
-                'race' => $request->input('w_race')[$i],
-                'status' => $request->input('w_status')[$i]
-            ]);
+            
+            if($request->input('w_name')[$i] != '')
+            {
+                DB::table('tblstudent_waris')->insert([
+                    'student_ic' => $data['id'],
+                    'name' => $request->input('w_name')[$i],
+                    'ic' => $request->input('w_ic')[$i],
+                    'home_tel' => $request->input('w_notel_home')[$i],
+                    'phone_tel' => $request->input('w_notel')[$i],
+                    'occupation' => $request->input('occupation')[$i],
+                    'dependent_no' => $request->input('dependent')[$i],
+                    'relationship' => $request->input('relationship')[$i],
+                    'race' => $request->input('w_race')[$i],
+                    'status' => $request->input('w_status')[$i]
+                ]);
+            }
         }
 
         DB::table('student_form')->where('student_ic', $data['id'])->update([
@@ -785,7 +793,7 @@ class PendaftarController extends Controller
         $data['student'] = DB::table('students')
                            ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
                            ->join('tblprogramme', 'students.program', 'tblprogramme.id')
-                           ->select('students.*', 'tblstudent_status.name AS status', 'tblprogramme.progname AS program')
+                           ->select('students.*', 'tblstudent_status.name AS statusName', 'tblprogramme.progname AS program')
                            ->where('ic', $request->student)->first();
 
         $data['history'] = DB::table('tblstudent_log')
@@ -829,7 +837,8 @@ class PendaftarController extends Controller
                     'batch' => $student->batch,
                     'session' => $student->session,
                     'semester' => $student->semester,
-                    'status' => $student->status
+                    'status' => $student->status,
+                    'student_status' => $student->kuliah
                 ]);
 
                 DB::table('tblstudent_log')->insert([
@@ -837,6 +846,7 @@ class PendaftarController extends Controller
                     'session_id' => $student->session,
                     'semester_id' => $student->semester,
                     'status_id' => $student->status,
+                    'kuliah_id' => $student->kuliah,
                     'date' => date("Y-m-d H:i:s"),
                     'remark' => $student->comment
                 ]);
@@ -846,6 +856,32 @@ class PendaftarController extends Controller
                            ->join('tblstudent_status', 'tblstudent_log.status_id', 'tblstudent_status.id')
                            ->where('student_ic', $student->ic)
                            ->get();
+
+                foreach($std_log as $key => $log)
+                {
+
+                    if($log->kuliah_id == 1)
+                    {
+
+                        $kuliah[$key] = 'Holding';
+
+                    }elseif($log->kuliah_id == 2)
+                    {
+
+                        $kuliah[$key] = 'Kuliah';
+
+                    }elseif($log->kuliah_id == 4)
+                    {
+
+                        $kuliah[$key] = 'Latihan Industri';
+
+                    }else{
+
+                        $kuliah[$key] = '';
+
+                    }
+
+                }
 
                 $content = "";
                 $content .= '<thead>
@@ -864,6 +900,9 @@ class PendaftarController extends Controller
                                     </th>
                                     <th style="width: 10%">
                                         Status
+                                    </th>
+                                    <th style="width: 10%">
+                                        Lectures Status
                                     </th>
                                     <th style="width: 10%">
                                         Date
@@ -893,6 +932,9 @@ class PendaftarController extends Controller
                         </td>
                         <td>
                         '. $std->name .'
+                        </td>
+                        <td>
+                        '. $kuliah[$key] .'
                         </td>
                         <td>
                         '. $std->date .'
