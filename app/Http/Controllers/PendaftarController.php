@@ -24,14 +24,262 @@ class PendaftarController extends Controller
     
     public function index()
     {
+        $year = DB::table('tblyear')->get();
         
-        $student = DB::table('students')->get();
+        $program = DB::table('tblprogramme')->get();
+
+        $session = DB::table('sessions')->get();
+
+        $semester = DB::table('semester')->get();
+
+        return view('pendaftar', compact('program', 'session', 'semester', 'year'));
+    }
+
+    public function studentEdit()
+    {
+        $year = DB::table('tblyear')->get();
 
         $program = DB::table('tblprogramme')->get();
 
         $session = DB::table('sessions')->get();
 
-        return view('pendaftar', compact('student', 'program', 'session'));
+        $semester = DB::table('semester')->get();
+
+        return view('pendaftar.studentEdit', compact('program', 'session', 'semester', 'year'));
+
+    }
+
+    
+    public function getStudentTableIndex(Request $request)
+    {
+        $student = DB::table('students')
+            ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+            ->join('sessions AS a', 'students.intake', 'a.SessionID')
+            ->join('sessions AS b', 'students.session', 'b.SessionID')
+            ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
+            ->join('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
+            ->join('tblsex', 'tblstudent_personal.sex_id', 'tblsex.id')
+            ->select('students.*', 'tblprogramme.progname', 'a.SessionName AS intake', 
+                     'b.SessionName AS session', 'tblstudent_status.name AS status',
+                     'tblstudent_personal.no_tel', 'tblsex.sex_name AS gender');
+
+        if(!empty($request->program))
+        {
+            $student->where('students.program', $request->program);
+        }
+        
+        if(!empty($request->session))
+        {
+            $student->where('students.session', $request->session);
+        }
+        
+        if(!empty($request->year))
+        {
+            $student->where('a.Year', $request->year);
+        }
+        
+        if(!empty($request->semester))
+        {
+            $student->where('students.semester', $request->semester);
+        }
+        
+        if(!empty($request->status))
+        {
+            $student->where('students.student_status', $request->status);
+        }
+
+        $students = $student->get();
+
+        foreach($students as $key => $std)
+        {
+
+            $sponsor_id[$key] = DB::table('tblpayment')
+                                ->where([
+                                    ['student_ic', $std->ic],
+                                    ['sponsor_id', '!=', null]
+                                    ])
+                                ->latest('id')->first();
+
+            if($sponsor_id[$key] != null)
+            {
+
+                $sponsor[$key] = DB::table('tblpayment')
+                                ->join('tblsponsor_library', 'tblpayment.payment_sponsor_id', 'tblsponsor_library.id')
+                                ->where('tblpayment.id', $sponsor_id[$key]->sponsor_id)->pluck('tblsponsor_library.name')->first();
+
+            }else{
+
+                $sponsor[$key] = 'SENDIRI';
+
+            }
+
+            if($std->student_status == 1)
+            {
+
+                $student_status[$key] = 'Holding';
+
+            }elseif($std->student_status == 2)
+            {
+
+                $student_status[$key] = 'Kuliah';
+
+            }elseif($std->student_status == 4)
+            {
+
+                $student_status[$key] = 'Latihan Industri';
+
+            }
+
+        }
+
+        $content = "";
+        $content .= '<thead>
+                        <tr>
+                            <th style="width: 1%">
+                                No.
+                            </th>
+                            <th>
+                                Name
+                            </th>
+                            <th>
+                                Gender
+                            </th>
+                            <th>
+                                No. IC
+                            </th>
+                            <th>
+                                No. Matric
+                            </th>
+                            <th>
+                                Program
+                            </th>
+                            <th>
+                                Intake
+                            </th>
+                            <th>
+                                Current Session
+                            </th>
+                            <th>
+                                Semester
+                            </th>
+                            <th>
+                                Sponsorship
+                            </th>
+                            <th>
+                                Status
+                            </th>
+                            <th>
+                                No. Phone
+                            </th>
+                            <th>
+                                Campus
+                            </th>
+                            <th>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="table">';
+                    
+        foreach($students as $key => $student){
+            //$registered = ($student->status == 'ACTIVE') ? 'checked' : '';
+            $content .= '
+            <tr>
+                <td style="width: 1%">
+                '. $key+1 .'
+                </td>
+                <td>
+                '. $student->name .'
+                </td>
+                <td>
+                '. $student->gender .'
+                </td>
+                <td>
+                '. $student->ic .'
+                </td>
+                <td>
+                '. $student->no_matric .'
+                </td>
+                <td>
+                '. $student->progname .'
+                </td>
+                <td>
+                '. $student->intake .'
+                </td>
+                <td>
+                '. $student->session .'
+                </td>
+                <td>
+                '. $student->semester .'
+                </td>
+                <td>
+                '. $sponsor[$key] .'
+                </td>
+                <td>
+                '. $student->status .'
+                </td>
+                <td>
+                '. $student->no_tel .'
+                </td>
+                <td>
+                '. $student_status[$key] .'
+                </td>';
+                
+
+                if (isset($request->edit)) {
+                    $content .= '<td class="project-actions text-right" >
+                                <a class="btn btn-info btn-sm btn-sm mr-2 mb-2" href="/pendaftar/edit/'. $student->ic .'">
+                                    <i class="ti-pencil-alt">
+                                    </i>
+                                    Edit
+                                </a>
+                                <a class="btn btn-primary btn-sm btn-sm mr-2 mb-2" href="/pendaftar/spm/'. $student->ic .'">
+                                    <i class="ti-ruler-pencil">
+                                    </i>
+                                    SPM
+                                </a>
+                                <a class="btn btn-secondary btn-sm btn-sm mr-2 mb-2" href="#" onclick="getProgram('. $student->ic .')">
+                                    <i class="ti-eye">
+                                    </i>
+                                    Program History
+                                </a>
+                                <!-- <a class="btn btn-danger btn-sm" href="#" onclick="deleteMaterial('. $student->ic .')">
+                                    <i class="ti-trash">
+                                    </i>
+                                    Delete
+                                </a> -->
+                                </td>
+                            
+                            ';
+                }else{
+                    $content .= '<td class="project-actions text-right" >
+                    <a class="btn btn-secondary btn-sm btn-sm mr-2" href="#" onclick="getProgram('. $student->ic .')">
+                        <i class="ti-eye">
+                        </i>
+                        Program History
+                    </a>
+                    </td>
+                
+                ';
+
+                }
+            }
+            $content .= '</tr></tbody>';
+
+            return $content;
+
+    }
+
+    public function delete(Request $request)
+    {
+
+        DB::table('students')->where('ic', $request->id)->delete();
+
+        DB::table('tblstudent_address')->where('student_ic', $request->id)->delete();
+
+        DB::table('tblstudent_personal')->where('student_ic', $request->id)->delete();
+
+        return true;
+
     }
 
     public function create()
@@ -428,115 +676,6 @@ class PendaftarController extends Controller
         return $content;
     }
 
-    public function getStudentTableIndex(Request $request)
-    {
-        if(isset($request->session))
-        {
-
-            $students = DB::table('students')
-            ->join('tblprogramme', 'students.program', 'tblprogramme.id')
-            ->where([['students.program', $request->program],['students.session', $request->session]])
-            ->select('students.*', 'tblprogramme.progname')
-            ->get();
-
-        }else
-        {
-
-            $students = DB::table('students')
-            ->join('tblprogramme', 'students.program', 'tblprogramme.id')
-            ->where('students.program', $request->program)
-            ->select('students.*', 'tblprogramme.progname')
-            ->get();
-
-        }
-
-        $content = "";
-        $content .= '<thead>
-                        <tr>
-                            <th style="width: 1%">
-                            No.
-                            </th>
-                            <th>
-                                Name
-                            </th>
-                            <th>
-                                No. IC
-                            </th>
-                            <th>
-                                No. Matric
-                            </th>
-                            <th>
-                                Program
-                            </th>
-                            <th>
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody id="table">';
-                    
-        foreach($students as $key => $student){
-            //$registered = ($student->status == 'ACTIVE') ? 'checked' : '';
-            $content .= '
-            <tr>
-                <td style="width: 1%">
-                '. $key+1 .'
-                </td>
-                <td>
-                '. $student->name .'
-                </td>
-                <td>
-                '. $student->ic .'
-                </td>
-                <td>
-                '. $student->no_matric .'
-                </td>
-                <td>
-                '. $student->progname .'
-                </td>
-                <td class="project-actions text-right" >
-                  <a class="btn btn-info btn-sm btn-sm mr-2" href="/pendaftar/edit/'. $student->ic .'">
-                      <i class="ti-pencil-alt">
-                      </i>
-                      Edit
-                  </a>
-                  <a class="btn btn-primary btn-sm btn-sm mr-2" href="/pendaftar/spm/'. $student->ic .'">
-                      <i class="ti-ruler-pencil">
-                      </i>
-                      SPM
-                  </a>
-                  <a class="btn btn-secondary btn-sm btn-sm mr-2" href="#" onclick="getProgram('. $student->ic .')">
-                    <i class="ti-eye">
-                    </i>
-                    Program History
-                  </a>
-                  <a class="btn btn-danger btn-sm" href="#" onclick="deleteMaterial('. $student->ic .')">
-                      <i class="ti-trash">
-                      </i>
-                      Delete
-                  </a>
-                </td>
-            </tr>
-            ';
-            }
-            $content .= '</tbody>';
-
-            return $content;
-
-    }
-
-    public function delete(Request $request)
-    {
-
-        DB::table('students')->where('ic', $request->id)->delete();
-
-        DB::table('tblstudent_address')->where('student_ic', $request->id)->delete();
-
-        DB::table('tblstudent_personal')->where('student_ic', $request->id)->delete();
-
-        return true;
-
-    }
-
     public function spmIndex()
     {
 
@@ -598,19 +737,6 @@ class PendaftarController extends Controller
 
             return back()->with('success', 'Successfully saved SPM data')->withInput();
         }
-
-    }
-
-    public function studentEdit()
-    {
-
-        $student = DB::table('students')->get();
-
-        $program = DB::table('tblprogramme')->get();
-
-        $session = DB::table('sessions')->get();
-
-        return view('pendaftar.studentEdit', compact('student', 'program', 'session'));
 
     }
 
