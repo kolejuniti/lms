@@ -179,6 +179,7 @@ function submitForm(ic)
         session: $('#session').val(),
         semester: $('#semester').val(),
         status: $('#status').val(),
+        kuliah: $('#kuliah').val(),
         comment: editor.getData(),
       };
 

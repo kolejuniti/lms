@@ -347,14 +347,14 @@
                         <div class="row">
                           <div class="col-md-6">
                             <div class="form-group">
-                              <label class="form-label" for="w_name">Name <p style="color:red; display:inline-block;">*</p></label>
-                              <input type="text" class="form-control" id="w_name" placeholder="Enter Name" name="w_name[]" required>
+                              <label class="form-label" for="w_name">Name</label>
+                              <input type="text" class="form-control" id="w_name" placeholder="Enter Name" name="w_name[]">
                             </div>
                           </div>
                           <div class="col-md-6">
                             <div class="form-group">
-                              <label class="form-label" for="w_ic">IC <p style="color:red; display:inline-block;">*</p></label>
-                              <input type="text" class="form-control" id="w_ic" placeholder="Enter IC" name="w_ic[]" required>
+                              <label class="form-label" for="w_ic">IC</label>
+                              <input type="text" class="form-control" id="w_ic" placeholder="Enter IC" name="w_ic[]">
                             </div>
                           </div>
                           <div class="col-md-6">
@@ -365,14 +365,14 @@
                           </div>
                           <div class="col-md-6">
                             <div class="form-group">
-                              <label class="form-label" for="w_notel">Phone No. Tel <p style="color:red; display:inline-block;">*</p></label>
-                              <input type="text" class="form-control" id="w_notel" placeholder="Enter No. Tel" name="w_notel[]" required>
+                              <label class="form-label" for="w_notel">Phone No. Tel</label>
+                              <input type="text" class="form-control" id="w_notel" placeholder="Enter No. Tel" name="w_notel[]">
                             </div>
                           </div>
                           <div class="col-md-6">
                             <div class="form-group">
-                              <label class="form-label" for="occupation">Occupation <p style="color:red; display:inline-block;">*</p></label>
-                              <select class="form-select" id="occupation" name="occupation[]" required>
+                              <label class="form-label" for="occupation">Occupation</label>
+                              <select class="form-select" id="occupation" name="occupation[]">
                                 <option value="-" selected disabled>-</option>
                                 <option value="SEKTOR KERAJAAN">SEKTOR KERAJAAN</option>
                                 <option value="SEKTOR SWASTA">SEKTOR SWASTA</option>
@@ -384,14 +384,14 @@
                           </div>
                           <div class="col-md-6">
                             <div class="form-group">
-                              <label class="form-label" for="dependent">No. Dependent <p style="color:red; display:inline-block;">*</p></label>
-                              <input type="text" class="form-control" id="dependent" name="dependent[]" placeholder="Enter Dependent" required>
+                              <label class="form-label" for="dependent">No. Dependent</label>
+                              <input type="text" class="form-control" id="dependent" name="dependent[]" placeholder="Enter Dependent">
                             </div>
                           </div>
                           <div class="col-md-6">
                             <div class="form-group">
-                              <label class="form-label" for="relationship">Relationship <p style="color:red; display:inline-block;">*</p></label>
-                              <select class="form-select" id="relationship" name="relationship[]" required>
+                              <label class="form-label" for="relationship">Relationship</label>
+                              <select class="form-select" id="relationship" name="relationship[]">
                                 <option value="-" selected disabled>-</option>
                                 @foreach ($data['relationship'] as $rlp)
                                   <option value="{{ $rlp->id }}">{{$rlp->name }}</option> 
@@ -401,8 +401,8 @@
                           </div>
                           <div class="col-md-6">
                             <div class="form-group">
-                              <label class="form-label" for="w_race">Race <p style="color:red; display:inline-block;">*</p></label>
-                              <select class="form-select" id="w_race" name="w_race[]" required>
+                              <label class="form-label" for="w_race">Race</label>
+                              <select class="form-select" id="w_race" name="w_race[]">
                                 <option value="-" selected disabled>-</option>
                                 @foreach ($data['race'] as $rc)
                                   <option value="{{ $rc->id }}">{{ $rc->nationality_name }}</option> 
@@ -412,8 +412,8 @@
                           </div>
                           <div class="col-md-6">
                             <div class="form-group">
-                              <label class="form-label" for="w_status">Status <p style="color:red; display:inline-block;">*</p></label>
-                              <select class="form-select" id="w_status" name="w_status[]" required>
+                              <label class="form-label" for="w_status">Status</label>
+                              <select class="form-select" id="w_status" name="w_status[]">
                                 <option value="-" selected disabled>-</option>
                                 @foreach ($data['wstatus'] as $sts)
                                   <option value="{{ $sts->id }}">{{$sts->name }}</option> 

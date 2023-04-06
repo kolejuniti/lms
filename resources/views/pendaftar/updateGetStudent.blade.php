@@ -10,7 +10,7 @@
                         <p>Student Name &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ $data['student']->name }}</p>
                     </div>
                     <div class="form-group">
-                        <p>Status &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ $data['student']->status }}</p>
+                        <p>Status &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ $data['student']->statusName }}</p>
                     </div>
                     <div class="form-group">
                         <p>Program &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ $data['student']->program }}</p>
@@ -79,6 +79,17 @@
                         <option value="{{ $sts->id }}" {{ ($data['student']->status == $sts->id) ? 'selected' : '' }}>{{ $sts->name }}</option> 
                         @endforeach
                         </select>
+                    </div>
+                </div>
+                <div class="col-md-6 mr-3" id="kuliah-card">
+                    <div class="form-group">
+                      <label class="form-label" for="kuliah">Lectures Status</label>
+                      <select class="form-select" id="kuliah" name="kuliah">
+                        <option value="-" selected disabled>-</option>
+                        <option value="1" {{ ($data['student']->student_status == 1) ? 'selected' : '' }}>Holding</option>
+                        <option value="2" {{ ($data['student']->student_status == 2) ? 'selected' : '' }}>Kuliah</option>
+                        <option value="4" {{ ($data['student']->student_status == 4) ? 'selected' : '' }}>Latihan Industri</option>
+                      </select>
                     </div>
                 </div>
                 <div class="col-md-12 mt-3">
