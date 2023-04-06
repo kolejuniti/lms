@@ -36,18 +36,18 @@
         </div>
         <div class="card-body">
           <div class="row mt-3 ">
-            <div class="col-md-3 ml-3">
+            <div class="col-md-6 mr-3" id="year-card">
               <div class="form-group">
-                  <label class="form-label" for="program">Program</label>
-                  <select class="form-select" id="program" name="program">
+                <label class="form-label" for="year">Year</label>
+                <select class="form-select" id="year" name="year">
                   <option value="-" selected disabled>-</option>
-                    @foreach ($program as $prg)
-                    <option value="{{ $prg->id }}">{{ $prg->progname}}</option> 
-                    @endforeach
-                  </select>
+                  @foreach ($year as $yr)
+                  <option value="{{ $yr->id }}">{{ $yr->year}}</option> 
+                  @endforeach
+                </select>
               </div>
-            </div> 
-            <div class="col-md-3 mr-3" id="session-card" hidden>
+            </div>
+            <div class="col-md-6 mr-3" id="session-card">
               <div class="form-group">
                 <label class="form-label" for="session">Session</label>
                 <select class="form-select" id="session" name="session">
@@ -58,28 +58,39 @@
                 </select>
               </div>
             </div>
-            <div class="col-md-3 mr-3" id="semester-card" hidden>
+            <div class="col-md-6 ml-3">
+              <div class="form-group">
+                  <label class="form-label" for="program">Program</label>
+                  <select class="form-select" id="program" name="program">
+                  <option value="-" selected disabled>-</option>
+                    @foreach ($program as $prg)
+                    <option value="{{ $prg->id }}">{{ $prg->progname}}</option> 
+                    @endforeach
+                  </select>
+              </div>
+            </div>
+            <div class="col-md-6 mr-3" id="semester-card">
               <div class="form-group">
                 <label class="form-label" for="semester">Semester</label>
                 <select class="form-select" id="semester" name="semester">
                   <option value="-" selected disabled>-</option>
-                  @foreach ($session as $ses)
-                  <option value="{{ $ses->SessionID }}">{{ $ses->SessionName}}</option> 
+                  @foreach ($semester as $ses)
+                  <option value="{{ $ses->id }}">{{ $ses->semester_name}}</option> 
                   @endforeach
                 </select>
               </div>
             </div>
-            <div class="col-md-3 mr-3" id="intake-card" hidden>
+            <div class="col-md-6 mr-3" id="status-card">
               <div class="form-group">
-                <label class="form-label" for="intake">Intake</label>
-                <select class="form-select" id="intake" name="intake">
+                <label class="form-label" for="status">Status</label>
+                <select class="form-select" id="status" name="status">
                   <option value="-" selected disabled>-</option>
-                  @foreach ($session as $ses)
-                  <option value="{{ $ses->SessionID }}">{{ $ses->SessionName}}</option> 
-                  @endforeach
+                  <option value="1">Holding</option>
+                  <option value="2">Kuliah</option>
+                  <option value="4">Latihan Industri</option>
                 </select>
               </div>
-            </div>       
+            </div>
           </div>
           <div class="row mt-3 " id="group-card" hidden>
             <div class="col-md-6 ml-3">
@@ -248,39 +259,63 @@
   <script type="text/javascript">
     var selected_program = "";
     var selected_session = "";
-    var selected_group = "";
+    var selected_year = "";
+    var selected_semester = "";
+    var selected_status = "";
 
     var url = window.location.href;
 
-    var session = document.getElementById('session-card');
+    //var session = document.getElementById('session-card');
 
-    $(document).on('change', '#program', async function(e){
-      selected_program = $(e.target).val();
+    $(document).on('change', '#year', function(e){
+    selected_year = $(e.target).val();
 
-      session.hidden = false;
-      document.getElementById('semester-card').hidden = false;
-      document.getElementById('intake-card').hidden = false;
-      
-    await getStudent(selected_program);
-    })
+      getStudent(selected_program,selected_session,selected_year,selected_semester,selected_status);
 
-    $(document).on('change', '#session', async function(e){
-    selected_session = $(e.target).val();
-
-    
-    await getStudent(selected_program,selected_session);
     });
 
+    $(document).on('change', '#program', function(e){
+      selected_program = $(e.target).val();
+      // session.hidden = false;
+      // document.getElementById('semester-card').hidden = false;
+      
+      getStudent(selected_program,selected_session,selected_year,selected_semester,selected_status);
 
-  function getStudent(program,session)
+    })
+
+    $(document).on('change', '#session', function(e){
+    selected_session = $(e.target).val();
+
+      getStudent(selected_program,selected_session,selected_year,selected_semester,selected_status);
+
+    });
+
+    $(document).on('change', '#semester', function(e){
+    selected_semester = $(e.target).val();
+
+      getStudent(selected_program,selected_session,selected_year,selected_semester,selected_status);
+
+    });
+
+    $(document).on('change', '#status', async function(e){
+    selected_status = $(e.target).val();
+
+      await getStudent(selected_program,selected_session,selected_year,selected_semester,selected_status);
+
+    });
+
+  function getStudent(program,session,year,semester,status)
   {
+
     $('#complex_header').DataTable().destroy();
+
+    var edit = true;
 
     return $.ajax({
             headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
             url      : "{{ url('pendaftar/group/getStudentTableIndex') }}",
             method   : 'POST',
-            data 	 : {program: program, session: session},
+            data 	 : {program: program,session: session,year: year,semester: semester,status: status, edit: edit},
             beforeSend:function(xhr){
               $("#complex_header").LoadingOverlay("show", {
                 image: `<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="24px" height="30px" viewBox="0 0 24 30" style="enable-background:new 0 0 50 50;" xml:space="preserve">
@@ -324,7 +359,6 @@
             }
         });
   }
-
 
   function getProgram(ic)
   {
