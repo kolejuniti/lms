@@ -176,6 +176,7 @@ Route::post('/lecturer/class/schedule/getschedule', [App\Http\Controllers\Lectur
 Route::post('/lecturer/class/schedule/insertschedule', [App\Http\Controllers\LecturerController::class, 'scheduleInsertGroup']);
 Route::get('/lecturer/class/attendance', [App\Http\Controllers\LecturerController::class, 'classAttendance'])->name('lecturer.class.attendance');
 Route::get('/lecturer/class/attendance/getGroup', [App\Http\Controllers\LecturerController::class, 'attendanceGetGroup']);
+Route::post('/lecturer/class/attendance/getStudentProgram', [App\Http\Controllers\LecturerController::class, 'getStudentProgram']);
 Route::post('/lecturer/class/attendance/getStudents', [App\Http\Controllers\LecturerController::class, 'getStudents']);
 Route::post('/lecturer/class/attendance/getDate', [App\Http\Controllers\LecturerController::class, 'getDate']);
 Route::post('/lecturer/class/attendance/store', [App\Http\Controllers\LecturerController::class, 'storeAttendance'])->name('lecturer.attendance.store');
