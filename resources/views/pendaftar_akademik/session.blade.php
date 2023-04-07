@@ -57,6 +57,9 @@
                         End
                     </th>
                     <th style="width: 10%">
+                        Year
+                    </th>
+                    <th style="width: 10%">
                         Status
                     </th>
                     <th style="width: 20%">
@@ -77,6 +80,9 @@
                 </td>
                 <td style="width: 10%">
                   {{ $ses->End }}
+                </td>
+                <td style="width: 10%">
+                  {{ $ses->Year }}
                 </td>
                 <td>
                   {{ $ses->Status }}
@@ -115,6 +121,17 @@
                     </div>
                     <div class="modal-body">
                       <div class="row col-md-12">
+                        <div>
+                          <div class="form-group">
+                              <label class="form-label" for="year">Year</label>
+                              <select class="form-select" id="year" name="year">
+                              <option value="-" selected disabled>-</option>
+                              @foreach($data['year'] as $yr)
+                              <option value="{{ $yr->year }}">{{ $yr->year }}</option>
+                              @endforeach
+                              </select>
+                          </div>
+                        </div>
                         <div>
                           <div class="form-group">
                               <label class="form-label" for="month">Month</label>
