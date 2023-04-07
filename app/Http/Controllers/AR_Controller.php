@@ -339,7 +339,8 @@ class AR_Controller extends Controller
     public function sessionList()
     {
         $data = [
-            'session' => DB::table('sessions')->get()
+            'session' => DB::table('sessions')->get(),
+            'year' => DB::table('tblyear')->get()
         ];
 
         return view('pendaftar_akademik.session', compact('data'));
@@ -349,6 +350,7 @@ class AR_Controller extends Controller
     public function createSession(Request $request)
     {
         $data = $request->validate([
+            'year' => ['required'],
             'month' => ['required'],
             'start' => ['required'],
             'end' => ['required']
@@ -368,6 +370,7 @@ class AR_Controller extends Controller
                 'SessionName' => $name,
                 'Start' => $data['start'],
                 'End' => $data['end'],
+                'Year' => $data['year'],
                 'Status' => $request->status
                 
             ]);
@@ -378,6 +381,7 @@ class AR_Controller extends Controller
                 'SessionName' => $name,
                 'Start' => $data['start'],
                 'End' => $data['end'],
+                'Year' => $data['year'],
                 'Status' => 'ACTIVE'
             ]);
         }
@@ -398,7 +402,8 @@ class AR_Controller extends Controller
     {
 
         $data = [
-            'course' => DB::table('sessions')->where('SessionID', $request->id)->first()
+            'course' => DB::table('sessions')->where('SessionID', $request->id)->first(),
+            'year' => DB::table('tblyear')->get()
         ];
 
         return view('pendaftar_akademik.getSession', compact('data'))->with('id', $request->id);
