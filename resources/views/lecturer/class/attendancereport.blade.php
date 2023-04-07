@@ -54,52 +54,74 @@
                           <div class="col-sm-12">
                             <table id="myTable{{$grp->group_name}}" class="table table-striped projects display dataTable no-footer" style="width: 100%;" role="grid" aria-describedby="complex_header_info">
                               <script>
-                                $(document).ready( function () {
+                                // Wait for the DOM to be ready before running the script
+                                $(document).ready(function() {
+                                    // Initialize DataTable for the table with ID 'myTable{{$grp->group_name}}'
                                     $('#myTable{{$grp->group_name}}').DataTable({
-                                      dom: 'lBfrtip', // if you remove this line you will see the show entries dropdown
-                                      paging: false, // Add this line to disable pagination
-                                      buttons: [
-                                          { extend: 'copyHtml5', footer: true },
-                                          { extend: 'excelHtml5', footer: true },
-                                          { extend: 'csvHtml5', footer: true },
-                                          { extend: 'pdfHtml5',
-                                            orientation: 'landscape',
-                                            pageSize: 'A2',
-                                            customize: function (doc) {
-                                                // Set the table width to 100% to fill the page
-                                                doc.content[1].table.widths = Array(doc.content[1].table.body[0].length + 1).join('*').split('');
+                                        // Set the DOM structure: 'l' for length changing input, 'B' for buttons, 'f' for filtering input, 'r' for processing display, 't' for the table, 'i' for table info, 'p' for pagination control
+                                        dom: 'lBfrtip',
+                                        // Set 'paging' to false to disable pagination
+                                        paging: false,
+                                        // Define buttons to add to the table
+                                        buttons: [
+                                            // Copy button with footer enabled
+                                            { extend: 'copyHtml5', footer: true },
+                                            // Excel export button with footer enabled
+                                            { extend: 'excelHtml5', footer: true },
+                                            // CSV export button with footer enabled
+                                            { extend: 'csvHtml5', footer: true },
+                                            // PDF export button with custom settings
+                                            {
+                                                extend: 'pdfHtml5',
+                                                // Set page orientation to landscape
+                                                orientation: 'landscape',
+                                                // Set page size to A2
+                                                pageSize: 'A2',
+                                                // Customize the exported PDF document
+                                                customize: function (doc) {
+                                                    // Set the table width to 100% to fill the page
+                                                    doc.content[1].table.widths = Array(doc.content[1].table.body[0].length + 1).join('*').split('');
 
-                                                // Custom header
-                                                var header = function() {
-                                                    return {
-                                                        stack: [
-                                                            {
-                                                                alignment: 'left',
-                                                                text: 'NAME: {{ $grp->name }}',
-                                                                fontSize: 14,
-                                                                bold: true,
-                                                                margin: [40, 20, 0, 0] // [left, top, right, bottom]
-                                                            },
-                                                            {
-                                                                alignment: 'left',
-                                                                text: 'SUBJEK: {{ $grp->course_name }} ({{ $grp->course_code }})',
-                                                                fontSize: 14,
-                                                                bold: true,
-                                                                margin: [40, 0, 0, 0] // [left, top, right, bottom]
-                                                            }
-                                                        ]
+                                                    // Define the custom header function
+                                                    var header = function() {
+                                                        return {
+                                                            // Create a stack to place text objects one below the other
+                                                            stack: [
+                                                                {
+                                                                    // Align the first line of text to the left
+                                                                    alignment: 'left',
+                                                                    // Insert the NAME text with the variable
+                                                                    text: 'NAME: {{ $grp->name }}',
+                                                                    // Set the font size to 14
+                                                                    fontSize: 14,
+                                                                    // Make the text bold
+                                                                    bold: true,
+                                                                    // Set the margin [left, top, right, bottom]
+                                                                    margin: [40, 20, 0, 0]
+                                                                },
+                                                                {
+                                                                    // Align the second line of text to the left
+                                                                    alignment: 'left',
+                                                                    // Insert the SUBJEK text with the variables
+                                                                    text: 'SUBJEK: {{ $grp->course_name }} ({{ $grp->course_code }})',
+                                                                    // Set the font size to 14
+                                                                    fontSize: 14,
+                                                                    // Make the text bold
+                                                                    bold: true,
+                                                                    // Set the margin [left, top, right, bottom]
+                                                                    margin: [40, 0, 0, 0]
+                                                                }
+                                                            ]
+                                                        };
                                                     };
-                                                };
-                                                
-                                                // Add custom header
-                                                doc.content.splice(0, 0, header());
+                                                    
+                                                    // Add the custom header to the PDF document
+                                                    doc.content.splice(0, 0, header());
+                                                }
                                             }
- 
-                                          }
-                                      ],
-
+                                        ],
                                     });
-                                } );
+                                });
                               </script>
                               <thead>
                                 <tr>
