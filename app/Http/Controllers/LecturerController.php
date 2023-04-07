@@ -1099,17 +1099,59 @@ class LecturerController extends Controller
         return $content;
     }
 
+    public function getStudentProgram(Request $request)
+    {
+
+        $group = explode('|', $request->group);
+
+        $program = student::join('students', 'student_subjek.student_ic', 'students.ic')
+                    ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+                    ->where('student_subjek.group_id', $group[0])->where('student_subjek.group_name', $group[1])
+                    ->where('student_subjek.sessionid', Session::get('SessionID'))
+                    ->whereNotIn('students.status', [4,5,6,7,16])
+                    ->groupBy('tblprogramme.id')
+                    ->select('tblprogramme.*')
+                    ->get();
+
+        $content = "";
+
+        $content .= "<option value='0' selected disabled>-</option>";
+        foreach($program as $prg){
+
+            $content .= '<option data-style="btn-inverse" value="'. $prg->id .'" >'. $prg->progname .' ('. $prg->progcode .')</option>';
+        }
+        
+        return $content;
+
+    }
+
     public function getStudents(Request $request)
     {
         $group = explode('|', $request->group);
 
-        $students = student::join('students', 'student_subjek.student_ic', 'students.ic')
-                    ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
-                    ->where('group_id', $group[0])->where('group_name', $group[1])
-                    ->where('student_subjek.sessionid', Session::get('SessionID'))
-                    ->whereNotIn('students.status', [4,5,6,7,16])
-                    ->orderBy('students.name')
-                    ->get();
+        if(!empty($request->program))
+        {
+
+            $students = student::join('students', 'student_subjek.student_ic', 'students.ic')
+                        ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
+                        ->where('group_id', $group[0])->where('group_name', $group[1])
+                        ->where('student_subjek.sessionid', Session::get('SessionID'))
+                        ->where('students.program', $request->program)
+                        ->whereNotIn('students.status', [4,5,6,7,16])
+                        ->orderBy('students.name')
+                        ->get();
+
+        }else{
+
+            $students = student::join('students', 'student_subjek.student_ic', 'students.ic')
+                        ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
+                        ->where('group_id', $group[0])->where('group_name', $group[1])
+                        ->where('student_subjek.sessionid', Session::get('SessionID'))
+                        ->whereNotIn('students.status', [4,5,6,7,16])
+                        ->orderBy('students.name')
+                        ->get();
+
+        }
 
         $content = "";
         $content .= '
