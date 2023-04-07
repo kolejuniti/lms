@@ -128,12 +128,9 @@
                               <label class="form-label" for="group">Group</label>
                               <select class="form-select" id="group" name="group">
                               <option value="-" selected disabled>-</option>
-                                <option value="1">Group 1</option> 
-                                <option value="2">Group 2</option> 
-                                <option value="3">Group 3</option> 
-                                <option value="4">Group 4</option> 
-                                <option value="5">Group 5</option> 
-                                <option value="6">Group 6</option> 
+                                <option value="1">YURAN</option> 
+                                <option value="4">DENDE / SAMAN</option> 
+                                <option value="5">LAIN - LAIN</option>
                               </select>
                           </div>
                         </div>
