@@ -62,7 +62,40 @@
                                           { extend: 'copyHtml5', footer: true },
                                           { extend: 'excelHtml5', footer: true },
                                           { extend: 'csvHtml5', footer: true },
-                                          { extend: 'pdfHtml5', footer: true }
+                                          { extend: 'pdfHtml5',
+                                            orientation: 'landscape',
+                                            pageSize: 'A2',
+                                            customize: function (doc) {
+                                                // Set the table width to 100% to fill the page
+                                                doc.content[1].table.widths = Array(doc.content[1].table.body[0].length + 1).join('*').split('');
+
+                                                // Custom header
+                                                var header = function() {
+                                                    return {
+                                                        stack: [
+                                                            {
+                                                                alignment: 'left',
+                                                                text: 'NAME: {{ $grp->name }}',
+                                                                fontSize: 14,
+                                                                bold: true,
+                                                                margin: [40, 20, 0, 0] // [left, top, right, bottom]
+                                                            },
+                                                            {
+                                                                alignment: 'left',
+                                                                text: 'SUBJEK: {{ $grp->course_name }} ({{ $grp->course_code }})',
+                                                                fontSize: 14,
+                                                                bold: true,
+                                                                margin: [40, 0, 0, 0] // [left, top, right, bottom]
+                                                            }
+                                                        ]
+                                                    };
+                                                };
+                                                
+                                                // Add custom header
+                                                doc.content.splice(0, 0, header());
+                                            }
+ 
+                                          }
                                       ],
 
                                     });
