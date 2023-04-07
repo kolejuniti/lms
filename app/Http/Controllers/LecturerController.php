@@ -1393,15 +1393,23 @@ class LecturerController extends Controller
 
     public function onlineClass() 
     {
+
         $user = Auth::user();
 
-        $courseid = Session::get('CourseID');
+        // $courseid = Session::get('CourseID');
+
+        $courseid = DB::table('subjek')->where('id', Session::get('CourseID'))->pluck('sub_id')->first();
+
+        // $folder = DB::table('lecturer_dir')
+        // ->where([
+        //     ['CourseID', $courseid],
+        //     ['Addby', $user->ic]
+        //     ])->get();
 
         $folder = DB::table('lecturer_dir')
-        ->where([
-            ['CourseID', $courseid],
-            ['Addby', $user->ic]
-            ])->get();
+        ->join('subjek', 'lecturer_dir.CourseID','subjek.id')
+        ->where('subjek.sub_id', $courseid)
+        ->where('Addby', $user->ic)->get();
 
         return view('lecturer.class.onlineclass', compact('folder'));
 
@@ -1637,13 +1645,20 @@ class LecturerController extends Controller
     {
         $user = Auth::user();
 
-        $courseid = Session::get('CourseID');
+        // $courseid = Session::get('CourseID');
+
+        $courseid = DB::table('subjek')->where('id', Session::get('CourseID'))->pluck('sub_id')->first();
+
+        // $folder = DB::table('lecturer_dir')
+        // ->where([
+        //     ['CourseID', $courseid],
+        //     ['Addby', $user->ic]
+        //     ])->get();
 
         $folder = DB::table('lecturer_dir')
-        ->where([
-            ['CourseID', $courseid],
-            ['Addby', $user->ic]
-            ])->get();
+        ->join('subjek', 'lecturer_dir.CourseID','subjek.id')
+        ->where('subjek.sub_id', $courseid)
+        ->where('Addby', $user->ic)->get();
 
         return view('lecturer.class.announcement', compact('folder'));
 
