@@ -435,14 +435,13 @@ class AdminController extends Controller
         $list = [];
         $status = [];
 
-
-
         $groups = DB::table('user_subjek')
+                  ->join('users', 'user_subjek.user_ic', 'users.ic')
                   ->join('student_subjek', 'user_subjek.id', 'student_subjek.group_id')
                   ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
-                  ->select('user_subjek.*','student_subjek.group_name','student_subjek.group_id')
+                  ->select('user_subjek.*','student_subjek.group_name','student_subjek.group_id', 'users.name', 'subjek.course_name', 'subjek.course_code')
                   ->where([
-                     ['user_subjek.user_ic', $user],
+                    ['user_subjek.user_ic', $user],
                      ['user_subjek.session_id', Session::get('SessionID')],
                      ['subjek.id', $courseid]
                   ])->groupBy('student_subjek.group_name')->get();
