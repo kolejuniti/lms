@@ -42,7 +42,7 @@
                 <select class="form-select" id="year" name="year">
                   <option value="-" selected disabled>-</option>
                   @foreach ($year as $yr)
-                  <option value="{{ $yr->id }}">{{ $yr->year}}</option> 
+                  <option value="{{ $yr->year }}">{{ $yr->year }}</option> 
                   @endforeach
                 </select>
               </div>
