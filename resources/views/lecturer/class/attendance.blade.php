@@ -72,7 +72,16 @@
                           </div>
                         </div>
                         </div>
-                    </div> 
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label class="form-label" for="program">Program</label>
+                        <select class="form-select" id="program" name="program" required>
+                            <option value="" disabled>-</option>
+                           
+                        </select>
+                      </div>
+                    </div>  
                     <!--<input type="time" min="00:00:00" max="01:30:00">
                     <div class="col-md-12">
                         <div class="form-group">
@@ -118,6 +127,7 @@
 $(document).ready(function(){
 
     var selected_group = "";
+    var selected_program = "";
     var input_date = "";
     
     return $.ajax({
@@ -141,17 +151,44 @@ $(document).on('change', '#group', async function(e){
     selected_group = $(e.target).val();
 
     await getStudents(selected_group);
-    //await getSchedule(selected_group, input_date);
+    await getProgram(selected_group);
 })
 
+$(document).on('change', '#program', async function(e){
+    selected_program = $(e.target).val();
 
-function getStudents(group)
+    await getStudents(selected_group,selected_program);
+})
+
+function getProgram(group)
+{
+    return $.ajax({
+        headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
+        url      : "{{ url('lecturer/class/attendance/getStudentProgram') }}",
+        method   : 'POST',
+        data 	 : {group: group},
+        error:function(err){
+            alert("Error");
+            console.log(err);
+        },
+        success  : function(data){
+            
+          $('#program').html(data);
+          $('#program').selectpicker('refresh');
+
+                
+        }
+    });
+}
+
+
+function getStudents(group,program)
 {
     return $.ajax({
         headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
         url      : "{{ url('lecturer/class/attendance/getStudents') }}",
         method   : 'POST',
-        data 	 : {group: group},
+        data 	 : {group: group, program: program},
         error:function(err){
             alert("Error");
             console.log(err);
