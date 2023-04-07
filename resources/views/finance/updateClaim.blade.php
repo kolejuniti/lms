@@ -22,14 +22,11 @@
           <div class="form-group">
               <label class="form-label" for="group">Group</label>
               <select class="form-select" id="group" name="group">
-              <option value="-" selected disabled>-</option>
-                <option value="1" {{ ($claims->groupid == '1') ? 'selected' : '' }}>Group 1</option> 
-                <option value="2" {{ ($claims->groupid == '2') ? 'selected' : '' }}>Group 2</option> 
-                <option value="3" {{ ($claims->groupid == '3') ? 'selected' : '' }}>Group 3</option> 
-                <option value="4" {{ ($claims->groupid == '4') ? 'selected' : '' }}>Group 4</option> 
-                <option value="5" {{ ($claims->groupid == '5') ? 'selected' : '' }}>Group 5</option> 
-                <option value="6" {{ ($claims->groupid == '6') ? 'selected' : '' }}>Group 6</option> 
-              </select>
+                <option value="-" selected disabled>-</option>
+                  <option value="1" {{ ($claims->groupid == '1') ? 'selected' : '' }}>YURAN</option> 
+                  <option value="4" {{ ($claims->groupid == '4') ? 'selected' : '' }}>DENDE / SAMAN</option> 
+                  <option value="5" {{ ($claims->groupid == '5') ? 'selected' : '' }}>LAIN - LAIN</option>
+                </select>
           </div>
         </div>
       </div>
