@@ -2932,6 +2932,7 @@ class FinanceController extends Controller
                    ->join('students', 'tblpayment.student_ic', 'students.ic')
                    ->select('tblpayment.*', 'students.name', 'students.no_matric', 'students.status', 'students.program', 'students.semester')
                    ->whereBetween('tblpayment.add_date', [$request->from, $request->to])
+                   ->where('tblpayment.process_status_id', 2)
                    ->whereNotNull('tblpayment.ref_no')
                    ->get();
 
@@ -2939,6 +2940,7 @@ class FinanceController extends Controller
                    ->join('students', 'tblpayment.student_ic', 'students.ic')
                    ->select('tblpayment.*', 'students.name', 'students.no_matric', 'students.status', 'students.program', 'students.semester')
                    ->whereBetween('tblpayment.add_date', [$request->from, $request->to])
+                   ->where('tblpayment.process_status_id', 2)
                    ->whereNotNull('tblpayment.student_ic')
                    ->whereNotNull('tblpayment.payment_sponsor_id')
                    ->get();
@@ -3675,6 +3677,7 @@ class FinanceController extends Controller
         ->leftjoin('tblpayment_bank', 'tblpaymentmethod.bank_id', 'tblpayment_bank.id')
         ->join('tblpayment_method', 'tblpaymentmethod.claim_method_id', 'tblpayment_method.id')
         ->whereBetween('tblpayment.add_date', [$request->from, $request->to])
+        ->where('tblpayment.process_status_id', 2)
         ->select('tblpayment.*', 'tblstudentclaim.groupid', 'tblpaymentdtl.amount', 'tblpaymentmethod.no_document', 'tblpayment_method.name AS method', 'tblpayment_bank.name AS bank')
         ->groupBy('tblpaymentdtl.id')->get();
 
