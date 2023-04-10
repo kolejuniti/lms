@@ -136,6 +136,13 @@
               </div>
           </div>
         </div>
+        <div id="uploadModal2" class="modal" class="modal fade" role="dialog">
+          <div class="modal-dialog">
+              <!-- modal content-->
+              <div class="modal-content" id="getModal2">
+              </div>
+          </div>
+        </div>
       </div>
       <!-- /.card -->
     </section>
@@ -217,8 +224,8 @@
                 console.log(err);
             },
             success  : function(data){
-                $('#getModal').html(data);
-                $('#uploadModal').modal('show');
+                $('#getModal2').html(data);
+                $('#uploadModal2').modal('show');
             }
         });
 

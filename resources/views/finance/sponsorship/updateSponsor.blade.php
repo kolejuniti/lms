@@ -2,11 +2,11 @@
     @csrf
     @method('POST')
     <div class="modal-header">
-        <div class="">
-            <button class="close waves-effect waves-light btn btn-danger btn-sm pull-right" data-dismiss="modal">
-                &times;
-            </button>
-        </div>
+      <div class="">
+        <button type="button" onclick="closeModal()" class="close waves-effect waves-light btn btn-danger btn-sm pull-right" data-dismiss="modal">
+            &times;
+        </button>
+      </div>
     </div>
     <div class="modal-body">
       <div class="row col-md-12">
@@ -30,3 +30,12 @@
         </div>
     </div>
 </form>
+
+<script>
+  function closeModal()
+  {
+    
+    $('#uploadModal2').modal('hide');
+
+  }
+</script>
