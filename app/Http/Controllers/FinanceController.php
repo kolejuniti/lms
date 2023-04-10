@@ -1977,7 +1977,7 @@ class FinanceController extends Controller
 
         $payment = DB::table('tblpayment')
                    ->join('tblsponsor_library', 'tblpayment.payment_sponsor_id', 'tblsponsor_library.id')
-                   ->where([['tblpayment.student_ic', null],['tblpayment.process_status_id',2]])
+                   ->where([['tblpayment.student_ic', ''],['tblpayment.process_status_id',2]])
                    ->select('tblpayment.*', 'tblsponsor_library.name', 'tblsponsor_library.code')->get();
 
         return view('finance.sponsorship.payment', compact('payment'));
