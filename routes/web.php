@@ -123,8 +123,14 @@ Route::get('/AR/session', [App\Http\Controllers\AR_Controller::class, 'sessionLi
 Route::post('/AR/session/create', [App\Http\Controllers\AR_Controller::class, 'createSession']);
 Route::post('/AR/session/update', [App\Http\Controllers\AR_Controller::class, 'updateSession']);
 Route::delete('/AR/session/delete', [App\Http\Controllers\AR_Controller::class, 'deleteDelete'])->name('pendaftar_akademik.session.delete');
-Route::get('/AR/schedule/index', [App\Http\Controllers\AR_Controller::class, 'scheduleIndex'])->name('pendaftar_akademik.schedule');
-Route::post('/AR/schedule/store', [App\Http\Controllers\AR_Controller::class, 'dropzoneStore'])->name('pendaftar_akademik.schedule.store');
+Route::get('/AR/schedule', [App\Http\Controllers\AR_Controller::class, 'scheduleDrop'])->name('pendaftar_akademik.schedule');
+Route::get('/AR/schedule/fetch', [App\Http\Controllers\AR_Controller::class, 'fetchEvents']);
+// Route::get('/AR/schedule/index/old', [App\Http\Controllers\AR_Controller::class, 'scheduleIndex'])->name('pendaftar_akademik.schedule.old');
+// Route::post('/AR/schedule/store', [App\Http\Controllers\AR_Controller::class, 'dropzoneStore'])->name('pendaftar_akademik.schedule.store');
+Route::post('/AR/schedule/create', [App\Http\Controllers\AR_Controller::class, 'createEvent']);
+Route::put('/AR/schedule/update/{id}', [App\Http\Controllers\AR_Controller::class, 'updateEvent']);
+Route::put('/AR/schedule/update2/{id}', [App\Http\Controllers\AR_Controller::class, 'updateEvent2']);
+Route::delete('/AR/schedule/delete/{id}', [App\Http\Controllers\AR_Controller::class, 'deleteEvent']);
 Route::get('/AR/leave', [App\Http\Controllers\AR_Controller::class, 'studentLeave'])->name('pendaftar_akademik.leave');
 Route::get('/AR/leave/getStudentLeave', [App\Http\Controllers\AR_Controller::class, 'getStudentLeave']);
 Route::post('/AR/leave/updateLeave', [App\Http\Controllers\AR_Controller::class, 'updateLeave']);
