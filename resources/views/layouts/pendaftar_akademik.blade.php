@@ -123,6 +123,8 @@
 	{
 		opacity:0.5 !important;
 	}
+
+	
 </style>
 
 
@@ -295,8 +297,9 @@
 						</span>
 					</a>
 					<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
+						<li><a href="/AR/schedule" class="{{ (route('pendaftar_akademik.schedule') == Request::url()) ? 'active' : ''}}">Create</a></li>
 						<li><a href="{{ Storage::disk('linode')->url('classschedule/index.htm') }}" target="_blank" class="">View</a></li>
-						<li><a href="/AR/schedule/index" class="{{ (route('pendaftar_akademik.schedule') == Request::url()) ? 'active' : ''}}">Upload</a></li>
+						{{-- <li><a href="/AR/schedule/index" class="{{ (route('pendaftar_akademik.schedule.old') == Request::url()) ? 'active' : ''}}">Upload</a></li> --}}
 					</ul>
 				</li>
 			  </ul>
