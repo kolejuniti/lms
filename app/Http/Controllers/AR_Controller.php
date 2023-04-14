@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\subject;
 use App\Models\student;
+use App\Models\Tblevent;
 use App\Models\UserStudent;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
@@ -646,5 +647,86 @@ class AR_Controller extends Controller
 
         return ['message' => 'Success'];
 
+    }
+
+    public function scheduleDrop()
+    {
+
+        return view('pendaftar_akademik.schedule.schedule');
+
+    }
+
+    public function fetchEvents()
+    {
+        $events = Tblevent::all();
+
+        return response()->json($events);
+    }
+
+    public function createEvent(Request $request)
+    {
+        $event = new Tblevent;
+        $event->title = $request->title;
+        $event->start = $request->start;
+        $event->end = $request->end;
+        $event->save();
+
+        // $id = DB::table('tblevents')->insertGetId([
+        //     'title' => $request->title,
+        //     'start' => $request->start,
+        //     'end' => $request->end
+        // ]);
+
+        // $event = DB::table('tblevents')->where('id', $id);
+
+        return response()->json([
+            'event' => [
+                'id' => $event->id,
+                'title' => $event->title,
+                'start' => $event->start,
+                'end' => $event->end
+            ]
+        ]);
+    }
+
+    public function updateEvent(Request $request, $id)
+    {
+        $event = Tblevent::find($id);
+        if ($event) {
+            $event->start = $request->start;
+            $event->end = $request->end;
+            $event->save();
+
+            return response()->json(['message' => 'Event updated successfully']);
+        } else {
+            return response()->json(['message' => 'Event not found'], 404);
+        }
+    }
+
+    public function updateEvent2(Request $request, $id)
+    {
+        $event = Tblevent::find($id);
+
+        if ($event) {
+            $event->title = $request->input('title');
+            $event->start = $request->start;
+            $event->end = $request->end;
+            $event->save();
+            return response()->json(['status' => 'success']);
+        } else {
+            return response()->json(['status' => 'error'], 404);
+        }
+    }
+
+    public function deleteEvent($id)
+    {
+        $event = Tblevent::find($id);
+
+        if ($event) {
+            $event->delete();
+            return response()->json(['status' => 'success']);
+        } else {
+            return response()->json(['status' => 'error'], 404);
+        }
     }
 }
