@@ -245,7 +245,20 @@ function renderForm(formdata){
 
         var formRenderOptions = {
             datatype: 'json',
-            formData: JSON.stringify(originalFormData)
+            formData: JSON.stringify(quiz),
+            onRender: function() {
+                const fileInputs = document.querySelectorAll('#fb-render input[type="file"]');
+                fileInputs.forEach(function(fileInput) {
+                    if (fileInput.name) {
+                        const img = document.createElement('img');
+                        img.src = fileInput.name;
+                        img.alt = 'uploaded_image';
+                        img.className = 'uploaded-image';
+                        fileInput.parentNode.insertBefore(img, fileInput.nextSibling);
+                        fileInput.style.display = 'none';
+                    }
+                });
+            }
         };
 
         $(fbRender).formRender(formRenderOptions );
