@@ -34,6 +34,9 @@ div.form-actions.btn-group > button{
     min-width:100px;
     margin: 0.5em;
 }
+
+
+
 </style>
 
 <!-- Content Wrapper. Contains page content -->
@@ -365,6 +368,8 @@ var quiz            = {!! empty($data['quiz']) ? "''" : json_encode($data['quiz'
 var quiz_status  = {!! empty($data['quizstatus']) ? "''" : $data['quizstatus'] !!};
 var quizFormData    = [];
 var i = 0;
+var imageDataUrls = {};
+var currentImageDataUrl;
 
 var formRenderInstance;
 
@@ -381,6 +386,7 @@ jQuery(function($) {
     if(reuse == '')
     {
         if(quiz_status == 2){
+
             Swal.fire({
                 title: "Quiz is already started!",
                 text: "You are not allowed to edit anymore once published",
@@ -391,11 +397,27 @@ jQuery(function($) {
                 $('.header-setting *').attr('disabled', 'disabled');
                 $('.hide-published-element').hide();
             });
+
         }else{
+
             
             fbOptions = {
                 formData: quizFormData,
                 dataType: 'xml',
+                disableFields: [
+                'autocomplete',
+                'button',
+                'checkbox-group',
+                'date',
+                'file',
+                'header',
+                'hidden',
+                'number',
+                'paragraph',
+                'radio-group',
+                'select',
+                'text'
+                ],
                 onCloseFieldEdit: function(editPanel) {},
                 onOpenFieldEdit: function(editPanel) {},
                 onClearAll: function() {
@@ -410,15 +432,48 @@ jQuery(function($) {
                     $('#form-div').hide();
                     $('.addFieldWrap').hide();
                     $('#fb-render').formRender({formData: formBuilder.formData});
+
+                    // Recreate the image previews
+                    $('#fb-render').find('input[type="file"]').each(function(index, input) {
+                        var imageDataUrl = imageDataUrls[index];
+
+                        if (imageDataUrl) {
+                        var previewImage = $('<img>').attr('src', imageDataUrl).addClass('uploaded-image-preview');
+                        $(input).siblings('.uploaded-image-preview').remove(); // Remove old preview image
+                        $(input).after(previewImage);
+                        }
+                    });
+
+
+                    // Disable the file input fields
+                    $('#fb-render').find('input[type="file"]').prop('disabled', true);
                 }
+
             },
 
             formBuilder = $fbEditor.formBuilder(fbOptions);
+
         }
+        
     }else{
+        
         fbOptions = {
                 formData: quizFormData,
                 dataType: 'xml',
+                disableFields: [
+                'autocomplete',
+                'button',
+                'checkbox-group',
+                'date',
+                'file',
+                'header',
+                'hidden',
+                'number',
+                'paragraph',
+                'radio-group',
+                'select',
+                'text'
+                ],
                 onCloseFieldEdit: function(editPanel) {},
                 onOpenFieldEdit: function(editPanel) {},
                 onClearAll: function() {
@@ -433,6 +488,20 @@ jQuery(function($) {
                     $('#form-div').hide();
                     $('.addFieldWrap').hide();
                     $('#fb-render').formRender({formData: formBuilder.formData});
+
+                    // Recreate the image previews
+                    $('#fb-render').find('input[type="file"]').each(function(index, input) {
+                        var imageDataUrl = imageDataUrls[index];
+
+                        if (imageDataUrl) {
+                        var previewImage = $('<img>').attr('src', imageDataUrl).addClass('uploaded-image-preview');
+                        $(input).siblings('.uploaded-image-preview').remove(); // Remove old preview image
+                        $(input).after(previewImage);
+                        }
+                    });
+
+                    // Disable the file input fields
+                    $('#fb-render').find('input[type="file"]').prop('disabled', true);
                 }
             },
 
@@ -450,6 +519,20 @@ jQuery(function($) {
             var index = this.dataset.index ? Number(this.dataset.index) : undefined;
 
             //alert(i);
+
+            formBuilder.actions.addField(field, index);
+
+            field = {
+                type: 'file',
+                className: 'form-control',
+                label: 'Upload Image',
+                name: 'uploaded_image[]', // Update the name attribute to use array notation
+                description: 'Drag and drop or click to select an image file.',
+                attrs: {
+                    'data-subtype': 'file-' + i // Add a unique identifier to the data-subtype
+                }
+            };
+
 
             formBuilder.actions.addField(field, index);
 
@@ -541,6 +624,20 @@ jQuery(function($) {
             var index = this.dataset.index ? Number(this.dataset.index) : undefined;
 
             //alert(i);
+
+            formBuilder.actions.addField(field, index);
+
+            field = {
+                type: 'file',
+                className: 'form-control',
+                label: 'Upload Image',
+                name: 'uploaded_image[]', // Update the name attribute to use array notation
+                description: 'Drag and drop or click to select an image file.',
+                attrs: {
+                    'data-subtype': 'file-' + i // Add a unique identifier to the data-subtype
+                }
+            };
+
 
             formBuilder.actions.addField(field, index);
 
@@ -645,6 +742,20 @@ jQuery(function($) {
             var index = this.dataset.index ? Number(this.dataset.index) : undefined;
 
             //alert(i)
+
+            formBuilder.actions.addField(field, index);
+
+            field = {
+                type: 'file',
+                className: 'form-control',
+                label: 'Upload Image',
+                name: 'uploaded_image[]', // Update the name attribute to use array notation
+                description: 'Drag and drop or click to select an image file.',
+                attrs: {
+                    'data-subtype': 'file-' + i // Add a unique identifier to the data-subtype
+                }
+            };
+
 
             formBuilder.actions.addField(field, index);
 
@@ -760,36 +871,54 @@ jQuery(function($) {
             if(total == collect)
             {
 
+                // Create a FormData object
+                var formData = new FormData();
+
+                // Append the form fields
+                formData.append('class', selected_class);
+                formData.append('quiz', selected_quiz);
+                formData.append('reuse', reuse);
+                formData.append('title', $("#quiz-title").val());
+                formData.append('duration', $("#quiz-duration").val());
+                formData.append('questionindex', $("#question-index").val());
+                formData.append('from', $("#from").val());
+                formData.append('to', $("#to").val());
+                formData.append('marks', $("#total-marks").val());
+                formData.append('group', JSON.stringify($('input[name="group[]"]:checked').map(function(){ return this.value; }).get()));
+                formData.append('chapter', JSON.stringify($('input[name="chapter[]"]:checked').map(function(){ return this.value; }).get()));
+                formData.append('status', status);
+                formData.append('data', JSON.stringify({formData: $fbEditor.formRender("userData") }));
+
+                var fileIndex = 0;
+                $('#fb-editor').find('input[type="file"]').each(function(index, input) {
+                    if (imageDataUrls[index]) {
+                        if (input && input.files && input.files[0]) {
+                        formData.append('uploaded_image[' + fileIndex + ']', input.files[0]);
+                        console.log('index:', index, 'input:', input.files[0]);
+                        fileIndex++;
+                        }
+                    }
+                });
+
+
+                //console.log(JSON.stringify({formData: $fbEditor.formRender("userData") }));
+
+                // Perform the AJAX request
                 $.ajax({
-                    headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
+                    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
                     url: "{{ url('lecturer/quiz/insert') }}",
                     type: 'POST',
-                    data:  { 
-                        class: selected_class, 
-                        quiz: selected_quiz,
-                        reuse: reuse,
-                        title: $("#quiz-title").val(),
-                        duration: $("#quiz-duration").val(),
-                        questionindex: $("#question-index").val(),
-                        from: $("#from").val(),
-                        to: $("#to").val(),
-                        marks: $("#total-marks").val(),
-                        group: $('input[name="group[]"]:checked').map(function(){ 
-                            return this.value; 
-                        }).get(),
-                        chapter: $('input[name="chapter[]"]:checked').map(function(){ 
-                            return this.value; 
-                        }).get(),
-                        status: status,
-                        data:window.JSON.stringify({formData: $fbEditor.formRender("userData") })
-                    },
-                    error:function(err){
+                    data: formData,
+                    processData: false, // Important: Do not process data
+                    contentType: false, // Important: Do not set content type
+                    error: function(err) {
                         console.log(err);
                     },
-                    success:function(res){
+                    success: function(res) {
                         location.href= "/lecturer/quiz/{{ Session::get('CourseIDS') }}";
                     }
                 });
+
 
             }else{
 
@@ -823,6 +952,29 @@ function renderForm(formdata){
         $(fbRender).formRender(formRenderOptions );
     });
 }
+
+var imageDataUrls = [];
+
+$(document).ready(function() {
+  $('body').on('change', 'input[type="file"]', function() {
+    var input = this;
+    var index = $('.form-builder input[type="file"]').index(input);
+
+    if (input.files && input.files[0]) {
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        imageDataUrls[index] = e.target.result;
+
+        $(input).parent().find('.uploaded-image-preview').remove();
+        var previewImage = $('<img>').attr('src', e.target.result).addClass('uploaded-image-preview');
+        $(input).after(previewImage);
+      };
+      reader.readAsDataURL(input.files[0]);
+    }
+  });
+});
+
+
 </script>
 
 
