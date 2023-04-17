@@ -260,8 +260,6 @@ class QuizController extends Controller
         $to = $request->to;
         $questionindex = $request->questionindex;
         $status = $request->status;
-        $group = $request->group;
-        $chapter = $request->chapter;
         $marks = $request->marks;
 
         $user = Auth::user();
@@ -269,6 +267,13 @@ class QuizController extends Controller
         $quizid = empty($request->quiz) ? '' : $request->quiz;
 
         $statusReuse = empty($request->reuse) ? '' : $request->reuse;
+
+        $groupJSON = $request->input('group');
+        $chapterJSON = $request->input('chapter');
+
+        // Decode the JSON strings into PHP arrays
+        $group = json_decode($groupJSON, true);
+        $chapter = json_decode($chapterJSON, true);
 
         if( !empty($statusReuse))
         {
@@ -377,9 +382,101 @@ class QuizController extends Controller
                 }
             }
         }
+
+        // Set the directory path
+        $dir = "classquiz/" . Session::get('CourseID') . "/" . "quizimage" . "/" . $q . "/";
+
+        $newNames = [];
+
+        // Set the directory path (STAGING)
+        // $dir = "classquiz/" . Session::get('CourseID') . "/" . "quizimage" . "/";
+
+        // Access the uploaded files
+        foreach ($_FILES as $inputSubtype => $fileData) {
+            // Loop through the array of files
+            for ($i = 0; $i < count($fileData['name']); $i++) {
+                $uploadedFile = $request->file($inputSubtype . '.' . $i);
+
+                $file_name = $uploadedFile->getClientOriginalName();
+                $file_ext = $uploadedFile->getClientOriginalExtension();
+                $fileInfo = pathinfo($file_name);
+                $filename = $fileInfo['filename'];
+                $newname = $filename . "." . $file_ext;
+
+                // Store the new name in the $newNames array, indexed by the "uploaded_image" key and file index
+                $originalName = 'uploaded_image[' . $i . ']';
+                $newNames[$originalName] = $newname;
+
+                // Check if the file is present
+                if ($uploadedFile) {
+                    // Validate the file (add your own validation rules)
+                    $validatedData = $request->validate([
+                        $inputSubtype . '.' . $i => 'mimes:jpg,jpeg,png|max:2048', // For example: images only, max size 2MB
+                    ]);
+
+                    // Check if the directory exists in Linode Object Storage
+                    if (!Storage::disk('linode')->exists($dir)) {
+                        // If the directory doesn't exist, create it
+                        Storage::disk('linode')->makeDirectory($dir);
+                    }
+
+                    // Store the file in Linode Object Storage with the specified path
+                    $filePath = Storage::disk('linode')->putFileAs(
+                        $dir,
+                        $uploadedFile,
+                        $newname,
+                        'public'
+                    );
+
+                    // Store the file path in the database or another location as per your requirements
+                    // For example, you could store the paths in a separate table, or add a column to an existing table
+                    // The implementation depends on your application structure
+
+                    // Create an img tag with the uploaded image
+                    $imgTag = "<img src='" . env('LINODE_ENDPOINT') . "/" . env('LINODE_BUCKET') . "/" . $dir . $newname . "' />";
+
+                    // Replace the corresponding image input with the img tag in the quiz content
+                    $data = str_replace($inputSubtype . '_' . $i, $imgTag, $data);
+                }
+            }
+        }
+
         
         
+        // Decode the JSON content of the quiz into a PHP array
+        $quiz_content = json_decode($data, true);
+
+        // Define the Linode Object Storage base URL
+        $linode_base_url = rtrim(env('LINODE_ENDPOINT'), '/') . '/' . env('LINODE_BUCKET') . '/' . $dir; // Replace this with your Linode Object Storage base URL
+
+        // Iterate through the "formData" array and update the image URLs
+        // Iterate through the "formData" array and update the image URLs
+        $fileIndex = 0; // Initialize the file index
+        foreach ($quiz_content['formData'] as $index => $item) {
+            if ($item['type'] === 'file' && isset($item['name'])) {
+                // Construct the original name using the file index
+                $originalName2 = 'uploaded_image[' . $fileIndex . ']';
+
+                // Check if a new name exists for this file in the $newNames array
+                if (isset($newNames[$originalName2])) {
+                    // Prepend the Linode Object Storage base URL to the new name
+                    $quiz_content['formData'][$index]['name'] = $linode_base_url . $newNames[$originalName2];
+                }
+
+                $fileIndex++; // Increment the file index
+            }
+        }
+
+        // Re-encode the quiz content to JSON format
+        $updated_content = json_encode($quiz_content);
+
+        // Update the content field in the database with the updated content
+        DB::table('tblclassquiz')->where('id', $q)->update([
+            "content" => $updated_content
+        ]);
+
         return true;
+
     }
 
     public function lecturerquizstatus()
@@ -768,6 +865,12 @@ class QuizController extends Controller
         foreach($quizformdata as $index => $v){
 
             if(!empty($quizformdata[$index]->className) ){
+                if ($v->type === 'file') {
+                    $quizformdata[$index]->disabled = true;
+                    $quizformdata[$index]->label = null;
+                    $quizformdata[$index]->description = null;
+                }
+
                 if(str_contains($quizformdata[$index]->className, "collected-marks")){
                     $quizformdata[$index]->type = "paragraph";
                     $quizformdata[$index]->label = $quizformdata[$index]->values[0]->label;
@@ -815,6 +918,7 @@ class QuizController extends Controller
     }
 
     public function startquiz(Request $request){
+
         $quiz = $request->quiz;
         $data = $request->data;
         
@@ -840,6 +944,7 @@ class QuizController extends Controller
     }
 
     public function savequiz(Request $request){
+
         $data = $request->data;
         $quizid = $request->quiz;
 
@@ -1033,7 +1138,6 @@ class QuizController extends Controller
        
         $data['quiz'] = $quizformdata;
         $data['comments'] = $quiz->comments;
-
         $data['quizid'] = $quiz->quizid;
         $data['quiztitle'] = $quiz->title;
         $data['quizduration'] = $quiz->duration;
