@@ -665,22 +665,25 @@ class StudentController extends Controller
     {
         $students = Session::get('StudInfo');
         
+        $quizlist = [];
         $percentagequiz = "";
 
+        $testlist = [];
         $percentagetest = "";
 
+        $midtermlist = [];
         $percentagemidterm = "";
 
+        $finallist = [];
         $percentagefinal = "";
 
+        $assignlist = [];
         $percentageassign = "";
 
-        $percentagepaperwork = "";
-
-        $percentagepractical = "";
-
+        $otherlist = [];
         $percentageother = "";
 
+        $extralist = [];
         $percentageextra = "";
 
         //$percentagefinal = "";
@@ -697,24 +700,35 @@ class StudentController extends Controller
                                 ['assessment', 'quiz']
                                 ])->first();
 
-        $quiz = DB::table('tblclassstudentquiz')
-                ->join('tblclassquiz', 'tblclassstudentquiz.quizid', 'tblclassquiz.id')
-                ->where([
-                    ['tblclassstudentquiz.userid', $students->ic],
-                    ['tblclassquiz.classid', request()->id],
-                    ['tblclassquiz.sessionid', Session::get('SessionID')]
-                ]);
-        
-        $totalquiz = $quiz->sum('tblclassquiz.total_mark');
-
-        $markquiz = $quiz->sum('tblclassstudentquiz.final_mark');
-
         if($percentquiz != null)
         {
             $percentagequiz = $percentquiz->mark_percentage;
         }
 
-        $quizlist = $quiz->get();
+        $totalquiz = 0;
+        $markquiz = 0;
+        
+        $quiz = DB::table('tblclassquiz')
+                    ->where([
+                        ['tblclassquiz.classid', request()->id],
+                        ['tblclassquiz.sessionid', Session::get('SessionID')]
+                    ])->get();
+        
+        foreach($quiz as $key => $qz)
+        {
+            $quizlist[$key] = DB::table('tblclassstudentquiz')->where([
+                                                                ['userid', $student->ic],
+                                                                ['quizid', $qz->id],
+                                                                ])->first();
+        
+            // Add the current total_mark to the $totalquiz variable
+            $totalquiz += $qz->total_mark;
+        
+            // If a quizlist record exists, add the current final_mark to the $markquiz variable
+            if ($quizlist[$key]) {
+                $markquiz += $quizlist[$key]->final_mark;
+            }
+        }
 
         if($totalquiz != 0 && $markquiz != 0)
         {
@@ -731,24 +745,35 @@ class StudentController extends Controller
                                 ['assessment', 'test']
                                 ])->first();
 
-        $test = DB::table('tblclassstudenttest')
-                ->join('tblclasstest', 'tblclassstudenttest.testid', 'tblclasstest.id')
-                ->where([
-                    ['tblclassstudenttest.userid', $students->ic],
-                    ['tblclasstest.classid', request()->id],
-                    ['tblclasstest.sessionid', Session::get('SessionID')]
-                ]);
-        
-        $totaltest = $test->sum('tblclasstest.total_mark');
-
-        $marktest = $test->sum('tblclassstudenttest.final_mark');
-
         if($percenttest != null)
         {
             $percentagetest = $percenttest->mark_percentage;
         }
 
-        $testlist = $test->get();
+        $totaltest = 0;
+        $marktest = 0;
+        
+        $test = DB::table('tblclasstest')
+                    ->where([
+                        ['tblclasstest.classid', request()->id],
+                        ['tblclasstest.sessionid', Session::get('SessionID')]
+                    ])->get();
+        
+        foreach($test as $key => $qz)
+        {
+            $testlist[$key] = DB::table('tblclassstudenttest')->where([
+                                                                ['userid', $student->ic],
+                                                                ['testid', $qz->id],
+                                                                ])->first();
+        
+            // Add the current total_mark to the $totaltest variable
+            $totaltest += $qz->total_mark;
+        
+            // If a testlist record exists, add the current final_mark to the $marktest variable
+            if ($testlist[$key]) {
+                $marktest += $testlist[$key]->final_mark;
+            }
+        }
 
         if($totaltest != 0 && $marktest != 0)
         {
@@ -765,24 +790,35 @@ class StudentController extends Controller
                                 ['assessment', 'assignment']
                                 ])->first();
 
-        $assign = DB::table('tblclassstudentassign')
-                ->join('tblclassassign', 'tblclassstudentassign.assignid', 'tblclassassign.id')
-                ->where([
-                    ['tblclassstudentassign.userid', $students->ic],
-                    ['tblclassassign.classid', request()->id],
-                    ['tblclassassign.sessionid', Session::get('SessionID')]
-                ]);
-        
-        $totalassign = $assign->sum('tblclassassign.total_mark');
-
-        $markassign = $assign->sum('tblclassstudentassign.final_mark');
-
         if($percentassign != null)
         {
             $percentageassign = $percentassign->mark_percentage;
         }
 
-        $assignlist = $assign->get();
+        $totalassign = 0;
+        $markassign = 0;
+        
+        $assign = DB::table('tblclassassign')
+                    ->where([
+                        ['tblclassassign.classid', request()->id],
+                        ['tblclassassign.sessionid', Session::get('SessionID')]
+                    ])->get();
+        
+        foreach($assign as $key => $qz)
+        {
+            $assignlist[$key] = DB::table('tblclassstudentassign')->where([
+                                                                ['userid', $student->ic],
+                                                                ['assignid', $qz->id],
+                                                                ])->first();
+        
+            // Add the current total_mark to the $totalassign variable
+            $totalassign += $qz->total_mark;
+        
+            // If a assignlist record exists, add the current final_mark to the $markassign variable
+            if ($assignlist[$key]) {
+                $markassign += $assignlist[$key]->final_mark;
+            }
+        }
 
         if($totalassign != 0 && $markassign != 0)
         {
@@ -791,7 +827,7 @@ class StudentController extends Controller
             $total_allassign = 0;
         }
 
-        // MIDTERM
+        //MIDTERM
 
         $percentmidterm = DB::table('tblclassmarks')
                                 ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
@@ -799,26 +835,35 @@ class StudentController extends Controller
                                 ['assessment', 'midterm']
                                 ])->first();
 
-        //dd($percent);
-  
-        $midterm = DB::table('tblclassstudentmidterm')
-                ->join('tblclassmidterm', 'tblclassstudentmidterm.midtermid', 'tblclassmidterm.id')
-                ->where([
-                    ['tblclassstudentmidterm.userid', $students->ic],
-                    ['tblclassmidterm.classid', request()->id],
-                    ['tblclassmidterm.sessionid', Session::get('SessionID')]
-                ]);
-        
-        $totalmidterm = $midterm->sum('tblclassmidterm.total_mark');
-   
-        $markmidterm = $midterm->sum('tblclassstudentmidterm.final_mark');
-
         if($percentmidterm != null)
         {
             $percentagemidterm = $percentmidterm->mark_percentage;
         }
 
-        $midtermlist = $midterm->get();
+        $totalmidterm = 0;
+        $markmidterm = 0;
+        
+        $midterm = DB::table('tblclassmidterm')
+                    ->where([
+                        ['tblclassmidterm.classid', request()->id],
+                        ['tblclassmidterm.sessionid', Session::get('SessionID')]
+                    ])->get();
+        
+        foreach($midterm as $key => $qz)
+        {
+            $midtermlist[$key] = DB::table('tblclassstudentmidterm')->where([
+                                                                ['userid', $student->ic],
+                                                                ['midtermid', $qz->id],
+                                                                ])->first();
+        
+            // Add the current total_mark to the $totalmidterm variable
+            $totalmidterm += $qz->total_mark;
+        
+            // If a midtermlist record exists, add the current final_mark to the $markmidterm variable
+            if ($midtermlist[$key]) {
+                $markmidterm += $midtermlist[$key]->final_mark;
+            }
+        }
 
         if($totalmidterm != 0 && $markmidterm != 0)
         {
@@ -836,100 +881,41 @@ class StudentController extends Controller
                                 ['assessment', 'final']
                                 ])->first();
 
-        //dd($percent);
-  
-        $final = DB::table('tblclassstudentfinal')
-                ->join('tblclassfinal', 'tblclassstudentfinal.finalid', 'tblclassfinal.id')
-                ->where([
-                    ['tblclassstudentfinal.userid', $students->ic],
-                    ['tblclassfinal.classid', request()->id],
-                    ['tblclassfinal.sessionid', Session::get('SessionID')]
-                ]);
-        
-        $totalfinal = $final->sum('tblclassfinal.total_mark');
-   
-        $markfinal = $final->sum('tblclassstudentfinal.final_mark');
-
         if($percentfinal != null)
         {
             $percentagefinal = $percentfinal->mark_percentage;
         }
 
-        $finallist = $final->get();
+        $totalfinal = 0;
+        $markfinal = 0;
+        
+        $final = DB::table('tblclassfinal')
+                    ->where([
+                        ['tblclassfinal.classid', request()->id],
+                        ['tblclassfinal.sessionid', Session::get('SessionID')]
+                    ])->get();
+        
+        foreach($final as $key => $qz)
+        {
+            $finallist[$key] = DB::table('tblclassstudentfinal')->where([
+                                                                ['userid', $student->ic],
+                                                                ['finalid', $qz->id],
+                                                                ])->first();
+        
+            // Add the current total_mark to the $totalfinal variable
+            $totalfinal += $qz->total_mark;
+        
+            // If a finallist record exists, add the current final_mark to the $markfinal variable
+            if ($finallist[$key]) {
+                $markfinal += $finallist[$key]->final_mark;
+            }
+        }
 
         if($totalfinal != 0 && $markfinal != 0)
         {
             $total_allfinal = round(( (int)$markfinal / (int)$totalfinal ) * (int)$percentagefinal);
         }else{
             $total_allfinal = 0;
-        }
-
-        //PAPERWORK
-
-        $percentpaperwork = DB::table('tblclassmarks')
-                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
-                                ['subjek.id', Session::get('CourseID')],
-                                ['assessment', 'paperwork']
-                                ])->first();
-
-        $paperwork = DB::table('tblclassstudentpaperwork')
-                ->join('tblclasspaperwork', 'tblclassstudentpaperwork.paperworkid', 'tblclasspaperwork.id')
-                ->where([
-                    ['tblclassstudentpaperwork.userid', $students->ic],
-                    ['tblclasspaperwork.classid', request()->id],
-                    ['tblclasspaperwork.sessionid', Session::get('SessionID')]
-                ]);
-        
-        $totalpaperwork = $paperwork->sum('tblclasspaperwork.total_mark');
-
-        $markpaperwork = $paperwork->sum('tblclassstudentpaperwork.final_mark');
-
-        if($percentpaperwork != null)
-        {
-            $percentagepaperwork = $percentpaperwork->mark_percentage;
-        }
-
-        $paperworklist = $paperwork->get();
-
-        if($totalpaperwork != 0 && $markpaperwork != 0)
-        {
-            $total_allpaperwork = round(( (int)$markpaperwork / (int)$totalpaperwork ) * (int)$percentagepaperwork);
-        }else{
-            $total_allpaperwork = 0;
-        }
-
-        //PRACTICAL
-
-        $percentpractical = DB::table('tblclassmarks')
-                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
-                                ['subjek.id', Session::get('CourseID')],
-                                ['assessment', 'practical']
-                                ])->first();
-
-        $practical = DB::table('tblclassstudentpractical')
-                ->join('tblclasspractical', 'tblclassstudentpractical.practicalid', 'tblclasspractical.id')
-                ->where([
-                    ['tblclassstudentpractical.userid', $students->ic],
-                    ['tblclasspractical.classid', request()->id],
-                    ['tblclasspractical.sessionid', Session::get('SessionID')]
-                ]);
-        
-        $totalpractical = $practical->sum('tblclasspractical.total_mark');
-
-        $markpractical = $practical->sum('tblclassstudentpractical.final_mark');
-
-        if($percentpractical != null)
-        {
-            $percentagepractical = $percentpractical->mark_percentage;
-        }
-
-        $practicallist = $practical->get();
-
-        if($totalpractical != 0 && $markpractical != 0)
-        {
-            $total_allpractical = round(( (int)$markpractical / (int)$totalpractical ) * (int)$percentagepractical);
-        }else{
-            $total_allpractical = 0;
         }
 
         //OTHER
@@ -940,24 +926,35 @@ class StudentController extends Controller
                                 ['assessment', 'lain-lain']
                                 ])->first();
 
-        $other = DB::table('tblclassstudentother')
-                ->join('tblclassother', 'tblclassstudentother.otherid', 'tblclassother.id')
-                ->where([
-                    ['tblclassstudentother.userid', $students->ic],
-                    ['tblclassother.classid', request()->id],
-                    ['tblclassother.sessionid', Session::get('SessionID')]
-                ]);
-        
-        $totalother = $other->sum('tblclassother.total_mark');
-
-        $markother = $other->sum('tblclassstudentother.final_mark');
-
         if($percentother != null)
         {
             $percentageother = $percentother->mark_percentage;
         }
 
-        $otherlist = $other->get();
+        $totalother = 0;
+        $markother = 0;
+        
+        $other = DB::table('tblclassother')
+                    ->where([
+                        ['tblclassother.classid', request()->id],
+                        ['tblclassother.sessionid', Session::get('SessionID')]
+                    ])->get();
+        
+        foreach($other as $key => $qz)
+        {
+            $otherlist[$key] = DB::table('tblclassstudentother')->where([
+                                                                ['userid', $student->ic],
+                                                                ['otherid', $qz->id],
+                                                                ])->first();
+        
+            // Add the current total_mark to the $totalother variable
+            $totalother += $qz->total_mark;
+        
+            // If a otherlist record exists, add the current final_mark to the $markother variable
+            if ($otherlist[$key]) {
+                $markother += $otherlist[$key]->final_mark;
+            }
+        }
 
         if($totalother != 0 && $markother != 0)
         {
@@ -974,24 +971,35 @@ class StudentController extends Controller
                                 ['assessment', 'extra']
                                 ])->first();
 
-        $extra = DB::table('tblclassstudentextra')
-                ->join('tblclassextra', 'tblclassstudentextra.extraid', 'tblclassextra.id')
-                ->where([
-                    ['tblclassstudentextra.userid', $students->ic],
-                    ['tblclassextra.classid', request()->id],
-                    ['tblclassextra.sessionid', Session::get('SessionID')]
-                ]);
-        
-        $totalextra = $extra->sum('tblclassextra.total_mark');
-
-        $markextra = $extra->sum('tblclassstudentextra.final_mark');
-
         if($percentextra != null)
         {
             $percentageextra = $percentextra->mark_percentage;
         }
 
-        $extralist = $extra->get();
+        $totalextra = 0;
+        $markextra = 0;
+        
+        $extra = DB::table('tblclassextra')
+                    ->where([
+                        ['tblclassextra.classid', request()->id],
+                        ['tblclassextra.sessionid', Session::get('SessionID')]
+                    ])->get();
+        
+        foreach($extra as $key => $qz)
+        {
+            $extralist[$key] = DB::table('tblclassstudentextra')->where([
+                                                                ['userid', $student->ic],
+                                                                ['extraid', $qz->id],
+                                                                ])->first();
+        
+            // Add the current total_mark to the $totalextra variable
+            $totalextra += $qz->total_mark;
+        
+            // If a extralist record exists, add the current final_mark to the $markextra variable
+            if ($extralist[$key]) {
+                $markextra += $extralist[$key]->final_mark;
+            }
+        }
 
         if($totalextra != 0 && $markextra != 0)
         {
@@ -1000,14 +1008,12 @@ class StudentController extends Controller
             $total_allextra = 0;
         }
 
-        return view('student.courseassessment.reportdetails', compact('student', 'quizlist', 'totalquiz', 'markquiz', 'percentagequiz', 'total_allquiz',
-                                                                                  'testlist', 'totaltest', 'marktest', 'percentagetest', 'total_alltest',
-                                                                                 'assignlist', 'totalassign', 'markassign', 'percentageassign', 'total_allassign',
-                                                                                 'midtermlist', 'totalmidterm', 'markmidterm', 'percentagemidterm', 'total_allmidterm',
-                                                                                 'finallist', 'totalfinal', 'markfinal', 'percentagefinal', 'total_allfinal',
-                                                                                 'paperworklist', 'totalpaperwork', 'markpaperwork', 'percentagepaperwork', 'total_allpaperwork',
-                                                                                 'practicallist', 'totalpractical', 'markpractical', 'percentagepractical', 'total_allpractical',
-                                                                                 'otherlist', 'totalother', 'markother', 'percentageother', 'total_allother',
-                                                                                 'extralist', 'totalextra', 'markextra', 'percentageextra', 'total_allextra'));
+        return view('student.courseassessment.reportdetails', compact('student', 'quiz', 'quizlist', 'totalquiz', 'markquiz', 'percentagequiz', 'total_allquiz',
+                                                                                  'test', 'testlist', 'totaltest', 'marktest', 'percentagetest', 'total_alltest',
+                                                                                  'assign', 'assignlist', 'totalassign', 'markassign', 'percentageassign', 'total_allassign',
+                                                                                  'midterm', 'midtermlist', 'totalmidterm', 'markmidterm', 'percentagemidterm', 'total_allmidterm',
+                                                                                  'final', 'finallist', 'totalfinal', 'markfinal', 'percentagefinal', 'total_allfinal',
+                                                                                  'other', 'otherlist', 'totalother', 'markother', 'percentageother', 'total_allother',
+                                                                                  'extra', 'extralist', 'totalextra', 'markextra', 'percentageextra', 'total_allextra'));
     }
 }
