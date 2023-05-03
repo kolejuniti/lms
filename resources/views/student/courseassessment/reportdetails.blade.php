@@ -14,9 +14,8 @@
 						<nav>
 							<ol class="breadcrumb">
 								<li class="breadcrumb-item"><a href="#"><i class="mdi mdi-home-outline"></i></a></li>
-								<li class="breadcrumb-item" aria-current="page">Academics</li>
-								<li class="breadcrumb-item" aria-current="page">Courses</li>
-								<li class="breadcrumb-item active" aria-current="page">Subjects</li>
+								<li class="breadcrumb-item" aria-current="page">Assessment</li>
+								<li class="breadcrumb-item active" aria-current="page">Report</li>
 							</ol>
 						</nav>
 					</div>
@@ -76,22 +75,22 @@
 											</tr>
 											</thead>
 											<tbody>
-											@foreach ($quizlist as $keys=>$quiz)
+											@foreach ($quiz as $keys=>$qz)
 												<tr>
 													<td>
 													{{ $keys+1 }}
 													</td>
 													<td >
-													{{ $quiz->title }}
+													{{ $qz->title }}
 													</td>
 													<td>
-													{{ $quiz->duration }}
+													{{ $qz->duration }}
 													</td>
 													<td>
-													{{ $quiz->total_mark }}
+													{{ $qz->total_mark }}
 													</td>
 													<td>
-													{{ $quiz->final_mark }}
+													{{ $quizlist[$keys]->final_mark ?? '-' }}
 													</td>
 												</tr>
 											@endforeach
@@ -173,24 +172,24 @@
 											</tr>
 											</thead>
 											<tbody>
-											@foreach ($testlist as $keys=>$test)
-												<tr>
-													<td>
-													{{ $keys+1 }}
-													</td>
-													<td >
-													{{ $test->title }}
-													</td>
-													<td>
-													{{ $test->duration }}
-													</td>
-													<td>
-													{{ $test->total_mark }}
-													</td>
-													<td>
-													{{ $test->final_mark }}
-													</td>
-												</tr>
+											@foreach ($test as $keys=>$ts)
+											<tr>
+												<td>
+												{{ $keys+1 }}
+												</td>
+												<td >
+												{{ $ts->title }}
+												</td>
+												<td>
+												{{ $ts->duration }}
+												</td>
+												<td>
+												{{ $ts->total_mark }}
+												</td>
+												<td>
+												{{ $testlist[$keys]->final_mark ?? '-' }}
+												</td>
+											</tr>
 											@endforeach
 												<tr>
 													<td style="width: 1%">
@@ -271,24 +270,24 @@
 											</tr>
 											</thead>
 											<tbody>
-											@foreach ($assignlist as $keys=>$assign)
-												<tr>
-													<td>
-													{{ $keys+1 }}
-													</td>
-													<td >
-													{{ $assign->title }}
-													</td>
-													<td>
-													{{ $assign->deadline }}
-													</td>
-													<td>
-													{{ $assign->total_mark }}
-													</td>
-													<td>
-													{{ $assign->final_mark }}
-													</td>
-												</tr>
+											@foreach ($assign as $keys=>$qz)
+											<tr>
+												<td>
+												{{ $keys+1 }}
+												</td>
+												<td >
+												{{ $qz->title }}
+												</td>
+												<td>
+												{{ $qz->deadline }}
+												</td>
+												<td>
+												{{ $qz->total_mark }}
+												</td>
+												<td>
+												{{ $assignlist[$keys]->final_mark ?? '-' }}
+												</td>
+											</tr>
 											@endforeach
 												<tr>
 													<td style="width: 1%">
@@ -366,21 +365,21 @@
 											</tr>
 											</thead>
 											<tbody>
-											@foreach ($midtermlist as $keys=>$midterm)
-												<tr>
-													<td>
-													{{ $keys+1 }}
-													</td>
-													<td >
-													{{ $midterm->title }}
-													</td>
-													<td>
-													{{ $midterm->total_mark }}
-													</td>
-													<td>
-													{{ $midterm->final_mark }}
-													</td>
-												</tr>
+											@foreach ($midterm as $keys=>$qz)
+											<tr>
+												<td>
+												{{ $keys+1 }}
+												</td>
+												<td >
+												{{ $qz->title }}
+												</td>
+												<td>
+												{{ $qz->total_mark }}
+												</td>
+												<td>
+												{{ $midtermlist[$keys]->final_mark ?? '-' }}
+												</td>
+											</tr>
 											@endforeach
 												<tr>
 													<td style="width: 1%">
@@ -459,19 +458,19 @@
 											</tr>
 											</thead>
 											<tbody>
-											@foreach ($finallist as $keys=>$final)
+											@foreach ($final as $keys=>$qz)
 												<tr>
 													<td>
 													{{ $keys+1 }}
 													</td>
 													<td >
-													{{ $final->title }}
+													{{ $qz->title }}
 													</td>
 													<td>
-													{{ $final->total_mark }}
+													{{ $qz->total_mark }}
 													</td>
 													<td>
-													{{ $final->final_mark }}
+													{{ $finallist[$keys]->final_mark ?? '-' }}
 													</td>
 												</tr>
 											@endforeach
@@ -524,7 +523,7 @@
 					
 					<!-- paperwork -->
 
-					@if ($percentagepaperwork != "")
+					{{-- @if ($percentagepaperwork != "")
 					<div class="col-12">
 						<div class="box">
 							<div class="card-header">
@@ -716,7 +715,7 @@
 							</div>
 						</div>
 					</div>-->
-					@endif
+					@endif --}}
 
 					<!-- other -->
 
@@ -741,9 +740,6 @@
 												Title
 												</th>
 												<th style="width: 20%">
-												Deadline
-												</th>
-												<th style="width: 20%">
 												Total Mark
 												</th>
 												<td style="width: 20%">
@@ -752,24 +748,21 @@
 											</tr>
 											</thead>
 											<tbody>
-											@foreach ($otherlist as $keys=>$other)
-												<tr>
-													<td>
-													{{ $keys+1 }}
-													</td>
-													<td >
-													{{ $other->title }}
-													</td>
-													<td>
-													{{ $other->deadline }}
-													</td>
-													<td>
-													{{ $other->total_mark }}
-													</td>
-													<td>
-													{{ $other->final_mark }}
-													</td>
-												</tr>
+											@foreach ($other as $keys=>$qz)
+											<tr>
+												<td>
+												{{ $keys+1 }}
+												</td>
+												<td >
+												{{ $qz->title }}
+												</td>
+												<td>
+												{{ $qz->total_mark }}
+												</td>
+												<td>
+												{{ $otherlist[$keys]->final_mark ?? '-' }}
+												</td>
+											</tr>
 											@endforeach
 												<tr>
 													<td style="width: 1%">
@@ -847,21 +840,21 @@
 											</tr>
 											</thead>
 											<tbody>
-											@foreach ($extralist as $keys=>$extra)
-												<tr>
-													<td>
-													{{ $keys+1 }}
-													</td>
-													<td >
-													{{ $extra->title }}
-													</td>
-													<td>
-													{{ $extra->total_mark }}
-													</td>
-													<td>
-													{{ $extra->final_mark }}
-													</td>
-												</tr>
+											@foreach ($extra as $keys=>$qz)
+											<tr>
+												<td>
+												{{ $keys+1 }}
+												</td>
+												<td >
+												{{ $qz->title }}
+												</td>
+												<td>
+												{{ $qz->total_mark }}
+												</td>
+												<td>
+												{{ $extralist[$keys]->final_mark ?? '-' }}
+												</td>
+											</tr>
 											@endforeach
 												<tr>
 													<td style="width: 1%">
