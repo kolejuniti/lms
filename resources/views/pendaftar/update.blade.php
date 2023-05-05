@@ -219,6 +219,30 @@
                       <div class="row">
                         <div class="col-md-6">
                           <div class="form-group">
+                            <label class="form-label" for="dun">DUN <p style="color:red; display:inline-block;">*</p></label>
+                            <select class="form-select" id="dun" name="dun" required>
+                              <option value="-" selected disabled>-</option>
+                                @foreach ($data['dun'] as $dun)
+                                <option value="{{ $dun->id }}" {{ ($student->dun == $dun->id) ? 'selected' : '' }}>{{ $dun->name }}</option> 
+                                @endforeach
+                            </select>
+                          </div>
+                        </div>
+                        <div class="col-md-6">
+                          <div class="form-group">
+                            <label class="form-label" for="parlimen">Parlimen <p style="color:red; display:inline-block;">*</p></label>
+                            <select class="form-select" id="parlimen" name="parlimen" required>
+                              <option value="-" selected disabled>-</option>
+                                @foreach ($data['parlimen'] as $parlimen)
+                                <option value="{{ $parlimen->id }}" {{ ($student->parlimen == $parlimen->id) ? 'selected' : '' }}>{{ $parlimen->name }}</option> 
+                                @endforeach
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-6">
+                          <div class="form-group">
                             <label class="form-label" for="dt">Date/Time</label>
                             <input type="datetime-local" class="form-control" id="dt" placeholder="Enter Bank Name" name="dt" value="{{ $student->datetime }}">
                           </div>
@@ -347,13 +371,13 @@
                         <div class="row">
                           <div class="col-md-6">
                             <div class="form-group">
-                              <label class="form-label" for="w_name">Name</label>
+                              <label class="form-label" for="w_name">Name <p style="color:red; display:inline-block;">*</p></label>
                               <input type="text" class="form-control" id="w_name" placeholder="Enter Name" name="w_name[]">
                             </div>
                           </div>
                           <div class="col-md-6">
                             <div class="form-group">
-                              <label class="form-label" for="w_ic">IC</label>
+                              <label class="form-label" for="w_ic">IC <p style="color:red; display:inline-block;">*</p></label>
                               <input type="text" class="form-control" id="w_ic" placeholder="Enter IC" name="w_ic[]">
                             </div>
                           </div>
@@ -365,13 +389,13 @@
                           </div>
                           <div class="col-md-6">
                             <div class="form-group">
-                              <label class="form-label" for="w_notel">Phone No. Tel</label>
+                              <label class="form-label" for="w_notel">Phone No. Tel <p style="color:red; display:inline-block;">*</p></label>
                               <input type="text" class="form-control" id="w_notel" placeholder="Enter No. Tel" name="w_notel[]">
                             </div>
                           </div>
                           <div class="col-md-6">
                             <div class="form-group">
-                              <label class="form-label" for="occupation">Occupation</label>
+                              <label class="form-label" for="occupation">Occupation <p style="color:red; display:inline-block;">*</p></label>
                               <select class="form-select" id="occupation" name="occupation[]">
                                 <option value="-" selected disabled>-</option>
                                 <option value="SEKTOR KERAJAAN">SEKTOR KERAJAAN</option>
@@ -384,13 +408,13 @@
                           </div>
                           <div class="col-md-6">
                             <div class="form-group">
-                              <label class="form-label" for="dependent">No. Dependent</label>
+                              <label class="form-label" for="dependent">No. Dependent <p style="color:red; display:inline-block;">*</p></label>
                               <input type="text" class="form-control" id="dependent" name="dependent[]" placeholder="Enter Dependent">
                             </div>
                           </div>
                           <div class="col-md-6">
                             <div class="form-group">
-                              <label class="form-label" for="relationship">Relationship</label>
+                              <label class="form-label" for="relationship">Relationship <p style="color:red; display:inline-block;">*</p></label>
                               <select class="form-select" id="relationship" name="relationship[]">
                                 <option value="-" selected disabled>-</option>
                                 @foreach ($data['relationship'] as $rlp)
@@ -401,7 +425,7 @@
                           </div>
                           <div class="col-md-6">
                             <div class="form-group">
-                              <label class="form-label" for="w_race">Race</label>
+                              <label class="form-label" for="w_race">Race <p style="color:red; display:inline-block;">*</p></label>
                               <select class="form-select" id="w_race" name="w_race[]">
                                 <option value="-" selected disabled>-</option>
                                 @foreach ($data['race'] as $rc)
@@ -412,7 +436,19 @@
                           </div>
                           <div class="col-md-6">
                             <div class="form-group">
-                              <label class="form-label" for="w_status">Status</label>
+                              <label class="form-label" for="w_kasar">Salary (Kasar) <p style="color:red; display:inline-block;">*</p></label>
+                              <input type="text" class="form-control" id="w_kasar" name="w_kasar[]">
+                            </div>
+                          </div>
+                          <div class="col-md-6">
+                            <div class="form-group">
+                              <label class="form-label" for="w_bersih">Salary (Bersih)</label>
+                              <input type="text" class="form-control" id="w_bersih" name="w_bersih[]">
+                            </div>
+                          </div>
+                          <div class="col-md-6">
+                            <div class="form-group">
+                              <label class="form-label" for="w_status">Status <p style="color:red; display:inline-block;">*</p></label>
                               <select class="form-select" id="w_status" name="w_status[]">
                                 <option value="-" selected disabled>-</option>
                                 @foreach ($data['wstatus'] as $sts)
@@ -605,6 +641,8 @@ $(document).ready(function() {
     newForm.find('input[name="w_notel[]"]').val('{{ $waris->phone_tel }}');
     newForm.find('select[name="occupation[]"]').val('{{ $waris->occupation }}');
     newForm.find('input[name="dependent[]"]').val('{{ $waris->dependent_no }}');
+    newForm.find('select[name="w_kasar[]"]').val('{{ $waris->kasar }}');
+    newForm.find('input[name="w_bersih[]"]').val('{{ $waris->bersih }}');
     newForm.find('select[name="relationship[]"]').val('{{ $waris->relationship }}');
     newForm.find('select[name="w_race[]"]').val('{{ $waris->race }}');
     newForm.find('select[name="w_status[]"]').val('{{ $waris->status }}');

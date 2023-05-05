@@ -213,6 +213,30 @@
                       <div class="row">
                         <div class="col-md-6">
                           <div class="form-group">
+                            <label class="form-label" for="dun">DUN <p style="color:red; display:inline-block;">*</p></label>
+                            <select class="form-select" id="dun" name="dun" required>
+                              <option value="-" selected disabled>-</option>
+                                @foreach ($data['dun'] as $dun)
+                                <option value="{{ $dun->id }}">{{ $dun->name }}</option> 
+                                @endforeach
+                            </select>
+                          </div>
+                        </div>
+                        <div class="col-md-6">
+                          <div class="form-group">
+                            <label class="form-label" for="parlimen">Parlimen <p style="color:red; display:inline-block;">*</p></label>
+                            <select class="form-select" id="parlimen" name="parlimen" required>
+                              <option value="-" selected disabled>-</option>
+                                @foreach ($data['parlimen'] as $parlimen)
+                                <option value="{{ $parlimen->id }}">{{ $parlimen->name }}</option> 
+                                @endforeach
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-6">
+                          <div class="form-group">
                             <label class="form-label" for="dt">Date/Time</label>
                             <input type="datetime-local" class="form-control" id="dt" placeholder="Enter Bank Name" name="dt">
                           </div>
@@ -402,6 +426,18 @@
                                   <option value="{{ $rc->id }}">{{ $rc->nationality_name }}</option> 
                                 @endforeach
                               </select>
+                            </div>
+                          </div>
+                          <div class="col-md-6">
+                            <div class="form-group">
+                              <label class="form-label" for="w_kasar">Salary (Kasar)</label>
+                              <input type="text" class="form-control" id="w_kasar" name="w_kasar[]">
+                            </div>
+                          </div>
+                          <div class="col-md-6">
+                            <div class="form-group">
+                              <label class="form-label" for="w_bersih">Salary (Bersih)</label>
+                              <input type="text" class="form-control" id="w_bersih" name="w_bersih[]">
                             </div>
                           </div>
                           <div class="col-md-6">
