@@ -313,6 +313,10 @@ class PendaftarController extends Controller
         $data['pass'] = DB::table('tblpass_type')->get();
 
         $data['country'] = DB::table('tblcountry')->get();
+        
+        $data['dun'] = DB::table('tbldun')->get();
+
+        $data['parlimen'] = DB::table('tblparlimen')->get();
 
         //dd($data['race']);
 
@@ -381,7 +385,9 @@ class PendaftarController extends Controller
             'citizenship_id' => $request->citizen,
             'no_tel' => $request->np1,
             'no_tel2' => $request->np2,
-            'no_telhome' => $request->np3
+            'no_telhome' => $request->np3,
+            'dun' => $request->dun,
+            'parlimen' => $request->parlimen
         ]);
 
         DB::table('tblstudent_pass')->insert([
@@ -416,6 +422,8 @@ class PendaftarController extends Controller
                     'phone_tel' => $request->input('w_notel')[$i],
                     'occupation' => $request->input('occupation')[$i],
                     'dependent_no' => $request->input('dependent')[$i],
+                    'kasar' => $request->input('w_kasar')[$i],
+                    'bersih' => $request->input('w_bersih')[$i],
                     'relationship' => $request->input('relationship')[$i],
                     'race' => $request->input('w_race')[$i],
                     'status' => $request->input('w_status')[$i]
@@ -501,6 +509,10 @@ class PendaftarController extends Controller
 
         $data['country'] = DB::table('tblcountry')->get();
 
+        $data['dun'] = DB::table('tbldun')->get();
+
+        $data['parlimen'] = DB::table('tblparlimen')->get();
+
         return view('pendaftar.update', compact(['student','program','session','data']));
 
     }
@@ -572,7 +584,9 @@ class PendaftarController extends Controller
             'citizenship_id' => $request->citizen,
             'no_tel' => $request->np1,
             'no_tel2' => $request->np2,
-            'no_telhome' => $request->np3
+            'no_telhome' => $request->np3,
+            'dun' => $request->dun,
+            'parlimen' => $request->parlimen
         ]);
 
         DB::table('tblstudent_pass')->where('student_ic', $data['id'])->update([
