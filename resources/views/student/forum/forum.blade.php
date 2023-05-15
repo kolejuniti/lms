@@ -92,20 +92,17 @@
                         }
                         else{
                         ?>
-                        <form method="post" role="form">
-                            <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                <label>Comment Input</label>
-                                <textarea id="upforum" name="upforum" class="form-control" rows="3" placeholder="Enter ..."></textarea>
+                        <div class="col-md-3">
+                            <div class="box bg-danger">
+                                <div class="box-body d-flex p-0">
+                                    <div class="flex-grow-1 p-2 flex-grow-1 bg-img bg-none-md">
+                                        <div class="row"> 
+                                            <p class="mb-0 fw-600">Please select a Topic first.</p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            </div>
-                            <div class="float-right">
-                            <input class="btn btn-block btn-primary float-right" name="addfrm" type="submit" value="Send">
-                            <input name="crsid" type="hidden" value="<?php //echo $crsid;?>">
-                            </div>
-                        </form>
+                        </div>
                         <?php
                         }
                         ?>
