@@ -32,7 +32,9 @@ class PendaftarController extends Controller
 
         $semester = DB::table('semester')->get();
 
-        return view('pendaftar', compact('program', 'session', 'semester', 'year'));
+        $status = DB::table('tblstudent_status')->get();
+
+        return view('pendaftar', compact('program', 'session', 'semester', 'year', 'status'));
     }
 
     public function studentEdit()
@@ -45,7 +47,9 @@ class PendaftarController extends Controller
 
         $semester = DB::table('semester')->get();
 
-        return view('pendaftar.studentEdit', compact('program', 'session', 'semester', 'year'));
+        $status = DB::table('tblstudent_status')->get();
+
+        return view('pendaftar.studentEdit', compact('program', 'session', 'semester', 'year', 'status'));
 
     }
 
@@ -85,7 +89,7 @@ class PendaftarController extends Controller
         
         if(!empty($request->status))
         {
-            $student->where('students.student_status', $request->status);
+            $student->where('students.status', $request->status);
         }
 
         $students = $student->get();
