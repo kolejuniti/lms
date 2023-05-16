@@ -85,9 +85,9 @@
                 <label class="form-label" for="status">Status</label>
                 <select class="form-select" id="status" name="status">
                   <option value="-" selected disabled>-</option>
-                  <option value="1">Holding</option>
-                  <option value="2">Kuliah</option>
-                  <option value="4">Latihan Industri</option>
+                  @foreach ($status as $sts)
+                  <option value="{{ $sts->id }}">{{ $sts->name}}</option> 
+                  @endforeach
                 </select>
               </div>
             </div>
