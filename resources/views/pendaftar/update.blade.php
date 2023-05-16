@@ -174,6 +174,30 @@
                       <div class="row">
                         <div class="col-md-6">
                           <div class="form-group">
+                            <label class="form-label" for="dun">DUN <p style="color:red; display:inline-block;">*</p></label>
+                            <select class="form-select" id="dun" name="dun" required>
+                              <option value="-" selected disabled>-</option>
+                                @foreach ($data['dun'] as $dun)
+                                <option value="{{ $dun->id }}" {{ ($student->dun == $dun->id) ? 'selected' : '' }}>{{ $dun->name }}</option> 
+                                @endforeach
+                            </select>
+                          </div>
+                        </div>
+                        <div class="col-md-6">
+                          <div class="form-group">
+                            <label class="form-label" for="parlimen">Parlimen <p style="color:red; display:inline-block;">*</p></label>
+                            <select class="form-select" id="parlimen" name="parlimen" required>
+                              <option value="-" selected disabled>-</option>
+                                @foreach ($data['parlimen'] as $parlimen)
+                                <option value="{{ $parlimen->id }}" {{ ($student->parlimen == $parlimen->id) ? 'selected' : '' }}>{{ $parlimen->name }}</option> 
+                                @endforeach
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-6">
+                          <div class="form-group">
                             <label class="form-label" for="matric">No. Matric</label>
                             <input type="text" class="form-control" id="matric" name="matric" placeholder="Enter matric" required value="{{ $student->no_matric }}" readonly>
                           </div>
@@ -213,30 +237,6 @@
                           <div class="form-group">
                             <label class="form-label" for="PN">PTPTN Pin No.</label>
                             <input type="text" class="form-control" id="PN" placeholder="Enter PTPTN Pin No." name="PN" value="{{ $student->ptptn_no }}">
-                          </div>
-                        </div>
-                      </div>
-                      <div class="row">
-                        <div class="col-md-6">
-                          <div class="form-group">
-                            <label class="form-label" for="dun">DUN <p style="color:red; display:inline-block;">*</p></label>
-                            <select class="form-select" id="dun" name="dun" required>
-                              <option value="-" selected disabled>-</option>
-                                @foreach ($data['dun'] as $dun)
-                                <option value="{{ $dun->id }}" {{ ($student->dun == $dun->id) ? 'selected' : '' }}>{{ $dun->name }}</option> 
-                                @endforeach
-                            </select>
-                          </div>
-                        </div>
-                        <div class="col-md-6">
-                          <div class="form-group">
-                            <label class="form-label" for="parlimen">Parlimen <p style="color:red; display:inline-block;">*</p></label>
-                            <select class="form-select" id="parlimen" name="parlimen" required>
-                              <option value="-" selected disabled>-</option>
-                                @foreach ($data['parlimen'] as $parlimen)
-                                <option value="{{ $parlimen->id }}" {{ ($student->parlimen == $parlimen->id) ? 'selected' : '' }}>{{ $parlimen->name }}</option> 
-                                @endforeach
-                            </select>
                           </div>
                         </div>
                       </div>

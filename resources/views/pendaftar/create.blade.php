@@ -174,6 +174,30 @@
                       <div class="row">
                         <div class="col-md-6">
                           <div class="form-group">
+                            <label class="form-label" for="dun">DUN <p style="color:red; display:inline-block;">*</p></label>
+                            <select class="form-select" id="dun" name="dun" required>
+                              <option value="-" selected disabled>-</option>
+                                @foreach ($data['dun'] as $dun)
+                                <option value="{{ $dun->id }}">{{ $dun->name }}</option> 
+                                @endforeach
+                            </select>
+                          </div>
+                        </div>
+                        <div class="col-md-6">
+                          <div class="form-group">
+                            <label class="form-label" for="parlimen">Parlimen <p style="color:red; display:inline-block;">*</p></label>
+                            <select class="form-select" id="parlimen" name="parlimen" required>
+                              <option value="-" selected disabled>-</option>
+                                @foreach ($data['parlimen'] as $parlimen)
+                                <option value="{{ $parlimen->id }}">{{ $parlimen->name }}</option> 
+                                @endforeach
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-6">
+                          <div class="form-group">
                             <label class="form-label" for="email">Email <p style="color:red; display:inline-block;">*</p></label>
                             <input type="email" class="form-control" id="email" name="email" placeholder="Enter email" required>
                           </div>
@@ -207,30 +231,6 @@
                           <div class="form-group">
                             <label class="form-label" for="PN">PTPTN Pin No.</label>
                             <input type="text" class="form-control" id="PN" placeholder="Enter PTPTN Pin No." name="PN">
-                          </div>
-                        </div>
-                      </div>
-                      <div class="row">
-                        <div class="col-md-6">
-                          <div class="form-group">
-                            <label class="form-label" for="dun">DUN <p style="color:red; display:inline-block;">*</p></label>
-                            <select class="form-select" id="dun" name="dun" required>
-                              <option value="-" selected disabled>-</option>
-                                @foreach ($data['dun'] as $dun)
-                                <option value="{{ $dun->id }}">{{ $dun->name }}</option> 
-                                @endforeach
-                            </select>
-                          </div>
-                        </div>
-                        <div class="col-md-6">
-                          <div class="form-group">
-                            <label class="form-label" for="parlimen">Parlimen <p style="color:red; display:inline-block;">*</p></label>
-                            <select class="form-select" id="parlimen" name="parlimen" required>
-                              <option value="-" selected disabled>-</option>
-                                @foreach ($data['parlimen'] as $parlimen)
-                                <option value="{{ $parlimen->id }}">{{ $parlimen->name }}</option> 
-                                @endforeach
-                            </select>
                           </div>
                         </div>
                       </div>
