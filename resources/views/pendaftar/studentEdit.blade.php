@@ -313,7 +313,7 @@
 
     return $.ajax({
             headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
-            url      : "{{ url('pendaftar/group/getStudentTableIndex') }}",
+            url      : "{{ url('pendaftar/group/getStudentTableIndex2') }}",
             method   : 'POST',
             data 	 : {program: program,session: session,year: year,semester: semester,status: status, edit: edit},
             beforeSend:function(xhr){
