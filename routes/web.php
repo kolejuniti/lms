@@ -93,6 +93,7 @@ Route::post('/pendaftar/getProgram', [App\Http\Controllers\PendaftarController::
 Route::delete('/pendaftar/delete', [App\Http\Controllers\PendaftarController::class, 'delete'])->name('pendaftar.delete');
 Route::post('/pendaftar/group/getSubject', [App\Http\Controllers\PendaftarController::class, 'getSubjectOption']);
 Route::post('/pendaftar/group/getStudentTableIndex', [App\Http\Controllers\PendaftarController::class, 'getStudentTableIndex']);
+Route::post('/pendaftar/group/getStudentTableIndex2', [App\Http\Controllers\PendaftarController::class, 'getStudentTableIndex2']);
 Route::post('/pendaftar/group/getGroupOption', [App\Http\Controllers\PendaftarController::class, 'getGroupOption']);
 Route::get('/pendaftar/spm/{ic}', [App\Http\Controllers\PendaftarController::class, 'spmIndex'])->name('pendaftar.spm');
 Route::post('/pendaftar/spm/{ic}/store', [App\Http\Controllers\PendaftarController::class, 'spmStore'])->name('pendaftar.spm.store');
@@ -565,6 +566,14 @@ Route::post('/treasurer/payment/credit/getStatement', [App\Http\Controllers\Trea
 
 Route::get('/quality/report/attendance', [App\Http\Controllers\QualityController::class, 'attendanceReport'])->name('quality.report.attendance');
 Route::post('/quality/report/attendance/getLecturer', [App\Http\Controllers\QualityController::class, 'getLectAttendance'])->name('quality.report.attendance.getLecturer');
+
+Route::get('/yuran-pengajian', [App\Http\Controllers\PaymentController::class, 'showPaymentForm'])->name('yuran-pengajian');
+Route::post('/checkout', [App\Http\Controllers\PaymentController::class, 'createCheckoutSession'])->name('checkout');
+Route::get('/checkout/success', [App\Http\Controllers\PaymentController::class, 'handlePaymentSuccess'])->name('checkout.success');
+Route::get('/checkout/cancel', function () {
+    return "Payment canceled!";
+})->name('checkout.cancel');
+Route::get('/checkout/receipt/{session_id}', [App\Http\Controllers\PaymentController::class, 'showReceipt'])->name('checkout.receipt');
 
 
 Route::middleware(['preventBackHistory'])->group(function () {
