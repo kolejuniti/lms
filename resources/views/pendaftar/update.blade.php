@@ -629,6 +629,8 @@ $(document).ready(function() {
   $('#dependent').val(firstWaris.dependent_no);
   $('#relationship').val(firstWaris.relationship);
   $('#w_race').val(firstWaris.race);
+  $('#w_kasar').val(firstWaris.kasar);
+  $('#w_bersih').val(firstWaris.bersih);
   $('#w_status').val(firstWaris.status);
 
   // Clone the card element with ID #card-1 for each remaining row of data
