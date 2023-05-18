@@ -42,8 +42,8 @@
                         <label class="form-label" for="batch">Batch</label>
                         <select class="form-select" id="batch" name="batch">
                         <option value="-" selected disabled>-</option>
-                        @foreach ($data['session'] as $ses)
-                        <option value="{{ $ses->SessionID }}" {{ ($data['student']->batch == $ses->SessionID) ? 'selected' : '' }}>{{ $ses->SessionName }}</option> 
+                        @foreach ($data['batch'] as $ses)
+                        <option value="{{ $ses->BatchID }}" {{ ($data['student']->batch == $ses->BatchID) ? 'selected' : '' }}>{{ $ses->BatchName }}</option> 
                         @endforeach
                         </select>
                     </div>
