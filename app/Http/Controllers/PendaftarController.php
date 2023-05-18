@@ -516,11 +516,57 @@ class PendaftarController extends Controller
         return view('pendaftar.create', compact(['program','session','data']));
     }
 
+    public function createSearch(Request $request)
+    {
+
+        $students = DB::table('students')->where('name', 'LIKE', "%".$request->search."%")
+                                         ->orwhere('ic', 'LIKE', "%".$request->search."%")
+                                         ->orwhere('no_matric', 'LIKE', "%".$request->search."%")->get();
+
+        $content = "";
+        $content .= '<thead>
+                        <tr>
+                            <th>
+                                Name
+                            </th>
+                            <th>
+                                IC
+                            </th>
+                            <th>
+                                No. Matric
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="table">';
+                    
+        foreach($students as $key => $std){
+            //$registered = ($std->status == 'ACTIVE') ? 'checked' : '';
+            $content .= '
+            <tr>
+                <td>
+                '. $std->name .'
+                </td>
+                <td>
+                '. $std->ic .'
+                </td>
+                <td>
+                '. $std->no_matric .'
+                </td>
+            </tr>
+            ';
+            }
+        $content .= '</tbody>';
+                
+         
+
+        return $content;
+
+    }
+
     public function store(Request $request)
     {
         $data = $request->validate([
             'name' => ['required','string'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:students'],
             'session' => ['required'],
             'batch' => ['required'],
             'program' => ['required'],
@@ -544,7 +590,7 @@ class PendaftarController extends Controller
             'name' => $data['name'],
             'ic' => $data['id'],
             'no_matric' => null,
-            'email' => $data['email'],
+            'email' =>$request->email,
             'intake' => $data['session'],
             'batch' => $data['batch'],
             'session' => $data['session'],
@@ -656,7 +702,7 @@ class PendaftarController extends Controller
 
         //$this->suratTawaran($data['id']);
 
-        return redirect(route('pendaftar'))->with('newStud', $data['id']);
+        return redirect(route('pendaftar.create'))->with('newStud', $data['id']);
     }
 
     public function edit()
@@ -717,7 +763,6 @@ class PendaftarController extends Controller
 
         $data = $request->validate([
             'name' => ['required','string'],
-            'email' => ['required', 'string', 'email', 'max:255'],
             'session' => ['required'],
             'batch' => ['required'],
             'program' => ['required'],
@@ -753,7 +798,7 @@ class PendaftarController extends Controller
 
         DB::table('students')->where('ic', $data['id'])->update([
             'name' => $data['name'],
-            'email' => $data['email'],
+            'email' =>$request->email,
             'intake' => $data['session'],
             'batch' => $data['batch'],
             'program' => $data['program'],
@@ -782,15 +827,20 @@ class PendaftarController extends Controller
             'parlimen' => $request->parlimen
         ]);
 
-        DB::table('tblstudent_pass')->where('student_ic', $data['id'])->update([
-            'student_ic' => $data['id'],
-            'pass_type' => $request->pt,
-            'pass_no' => $request->spn,
-            'date_issued' => $request->di,
-            'date_expired' => $request->de
-        ]);
+        DB::table('tblstudent_pass')->updateOrInsert(
+            ['student_ic' => $data['id']], // "where" condition
+            [
+                'student_ic' => $data['id'],
+                'pass_type' => $request->pt,
+                'pass_no' => $request->spn,
+                'date_issued' => $request->di,
+                'date_expired' => $request->de
+            ]
+        );
 
-        DB::table('tblstudent_address')->where('student_ic', $data['id'])->update([
+        DB::table('tblstudent_address')->updateOrInsert(
+            ['student_ic' => $data['id']],
+            [
             'student_ic' => $data['id'],
             'address1' => $request->address1,
             'address2' => $request->address2,
@@ -799,7 +849,8 @@ class PendaftarController extends Controller
             'postcode' => $request->postcode,
             'state_id' => $request->state,
             'country_id' => $request->country
-        ]);
+            ]
+        );
 
         DB::table('tblstudent_waris')->where('student_ic', $data['id'])->delete();
 
@@ -816,6 +867,8 @@ class PendaftarController extends Controller
                     'phone_tel' => $request->input('w_notel')[$i],
                     'occupation' => $request->input('occupation')[$i],
                     'dependent_no' => $request->input('dependent')[$i],
+                    'kasar' => $request->input('w_kasar')[$i],
+                    'bersih' => $request->input('w_bersih')[$i],
                     'relationship' => $request->input('relationship')[$i],
                     'race' => $request->input('w_race')[$i],
                     'status' => $request->input('w_status')[$i]
@@ -1014,6 +1067,8 @@ class PendaftarController extends Controller
         $data['semester'] = DB::table('semester')->get();
 
         $data['status'] = DB::table('tblstudent_status')->get();
+
+        $data['batch'] = DB::table('tblbatch')->get();
 
         return view('pendaftar.updateGetStudent', compact('data'));
 
