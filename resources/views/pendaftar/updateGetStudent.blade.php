@@ -32,7 +32,7 @@
                         <select class="form-select" id="intake" name="intake">
                         <option value="-" selected disabled>-</option>
                         @foreach ($data['session'] as $ses)
-                        <option value="{{ $ses->SessionID }}" {{ ($data['student']->session == $ses->SessionID) ? 'selected' : '' }}>{{ $ses->SessionName }}</option> 
+                        <option value="{{ $ses->SessionID }}" {{ ($data['student']->intake == $ses->SessionID) ? 'selected' : '' }}>{{ $ses->SessionName }}</option> 
                         @endforeach
                         </select>
                     </div>
