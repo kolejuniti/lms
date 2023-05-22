@@ -275,7 +275,7 @@ class PendaftarController extends Controller
 
     public function getStudentTableIndex2(Request $request)
     {
-        $student = DB::table('students')
+        $students = DB::table('students')
             ->join('tblprogramme', 'students.program', 'tblprogramme.id')
             ->join('sessions AS a', 'students.intake', 'a.SessionID')
             ->join('sessions AS b', 'students.session', 'b.SessionID')
@@ -284,34 +284,37 @@ class PendaftarController extends Controller
             ->join('tblsex', 'tblstudent_personal.sex_id', 'tblsex.id')
             ->select('students.*', 'tblprogramme.progname', 'a.SessionName AS intake', 
                      'b.SessionName AS session', 'tblstudent_status.name AS status',
-                     'tblstudent_personal.no_tel', 'tblsex.sex_name AS gender');
+                     'tblstudent_personal.no_tel', 'tblsex.sex_name AS gender')
+            ->where('students.name', 'LIKE', "%".$request->search."%")
+            ->orwhere('students.ic', 'LIKE', "%".$request->search."%")
+            ->orwhere('students.no_matric', 'LIKE', "%".$request->search."%")->get();
 
-        if(!empty($request->program))
-        {
-            $student->where('students.program', $request->program);
-        }
+        // if(!empty($request->program))
+        // {
+        //     $student->where('students.program', $request->program);
+        // }
         
-        if(!empty($request->session))
-        {
-            $student->where('students.session', $request->session);
-        }
+        // if(!empty($request->session))
+        // {
+        //     $student->where('students.session', $request->session);
+        // }
         
-        if(!empty($request->year))
-        {
-            $student->where('a.Year', $request->year);
-        }
+        // if(!empty($request->year))
+        // {
+        //     $student->where('a.Year', $request->year);
+        // }
         
-        if(!empty($request->semester))
-        {
-            $student->where('students.semester', $request->semester);
-        }
+        // if(!empty($request->semester))
+        // {
+        //     $student->where('students.semester', $request->semester);
+        // }
         
-        if(!empty($request->status))
-        {
-            $student->where('students.status', $request->status);
-        }
+        // if(!empty($request->status))
+        // {
+        //     $student->where('students.status', $request->status);
+        // }
 
-        $students = $student->get();
+        // $students = $student->get();
 
         foreach($students as $key => $std)
         {
@@ -418,43 +421,32 @@ class PendaftarController extends Controller
                 </td>';
                 
 
-                if (isset($request->edit)) {
-                    $content .= '<td class="project-actions text-right" >
-                                <a class="btn btn-info btn-sm btn-sm mr-2 mb-2" href="/pendaftar/edit/'. $student->ic .'">
-                                    <i class="ti-pencil-alt">
-                                    </i>
-                                    Edit
-                                </a>
-                                <a class="btn btn-primary btn-sm btn-sm mr-2 mb-2" href="/pendaftar/spm/'. $student->ic .'">
-                                    <i class="ti-ruler-pencil">
-                                    </i>
-                                    SPM
-                                </a>
-                                <a class="btn btn-secondary btn-sm btn-sm mr-2 mb-2" href="#" onclick="getProgram('. $student->ic .')">
-                                    <i class="ti-eye">
-                                    </i>
-                                    Program History
-                                </a>
-                                <!-- <a class="btn btn-danger btn-sm" href="#" onclick="deleteMaterial('. $student->ic .')">
-                                    <i class="ti-trash">
-                                    </i>
-                                    Delete
-                                </a> -->
-                                </td>
-                            
-                            ';
-                }else{
-                    $content .= '<td class="project-actions text-right" >
-                    <a class="btn btn-secondary btn-sm btn-sm mr-2" href="#" onclick="getProgram('. $student->ic .')">
-                        <i class="ti-eye">
-                        </i>
-                        Program History
-                    </a>
-                    </td>
-                
-                ';
-
-                }
+            
+                $content .= '<td class="project-actions text-right" >
+                            <a class="btn btn-info btn-sm btn-sm mr-2 mb-2" href="/pendaftar/edit/'. $student->ic .'">
+                                <i class="ti-pencil-alt">
+                                </i>
+                                Edit
+                            </a>
+                            <a class="btn btn-primary btn-sm btn-sm mr-2 mb-2" href="/pendaftar/spm/'. $student->ic .'">
+                                <i class="ti-ruler-pencil">
+                                </i>
+                                SPM
+                            </a>
+                            <a class="btn btn-secondary btn-sm btn-sm mr-2 mb-2" href="#" onclick="getProgram('. $student->ic .')">
+                                <i class="ti-eye">
+                                </i>
+                                Program History
+                            </a>
+                            <!-- <a class="btn btn-danger btn-sm" href="#" onclick="deleteMaterial('. $student->ic .')">
+                                <i class="ti-trash">
+                                </i>
+                                Delete
+                            </a> -->
+                            </td>
+                        
+                        ';
+           
             }
             $content .= '</tr></tbody>';
 
@@ -946,6 +938,11 @@ class PendaftarController extends Controller
 
     public function spmIndex()
     {
+        $data['student'] = DB::table('students')
+                           ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
+                           ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+                           ->select('students.*', 'tblstudent_status.name AS status', 'tblprogramme.progname AS program')
+                           ->where('ic', request()->ic)->first();
 
         $data['spm'] = DB::table('tblstudent_spm')
                        ->join('tblspm_dtl', 'tblstudent_spm.student_ic', 'tblspm_dtl.student_spm_ic')
