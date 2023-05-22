@@ -85,6 +85,7 @@ Route::get('/DN', [App\Http\Controllers\DN_Controller::class, 'index'])->name('d
 Route::get('/pendaftar_dashboard', [App\Http\Controllers\PendaftarController::class, 'dashboard'])->name('pendaftar.dashboard');
 Route::get('/pendaftar', [App\Http\Controllers\PendaftarController::class, 'index'])->name('pendaftar');
 Route::get('/pendaftar/create', [App\Http\Controllers\PendaftarController::class, 'create'])->name('pendaftar.create');
+Route::post('/pendaftar/create/search', [App\Http\Controllers\PendaftarController::class, 'createSearch'])->name('pendaftar.create.search');
 Route::post('/pendaftar/store', [App\Http\Controllers\PendaftarController::class, 'store'])->name('pendaftar.store');
 Route::get('/pendaftar/surat_tawaran', [App\Http\Controllers\PendaftarController::class, 'suratTawaran'])->name('pendaftar.surat_tawaran');
 Route::get('/pendaftar/edit/{ic}', [App\Http\Controllers\PendaftarController::class, 'edit'])->name('pendaftar.edit');
