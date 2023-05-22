@@ -31,6 +31,15 @@
             <div class="card card-primary">
               <div class="card-header">
                 <h3 class="card-title">Student Registration</h3>
+                <div class="row mt-3 d-flex">
+                  <div class="col-md-12 mb-3">
+                    <div class="pull-right">
+                        <a type="button" class="waves-effect waves-light btn btn-info btn-sm" data-toggle="modal" data-target="#uploadModal">
+                          <i class="fa fa-user-o"></i> &nbsp Check Student
+                        </a>
+                    </div>
+                  </div>
+                </div>
               </div>
               <!-- /.card-header -->
               <!-- form start -->
@@ -198,8 +207,8 @@
                       <div class="row">
                         <div class="col-md-6">
                           <div class="form-group">
-                            <label class="form-label" for="email">Email <p style="color:red; display:inline-block;">*</p></label>
-                            <input type="email" class="form-control" id="email" name="email" placeholder="Enter email" required>
+                            <label class="form-label" for="email">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" placeholder="Enter email">
                           </div>
                         </div> 
                         <div class="col-md-6">
@@ -302,16 +311,16 @@
                       <div class="row">
                         <div class="col-md-6">
                           <div class="form-group">
-                            <label class="form-label" for="address2">Address 2 <p style="color:red; display:inline-block;">*</p></label>
-                            <input type="text" class="form-control" id="address2" placeholder="Enter Address 2" name="address2" required>
+                            <label class="form-label" for="address2">Address 2</label>
+                            <input type="text" class="form-control" id="address2" placeholder="Enter Address 2" name="address2">
                           </div>
                         </div>
                       </div>
                       <div class="row">
                         <div class="col-md-6">
                           <div class="form-group">
-                            <label class="form-label" for="address3">Address 3 <p style="color:red; display:inline-block;">*</p></label>
-                            <input type="text" class="form-control" id="address3" placeholder="Enter Address 3" name="address3" required>
+                            <label class="form-label" for="address3">Address 3</label>
+                            <input type="text" class="form-control" id="address3" placeholder="Enter Address 3" name="address3">
                           </div>
                         </div>
                       </div>
@@ -579,6 +588,68 @@
                   <button type="submit" class="btn btn-primary pull-right mb-3">Submit</button>
                 </div>
               </form>
+
+              <div id="uploadModal" class="modal" class="modal fade" role="dialog">
+                <div class="modal-dialog">
+                    <!-- modal content-->
+                    <div class="modal-content" id="getModal">
+                        <div class="modal-header">
+                            <div class="">
+                                <button class="close waves-effect waves-light btn btn-danger btn-sm pull-right" data-dismiss="modal">
+                                    &times;
+                                </button>
+                            </div>
+                        </div>
+                        <div class="modal-body">
+                          <div class="row col-md-12">
+                            <div class="col-md-12">
+                              <div class="form-group">
+                                <label class="form-label" for="name">Name / No. IC / No. Matric</label>
+                                <input type="text" class="form-control" id="search" placeholder="Search..." name="search">
+                              </div>
+                            </div>
+                          </div>
+                          <div id="form-student">
+                            <div class="card mb-3" id="stud_info">
+                              <div class="card-header">
+                              <b>Student</b>
+                              </div>
+                              <div class="card-body">
+                                  <div class="row">
+                                      <div class="col-md-12 mt-3">
+                                          <div class="form-group mt-3">
+                                              <table id="get_student" class="w-100 table table-bordered display margin-top-10 w-p100">
+                                                  <thead>
+                                                      <tr>
+                                                          <th >
+                                                              Name
+                                                          </th>
+                                                          <th >
+                                                              IC
+                                                          </th>
+                                                      </tr>
+                                                  </thead>
+                                                  <tbody id="table">
+                                                      <tr>
+                                                          <td>
+                                                          
+                                                          </td>
+                                                          <td>
+                                                          
+                                                          </td>
+                                                      </tr>
+                                                  </tbody>
+                                              </table>
+                                          </div>
+                                      </div>
+                                  </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                    </div>
+                </div>
+              </div>
             </div>
             <!-- /.card -->
           </div>
@@ -588,6 +659,14 @@
     <!-- /.content -->
   </div>
 </div>
+
+@if(session('newStud'))
+    <script>
+      alert('Success! Student has been registered!')
+      window.open('/pendaftar/surat_tawaran?ic={{ session("newStud") }}')
+    </script>
+@endif
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
   $(document).ready(function() {
@@ -657,5 +736,32 @@ $(document).on('change', "#CF",function(){
   }
     //
 })
+
+$('#search').keyup(function(event){
+    if (event.keyCode === 13) { // 13 is the code for the "Enter" key
+        var searchTerm = $(this).val();
+        getStudent(searchTerm);
+    }
+});
+
+function getStudent(search)
+{
+
+          return $.ajax({
+            headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
+            url      : "{{ url('pendaftar/create/search') }}",
+            method   : 'POST',
+            data 	 : {search: search},
+            error:function(err){
+                alert("Error");
+                console.log(err);
+            },
+            success  : function(data){
+                $('#get_student').html(data); 
+            }
+        });
+    
+}
+
 </script>
 @endsection

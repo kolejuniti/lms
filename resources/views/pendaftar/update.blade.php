@@ -46,7 +46,7 @@
                         <div class="col-md-12">
                           <div class="form-group">
                             <label class="form-label" for="name">Full Name <p style="color:red; display:inline-block;">*</p></label>
-                            <input type="text" class="form-control" id="name" placeholder="Enter name" name="name" value="{{ $student->name }}" required>
+                            <input style="text-transform:uppercase" type="text" class="form-control" id="name" placeholder="Enter name" name="name" value="{{ $student->name }}" required>
                           </div>
                         </div>
                         <div class="col-md-6">
@@ -204,8 +204,8 @@
                         </div>
                         <div class="col-md-6">
                           <div class="form-group">
-                            <label class="form-label" for="email">Email <p style="color:red; display:inline-block;">*</p></label>
-                            <input type="email" class="form-control" id="email" name="email" placeholder="Enter email" required value="{{ $student->email }}">
+                            <label class="form-label" for="email">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" placeholder="Enter email" value="{{ $student->email }}">
                           </div>
                         </div> 
                         <div class="col-md-6">
@@ -308,16 +308,16 @@
                       <div class="row">
                         <div class="col-md-6">
                           <div class="form-group">
-                            <label class="form-label" for="address2">Address 2 <p style="color:red; display:inline-block;">*</p></label>
-                            <input type="text" class="form-control" id="address2" placeholder="Enter Address 2" name="address2" value="{{ $student->address2 }}" required>
+                            <label class="form-label" for="address2">Address 2</label>
+                            <input type="text" class="form-control" id="address2" placeholder="Enter Address 2" name="address2" value="{{ $student->address2 }}">
                           </div>
                         </div>
                       </div>
                       <div class="row">
                         <div class="col-md-6">
                           <div class="form-group">
-                            <label class="form-label" for="address3">Address 3 <p style="color:red; display:inline-block;">*</p></label>
-                            <input type="text" class="form-control" id="address3" placeholder="Enter Address 3" name="address3" value="{{ $student->address3 }}" required>
+                            <label class="form-label" for="address3">Address 3</label>
+                            <input type="text" class="form-control" id="address3" placeholder="Enter Address 3" name="address3" value="{{ $student->address3 }}">
                           </div>
                         </div>
                       </div>
@@ -476,8 +476,8 @@
                       <div class="row">
                         <div class="col-md-12">
                           <div class="form-group">
-                            <label class="form-label" for="program">Program</label>
-                            <select class="form-select" id="program" name="program">
+                            <label class="form-label" for="program">Program <p style="color:red; display:inline-block;">*</p></label>
+                            <select class="form-select" id="program" name="program" required>
                               <option value="-" selected disabled>-</option>
                                 @foreach ($program as $prg)
                                 <option value="{{ $prg->id }}" {{ ($prg->id == $student->program) ? 'selected' : ''}}>{{$prg->progname }}</option> 
@@ -497,8 +497,8 @@
                         </div>
                         <div class="col-md-6">
                           <div class="form-group">
-                            <label class="form-label" for="session">Intake</label>
-                            <select class="form-select" id="session" name="session">
+                            <label class="form-label" for="session">Intake <p style="color:red; display:inline-block;">*</p></label>
+                            <select class="form-select" id="session" name="session" required>
                               <option value="-" selected disabled>-</option>
                                 @foreach ($session as $ses)
                                 <option value="{{ $ses->SessionID }}" {{ ($student->intake == $ses->SessionID) ? 'selected' : '' }}>{{ $ses->SessionName}}</option> 
@@ -508,8 +508,8 @@
                         </div>
                         <div class="col-md-6">
                           <div class="form-group">
-                            <label class="form-label" for="batch">Batch</label>
-                            <select class="form-select" id="batch" name="batch">
+                            <label class="form-label" for="batch">Batch <p style="color:red; display:inline-block;">*</p></label>
+                            <select class="form-select" id="batch" name="batch" required>
                               <option value="-" selected disabled>-</option>
                                 @foreach ($data['batch'] as $bch)
                                 <option value="{{ $bch->BatchID }}" {{ ($bch->BatchID == $student->batch) ? 'selected' : ''}}>{{ $bch->BatchName}}</option> 
@@ -519,7 +519,7 @@
                         </div>
                         <div class="col-md-6">
                           <div class="form-group">
-                            <label class="form-label" for="dol">Date of Offer Letter</label>
+                            <label class="form-label" for="dol">Date of Offer Letter <p style="color:red; display:inline-block;">*</p></label>
                             <input type="date" class="form-control" id="dol" name="dol" value="{{ $student->date_offer }}">
                           </div>
                         </div>

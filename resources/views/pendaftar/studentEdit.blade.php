@@ -27,7 +27,7 @@
       <!-- Default box -->
       <div class="card">
         <div class="card-header">
-          <h3 class="card-title">Assigned Student</h3>
+          <h3 class="card-title">Edit Student</h3>
           <div class="card-tools">
             <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
               <i class="fas fa-minus"></i>
@@ -36,59 +36,12 @@
         </div>
         <div class="card-body">
           <div class="row mt-3 ">
-            <div class="col-md-6 mr-3" id="year-card">
-              <div class="form-group">
-                <label class="form-label" for="year">Year</label>
-                <select class="form-select" id="year" name="year">
-                  <option value="-" selected disabled>-</option>
-                  @foreach ($year as $yr)
-                  <option value="{{ $yr->year }}">{{ $yr->year }}</option> 
-                  @endforeach
-                </select>
-              </div>
-            </div>
-            <div class="col-md-6 mr-3" id="session-card">
-              <div class="form-group">
-                <label class="form-label" for="session">Session</label>
-                <select class="form-select" id="session" name="session">
-                  <option value="-" selected disabled>-</option>
-                  @foreach ($session as $ses)
-                  <option value="{{ $ses->SessionID }}">{{ $ses->SessionName}}</option> 
-                  @endforeach
-                </select>
-              </div>
-            </div>
-            <div class="col-md-6 ml-3">
-              <div class="form-group">
-                  <label class="form-label" for="program">Program</label>
-                  <select class="form-select" id="program" name="program">
-                  <option value="-" selected disabled>-</option>
-                    @foreach ($program as $prg)
-                    <option value="{{ $prg->id }}">{{ $prg->progname}}</option> 
-                    @endforeach
-                  </select>
-              </div>
-            </div>
-            <div class="col-md-6 mr-3" id="semester-card">
-              <div class="form-group">
-                <label class="form-label" for="semester">Semester</label>
-                <select class="form-select" id="semester" name="semester">
-                  <option value="-" selected disabled>-</option>
-                  @foreach ($semester as $ses)
-                  <option value="{{ $ses->id }}">{{ $ses->semester_name}}</option> 
-                  @endforeach
-                </select>
-              </div>
-            </div>
-            <div class="col-md-6 mr-3" id="status-card">
-              <div class="form-group">
-                <label class="form-label" for="status">Status</label>
-                <select class="form-select" id="status" name="status">
-                  <option value="-" selected disabled>-</option>
-                  @foreach ($status as $sts)
-                  <option value="{{ $sts->id }}">{{ $sts->name}}</option> 
-                  @endforeach
-                </select>
+            <div class="row col-md-12">
+              <div class="col-md-3">
+                <div class="form-group">
+                  <label class="form-label" for="name">Name / No. IC / No. Matric</label>
+                  <input type="text" class="form-control" id="search" placeholder="Search..." name="search">
+                </div>
               </div>
             </div>
           </div>
@@ -238,24 +191,6 @@
 
 </script>
 
-<script>
-    $(function () {
-      $("#example1").DataTable({
-        "responsive": true, "lengthChange": false, "autoWidth": false,
-        "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
-      }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
-      $('#example2').DataTable({
-        "paging": true,
-        "lengthChange": false,
-        "searching": false,
-        "ordering": true,
-        "info": true,
-        "autoWidth": false,
-        "responsive": true,
-      });
-    });
-  </script>
-
   <script type="text/javascript">
     var selected_program = "";
     var selected_session = "";
@@ -377,6 +312,70 @@
             }
         });
 
+  }
+
+  $('#search').keyup(function(event){
+    if (event.keyCode === 13) { // 13 is the code for the "Enter" key
+        var searchTerm = $(this).val();
+        getStudent(searchTerm);
+    }
+  });
+
+  function getStudent(search)
+  {
+
+    $('#complex_header').DataTable().destroy();
+
+    var edit = true;
+
+    return $.ajax({
+        headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
+        url      : "{{ url('pendaftar/group/getStudentTableIndex2') }}",
+        method   : 'POST',
+        data 	 : {search: search},
+        beforeSend:function(xhr){
+          $("#complex_header").LoadingOverlay("show", {
+            image: `<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="24px" height="30px" viewBox="0 0 24 30" style="enable-background:new 0 0 50 50;" xml:space="preserve">
+              <rect x="0" y="10" width="4" height="10" fill="#333" opacity="0.2">
+              <animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0s" dur="0.6s" repeatCount="indefinite"></animate>
+              <animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0s" dur="0.6s" repeatCount="indefinite"></animate>
+              <animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0s" dur="0.6s" repeatCount="indefinite"></animate>
+              </rect>
+              <rect x="8" y="10" width="4" height="10" fill="#333" opacity="0.2">
+              <animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0.15s" dur="0.6s" repeatCount="indefinite"></animate>
+              <animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0.15s" dur="0.6s" repeatCount="indefinite"></animate>
+              <animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0.15s" dur="0.6s" repeatCount="indefinite"></animate>
+              </rect>
+              <rect x="16" y="10" width="4" height="10" fill="#333" opacity="0.2">
+              <animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0.3s" dur="0.6s" repeatCount="indefinite"></animate>
+              <animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0.3s" dur="0.6s" repeatCount="indefinite"></animate>
+              <animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0.3s" dur="0.6s" repeatCount="indefinite"></animate>
+              </rect>
+            </svg>`,
+            background:"rgba(255,255,255, 0.3)",
+            imageResizeFactor : 1,    
+            imageAnimation : "2000ms pulse" , 
+            imageColor: "#019ff8",
+            text : "Please wait...",
+            textResizeFactor: 0.15,
+            textColor: "#019ff8",
+            textColor: "#019ff8"
+          });
+          $("#complex_header").LoadingOverlay("hide");
+        },
+        error:function(err){
+            alert("Error");
+            console.log(err);
+        },
+        success  : function(data){
+            $('#complex_header').removeAttr('hidden');
+            $('#complex_header').html(data);
+            
+            $('#complex_header').DataTable();
+            //window.location.reload();
+        }
+    });
+      
   }
   </script>
 @endsection
