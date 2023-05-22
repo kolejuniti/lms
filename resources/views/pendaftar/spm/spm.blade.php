@@ -58,6 +58,31 @@
                     <div class="card-header">
                         <b>Student Info</b>
                     </div>
+                    
+                    <div class="card-body">
+                        <div class="row mb-5">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <p>Student Name &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ $data['student']->name }}</p>
+                                </div>
+                                <div class="form-group">
+                                    <p>Status &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ $data['student']->status }}</p>
+                                </div>
+                                <div class="form-group">
+                                    <p>Program &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ $data['student']->program }}</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <p>No. IC / No. Passport &nbsp; &nbsp;: &nbsp;&nbsp; {{ $data['student']->ic }}</p>
+                                </div>
+                                <div class="form-group">
+                                    <p>No. Matric &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ $data['student']->no_matric }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                   
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-6">
@@ -73,7 +98,7 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label class="form-label" for="turn">Turn</label>
+                                    <label class="form-label" for="turn">Turn No.</label>
                                     <input type="text" class="form-control" id="turn" name="turn" value="{{ isset($data['info']->number_turn) ? $data['info']->number_turn : '' }}">
                                 </div>
                             </div>
@@ -145,7 +170,7 @@
                                             <select class="form-select" id="subject" name="subject[]" required>
                                             <option value="" selected disabled>-</option>
                                             @foreach ($data['subject'] as $sub)
-                                                <option value="{{ $sub->id }}" {{ ($sub->id == 3) ? 'selected' : 'disabled' }}>{{$sub->name }}</option> 
+                                                <option value="{{ $sub->id }}" {{ ($sub->id == 5) ? 'selected' : 'disabled' }}>{{$sub->name }}</option> 
                                             @endforeach
                                             </select>
                                         </div>
@@ -172,7 +197,7 @@
                                             <select class="form-select" id="subject" name="subject[]" required>
                                             <option value="" selected disabled>-</option>
                                             @foreach ($data['subject'] as $sub)
-                                                <option value="{{ $sub->id }}" {{ ($sub->id == 4) ? 'selected' : 'disabled' }}>{{$sub->name }}</option> 
+                                                <option value="{{ $sub->id }}" {{ ($sub->id == 6) ? 'selected' : 'disabled' }}>{{$sub->name }}</option> 
                                             @endforeach
                                             </select>
                                         </div>
