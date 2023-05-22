@@ -58,7 +58,7 @@
     <body>
         <p>UNITI/KUSB/2023/040729050173</p>
         <br>
-        <p>{{ date('Y-m-d') }}</p>
+        <p>{{ date('d/m/Y') }}</p>
         <br>
         <p>{{ strtoupper($data['student']->name) }}</p>
         <p>{{ strtoupper($data['address']->address1) }}</p>

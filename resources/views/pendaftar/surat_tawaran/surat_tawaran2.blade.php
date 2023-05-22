@@ -67,7 +67,7 @@
         <div style="border-top: 1px solid black;"></div>
         <br>
         <p>Surat Kami : UNITI/KUSB/2023/040616070397</p>
-        <p>Tarikh : {{ date('Y-m-d') }}</p>
+        <p>Tarikh : {{ date('d/m/Y') }}</p>
         <br>
         <p>
           {{ strtoupper($data['student']->name) }}<br>
