@@ -39,7 +39,7 @@
             <!-- general form elements -->
             <div class="card card-primary">
               <div class="card-header">
-                <h3 class="card-title">Assign Student</h3>
+                <h3 class="card-title">Add Claim Package</h3>
               </div>
               <!-- /.card-header -->
               <!-- form start -->
@@ -247,8 +247,50 @@
         success:function(res){
             try{
                 if(res.message == "Success"){
-                    alert("Success! Claim has been added/created!")
-                    location.reload();
+                    alert("Success! Claim has been added/created!");
+                    
+                    // Start with an empty table structure
+                    var newTable = "<table id='table_projectprogress_course' class='table table-striped projects display dataTable no-footer' style='width: 100%;'>" +
+                                        "<thead class='thead-themed'>" +
+                                        "<tr>" +
+                                            "<th style='width: 1%'>No.</th>" +
+                                            "<th style='width: 20%'>Claim Name</th>" +
+                                            "<th style='width: 5%'>Price Per Unit</th>" +
+                                            "<th style='width: 5%'>Program</th>" +
+                                            "<th style='width: 5%'>Intake</th>" +
+                                            "<th style='width: 5%'>Semester</th>" +
+                                            "<th style='width: 20%'></th>" +
+                                        "</tr>" +
+                                        "</thead>" +
+                                        "<tbody>";
+
+                    // Add new rows
+                    $.each(res.data, function(i, item) {
+                        var newRow = "<tr>" +
+                            "<td>" + (i+1) + "</td>" +
+                            "<td>" + item.name + "</td>" +
+                            "<td>" + item.pricePerUnit + "</td>" +
+                            "<td>" + item.progname + "</td>" +
+                            "<td>" + item.SessionName + "</td>" +
+                            "<td>" + item.semester_name + "</td>" +
+                            "<td class='project-actions text-right' style='text-align: center;'>" +
+                              "<a class='btn btn-info btn-sm pr-2' href='#' onclick='updatePackage(\"" + item.id + "\")'>" +
+                                  "<i class='ti-pencil-alt'></i> Edit" +
+                              "</a>" +
+                              "<a class='btn btn-danger btn-sm' href='#' onclick='deletePackage(\"" + item.id + "\")'>" +
+                                  "<i class='ti-trash'></i> Delete" +
+                              "</a>" +
+                            "</td>" +
+                        "</tr>";
+                        newTable += newRow;
+                    });
+
+                    // Close table structure
+                    newTable += "</tbody></table>";
+
+                    // Replace the div contents with the new table
+                    $('#add-student-div').html(newTable);
+
                 }else{
                     $('.error-field').html('');
                     if(res.message == "Field Error"){
@@ -301,8 +343,50 @@
         success:function(res){
             try{
                 if(res.message == "Success"){
-                    alert("Success! Claim has been copied!")
-                    location.reload();
+                  alert("Success! Claim has been copied!");
+                    
+                    // Start with an empty table structure
+                    var newTable = "<table id='table_projectprogress_course' class='table table-striped projects display dataTable no-footer' style='width: 100%;'>" +
+                                        "<thead class='thead-themed'>" +
+                                        "<tr>" +
+                                            "<th style='width: 1%'>No.</th>" +
+                                            "<th style='width: 20%'>Claim Name</th>" +
+                                            "<th style='width: 5%'>Price Per Unit</th>" +
+                                            "<th style='width: 5%'>Program</th>" +
+                                            "<th style='width: 5%'>Intake</th>" +
+                                            "<th style='width: 5%'>Semester</th>" +
+                                            "<th style='width: 20%'></th>" +
+                                        "</tr>" +
+                                        "</thead>" +
+                                        "<tbody>";
+
+                    // Add new rows
+                    $.each(res.data, function(i, item) {
+                        var newRow = "<tr>" +
+                            "<td>" + (i+1) + "</td>" +
+                            "<td>" + item.name + "</td>" +
+                            "<td>" + item.pricePerUnit + "</td>" +
+                            "<td>" + item.progname + "</td>" +
+                            "<td>" + item.SessionName + "</td>" +
+                            "<td>" + item.semester_name + "</td>" +
+                            "<td class='project-actions text-right' style='text-align: center;'>" +
+                              "<a class='btn btn-info btn-sm pr-2' href='#' onclick='updatePackage(\"" + item.id + "\")'>" +
+                                  "<i class='ti-pencil-alt'></i> Edit" +
+                              "</a>" +
+                              "<a class='btn btn-danger btn-sm' href='#' onclick='deletePackage(\"" + item.id + "\")'>" +
+                                  "<i class='ti-trash'></i> Delete" +
+                              "</a>" +
+                            "</td>" +
+                        "</tr>";
+                        newTable += newRow;
+                    });
+
+                    // Close table structure
+                    newTable += "</tbody></table>";
+
+                    // Replace the div contents with the new table
+                    $('#add-student-div').html(newTable);
+
                 }else{
                     $('.error-field').html('');
                     if(res.message == "Field Error"){
@@ -364,9 +448,50 @@
                       alert("Error");
                       console.log(err);
                   },
-                  success  : function(data){
-                      window.location.reload();
-                      alert("success");
+                  success  : function(res){
+                    alert("Success! Claim has been deleted!");
+                    
+                    // Start with an empty table structure
+                    var newTable = "<table id='table_projectprogress_course' class='table table-striped projects display dataTable no-footer' style='width: 100%;'>" +
+                                        "<thead class='thead-themed'>" +
+                                        "<tr>" +
+                                            "<th style='width: 1%'>No.</th>" +
+                                            "<th style='width: 20%'>Claim Name</th>" +
+                                            "<th style='width: 5%'>Price Per Unit</th>" +
+                                            "<th style='width: 5%'>Program</th>" +
+                                            "<th style='width: 5%'>Intake</th>" +
+                                            "<th style='width: 5%'>Semester</th>" +
+                                            "<th style='width: 20%'></th>" +
+                                        "</tr>" +
+                                        "</thead>" +
+                                        "<tbody>";
+
+                    // Add new rows
+                    $.each(res.data, function(i, item) {
+                        var newRow = "<tr>" +
+                            "<td>" + (i+1) + "</td>" +
+                            "<td>" + item.name + "</td>" +
+                            "<td>" + item.pricePerUnit + "</td>" +
+                            "<td>" + item.progname + "</td>" +
+                            "<td>" + item.SessionName + "</td>" +
+                            "<td>" + item.semester_name + "</td>" +
+                            "<td class='project-actions text-right' style='text-align: center;'>" +
+                              "<a class='btn btn-info btn-sm pr-2' href='#' onclick='updatePackage(\"" + item.id + "\")'>" +
+                                  "<i class='ti-pencil-alt'></i> Edit" +
+                              "</a>" +
+                              "<a class='btn btn-danger btn-sm' href='#' onclick='deletePackage(\"" + item.id + "\")'>" +
+                                  "<i class='ti-trash'></i> Delete" +
+                              "</a>" +
+                            "</td>" +
+                        "</tr>";
+                        newTable += newRow;
+                    });
+
+                    // Close table structure
+                    newTable += "</tbody></table>";
+
+                    // Replace the div contents with the new table
+                    $('#add-student-div').html(newTable);
                   }
               });
           }
