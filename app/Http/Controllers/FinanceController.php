@@ -211,20 +211,46 @@ class FinanceController extends Controller
 
             }
 
-            return ["message"=>"Success"];
+            $datas = DB::table('tblstudentclaimpackage')->where([
+                ['tblstudentclaimpackage.program_id', $data->program],
+                ['tblstudentclaimpackage.intake_id', $data->intake],
+                ['tblstudentclaimpackage.semester_id', $data->semester]
+            ])
+            ->join('tblprogramme', 'tblstudentclaimpackage.program_id', 'tblprogramme.id')
+            ->join('sessions', 'tblstudentclaimpackage.intake_id', 'sessions.SessionID')
+            ->join('semester', 'tblstudentclaimpackage.semester_id', 'semester.id')
+            ->join('tblstudentclaim', 'tblstudentclaimpackage.claim_id', 'tblstudentclaim.id')
+            ->select('tblstudentclaimpackage.*','tblprogramme.progname','sessions.SessionName','semester.semester_name','tblstudentclaim.name')
+            ->get();
+
+            return response()->json(['message' => 'Success', 'data' => $datas]);
 
         }else{
 
+            $data = json_decode($request->addClaim);
+
             DB::table('tblstudentclaimpackage')->where('id', $request->idS)
             ->update([
-                'program_id' => $request->programs,
-                'intake_id' => $request->intakes,
-                'semester_id' => $request->semesters,
-                'claim_id' => $request->claims,
-                'pricePerUnit' => $request->prices
+                'program_id' => $data->program,
+                'intake_id' => $data->intake,
+                'semester_id' => $data->semester,
+                'claim_id' => $data->claim,
+                'pricePerUnit' => $data->price
             ]);
 
-            return back();
+            $datas = DB::table('tblstudentclaimpackage')->where([
+                ['tblstudentclaimpackage.program_id', $data->program],
+                ['tblstudentclaimpackage.intake_id', $data->intake],
+                ['tblstudentclaimpackage.semester_id', $data->semester]
+            ])
+            ->join('tblprogramme', 'tblstudentclaimpackage.program_id', 'tblprogramme.id')
+            ->join('sessions', 'tblstudentclaimpackage.intake_id', 'sessions.SessionID')
+            ->join('semester', 'tblstudentclaimpackage.semester_id', 'semester.id')
+            ->join('tblstudentclaim', 'tblstudentclaimpackage.claim_id', 'tblstudentclaim.id')
+            ->select('tblstudentclaimpackage.*','tblprogramme.progname','sessions.SessionName','semester.semester_name','tblstudentclaim.name')
+            ->get();
+
+            return response()->json(['message' => 'Success', 'data' => $datas]);
 
         }
     }
@@ -283,7 +309,19 @@ class FinanceController extends Controller
 
         }
 
-        return ["message"=>"Success"];
+        $datas = DB::table('tblstudentclaimpackage')->where([
+            ['tblstudentclaimpackage.program_id', $data->program],
+            ['tblstudentclaimpackage.intake_id', $data->intake],
+            ['tblstudentclaimpackage.semester_id', $data->semester]
+        ])
+        ->join('tblprogramme', 'tblstudentclaimpackage.program_id', 'tblprogramme.id')
+        ->join('sessions', 'tblstudentclaimpackage.intake_id', 'sessions.SessionID')
+        ->join('semester', 'tblstudentclaimpackage.semester_id', 'semester.id')
+        ->join('tblstudentclaim', 'tblstudentclaimpackage.claim_id', 'tblstudentclaim.id')
+        ->select('tblstudentclaimpackage.*','tblprogramme.progname','sessions.SessionName','semester.semester_name','tblstudentclaim.name')
+        ->get();
+
+        return response()->json(['message' => 'Success', 'data' => $datas]);
 
     }
 
@@ -307,9 +345,23 @@ class FinanceController extends Controller
     public function deletePackage(Request $request)
     {
 
+        $claim =  DB::table('tblstudentclaimpackage')->where('id', request()->id)->first();
+
         DB::table('tblstudentclaimpackage')->where('id', request()->id)->delete();
 
-        return back();
+        $datas = DB::table('tblstudentclaimpackage')->where([
+            ['tblstudentclaimpackage.program_id', $claim->program_id],
+            ['tblstudentclaimpackage.intake_id', $claim->intake_id],
+            ['tblstudentclaimpackage.semester_id', $claim->semester_id]
+        ])
+        ->join('tblprogramme', 'tblstudentclaimpackage.program_id', 'tblprogramme.id')
+        ->join('sessions', 'tblstudentclaimpackage.intake_id', 'sessions.SessionID')
+        ->join('semester', 'tblstudentclaimpackage.semester_id', 'semester.id')
+        ->join('tblstudentclaim', 'tblstudentclaimpackage.claim_id', 'tblstudentclaim.id')
+        ->select('tblstudentclaimpackage.*','tblprogramme.progname','sessions.SessionName','semester.semester_name','tblstudentclaim.name')
+        ->get();
+
+        return response()->json(['message' => 'Success', 'data' => $datas]);
 
     }
 
