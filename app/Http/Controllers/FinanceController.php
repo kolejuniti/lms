@@ -502,7 +502,8 @@ class FinanceController extends Controller
                         //                                 ])->exists() : '')
                         // {
 
-                        if(($payment->nodoc != null) ? DB::table('tblpaymentmethod')->where('no_document', $payment->nodoc)->exists() : '')
+                        if(($payment->nodoc != null) ? DB::table('tblpaymentmethod')->join('tblpayment', 'tblpaymentmethod.payment_id', 'tblpayment.id')
+                        ->where('tblpaymentmethod.no_document', $payment->nodoc)->whereNotIn('tblpayment.process_status_id', [1, 3])->exists() : '')
                         {
 
                             return ["message" => "Document with the same number already used! Please use a different document no."];
