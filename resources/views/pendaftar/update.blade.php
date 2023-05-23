@@ -643,7 +643,7 @@ $(document).ready(function() {
     newForm.find('input[name="w_notel[]"]').val('{{ $waris->phone_tel }}');
     newForm.find('select[name="occupation[]"]').val('{{ $waris->occupation }}');
     newForm.find('input[name="dependent[]"]').val('{{ $waris->dependent_no }}');
-    newForm.find('select[name="w_kasar[]"]').val('{{ $waris->kasar }}');
+    newForm.find('input[name="w_kasar[]"]').val('{{ $waris->kasar }}');
     newForm.find('input[name="w_bersih[]"]').val('{{ $waris->bersih }}');
     newForm.find('select[name="relationship[]"]').val('{{ $waris->relationship }}');
     newForm.find('select[name="w_race[]"]').val('{{ $waris->race }}');
