@@ -765,6 +765,22 @@ class FinanceController extends Controller
                     
                     $year = substr($intake->SessionName, 6, 2) . substr($intake->SessionName, 11, 2);
 
+                    if(DB::table('tblmatric_no')->where('session', $year)->exists())
+                    {
+
+                        $lastno = DB::table('tblmatric_no')->where('session', $year)->first();
+
+                    }else{
+
+                        DB::table('tblmatric_no')->insert([
+                            'session' => $year,
+                            'final_no' => 0001
+                        ]);
+
+                        $lastno = DB::table('tblmatric_no')->where('session', $year)->first();
+
+                    }
+
                     $lastno = DB::table('tblmatric_no')->where('session', $year)->first();
 
                     $newno = sprintf("%04s", $lastno->final_no + 1);
@@ -1746,7 +1762,23 @@ class FinanceController extends Controller
                             
                             $year = substr($intake->SessionName, 6, 2) . substr($intake->SessionName, 11, 2);
 
-                            $lastno = DB::table('tblmatric_no')->where('session', $year)->first();
+                            // $lastno = DB::table('tblmatric_no')->where('session', $year)->first();
+
+                            if(DB::table('tblmatric_no')->where('session', $year)->exists())
+                            {
+
+                                $lastno = DB::table('tblmatric_no')->where('session', $year)->first();
+
+                            }else{
+
+                                DB::table('tblmatric_no')->insert([
+                                    'session' => $year,
+                                    'final_no' => 0001
+                                ]);
+
+                                $lastno = DB::table('tblmatric_no')->where('session', $year)->first();
+
+                            }
 
                             $newno = sprintf("%04s", $lastno->final_no + 1);
 
