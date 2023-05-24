@@ -759,7 +759,7 @@ class FinanceController extends Controller
             if($student->no_matric == null)
             {
 
-                if($sum = DB::table('tblpayment')->where('student_ic', $student->ic)->sum('amount') >= 250)
+                if($sum = DB::table('tblpayment')->where('student_ic', $student->ic)->whereNotIn('process_status_id', [1, 3])->sum('amount') >= 250)
                 {
                     $intake = DB::table('sessions')->where('SessionID', $student->intake)->first();
                     
@@ -1758,7 +1758,7 @@ class FinanceController extends Controller
                     if($student->no_matric == null)
                     {
 
-                        if($sum = DB::table('tblpayment')->where('student_ic', $student->ic)->sum('amount') >= 250)
+                        if($sum = DB::table('tblpayment')->where('student_ic', $student->ic)->whereNotIn('process_status_id', [1, 3])->sum('amount') >= 250)
                         {
                             $intake = DB::table('sessions')->where('SessionID', $student->intake)->first();
                             
