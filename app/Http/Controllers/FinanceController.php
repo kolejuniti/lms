@@ -770,6 +770,8 @@ class FinanceController extends Controller
 
                         $lastno = DB::table('tblmatric_no')->where('session', $year)->first();
 
+                        $newno = sprintf("%04s", $lastno->final_no + 1);
+
                     }else{
 
                         DB::table('tblmatric_no')->insert([
@@ -779,9 +781,9 @@ class FinanceController extends Controller
 
                         $lastno = DB::table('tblmatric_no')->where('session', $year)->first();
 
-                    }
+                        $newno = sprintf("%04s", $lastno->final_no);
 
-                    $lastno = DB::table('tblmatric_no')->where('session', $year)->first();
+                    }
 
                     $newno = sprintf("%04s", $lastno->final_no + 1);
 
