@@ -819,12 +819,12 @@ class FinanceController extends Controller
                            ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
                            ->join('tblprogramme', 'students.program', 'tblprogramme.id')
                            ->join('sessions', 'students.session', 'sessions.SessionID')
-                           ->select('students.*', 'tblstudent_status.name AS status', 'tblprogramme.progname AS program','sessions.SessionName AS session')
+                           ->select('students.*', 'tblstudent_status.name AS status', 'tblprogramme.progname AS program', 'tblprogramme.id AS programID','sessions.SessionName AS session')
                            ->where('ic', $request->student)->first();
 
         $data['claim'] = DB::table('tblstudentclaimpackage')
                          ->where([
-                            ['program_id', $data['student']->program],
+                            ['program_id', $data['student']->programID],
                             ['intake_id', $data['student']->intake]
                             ])->join('tblstudentclaim', 'tblstudentclaimpackage.claim_id', 'tblstudentclaim.id')
                          ->select('tblstudentclaimpackage.id', 'tblstudentclaim.name')->get();
