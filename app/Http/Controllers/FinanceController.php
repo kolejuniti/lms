@@ -494,14 +494,6 @@ class FinanceController extends Controller
 
                     }else{
 
-                        // if(($payment->nodoc != null) ? DB::table('tblpaymentmethod')
-                        //                                ->join('tblpayment', 'tblpaymentmethod.payment_id', 'tblpayment.id')
-                        //                                ->where([
-                        //                                 ['no_document', $payment->nodoc],
-                        //                                 ['tblpayment.process_status_id',2]
-                        //                                 ])->exists() : '')
-                        // {
-
                         if(($payment->nodoc != null) ? DB::table('tblpaymentmethod')->join('tblpayment', 'tblpaymentmethod.payment_id', 'tblpayment.id')
                         ->where('tblpaymentmethod.no_document', $payment->nodoc)->whereNotIn('tblpayment.process_status_id', [1, 3])->exists() : '')
                         {
@@ -826,14 +818,16 @@ class FinanceController extends Controller
         $data['student'] = DB::table('students')
                            ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
                            ->join('tblprogramme', 'students.program', 'tblprogramme.id')
-                           ->select('students.*', 'tblstudent_status.name AS status', 'tblprogramme.progname AS program')
+                           ->join('sessions', 'students.session', 'sessions.SessionID')
+                           ->select('students.*', 'tblstudent_status.name AS status', 'tblprogramme.progname AS program','sessions.SessionName AS session')
                            ->where('ic', $request->student)->first();
 
         $data['claim'] = DB::table('tblstudentclaimpackage')
                          ->where([
                             ['program_id', $data['student']->program],
                             ['intake_id', $data['student']->intake]
-                            ])->join('tblstudentclaim', 'tblstudentclaimpackage.claim_id', 'tblstudentclaim.id')->get();
+                            ])->join('tblstudentclaim', 'tblstudentclaimpackage.claim_id', 'tblstudentclaim.id')
+                         ->select('tblstudentclaimpackage.id', 'tblstudentclaim.name')->get();
 
         return  view('finance.payment.claimGetStudent', compact('data'));
 
@@ -866,6 +860,11 @@ class FinanceController extends Controller
 
             if($student->status == 1 || $student->status == 2 && $student->campus_id == 0)
             {
+                DB::table('tblclaim')->where([
+                    ['student_ic', $student->ic],
+                    ['session_id', $student->session],
+                    ['semester_id', $student->semester]
+                ])->delete();
 
                 $id = DB::table('tblclaim')->insertGetId([
                     'student_ic' => $student->ic,
@@ -1207,6 +1206,7 @@ class FinanceController extends Controller
             $student = DB::table('students')->where('ic', $ref_no->student_ic)->first();
 
             DB::table('students')->where('ic', $student->ic)->update([
+                'status' => 2,
                 'campus_id' => 1
             ]);
 
@@ -1236,6 +1236,7 @@ class FinanceController extends Controller
                 $alert = ['message' => 'Success'];
 
             }
+
             if($student->semester != 1)
             {
 
@@ -1569,7 +1570,8 @@ class FinanceController extends Controller
 
                     }else{
 
-                        if(($payment->nodoc != null) ? DB::table('tblpaymentmethod')->where('no_document', $payment->nodoc)->exists() : '')
+                        if(($payment->nodoc != null) ? DB::table('tblpaymentmethod')->join('tblpayment', 'tblpaymentmethod.payment_id', 'tblpayment.id')
+                        ->where('tblpaymentmethod.no_document', $payment->nodoc)->whereNotIn('tblpayment.process_status_id', [1, 3])->exists() : '')
                         {
 
                             return ["message" => "Document with the same number already used! Please use a different document no."];
@@ -2188,7 +2190,8 @@ class FinanceController extends Controller
 
                     }else{
 
-                        if(($payment->nodoc != null) ? DB::table('tblpaymentmethod')->where('no_document', $payment->nodoc)->exists() : '')
+                        if(($payment->nodoc != null) ? DB::table('tblpaymentmethod')->join('tblpayment', 'tblpaymentmethod.payment_id', 'tblpayment.id')
+                        ->where('tblpaymentmethod.no_document', $payment->nodoc)->whereNotIn('tblpayment.process_status_id', [1, 3])->exists() : '')
                         {
 
                             return ["message" => "Document with the same number already used! Please use a different document no."];
@@ -4188,7 +4191,8 @@ class FinanceController extends Controller
 
                     }else{
 
-                        if(($payment->nodoc != null) ? DB::table('tblpaymentmethod')->where('no_document', $payment->nodoc)->exists() : '')
+                        if(($payment->nodoc != null) ? DB::table('tblpaymentmethod')->join('tblpayment', 'tblpaymentmethod.payment_id', 'tblpayment.id')
+                        ->where('tblpaymentmethod.no_document', $payment->nodoc)->whereNotIn('tblpayment.process_status_id', [1, 3])->exists() : '')
                         {
 
                             return ["message" => "Document with the same number already used! Please use a different document no."];
@@ -4438,6 +4442,53 @@ class FinanceController extends Controller
             $student = DB::table('students')->where('ic', $ref_no->student_ic)->first();
 
             $alert = null;
+
+            if($student->no_matric == null)
+            {
+
+                if($sum = DB::table('tblpayment')->where('student_ic', $student->ic)->whereNotIn('process_status_id', [1, 3])->sum('amount') >= 250)
+                {
+                    $intake = DB::table('sessions')->where('SessionID', $student->intake)->first();
+                    
+                    $year = substr($intake->SessionName, 6, 2) . substr($intake->SessionName, 11, 2);
+
+                    if(DB::table('tblmatric_no')->where('session', $year)->exists())
+                    {
+
+                        $lastno = DB::table('tblmatric_no')->where('session', $year)->first();
+
+                        $newno = sprintf("%04s", $lastno->final_no + 1);
+
+                    }else{
+
+                        DB::table('tblmatric_no')->insert([
+                            'session' => $year,
+                            'final_no' => 0001
+                        ]);
+
+                        $lastno = DB::table('tblmatric_no')->where('session', $year)->first();
+
+                        $newno = sprintf("%04s", $lastno->final_no);
+
+                    }
+
+                    $newno = sprintf("%04s", $lastno->final_no + 1);
+
+                    $no_matric = $year . $newno;
+
+                    DB::table('students')->where('ic', $student->ic)->update([
+                        'no_matric' => $no_matric
+                    ]);
+
+                    DB::table('tblmatric_no')->where('session', $year)->update([
+                        'final_no' => $newno
+                    ]);
+
+                    $alert = 'No Matric has been updated!';
+
+                }
+
+            }
 
         }else{
 
