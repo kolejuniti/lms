@@ -3030,8 +3030,6 @@ class FinanceController extends Controller
                    ->join('students', 'tblpayment.student_ic', 'students.ic')
                    ->select('tblpayment.*', 'students.name', 'students.no_matric', 'students.status', 'students.program', 'students.semester')
                    ->whereBetween('tblpayment.add_date', [$request->from, $request->to])
-                   ->where('tblpayment.process_status_id', 2)
-                   ->whereNotNull('tblpayment.ref_no')
                    ->get();
 
         $sponsor = DB::table('tblpayment')
