@@ -1,3 +1,9 @@
+@php
+
+use Carbon\Carbon;
+
+@endphp
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -56,6 +62,16 @@
         </style>
     </head>
     <body>
+        @php
+
+            // Get the date two weeks before
+            $twoWeeksBefore = Carbon::parse($data['student']->date_offer)->subWeeks(2);
+
+            // Convert the date format
+            $formattedDate = $twoWeeksBefore->format('d/m/Y');
+
+        @endphp
+
         <div style="text-align: center;">
             <img src="{{ asset('assets/images/logo/Kolej-UNITI.png')}}" alt="Logo" width="15%" height="15%">
             <h1>KOLEJ UNITI</h1>
@@ -67,7 +83,7 @@
         <div style="border-top: 1px solid black;"></div>
         <br>
         <p>Surat Kami : UNITI/KUSB/2023/040616070397</p>
-        <p>Tarikh : {{ date('d/m/Y') }}</p>
+        <p>Tarikh : {{ $formattedDate }}</p>
         <br>
         <p>
           {{ strtoupper($data['student']->name) }}<br>
