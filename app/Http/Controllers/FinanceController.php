@@ -2873,24 +2873,24 @@ class FinanceController extends Controller
         if($request->refno != '')
         {
 
-        // Query to fetch data from the 'tblpayment' table
         $reg = DB::table('tblpayment')
         ->join('students', 'tblpayment.student_ic', 'students.ic')
         ->join('tblprocess_status', 'tblpayment.process_status_id', 'tblprocess_status.id')
-        ->where('tblpayment.process_status_id', 2)  // Filter based on the 'process_status_id' column
-        ->where('tblpayment.ref_no', 'LIKE', $request->refno."%")  // Filter based on the 'ref_no' column
-        ->select('tblpayment.id', 'tblpayment.ref_no', 'tblpayment.date', 'tblpayment.process_type_id', 'tblpayment.amount', 'tblprocess_status.name AS status', 'students.no_matric', 'students.name AS name', 'students.ic');  // Select specific columns
+        ->where('tblpayment.ref_no', 'LIKE', $request->refno."%")
+        ->where('tblpayment.process_status_id', 2)
+        ->select('tblpayment.id', 'tblpayment.ref_no','tblpayment.date', 'tblpayment.process_type_id', 'tblpayment.amount', 'tblprocess_status.name AS status', 'students.no_matric', 'students.name AS name', 'students.ic');
 
-        // Query to fetch data from the 'tblclaim' table and combine with 'tblpayment' query using UNION ALL
         $data['student'] = DB::table('tblclaim')
         ->join('students', 'tblclaim.student_ic', 'students.ic')
         ->join('tblprocess_status', 'tblclaim.process_status_id', 'tblprocess_status.id')
         ->join('tblclaimdtl', 'tblclaim.id', 'tblclaimdtl.claim_id')
-        ->where('tblclaim.process_status_id', 2)  // Filter based on the 'process_status_id' column
-        ->where('tblclaim.ref_no', 'LIKE', $request->refno."%")  // Filter based on the 'ref_no' column
-        ->unionAll($reg)  // Combine with the 'tblpayment' query using UNION ALL
-        ->select('tblclaim.id', 'tblclaim.ref_no', 'tblclaim.date', 'tblclaim.process_type_id', DB::raw('SUM(tblclaimdtl.amount) AS amount'), 'tblprocess_status.name AS status', 'students.no_matric', 'students.name AS name', 'students.ic');  // Select specific columns
+        ->where('tblclaim.ref_no', 'LIKE', $request->refno."%")
+        ->where('tblclaim.process_status_id', 2)
+        ->unionALL($reg)
+        ->select('tblclaim.id', 'tblclaim.ref_no','tblclaim.date', 'tblclaim.process_type_id', DB::raw('SUM(tblclaimdtl.amount) AS amount'), 'tblprocess_status.name AS status', 'students.no_matric', 'students.name AS name', 'students.ic')
+        ->get();
 
+        
 
         }elseif($request->search != '')
         {
@@ -2898,20 +2898,20 @@ class FinanceController extends Controller
         $reg = DB::table('tblpayment')
         ->join('students', 'tblpayment.student_ic', 'students.ic')
         ->join('tblprocess_status', 'tblpayment.process_status_id', 'tblprocess_status.id')
-        ->where('tblpayment.process_status_id', 2)
         ->where('students.name', 'LIKE', $request->search."%")
         ->orwhere('students.ic', 'LIKE', $request->search."%")
         ->orwhere('students.no_matric', 'LIKE', $request->search."%")
+        ->where('tblpayment.process_status_id', 2)
         ->select('tblpayment.id', 'tblpayment.ref_no','tblpayment.date', 'tblpayment.process_type_id', 'tblpayment.amount', 'tblprocess_status.name AS status', 'students.no_matric', 'students.name AS name', 'students.ic');
 
         $reg2 = DB::table('tblclaim')
         ->join('students', 'tblclaim.student_ic', 'students.ic')
         ->leftjoin('tblprocess_status', 'tblclaim.process_status_id', 'tblprocess_status.id')
         ->leftjoin('tblclaimdtl', 'tblclaim.id', 'tblclaimdtl.claim_id')
-        ->where('tblclaim.process_status_id', 2)
         ->where('students.name', 'LIKE', $request->search."%")
         ->orwhere('students.ic', 'LIKE', $request->search."%")
         ->orwhere('students.no_matric', 'LIKE', $request->search."%")
+        ->where('tblclaim.process_status_id', 2)
         ->groupBy('tblclaim.id')
         ->select('tblclaim.id', 'tblclaim.ref_no','tblclaim.date', 'tblclaim.process_type_id', DB::raw('SUM(tblclaimdtl.amount) AS amount'), 'tblprocess_status.name AS status', 'students.no_matric', 'students.name AS name', 'students.ic');
         
@@ -3048,7 +3048,7 @@ class FinanceController extends Controller
         foreach($payment as $pym)
         {
 
-            if($pym->status == 1 && $pym->sponsor_id != null)
+            if($pym->status == 1 && $pym->sponsor_id == null)
             {
 
                 if(DB::table('tblpaymentdtl')
