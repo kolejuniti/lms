@@ -868,7 +868,9 @@ class PendaftarController extends Controller
             }
         }
 
-        DB::table('student_form')->where('student_ic', $data['id'])->update([
+        DB::table('student_form')->updateOrInsert(
+            ['student_ic' => $data['id']],
+            [
             'student_ic' => $data['id'],
             'main' => $request->main,
             'pre_registration' => $request->PR,
@@ -880,9 +882,8 @@ class PendaftarController extends Controller
             'copy_school' => $request->coppysc,
             'copy_pic' => $request->copypic,
             'copy_pincome' => $request->copypp
-        ]);
-
-
+            ]
+        );
 
         return back();
 
