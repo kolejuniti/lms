@@ -1385,6 +1385,12 @@ class FinanceController extends Controller
                     }
                 }
 
+            }else{
+
+                DB::table('students')->where('ic', $student->ic)->update([
+                    'date' => date('Y-m-d')
+                ]);
+
             }
 
         }else{
@@ -1949,7 +1955,7 @@ class FinanceController extends Controller
                            ->where('students.ic', $data['payment']->student_ic)
                            ->first();
 
-        $data['date'] = Carbon::createFromFormat('Y-m-d', $data['student']->date)->format('d/m/Y');
+        $data['date'] = Carbon::createFromFormat('Y-m-d', $data['payment']->date)->format('d/m/Y');
 
         return view('finance.payment.receipt', compact('data'));
 
@@ -1977,7 +1983,7 @@ class FinanceController extends Controller
                            ->where('students.ic', $data['payment']->student_ic)
                            ->first();
 
-        $data['date'] = Carbon::createFromFormat('Y-m-d', $data['student']->date)->format('d/m/Y');
+        $data['date'] = Carbon::createFromFormat('Y-m-d', $data['payment']->date)->format('d/m/Y');
 
         return view('finance.sponsorship.receipt', compact('data'));
 
@@ -2005,7 +2011,7 @@ class FinanceController extends Controller
                            ->where('students.ic', $data['payment']->student_ic)
                            ->first();
 
-        $data['date'] = Carbon::createFromFormat('Y-m-d', $data['student']->date)->format('d/m/Y');
+        $data['date'] = Carbon::createFromFormat('Y-m-d', $data['payment']->date)->format('d/m/Y');
 
         return view('finance.sponsorship.receipt', compact('data'))->with('invois', '1');
 
@@ -2867,24 +2873,24 @@ class FinanceController extends Controller
         if($request->refno != '')
         {
 
+        // Query to fetch data from the 'tblpayment' table
         $reg = DB::table('tblpayment')
         ->join('students', 'tblpayment.student_ic', 'students.ic')
         ->join('tblprocess_status', 'tblpayment.process_status_id', 'tblprocess_status.id')
-        ->where('tblpayment.ref_no', 'LIKE', $request->refno."%")
-        ->where('tblpayment.process_status_id', 2)
-        ->select('tblpayment.id', 'tblpayment.ref_no','tblpayment.date', 'tblpayment.process_type_id', 'tblpayment.amount', 'tblprocess_status.name AS status', 'students.no_matric', 'students.name AS name', 'students.ic');
+        ->where('tblpayment.process_status_id', 2)  // Filter based on the 'process_status_id' column
+        ->where('tblpayment.ref_no', 'LIKE', $request->refno."%")  // Filter based on the 'ref_no' column
+        ->select('tblpayment.id', 'tblpayment.ref_no', 'tblpayment.date', 'tblpayment.process_type_id', 'tblpayment.amount', 'tblprocess_status.name AS status', 'students.no_matric', 'students.name AS name', 'students.ic');  // Select specific columns
 
+        // Query to fetch data from the 'tblclaim' table and combine with 'tblpayment' query using UNION ALL
         $data['student'] = DB::table('tblclaim')
         ->join('students', 'tblclaim.student_ic', 'students.ic')
         ->join('tblprocess_status', 'tblclaim.process_status_id', 'tblprocess_status.id')
         ->join('tblclaimdtl', 'tblclaim.id', 'tblclaimdtl.claim_id')
-        ->where('tblclaim.ref_no', 'LIKE', $request->refno."%")
-        ->where('tblclaim.process_status_id', 2)
-        ->unionALL($reg)
-        ->select('tblclaim.id', 'tblclaim.ref_no','tblclaim.date', 'tblclaim.process_type_id', DB::raw('SUM(tblclaimdtl.amount) AS amount'), 'tblprocess_status.name AS status', 'students.no_matric', 'students.name AS name', 'students.ic')
-        ->get();
+        ->where('tblclaim.process_status_id', 2)  // Filter based on the 'process_status_id' column
+        ->where('tblclaim.ref_no', 'LIKE', $request->refno."%")  // Filter based on the 'ref_no' column
+        ->unionAll($reg)  // Combine with the 'tblpayment' query using UNION ALL
+        ->select('tblclaim.id', 'tblclaim.ref_no', 'tblclaim.date', 'tblclaim.process_type_id', DB::raw('SUM(tblclaimdtl.amount) AS amount'), 'tblprocess_status.name AS status', 'students.no_matric', 'students.name AS name', 'students.ic');  // Select specific columns
 
-        
 
         }elseif($request->search != '')
         {
@@ -2892,20 +2898,20 @@ class FinanceController extends Controller
         $reg = DB::table('tblpayment')
         ->join('students', 'tblpayment.student_ic', 'students.ic')
         ->join('tblprocess_status', 'tblpayment.process_status_id', 'tblprocess_status.id')
+        ->where('tblpayment.process_status_id', 2)
         ->where('students.name', 'LIKE', $request->search."%")
         ->orwhere('students.ic', 'LIKE', $request->search."%")
         ->orwhere('students.no_matric', 'LIKE', $request->search."%")
-        ->where('tblpayment.process_status_id', 2)
         ->select('tblpayment.id', 'tblpayment.ref_no','tblpayment.date', 'tblpayment.process_type_id', 'tblpayment.amount', 'tblprocess_status.name AS status', 'students.no_matric', 'students.name AS name', 'students.ic');
 
         $reg2 = DB::table('tblclaim')
         ->join('students', 'tblclaim.student_ic', 'students.ic')
         ->leftjoin('tblprocess_status', 'tblclaim.process_status_id', 'tblprocess_status.id')
         ->leftjoin('tblclaimdtl', 'tblclaim.id', 'tblclaimdtl.claim_id')
+        ->where('tblclaim.process_status_id', 2)
         ->where('students.name', 'LIKE', $request->search."%")
         ->orwhere('students.ic', 'LIKE', $request->search."%")
         ->orwhere('students.no_matric', 'LIKE', $request->search."%")
-        ->where('tblclaim.process_status_id', 2)
         ->groupBy('tblclaim.id')
         ->select('tblclaim.id', 'tblclaim.ref_no','tblclaim.date', 'tblclaim.process_type_id', DB::raw('SUM(tblclaimdtl.amount) AS amount'), 'tblprocess_status.name AS status', 'students.no_matric', 'students.name AS name', 'students.ic');
         
@@ -3762,35 +3768,7 @@ class FinanceController extends Controller
         }
         //dd( $data['otherStudMethod']);
         
-        $other = DB::table('tblpaymentdtl')
-        ->join('tblpayment', 'tblpaymentdtl.payment_id', 'tblpayment.id')
-        ->join('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
-        ->join('tblpaymentmethod', 'tblpayment.id', 'tblpaymentmethod.payment_id')
-        ->leftjoin('tblpayment_bank', 'tblpaymentmethod.bank_id', 'tblpayment_bank.id')
-        ->join('tblpayment_method', 'tblpaymentmethod.claim_method_id', 'tblpayment_method.id')
-        ->whereBetween('tblpayment.add_date', [$request->from, $request->to])
-        ->where('tblpayment.process_status_id', 2)
-        ->select('tblpayment.*', 'tblstudentclaim.groupid', 'tblpaymentdtl.amount', 'tblpaymentmethod.no_document', 'tblpayment_method.name AS method', 'tblpayment_bank.name AS bank')
-        ->groupBy('tblpaymentdtl.id')->get();
-
-
-        foreach($other as $ot)
-        {
-            if(array_intersect([1], (array) $ot->process_type_id) && array_intersect([2], (array) $ot->groupid))
-            {
-                $data['hostel'][] = $ot;
-
-            }elseif(array_intersect([1], (array) $ot->process_type_id) && array_intersect([3], (array) $ot->groupid))
-            {
-                $data['convo'][] = $ot;
-
-            }elseif(array_intersect([1], (array) $ot->process_type_id) && array_intersect([4], (array) $ot->groupid))
-            {
-                $data['fine'][] = $ot;
-
-            }
-
-        }
+        
         
         if(isset($request->print))
         {
