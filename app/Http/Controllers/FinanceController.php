@@ -3782,15 +3782,15 @@ class FinanceController extends Controller
 
         foreach($other as $ot)
         {
-            if(array_intersect([1], (array) $ot->process_type_id) && array_intersect([2], (array) $ot->groupid))
+            if(array_intersect([1], (array) $ot->process_type_id) && array_intersect([2], (array) $ot->groupid) && $ot->amount != 0)
             {
                 $data['hostel'][] = $ot;
 
-            }elseif(array_intersect([1], (array) $ot->process_type_id) && array_intersect([3], (array) $ot->groupid))
+            }elseif(array_intersect([1], (array) $ot->process_type_id) && array_intersect([3], (array) $ot->groupid) && $ot->amount != 0)
             {
                 $data['convo'][] = $ot;
 
-            }elseif(array_intersect([1], (array) $ot->process_type_id) && array_intersect([10], (array) $ot->groupid))
+            }elseif(array_intersect([1], (array) $ot->process_type_id) && array_intersect([4], (array) $ot->groupid) && $ot->amount != 0)
             {
                 $data['fine'][] = $ot;
 
