@@ -3790,7 +3790,7 @@ class FinanceController extends Controller
             {
                 $data['convo'][] = $ot;
 
-            }elseif(array_intersect([1], (array) $ot->process_type_id) && array_intersect([4], (array) $ot->groupid))
+            }elseif(in_array(1, (array) $ot->process_type_id) && in_array(4, (array) $ot->groupid))
             {
                 $data['fine'][] = $ot;
 
