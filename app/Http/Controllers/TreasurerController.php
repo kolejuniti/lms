@@ -43,6 +43,8 @@ class TreasurerController extends Controller
                            ->select('students.*', 'tblstudent_status.name AS status', 'tblprogramme.progname AS program')
                            ->where('ic', $request->student)->first();
 
+        $data['program'] = DB::table('tblprogramme')->get();
+
         return view('treasurer.payment.creditGetStudent', compact('data'));
 
     }
@@ -77,6 +79,7 @@ class TreasurerController extends Controller
                         'ref_no' => null,
                         'session_id' => $stddetail->session,
                         'semester_id' => $stddetail->semester,
+                        'program_id' => $payment->program,
                         'process_status_id' => 1,
                         'process_type_id' => 5,
                         'remark' => $payment->remark,
@@ -91,6 +94,7 @@ class TreasurerController extends Controller
                            ->join('tblclaim', 'tblclaimdtl.claim_id', 'tblclaim.id')
                            ->join('tblstudentclaim', 'tblclaimdtl.claim_package_id', 'tblstudentclaim.id')
                            ->where('tblclaim.student_ic', $payment->ic)
+                           ->where('tblclaim.program_id', $payment->program)
                            ->where('tblclaim.process_status_id', 2)
                            ->select('tblclaimdtl.*', 'tblclaim.session_id', 'tblclaim.semester_id', 'tblstudentclaim.name')->get();
 
@@ -107,6 +111,7 @@ class TreasurerController extends Controller
                         ->where([
                             ['tblpaymentdtl.claimDtl_id', $clm->id],
                             ['tblpayment.student_ic', $payment->ic],
+                            ['tblpayment.program_id', $payment->program],
                             ['tblpaymentdtl.claim_type_id', $clm->claim_package_id],
                             ['tblpayment.session_id', $clm->session_id],
                             ['tblpayment.semester_id', $clm->semester_id],
@@ -398,6 +403,7 @@ class TreasurerController extends Controller
                         'ref_no' => $ref_no->code . $ref_no->ref_no + 1,
                         'session_id' => $stddetail->session,
                         'semester_id' => $stddetail->semester,
+                        'program_id' => $stddetail->program,
                         'process_status_id' => 2,
                         'process_type_id' => 4,
                         'remark' => $payment->remark,

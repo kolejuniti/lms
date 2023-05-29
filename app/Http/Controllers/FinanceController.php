@@ -417,6 +417,7 @@ class FinanceController extends Controller
                         'student_ic' => $payment->ic,
                         'date' => date('Y-m-d'),
                         'ref_no' => null,
+                        'program_id' => $stddetail->program,
                         'session_id' => $stddetail->session,
                         'semester_id' => $stddetail->semester,
                         'amount' => $payment->total,
@@ -850,6 +851,7 @@ class FinanceController extends Controller
             ['student_ic', $student->ic],
             ['session_id', $student->session],
             ['semester_id', $student->semester],
+            ['program_id', $student->program],
             ['process_status_id', 2]
            ])->get()) > 0)
         {
@@ -863,13 +865,15 @@ class FinanceController extends Controller
                 DB::table('tblclaim')->where([
                     ['student_ic', $student->ic],
                     ['session_id', $student->session],
-                    ['semester_id', $student->semester]
+                    ['semester_id', $student->semester],
+                    ['program_id', $student->program]
                 ])->delete();
 
                 $id = DB::table('tblclaim')->insertGetId([
                     'student_ic' => $student->ic,
                     'date' => date('Y-m-d'),
                     'ref_no' => null,
+                    'program_id' => $student->program,
                     'session_id' => $student->session,
                     'semester_id' => $student->semester,
                     'process_status_id' => 1,
@@ -1248,6 +1252,7 @@ class FinanceController extends Controller
                 ['tblclaimdtl.claim_package_id', 9],
                 ['tblclaim.session_id', $student->session],
                 ['tblclaim.semester_id', $student->semester],
+                ['tblclaim.program_id', $student->program],
                 ['tblclaim.student_ic', $student->ic]
                 ])
                 ->select('tblclaim.*')->first();
@@ -1276,6 +1281,7 @@ class FinanceController extends Controller
                             'ref_no' => $ref_no->code . $ref_no->ref_no + 1,
                             'session_id' => $student->session,
                             'semester_id' => $student->semester,
+                            'program_id' => $student->program,
                             'amount' => $icv->amount,
                             'process_status_id' => 2,
                             'process_type_id' => 9,
@@ -1348,6 +1354,7 @@ class FinanceController extends Controller
                                         'ref_no' => $ref_no->code . $ref_no->ref_no + 1,
                                         'session_id' => $student->session,
                                         'semester_id' => $student->semester,
+                                        'program_id' => $student->program,
                                         'amount' => $tbg->amount,
                                         'process_status_id' => 2,
                                         'process_type_id' => $tbg->process_type_id,
@@ -1416,7 +1423,7 @@ class FinanceController extends Controller
         $data['student'] = DB::table('students')
                            ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
                            ->join('tblprogramme', 'students.program', 'tblprogramme.id')
-                           ->select('students.*', 'tblstudent_status.name AS status', 'tblprogramme.progname AS program')
+                           ->select('students.*', 'students.program AS programID', 'tblstudent_status.name AS status', 'tblprogramme.progname AS program')
                            ->where('ic', $request->student)->first();
 
         $data['method'] = DB::table('tblpayment_method')->get();
@@ -1427,6 +1434,7 @@ class FinanceController extends Controller
                             ->join('tblclaim', 'tblclaimdtl.claim_id', 'tblclaim.id')
                             ->join('tblstudentclaim', 'tblclaimdtl.claim_package_id', 'tblstudentclaim.id')
                             ->where('tblclaim.student_ic', $request->student)
+                            ->where('tblclaim.program_id', $data['student']->programID)
                             ->where('tblclaim.process_status_id', 2)->where('tblclaim.process_type_id', '!=', 5)
                             ->select('tblclaimdtl.*', 'tblclaim.session_id', 'tblclaim.semester_id', 'tblstudentclaim.name')->get();
 
@@ -1446,6 +1454,7 @@ class FinanceController extends Controller
                 ['tblpaymentdtl.claim_type_id', $tsy->claim_package_id],
                 ['tblpayment.session_id', $tsy->session_id],
                 ['tblpayment.semester_id', $tsy->semester_id],
+                ['tblpayment.program_id', $data['student']->programID],
                 ['tblpayment.process_status_id', 2]
             ]);
 
@@ -1499,6 +1508,7 @@ class FinanceController extends Controller
                         'student_ic' => $payment->ic,
                         'date' => date('Y-m-d'),
                         'ref_no' => null,
+                        'program_id' => $stddetail->program,
                         'session_id' => $stddetail->session,
                         'semester_id' => $stddetail->semester,
                         'amount' => $payment->total,
@@ -2438,13 +2448,14 @@ class FinanceController extends Controller
         $data['student'] = DB::table('students')
                            ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
                            ->join('tblprogramme', 'students.program', 'tblprogramme.id')
-                           ->select('students.*', 'tblstudent_status.name AS status', 'tblprogramme.progname AS program')
+                           ->select('students.*', 'students.program AS programID','tblstudent_status.name AS status', 'tblprogramme.progname AS program')
                            ->where('ic', $request->student)->first();
 
         $data['tuition'] = DB::table('tblclaimdtl')
                             ->join('tblclaim', 'tblclaimdtl.claim_id', 'tblclaim.id')
                             ->join('tblstudentclaim', 'tblclaimdtl.claim_package_id', 'tblstudentclaim.id')
                             ->where('tblclaim.student_ic', $request->student)
+                            ->where('tblclaim.program_id', $data['student']->programID)
                             ->where('tblclaim.process_status_id', 2)->where('tblclaim.process_type_id', '!=', 5)
                             ->select('tblclaimdtl.*', 'tblclaim.session_id', 'tblclaim.semester_id', 'tblstudentclaim.name')->get();
 
@@ -2464,6 +2475,7 @@ class FinanceController extends Controller
                 ['tblpaymentdtl.claim_type_id', $tsy->claim_package_id],
                 ['tblpayment.session_id', $tsy->session_id],
                 ['tblpayment.semester_id', $tsy->semester_id],
+                ['tblpayment.program_id', $data['student']->programID],
                 ['tblpayment.process_status_id', 2]
             ]);
 
@@ -2537,6 +2549,7 @@ class FinanceController extends Controller
                                 'sponsor_id' => $payment->id,
                                 'date' => date('Y-m-d'),
                                 'ref_no' => null,
+                                'program_id' => $stddetail->program,
                                 'session_id' => $stddetail->session,
                                 'semester_id' => $stddetail->semester,
                                 'amount' => $payment->total,
@@ -2682,17 +2695,19 @@ class FinanceController extends Controller
         $record = DB::table('tblpaymentdtl')
         ->leftJoin('tblpayment', 'tblpaymentdtl.payment_id', 'tblpayment.id')
         ->leftJoin('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
+        ->leftjoin('tblprogramme', 'tblpayment.program_id', 'tblprogramme.id')
         ->where([
             ['tblpayment.student_ic', $request->student],
             ['tblpayment.process_status_id', 2], 
             ['tblstudentclaim.groupid', 1], 
             ['tblpaymentdtl.amount', '!=', 0]
             ])
-        ->select('tblpayment.ref_no','tblpayment.date', 'tblstudentclaim.name', 'tblpaymentdtl.amount', 'tblpayment.process_type_id');
+        ->select('tblpayment.ref_no','tblpayment.date', 'tblstudentclaim.name', 'tblpaymentdtl.amount', 'tblpayment.process_type_id', 'tblprogramme.progname AS program');
 
         $data['record'] = DB::table('tblclaimdtl')
         ->leftJoin('tblclaim', 'tblclaimdtl.claim_id', 'tblclaim.id')
         ->leftJoin('tblstudentclaim', 'tblclaimdtl.claim_package_id', 'tblstudentclaim.id')
+        ->leftjoin('tblprogramme', 'tblclaim.program_id', 'tblprogramme.id')
         ->where([
             ['tblclaim.student_ic', $request->student],
             ['tblclaim.process_status_id', 2],  
@@ -2700,7 +2715,7 @@ class FinanceController extends Controller
             ['tblclaimdtl.amount', '!=', 0]
             ])
         ->unionALL($record)
-        ->select('tblclaim.ref_no','tblclaim.date', 'tblstudentclaim.name', 'tblclaimdtl.amount', 'tblclaim.process_type_id')
+        ->select('tblclaim.ref_no','tblclaim.date', 'tblstudentclaim.name', 'tblclaimdtl.amount', 'tblclaim.process_type_id', 'tblprogramme.progname AS program')
         ->orderBy('date')
         ->get();
 
@@ -2742,24 +2757,26 @@ class FinanceController extends Controller
         $record2 = DB::table('tblpaymentdtl')
         ->leftJoin('tblpayment', 'tblpaymentdtl.payment_id', 'tblpayment.id')
         ->leftJoin('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
+        ->leftjoin('tblprogramme', 'tblpayment.program_id', 'tblprogramme.id')
         ->where([
             ['tblpayment.student_ic', $request->student],
             ['tblpayment.process_status_id', 2],  
             ['tblstudentclaim.groupid', 4],
             ['tblpaymentdtl.amount', '!=', 0]
             ])
-        ->select('tblpayment.ref_no','tblpayment.date', 'tblstudentclaim.name', 'tblpaymentdtl.amount', 'tblpayment.process_type_id');
+        ->select('tblpayment.ref_no','tblpayment.date', 'tblstudentclaim.name', 'tblpaymentdtl.amount', 'tblpayment.process_type_id', 'tblprogramme.progname AS program');
 
         $data['record2'] = DB::table('tblclaimdtl')
         ->leftJoin('tblclaim', 'tblclaimdtl.claim_id', 'tblclaim.id')
         ->leftJoin('tblstudentclaim', 'tblclaimdtl.claim_package_id', 'tblstudentclaim.id')
+        ->leftjoin('tblprogramme', 'tblclaim.program_id', 'tblprogramme.id')
         ->where([
             ['tblclaim.student_ic', $request->student],
             ['tblclaim.process_status_id', 2],  
             ['tblstudentclaim.groupid', 4],
             ['tblclaimdtl.amount', '!=', 0]
             ])        ->unionALL($record2)
-        ->select('tblclaim.ref_no','tblclaim.date', 'tblstudentclaim.name', 'tblclaimdtl.amount', 'tblclaim.process_type_id')
+        ->select('tblclaim.ref_no','tblclaim.date', 'tblstudentclaim.name', 'tblclaimdtl.amount', 'tblclaim.process_type_id', 'tblprogramme.progname AS program')
         ->orderBy('date')
         ->get();
 
@@ -2800,24 +2817,26 @@ class FinanceController extends Controller
         $record3 = DB::table('tblpaymentdtl')
         ->leftJoin('tblpayment', 'tblpaymentdtl.payment_id', 'tblpayment.id')
         ->leftJoin('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
+        ->leftjoin('tblprogramme', 'tblpayment.program_id', 'tblprogramme.id')
         ->where([
             ['tblpayment.student_ic', $request->student],
             ['tblpayment.process_status_id', 2],  
             ['tblstudentclaim.groupid', 5],
             ['tblpaymentdtl.amount', '!=', 0]
             ])
-        ->select('tblpayment.ref_no','tblpayment.date', 'tblstudentclaim.name', 'tblpaymentdtl.amount', 'tblpayment.process_type_id');
+        ->select('tblpayment.ref_no','tblpayment.date', 'tblstudentclaim.name', 'tblpaymentdtl.amount', 'tblpayment.process_type_id', 'tblprogramme.progname AS program');
 
         $data['record3'] = DB::table('tblclaimdtl')
         ->leftJoin('tblclaim', 'tblclaimdtl.claim_id', 'tblclaim.id')
         ->leftJoin('tblstudentclaim', 'tblclaimdtl.claim_package_id', 'tblstudentclaim.id')
+        ->leftjoin('tblprogramme', 'tblclaim.program_id', 'tblprogramme.id')
         ->where([
             ['tblclaim.student_ic', $request->student],
             ['tblclaim.process_status_id', 2],  
             ['tblstudentclaim.groupid', 5],
             ['tblclaimdtl.amount', '!=', 0]
             ])        ->unionALL($record3)
-        ->select('tblclaim.ref_no','tblclaim.date', 'tblstudentclaim.name', 'tblclaimdtl.amount', 'tblclaim.process_type_id')
+        ->select('tblclaim.ref_no','tblclaim.date', 'tblstudentclaim.name', 'tblclaimdtl.amount', 'tblclaim.process_type_id', 'tblprogramme.progname AS program')
         ->orderBy('date')
         ->get();
 
@@ -4120,6 +4139,7 @@ class FinanceController extends Controller
                         'student_ic' => $payment->ic,
                         'date' => date('Y-m-d'),
                         'ref_no' => null,
+                        'program_id' => $stddetail->program,
                         'session_id' => $stddetail->session,
                         'semester_id' => $stddetail->semester,
                         'amount' => $payment->total,
