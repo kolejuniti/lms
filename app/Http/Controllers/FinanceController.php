@@ -828,7 +828,7 @@ class FinanceController extends Controller
                             ['program_id', $data['student']->programID],
                             ['intake_id', $data['student']->intake]
                             ])->join('tblstudentclaim', 'tblstudentclaimpackage.claim_id', 'tblstudentclaim.id')
-                         ->select('tblstudentclaimpackage.id', 'tblstudentclaim.name')->get();
+                         ->select('tblstudentclaim.id', 'tblstudentclaim.name')->get();
 
         return  view('finance.payment.claimGetStudent', compact('data'));
 
