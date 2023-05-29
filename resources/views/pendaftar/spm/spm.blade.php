@@ -85,7 +85,7 @@
                    
                     <div class="card-body">
                         <div class="row">
-                            <div class="col-md-6">
+                            {{-- <div class="col-md-6">
                                 <div class="form-group">
                                     <label class="form-label" for="year">Year</label>
                                     <select class="form-select" id="year" name="year" required>
@@ -94,6 +94,12 @@
                                         <option value="{{ $year }}" {{ isset($data['info']->year) ? (($data['info']->year == $year) ? 'selected' : '') : '' }}>{{ $year }}</option>
                                     @endfor
                                     </select>
+                                </div>
+                            </div> --}}
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label" for="year">Year</label>
+                                    <input type="text" class="form-control" id="year" name="year" value="{{ isset($data['info']->year) ? $data['info']->year : '' }}">
                                 </div>
                             </div>
                             <div class="col-md-6">
