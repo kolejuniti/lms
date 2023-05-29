@@ -102,7 +102,7 @@
                                 @endforeach
                                 <tfoot>
                                     <tr>
-                                        <td colspan="3" style="text-align:center">
+                                        <td colspan="4" style="text-align:center">
                                         TOTAL AMOUNT :
                                         </td>
                                         <td>
@@ -201,7 +201,7 @@
                                 @endforeach
                                 <tfoot>
                                     <tr>
-                                        <td colspan="3" style="text-align:center">
+                                        <td colspan="4" style="text-align:center">
                                         TOTAL AMOUNT :
                                         </td>
                                         <td>
@@ -300,7 +300,7 @@
                                 @endforeach
                                 <tfoot>
                                     <tr>
-                                        <td colspan="3" style="text-align:center">
+                                        <td colspan="4" style="text-align:center">
                                         TOTAL AMOUNT :
                                         </td>
                                         <td>
