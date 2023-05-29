@@ -48,7 +48,7 @@
                   </a>
               </div>
             </div>
-        </div>
+          </div>
         </div>
         <div class="card-body p-0">
           <table id="myTable" class="table table-striped projects display dataTable">

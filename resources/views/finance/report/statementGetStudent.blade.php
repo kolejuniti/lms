@@ -46,6 +46,9 @@
                                         Ref No
                                     </th>
                                     <th style="width: 5%">
+                                        Program
+                                    </th>
+                                    <th style="width: 5%">
                                         Description
                                     </th>
                                     <th style="width: 5%">
@@ -71,6 +74,9 @@
                                     @else
                                     {{ $req->ref_no }}
                                     @endif
+                                    </td>
+                                    <td>
+                                    {{ $req->program }}
                                     </td>
                                     <td>
                                     {{ $req->name }}
@@ -139,6 +145,9 @@
                                         Ref No
                                     </th>
                                     <th style="width: 5%">
+                                        Program
+                                    </th>
+                                    <th style="width: 5%">
                                         Description
                                     </th>
                                     <th style="width: 5%">
@@ -164,6 +173,9 @@
                                     @else
                                     {{ $req->ref_no }}
                                     @endif
+                                    </td>
+                                    <td>
+                                    {{ $req->program }}
                                     </td>
                                     <td>
                                     {{ $req->name }}
@@ -232,6 +244,9 @@
                                         Ref No
                                     </th>
                                     <th style="width: 5%">
+                                        Program
+                                    </th>
+                                    <th style="width: 5%">
                                         Description
                                     </th>
                                     <th style="width: 5%">
@@ -257,6 +272,9 @@
                                     @else
                                     {{ $req->ref_no }}
                                     @endif
+                                    </td>
+                                    <td>
+                                    {{ $req->program }}
                                     </td>
                                     <td>
                                     {{ $req->name }}
