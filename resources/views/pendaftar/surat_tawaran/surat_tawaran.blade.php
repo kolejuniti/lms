@@ -96,11 +96,11 @@ use Carbon\Carbon;
         <br>
         <p>Saudara/Saudari,</p>
         <br>
-        <p>TAWARAN KEMASUKAN KE PROGRAM AKADEMIK KOLEJ UNITI SESI MAC 2022/2023</p>
+        <p>TAWARAN KEMASUKAN KE PROGRAM AKADEMIK KOLEJ UNITI SESI <b>{{ $data['student']->intake }}</b></p>
         <br>
-        <p>TAHNIAH dan SUKACITA di maklumkan, saudara/saudari di tawarkan untuk mengikuti pengajian program {{ $data['student']->progname }} di KOLEJ UNITI.</p>
+        <p><b>TAHNIAH</b> dan <b>SUKACITA</b> di maklumkan, saudara/saudari di tawarkan untuk mengikuti pengajian program <b>{{ $data['student']->progname }}</b> di KOLEJ UNITI.</p>
         <br>
-        <p>Untuk pengetahuan saudara/saudari, program yang diikuti adalah program akademik yang dikendalikan oleh KOLEJ UNITI di PERSIARAN UNITI VILLAGE, TANJUNG AGAS, 71250 PORT DICKSON, NEGERI SEMBILAN DARUL KHUSUS. Setelah memenuhi semua keperluan, saudara/saudari akan DIANUGERAHKAN DIPLOMA OLEH KOLEJ UNITI ATAU UiTM DAN UPM.</p>
+        <p>Untuk pengetahuan saudara/saudari, program yang diikuti adalah program akademik yang dikendalikan oleh <b>KOLEJ UNITI di PERSIARAN UNITI VILLAGE, TANJUNG AGAS, 71250 PORT DICKSON, NEGERI SEMBILAN DARUL KHUSUS.</b> Setelah memenuhi semua keperluan, saudara/saudari akan <b>DIANUGERAHKAN DIPLOMA OLEH KOLEJ UNITI ATAU UiTM DAN UPM.</b></p>
         <br>
         <p>Tawaran ini adalah sah untuk tujuan di atas sahaja.</p>
         <br>
@@ -145,9 +145,9 @@ use Carbon\Carbon;
         <p>Yang benar,</p>
         <img src="{{ asset('storage/signature/signature1.png') }}" alt="Image" width="5%" height="5%">
 
-        <p>AMIR HAMZAH BIN MD. ISA<br>
+        <p><b>AMIR HAMZAH BIN MD. ISA</b><br>
         KETUA EKSEKUTIF<br>
-        KOLEJ UNITI</p>
+        <b>KOLEJ UNITI</b></p>
         <p>* Pihak Kolej berhak menarik balik tawaran ini di atas apa-apa jua alasan dari semasa ke semasa</p>
         <p>* Universiti Teknologi MARA (UiTM) tidak bertanggungjawab menyerap pelajar program usahasama sekiranya Kolej UNITI menghadapi masalah untuk mengendalikan program.</p>
         <p>* Kos perkhidmatan UiTM RM300.00 tidak akan dikembalikan setelah pelajar mendaftar di Kolej (program UiTM sahaja)</p>
