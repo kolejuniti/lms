@@ -152,6 +152,7 @@ function save(ic)
 
   forminput = {
     ic: ic,
+    program: $('#program').val(),
     discount: $('input[name="discount"]:checked').val(),
     remark: $('#remark').val()
   };

@@ -69,6 +69,17 @@
                         </fieldset>
                     </div>
                 </div>
+                <div class="col-md-3" id="method-card">
+                    <div class="form-group">
+                    <label class="form-label" for="program">Program</label>
+                    <select class="form-select" id="program" name="program" required>
+                        <option value="" selected disabled>-</option>
+                        @foreach ($data['program'] as $prg)
+                        <option value="{{ $prg->id }}">{{ $prg->progname }}</option>
+                        @endforeach
+                    </select>
+                    </div>
+                </div>
                 <div class="col-md-12 mt-3">
                     <div class="form-group">
                         <label class="form-label">Remark</label>
