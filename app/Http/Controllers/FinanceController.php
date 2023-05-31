@@ -1937,6 +1937,8 @@ class FinanceController extends Controller
     {
         $data['payment'] = DB::table('tblpayment')->where('id', $request->id)->first();
 
+        $data['staff'] = DB::table('users')->where('ic', $data['payment']->add_staffID)->first();
+
         $detail = DB::table('tblpaymentdtl')
                           ->join('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
                           ->where('tblpaymentdtl.payment_id', $request->id)
@@ -1975,6 +1977,8 @@ class FinanceController extends Controller
     {
         $data['payment'] = DB::table('tblpayment')->where('id', $request->id)->first();
 
+        $data['staff'] = DB::table('users')->where('ic', $data['payment']->add_staffID)->first();
+
         $detail = DB::table('tblpaymentdtl')
                           ->join('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
                           ->where('tblpaymentdtl.payment_id', $request->id)
@@ -1983,6 +1987,16 @@ class FinanceController extends Controller
         $data['detail'] = $detail->get();
 
         $data['total'] = $detail->sum('tblpaymentdtl.amount');
+
+        $method = DB::table('tblpaymentmethod')
+                          ->join('tblpayment_method', 'tblpaymentmethod.claim_method_id', 'tblpayment_method.id')
+                          ->leftjoin('tblpayment_bank', 'tblpaymentmethod.bank_id', 'tblpayment_bank.id')
+                          ->where('tblpaymentmethod.payment_id', $data['payment']->sponsor_id)
+                          ->select('tblpaymentmethod.*', 'tblpayment_method.name AS method', 'tblpayment_bank.name AS bank');
+                          
+        $data['method'] = $method->get();
+
+        $data['total2'] = $method->sum('tblpaymentmethod.amount');
 
         $data['student'] = DB::table('students')
                            ->join('sessions AS A1', 'students.intake', 'A1.SessionID')
@@ -2002,6 +2016,8 @@ class FinanceController extends Controller
     public function getReceipt3(Request $request)
     {
         $data['payment'] = DB::table('tblclaim')->where('id', $request->id)->first();
+
+        $data['staff'] = DB::table('users')->where('ic', $data['payment']->add_staffID)->first();
 
         $detail = DB::table('tblclaimdtl')
                           ->join('tblstudentclaim', 'tblclaimdtl.claim_package_id', 'tblstudentclaim.id')
@@ -2527,7 +2543,19 @@ class FinanceController extends Controller
 
                     $pymdetails = DB::table('tblpayment')->where('id', $payment->id)->first();
 
-                    $count = DB::table('tblpayment')->where([['sponsor_id', $payment->id],['process_status_id', 2]])->get();
+                    if(count(DB::table('tblpayment')->where([['sponsor_id', $payment->id],['process_status_id', 2]])->get()) > 0)
+                    {
+                        $sum = DB::table('tblpayment')->where([['sponsor_id', $payment->id],['process_status_id', 2]])->sum('amount');
+
+                        $balance = $pymdetails->amount - $sum;
+
+                    }else{
+
+                        $balance = $pymdetails->amount;
+
+                    }
+
+                    $count = DB::table('tblpayment')->where([['sponsor_id', $payment->id],['process_status_id', 2],['student_ic', $payment->ic]])->get();
 
                     if(count($count) > 0)
                     {
@@ -2536,10 +2564,10 @@ class FinanceController extends Controller
 
                     }else{
 
-                        if($payment->total > $pymdetails->amount)
+                        if($payment->total > $balance)
                         {
 
-                            return ["message" => "Amount cannot exceed " . $pymdetails->amount . "!"];
+                            return ["message" => "Amount cannot exceed " . $balance . "!"];
 
                         }else{
 
@@ -2639,14 +2667,13 @@ class FinanceController extends Controller
                         'ref_no' => $ref_no->ref_no + 1
                     ]);*/
 
-                    $totalall = DB::table('tblpayment')->where('id', $payment->id)->first();
+                    // $totalall = DB::table('tblpayment')->where('id', $payment->id)->first();
 
-                    $balance =  $totalall->amount - $payment->sum2;
+                    // $balance =  $totalall->amount - $payment->sum2;
 
                     DB::table('tblpayment')->where('id', $payment->id)->update([
                         'process_status_id' => 2,
-                        'ref_no' => null,
-                        'amount' => $balance
+                        'ref_no' => null
                     ]);
 
                 
@@ -2942,7 +2969,16 @@ class FinanceController extends Controller
 
         }
 
-        return view('finance.report.getReceiptList', compact('data'));
+        if(isset($request->cancel))
+        {
+
+            return view('finance.payment.getReceiptList', compact('data'));
+
+        }else{
+
+            return view('finance.report.getReceiptList', compact('data'));
+
+        }
 
     }
 
@@ -4934,6 +4970,40 @@ class FinanceController extends Controller
         DB::table('tblpackage_sponsorship')->where('id', $request->id)->delete();
 
         return [ "message" => "success"];
+
+    }
+
+    public function cancelTransaction()
+    {
+
+        return view('finance.payment.receiptList');
+
+    }
+
+    public function cancelTransactionConfirm(Request $request)
+    {
+        if(in_array($request->typeID, [2,4,5]))
+        {
+
+            DB::table('tblclaim')->where('id', $request->receiptID)->update([
+                'process_status_id' => 3,
+                'termination_date' => date('Y-m-d'),
+                'termination_reason' => $request->reason,
+                'termination_staffID' => Auth::user()->ic
+             ]);
+
+        }else{
+
+            DB::table('tblpayment')->where('id', $request->receiptID)->update([
+               'process_status_id' => 3,
+               'termination_date' => date('Y-m-d'),
+               'termination_reason' => $request->reason,
+               'termination_staffID' => Auth::user()->ic
+            ]);
+
+        }
+
+        return back();
 
     }
 }
