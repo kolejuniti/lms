@@ -73,12 +73,12 @@
                   </div>
                </div>
                <br>
-               <div class="row">
+               {{-- <div class="row">
                   <div class="col-12">
                      <h2>Resit<br>
                      <span class="small">No. Resit : {{ $data['payment']->ref_no }}</span></h2>
                   </div>
-               </div>
+               </div> --}}
             </div>
             <div class="row">
                <div class="col-md-12 d-flex p-2">
@@ -170,7 +170,7 @@
             </div>
             <div class="row">
                <div class="col-md-12 text-right identity">
-                  <p>This Invoice belong to the<br><strong>Kolej Uniti Sdn. Bhd</strong></p>
+                  <p>Received By :<br><strong>{{ $data['staff']->name }}</strong></p>
                </div>
             </div>
          </div>

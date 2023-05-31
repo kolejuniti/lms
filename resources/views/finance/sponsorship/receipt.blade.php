@@ -80,7 +80,7 @@
                      @else
                      <h2>Resit<br>
                      @endif
-                     <span class="small">No. Resit : {{ $data['payment']->ref_no }}</span></h2>
+                     {{-- <span class="small">No. Resit : {{ $data['payment']->ref_no }}</span></h2> --}}
                   </div>
                </div>
             </div>
@@ -89,7 +89,7 @@
                   <div class="col-md-6" style="margin-right: 10px">
                      <div class="form-group">
                            <p>Name &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ $data['student']->name }}</p>
-                           <p>No. Resit &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ $data['payment']->ref_no }}</p>
+                           <p>No. Resit &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ $data['payment']->id }}</p>
                            <p>No. KP / No. Passport &thinsp;&thinsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ $data['student']->ic }}</p>
                            <p>Sesi Kemasukan &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ $data['student']->intake }}</p>
                            <p>Sesi Semasa &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ $data['student']->session }}</p>
@@ -106,6 +106,43 @@
                   </div>
                </div>
 
+               @if(!isset($invois))
+               <div class="col-md-12">
+                  <h3>KAEDAH</h3>
+                  <table class="table table-striped">
+                     <thead>
+                        <tr class="line">
+                           <td><strong>#</strong></td>
+                           <td class="text-center"><strong>KAEDAH BAYARAN</strong></td>
+                           <td class="text-center"><strong>BANK</strong></td>
+                           <td class="text-center"><strong>NO. DOKUMEN</strong></td>
+                           <td class="text-center"><strong>AMAUN</strong></td>
+                        </tr>
+                     </thead>
+                     <tbody>
+                        @foreach ($data['method'] as $key => $dtl)
+                        <tr>
+                           <td>{{ $key+1 }}</td>
+                           <td style="text-align: center">{{ $dtl->method }}</td>
+                           <td style="text-align: center">{{ $dtl->bank }}</td>
+                           @if ($dtl->no_document == null)
+                           <td style="text-align: center">TIADA</td>
+                           @else
+                           <td style="text-align: center">{{ $dtl->no_document }}</td>
+                           @endif
+                           <td style="text-align: center">{{ $dtl->amount }}</td>
+                        </tr>
+                        @endforeach
+                        <tr>
+                           <td colspan="3">
+                           </td><td class="text-center"><strong>Jumlah :</strong></td>
+                           <td class="text-center"><strong>{{ $data['total2'] }}</strong></td>
+                        </tr>
+                     </tbody>
+                  </table>
+               </div>
+               @endif
+
                <div class="col-md-12">
                   <h3>BAYARAN</h3>
                   <table class="table table-striped">
@@ -118,10 +155,14 @@
                         </tr>
                      </thead>
                      <tbody>
+                        @php
+                           $count = 0;
+                        @endphp
+
                         @foreach ($data['detail'] as $keys => $dtl)
                         @if ($dtl->amount != 0)
                         <tr>
-                           <td>{{ $keys+1 }}</td>
+                           <td>{{ $count+1 }}</td>
                            <td style="text-align: center">{{ $dtl->name }}</td>
                            <td style="text-align: center">{{ $dtl->groupid }}</td>
                            <td style="text-align: center">{{ $dtl->amount }}</td>
@@ -139,7 +180,7 @@
             </div>
             <div class="row">
                <div class="col-md-12 text-right identity">
-                  <p>This Invoice belong to the<br><strong>Kolej Uniti Sdn. Bhd</strong></p>
+                  <p>Received By :<br><strong>{{ $data['staff']->name }}</strong></p>
                </div>
             </div>
          </div>
