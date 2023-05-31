@@ -299,6 +299,7 @@
 					<li><a href="{{ route('finance.payment.claim') }}" class="{{ (route('finance.payment.claim') == Request::url()) ? 'active' : ''}}">Claims</a></li>
 					<li><a href="{{ route('finance.payment.tuition') }}" class="{{ (route('finance.payment.tuition') == Request::url()) ? 'active' : ''}}">Daily Payment</a></li>
 					<li><a href="{{ route('finance.payment.other') }}" class="{{ (route('finance.payment.other') == Request::url()) ? 'active' : ''}}">Other Payment</a></li>
+					<li><a href="{{ route('finance.payment.cancel') }}" class="{{ (route('finance.payment.cancel') == Request::url()) ? 'active' : ''}}">Cancel Transaction</a></li>
 				</ul>
 			  </li>
 			  <li class="treeview">
