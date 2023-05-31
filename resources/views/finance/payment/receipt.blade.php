@@ -155,7 +155,7 @@
                            <td>{{ $keys+1 }}</td>
                            <td style="text-align: center">{{ $dtl->name }}</td>
                            <td style="text-align: center">{{ $dtl->groupid }}</td>
-                           <td style="text-align: center">{{ $dtl->amount }}</td>
+                           <td style="text-align: center">{{ $dtl->total_amount }}</td>
                         </tr>
                         @endif
                         @endforeach
