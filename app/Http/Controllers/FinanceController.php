@@ -2794,7 +2794,7 @@ class FinanceController extends Controller
             ['tblstudentclaim.groupid', 4],
             ['tblpaymentdtl.amount', '!=', 0]
             ])
-        ->select('tblpayment.ref_no','tblpayment.date', 'tblstudentclaim.name', 'tblpaymentdtl.amount', 'tblpayment.process_type_id', 'tblprogramme.progname AS program');
+        ->select('tblpayment.ref_no','tblpayment.date', 'tblstudentclaim.name', 'tblpaymentdtl.amount', 'tblpayment.process_type_id', 'tblprogramme.progcode AS program');
 
         $data['record2'] = DB::table('tblclaimdtl')
         ->leftJoin('tblclaim', 'tblclaimdtl.claim_id', 'tblclaim.id')
@@ -2806,7 +2806,7 @@ class FinanceController extends Controller
             ['tblstudentclaim.groupid', 4],
             ['tblclaimdtl.amount', '!=', 0]
             ])        ->unionALL($record2)
-        ->select('tblclaim.ref_no','tblclaim.date', 'tblstudentclaim.name', 'tblclaimdtl.amount', 'tblclaim.process_type_id', 'tblprogramme.progname AS program')
+        ->select('tblclaim.ref_no','tblclaim.date', 'tblstudentclaim.name', 'tblclaimdtl.amount', 'tblclaim.process_type_id', 'tblprogramme.progcode AS program')
         ->orderBy('date')
         ->get();
 
@@ -2854,7 +2854,7 @@ class FinanceController extends Controller
             ['tblstudentclaim.groupid', 5],
             ['tblpaymentdtl.amount', '!=', 0]
             ])
-        ->select('tblpayment.ref_no','tblpayment.date', 'tblstudentclaim.name', 'tblpaymentdtl.amount', 'tblpayment.process_type_id', 'tblprogramme.progname AS program');
+        ->select('tblpayment.ref_no','tblpayment.date', 'tblstudentclaim.name', 'tblpaymentdtl.amount', 'tblpayment.process_type_id', 'tblprogramme.progcode AS program');
 
         $data['record3'] = DB::table('tblclaimdtl')
         ->leftJoin('tblclaim', 'tblclaimdtl.claim_id', 'tblclaim.id')
@@ -2866,7 +2866,7 @@ class FinanceController extends Controller
             ['tblstudentclaim.groupid', 5],
             ['tblclaimdtl.amount', '!=', 0]
             ])        ->unionALL($record3)
-        ->select('tblclaim.ref_no','tblclaim.date', 'tblstudentclaim.name', 'tblclaimdtl.amount', 'tblclaim.process_type_id', 'tblprogramme.progname AS program')
+        ->select('tblclaim.ref_no','tblclaim.date', 'tblstudentclaim.name', 'tblclaimdtl.amount', 'tblclaim.process_type_id', 'tblprogramme.progcode AS program')
         ->orderBy('date')
         ->get();
 
