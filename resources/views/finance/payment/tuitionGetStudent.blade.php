@@ -80,7 +80,7 @@
                 <div class="col-md-3" id="document-card">
                     <div class="form-group">
                         <label class="form-label" for="nodoc">Document No.</label>
-                        <input type="text" class="form-control" name="nodoc" id="nodoc">
+                        <input type="text" class="form-control" onkeypress="return event.charCode != 32" name="nodoc" id="nodoc">
                     </div>
                 </div> 
                 <div class="col-md-2" id="amount-card">
