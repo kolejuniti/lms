@@ -71,7 +71,7 @@
                           <option value="PL">Program Lead</option>
                           <option value="DN">Deen</option>
                           <option value="AO">Administrative Officer</option>
-                          <option value="RGS">HEA</option>
+                          <option value="RGS">Student Record</option>
                           <option value="AR">Academic Registrar</option>
                           <option value="LCT">Lecturer</option>
                           <option value="FN">Finance</option>
