@@ -43,7 +43,17 @@ class TreasurerController extends Controller
                            ->select('students.*', 'tblstudent_status.name AS status', 'tblprogramme.progname AS program')
                            ->where('ic', $request->student)->first();
 
-        $data['program'] = DB::table('tblprogramme')->get();
+        $first = DB::table('students')
+                 ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+                 ->where('students.ic', $request->student)
+                 ->select('tblprogramme.*');
+
+        $second = DB::table('student_program')
+                 ->join('tblprogramme', 'student_program.program_id', 'tblprogramme.id')
+                 ->where('student_program.student_ic', $request->student)
+                 ->select('tblprogramme.*');
+
+        $data['program'] = $second->unionAll($first)->get();
 
         return view('treasurer.payment.creditGetStudent', compact('data'));
 
