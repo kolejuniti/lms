@@ -570,6 +570,14 @@ Route::post('/treasurer/payment/credit/getStatement', [App\Http\Controllers\Trea
 Route::get('/quality/report/attendance', [App\Http\Controllers\QualityController::class, 'attendanceReport'])->name('quality.report.attendance');
 Route::post('/quality/report/attendance/getLecturer', [App\Http\Controllers\QualityController::class, 'getLectAttendance'])->name('quality.report.attendance.getLecturer');
 
+Route::get('/posting/staff', [App\Http\Controllers\AllController::class, 'staffPosting'])->name('posting.staff');
+Route::post('/posting/staff/create', [App\Http\Controllers\AllController::class, 'postingCreate']);
+Route::post('/posting/staff/delete', [App\Http\Controllers\AllController::class, 'postingDelete']);
+Route::post('/posting/staff/update', [App\Http\Controllers\AllController::class, 'postingUpdate']);
+Route::get('/posting/admin', [App\Http\Controllers\AllController::class, 'adminPosting'])->name('posting.admin');
+Route::post('/posting/admin/listStaff', [App\Http\Controllers\AllController::class, 'getStaffList']);
+
+
 Route::get('/yuran-pengajian', [App\Http\Controllers\PaymentController::class, 'showPaymentForm'])->name('yuran-pengajian');
 Route::post('/checkout', [App\Http\Controllers\PaymentController::class, 'createCheckoutSession'])->name('checkout');
 Route::get('/checkout/success', [App\Http\Controllers\PaymentController::class, 'handlePaymentSuccess'])->name('checkout.success');
