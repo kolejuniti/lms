@@ -274,6 +274,9 @@
 					<li><a href="{{ route('treasurer.payment.debit') }}" class="{{ (route('treasurer.payment.debit') == Request::url()) ? 'active' : ''}}">Debit Note</a></li>
 				</ul>
 			  </li>
+			  <li>
+				<a href="{{ route('posting.staff') }}" class="{{ (route('posting.staff') == Request::url()) ? 'active' : ''}}"><i data-feather="tv"></i><span>Posting</span></a>
+			  </li> 
 		  </div>
 		</div>
     </section>

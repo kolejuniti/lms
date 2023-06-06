@@ -293,6 +293,9 @@
 						<li><a href="/quality/report/attendance">Attendance</a></li>
 					</ul>
 				</li> 
+				<li>
+					<a href="{{ route('posting.staff') }}" class="{{ (route('posting.staff') == Request::url()) ? 'active' : ''}}"><i data-feather="tv"></i><span>Posting</span></a>
+				</li> 
 			  </ul>
 			  <div class="sidebar-widgets">
 				  <div class="mx-25 mb-30 pb-20 side-bx bg-primary-light rounded20">

@@ -326,6 +326,9 @@
 					<li><a href="{{ route('finance.chargeReport') }}" class="{{ (route('finance.chargeReport') == Request::url()) ? 'active' : ''}}">Charge Report</a></li>
 				</ul>
 			  </li>
+			  <li>
+				<a href="{{ route('posting.staff') }}" class="{{ (route('posting.staff') == Request::url()) ? 'active' : ''}}"><i data-feather="tv"></i><span>Posting</span></a>
+			  </li> 
 		  </div>
 		</div>
     </section>

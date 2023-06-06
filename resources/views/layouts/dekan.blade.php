@@ -265,6 +265,9 @@
 					<a href="{{ route('lecturer') }}" class="{{ (route('lecturer') == Request::url()) ? 'active' : ''}}"><i data-feather="bookmark"></i><span>Course</span></a>
 				</li> 
 				<li>
+					<a href="{{ route('posting.staff') }}" class="{{ (route('posting.staff') == Request::url()) ? 'active' : ''}}"><i data-feather="tv"></i><span>Posting</span></a>
+				</li> 
+				<li>
 					<a href="{{ Storage::disk('linode')->url('classschedule/index.htm') }}" target="_blank"><i data-feather="layout"></i><span>Schedule</span></a>
 				</li> 
 			  </ul>
