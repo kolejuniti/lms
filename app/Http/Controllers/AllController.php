@@ -50,7 +50,8 @@ class AllController extends Controller
                 'status' => $request->status,
                 'total_view' => $request->view,
                 'total_comment' => $request->comment,
-                'total_like' => $request->like
+                'total_like' => $request->like,
+                'total_share' => $request->share
             ]);
 
             $alert =  'Post successfully updated!';
@@ -68,7 +69,8 @@ class AllController extends Controller
                 'status' => $request->status,
                 'total_view' => $request->view,
                 'total_comment' => $request->comment,
-                'total_like' => $request->like
+                'total_like' => $request->like,
+                'total_share' => $request->share
             ]);
 
             $alert =  'Post successfully added!';
