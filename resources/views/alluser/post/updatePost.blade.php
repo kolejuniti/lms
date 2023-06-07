@@ -81,6 +81,12 @@
             <input type="number" name="like" id="like" class="form-control" value="{{ $data['post']->total_like }}" required>
           </div>
         </div>
+        <div>
+          <div class="form-group">
+            <label>Total Share</label>
+            <input type="number" name="share" id="share" class="form-control"  value="{{ $data['post']->total_share }}" required>
+          </div>
+        </div>
       </div>
     </div>
     <div class="modal-footer">

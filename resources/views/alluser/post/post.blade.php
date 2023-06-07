@@ -133,6 +133,9 @@
                         Total Like
                     </th>
                     <th>
+                        Total Share
+                    </th>
+                    <th>
                     </th>
                 </tr>
             </thead>
@@ -169,14 +172,16 @@
                 <th>
                   {{ $pst->total_like }}
                 </td>
+                <th>
+                  {{ $pst->total_share }}
+                </td>
                 <td class="project-actions text-right" style="text-align: center;">
-                  
-                  <button class="btn btn-info btn-sm btn-sm mr-2" data-toggle="modal" data-target="#fbModal">
+                  {{-- <button class="btn btn-info btn-sm btn-sm mr-2" data-toggle="modal" data-target="#fbModal">
                       <i class="ti-layout-media-center">
                       </i>
                       View
                   </button>
-                 
+                  --}}
                   <a class="btn btn-info btn-sm btn-sm mr-2" href="#" onclick="updatePost('{{ $pst->id }}')">
                       <i class="ti-pencil-alt">
                       </i>
@@ -289,6 +294,12 @@
                           <div class="form-group">
                             <label>Total Like</label>
                             <input type="number" name="like" id="like" class="form-control" required>
+                          </div>
+                        </div>
+                        <div>
+                          <div class="form-group">
+                            <label>Total Share</label>
+                            <input type="number" name="share" id="share" class="form-control" required>
                           </div>
                         </div>
                       </div>
