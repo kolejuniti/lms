@@ -226,8 +226,27 @@
                       <div class="row">
                         <div class="col-md-6">
                           <div class="form-group">
-                            <label class="form-label" for="bank_name">Bank Name</label>
-                            <input type="text" class="form-control" id="bank_name" placeholder="Enter Bank Name" name="bank_name">
+                            <label for="bank_name" class="form-label">Choose a bank:</label>
+                            <input class="form-control" list="banks" id="bank_name" name="bank_name" placeholder="Type to search...">
+                            <datalist id="banks">
+                                <option value="Affin Bank">
+                                <option value="Alliance Bank">
+                                <option value="AmBank">
+                                <option value="Bank Islam Malaysia">
+                                <option value="Bank Muamalat Malaysia">
+                                <option value="Bank Rakyat">
+                                <option value="Bank Simpanan Nasional">
+                                <option value="CIMB Bank">
+                                <option value="Citibank">
+                                <option value="Hong Leong Bank">
+                                <option value="HSBC Bank Malaysia">
+                                <option value="Maybank">
+                                <option value="OCBC Bank">
+                                <option value="Public Bank">
+                                <option value="RHB Bank">
+                                <option value="Standard Chartered Bank Malaysia">
+                                <option value="UOB Bank">
+                            </datalist>
                           </div>
                         </div>
                         <div class="col-md-6">
