@@ -82,6 +82,10 @@ class LoginController extends Controller
             {
                 return redirect()->route('treasurer.dashboard');
             }
+            elseif($user->usrtype == 'OTR' && $request->usertypes == 'Others')
+            {
+                return redirect()->route('others.dashboard');
+            }
             else{
                 return back()->with(["message"=>"Not Authorized to Enter!"]);
             }
