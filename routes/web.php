@@ -566,6 +566,7 @@ Route::post('/treasurer/payment/debit/getStudent', [App\Http\Controllers\Treasur
 Route::post('/treasurer/payment/debit/storeDebit', [App\Http\Controllers\TreasurerController::class, 'storeDebit']);
 Route::post('/treasurer/payment/credit/getStatement', [App\Http\Controllers\TreasurerController::class, 'getStatement']);
 
+Route::get('/Others_dashboard', [App\Http\Controllers\OtherUserController::class, 'dashboard'])->name('others.dashboard');
 
 Route::get('/quality/report/attendance', [App\Http\Controllers\QualityController::class, 'attendanceReport'])->name('quality.report.attendance');
 Route::post('/quality/report/attendance/getLecturer', [App\Http\Controllers\QualityController::class, 'getLectAttendance'])->name('quality.report.attendance.getLecturer');
