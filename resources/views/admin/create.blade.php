@@ -76,6 +76,7 @@
                           <option value="LCT">Lecturer</option>
                           <option value="FN">Finance</option>
                           <option value="TS">Treasurer</option>
+                          <option value="OTR">Others</option>
                         </select>
                       </div>
                     </div>

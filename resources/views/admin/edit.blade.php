@@ -86,6 +86,7 @@
                           <option value="LCT" {{ ($id->usrtype == "LCT") ? 'selected' : '' }}>Lecturer</option>
                           <option value="FN" {{ ($id->usrtype == "FN") ? 'selected' : '' }}>Finance</option>
                           <option value="TS" {{ ($id->usrtype == "TS") ? 'selected' : '' }}>Treasurer</option>
+                          <option value="OTR" {{ ($id->usrtype == "OTR") ? 'selected' : '' }}>Others</option>
                         </select>
                       </div>
                     </div>
