@@ -1,6 +1,22 @@
 @extends('layouts.admin')
 
 @section('main')
+
+<style>
+  .short-link {
+  display: inline-block;
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.compact-cell {
+  max-width: 200px;
+}
+
+</style>
+
 <!-- Content Header (Page header) -->
 <div class="content-wrapper" style="min-height: 695.8px;">
   <div class="container-full">
@@ -44,14 +60,14 @@
             </div>
             <div class="col-md-6">
                 <div class="form-group">
-                  <label class="form-label" for="staff">Student</label>
+                  <label class="form-label" for="staff">Staff</label>
                   <select class="form-select" id="staff" name="staff">
                     <option value="-" selected disabled>-</option>
                   </select>
                 </div>
             </div>
           </div>
-          <div class="row mt-3 ">
+          <div class="row mt-3">
             <div class="col-md-6 mr-3" id="faculty-card">
               <div class="form-group">
                 <label class="form-label" for="faculty">Faculty</label>
@@ -64,28 +80,58 @@
               </div>
             </div>
           </div>
+          <div class="row mt-3">
+            <div class="col-md-6">
+                <div class="form-group">
+                <label class="form-label" for="from">FROM</label>
+                <input type="date" class="form-control" id="from" name="from">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                <label class="form-label" for="name">TO</label>
+                <input type="date" class="form-control" id="to" name="to">
+                </div>
+            </div>
+          </div>
         </div>
         <div class="card-body p-0">
           <table id="complex_header" class="table table-striped projects display dataTable">
             <thead>
                 <tr>
-                    <th style="width: 1%">
-                        No.
-                    </th>
-                    <th style="width: 15%">
-                        Name
-                    </th>
-                    <th style="width: 15%">
-                        No. IC
-                    </th>
-                    <th style="width: 10%">
-                        No. Matric
-                    </th>
-                    <th style="width: 10%">
-                        Program
-                    </th>
-                    <th style="width: 20%">
-                    </th>
+                  <th style="width: 1%">
+                    No.
+                  </th>
+                  <th>
+                      Date
+                  </th>
+                  <th>
+                      Channel
+                  </th>
+                  <th>
+                      Title
+                  </th>
+                  <th style="width: 10%">
+                      Link
+                  </th>
+                  <th>
+                      Type
+                  </th>
+                  <th>
+                      Status
+                  </th>
+                  <th>
+                      Total View
+                  </th>
+                  <th>
+                      Total Comment
+                  </th>
+                  <th>
+                      Total Like
+                  </th>
+                  <th>
+                      Total Share
+                  </th>
                 </tr>
             </thead>
             <tbody id="table">
@@ -227,11 +273,10 @@
   </script>
 
   <script type="text/javascript">
-   var selected_program = "";
-    var selected_session = "";
-    var selected_year = "";
-    var selected_semester = "";
-    var selected_status = "";
+   var selected_staff = "";
+    var selected_faculty = "";
+    var selected_from = "";
+    var selected_to = "";
 
     var url = window.location.href;
 
@@ -240,11 +285,6 @@
             var searchTerm = $(this).val();
             getStaff(searchTerm);
         }
-    });
-
-    $('#staff').on('change', function(){
-        var selectedStaf = $(this).val();
-        getStafInfo(selectedStaf);
     });
 
     function getStaff(search)
@@ -268,115 +308,45 @@
         
     }
 
-    function getStafInfo(staff)
-    {
-        return $.ajax({
-                headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
-                url      : "{{ url('finance/report/statement/getstaff') }}",
-                method   : 'POST',
-                data 	 : {staff: staff},
-                error:function(err){
-                    alert("Error");
-                    console.log(err);
-                },
-                success  : function(data){
-                  var d = new Date();
+    $('#staff').on('change', function(){
+        selected_staff = $(this).val();
+        getStaffPost(selected_staff,selected_faculty,selected_from,selected_to);
+    });
 
-                  var month = d.getMonth()+1;
-                  var day = d.getDate();
+    $(document).on('change', '#faculty', function(e){
+      selected_faculty = $(e.target).val();
 
-                  var output = d.getFullYear() + '/' +
-                      (month<10 ? '0' : '') + month + '/' +
-                      (day<10 ? '0' : '') + day;
-
-
-                    $('#form-student').html(data);
-                
-                    $('#complex_header').DataTable({
-                      dom: 'lBfrtip', // if you remove this line you will see the show entries dropdown
-                      
-                      buttons: [
-                        {
-                            extend: 'excelHtml5',
-                            messageTop: output,
-                            title: 'Excel' + '-' + output,
-                            text:'Export to excel'
-                            //Columns to export
-                            //exportOptions: {
-                          //     columns: [0, 1, 2, 3,4,5,6]
-                          // }
-                        },
-                        {
-                            extend: 'pdfHtml5',
-                            title: 'PDF' + '-' + output,
-                            text: 'Export to PDF'
-                            //Columns to export
-                            //exportOptions: {
-                          //     columns: [0, 1, 2, 3, 4, 5, 6]
-                          //  }
-                        }
-                      ],
-                    });
-                    //$('#student').selectpicker('refresh');
-
-                    "use strict";
-                    ClassicEditor
-                    .create( document.querySelector( '#commenttxt' ),{ height: '25em' } )
-                    .then(newEditor =>{editor = newEditor;})
-                    .catch( error => { console.log( error );});
-                }
-            });
-    }
-
-    //var session = document.getElementById('session-card');
-
-    $(document).on('change', '#year', function(e){
-    selected_year = $(e.target).val();
-
-      getStudent(selected_program,selected_session,selected_year,selected_semester,selected_status);
+      getStaffPost(selected_staff,selected_faculty,selected_from,selected_to);
 
     });
 
-    $(document).on('change', '#program', function(e){
-      selected_program = $(e.target).val();
+    $(document).on('change', '#from', function(e){
+      selected_from = $(e.target).val();
       // session.hidden = false;
       // document.getElementById('semester-card').hidden = false;
       
-      getStudent(selected_program,selected_session,selected_year,selected_semester,selected_status);
+      getStaffPost(selected_staff,selected_faculty,selected_from,selected_to);
 
     })
 
-    $(document).on('change', '#session', function(e){
-    selected_session = $(e.target).val();
+    $(document).on('change', '#to', function(e){
+      selected_to = $(e.target).val();
 
-      getStudent(selected_program,selected_session,selected_year,selected_semester,selected_status);
-
-    });
-
-    $(document).on('change', '#semester', function(e){
-    selected_semester = $(e.target).val();
-
-      getStudent(selected_program,selected_session,selected_year,selected_semester,selected_status);
+      getStaffPost(selected_staff,selected_faculty,selected_from,selected_to);
 
     });
 
-    $(document).on('change', '#status', async function(e){
-    selected_status = $(e.target).val();
 
-      await getStudent(selected_program,selected_session,selected_year,selected_semester,selected_status);
-
-    });
-
-  function getStudent(program,session,year,semester,status)
+  function getStaffPost(staff,faculty,from,to)
   {
 
     $('#complex_header').DataTable().destroy();
 
     return $.ajax({
             headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
-            url      : "{{ url('pendaftar/group/getStudentTableIndex') }}",
+            url      : "{{ url('posting/admin/getStaffPost') }}",
             method   : 'POST',
-            data 	 : {program: program,session: session,year: year,semester: semester,status: status},
+            data 	 : {staff: staff,faculty: faculty,from: from,to: to},
             beforeSend:function(xhr){
               $("#complex_header").LoadingOverlay("show", {
                 image: `<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="24px" height="30px" viewBox="0 0 24 30" style="enable-background:new 0 0 50 50;" xml:space="preserve">
