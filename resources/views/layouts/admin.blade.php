@@ -257,6 +257,18 @@
 					</ul>
 				</li> 
 
+				<li class="treeview">
+				    <a href="#"><i data-feather="tv"></i><span>Post</span>
+						<span class="pull-right-container">
+							<i class="fa fa-angle-left pull-right"></i>
+						</span>
+				    </a>
+					<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
+						<li><a href="{{ route('posting.admin') }}">Admin</a></li>
+						<li><a href="{{ route('posting.staff') }}">Staf</a></li>
+					</ul>
+				</li> 
+
 				<li>
 					<a href="{{ Storage::disk('linode')->url('classschedule/index.htm') }}" target="_blank"><i data-feather="layout"></i><span>Schedule</span></a>
 				</li> 
