@@ -577,7 +577,7 @@ Route::post('/posting/staff/delete', [App\Http\Controllers\AllController::class,
 Route::post('/posting/staff/update', [App\Http\Controllers\AllController::class, 'postingUpdate']);
 Route::get('/posting/admin', [App\Http\Controllers\AllController::class, 'adminPosting'])->name('posting.admin');
 Route::post('/posting/admin/listStaff', [App\Http\Controllers\AllController::class, 'getStaffList']);
-
+Route::post('/posting/admin/getStaffPost', [App\Http\Controllers\AllController::class, 'getStaffPost']);
 
 Route::get('/yuran-pengajian', [App\Http\Controllers\PaymentController::class, 'showPaymentForm'])->name('yuran-pengajian');
 Route::post('/checkout', [App\Http\Controllers\PaymentController::class, 'createCheckoutSession'])->name('checkout');
