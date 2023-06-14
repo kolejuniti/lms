@@ -139,4 +139,47 @@ class AllController extends Controller
         return $content;
 
     }
+
+    public function getStaffPost(Request $request)
+    {
+
+        $data['post'] = [];
+
+        if(isset($request->staff))
+        {
+
+            $post = DB::table('tblposting')
+                    ->join('users', 'tblposting.staff_ic', 'users.ic')
+                    ->where('tblposting.staff_ic', $request->staff);
+
+        }
+
+        if(isset($request->faculty))
+        {
+
+            $post = DB::table('tblposting')
+                    ->join('users', 'tblposting.staff_ic', 'users.ic')
+                    ->where('users.faculty', $request->faculty);
+
+        }
+
+        if(isset($request->from) && isset($request->to))
+        {
+
+            $post = DB::table('tblposting')
+                    ->join('users', 'tblposting.staff_ic', 'users.ic')
+                    ->whereBetween('tblposting.post_date', [$request->from, $request->to]);
+
+        }
+
+        if(isset($post))
+        {
+
+            $data['post'] = $post->get();
+
+        }
+
+        return view('alluser.post.adminGetStaff', compact('data'));
+
+    }
 }
