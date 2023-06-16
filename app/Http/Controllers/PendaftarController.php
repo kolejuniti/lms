@@ -503,6 +503,8 @@ class PendaftarController extends Controller
 
         $data['parlimen'] = DB::table('tblparlimen')->get();
 
+        $data['qualification'] = DB::table('tblqualification_std')->get();
+
         //dd($data['race']);
 
         return view('pendaftar.create', compact(['program','session','data']));
@@ -618,7 +620,8 @@ class PendaftarController extends Controller
             'no_tel2' => $request->np2,
             'no_telhome' => $request->np3,
             'dun' => $request->dun,
-            'parlimen' => $request->parlimen
+            'parlimen' => $request->parlimen,
+            'qualification' => $request->qualification
         ]);
 
         DB::table('tblstudent_pass')->insert([
@@ -744,6 +747,8 @@ class PendaftarController extends Controller
 
         $data['parlimen'] = DB::table('tblparlimen')->get();
 
+        $data['qualification'] = DB::table('tblqualification_std')->get();
+
         return view('pendaftar.update', compact(['student','program','session','data']));
 
     }
@@ -816,7 +821,8 @@ class PendaftarController extends Controller
             'no_tel2' => $request->np2,
             'no_telhome' => $request->np3,
             'dun' => $request->dun,
-            'parlimen' => $request->parlimen
+            'parlimen' => $request->parlimen,
+            'qualification' => $request->qualification
         ]);
 
         DB::table('tblstudent_pass')->updateOrInsert(
