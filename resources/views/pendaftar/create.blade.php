@@ -104,6 +104,13 @@
                       <div class="row">
                         <div class="col-md-6">
                           <div class="form-group">
+                            <h4 style="color:red; display:inline-block;"><a target="_blank" href="https://mysprsemak.spr.gov.my/semakan">Untuk semak student di MYSPR, boleh click di sini.</a></h4>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-6">
+                          <div class="form-group">
                             <label class="form-label" for="race">Race <p style="color:red; display:inline-block;">*</p></label>
                             <select class="form-select" id="race" name="race" required>
                               <option value="-" selected disabled>-</option>
@@ -199,6 +206,17 @@
                               <option value="-" selected disabled>-</option>
                                 @foreach ($data['parlimen'] as $parlimen)
                                 <option value="{{ $parlimen->id }}">{{ $parlimen->name }}</option> 
+                                @endforeach
+                            </select>
+                          </div>
+                        </div>
+                        <div class="col-md-6">
+                          <div class="form-group">
+                            <label class="form-label" for="qualification">Qualification <p style="color:red; display:inline-block;">*</p></label>
+                            <select class="form-select" id="qualification" name="qualification" required>
+                              <option value="-" selected disabled>-</option>
+                                @foreach ($data['qualification'] as $quality)
+                                <option value="{{ $quality->id }}">{{ $quality->name }}</option> 
                                 @endforeach
                             </select>
                           </div>
