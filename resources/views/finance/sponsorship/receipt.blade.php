@@ -64,10 +64,10 @@
                   <div class="col-12 d-flex">
                      <img src="{{ asset('assets/images/logo/Kolej-UNITI.png')}}" alt="" height="50">
                      <address>
-                        <strong>UNITI</strong><br>
-                        Kompleks UNITI, 71250 Pasir Panjang,<br>
-                        Port Dickson, Negeri Sembilan Darul Khusus.<br>
-                        <abbr title="Phone">Tel:</abbr> 06-661 0518 / 06-661 0520 | <abbr title="Phone">Fax:</abbr> 06-661 0509<br>
+                        <strong>KOLEJ UNITI</strong><br>
+                        PERSIARAN UNITI VILLAGE, TANJUNG AGAS<br>
+                        71250, PORT DICKSON, NEGERI SEMBILAN.<br>
+                        <abbr title="Phone">Tel:</abbr> 06-649 0350 | <abbr title="Phone">Fax:</abbr> 06-661 0509<br>
                         http://www.uniti.edu.my | <abbr title="Email">Email:</abbr> info@uniti.edu.my
                      </address>
                   </div>
