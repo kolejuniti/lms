@@ -79,7 +79,7 @@
                                     {{ $req->program }}
                                     </td>
                                     <td>
-                                    {{ $data['name'] }}
+                                    {{ $data['name'] $req->process_type_id}}
                                     </td>
                                     <td>
                                     @if (array_intersect([2,3,4,5], (array) $req->process_type_id))
