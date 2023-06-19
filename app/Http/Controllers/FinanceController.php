@@ -1986,10 +1986,10 @@ class FinanceController extends Controller
                           ->where('tblpaymentdtl.payment_id', $request->id)
                           ->select('tblpaymentdtl.*', DB::raw('SUM(tblpaymentdtl.amount) AS total_amount'), 'tblstudentclaim.name', 'tblstudentclaim.groupid')
                           ->groupBy('tblstudentclaim.name');
-                          
-        $data['detail'] = $detail->get();
 
         $data['total'] = $detail->sum('tblpaymentdtl.amount');
+                          
+        $data['detail'] = $detail->get();
 
         $method = DB::table('tblpaymentmethod')
                           ->join('tblpayment_method', 'tblpaymentmethod.claim_method_id', 'tblpayment_method.id')
@@ -2961,7 +2961,7 @@ class FinanceController extends Controller
         ->join('tblprocess_status', 'tblpayment.process_status_id', 'tblprocess_status.id')
         ->where('tblpayment.ref_no', 'LIKE', $request->refno."%")
         ->where('tblpayment.process_status_id', 2)
-        ->select('tblpayment.id', 'tblpayment.ref_no','tblpayment.date', 'tblpayment.process_type_id', 'tblpayment.amount', 'tblprocess_status.name AS status', 'students.no_matric', 'students.name AS name', 'students.ic');
+        ->select('tblpayment.id', 'tblpayment.date AS unified_date', 'tblpayment.ref_no','tblpayment.date AS date', 'tblpayment.process_type_id', 'tblpayment.amount', 'tblprocess_status.name AS status', 'students.no_matric', 'students.name AS name', 'students.ic');
 
         $data['student'] = DB::table('tblclaim')
         ->join('students', 'tblclaim.student_ic', 'students.ic')
@@ -2970,7 +2970,8 @@ class FinanceController extends Controller
         ->where('tblclaim.ref_no', 'LIKE', $request->refno."%")
         ->where('tblclaim.process_status_id', 2)
         ->unionALL($reg)
-        ->select('tblclaim.id', 'tblclaim.ref_no','tblclaim.date', 'tblclaim.process_type_id', DB::raw('SUM(tblclaimdtl.amount) AS amount'), 'tblprocess_status.name AS status', 'students.no_matric', 'students.name AS name', 'students.ic')
+        ->select('tblclaim.id', 'tblclaim.date AS unified_date', 'tblclaim.ref_no','tblclaim.date AS date', 'tblclaim.process_type_id', DB::raw('SUM(tblclaimdtl.amount) AS amount'), 'tblprocess_status.name AS status', 'students.no_matric', 'students.name AS name', 'students.ic')
+        ->orderBy('unified_date', 'asc')
         ->get();
 
         
@@ -2985,7 +2986,7 @@ class FinanceController extends Controller
         ->orwhere('students.ic', 'LIKE', $request->search."%")
         ->orwhere('students.no_matric', 'LIKE', $request->search."%")
         ->where('tblpayment.process_status_id', 2)
-        ->select('tblpayment.id', 'tblpayment.ref_no','tblpayment.date', 'tblpayment.process_type_id', 'tblpayment.amount', 'tblprocess_status.name AS status', 'students.no_matric', 'students.name AS name', 'students.ic');
+        ->select('tblpayment.id', 'tblpayment.date AS unified_date', 'tblpayment.ref_no','tblpayment.date AS date', 'tblpayment.process_type_id', 'tblpayment.amount', 'tblprocess_status.name AS status', 'students.no_matric', 'students.name AS name', 'students.ic');
 
         $reg2 = DB::table('tblclaim')
         ->join('students', 'tblclaim.student_ic', 'students.ic')
@@ -2996,9 +2997,9 @@ class FinanceController extends Controller
         ->orwhere('students.no_matric', 'LIKE', $request->search."%")
         ->where('tblclaim.process_status_id', 2)
         ->groupBy('tblclaim.id')
-        ->select('tblclaim.id', 'tblclaim.ref_no','tblclaim.date', 'tblclaim.process_type_id', DB::raw('SUM(tblclaimdtl.amount) AS amount'), 'tblprocess_status.name AS status', 'students.no_matric', 'students.name AS name', 'students.ic');
+        ->select('tblclaim.id', 'tblclaim.date AS unified_date', 'tblclaim.ref_no','tblclaim.date AS date', 'tblclaim.process_type_id', DB::raw('SUM(tblclaimdtl.amount) AS amount'), 'tblprocess_status.name AS status', 'students.no_matric', 'students.name AS name', 'students.ic');
         
-        $data['student'] = $reg->union($reg2)->get();
+        $data['student'] = $reg->union($reg2)->orderBy('unified_date', 'asc')->get();
 
         }else{
 
