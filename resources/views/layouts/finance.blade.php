@@ -300,6 +300,8 @@
 					<li><a href="{{ route('finance.payment.tuition') }}" class="{{ (route('finance.payment.tuition') == Request::url()) ? 'active' : ''}}">Daily Payment</a></li>
 					<li><a href="{{ route('finance.payment.other') }}" class="{{ (route('finance.payment.other') == Request::url()) ? 'active' : ''}}">Other Payment</a></li>
 					<li><a href="{{ route('finance.payment.cancel') }}" class="{{ (route('finance.payment.cancel') == Request::url()) ? 'active' : ''}}">Cancel Transaction</a></li>
+					<li><a href="{{ route('treasurer.payment.credit') }}" class="{{ (route('treasurer.payment.credit') == Request::url()) ? 'active' : ''}}">Credit Note</a></li>
+					<li><a href="{{ route('treasurer.payment.debit') }}" class="{{ (route('treasurer.payment.debit') == Request::url()) ? 'active' : ''}}">Debit Note</a></li>
 				</ul>
 			  </li>
 			  <li class="treeview">
