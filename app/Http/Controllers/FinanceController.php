@@ -2768,21 +2768,21 @@ class FinanceController extends Controller
 
                 $data['sum1'] += $req->amount;
 
-                if($req->process_type_id == 1)
-                {
+                // if($req->process_type_id == 1)
+                // {
 
-                    $data['name'] = $req->name;
+                //     $data['name'] = $req->name;
 
-                }elseif($req->process_type_id == 5)
-                {
+                // }elseif($req->process_type_id == 5)
+                // {
 
-                    $data['name'] = $req->remark;
+                //     $data['name'] = $req->remark;
 
-                }else{
+                // }else{
 
-                    $data['name'] = $req->process;
+                //     $data['name'] = $req->process;
 
-                }
+                // }
                 
 
             }elseif(array_intersect([1,6,7,8,9,15,16,17,18,19], (array) $req->process_type_id))
@@ -2794,16 +2794,16 @@ class FinanceController extends Controller
 
                 $data['sum2'] += $req->amount;
 
-                if(array_intersect([1,7], (array) $req->process_type_id))
-                {
+                // if(array_intersect([1,7], (array) $req->process_type_id))
+                // {
 
-                    $data['name'] = $req->name;
+                //     $data['name'] = $req->name;
 
-                }else{
+                // }else{
 
-                    $data['name'] = $req->process;
+                //     $data['name'] = $req->process;
 
-                }
+                // }
 
             }
 
