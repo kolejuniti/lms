@@ -1987,7 +1987,6 @@ class FinanceController extends Controller
                           ->select('tblpaymentdtl.*', DB::raw('SUM(tblpaymentdtl.amount) AS total_amount'), 'tblstudentclaim.name', 'tblstudentclaim.groupid')
                           ->groupBy('tblstudentclaim.name')->get();
                           
-        // Total sum without grouping
         $data['total'] = DB::table('tblpaymentdtl')
                          ->where('payment_id', $request->id)
                          ->sum('amount');
@@ -2023,15 +2022,15 @@ class FinanceController extends Controller
 
         $data['staff'] = DB::table('users')->where('ic', $data['payment']->add_staffID)->first();
 
-        $detail = DB::table('tblclaimdtl')
+        $data['detail'] = DB::table('tblclaimdtl')
                           ->join('tblstudentclaim', 'tblclaimdtl.claim_package_id', 'tblstudentclaim.id')
                           ->where('tblclaimdtl.claim_id', $request->id)
                           ->select('tblclaimdtl.*', DB::raw('SUM(tblclaimdtl.amount) AS total_amount'), 'tblstudentclaim.name', 'tblstudentclaim.groupid')
-                          ->groupBy('tblstudentclaim.name');
-                          
-        $data['detail'] = $detail->get();
+                          ->groupBy('tblstudentclaim.name')->get();
 
-        $data['total'] = $detail->sum('tblclaimdtl.amount');
+        $data['total'] = DB::table('tblclaimdtl')
+                         ->where('claim_id', $request->id)
+                         ->sum('amount');
 
         $data['student'] = DB::table('students')
                            ->join('sessions AS A1', 'students.intake', 'A1.SessionID')
