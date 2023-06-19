@@ -130,7 +130,7 @@
                            @else
                            <td style="text-align: center">{{ $dtl->no_document }}</td>
                            @endif
-                           <td style="text-align: center">{{ $dtl->amount }}</td>
+                           <td style="text-align: center">{{ $data['total'] }}</td>
                         </tr>
                         @endforeach
                         <tr>
