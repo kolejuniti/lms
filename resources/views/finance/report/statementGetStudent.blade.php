@@ -79,7 +79,13 @@
                                     {{ $req->program }}
                                     </td>
                                     <td>
-                                    {{ $data['name'] }} {{ $req->process_type_id }}
+                                    @if($req->process_type_id == 1 || $req->process_type_id == 2)
+                                    {{ $req->name }}
+                                    @elseif($req->process_type_id == 5)
+                                    {{ $req->remark }}
+                                    @else
+                                    {{ $req->process }}
+                                    @endif
                                     </td>
                                     <td>
                                     @if (array_intersect([2,3,4,5], (array) $req->process_type_id))
