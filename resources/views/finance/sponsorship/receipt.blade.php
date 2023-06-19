@@ -73,16 +73,16 @@
                   </div>
                </div>
                <br>
-               <div class="row">
+               {{-- <div class="row">
                   <div class="col-12">
                      @if (isset($invois))
                      <h2>Invoice<br>
                      @else
                      <h2>Resit<br>
                      @endif
-                     {{-- <span class="small">No. Resit : {{ $data['payment']->ref_no }}</span></h2> --}}
+                     <span class="small">No. Resit : {{ $data['payment']->ref_no }}</span></h2>
                   </div>
-               </div>
+               </div> --}}
             </div>
             <div class="row">
                <div class="d-flex p-2">
@@ -136,7 +136,7 @@
                         <tr>
                            <td colspan="3">
                            </td><td class="text-center"><strong>Jumlah :</strong></td>
-                           <td class="text-center"><strong>{{ $data['total2'] }}</strong></td>
+                           <td class="text-center"><strong>{{ $data['total'] }}</strong></td>
                         </tr>
                      </tbody>
                   </table>
