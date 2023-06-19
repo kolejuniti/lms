@@ -2773,7 +2773,7 @@ class FinanceController extends Controller
 
                     $data['name'] = $req->name;
 
-                }if($req->process_type_id == 5)
+                }elseif($req->process_type_id == 5)
                 {
 
                     $data['name'] = $req->remark;
