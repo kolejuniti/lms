@@ -121,6 +121,50 @@
                                 </div> 
                             </tbody>
                         </table>
+
+                        <div class="card mb-3" id="stud_info">
+                            <div class="card-body">
+                                <div class="row mb-5">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <p>PACKAGE &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ isset($data['package']->package) ? $data['package']->package : null }}</p>
+                                        </div>
+                                        <div class="form-group">
+                                            <p>METHOD &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ isset($data['package']->type) ? $data['package']->type : null }}</p>
+                                        </div>
+                                        <div class="form-group">
+                                            <p>PAYMENT &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ isset($data['sponsor']->amount) ? $data['sponsor']->amount : null }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <table class="w-100 table table-bordered display margin-top-10 w-p100">
+                                                <tr>
+                                                    <th>Semester 1</th>
+                                                    <th>Semester 2</th>
+                                                    <th>Semester 3</th>
+                                                    <th>Semester 4</th>
+                                                    <th>Semester 5</th>
+                                                    <th>Semester 6</th>
+                                                </tr>
+                                                <tr>
+                                                    <td>{{ isset($data['package']->semester_1) ? $data['package']->semester_1 : null }}</td>
+                                                    <td>{{ isset($data['package']->semester_2) ? $data['package']->semester_2 : null }}</td>
+                                                    <td>{{ isset($data['package']->semester_3) ? $data['package']->semester_3 : null }}</td>
+                                                    <td>{{ isset($data['package']->semester_4) ? $data['package']->semester_4 : null }}</td>
+                                                    <td>{{ isset($data['package']->semester_5) ? $data['package']->semester_5 : null }}</td>
+                                                    <td>{{ isset($data['package']->semester_6) ? $data['package']->semester_6 : null }}</td>
+                                                </tr>
+                                                <!-- More rows can be added here -->
+                                            </table>
+                                        </div>
+                                        <div class="form-group">
+                                            <p>CURRENT ARREARS &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ isset($data['value']) ? $data['value'] : null }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
