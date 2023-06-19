@@ -2790,9 +2790,12 @@ class FinanceController extends Controller
             $data['package'] = DB::table('tblpayment_package')
                             ->join('tblpackage', 'tblpayment_package.package_id', 'tblpackage.id')
                             ->join('tblpayment_type', 'tblpayment_package.payment_type_id', 'tblpayment_type.id')
+                            ->join('tblpayment_program', 'tblpayment_package.id', 'tblpayment_program.payment_package_id')
                             ->where([
                                 ['tblpayment_package.package_id', $data['sponsor']->package_id],
-                                ['tblpayment_package.payment_type_id', $data['sponsor']->payment_type_id]
+                                ['tblpayment_package.payment_type_id', $data['sponsor']->payment_type_id],
+                                ['tblpayment_program.intake_id', $data['student']->intake],
+                                ['tblpayment_program.program_id',$data['student']->program]
                             ])->select('tblpayment_package.*','tblpackage.name AS package', 'tblpayment_type.name AS type')->first();
 
             $semester_column = 'semester_' . $data['student']->semester; // e.g., this will be 'semester_2' if $user->semester is 2
