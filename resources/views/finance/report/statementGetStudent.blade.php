@@ -64,7 +64,7 @@
                             </thead>
                             <tbody id="table">
                                 @foreach ($data['record'] as $key => $req)
-                                <tr>
+                                <tr style="{{ (substr($req->ref_no, 0, 3) == 'INV') ? 'background-color: red' : ''}}">
                                     <td>
                                     {{ $req->date }}
                                     </td>
@@ -79,7 +79,7 @@
                                     {{ $req->program }}
                                     </td>
                                     <td>
-                                    {{ $req->name }}
+                                    {{ $data['name'] }}
                                     </td>
                                     <td>
                                     @if (array_intersect([2,3,4,5], (array) $req->process_type_id))
