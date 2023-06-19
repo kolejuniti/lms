@@ -2782,7 +2782,35 @@ class FinanceController extends Controller
 
         $data['sum3'] = end($data['total']);
 
+        $data['sponsor'] = DB::table('tblpackage_sponsorship')
+                       ->where('student_ic', $request->student)->first();
 
+        if($data['sponsor'] != null) {
+
+            $data['package'] = DB::table('tblpayment_package')
+                            ->join('tblpackage', 'tblpayment_package.package_id', 'tblpackage.id')
+                            ->join('tblpayment_type', 'tblpayment_package.payment_type_id', 'tblpayment_type.id')
+                            ->where([
+                                ['tblpayment_package.package_id', $data['sponsor']->package_id],
+                                ['tblpayment_package.payment_type_id', $data['sponsor']->payment_type_id]
+                            ])->select('tblpayment_package.*','tblpackage.name AS package', 'tblpayment_type.name AS type')->first();
+
+            $semester_column = 'semester_' . $data['student']->semester; // e.g., this will be 'semester_2' if $user->semester is 2
+
+            if (isset($data['package']->$semester_column)) {
+                $data['value'] = $data['sum3'] - $data['package']->$semester_column;
+                // Do something with $semester_value
+            } else {
+                $data['value'] = 0;
+                // Handle case where the column is not set
+            }
+
+        }else{
+
+            $data['package'] = null;
+
+        }
+                                
         //FINE
 
         $record2 = DB::table('tblpaymentdtl')
