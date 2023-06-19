@@ -2720,7 +2720,7 @@ class FinanceController extends Controller
         $data['student'] = DB::table('students')
                            ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
                            ->join('tblprogramme', 'students.program', 'tblprogramme.id')
-                           ->select('students.*', 'tblstudent_status.name AS status', 'tblprogramme.progname AS program')
+                           ->select('students.*', 'tblstudent_status.name AS status', 'tblprogramme.progname AS program', 'students.program AS progid')
                            ->where('ic', $request->student)->first();
 
         $record = DB::table('tblpaymentdtl')
@@ -2795,7 +2795,7 @@ class FinanceController extends Controller
                                 ['tblpayment_package.package_id', $data['sponsor']->package_id],
                                 ['tblpayment_package.payment_type_id', $data['sponsor']->payment_type_id],
                                 ['tblpayment_program.intake_id', $data['student']->intake],
-                                ['tblpayment_program.program_id',$data['student']->program]
+                                ['tblpayment_program.program_id',$data['student']->progid]
                             ])->select('tblpayment_package.*','tblpackage.name AS package', 'tblpayment_type.name AS type')->first();
 
             $semester_column = 'semester_' . $data['student']->semester; // e.g., this will be 'semester_2' if $user->semester is 2
