@@ -2725,6 +2725,7 @@ class FinanceController extends Controller
 
         $record = DB::table('tblpaymentdtl')
         ->leftJoin('tblpayment', 'tblpaymentdtl.payment_id', 'tblpayment.id')
+        ->leftJoin('tblprocess_type', 'tblpayment.process_type_id', 'tblprocess_type.id')
         ->leftJoin('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
         ->leftjoin('tblprogramme', 'tblpayment.program_id', 'tblprogramme.id')
         ->where([
@@ -2733,10 +2734,11 @@ class FinanceController extends Controller
             ['tblstudentclaim.groupid', 1], 
             ['tblpaymentdtl.amount', '!=', 0]
             ])
-        ->select('tblpayment.ref_no','tblpayment.date', 'tblstudentclaim.name', 'tblpaymentdtl.amount', 'tblpayment.process_type_id', 'tblprogramme.progcode AS program');
+        ->select('tblprocess_type.name AS process', 'tblpayment.ref_no','tblpayment.date', 'tblstudentclaim.name', 'tblpaymentdtl.amount', 'tblpayment.process_type_id', 'tblprogramme.progcode AS program', DB::raw('NULL as remark'));
 
         $data['record'] = DB::table('tblclaimdtl')
         ->leftJoin('tblclaim', 'tblclaimdtl.claim_id', 'tblclaim.id')
+        ->leftJoin('tblprocess_type', 'tblclaim.process_type_id', 'tblprocess_type.id')
         ->leftJoin('tblstudentclaim', 'tblclaimdtl.claim_package_id', 'tblstudentclaim.id')
         ->leftjoin('tblprogramme', 'tblclaim.program_id', 'tblprogramme.id')
         ->where([
@@ -2746,7 +2748,7 @@ class FinanceController extends Controller
             ['tblclaimdtl.amount', '!=', 0]
             ])
         ->unionALL($record)
-        ->select('tblclaim.ref_no','tblclaim.date', 'tblstudentclaim.name', 'tblclaimdtl.amount', 'tblclaim.process_type_id', 'tblprogramme.progcode AS program')
+        ->select('tblprocess_type.name AS process', 'tblclaim.ref_no','tblclaim.date', 'tblstudentclaim.name', 'tblclaimdtl.amount', 'tblclaim.process_type_id', 'tblprogramme.progcode AS program', 'tblclaim.remark')
         ->orderBy('date')
         ->get();
 
@@ -2765,6 +2767,22 @@ class FinanceController extends Controller
                 $val = $val + $req->amount;
 
                 $data['sum1'] += $req->amount;
+
+                if($req->process_type_id == 1)
+                {
+
+                    $data['name'] = $req->name;
+
+                }if($req->process_type_id == 5)
+                {
+
+                    $data['name'] = $req->remark;
+
+                }else{
+
+                    $data['name'] = $req->process;
+
+                }
                 
 
             }elseif(array_intersect([1,6,7,8,9,15,16,17,18,19], (array) $req->process_type_id))
@@ -2775,6 +2793,17 @@ class FinanceController extends Controller
                 $val = $val - $req->amount;
 
                 $data['sum2'] += $req->amount;
+
+                if(array_intersect([1,7], (array) $req->process_type_id))
+                {
+
+                    $data['name'] = $req->name;
+
+                }else{
+
+                    $data['name'] = $req->process;
+
+                }
 
             }
 
