@@ -1981,15 +1981,16 @@ class FinanceController extends Controller
 
         $data['staff'] = DB::table('users')->where('ic', $data['payment']->add_staffID)->first();
 
-        $detail = DB::table('tblpaymentdtl')
+        $data['detail'] = DB::table('tblpaymentdtl')
                           ->join('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
                           ->where('tblpaymentdtl.payment_id', $request->id)
                           ->select('tblpaymentdtl.*', DB::raw('SUM(tblpaymentdtl.amount) AS total_amount'), 'tblstudentclaim.name', 'tblstudentclaim.groupid')
-                          ->groupBy('tblstudentclaim.name');
+                          ->groupBy('tblstudentclaim.name')->get();
                           
-        $data['detail'] = $detail->get();
-
-        $data['total'] = $detail->sum('tblpaymentdtl.amount');
+        // Total sum without grouping
+        $data['total'] = DB::table('tblpaymentdtl')
+                         ->where('payment_id', $request->id)
+                         ->sum('amount');
 
         $method = DB::table('tblpaymentmethod')
                           ->join('tblpayment_method', 'tblpaymentmethod.claim_method_id', 'tblpayment_method.id')
