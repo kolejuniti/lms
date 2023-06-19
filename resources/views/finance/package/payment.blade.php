@@ -250,16 +250,16 @@ function getProgram(id)
 function Register(prg,id)
 {
 
-  var session = $('#session').val();
+  var intake = $('#intake').val();
 
-  if(session != null)
+  if(intake != null)
   {
 
     return $.ajax({
       headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
       url      : "{{ url('/finance/package/payment/registerPRGPYM') }}",
       method   : 'POST',
-      data 	 : {prg: prg, id: id, session: session},
+      data 	 : {prg: prg, id: id, intake: intake},
       error:function(err){
           alert("Error");
           console.log(err);
@@ -271,7 +271,7 @@ function Register(prg,id)
 
   }else{
 
-    alert('Please select Session!');
+    alert('Please select Intake!');
 
   }
 

@@ -1,8 +1,8 @@
 <div class="row">
     <div class="col-md-6" id="ptptn-card">
       <div class="form-group">
-        <label class="form-label" for="session">Session</label>
-        <select class="form-select" id="session" name="session">
+        <label class="form-label" for="intake">Intake</label>
+        <select class="form-select" id="intake" name="intake">
           <option value="" selected disabled>-</option>
           @foreach ($data['session'] as $ses)
             <option value="{{ $ses->SessionID }}">{{ $ses->SessionName }}</option>
