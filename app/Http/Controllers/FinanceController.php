@@ -1986,7 +1986,7 @@ class FinanceController extends Controller
                           ->where('tblpaymentdtl.payment_id', $request->id)
                           ->select('tblpaymentdtl.*', DB::raw('SUM(tblpaymentdtl.amount) AS total_amount'), 'tblstudentclaim.name', 'tblstudentclaim.groupid');
                           
-        $data['detail'] = $detail->groupBy('tblstudentclaim.name')->get();
+        $data['detail'] = $detail->get();
 
         $data['total'] = $detail->sum('tblpaymentdtl.amount');
 
