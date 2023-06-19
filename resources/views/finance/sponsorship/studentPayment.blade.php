@@ -90,10 +90,11 @@
 <script src="https://cdn.ckeditor.com/ckeditor5/31.0.0/classic/ckeditor.js"></script>
 <script type="text/javascript">
 
-$('#search').keyup(function(){
-
-    getStudent($(this).val());
-
+$('#search').keyup(function(event){
+    if (event.keyCode === 13) { // 13 is the code for the "Enter" key
+        var searchTerm = $(this).val();
+        getStudent(searchTerm);
+    }
 });
 
 $('#student').on('change', function(){
