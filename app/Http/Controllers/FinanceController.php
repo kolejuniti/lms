@@ -1984,7 +1984,8 @@ class FinanceController extends Controller
         $detail = DB::table('tblpaymentdtl')
                           ->join('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
                           ->where('tblpaymentdtl.payment_id', $request->id)
-                          ->select('tblpaymentdtl.*', DB::raw('SUM(tblpaymentdtl.amount) AS total_amount'), 'tblstudentclaim.name', 'tblstudentclaim.groupid');
+                          ->select('tblpaymentdtl.*', DB::raw('SUM(tblpaymentdtl.amount) AS total_amount'), 'tblstudentclaim.name', 'tblstudentclaim.groupid')
+                          ->groupBy('tblpaymentdtl.claim_type_id');
                           
         $data['detail'] = $detail->get();
 
