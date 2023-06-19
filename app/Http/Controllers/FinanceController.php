@@ -4839,7 +4839,7 @@ class FinanceController extends Controller
 
         $data['registered'] = DB::table('tblprogramme')
                               ->join('tblpayment_program', 'tblprogramme.id', 'tblpayment_program.program_id')
-                              ->join('sessions', 'tblpayment_program.session_id', 'sessions.SessionID')
+                              ->join('sessions', 'tblpayment_program.intake_id', 'sessions.SessionID')
                               ->where('tblpayment_program.payment_package_id', $request->id)
                               ->select('tblprogramme.*', 'sessions.SessionName', 'tblpayment_program.id')
                               ->get();
@@ -4859,7 +4859,7 @@ class FinanceController extends Controller
         DB::table('tblpayment_program')->insert([
             'payment_package_id' => $request->id,
             'program_id' => $request->prg,
-            'session_id' => $request->session
+            'intake_id' => $request->intake
         ]);
 
         return response()->json($request->id);
