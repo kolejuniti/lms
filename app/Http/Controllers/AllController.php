@@ -23,7 +23,7 @@ class AllController extends Controller
     {
 
         $data['user'] = DB::table('users')
-                        ->join('tblfaculty', 'users.faculty', 'tblfaculty.id')
+                        ->leftjoin('tblfaculty', 'users.faculty', 'tblfaculty.id')
                         ->join('tbluser_type', 'users.usrtype', 'tbluser_type.code')
                         ->select('users.*', 'tbluser_type.name AS type', 'tblfaculty.facultyname AS faculty')
                         ->where('users.ic', Auth::user()->ic)->first();
