@@ -84,14 +84,28 @@
           <div class="row mt-3">
             <div class="col-md-6">
                 <div class="form-group">
-                <label class="form-label" for="from">FROM</label>
+                <label class="form-label" for="from">FROM POSTING</label>
                 <input type="date" class="form-control" id="from" name="from">
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="form-group">
-                <label class="form-label" for="name">TO</label>
+                <label class="form-label" for="name">TO POSTING</label>
                 <input type="date" class="form-control" id="to" name="to">
+                </div>
+            </div>
+          </div>
+          <div class="row mt-3">
+            <div class="col-md-6">
+                <div class="form-group">
+                <label class="form-label" for="from">FROM KEY-IN</label>
+                <input type="date" class="form-control" id="from2" name="from2">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                <label class="form-label" for="name">TO KEY-IN</label>
+                <input type="date" class="form-control" id="to2" name="to2">
                 </div>
             </div>
           </div>
@@ -278,6 +292,8 @@
     var selected_faculty = "";
     var selected_from = "";
     var selected_to = "";
+    var selected_from2 = "";
+    var selected_to2 = "";
 
     var url = window.location.href;
 
@@ -311,13 +327,13 @@
 
     $('#staff').on('change', function(){
         selected_staff = $(this).val();
-        getStaffPost(selected_staff,selected_faculty,selected_from,selected_to);
+        getStaffPost(selected_staff,selected_faculty,selected_from,selected_to,selected_from2,selected_to2);
     });
 
     $(document).on('change', '#faculty', function(e){
       selected_faculty = $(e.target).val();
 
-      getStaffPost(selected_staff,selected_faculty,selected_from,selected_to);
+      getStaffPost(selected_staff,selected_faculty,selected_from,selected_to,selected_from2,selected_to2);
 
     });
 
@@ -326,19 +342,35 @@
       // session.hidden = false;
       // document.getElementById('semester-card').hidden = false;
       
-      getStaffPost(selected_staff,selected_faculty,selected_from,selected_to);
+      getStaffPost(selected_staff,selected_faculty,selected_from,selected_to,selected_from2,selected_to2);
 
     })
 
     $(document).on('change', '#to', function(e){
       selected_to = $(e.target).val();
 
-      getStaffPost(selected_staff,selected_faculty,selected_from,selected_to);
+      getStaffPost(selected_staff,selected_faculty,selected_from,selected_to,selected_from2,selected_to2);
+
+    });
+
+    $(document).on('change', '#from2', function(e){
+      selected_from = $(e.target).val();
+      // session.hidden = false;
+      // document.getElementById('semester-card').hidden = false;
+      
+      getStaffPost(selected_staff,selected_faculty,selected_from,selected_to,selected_from2,selected_to2);
+
+    })
+
+    $(document).on('change', '#to2', function(e){
+      selected_to = $(e.target).val();
+
+      getStaffPost(selected_staff,selected_faculty,selected_from,selected_to,selected_from2,selected_to2);
 
     });
 
 
-  function getStaffPost(staff,faculty,from,to)
+  function getStaffPost(staff,faculty,from,to,from2,to2)
   {
 
     $('#complex_header').DataTable().destroy();
@@ -347,7 +379,7 @@
             headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
             url      : "{{ url('posting/admin/getStaffPost') }}",
             method   : 'POST',
-            data 	 : {staff: staff,faculty: faculty,from: from,to: to},
+            data 	 : {staff: staff,faculty: faculty,from: from,to: to,from2: from2,to2: to2},
             beforeSend:function(xhr){
               $("#complex_header").LoadingOverlay("show", {
                 image: `<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="24px" height="30px" viewBox="0 0 24 30" style="enable-background:new 0 0 50 50;" xml:space="preserve">
