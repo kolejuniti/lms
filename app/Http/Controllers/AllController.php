@@ -161,9 +161,19 @@ class AllController extends Controller
         if(isset($request->faculty))
         {
 
-            $post = DB::table('tblposting')
+            if($request->faculty == 'all')
+            {
+
+                $post = DB::table('tblposting')
+                    ->join('users', 'tblposting.staff_ic', 'users.ic');
+
+            }else{
+
+                $post = DB::table('tblposting')
                     ->join('users', 'tblposting.staff_ic', 'users.ic')
                     ->where('users.faculty', $request->faculty);
+
+            }
 
         }
 
@@ -179,7 +189,7 @@ class AllController extends Controller
         if(isset($post))
         {
 
-            $data['post'] = $post->get();
+            $data['post'] = $post->leftjoin('tblfaculty', 'users.faculty', 'tblfaculty.id')->get();
 
         }
 
