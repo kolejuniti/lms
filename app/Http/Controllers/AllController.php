@@ -186,6 +186,15 @@ class AllController extends Controller
 
         }
 
+        if(isset($request->from2) && isset($request->to2))
+        {
+
+            $post = DB::table('tblposting')
+                    ->join('users', 'tblposting.staff_ic', 'users.ic')
+                    ->whereBetween('tblposting.date', [$request->from2, $request->to2]);
+
+        }
+
         if(isset($post))
         {
 
