@@ -51,7 +51,11 @@ class AllController extends Controller
                 'total_view' => $request->view,
                 'total_comment' => $request->comment,
                 'total_like' => $request->like,
-                'total_share' => $request->share
+                'total_share' => $request->share,
+                'update_view' => date('Y-m-d'),
+                'update_comment' => date('Y-m-d'),
+                'update_like' => date('Y-m-d'),
+                'update_share' => date('Y-m-d')
             ]);
 
             $alert =  'Post successfully updated!';
