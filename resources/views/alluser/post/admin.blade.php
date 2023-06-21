@@ -73,6 +73,7 @@
                 <label class="form-label" for="faculty">Faculty</label>
                 <select class="form-select" id="faculty" name="faculty">
                   <option value="-" selected disabled>-</option>
+                  <option value="all">ALL FACULTY</option>
                   @foreach ($data['faculty'] as $fcl)
                   <option value="{{ $fcl->id }}">{{ $fcl->facultyname }}</option> 
                   @endforeach
@@ -95,7 +96,7 @@
             </div>
           </div>
         </div>
-        <div class="card-body p-0">
+        <div class="card-body table-responsive p-0">
           <table id="complex_header" class="table table-striped projects display dataTable">
             <thead>
                 <tr>

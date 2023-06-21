@@ -8,7 +8,16 @@
                     No.
                 </th>
                 <th>
-                    Date
+                    Date Key-In
+                </th>
+                <th>
+                    Date Posting
+                </th>
+                <th>
+                    Name
+                </th>
+                <th>
+                    Faculty
                 </th>
                 <th>
                     Channel
@@ -37,6 +46,9 @@
                 <th>
                     Total Share
                 </th>
+                <th>
+                    Latest Update
+                </th>
             </tr>
         </thead>
         <tbody id="table">
@@ -47,6 +59,15 @@
                 </td>
                 <th>
                   {{ $pst->date }}
+                </td>
+                <th>
+                  {{ $pst->post_date }}
+                </td>
+                <th>
+                  {{ $pst->name }}
+                </td>
+                <th>
+                  {{ $pst->facultyname }}
                 </td>
                 <th>
                   {{ $pst->channel }}
@@ -74,6 +95,9 @@
                 </td>
                 <th>
                   {{ $pst->total_share }}
+                </td>
+                <th>
+                  {{ $pst->update_view }}
                 </td>
               </tr>
             @endforeach 
