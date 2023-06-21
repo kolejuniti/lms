@@ -106,7 +106,10 @@
                         No.
                     </th>
                     <th>
-                        Date
+                        Date Key-in
+                    </th>
+                    <th>
+                        Date Posting
                     </th>
                     <th>
                         Channel
@@ -149,6 +152,9 @@
                   {{ $pst->date }}
                 </td>
                 <th>
+                  {{ $pst->post_date }}
+                </td>
+                <th>
                   {{ $pst->channel }}
                 </td>
                 <th>
@@ -187,7 +193,7 @@
                       </i>
                       Edit
                   </a>
-                  <a class="btn btn-danger btn-sm" href="#" onclick="deletePost('{{ $pst->id }}')">
+                  <a class="btn btn-danger btn-sm mt-2" href="#" onclick="deletePost('{{ $pst->id }}')">
                       <i class="ti-trash">
                       </i>
                       Delete
@@ -227,7 +233,7 @@
                       <div class="row col-md-12">
                         <div>
                           <div class="form-group">
-                            <label>Date</label>
+                            <label>Date Posting</label>
                             <input type="date" name="date" id="date" class="form-control" required>
                           </div>
                         </div>

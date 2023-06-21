@@ -12,7 +12,7 @@
       <div class="row col-md-12">
         <div>
           <div class="form-group">
-            <label>Date</label>
+            <label>Date Posting</label>
             <input type="date" name="date" id="date" class="form-control" value="{{ $data['post']->post_date }}" required>
           </div>
         </div>
