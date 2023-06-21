@@ -417,8 +417,34 @@
             success  : function(data){
                 $('#complex_header').removeAttr('hidden');
                 $('#complex_header').html(data);
-                
-                $('#complex_header').DataTable();
+      
+                $(document).ready(function() {
+                // Initialize DataTable for the table
+                $('#complex_header').DataTable({
+                    // Set the DOM structure: 'l' for length changing input, 'B' for buttons, 'f' for filtering input, 'r' for processing display, 't' for the table, 'i' for table info, 'p' for pagination control
+                    dom: 'lBfrtip',
+                    // Set 'paging' to false to disable pagination
+                    paging: false,
+                    // Define buttons to add to the table
+                    buttons: [
+                        // Copy button with footer enabled
+                        { extend: 'copyHtml5', footer: true },
+                        // Excel export button with footer enabled
+                        { extend: 'excelHtml5', footer: true },
+                        // CSV export button with footer enabled
+                        { extend: 'csvHtml5', footer: true },
+                        // PDF export button with custom settings
+                        {
+                          extend: 'pdfHtml5',
+                          // Set page orientation to landscape
+                          orientation: 'landscape',
+                          // Set page size to A2
+                          pageSize: 'A2',
+                          
+                      }
+                    ],
+                });
+            });
                 //window.location.reload();
             }
         });
