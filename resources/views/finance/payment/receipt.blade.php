@@ -24,31 +24,35 @@
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
   <style>
-   @page {
-      size: A5 landscape; /* reduced height for A5 size in landscape orientation */
-      margin: 1cm;
-    }
-    * {
-        margin: 0;
-        padding: 0;
-        border: 0;
-        outline: 0;
-        font-size: 100%;
-        vertical-align: baseline;
-        background: transparent;
-        font-size: 7px;
-    }
-    h2,h3,p {
-        margin: 0;
-        padding: 0;
-        border: 0;
-        outline: 0;
-        font-size: 100%;
-        vertical-align: baseline;
-        background: transparent;
-        font-size: 7px;
-    }
-    </style>
+      @page {
+         size: A4 potrait; 
+         margin: 0.5cm; /* reduce margin */
+      }
+      * {
+         margin: 0;
+         padding: 0;
+         border: 0;
+         outline: 0;
+         font-size: 100%;
+         vertical-align: baseline;
+         background: transparent;
+         font-size: 5px; /* reduce font-size */
+      }
+      h2,h3,p {
+         margin: 0;
+         padding: 0;
+         border: 0;
+         outline: 0;
+         font-size: 100%;
+         vertical-align: baseline;
+         background: transparent;
+         font-size: 5px; /* reduce font-size */
+      }
+      .container {
+         transform: scale(0.8); /* scale down everything */
+      }
+   </style>
+
  </head>
  
  
@@ -180,6 +184,18 @@
    </div>
 </body>
 <script type="text/javascript">
+
+   window.onload = function() {
+      var contentHeight = document.querySelector('.container').offsetHeight;
+      var contentWidth = document.querySelector('.container').offsetWidth;
+      var pageHeight = 1122; // height of an A4 page in pixels
+      var pageWidth = 1300; // width of an A4 page in pixels
+      var scaleFactorHeight = pageHeight / contentHeight;
+      var scaleFactorWidth = pageWidth / contentWidth;
+      var scaleFactor = Math.min(scaleFactorHeight, scaleFactorWidth);
+      document.querySelector('.container').style.transform = 'scale(' + scaleFactor + ')';
+      document.querySelector('.container').style.transformOrigin = 'top left';
+   };
 
    $(document).ready(function () {
        window.print();
