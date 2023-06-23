@@ -77,6 +77,7 @@
                           <option value="FN">Finance</option>
                           <option value="TS">Treasurer</option>
                           <option value="OTR">Others</option>
+                          <option value="COOP">Cooperation</option>
                         </select>
                       </div>
                     </div>
