@@ -5082,4 +5082,312 @@ class FinanceController extends Controller
         return back();
 
     }
+
+    public function studentVoucher()
+    {
+
+        return view('finance.voucher.voucher');
+
+    }
+
+    public function getStudentVoucher(Request $request)
+    {
+
+        $data['student'] = DB::table('students')
+                           ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
+                           ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+                           ->select('students.*', 'tblstudent_status.name AS status', 'tblprogramme.progname AS program')
+                           ->where('ic', $request->student)->first();
+
+        $data['voucher'] = DB::table('tblstudent_voucher')
+                           ->join('tblprocess_status', 'tblstudent_voucher.status', 'tblprocess_status.id')
+                           ->select('tblstudent_voucher.*', 'tblprocess_status.name')
+                           ->where('tblstudent_voucher.student_ic', $request->student)
+                           ->get();
+
+        $data['sum'] = DB::table('tblstudent_voucher')->where('tblstudent_voucher.student_ic', $request->student)->sum('amount');
+
+        return  view('finance.voucher.voucherGetStudent', compact('data'));
+
+    }
+
+    public function storeVoucherDtl(Request $request)
+    {
+
+        $voucherDetail = $request->voucherDetail;
+
+        $validator = Validator::make($request->all(), [
+            'voucherDetail' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return ["message"=>"Field Error", "error" => $validator->messages()->get('*')];
+        }
+
+        try{ 
+            DB::beginTransaction();
+            DB::connection()->enableQueryLog();
+
+            try{
+                $voucher = json_decode($voucherDetail);
+                
+                if($voucher->from != null && $voucher->to != null && $voucher->amount != null)
+                {
+
+                    $prefix = substr($voucher->from, 0, 1); // Get the prefix from the first user input
+
+                    $start = (int) substr($voucher->from, 1); // Get the number from the first user input
+                    $end = (int) substr($voucher->to, 1); // Get the number from the second user input
+
+                    $result = []; // The array to store the series
+
+                    for ($i = $start; $i <= $end; $i++) {
+                        $formatted_number = str_pad($i, 4, '0', STR_PAD_LEFT);
+                        $result[] = $prefix . $formatted_number;
+                    }
+
+                    $exists = [];
+                    $doesNotExist = [];
+
+                    foreach($result as $rslt)
+                    {
+                        $record = DB::table('tblstudent_voucher')
+                        ->where([
+                            ['no_voucher', $rslt]
+                            ])->first();
+
+                        if($record)
+                        {
+
+                            $exists[] = $rslt;
+
+                        }else{
+
+                            $doesNotExist[] = $rslt;
+
+                        }
+
+
+                    }
+
+                    if(count($doesNotExist) <= 0)
+                    {
+
+                        return ["message" => "All Voucher is used!"];
+
+                    }else{
+
+                        foreach($doesNotExist as $vch)
+                        {
+
+                            DB::table('tblstudent_voucher')->insert([
+                                'student_ic' => $voucher->ic,
+                                'no_voucher' => $vch,
+                                'amount' => $voucher->amount,
+                                'status' => 1,
+                                'redeem_date' => null,
+                                'staff_ic' => Auth::user()->ic,
+                                'add_date' => date('Y-m-d')
+                            ]);
+
+                        }
+
+                    }
+
+                    $details = DB::table('tblstudent_voucher')
+                            ->join('tblprocess_status', 'tblstudent_voucher.status', 'tblprocess_status.id')
+                            ->select('tblstudent_voucher.*', 'tblprocess_status.name')
+                            ->where([
+                                ['tblstudent_voucher.student_ic', $voucher->ic]
+                            ])
+                            ->get();
+
+                    $sum = DB::table('tblstudent_voucher')->where('tblstudent_voucher.student_ic', $voucher->ic)->sum('amount');
+
+                    $content = "";
+                    $content .= '<thead>
+                                    <tr>
+                                        <th style="width: 1%">
+                                            No.
+                                        </th>
+                                        <th>
+                                            No. Vouchar
+                                        </th>
+                                        <th>
+                                            Amount
+                                        </th>
+                                        <th>
+                                            Status
+                                        </th>
+                                        <th>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody id="table">';
+                                
+                    foreach($details as $key => $dtl){
+                    //$registered = ($dtl->status == 'ACTIVE') ? 'checked' : '';
+                    $content .= '
+                        <tr>
+                            <td style="width: 1%">
+                            '. $key+1 .'
+                            </td>
+                            <td style="width: 15%">
+                            '. $dtl->no_voucher .'
+                            </td>
+                            <td style="width: 15%">
+                            '. $dtl->amount .'
+                            </td>
+                            <td style="width: 30%">
+                            '. $dtl->name .'
+                            </td>
+                            <td>';
+                            if($dtl->name != 'SAH')
+                            {
+                $content .= '<a class="btn btn-danger btn-sm" href="#" onclick="deletedtl('. $dtl->id .')">
+                                  <i class="ti-trash">
+                                  </i>
+                                  Delete
+                              </a>';
+                            }
+                $content .= '</td>
+                        </tr>
+                        ';
+                        }
+                    $content .= '</tbody>';
+                    $content .= '<tfoot>
+                        <tr>
+                            <td style="width: 1%">
+                            
+                            </td>
+                            <td style="width: 15%">
+                            TOTAL AMOUNT  :
+                            </td>
+                            <td style="width: 15%">
+                            '. $sum .'
+                            </td>
+                            <td style="width: 30%">
+                            
+                            </td>
+                            <td>
+                        
+                            </td>
+                        </tr>
+                    </tfoot>';
+
+                
+                }else{
+                    return ["message" => "Please fill all required field!"];
+                }
+                
+            }catch(QueryException $ex){
+                DB::rollback();
+                if($ex->getCode() == 23000){
+                    return ["message"=>"Class code already existed inside the system"];
+                }else{
+                    \Log::debug($ex);
+                    return ["message"=>"DB Error"];
+                }
+            }
+
+            DB::commit();
+        }catch(Exception $ex){
+            return ["message"=>"Error"];
+        }
+
+        return ["message" => "Success", "data" => $content, 'exists' => $exists];
+
+    }
+
+    public function deleteVoucherDtl(Request $request)
+    {
+        $student = DB::table('tblstudent_voucher')->where('id', $request->id)->first();
+
+        DB::table('tblstudent_voucher')->where('id', $request->id)->delete();
+
+        $details = DB::table('tblstudent_voucher')
+                            ->join('tblprocess_status', 'tblstudent_voucher.status', 'tblprocess_status.id')
+                            ->select('tblstudent_voucher.*', 'tblprocess_status.name')
+                            ->where([
+                                ['tblstudent_voucher.student_ic', $student->student_ic]
+                            ])
+                            ->get();
+
+        $sum = DB::table('tblstudent_voucher')->where('tblstudent_voucher.student_ic', $student->student_ic)->sum('amount');
+
+        $content = "";
+        $content .= '<thead>
+                        <tr>
+                            <th style="width: 1%">
+                                No.
+                            </th>
+                            <th>
+                                No. Vouchar
+                            </th>
+                            <th>
+                                Amount
+                            </th>
+                            <th>
+                                Status
+                            </th>
+                            <th>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="table">';
+                    
+        foreach($details as $key => $dtl){
+        //$registered = ($dtl->status == 'ACTIVE') ? 'checked' : '';
+        $content .= '
+            <tr>
+                <td style="width: 1%">
+                '. $key+1 .'
+                </td>
+                <td style="width: 15%">
+                '. $dtl->no_voucher .'
+                </td>
+                <td style="width: 15%">
+                '. $dtl->amount .'
+                </td>
+                <td style="width: 30%">
+                '. $dtl->name .'
+                </td>
+                <td>';
+                if($dtl->name != 'SAH')
+                {
+    $content .= '<a class="btn btn-danger btn-sm" href="#" onclick="deletedtl('. $dtl->id .')">
+                        <i class="ti-trash">
+                        </i>
+                        Delete
+                    </a>';
+                }
+    $content .= '</td>
+            </tr>
+            ';
+            }
+        $content .= '</tbody>';
+        $content .= '<tfoot>
+            <tr>
+                <td style="width: 1%">
+                
+                </td>
+                <td style="width: 15%">
+                TOTAL AMOUNT  :
+                </td>
+                <td style="width: 15%">
+                '. $sum .'
+                </td>
+                <td style="width: 30%">
+                
+                </td>
+                <td>
+            
+                </td>
+            </tr>
+        </tfoot>';
+        
+
+        return $content;
+
+    }
 }
