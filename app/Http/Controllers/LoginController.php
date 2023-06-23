@@ -86,6 +86,10 @@ class LoginController extends Controller
             {
                 return redirect()->route('others.dashboard');
             }
+            elseif($user->usrtype == 'COOP' && $request->usertypes == 'Cooperation')
+            {
+                return redirect()->route('coop.dashboard');
+            }
             else{
                 return back()->with(["message"=>"Not Authorized to Enter!"]);
             }
