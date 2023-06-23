@@ -328,6 +328,16 @@
 					<li><a href="{{ route('finance.chargeReport') }}" class="{{ (route('finance.chargeReport') == Request::url()) ? 'active' : ''}}">Charge Report</a></li>
 				</ul>
 			  </li>
+			  <li class="treeview">
+				<a href="#"><i data-feather="shopping-bag"></i><span>Voucher</span>
+					<span class="pull-right-container">
+						<i class="fa fa-angle-left pull-right"></i>
+					</span>
+				</a>
+				<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
+					<li><a href="{{ route('finance.voucher.student') }}" class="{{ (route('finance.voucher.student') == Request::url()) ? 'active' : ''}}">Student</a></li>
+				</ul>
+			  </li>
 			  <li>
 				<a href="{{ route('posting.staff') }}" class="{{ (route('posting.staff') == Request::url()) ? 'active' : ''}}"><i data-feather="tv"></i><span>Posting</span></a>
 			  </li> 
