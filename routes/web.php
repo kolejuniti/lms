@@ -554,6 +554,10 @@ Route::post('/finance/package/payment/storePaymentPKG', [App\Http\Controllers\Fi
 Route::post('/finance/package/payment/getProgramPayment', [App\Http\Controllers\FinanceController::class, 'getProgramPayment']);
 Route::post('/finance/package/payment/registerPRGPYM', [App\Http\Controllers\FinanceController::class, 'registerPRGPYM']);
 Route::post('/finance/package/payment/deletePRGPYM', [App\Http\Controllers\FinanceController::class, 'deletePRGPYM']);
+Route::get('/finance/voucher/student', [App\Http\Controllers\FinanceController::class, 'studentVoucher'])->name('finance.voucher.student');
+Route::post('/finance/voucher/student/getStudent', [App\Http\Controllers\FinanceController::class, 'getStudentVoucher']);
+Route::post('/finance/voucher/student/storeVoucherDtl', [App\Http\Controllers\FinanceController::class, 'storeVoucherDtl']);
+Route::post('/finance/voucher/student/deleteVoucherDtl', [App\Http\Controllers\FinanceController::class, 'deleteVoucherDtl']);
 
 
 Route::get('/treasurer_dashboard', [App\Http\Controllers\TreasurerController::class, 'dashboard'])->name('treasurer.dashboard');
@@ -567,6 +571,8 @@ Route::post('/treasurer/payment/debit/storeDebit', [App\Http\Controllers\Treasur
 Route::post('/treasurer/payment/credit/getStatement', [App\Http\Controllers\TreasurerController::class, 'getStatement']);
 
 Route::get('/Others_dashboard', [App\Http\Controllers\OtherUserController::class, 'dashboard'])->name('others.dashboard');
+
+Route::get('/coop_dashboard', [App\Http\Controllers\CoopController::class, 'dashboard'])->name('coop.dashboard');
 
 Route::get('/quality/report/attendance', [App\Http\Controllers\QualityController::class, 'attendanceReport'])->name('quality.report.attendance');
 Route::post('/quality/report/attendance/getLecturer', [App\Http\Controllers\QualityController::class, 'getLectAttendance'])->name('quality.report.attendance.getLecturer');
