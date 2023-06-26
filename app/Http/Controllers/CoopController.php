@@ -86,4 +86,31 @@ class CoopController extends Controller
         return view('coop.voucher.voucherGetStudent', compact('data'));
     }
 
+    public function dailyReport()
+    {
+
+        return view('coop.voucher.dailyReport');
+
+    }
+
+    public function getDailyReport(Request $request)
+    {
+        $data['voucher'] = [];
+        $data['sum'] = [];
+
+        $voucher = DB::table('tblstudent_voucher')
+                  ->join('tblprocess_status', 'tblstudent_voucher.status', 'tblprocess_status.id')
+                  ->join('students', 'tblstudent_voucher.student_ic', 'students.ic')
+                  ->join('users', 'tblstudent_voucher.staff_ic', 'users.ic')
+                  ->select('tblstudent_voucher.*', 'tblprocess_status.name AS status', 'students.name AS student', 'users.name AS staff')
+                  ->whereBetween('tblstudent_voucher.add_date', [$request->from, $request->to]);
+
+        $data['sum'] = $voucher->sum('amount');
+
+        $data['voucher'] = $voucher->get();
+
+        return view('coop.voucher.getDailyReport', compact('data'));
+
+    }
+
 }
