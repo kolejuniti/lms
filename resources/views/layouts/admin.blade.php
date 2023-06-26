@@ -264,8 +264,8 @@
 						</span>
 				    </a>
 					<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
-						<li><a href="{{ route('posting.admin') }}">Admin</a></li>
-						<li><a href="{{ route('posting.staff') }}">Staf</a></li>
+						<li><a href="{{ route('posting.admin') }}">Report Posting</a></li>
+						<li><a href="{{ route('posting.staff') }}">Share Posting</a></li>
 					</ul>
 				</li> 
 

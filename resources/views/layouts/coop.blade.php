@@ -251,7 +251,7 @@
 					<a href="{{ route('others.dashboard') }}" class="{{ (route('others.dashboard') == Request::url()) ? 'active' : ''}}"><i data-feather="home"></i><span>Dashboard</span></a>
 				</li>
 				<li>
-					<a href="{{ route('posting.voucher') }}" class="{{ (route('posting.voucher') == Request::url()) ? 'active' : ''}}"><i data-feather="shopping-bag"></i><span>Voucher</span></a>
+					<a href="{{ route('coop.voucher') }}" class="{{ (route('coop.voucher') == Request::url()) ? 'active' : ''}}"><i data-feather="shopping-bag"></i><span>Voucher</span></a>
 				</li>
 				<li>
 					<a href="{{ route('posting.staff') }}" class="{{ (route('posting.staff') == Request::url()) ? 'active' : ''}}"><i data-feather="tv"></i><span>Posting</span></a>
