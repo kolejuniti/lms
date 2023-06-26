@@ -576,6 +576,9 @@ Route::get('/coop_dashboard', [App\Http\Controllers\CoopController::class, 'dash
 Route::get('/coop/voucher', [App\Http\Controllers\CoopController::class, 'voucher'])->name('coop.voucher');
 Route::post('/coop/voucher/findVoucher', [App\Http\Controllers\CoopController::class, 'findVoucher']);
 Route::post('/coop/voucher/redeemVoucher', [App\Http\Controllers\CoopController::class, 'redeemVoucher']);
+Route::get('/coop/voucher/report/dailyreport', [App\Http\Controllers\CoopController::class, 'dailyReport'])->name('coop.voucher.dailyReport');
+Route::get('/coop/voucher/report/dailyreport/getDailyReport', [App\Http\Controllers\CoopController::class, 'getDailyReport']);
+
 
 Route::get('/quality/report/attendance', [App\Http\Controllers\QualityController::class, 'attendanceReport'])->name('quality.report.attendance');
 Route::post('/quality/report/attendance/getLecturer', [App\Http\Controllers\QualityController::class, 'getLectAttendance'])->name('quality.report.attendance.getLecturer');
