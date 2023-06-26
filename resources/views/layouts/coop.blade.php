@@ -250,9 +250,17 @@
 				<li>
 					<a href="{{ route('others.dashboard') }}" class="{{ (route('others.dashboard') == Request::url()) ? 'active' : ''}}"><i data-feather="home"></i><span>Dashboard</span></a>
 				</li>
-				<li>
-					<a href="{{ route('coop.voucher') }}" class="{{ (route('coop.voucher') == Request::url()) ? 'active' : ''}}"><i data-feather="shopping-bag"></i><span>Voucher</span></a>
-				</li>
+				<li class="treeview">
+					<a href="#"><i data-feather="shopping-bag"></i><span>Voucher</span>
+						<span class="pull-right-container">
+							<i class="fa fa-angle-left pull-right"></i>
+						</span>
+					</a>
+					<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
+						<li><a href="{{ route('coop.voucher') }}" class="{{ (route('coop.voucher') == Request::url()) ? 'active' : ''}}">Redeem Voucher</a></li>
+						<li><a href="{{ route('coop.voucher.dailyReport') }}" class="{{ (route('coop.voucher.dailyReport') == Request::url()) ? 'active' : ''}}">Voucher Report</a></li>
+					</ul>
+				  </li>
 				<li>
 					<a href="{{ route('posting.staff') }}" class="{{ (route('posting.staff') == Request::url()) ? 'active' : ''}}"><i data-feather="tv"></i><span>Posting</span></a>
 				</li>
