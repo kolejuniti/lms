@@ -573,6 +573,9 @@ Route::post('/treasurer/payment/credit/getStatement', [App\Http\Controllers\Trea
 Route::get('/Others_dashboard', [App\Http\Controllers\OtherUserController::class, 'dashboard'])->name('others.dashboard');
 
 Route::get('/coop_dashboard', [App\Http\Controllers\CoopController::class, 'dashboard'])->name('coop.dashboard');
+Route::get('/coop/voucher', [App\Http\Controllers\CoopController::class, 'voucher'])->name('coop.voucher');
+Route::post('/coop/voucher/findVoucher', [App\Http\Controllers\CoopController::class, 'findVoucher']);
+Route::post('/coop/voucher/redeemVoucher', [App\Http\Controllers\CoopController::class, 'redeemVoucher']);
 
 Route::get('/quality/report/attendance', [App\Http\Controllers\QualityController::class, 'attendanceReport'])->name('quality.report.attendance');
 Route::post('/quality/report/attendance/getLecturer', [App\Http\Controllers\QualityController::class, 'getLectAttendance'])->name('quality.report.attendance.getLecturer');
