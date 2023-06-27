@@ -384,12 +384,29 @@
 <script>
      $(document).ready( function () {
         $('#myTable').DataTable({
-          dom: 'lBfrtip', // if you remove this line you will see the show entries dropdown
-          
-          buttons: [
-              'copy', 'csv', 'excel', 'pdf', 'print'
-          ],
-        });
+                    // Set the DOM structure: 'l' for length changing input, 'B' for buttons, 'f' for filtering input, 'r' for processing display, 't' for the table, 'i' for table info, 'p' for pagination control
+                    dom: 'lBfrtip',
+                    // Set 'paging' to false to disable pagination
+                    paging: false,
+                    // Define buttons to add to the table
+                    buttons: [
+                        // Copy button with footer enabled
+                        { extend: 'copyHtml5', footer: true },
+                        // Excel export button with footer enabled
+                        { extend: 'excelHtml5', footer: true },
+                        // CSV export button with footer enabled
+                        { extend: 'csvHtml5', footer: true },
+                        // PDF export button with custom settings
+                        {
+                          extend: 'pdfHtml5',
+                          // Set page orientation to landscape
+                          orientation: 'landscape',
+                          // Set page size to A2
+                          pageSize: 'A2',
+                          
+                      }
+                    ],
+                });
     } );
   </script>
 
