@@ -8,13 +8,13 @@
     <div class="content-header">
       <div class="d-flex align-items-center">
         <div class="me-auto">
-          <h4 class="page-title">Course</h4>
+          <h4 class="page-title">Subject</h4>
           <div class="d-inline-block align-items-center">
             <nav>
               <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="#"><i class="mdi mdi-home-outline"></i></a></li>
                 <li class="breadcrumb-item" aria-current="page">Dashboard</li>
-                <li class="breadcrumb-item active" aria-current="page">Course</li>
+                <li class="breadcrumb-item active" aria-current="page">Subject</li>
               </ol>
             </nav>
           </div>
@@ -27,7 +27,7 @@
       <!-- Default box -->
       <div class="card">
         <div class="card-header">
-          <h3 class="card-title">Assigned Student</h3>
+          <h3 class="card-title">Subject List</h3>
         </div>
         <div class="card-body">
           <div class="row mb-3 d-flex">
@@ -42,14 +42,18 @@
                       @endforeach
                     </select>
                 </div>
-              </div>
+              </div class="row">
                 <div class="pull-right">
                     <a type="button" class="waves-effect waves-light btn btn-info btn-sm" data-toggle="modal" data-target="#uploadModal">
                         <i class="fa fa-plus"></i> <i class="fa fa-object-group"></i> &nbsp Add Course
                     </a>
+
+                    <a type="button" class="waves-effect waves-light btn btn-success btn-sm" data-toggle="modal" data-target="#uploadModal2">
+                      <i class="fa fa-plus"></i> <i class="fa fa-object-group"></i> &nbsp Update Course
+                    </a>
                 </div>
-            </div>
-        </div>
+              </div>
+          </div>
         </div>
         <div class="card-body p-0">
           <table id="myTable" class="table table-striped projects display dataTable">
@@ -72,7 +76,7 @@
                     </th>
                     <th style="width: 5%">
                         Semester
-                  </th>
+                    </th>
                     <th style="width: 20%">
                     </th>
                 </tr>
@@ -119,76 +123,149 @@
         <div id="uploadModal" class="modal" class="modal fade" role="dialog">
           <div class="modal-dialog">
               <!-- modal content-->
-              <div class="modal-content" id="getModal">
+              <div class="modal-content">
                   <form action="/AR/course/create" method="post" role="form" enctype="multipart/form-data">
-                  @csrf
-                  @method('POST')
-                  <div class="modal-header">
-                      <div class="">
-                          <button class="close waves-effect waves-light btn btn-danger btn-sm pull-right" data-dismiss="modal">
-                              &times;
-                          </button>
-                      </div>
-                  </div>
-                  <div class="modal-body">
-                    <div class="row col-md-12">
-                      <div>
-                        <div class="form-group">
-                          <label>ID</label>
-                          <input type="number" name="id" id="id" class="form-control">
+                    @csrf
+                    @method('POST')
+                    <div class="modal-header">
+                        <div class="">
+                            <button class="close waves-effect waves-light btn btn-danger btn-sm pull-right" data-dismiss="modal">
+                                &times;
+                            </button>
                         </div>
-                      </div>
-                      <div>
-                        <div class="form-group">
-                          <label>Course Name</label>
-                          <input type="text" name="name" id="name" class="form-control">
+                    </div>
+                    <div class="modal-body">
+                      <div class="row col-md-12">
+                        <div>
+                          <div class="form-group">
+                            <label>ID</label>
+                            <input type="number" name="id" id="id" class="form-control">
+                          </div>
                         </div>
-                      </div>
-                      <div>
-                        <div class="form-group">
-                          <label>Course Code</label>
-                          <input type="text" name="code" id="code" class="form-control">
+                        <div>
+                          <div class="form-group">
+                            <label>Course Name</label>
+                            <input type="text" name="name" id="name" class="form-control">
+                          </div>
                         </div>
-                      </div>
-                      <div>
-                        <div class="form-group">
-                          <label>Credit</label>
-                          <input type="text" name="credit" id="credit" class="form-control">
+                        <div>
+                          <div class="form-group">
+                            <label>Course Code</label>
+                            <input type="text" name="code" id="code" class="form-control">
+                          </div>
                         </div>
-                      </div>
-                      <div>
-                        <div class="form-group">
-                            <label class="form-label" for="program2">Program</label>
-                            <select class="form-select" id="program2" name="program2">
-                            <option value="-" selected disabled>-</option>
-                              @foreach ($data['program'] as $prg)
-                              <option value="{{ $prg->id }}">{{ $prg->progname}}</option> 
-                              @endforeach
-                            </select>
+                        <div>
+                          <div class="form-group">
+                            <label>Credit</label>
+                            <input type="text" name="credit" id="credit" class="form-control">
+                          </div>
                         </div>
-                      </div>
-                      <div>
-                        <div class="form-group">
-                            <label class="form-label" for="semester">Semester</label>
-                            <select class="form-select" id="semester" name="semester">
-                            <option value="-" selected disabled>-</option>
-                              <option value="1">Semester 1</option> 
-                              <option value="2">Semester 2</option> 
-                              <option value="3">Semester 3</option> 
-                              <option value="4">Semester 4</option> 
-                              <option value="5">Semester 5</option> 
-                              <option value="6">Semester 6</option> 
-                            </select>
+                        <div>
+                          <div class="form-group">
+                              <label class="form-label" for="program2">Program</label>
+                              <select class="form-select" id="program2" name="program2[]" style="height: 400px" multiple>
+                                <option value="-" selected disabled>-</option>
+                                @foreach ($data['program'] as $prg)
+                                <option value="{{ $prg->id }}">{{ $prg->progname}}</option> 
+                                @endforeach
+                              </select>
+                          </div>
+                        </div>
+                        <div>
+                          <div class="form-group">
+                              <label class="form-label" for="semester">Semester</label>
+                              <select class="form-select" id="semester" name="semester">
+                              <option value="-" selected disabled>-</option>
+                                <option value="1">Semester 1</option> 
+                                <option value="2">Semester 2</option> 
+                                <option value="3">Semester 3</option> 
+                                <option value="4">Semester 4</option> 
+                                <option value="5">Semester 5</option> 
+                                <option value="6">Semester 6</option> 
+                              </select>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                  <div class="modal-footer">
-                      <div class="form-group pull-right">
-                          <input type="submit" name="addtopic" class="form-controlwaves-effect waves-light btn btn-primary btn-sm pull-right" value="submit">
-                      </div>
-                  </div>
+                    <div class="modal-footer">
+                        <div class="form-group pull-right">
+                            <input type="submit" name="addtopic" class="form-controlwaves-effect waves-light btn btn-primary btn-sm pull-right" value="submit">
+                        </div>
+                    </div>
                   </form>
+              </div>
+          </div>
+        </div>
+
+        <div id="uploadModal2" class="modal" class="modal fade" role="dialog">
+          <div class="modal-dialog">
+              <!-- modal content-->
+              <div class="modal-content">
+                  <form action="/AR/course/create?upt={{ 1 }}" method="post" role="form" enctype="multipart/form-data">
+                    @csrf
+                    @method('POST')
+                    <div class="modal-header">
+                        <div class="">
+                            <button class="close waves-effect waves-light btn btn-danger btn-sm pull-right" data-dismiss="modal">
+                                &times;
+                            </button>
+                        </div>
+                    </div>
+                    <div class="modal-body">
+                      <div class="row col-md-12">
+                        <div>
+                          <div class="form-group">
+                              <label class="form-label" for="course">Course</label>
+                              <input class="form-select" list="courses" name="course" id="course">
+                              <datalist id="courses" name="courses">
+                                <option value="-" selected disabled>-</option>
+                                @foreach ($data['courselist'] as $crs)
+                                <option value="{{ $crs->id }}">{{ $crs->course_name}} ({{ $crs->course_code }})</option> 
+                                @endforeach
+                              </datalist >
+                          </div>
+                        </div>
+                        <div>
+                          <div class="form-group">
+                              <label class="form-label" for="program2">Program</label>
+                              <select class="form-select" id="program2" name="program2[]" style="height: 400px" multiple>
+                                <option value="-" selected disabled>-</option>
+                                @foreach ($data['program'] as $prg)
+                                <option value="{{ $prg->id }}">{{ $prg->progname}}</option> 
+                                @endforeach
+                              </select>
+                          </div>
+                        </div>
+                        <div>
+                          <div class="form-group">
+                              <label class="form-label" for="semester">Semester</label>
+                              <select class="form-select" id="semester" name="semester">
+                              <option value="-" selected disabled>-</option>
+                                <option value="1">Semester 1</option> 
+                                <option value="2">Semester 2</option> 
+                                <option value="3">Semester 3</option> 
+                                <option value="4">Semester 4</option> 
+                                <option value="5">Semester 5</option> 
+                                <option value="6">Semester 6</option> 
+                              </select>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="form-group pull-right">
+                            <input type="submit" name="addtopic" class="form-controlwaves-effect waves-light btn btn-primary btn-sm pull-right" value="submit">
+                        </div>
+                    </div>
+                  </form>
+              </div>
+          </div>
+        </div>
+
+        <div id="uploadModal3" class="modal" class="modal fade" role="dialog">
+          <div class="modal-dialog">
+              <!-- modal content-->
+              <div class="modal-content" id="getModal">
               </div>
           </div>
         </div>
@@ -229,7 +306,7 @@
     if (res.isConfirmed){
               $.ajax({
                   headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
-                  url      : "{{ url('/AR/course/create') }}",
+                  url      : "{{ url('/AR/course/delete') }}",
                   method   : 'DELETE',
                   data 	 : {id:id},
                   error:function(err){
@@ -243,6 +320,26 @@
               });
           }
       });
+  }
+
+  
+  function updateCourse(id)
+  {
+    return $.ajax({
+            headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
+            url      : "{{ url('AR/course/update') }}",
+            method   : 'POST',
+            data 	 : {id: id},
+            error:function(err){
+                alert("Error");
+                console.log(err);
+            },
+            success  : function(data){
+                $('#getModal').html(data);
+                $('#uploadModal3').modal('show');
+            }
+        });
+
   }
 
 </script>
@@ -324,30 +421,13 @@
                   buttons: [
                       'copy', 'csv', 'excel', 'pdf', 'print'
                   ],
+                  float: right;
                 });
                 //window.location.reload();
             }
         });
   }
 
-  function updateCourse(id)
-  {
-    return $.ajax({
-            headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
-            url      : "{{ url('AR/course/update') }}",
-            method   : 'POST',
-            data 	 : {id: id},
-            error:function(err){
-                alert("Error");
-                console.log(err);
-            },
-            success  : function(data){
-                $('#getModal').html(data);
-                $('#uploadModal').modal('show');
-            }
-        });
-
-  }
   
 
   </script>
