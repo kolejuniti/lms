@@ -269,10 +269,18 @@
 			  <ul class="sidebar-menu" data-widget="tree">	
 				<li>
 					<a href="{{ route('pendaftar_akademik.dashboard') }}"><i data-feather="home"></i><span>Dashboard</span></a>
-				</li>	
-				<li>
-				  <a href="{{ route('pendaftar_akademik') }}" class="{{ (route('pendaftar_akademik') == Request::url()) ? 'active' : ''}}"><i data-feather="clipboard"></i><span>Assigned Subject List</span></a>
 				</li>
+				<li class="treeview">
+					<a href="#"><i data-feather="clipboard"></i><span>Subject</span>
+						<span class="pull-right-container">
+							<i class="fa fa-angle-left pull-right"></i>
+						</span>
+					</a>
+					<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
+						<li><a href="{{ route('pendaftar_akademik') }}" class="{{ (route('pendaftar_akademik') == Request::url()) ? 'active' : ''}}">Subject List</a></li>
+						<li><a href="{{ route('pendaftar_akademik.assignCourse') }}" class="{{ (route('pendaftar_akademik.assignCourse') == Request::url()) ? 'active' : ''}}">Structure List</a></li>
+					</ul>
+				</li>	
 				<li>
 				  <a href="{{ route('pendaftar_akademik.student') }}" class="{{ (route('pendaftar_akademik.student') == Request::url()) ? 'active' : ''}}"><i data-feather="airplay"></i><span>Assign Subject</span></a>
 				</li>
