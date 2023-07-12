@@ -164,7 +164,6 @@
             selectable: true,
             eventResizableFromStart: true, // Allow resizing event from the start
             durationEditable: true, // Enable duration editing by dragging the event's sides
-
             titleFormat: { // Customize the title format
                 title: 'Lecturer Timetable',
                 text: 'Lecturer Timetable'
