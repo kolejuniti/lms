@@ -31,7 +31,8 @@ class AR_Controller extends Controller
     {
 
         $data = [
-            'course' => DB::table('subjek')->join('tblprogramme', 'subjek.prgid', 'tblprogramme.id')->select('subjek.*', 'tblprogramme.progname')->get(),
+            'course' => DB::table('subjek')->leftjoin('tblprogramme', 'subjek.prgid', 'tblprogramme.id')->select('subjek.*', 'tblprogramme.progname')->get(),
+            'courselist' => DB::table('subjek')->groupBy('sub_id')->get(),
             'program' => DB::table('tblprogramme')->get()
         ];
 
@@ -72,13 +73,7 @@ class AR_Controller extends Controller
                         <th style="width: 5%">
                             Credit
                         </th>
-                        <th style="width: 10%">
-                            Program
-                        </th>
-                        <th style="width: 5%">
-                            Semester
-                        </th>
-                            <th style="width: 20%">
+                        <th style="width: 20%">
                         </th>
                     </tr>
                     </thead>
@@ -99,12 +94,6 @@ class AR_Controller extends Controller
                 </td>
                 <td style="width: 5%">
                 '. $crs->course_credit .'
-                </td>
-                <td>
-                '. $crs->progname .'
-                </td>
-                <td>
-                '. $crs->semesterid .'
                 </td>
                 <td class="project-actions text-right" style="text-align: center;">
                 <a class="btn btn-info btn-sm btn-sm mr-2" href="#">
@@ -130,15 +119,15 @@ class AR_Controller extends Controller
     public function createCourse(Request $request)
     {
         $data = $request->validate([
-            'id' => ['required'],
-            'name' => ['required'],
-            'code' => ['required','string'],
-            'credit' => ['required'],
+            'id' => [],
+            'name' => [],
+            'code' => ['string'],
+            'credit' => [],
             'program2' => ['required'],
             'semester' => ['required']
         ]);
 
-        //dd($request->idS);
+        //dd($request->upt);
 
 
         if(isset($request->idS))
@@ -153,16 +142,66 @@ class AR_Controller extends Controller
                 'semesterid' => $data['semester']
             ]);
 
-        }else{
+        }elseif(isset($request->upt))
+        {
 
-            DB::table('subjek')->insert([
-                'sub_id' => $data['id'],
-                'course_name' => $data['name'],
-                'course_code' => $data['code'],
-                'course_credit' => $data['credit'],
-                'prgid' => $data['program2'],
-                'semesterid' => $data['semester']
-            ]);
+            $course = DB::table('subjek')->where('id', $request->course)->first();
+
+            // Check if program2 is a string, and if so, convert it to an array
+            if (is_string($data['program2'])) {
+                $data['program2'] = [$data['program2']];
+            }
+
+            // Do something with the selected programs
+            foreach ($data['program2'] as $programId) {
+
+                if(DB::table('subjek')->where([
+                    ['sub_id', $course->sub_id],
+                    ['prgid', $programId],
+                    ['semesterid', $data['semester']]
+                    ])->exists())
+                {
+
+                }else{
+
+                    DB::table('subjek')->insert([
+                        'sub_id' => $course->sub_id,
+                        'course_name' => $course->course_name,
+                        'course_code' => $course->course_code,
+                        'course_credit' => $course->course_credit,
+                        'prgid' => $programId,
+                        'semesterid' => $data['semester']
+                    ]);
+
+                }
+            }
+
+
+        }else
+        {
+
+            $recentId = DB::table('subjek')->latest()->value('sub_id');
+
+            $addID = $recentId + 1;
+
+            // Check if program2 is a string, and if so, convert it to an array
+            if (is_string($data['program2'])) {
+                $data['program2'] = [$data['program2']];
+            }
+
+            // Do something with the selected programs
+            foreach ($data['program2'] as $programId) {
+
+                DB::table('subjek')->insert([
+                    'sub_id' => $addID,
+                    'course_name' => $data['name'],
+                    'course_code' => $data['code'],
+                    'course_credit' => $data['credit'],
+                    'prgid' => $programId,
+                    'semesterid' => $data['semester']
+                ]);
+
+            }
         }
 
         return redirect(route('pendaftar_akademik'));
@@ -182,11 +221,203 @@ class AR_Controller extends Controller
     {
 
         $data = [
-            'course' => DB::table('subjek')->join('tblprogramme', 'subjek.prgid', 'tblprogramme.id')->select('subjek.*', 'tblprogramme.progname')->where('subjek.id', $request->id)->first(),
+            'course' => DB::table('subjek')->leftjoin('tblprogramme', 'subjek.prgid', 'tblprogramme.id')->select('subjek.*', 'tblprogramme.progname')->where('subjek.id', $request->id)->first(),
             'program' => DB::table('tblprogramme')->get()
         ];
 
         return view('pendaftar_akademik.getCourse', compact('data'))->with('id', $request->id);
+
+    }
+
+    public function assignCourse()
+    {
+
+        $data = [
+
+            'course' => DB::table('subjek')->get(),
+            'structure' => DB::table('structure')->get(),
+            'intake' => DB::table('sessions')->get(),
+            'assigned' => DB::table('subjek_structure')
+                        ->join('subjek', function($join)
+                        {
+                            $join->on('subjek_structure.courseID', 'subjek.sub_id');
+                            $join->on('subjek_structure.program_id', 'subjek.prgid');
+                            $join->on('subjek_structure.semester_id', 'subjek.semesterid');
+                        })
+                        ->leftjoin('structure', 'subjek_structure.structure', 'structure.id')
+                        ->leftjoin('sessions', 'subjek_structure.intake_id', 'sessions.SessionID')
+                        ->leftjoin('tblprogramme', 'subjek.prgid', 'tblprogramme.id')
+                        ->select('subjek_structure.id', 'subjek.course_name', 'subjek.course_code','structure.structure_name', 'sessions.SessionName', 'tblprogramme.progname')->get()
+
+        ];
+
+        return view('pendaftar_akademik.course.assignSubject', compact('data'));
+
+    }
+
+    public function getCourse2(Request $request)
+    {
+        //if(isset($request->session))
+        //{
+            //if(isset($request->group))
+            //{
+                //$students = student::where('courseid', $request->subject)->where('sessionid', $request->session)->where('group_id', $request->group)->get();
+            //}else
+            //{
+                //$students = student::where('courseid', $request->subject)->where('sessionid', $request->session)->get();
+            //}
+        //}else
+        //{
+            //$students = student::where('courseid', $request->subject)->get();
+        //}
+
+        $ids = DB::table('subjek')->where('id', $request->course)->first();
+
+        $course = DB::table('subjek')->leftjoin('tblprogramme', 'subjek.prgid', 'tblprogramme.id')
+                  ->where([
+                    ['subjek.sub_id', $ids->sub_id],
+                    ['subjek.prgid', '!=', null]
+                  ])->select('subjek.*', 'tblprogramme.progname')->get();
+
+        $content = "";
+        $content .= '<thead>
+                    <tr>
+                        <th style="width: 1%">
+                            No.
+                        </th>
+                        <th style="width: 20%">
+                            Course Name
+                        </th>
+                        <th style="width: 5%">
+                            Course Code
+                        </th>
+                        <th style="width: 5%">
+                            Credit
+                        </th>
+                        <th style="width: 5%">
+                            Program
+                        </th>
+                        <th style="width: 5%">
+                            Semester
+                        </th>
+                        <th style="width: 20%">
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody id="table">';
+                    
+        foreach($course as $key => $crs){
+            //$registered = ($crs->status == 'ACTIVE') ? 'checked' : '';
+            $content .= '
+            <tr>
+                <td style="width: 1%">
+                '. $key+1 .'
+                </td>
+                <td style="width: 20%">
+                '. $crs->course_name .'
+                </td>
+                <td style="width: 5%">
+                '. $crs->course_code .'
+                </td>
+                <td style="width: 5%">
+                '. $crs->course_credit .'
+                </td>
+                <td style="width: 5%">
+                '. $crs->progname .'
+                </td>
+                <td style="width: 5%">
+                '. $crs->semesterid .'
+                </td>
+                <td class="project-actions text-right" style="text-align: center;">
+                <a class="btn btn-danger btn-sm" href="#" onclick="deleteMaterial(\''. $crs->id .'\')">
+                    <i class="ti-trash">
+                    </i>
+                    Delete
+                </a>
+                </td>
+            </tr>
+            ';
+            }
+            $content .= '</tbody>';
+
+            return $content;
+
+    }
+
+    public function addCourse(Request $request)
+    {
+
+        $data = json_decode($request->addCourse);
+
+        if (isset($data->course) && is_array($data->course) && count($data->course) > 0 
+            && isset($data->intake) && is_array($data->intake) && count($data->intake) > 0
+            && isset($data->structure)) {
+            // The 'program' input is not empty, process the data
+            $selectedCourse = $data->course;
+
+            $selectedIntake = $data->intake;
+
+            // $course = DB::table('subjek')->where('id', $data->course)->first();
+            
+            // Do something with the selected programs
+            foreach($selectedCourse as $courseID) {
+                // Process each selected Course
+
+                $course = DB::table('subjek')->where('id', $courseID)->first();
+
+                foreach($selectedIntake as $intakeID)
+                {
+
+                    if(DB::table('subjek_structure')->where([['courseID', $course->sub_id], ['structure', $data->structure], ['intake_id', $intakeID], ['program_id', $course->prgid], ['semester_id', $course->semesterid]])->exists())
+                    {
+
+
+                    }else{
+
+                        DB::table('subjek_structure')->insert([
+                            'courseID' => $course->sub_id,
+                            'structure' => $data->structure,
+                            'intake_id' => $intakeID,
+                            'program_id' => $course->prgid,
+                            'semester_id' => $course->semesterid
+                        ]);
+
+                    }
+                }
+            }
+
+            $datas = DB::table('subjek_structure')
+            ->join('subjek', function($join)
+            {
+                $join->on('subjek_structure.courseID', 'subjek.sub_id');
+                $join->on('subjek_structure.program_id', 'subjek.prgid');
+                $join->on('subjek_structure.semester_id', 'subjek.semesterid');
+            })
+            ->leftjoin('structure', 'subjek_structure.structure', 'structure.id')
+            ->leftjoin('sessions', 'subjek_structure.intake_id', 'sessions.SessionID')
+            ->leftjoin('tblprogramme', 'subjek.prgid', 'tblprogramme.id')
+            ->select('subjek_structure.id', 'subjek.course_name', 'subjek.course_code','structure.structure_name', 'sessions.SessionName', 'tblprogramme.progname')->get();
+
+
+            return response()->json(['message' => 'Success', 'data' => $datas]);
+
+        } else {
+            // The 'program' input is empty
+            // Handle the case when no program is selected
+            dd('test');
+
+            return response()->json(['message' => 'Please fills in required details']);
+
+        }
+
+    }
+
+    public function deleteCourse2(Request $request)
+    {
+
+        DB::table('subjek_structure')->where('id', $request->id)->delete();
+
+        return true;
 
     }
 
@@ -660,8 +891,20 @@ class AR_Controller extends Controller
     {
         $events = Tblevent::all();
 
-        return response()->json($events);
+        $formattedEvents = $events->map(function ($event) {
+            return [
+                'id' => $event->id,
+                'title' => $event->title,
+                'startTime' => date('H:i:s', strtotime($event->start)),
+                'endTime' => date('H:i:s', strtotime($event->end)),
+                'duration' => gmdate('H:i:s', strtotime($event->end) - strtotime($event->start)),
+                'daysOfWeek' => [date('N', strtotime($event->start))] // Recurring on the same day of the week
+            ];
+        });
+
+        return response()->json($formattedEvents);
     }
+
 
     public function createEvent(Request $request)
     {
@@ -729,4 +972,6 @@ class AR_Controller extends Controller
             return response()->json(['status' => 'error'], 404);
         }
     }
+
+    
 }
