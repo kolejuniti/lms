@@ -404,7 +404,6 @@ class AR_Controller extends Controller
         } else {
             // The 'program' input is empty
             // Handle the case when no program is selected
-            dd('test');
 
             return response()->json(['message' => 'Please fills in required details']);
 
