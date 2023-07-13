@@ -440,6 +440,18 @@
                           orientation: 'landscape',
                           // Set page size to A2
                           pageSize: 'A2',
+                          customize: function(doc) {
+                            // Get all the link elements in the table
+                            var links = $(doc.content).find('table td a');
+                            
+                            // Shorten the link text
+                            links.each(function() {
+                              var link = $(this);
+                              var href = link.attr('href');
+                              var shortenedLink = shortenLink(href); // Replace with your own function to shorten the link
+                              link.text(shortenedLink);
+                            });
+                          }
                           
                       }
                     ],
