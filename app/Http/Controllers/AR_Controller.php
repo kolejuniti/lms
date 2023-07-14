@@ -515,6 +515,8 @@ class AR_Controller extends Controller
 
         $course = DB::table('subjek')->where('id', $request->id)->first();
 
+        if($course->prerequisite_id == 881)
+        {
   
             DB::table('student_subjek')->insert([
                 'student_ic' => $data['student']->ic,
@@ -534,7 +536,38 @@ class AR_Controller extends Controller
 
             }
 
-     
+        }else{
+
+            $check = DB::table('student_subjek')->where('courseid', $course->prerequisite_id)->value('course_status_id');
+
+            if(isset($check) && $check != 2)
+            {
+
+                DB::table('student_subjek')->insert([
+                    'student_ic' => $data['student']->ic,
+                    'courseid' => $course->sub_id,
+                    'sessionid' => $data['student']->session,
+                    'semesterid' => $data['student']->semester,
+                    'course_status_id' => 15,
+                    'status' => 'ACTIVE'
+                ]);
+    
+                if($data['student']->student_status == 1)
+                {
+    
+                    DB::table('students')->update([
+                        'student_status' => 2
+                    ]);
+    
+                }
+
+            }else{
+
+                $data['error'] = 'Subject from previous semester status FAILED';
+
+            }
+
+        }
 
 
         for($i = 0; $i <= $data['student']->semester; $i++)

@@ -1215,30 +1215,69 @@ class FinanceController extends Controller
                 'campus_id' => 1
             ]);
 
-            //check if subject exists
-            if(DB::table('student_subjek')->where([['student_ic', $student->ic],['sessionid', $student->session],['semesterid', $student->semester]])->exists())
+            if($student->semester == 1)
             {
-                $alert =  ['message' => 'Success! Subject for student has already registered for this semester!'];
 
-            }else{
-
-                $subject = DB::table('subjek')->where([
-                    ['prgid','=', $student->program],
-                    ['semesterid','=', $student->semester]
-                ])->get();
-
-                foreach($subject as $key)
+                //check if subject exists
+                if(DB::table('student_subjek')->where([['student_ic', $student->ic],['sessionid', $student->session],['semesterid', $student->semester]])->exists())
                 {
-                    student::create([
-                        'student_ic' => $student->ic,
-                        'courseid' => $key->sub_id,
-                        'sessionid' => $student->session,
-                        'semesterid' => $key->semesterid,
-                        'status' => 'ACTIVE'
-                    ]);
-                }
+                    $alert =  ['message' => 'Success! Subject for student has already registered for this semester!'];
 
-                $alert = ['message' => 'Success'];
+                }else{
+
+                    $subject = DB::table('subjek')
+                    ->join('subjek_structure', function($join){
+                        $join->on('subjek.sub_id', 'subjek_structure.courseID');
+                        $join->on('subjek.prgid', 'subjek_structure.program_id');
+                        $join->on('subjek.semesterid', 'subjek_structure.semester_id');
+                    })
+                    ->where([
+                        ['prgid','=', $student->program],
+                        ['semesterid','=', $student->semester],
+                        ['subjek_structure.intake_id', $student->intake]
+                    ])
+                    ->select('subjek.*')->get();
+
+                    foreach($subject as $key)
+                    {
+
+                        if($key->prerequisite_id == 881)
+                        {
+
+                            student::create([
+                                'student_ic' => $student->ic,
+                                'courseid' => $key->sub_id,
+                                'sessionid' => $student->session,
+                                'semesterid' => $key->semesterid,
+                                'course_status_id' => 15,
+                                'status' => 'ACTIVE'
+                            ]);
+
+                        }else{
+
+                            $check = DB::table('student_subjek')->where('courseid', $key->prerequisite_id)->value('course_status_id');
+
+                            if(isset($check) && $check != 2)
+                            {
+
+                                student::create([
+                                    'student_ic' => $student->ic,
+                                    'courseid' => $key->sub_id,
+                                    'sessionid' => $student->session,
+                                    'semesterid' => $key->semesterid,
+                                    'course_status_id' => 15,
+                                    'status' => 'ACTIVE'
+                                ]);
+                
+
+                            }
+
+                        }
+                    }
+
+                    $alert = ['message' => 'Success'];
+
+                }
 
             }
 
