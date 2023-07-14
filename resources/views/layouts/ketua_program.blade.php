@@ -282,6 +282,7 @@
 							</ul>
 						</li>
 						<li><a href="{{ route('kp.coursemark') }}" class="{{ (route('kp.coursemark') == Request::url()) ? 'active' : ''}}">Marks</a></li>
+						<li><a href="{{ route('pendaftar_akademik.student') }}" class="{{ (route('pendaftar_akademik.student') == Request::url()) ? 'active' : ''}}">Subject</a></li>
 						@endif
 					</ul>
 				</li>  	
