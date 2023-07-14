@@ -123,8 +123,9 @@
                                 {{ $crs->course_credit }}
                                 </td>
                                 <td>
-                                {{ $crs->semesterid }}
+                                {{ $crs->semester }}
                                 </td>
+                                @if(Auth::user()->usrtype == 'AR')
                                 <td style="text-align: center;">
                                     <div class="pull right">
                                         <button class="btn btn-danger btn-sm mr-2" onclick="unregister('{{ $crs->IDS }}','{{ $data['student']->ic }}')">
@@ -134,6 +135,11 @@
                                         </button>
                                     </div>
                                 </td>
+                                @else
+                                <td>
+                                    
+                                </td>
+                                @endif
                             </tr>
                         @endforeach
                         </tbody>
@@ -150,3 +156,11 @@
         </div>
     </div>
 </div>
+
+<script>
+    var error = "{{ $data['error'] ?? null}}";
+    
+    if (error != '') {
+        alert(error);
+    }
+</script>

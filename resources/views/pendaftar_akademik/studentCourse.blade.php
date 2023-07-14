@@ -1,4 +1,4 @@
-@extends('../layouts.pendaftar_akademik')
+@extends((Auth::user()->usrtype == "AR") ? 'layouts.pendaftar_akademik' : (Auth::user()->usrtype == "PL" ? 'layouts.ketua_program' : ''))
 
 @section('main')
 <!-- Content Header (Page header) -->
@@ -43,7 +43,7 @@
                 </div>
                 <!-- /.card-header -->
                 <div class="card-body">
-                    <div class="row">
+                    {{-- <div class="row">
                         <div class="col-md-6" id="program-card">
                             <div class="form-group">
                             <label class="form-label" for="program">Program</label>
@@ -74,6 +74,23 @@
                             </select>
                             </div>
                         </div>
+                    </div> --}}
+
+                    <div class="row">
+                      <div class="col-md-6">
+                          <div class="form-group">
+                          <label class="form-label" for="name">Name / No. IC / No. Matric</label>
+                          <input type="text" class="form-control" id="search" placeholder="Search..." name="search">
+                          </div>
+                      </div>
+                      <div class="col-md-6">
+                          <div class="form-group">
+                            <label class="form-label" for="student">Student</label>
+                            <select class="form-select" id="student" name="student">
+                              <option value="-" selected disabled>-</option>
+                            </select>
+                          </div>
+                      </div>
                     </div>
                 </div>
                 <!-- /.card-body -->
@@ -98,23 +115,71 @@
   var selected_student = null;
   var student = document.getElementById('student-card');
 
-  $(document).on('change', '#program', async function(e){
-    selected_program = $(e.target).val();
-
-    student.hidden = false;
-
-    await getStudent(selected_program, selected_session);
-
+  $('#search').keyup(function(event){
+    if (event.keyCode === 13) { // 13 is the code for the "Enter" key
+        var searchTerm = $(this).val();
+        getStudent(searchTerm);
+      }
   });
 
+  function getStudent(search)
+  {
 
-  $(document).on('change', '#session', async function(e){
-    selected_session = $(e.target).val();
+      return $.ajax({
+              headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
+              url      : "{{ url('pendaftar/student/status/listStudent') }}",
+              method   : 'POST',
+              data 	 : {search: search},
+              error:function(err){
+                  alert("Error");
+                  console.log(err);
+              },
+              success  : function(data){
+                  $('#student').html(data);
+                  $('#student').selectpicker('refresh');
 
-    student.hidden = false;
+              }
+          });
+      
+  }
 
-    await getStudent(selected_program, selected_session);
-  });
+  // $(document).on('change', '#program', async function(e){
+  //   selected_program = $(e.target).val();
+
+  //   student.hidden = false;
+
+  //   await getCourses(selected_program, selected_session);
+
+  // });
+
+
+  // $(document).on('change', '#session', async function(e){
+  //   selected_session = $(e.target).val();
+
+  //   student.hidden = false;
+
+  //   await getCourses(selected_program, selected_session);
+  // });
+
+    // function getCourses(program,session)
+  // {
+  //   return $.ajax({
+  //           headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
+  //           url      : "{{ url('AR/student/getStudent') }}",
+  //           method   : 'GET',
+  //           data 	 : {program: program,session: session},
+  //           error:function(err){
+  //               alert("Error");
+  //               console.log(err);
+  //           },
+  //           success  : function(data){
+  //               //$('#lecturer-selection-div').removeAttr('hidden');
+  //               $('#student').html(data);
+  //               $('#student').selectpicker('refresh');
+
+  //           }
+  //       });
+  // }
 
   $(document).on('change', '#student', function(e){
     selected_student = $(e.target).val();
@@ -124,25 +189,7 @@
     getCourse(selected_student);
   });
 
-  function getStudent(program,session)
-  {
-    return $.ajax({
-            headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
-            url      : "{{ url('AR/student/getStudent') }}",
-            method   : 'GET',
-            data 	 : {program: program,session: session},
-            error:function(err){
-                alert("Error");
-                console.log(err);
-            },
-            success  : function(data){
-                //$('#lecturer-selection-div').removeAttr('hidden');
-                $('#student').html(data);
-                $('#student').selectpicker('refresh');
 
-            }
-        });
-  }
 
   function getCourse(student)
   {
