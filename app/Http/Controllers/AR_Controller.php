@@ -486,7 +486,7 @@ class AR_Controller extends Controller
         $getCourse =  DB::table('student_subjek')
                       ->join('students', 'student_subjek.student_ic', 'students.ic')
                       ->join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
-                      ->where('student_subjek.sessionid', $data['student']->session)
+                    //   ->where('student_subjek.sessionid', $data['student']->session)
                       ->where('students.ic', $data['student']->ic)
                       ->where('subjek.prgid', $data['student']->program);
 
@@ -501,7 +501,8 @@ class AR_Controller extends Controller
                                 $join->on('subjek.semesterid', 'subjek_structure.semester_id');
                              })
                              ->where('subjek_structure.intake_id', $data['student']->intake)
-                             ->whereIn('subjek.semesterid', $loop)->where('prgid', $data['student']->program)
+                            //  ->whereIn('subjek.semesterid', $loop)
+                             ->where('prgid', $data['student']->program)
                              ->orderBy('subjek.semesterid')
                              ->select('subjek.*')->get();
 
@@ -581,7 +582,7 @@ class AR_Controller extends Controller
                       ->join('students', 'student_subjek.student_ic', 'students.ic')
                       ->join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
                       ->where('students.ic', $data['student']->ic)
-                      ->where('student_subjek.sessionid', $data['student']->session)
+                    //   ->where('student_subjek.sessionid', $data['student']->session)
                       ->where('subjek.prgid', $data['student']->program);
 
         $data['allCourse'] = $getCourse->select('student_subjek.id as IDS','student_subjek.courseid', 'student_subjek.semesterid AS semester', 'subjek.*')->orderBy('student_subjek.semesterid')->get();
@@ -595,7 +596,8 @@ class AR_Controller extends Controller
                                 $join->on('subjek.semesterid', 'subjek_structure.semester_id');
                              })
                              ->where('subjek_structure.intake_id', $data['student']->intake)
-                             ->whereIn('subjek.semesterid', $loop)->where('prgid', $data['student']->program)
+                            //  ->whereIn('subjek.semesterid', $loop)
+                             ->where('prgid', $data['student']->program)
                              ->orderBy('subjek.semesterid')
                              ->select('subjek.*')->get();
 
@@ -621,7 +623,7 @@ class AR_Controller extends Controller
                       ->join('students', 'student_subjek.student_ic', 'students.ic')
                       ->join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
                       ->where('students.ic', $data['student']->ic)
-                      ->where('student_subjek.sessionid', $data['student']->session)
+                    //   ->where('student_subjek.sessionid', $data['student']->session)
                       ->where('subjek.prgid', $data['student']->program);
 
         $data['allCourse'] = $getCourse->select('student_subjek.id as IDS','student_subjek.courseid', 'student_subjek.semesterid AS semester', 'subjek.*')->orderBy('student_subjek.semesterid')->get();
@@ -635,7 +637,8 @@ class AR_Controller extends Controller
                                 $join->on('subjek.semesterid', 'subjek_structure.semester_id');
                              })
                              ->where('subjek_structure.intake_id', $data['student']->intake)
-                             ->whereIn('subjek.semesterid', $loop)->where('prgid', $data['student']->program)
+                            //  ->whereIn('subjek.semesterid', $loop)
+                             ->where('prgid', $data['student']->program)
                              ->orderBy('subjek.semesterid')
                              ->select('subjek.*')->get();
 
