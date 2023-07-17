@@ -481,7 +481,11 @@ class AR_Controller extends Controller
             $loop[] = $i;
         }
 
-        //dd($student);
+        $data['students'] = DB::table('students')
+        ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
+        ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+        ->select('students.*', 'tblstudent_status.name AS status', 'tblprogramme.progname AS program')
+        ->where('ic', $request->student)->first();
 
         $getCourse =  DB::table('student_subjek')
                       ->join('students', 'student_subjek.student_ic', 'students.ic')
@@ -576,7 +580,11 @@ class AR_Controller extends Controller
             $loop[] = $i;
         }
 
-        //dd($student);
+        $data['students'] = DB::table('students')
+        ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
+        ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+        ->select('students.*', 'tblstudent_status.name AS status', 'tblprogramme.progname AS program')
+        ->where('ic', $request->student)->first();
 
         $getCourse =  DB::table('student_subjek')
                       ->join('students', 'student_subjek.student_ic', 'students.ic')
@@ -617,7 +625,11 @@ class AR_Controller extends Controller
             $loop[] = $i;
         }
 
-        //dd($student);
+        $data['students'] = DB::table('students')
+        ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
+        ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+        ->select('students.*', 'tblstudent_status.name AS status', 'tblprogramme.progname AS program')
+        ->where('ic', $request->student)->first();
 
         $getCourse =  DB::table('student_subjek')
                       ->join('students', 'student_subjek.student_ic', 'students.ic')
