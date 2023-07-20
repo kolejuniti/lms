@@ -52,7 +52,7 @@
             @foreach ($summary as $sum)
             <div id="{{ $sum->progcode }}" class="tab-pane">
               <!-- //asset('storage/coursesummary/'.$course->progcode.'/'.str_replace(" ","_", $course->course_code).'.pdf') -->
-              {{-- 
+              
                 @if (Storage::disk('linode')->exists('coursesummary/'.$sum->progcode.'/'.str_replace(" ","_", $sum->course_code).'.pdf'))
                     <iframe src="{{ Storage::disk('linode')->temporaryUrl('coursesummary/'.$sum->progcode.'/'.str_replace(" ","_", $sum->course_code).'.pdf',now()->addMinutes(5)) }}" width="100%" height="1000" style="border:1px solid black;">
                     </iframe>
@@ -61,7 +61,7 @@
                         <h1 class="text-muted ">-- Course Summary not set --</h1>
                     </div>
                 @endif
-                --}}
+               
             </div>
             @endforeach
           </div>
