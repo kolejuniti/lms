@@ -8,13 +8,13 @@
     <div class="content-header">
       <div class="d-flex align-items-center">
         <div class="me-auto">
-          <h4 class="page-title">Profile</h4>
+          <h4 class="page-title">Course Summary</h4>
           <div class="d-inline-block align-items-center">
             <nav>
               <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="#"><i class="mdi mdi-home-outline"></i></a></li>
-                <li class="breadcrumb-item" aria-current="page">Extra</li>
-                <li class="breadcrumb-item active" aria-current="page">Profile</li>
+                <li class="breadcrumb-item" aria-current="page">Home</li>
+                <li class="breadcrumb-item active" aria-current="page">Course Summary</li>
               </ol>
             </nav>
           </div>
@@ -51,16 +51,17 @@
           <div class="tab-content">
             @foreach ($summary as $sum)
             <div id="{{ $sum->progcode }}" class="tab-pane">
-            {{ $sum->progcode }} {{ $sum->course_code }}
               <!-- //asset('storage/coursesummary/'.$course->progcode.'/'.str_replace(" ","_", $course->course_code).'.pdf') -->
-              @if (Storage::disk('linode')->exists('coursesummary/'.$sum->progcode.'/'.str_replace(" ","_", $sum->course_code).'.pdf'))
-              <iframe src="{{ Storage::disk('linode')->temporaryUrl('coursesummary/'.$sum->progcode.'/'.str_replace(" ","_", $sum->course_code).'.pdf',now()->addMinutes(5)) }}" width="100%" height="1000" style="border:1px solid black;">
-              </iframe>
-              @else
-              <div class=" d-flex justify-content-center align-items-center box-header bg-secondary-light" style="height:20em">
-                <h1 class="text-muted ">-- Course Summary not set --</h1>
-              </div>
-              @endif
+              {{-- 
+                @if (Storage::disk('linode')->exists('coursesummary/'.$sum->progcode.'/'.str_replace(" ","_", $sum->course_code).'.pdf'))
+                    <iframe src="{{ Storage::disk('linode')->temporaryUrl('coursesummary/'.$sum->progcode.'/'.str_replace(" ","_", $sum->course_code).'.pdf',now()->addMinutes(5)) }}" width="100%" height="1000" style="border:1px solid black;">
+                    </iframe>
+                @else
+                    <div class=" d-flex justify-content-center align-items-center box-header bg-secondary-light" style="height:20em">
+                        <h1 class="text-muted ">-- Course Summary not set --</h1>
+                    </div>
+                @endif
+                --}}
             </div>
             @endforeach
           </div>
