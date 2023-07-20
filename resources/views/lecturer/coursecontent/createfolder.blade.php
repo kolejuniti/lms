@@ -8,13 +8,14 @@
     <div class="content-header">
       <div class="d-flex align-items-center">
         <div class="me-auto">
-          <h4 class="page-title">Profile</h4>
+          <h4 class="page-title">Create Folder</h4>
           <div class="d-inline-block align-items-center">
             <nav>
               <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="#"><i class="mdi mdi-home-outline"></i></a></li>
-                <li class="breadcrumb-item" aria-current="page">Extra</li>
-                <li class="breadcrumb-item active" aria-current="page">Profile</li>
+                <li class="breadcrumb-item" aria-current="page">Home</li>
+                <li class="breadcrumb-item" aria-current="page">Material Gallery</li>
+                <li class="breadcrumb-item" aria-current="page">Create Folder</li>
               </ol>
             </nav>
           </div>
