@@ -271,76 +271,120 @@ class AR_Controller extends Controller
             //$students = student::where('courseid', $request->subject)->get();
         //}
 
-        $ids = DB::table('subjek')->where('id', $request->course)->first();
+        if(isset($request->course))
+        {
 
-        $course = DB::table('subjek')->leftjoin('tblprogramme', 'subjek.prgid', 'tblprogramme.id')
-                  ->where([
-                    ['subjek.sub_id', $ids->sub_id],
-                    ['subjek.prgid', '!=', null]
-                  ])->select('subjek.*', 'tblprogramme.progname')->get();
+            $course = DB::table('subjek_structure')
+                    ->join('subjek', function($join)
+                    {
+                        $join->on('subjek_structure.courseID', 'subjek.sub_id');
+                        $join->on('subjek_structure.program_id', 'subjek.prgid');
+                        $join->on('subjek_structure.semester_id', 'subjek.semesterid');
+                    })
+                    ->leftjoin('structure', 'subjek_structure.structure', 'structure.id')
+                    ->leftjoin('sessions', 'subjek_structure.intake_id', 'sessions.SessionID')
+                    ->leftjoin('tblprogramme', 'subjek.prgid', 'tblprogramme.id');
 
-        $content = "";
-        $content .= '<thead>
-                    <tr>
-                        <th style="width: 1%">
-                            No.
-                        </th>
-                        <th style="width: 20%">
-                            Course Name
-                        </th>
-                        <th style="width: 5%">
-                            Course Code
-                        </th>
-                        <th style="width: 5%">
-                            Credit
-                        </th>
-                        <th style="width: 5%">
-                            Program
-                        </th>
-                        <th style="width: 5%">
-                            Semester
-                        </th>
-                        <th style="width: 20%">
-                        </th>
-                    </tr>
-                    </thead>
-                    <tbody id="table">';
-                    
-        foreach($course as $key => $crs){
-            //$registered = ($crs->status == 'ACTIVE') ? 'checked' : '';
-            $content .= '
-            <tr>
-                <td style="width: 1%">
-                '. $key+1 .'
-                </td>
-                <td style="width: 20%">
-                '. $crs->course_name .'
-                </td>
-                <td style="width: 5%">
-                '. $crs->course_code .'
-                </td>
-                <td style="width: 5%">
-                '. $crs->course_credit .'
-                </td>
-                <td style="width: 5%">
-                '. $crs->progname .'
-                </td>
-                <td style="width: 5%">
-                '. $crs->semesterid .'
-                </td>
-                <td class="project-actions text-right" style="text-align: center;">
-                <a class="btn btn-danger btn-sm" href="#" onclick="deleteMaterial(\''. $crs->id .'\')">
-                    <i class="ti-trash">
-                    </i>
-                    Delete
-                </a>
-                </td>
-            </tr>
-            ';
+            if(isset($request->course))
+            {
+
+                $courses = $course->whereIn('subjek.id', $request->course);
+
             }
-            $content .= '</tbody>';
 
-            return $content;
+            if(isset($request->structure))
+            {
+
+                $courses = $course->where('structure.id', $request->structure);
+
+            }
+
+            if(isset($request->intake))
+            {
+
+                $courses = $course->whereIn('sessions.SessionID', $request->intake);
+
+            }
+
+            $data['course'] = $courses->select('subjek_structure.id', 'subjek.course_name', 'subjek.course_code','structure.structure_name', 'sessions.SessionName', 'tblprogramme.progname')->get();
+
+            // $ids = DB::table('subjek')->where('id', $request->course)->first();
+
+            // $course = DB::table('subjek')->leftjoin('tblprogramme', 'subjek.prgid', 'tblprogramme.id')
+            //           ->where([
+            //             ['subjek.sub_id', $ids->sub_id],
+            //             ['subjek.prgid', '!=', null]
+            //           ])->select('subjek.*', 'tblprogramme.progname')->get();
+
+            $content = "";
+            $content .= '<thead>
+                        <tr>
+                            <th style="width: 1%">
+                                No.
+                            </th>
+                            <th style="width: 20%">
+                                Course Name
+                            </th>
+                            <th style="width: 5%">
+                                Course Code
+                            </th>
+                            <th style="width: 5%">
+                                Structure
+                            </th>
+                            <th style="width: 5%">
+                                Program
+                            </th>
+                            <th style="width: 5%">
+                                Semester
+                            </th>
+                            <th style="width: 20%">
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody id="table">';
+                        
+            foreach($data['course'] as $key => $crs){
+                //$registered = ($crs->status == 'ACTIVE') ? 'checked' : '';
+                $content .= '
+                <tr>
+                    <td style="width: 1%">
+                    '. $key+1 .'
+                    </td>
+                    <td style="width: 20%">
+                    '. $crs->course_name .'
+                    </td>
+                    <td style="width: 5%">
+                    '. $crs->course_code .'
+                    </td>
+                    <td style="width: 5%">
+                    '. $crs->structure_name .'
+                    </td>
+                    <td style="width: 5%">
+                    '. $crs->progname .'
+                    </td>
+                    <td style="width: 5%">
+                    '. $crs->SessionName .'
+                    </td>
+                    <td class="project-actions text-right" style="text-align: center;">
+                    <a class="btn btn-danger btn-sm" href="#" onclick="deleteMaterial(\''. $crs->id .'\')">
+                        <i class="ti-trash">
+                        </i>
+                        Delete
+                    </a>
+                    </td>
+                </tr>
+                ';
+                }
+                $content .= '</tbody>';
+
+                return $content;
+
+        }else{
+
+
+            return response()->json(['error' => 'Please select subject first!']);
+
+        }
 
     }
 
@@ -396,6 +440,9 @@ class AR_Controller extends Controller
             ->leftjoin('structure', 'subjek_structure.structure', 'structure.id')
             ->leftjoin('sessions', 'subjek_structure.intake_id', 'sessions.SessionID')
             ->leftjoin('tblprogramme', 'subjek.prgid', 'tblprogramme.id')
+            ->whereIn('subjek.id', $data->course)
+            ->where('structure.id', $data->structure)
+            ->whereIn('sessions.SessionID', $data->intake)
             ->select('subjek_structure.id', 'subjek.course_name', 'subjek.course_code','structure.structure_name', 'sessions.SessionName', 'tblprogramme.progname')->get();
 
 
