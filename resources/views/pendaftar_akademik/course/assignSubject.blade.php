@@ -87,7 +87,7 @@
                         Course Code
                     </th>
                     <th style="width: 5%">
-                        Credit
+                        Structure
                     </th>
                     <th style="width: 10%">
                         Program
@@ -100,20 +100,15 @@
                 </tr>
             </thead>
             <tbody id="table">
-              @foreach($data['assigned'] as $i => $course)
+              {{-- @foreach($data['assigned'] as $i => $course)
               <tr>
                 <td>{{ $i+1 }}</td>
-                <td>{{ $course->course_name }}</td>
-                <td>{{ $course->course_code }}</td>
-                <td>{{ $course->structure_name }}</td>
-                <td>{{ $course->progname }}</td>
-                <td>{{ $course->SessionName }}</td>
                 <td class="project-actions text-right" style="text-align: center;">
                   <a class="btn btn-danger btn-sm" href="#" onclick="deleteMaterial('{{ $course->id }}')">
                   <i class="ti-trash"></i> Delete</a>
-                 </td>
+                </td>
               </tr>
-              @endforeach
+              @endforeach --}}
             </tbody>
           </table>
         </div>
@@ -253,6 +248,7 @@
      $(document).ready( function () {
         $('#myTable').DataTable({
           dom: 'lBfrtip', // if you remove this line you will see the show entries dropdown
+          pageLength: 100,
           
           buttons: [
               'copy', 'csv', 'excel', 'pdf', 'print'
@@ -262,75 +258,99 @@
   </script>
 
   <script type="text/javascript">
-  //   var selected_course = "";
+    var selected_course = "";
+    var selected_structure = "";
+    var selected_intake = "";
 
-  //   var url = window.location.href;
+    var url = window.location.href;
 
 
-  //   $(document).on('change', '#course', async function(e){
-  //     selected_course = $(e.target).val();
+    $(document).on('change', '#course', async function(e){
+      selected_course = $(e.target).val();
 
-  //   await getCourse(selected_course);
-  //   })
+      await getCourse(selected_course,selected_structure,selected_intake);
 
-  // function getCourse(course)
-  // {
-  //   $('#myTable').DataTable().destroy();
+    })
 
-  //     return $.ajax({
-  //           headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
-  //           url      : "{{ url('AR/assignCourse/getCourse2') }}",
-  //           method   : 'POST',
-  //           data 	 : {course: course},
-  //           beforeSend:function(xhr){
-  //             $("#myTable").LoadingOverlay("show", {
-  //               image: `<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="24px" height="30px" viewBox="0 0 24 30" style="enable-background:new 0 0 50 50;" xml:space="preserve">
-  //                 <rect x="0" y="10" width="4" height="10" fill="#333" opacity="0.2">
-  //                 <animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0s" dur="0.6s" repeatCount="indefinite"></animate>
-  //                 <animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0s" dur="0.6s" repeatCount="indefinite"></animate>
-  //                 <animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0s" dur="0.6s" repeatCount="indefinite"></animate>
-  //                 </rect>
-  //                 <rect x="8" y="10" width="4" height="10" fill="#333" opacity="0.2">
-  //                 <animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0.15s" dur="0.6s" repeatCount="indefinite"></animate>
-  //                 <animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0.15s" dur="0.6s" repeatCount="indefinite"></animate>
-  //                 <animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0.15s" dur="0.6s" repeatCount="indefinite"></animate>
-  //                 </rect>
-  //                 <rect x="16" y="10" width="4" height="10" fill="#333" opacity="0.2">
-  //                 <animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0.3s" dur="0.6s" repeatCount="indefinite"></animate>
-  //                 <animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0.3s" dur="0.6s" repeatCount="indefinite"></animate>
-  //                 <animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0.3s" dur="0.6s" repeatCount="indefinite"></animate>
-  //                 </rect>
-  //               </svg>`,
-  //               background:"rgba(255,255,255, 0.3)",
-  //               imageResizeFactor : 1,    
-  //               imageAnimation : "2000ms pulse" , 
-  //               imageColor: "#019ff8",
-  //               text : "Please wait...",
-  //               textResizeFactor: 0.15,
-  //               textColor: "#019ff8",
-  //               textColor: "#019ff8"
-  //             });
-  //             $("#myTable").LoadingOverlay("hide");
-  //           },
-  //           error:function(err){
-  //               alert("Error");
-  //               console.log(err);
-  //           },
-  //           success  : function(data){
-  //               $('#myTable').removeAttr('hidden');
-  //               $('#myTable').html(data);
-                
-  //               $('#myTable').DataTable({
-  //                 dom: 'lBfrtip', // if you remove this line you will see the show entries dropdown
+    $(document).on('change', '#structure', async function(e){
+      selected_structure = $(e.target).val();
+
+      await getCourse(selected_course,selected_structure,selected_intake);
+
+    })
+
+    $(document).on('change', '#intake', async function(e){
+      selected_intake = $(e.target).val();
+
+      await getCourse(selected_course,selected_structure,selected_intake);
+
+    })
+
+  function getCourse(course,structure,intake)
+  {
+    $('#myTable').DataTable().destroy();
+
+      return $.ajax({
+            headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
+            url      : "{{ url('AR/assignCourse/getCourse2') }}",
+            method   : 'POST',
+            data 	 : {course: course,structure: structure,intake: intake},
+            beforeSend:function(xhr){
+              $("#myTable").LoadingOverlay("show", {
+                image: `<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="24px" height="30px" viewBox="0 0 24 30" style="enable-background:new 0 0 50 50;" xml:space="preserve">
+                  <rect x="0" y="10" width="4" height="10" fill="#333" opacity="0.2">
+                  <animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0s" dur="0.6s" repeatCount="indefinite"></animate>
+                  <animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0s" dur="0.6s" repeatCount="indefinite"></animate>
+                  <animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0s" dur="0.6s" repeatCount="indefinite"></animate>
+                  </rect>
+                  <rect x="8" y="10" width="4" height="10" fill="#333" opacity="0.2">
+                  <animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0.15s" dur="0.6s" repeatCount="indefinite"></animate>
+                  <animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0.15s" dur="0.6s" repeatCount="indefinite"></animate>
+                  <animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0.15s" dur="0.6s" repeatCount="indefinite"></animate>
+                  </rect>
+                  <rect x="16" y="10" width="4" height="10" fill="#333" opacity="0.2">
+                  <animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0.3s" dur="0.6s" repeatCount="indefinite"></animate>
+                  <animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0.3s" dur="0.6s" repeatCount="indefinite"></animate>
+                  <animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0.3s" dur="0.6s" repeatCount="indefinite"></animate>
+                  </rect>
+                </svg>`,
+                background:"rgba(255,255,255, 0.3)",
+                imageResizeFactor : 1,    
+                imageAnimation : "2000ms pulse" , 
+                imageColor: "#019ff8",
+                text : "Please wait...",
+                textResizeFactor: 0.15,
+                textColor: "#019ff8",
+                textColor: "#019ff8"
+              });
+              $("#myTable").LoadingOverlay("hide");
+            },
+            error:function(err){
+                alert("Error");
+                console.log(err);
+            },
+            success  : function(data){
+                if(data.error)
+                {
+
+                  alert(data.error);
+
+                }else{
+                  $('#myTable').removeAttr('hidden');
+                  $('#myTable').html(data);
                   
-  //                 buttons: [
-  //                     'copy', 'csv', 'excel', 'pdf', 'print'
-  //                 ],
-  //               });
-  //               //window.location.reload();
-  //           }
-  //       });
-  // }
+                  $('#myTable').DataTable({
+                    dom: 'lBfrtip', // if you remove this line you will see the show entries dropdown
+                    
+                    buttons: [
+                        'copy', 'csv', 'excel', 'pdf', 'print'
+                    ],
+                  });
+                  //window.location.reload();
+                }
+              }
+        });
+  }
 
   function updateCourse(id)
   {
