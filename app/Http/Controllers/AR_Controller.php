@@ -234,24 +234,42 @@ class AR_Controller extends Controller
 
         $data = [
 
-            'course' => DB::table('subjek')->get(),
+            // 'course' => DB::table('subjek')->get(),
+            'program' => DB::table('tblprogramme')->get(),
             'structure' => DB::table('structure')->get(),
             'intake' => DB::table('sessions')->get(),
-            'assigned' => DB::table('subjek_structure')
-                        ->join('subjek', function($join)
-                        {
-                            $join->on('subjek_structure.courseID', 'subjek.sub_id');
-                            $join->on('subjek_structure.program_id', 'subjek.prgid');
-                            $join->on('subjek_structure.semester_id', 'subjek.semesterid');
-                        })
-                        ->leftjoin('structure', 'subjek_structure.structure', 'structure.id')
-                        ->leftjoin('sessions', 'subjek_structure.intake_id', 'sessions.SessionID')
-                        ->leftjoin('tblprogramme', 'subjek.prgid', 'tblprogramme.id')
-                        ->select('subjek_structure.id', 'subjek.course_name', 'subjek.course_code','structure.structure_name', 'sessions.SessionName', 'tblprogramme.progname')->get()
+            // 'assigned' => DB::table('subjek_structure')
+            //             ->join('subjek', function($join)
+            //             {
+            //                 $join->on('subjek_structure.courseID', 'subjek.sub_id');
+            //                 $join->on('subjek_structure.program_id', 'subjek.prgid');
+            //                 $join->on('subjek_structure.semester_id', 'subjek.semesterid');
+            //             })
+            //             ->leftjoin('structure', 'subjek_structure.structure', 'structure.id')
+            //             ->leftjoin('sessions', 'subjek_structure.intake_id', 'sessions.SessionID')
+            //             ->leftjoin('tblprogramme', 'subjek.prgid', 'tblprogramme.id')
+            //             ->select('subjek_structure.id', 'subjek.course_name', 'subjek.course_code','structure.structure_name', 'sessions.SessionName', 'tblprogramme.progname')->get()
 
         ];
 
         return view('pendaftar_akademik.course.assignSubject', compact('data'));
+
+    }
+
+    public function getCourse0(Request $request)
+    {
+        $course = DB::table('subjek')->where('prgid', $request->program)->get();
+
+        $content = "";
+
+        $content .= "<option value='0' disabled>-</option>";
+        foreach($course as $crs){
+
+            $content .= "<option value='". $crs->id ."'><strong>". $crs->course_name . "</strong> (" . $crs->course_code . ")</option>"; 
+
+        }
+        
+        return $content;
 
     }
 
