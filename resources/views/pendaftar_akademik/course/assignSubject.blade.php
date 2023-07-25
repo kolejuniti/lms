@@ -34,12 +34,23 @@
             <div class="col-md-12 mb-3">
               <div class="col-md-4 ml-3">
                 <div class="form-group">
-                    <label class="form-label" for="course">Course</label>
-                    <select class="form-select" id="course" name="course" style="height: 400px;width: 750px" multiple>
+                    <label class="form-label" for="program">Program</label>
+                    <select class="form-select" id="program" name="program">
                     <option value="-" selected disabled>-</option>
-                      @foreach ($data['course'] as $crs)
-                      <option value="{{ $crs->id }}">{{ $crs->course_name }} ({{ $crs->course_code }})</option> 
+                      @foreach ($data['program'] as $prg)
+                      <option value="{{ $prg->id }}">{{ $prg->progname }} ({{ $prg->progcode }})</option> 
                       @endforeach
+                    </select>
+                </div>
+              </div>
+              <div class="col-md-4 ml-3">
+                <div class="form-group">
+                    <label class="form-label" for="course">Course</label>
+                    <select class="form-select" id="course" name="course" style="height: 400px" multiple>
+                    <option value="-" selected disabled>-</option>
+                      {{-- @foreach ($data['course'] as $crs)
+                      <option value="{{ $crs->id }}">{{ $crs->course_name }} ({{ $crs->course_code }})</option> 
+                      @endforeach --}}
                     </select>
                 </div>
               </div>
@@ -258,12 +269,38 @@
   </script>
 
   <script type="text/javascript">
+    var selected_program = "";
     var selected_course = "";
     var selected_structure = "";
     var selected_intake = "";
 
     var url = window.location.href;
 
+    $(document).on('change', '#program', function(e){
+      selected_program = $(e.target).val();
+
+       getCourse0(selected_program);
+
+    })
+
+    function getCourse0(program)
+    {
+
+        return $.ajax({
+                headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
+                url      : "{{ url('AR/assignCourse/getCourse0') }}",
+                method   : 'POST',
+                data 	 : {program: program},
+                error:function(err){
+                    alert("Error");
+                    console.log(err);
+                },
+                success  : function(data){
+                    $('#course').html(data);
+                }
+            });
+        
+    }
 
     $(document).on('change', '#course', async function(e){
       selected_course = $(e.target).val();
