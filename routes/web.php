@@ -117,6 +117,7 @@ Route::post('/AR/course/create', [App\Http\Controllers\AR_Controller::class, 'cr
 Route::delete('/AR/course/delete', [App\Http\Controllers\AR_Controller::class, 'deleteCourse'])->name('pendaftar_akademik.delete');
 Route::post('/AR/course/update', [App\Http\Controllers\AR_Controller::class, 'updateCourse']);
 Route::get('/AR/assignCourse', [App\Http\Controllers\AR_Controller::class, 'assignCourse'])->name('pendaftar_akademik.assignCourse');
+Route::post('/AR/assignCourse/getCourse0', [App\Http\Controllers\AR_Controller::class, 'getCourse0']);
 Route::post('/AR/assignCourse/getCourse2', [App\Http\Controllers\AR_Controller::class, 'getCourse2']);
 Route::post('/AR/assignCourse/addCourse', [App\Http\Controllers\AR_Controller::class, 'addCourse']);
 Route::delete('/AR/assignCourse/deleteCourse2', [App\Http\Controllers\AR_Controller::class, 'deleteCourse2']);
