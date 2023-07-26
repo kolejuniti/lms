@@ -1432,6 +1432,8 @@ class FinanceController extends Controller
                     }
                 }
 
+                $alert = ['message' => 'Success'];
+
             }else{
 
                 DB::table('students')->where('ic', $student->ic)->update([
