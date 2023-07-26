@@ -1371,7 +1371,8 @@ class FinanceController extends Controller
                         $tabungs = DB::table('tbltabungkhas')
                                 ->join('tblprocess_type', 'tbltabungkhas.process_type_id', 'tblprocess_type.id')
                                 ->where([
-                                    ['tbltabungkhas.package_id', $spn->package_id]
+                                    ['tbltabungkhas.package_id', $spn->package_id],
+                                    ['tbltabungkhas.intake_id', $student->intake]
                                 ])->select('tbltabungkhas.*', 'tblprocess_type.code');
 
                         if($tabungs->exists())
@@ -1380,7 +1381,7 @@ class FinanceController extends Controller
 
                             foreach($tabung as $key => $tbg)
                             {
-                                if($student->intake == $tbg->intake_id)
+                                if(DB::table('tbltabungkhas_program')->where([['tabungkhas_id', $tbg->id],['program_id', $student->program]])->exists())
                                 {
                                     $ref_no = DB::table('tblref_no')->where('id', 8)->first();
 
