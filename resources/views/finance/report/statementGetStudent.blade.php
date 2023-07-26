@@ -95,7 +95,7 @@
                                     @endif
                                     </td>
                                     <td>
-                                    @if (array_intersect([1,6,7,8,9,15,16], (array) $req->process_type_id))
+                                    @if (array_intersect([1,6,7,8,9,15,16,17], (array) $req->process_type_id))
                                     {{ number_format($req->amount, 2) }}
                                     @else
                                     0.00
