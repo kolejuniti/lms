@@ -1215,7 +1215,7 @@ class FinanceController extends Controller
                 'campus_id' => 1
             ]);
 
-            if($student->semester == 1)
+            if($student->semester != 1)
             {
 
                 //check if subject exists
@@ -1278,11 +1278,6 @@ class FinanceController extends Controller
                     $alert = ['message' => 'Success'];
 
                 }
-
-            }
-
-            if($student->semester != 1)
-            {
 
                 //PENAJA
 
@@ -1432,8 +1427,6 @@ class FinanceController extends Controller
                         }
                     }
                 }
-
-                $alert = ['message' => 'Success'];
 
             }else{
 
