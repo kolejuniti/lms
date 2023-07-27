@@ -378,7 +378,9 @@ class FinanceController extends Controller
         $data['student'] = DB::table('students')
                            ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
                            ->join('tblprogramme', 'students.program', 'tblprogramme.id')
-                           ->select('students.*', 'tblstudent_status.name AS status', 'tblprogramme.progname AS program')
+                           ->join('sessions AS t1', 'students.intake', 't1.SessionID')
+                           ->join('sessions AS t2', 'students.session', 't2.SessionID')
+                           ->select('students.*', 'tblstudent_status.name AS status', 'tblprogramme.progname AS program', 'students.program AS progid', 't1.SessionName AS intake_name', 't2.SessionName AS session_name')
                            ->where('ic', $request->student)->first();
 
         $data['method'] = DB::table('tblpayment_method')->get();
@@ -819,13 +821,14 @@ class FinanceController extends Controller
         $data['student'] = DB::table('students')
                            ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
                            ->join('tblprogramme', 'students.program', 'tblprogramme.id')
-                           ->join('sessions', 'students.session', 'sessions.SessionID')
-                           ->select('students.*', 'tblstudent_status.name AS status', 'tblprogramme.progname AS program', 'tblprogramme.id AS programID','sessions.SessionName AS session')
+                           ->join('sessions AS t1', 'students.intake', 't1.SessionID')
+                           ->join('sessions AS t2', 'students.session', 't2.SessionID')
+                           ->select('students.*', 'tblstudent_status.name AS status', 'tblprogramme.progname AS program', 'students.program AS progid', 't1.SessionName AS intake_name', 't2.SessionName AS session_name')
                            ->where('ic', $request->student)->first();
 
         $data['claim'] = DB::table('tblstudentclaimpackage')
                          ->where([
-                            ['program_id', $data['student']->programID],
+                            ['program_id', $data['student']->progid],
                             ['intake_id', $data['student']->intake]
                             ])->join('tblstudentclaim', 'tblstudentclaimpackage.claim_id', 'tblstudentclaim.id')
                             ->distinct('tblstudentclaimpackage.claim_id')
@@ -1459,7 +1462,9 @@ class FinanceController extends Controller
         $data['student'] = DB::table('students')
                            ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
                            ->join('tblprogramme', 'students.program', 'tblprogramme.id')
-                           ->select('students.*', 'students.program AS programID', 'tblstudent_status.name AS status', 'tblprogramme.progname AS program')
+                           ->join('sessions AS t1', 'students.intake', 't1.SessionID')
+                           ->join('sessions AS t2', 'students.session', 't2.SessionID')
+                           ->select('students.*', 'tblstudent_status.name AS status', 'tblprogramme.progname AS program', 'students.program AS progid', 't1.SessionName AS intake_name', 't2.SessionName AS session_name')
                            ->where('ic', $request->student)->first();
 
         $data['method'] = DB::table('tblpayment_method')->get();
@@ -1470,7 +1475,7 @@ class FinanceController extends Controller
                             ->join('tblclaim', 'tblclaimdtl.claim_id', 'tblclaim.id')
                             ->join('tblstudentclaim', 'tblclaimdtl.claim_package_id', 'tblstudentclaim.id')
                             ->where('tblclaim.student_ic', $request->student)
-                            ->where('tblclaim.program_id', $data['student']->programID)
+                            ->where('tblclaim.program_id', $data['student']->progid)
                             ->where('tblclaim.process_status_id', 2)->where('tblclaim.process_type_id', '!=', 5)
                             ->select('tblclaimdtl.*', 'tblclaim.session_id', 'tblclaim.semester_id', 'tblstudentclaim.name')->get();
 
@@ -2503,14 +2508,16 @@ class FinanceController extends Controller
         $data['student'] = DB::table('students')
                            ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
                            ->join('tblprogramme', 'students.program', 'tblprogramme.id')
-                           ->select('students.*', 'students.program AS programID','tblstudent_status.name AS status', 'tblprogramme.progname AS program')
+                           ->join('sessions AS t1', 'students.intake', 't1.SessionID')
+                           ->join('sessions AS t2', 'students.session', 't2.SessionID')
+                           ->select('students.*', 'tblstudent_status.name AS status', 'tblprogramme.progname AS program', 'students.program AS progid', 't1.SessionName AS intake_name', 't2.SessionName AS session_name')
                            ->where('ic', $request->student)->first();
 
         $data['tuition'] = DB::table('tblclaimdtl')
                             ->join('tblclaim', 'tblclaimdtl.claim_id', 'tblclaim.id')
                             ->join('tblstudentclaim', 'tblclaimdtl.claim_package_id', 'tblstudentclaim.id')
                             ->where('tblclaim.student_ic', $request->student)
-                            ->where('tblclaim.program_id', $data['student']->programID)
+                            ->where('tblclaim.program_id', $data['student']->progid)
                             ->where('tblclaim.process_status_id', 2)->where('tblclaim.process_type_id', '!=', 5)
                             ->select('tblclaimdtl.*', 'tblclaim.session_id', 'tblclaim.semester_id', 'tblstudentclaim.name')->get();
 
@@ -2755,7 +2762,9 @@ class FinanceController extends Controller
         $data['student'] = DB::table('students')
                            ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
                            ->join('tblprogramme', 'students.program', 'tblprogramme.id')
-                           ->select('students.*', 'tblstudent_status.name AS status', 'tblprogramme.progname AS program', 'students.program AS progid')
+                           ->join('sessions AS t1', 'students.intake', 't1.SessionID')
+                           ->join('sessions AS t2', 'students.session', 't2.SessionID')
+                           ->select('students.*', 'tblstudent_status.name AS status', 'tblprogramme.progname AS program', 'students.program AS progid', 't1.SessionName AS intake_name', 't2.SessionName AS session_name')
                            ->where('ic', $request->student)->first();
 
         $record = DB::table('tblpaymentdtl')
@@ -4245,7 +4254,9 @@ class FinanceController extends Controller
         $data['student'] = DB::table('students')
                            ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
                            ->join('tblprogramme', 'students.program', 'tblprogramme.id')
-                           ->select('students.*', 'tblstudent_status.name AS status', 'tblprogramme.progname AS program')
+                           ->join('sessions AS t1', 'students.intake', 't1.SessionID')
+                           ->join('sessions AS t2', 'students.session', 't2.SessionID')
+                           ->select('students.*', 'tblstudent_status.name AS status', 'tblprogramme.progname AS program', 'students.program AS progid', 't1.SessionName AS intake_name', 't2.SessionName AS session_name')
                            ->where('ic', $request->student)->first();
 
         $data['method'] = DB::table('tblpayment_method')->get();
@@ -5131,7 +5142,9 @@ class FinanceController extends Controller
         $data['student'] = DB::table('students')
                            ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
                            ->join('tblprogramme', 'students.program', 'tblprogramme.id')
-                           ->select('students.*', 'tblstudent_status.name AS status', 'tblprogramme.progname AS program')
+                           ->join('sessions AS t1', 'students.intake', 't1.SessionID')
+                           ->join('sessions AS t2', 'students.session', 't2.SessionID')
+                           ->select('students.*', 'tblstudent_status.name AS status', 'tblprogramme.progname AS program', 'students.program AS progid', 't1.SessionName AS intake_name', 't2.SessionName AS session_name')
                            ->where('ic', $request->student)->first();
 
         $data['voucher'] = DB::table('tblstudent_voucher')
