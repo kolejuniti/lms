@@ -945,10 +945,13 @@ class PendaftarController extends Controller
 
     public function spmIndex()
     {
+        
         $data['student'] = DB::table('students')
                            ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
                            ->join('tblprogramme', 'students.program', 'tblprogramme.id')
-                           ->select('students.*', 'tblstudent_status.name AS status', 'tblprogramme.progname AS program')
+                           ->join('sessions AS t1', 'students.intake', 't1.SessionID')
+                           ->join('sessions AS t2', 'students.session', 't2.SessionID')
+                           ->select('students.*', 'tblstudent_status.name AS status', 'tblprogramme.progname AS program', 'students.program AS progid', 't1.SessionName AS intake_name', 't2.SessionName AS session_name')
                            ->where('ic', request()->ic)->first();
 
         $data['spm'] = DB::table('tblstudent_spm')
@@ -1054,10 +1057,12 @@ class PendaftarController extends Controller
     public function getStudentInfo(Request $request)
     {
 
-        $data['student'] = DB::table('students')
+                           $data['student'] = DB::table('students')
                            ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
                            ->join('tblprogramme', 'students.program', 'tblprogramme.id')
-                           ->select('students.*', 'tblstudent_status.name AS statusName', 'tblprogramme.progname AS program')
+                           ->join('sessions AS t1', 'students.intake', 't1.SessionID')
+                           ->join('sessions AS t2', 'students.session', 't2.SessionID')
+                           ->select('students.*', 'tblstudent_status.name AS statusName', 'tblprogramme.progname AS program', 'students.program AS progid', 't1.SessionName AS intake_name', 't2.SessionName AS session_name')
                            ->where('ic', $request->student)->first();
 
         $data['history'] = DB::table('tblstudent_log')
