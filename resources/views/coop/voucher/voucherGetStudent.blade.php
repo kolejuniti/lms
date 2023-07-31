@@ -54,6 +54,12 @@
                 </div> 
                 <div class="col-md-6" id="payment-card">
                     <div class="form-group">
+                        <label class="form-label" for="date">Expiry Date</label>
+                        <input type="date" class="form-control" name="date" id="date" value="{{ $data['voucher']->expiry_date }}" readonly>
+                    </div>
+                </div>
+                <div class="col-md-6" id="payment-card">
+                    <div class="form-group">
                         <label class="form-label" for="date">Redeem Date</label>
                         <input type="date" class="form-control" name="date" id="date" value="{{ $data['voucher']->redeem_date }}" readonly>
                     </div>
@@ -70,3 +76,14 @@
             </div>
         </div>
     </div>
+
+
+    @if (isset($error))
+    <script>
+        // JavaScript code to display the alert
+        if('{{ $error }}' != '')
+        {
+            alert('{{ $error }}');
+        }
+    </script>
+    @endif
