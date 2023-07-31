@@ -67,11 +67,23 @@ class CoopController extends Controller
 
     public function redeemVoucher(Request $request)
     {
+        $error = '';
+        $today = date('Y-m-d');
 
-        DB::table('tblstudent_voucher')->where('id', $request->id)->update([
-            'status' => 2,
-            'redeem_date' => date('Y-m-d')
-        ]);
+        $voucher = DB::table('tblstudent_voucher')->where('id', $request->id)->first();
+
+        if($today >= $voucher->expiry_date) {
+
+            $error = 'Voucher Expired!';
+
+        }else{
+
+            DB::table('tblstudent_voucher')->where('id', $request->id)->update([
+                'status' => 2,
+                'redeem_date' => date('Y-m-d')
+            ]);
+
+        }
 
         $voucher = DB::table('tblstudent_voucher')->where('id', $request->id)->first();
 
@@ -83,7 +95,7 @@ class CoopController extends Controller
                            ->select('students.*', 'tblstudent_status.name AS status', 'tblprogramme.progname AS program')
                            ->where('ic', $data['voucher']->student_ic)->first();
 
-        return view('coop.voucher.voucherGetStudent', compact('data'));
+        return view('coop.voucher.voucherGetStudent', compact('data'))->with('error', $error);
     }
 
     public function dailyReport()

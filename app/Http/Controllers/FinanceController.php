@@ -5179,7 +5179,7 @@ class FinanceController extends Controller
             try{
                 $voucher = json_decode($voucherDetail);
                 
-                if($voucher->from != null && $voucher->to != null && $voucher->amount != null)
+                if($voucher->from != null && $voucher->to != null && $voucher->amount != null && $voucher->expired != null)
                 {
 
                     $prefix = substr($voucher->from, 0, 1); // Get the prefix from the first user input
@@ -5234,6 +5234,7 @@ class FinanceController extends Controller
                                 'amount' => $voucher->amount,
                                 'status' => 1,
                                 'redeem_date' => null,
+                                'expiry_date' => $voucher->expired,
                                 'staff_ic' => Auth::user()->ic,
                                 'add_date' => date('Y-m-d')
                             ]);
