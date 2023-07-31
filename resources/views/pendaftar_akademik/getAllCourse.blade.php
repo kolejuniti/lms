@@ -133,6 +133,9 @@
                             <th style="width: 5%">
                             Semester
                             </th>
+                            <th style="width: 5%">
+                            Session
+                            </th>
                             <th style="width: 20%">
                             </th>
                         </tr>
@@ -154,6 +157,9 @@
                                 </td>
                                 <td>
                                 {{ $crs->semester }}
+                                </td>
+                                <td>
+                                {{ $crs->SessionName }}
                                 </td>
                                 @if(Auth::user()->usrtype == 'AR')
                                 <td style="text-align: center;">
