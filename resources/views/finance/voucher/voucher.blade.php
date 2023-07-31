@@ -186,6 +186,7 @@ function add(ic)
     from: $('#from').val(),
     to: $('#to').val(),
     amount: $('#amount').val(),
+    expired: $('#expired').val(),
   };
 
   formData.append('voucherDetail', JSON.stringify(forminput));

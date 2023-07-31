@@ -86,6 +86,14 @@
                 </div> 
             </div>
             <div class="row">
+                <div class="col-md-2" id="amount-card">
+                    <div class="form-group">
+                        <label class="form-label" for="amount">Expiry Date</label>
+                        <input type="date" class="form-control" name="expired" id="expired">
+                    </div>
+                </div> 
+            </div>
+            <div class="row">
                 <div class="col-md-12 mt-3">
                     <div class="form-group mt-3">
                     <button type="submit" class="btn btn-primary pull-right mb-3" onclick="add('{{ $data['student']->ic }}')">Add</button>
