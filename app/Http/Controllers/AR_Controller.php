@@ -555,11 +555,12 @@ class AR_Controller extends Controller
         $getCourse =  DB::table('student_subjek')
                       ->join('students', 'student_subjek.student_ic', 'students.ic')
                       ->join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
+                      ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
                     //   ->where('student_subjek.sessionid', $data['student']->session)
                       ->where('students.ic', $data['student']->ic)
                       ->where('subjek.prgid', $data['student']->program);
 
-        $data['allCourse'] = $getCourse->select('student_subjek.id as IDS','student_subjek.courseid', 'student_subjek.semesterid AS semester', 'subjek.*')->orderBy('student_subjek.semesterid')->get();
+        $data['allCourse'] = $getCourse->select('student_subjek.id as IDS', 'student_subjek.courseid', 'student_subjek.semesterid AS semester', 'sessions.SessionName', 'subjek.*')->orderBy('student_subjek.semesterid')->get();
 
         $crsExists = $getCourse->where('student_subjek.course_status_id', '!=', 2)->pluck('student_subjek.courseid')->toArray();
 
