@@ -127,7 +127,7 @@
                         Status
                     </th>
                     <th>
-                        Total View
+                        Total View / Reach
                     </th>
                     <th>
                         Total Comment
@@ -139,47 +139,60 @@
                         Total Share
                     </th>
                     <th>
+                        Total Save / Bookmark
+                    </th>
+                    <th>
                     </th>
                 </tr>
             </thead>
             <tbody id="table">
-            @foreach ($data['post'] as $key=> $pst)
+            @foreach ($data['post'] as $key => $pst)
               <tr>
                 <td style="width: 1%">
                   {{ $key+1 }}
                 </td>
-                <th>
+                <td>
                   {{ $pst->date }}
                 </td>
-                <th>
+                <td>
                   {{ $pst->post_date }}
                 </td>
-                <th>
+                <td>
                   {{ $pst->channel }}
                 </td>
-                <th>
+                <td>
                   {{ $pst->title }}
                 </td>
-                <th class="compact-cell">
+                <td class="compact-cell">
                   <a href="{{ $pst->link }}" target="_blank" class="short-link">{{ $pst->link }}</a>
-                </th>
-                <th>
+                </td>
+                <td>
                   {{ $pst->channel_type }}
                 </td>
-                <th>
+                <td>
                   {{ $pst->status }}
                 </td>
-                <th>
+                <td>
                   {{ $pst->total_view }}
                 </td>
-                <th>
+                {{-- @if(isset($data['history'][$key]))
+                  @foreach($data['history'][$key] as $key2 => $history)
+                  <td>
+                    {{ $history->total_view }}
+                  </td>
+                  @endforeach
+                @endif --}}
+                <td>
                   {{ $pst->total_comment }}
                 </td>
-                <th>
+                <td>
                   {{ $pst->total_like }}
                 </td>
-                <th>
+                <td>
                   {{ $pst->total_share }}
+                </td>
+                <td>
+                  {{ $pst->total_save }}
                 </td>
                 <td class="project-actions text-right" style="text-align: center;">
                   {{-- <button class="btn btn-info btn-sm btn-sm mr-2" data-toggle="modal" data-target="#fbModal">
@@ -286,26 +299,32 @@
                         </div>
                         <div>
                           <div class="form-group">
-                            <label>Total View</label>
-                            <input type="number" name="view" id="view" class="form-control" required>
+                            <label>Total View / Reach</label>
+                            <input type="number" name="view" id="view" class="form-control" value="0" required>
                           </div>
                         </div>
                         <div>
                           <div class="form-group">
                             <label>Total Comment</label>
-                            <input type="number" name="comment" id="comment" class="form-control" required>
+                            <input type="number" name="comment" id="comment" class="form-control" value="0" required>
                           </div>
                         </div>
                         <div>
                           <div class="form-group">
                             <label>Total Like</label>
-                            <input type="number" name="like" id="like" class="form-control" required>
+                            <input type="number" name="like" id="like" class="form-control" value="0" required>
                           </div>
                         </div>
                         <div>
                           <div class="form-group">
                             <label>Total Share</label>
-                            <input type="number" name="share" id="share" class="form-control" required>
+                            <input type="number" name="share" id="share" class="form-control" value="0" required>
+                          </div>
+                        </div>
+                        <div>
+                          <div class="form-group">
+                            <label>Total Save</label>
+                            <input type="number" name="save" id="save" class="form-control" value="0" required>
                           </div>
                         </div>
                       </div>

@@ -35,7 +35,7 @@
                     Status
                 </th>
                 <th>
-                    Total View
+                    Total View / Reach
                 </th>
                 <th>
                     Total Comment
@@ -45,6 +45,9 @@
                 </th>
                 <th>
                     Total Share
+                </th>
+                <th>
+                    Total Save / Bookmark
                 </th>
                 <th>
                     Latest Update
@@ -95,6 +98,9 @@
                 </td>
                 <th>
                   {{ $pst->total_share }}
+                </td>
+                <th>
+                  {{ $pst->total_save }}
                 </td>
                 <th>
                   {{ $pst->update_view }}

@@ -136,7 +136,7 @@
                       Status
                   </th>
                   <th>
-                      Total View
+                      Total View / Reach
                   </th>
                   <th>
                       Total Comment
@@ -146,6 +146,12 @@
                   </th>
                   <th>
                       Total Share
+                  </th>
+                  <th>
+                      Total Save / Bookmark
+                  </th>
+                  <th>
+                      Latest Update
                   </th>
                 </tr>
             </thead>

@@ -87,6 +87,12 @@
             <input type="number" name="share" id="share" class="form-control"  value="{{ $data['post']->total_share }}" required>
           </div>
         </div>
+        <div>
+          <div class="form-group">
+            <label>Total Save</label>
+            <input type="number" name="save" id="save" class="form-control"  value="{{ $data['post']->total_save }}" required>
+          </div>
+        </div>
       </div>
     </div>
     <div class="modal-footer">
