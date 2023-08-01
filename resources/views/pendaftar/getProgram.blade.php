@@ -38,12 +38,7 @@
             <td style="width: 15%">
               {{ $prg->progname }}
             </td>
-            <td>
-              {{ $intake[$key]->SessionName }}
-            </td>
-            <td>
-              {{ $batch[$key]->SessionName }}
-            </td>
+        
             <td>
               {{ $prg->session }}
             </td>
