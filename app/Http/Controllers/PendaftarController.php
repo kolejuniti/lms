@@ -791,6 +791,10 @@ class PendaftarController extends Controller
                 'session' => $oldstd->session
             ]);
 
+            DB::table('students')->where('ic', $data['id'])->update([
+                'status' => 1
+            ]);
+
         }
 
         DB::table('students')->where('ic', $data['id'])->update([
