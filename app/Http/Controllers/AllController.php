@@ -30,6 +30,13 @@ class AllController extends Controller
 
         $data['post'] = DB::table('tblposting')->where('staff_ic', $data['user']->ic)->get();
 
+        foreach($data['post'] as $key => $post)
+        {
+
+            $data['history'][$key] = DB::table('tblposting_history')->where('post_id', $post->id)->get();
+
+        }
+
         return view('alluser.post.post', compact('data'));
 
     }
@@ -52,10 +59,22 @@ class AllController extends Controller
                 'total_comment' => $request->comment,
                 'total_like' => $request->like,
                 'total_share' => $request->share,
+                'total_save' => $request->save,
                 'update_view' => date('Y-m-d'),
                 'update_comment' => date('Y-m-d'),
                 'update_like' => date('Y-m-d'),
-                'update_share' => date('Y-m-d')
+                'update_share' => date('Y-m-d'),
+                'update_save' => date('Y-m-d')
+            ]);
+
+            DB::table('tblposting_history')->insert([
+                'post_id' => $request->idS,
+                'update_date' => date('Y-m-d'),
+                'total_view' => $request->view,
+                'total_comment' => $request->comment,
+                'total_like' => $request->like,
+                'total_share' => $request->share,
+                'total_save' => $request->save,
             ]);
 
             $alert =  'Post successfully updated!';
@@ -74,7 +93,8 @@ class AllController extends Controller
                 'total_view' => $request->view,
                 'total_comment' => $request->comment,
                 'total_like' => $request->like,
-                'total_share' => $request->share
+                'total_share' => $request->share,
+                'total_save' => $request->save
             ]);
 
             $alert =  'Post successfully added!';
