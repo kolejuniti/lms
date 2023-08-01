@@ -906,7 +906,7 @@ class PendaftarController extends Controller
     
                    
 
-        return view('pendaftar.getProgram', compact(['programs', 'intake', 'batch']));
+        return view('pendaftar.getProgram', compact(['programs']));
 
     }
 
