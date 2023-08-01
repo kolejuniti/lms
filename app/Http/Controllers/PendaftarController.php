@@ -241,7 +241,7 @@ class PendaftarController extends Controller
                                     </i>
                                     SPM
                                 </a>
-                                <a class="btn btn-secondary btn-sm btn-sm mr-2 mb-2" href="#" onclick="getProgram('. $student->ic .')">
+                                <a class="btn btn-secondary btn-sm btn-sm mr-2 mb-2" href="#" onclick="getProgram(\''. $student->ic .'\')">
                                     <i class="ti-eye">
                                     </i>
                                     Program History
@@ -256,7 +256,7 @@ class PendaftarController extends Controller
                             ';
                 }else{
                     $content .= '<td class="project-actions text-right" >
-                    <a class="btn btn-secondary btn-sm btn-sm mr-2" href="#" onclick="getProgram('. $student->ic .')">
+                    <a class="btn btn-secondary btn-sm btn-sm mr-2" href="#" onclick="getProgram(\''. $student->ic .'\')">
                         <i class="ti-eye">
                         </i>
                         Program History
@@ -433,7 +433,7 @@ class PendaftarController extends Controller
                                 </i>
                                 SPM
                             </a>
-                            <a class="btn btn-secondary btn-sm btn-sm mr-2 mb-2" href="#" onclick="getProgram('. $student->ic .')">
+                            <a class="btn btn-secondary btn-sm btn-sm mr-2 mb-2" href="#" onclick="getProgram(\''. $student->ic .'\')">
                                 <i class="ti-eye">
                                 </i>
                                 Program History
