@@ -903,13 +903,7 @@ class PendaftarController extends Controller
                     ->join('tblprogramme', 'student_program.program_id', 'tblprogramme.id')
                     ->where('student_ic', $request->ic)->get();
         
-        $intake = DB::table('student_program')
-                  ->join('sessions', 'student_program.intake', 'sessions.SessionID')
-                  ->where('student_ic', $request->ic)->get();
-
-        $batch = DB::table('student_program')
-                 ->join('sessions', 'student_program.batch', 'sessions.SessionID')
-                 ->where('student_ic', $request->ic)->get();
+    
                    
 
         return view('pendaftar.getProgram', compact(['programs', 'intake', 'batch']));
