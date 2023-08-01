@@ -281,10 +281,24 @@
                         </div>
                       </div>
                       <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-6 mb-2">
                           <div class="form-group">
                             <label class="form-label" for="dt">Date/Time</label>
                             <input type="datetime-local" class="form-control" id="dt" placeholder="Enter Bank Name" name="dt">
+                          </div>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                          <div class="form-group">
+                            <label class="form-label" for="jkm">JKM</label>
+                            <input type="text" class="form-control" id="jkm" name="jkm">
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-6">
+                          <div class="form-group">
+                              <input type="checkbox" id="oku" class="filled-in" name="oku" value="1">
+                              <label for="oku">OKU</label>
                           </div>
                         </div>
                       </div>
