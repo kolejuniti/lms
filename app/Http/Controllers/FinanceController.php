@@ -1437,6 +1437,8 @@ class FinanceController extends Controller
                     'date' => date('Y-m-d')
                 ]);
 
+                $alert = ['message' => 'Success'];
+
             }
 
         }else{
