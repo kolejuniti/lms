@@ -828,7 +828,9 @@ class PendaftarController extends Controller
             'no_telhome' => $request->np3,
             'dun' => $request->dun,
             'parlimen' => $request->parlimen,
-            'qualification' => $request->qualification
+            'qualification' => $request->qualification,
+            'oku' => $request->oku,
+            'no_jkm' => $request->jkm
         ]);
 
         DB::table('tblstudent_pass')->updateOrInsert(
