@@ -438,7 +438,7 @@ class PendaftarController extends Controller
                                 </i>
                                 Program History
                             </a>
-                            <!-- <a class="btn btn-danger btn-sm" href="#" onclick="deleteMaterial('. $student->ic .')">
+                            <!-- <a class="btn btn-danger btn-sm" href="#" onclick="deleteMaterial(\''. $student->ic .'\')">
                                 <i class="ti-trash">
                                 </i>
                                 Delete
