@@ -1065,7 +1065,7 @@ class PendaftarController extends Controller
     public function getStudentInfo(Request $request)
     {
 
-                           $data['student'] = DB::table('students')
+        $data['student'] = DB::table('students')
                            ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
                            ->join('tblprogramme', 'students.program', 'tblprogramme.id')
                            ->join('sessions AS t1', 'students.intake', 't1.SessionID')
@@ -1079,6 +1079,32 @@ class PendaftarController extends Controller
                            ->where('student_ic', $request->student)
                            ->get();
 
+        foreach($data['history'] as $key => $log)
+        {
+
+            if($log->kuliah_id == 1)
+            {
+
+                $kuliah[$key] = 'Holding';
+
+            }elseif($log->kuliah_id == 2)
+            {
+
+                $kuliah[$key] = 'Kuliah';
+
+            }elseif($log->kuliah_id == 4)
+            {
+
+                $kuliah[$key] = 'Latihan Industri';
+
+            }else{
+
+                $kuliah[$key] = '';
+
+            }
+
+        }
+
         $data['session'] = DB::table('sessions')->get();
 
         $data['semester'] = DB::table('semester')->get();
@@ -1087,7 +1113,7 @@ class PendaftarController extends Controller
 
         $data['batch'] = DB::table('tblbatch')->get();
 
-        return view('pendaftar.updateGetStudent', compact('data'));
+        return view('pendaftar.updateGetStudent', compact('data', 'kuliah'));
 
     }
 
