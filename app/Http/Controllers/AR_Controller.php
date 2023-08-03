@@ -974,6 +974,24 @@ class AR_Controller extends Controller
             'campus_id' => 0,
         ]);
 
+        foreach($request->leave AS $matric)
+        {
+            $student = UserStudent::where('no_matric', $matric)->first();
+
+
+            DB::table('tblstudent_log')->insert([
+                'student_ic' => $student->ic,
+                'session_id' => $student->session,
+                'semester_id' => $student->semester,
+                'status_id' => $student->status,
+                'kuliah_id' => 0,
+                'date' => date("Y-m-d H:i:s"),
+                'remark' => null,
+                'add_staffID' => Auth::user()->ic
+            ]);
+
+        }
+        
         return ['message' => 'success'];
 
     }
@@ -984,6 +1002,24 @@ class AR_Controller extends Controller
         DB::table('students')->whereIn('no_matric', $request->campus)->update([
             'campus_id' => 1,
         ]);
+
+        foreach($request->campus AS $campus)
+        {
+            $student = UserStudent::where('no_matric', $campus)->first();
+
+
+            DB::table('tblstudent_log')->insert([
+                'student_ic' => $student->ic,
+                'session_id' => $student->session,
+                'semester_id' => $student->semester,
+                'status_id' => $student->status,
+                'kuliah_id' => 1,
+                'date' => date("Y-m-d H:i:s"),
+                'remark' => null,
+                'add_staffID' => Auth::user()->ic
+            ]);
+
+        }
 
         return ['message' => 'success'];
 
@@ -1020,7 +1056,7 @@ class AR_Controller extends Controller
 
         $student = DB::table('students')->where('no_matric', $request->no_matric)->first();
 
-        if($request->session != '')
+        if($request->session != '' && $request->session != $student->session)
         {
 
             DB::table('students')->where('no_matric', $request->no_matric)->update([
@@ -1028,9 +1064,22 @@ class AR_Controller extends Controller
                 'semester' => $student->semester + 1
             ]);
 
+            $userUpt = UserStudent::where('no_matric', $request->no_matric)->first();
+
+            DB::table('tblstudent_log')->insert([
+                'student_ic' => $userUpt->ic,
+                'session_id' => $userUpt->session,
+                'semester_id' => $userUpt->semester,
+                'status_id' => $userUpt->status,
+                'kuliah_id' => $userUpt->campus_id,
+                'date' => date("Y-m-d H:i:s"),
+                'remark' => null,
+                'add_staffID' => Auth::user()->ic
+            ]);
+
         }else{
 
-            return ['message' => 'Please fill all required field!'];
+            return ['message' => 'Please fill all required field and cannot be the same semester!'];
 
         }
 

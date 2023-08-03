@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Session;
 use App\Models\student;
 use App\Models\User;
+use App\Models\UserStudent;
 use App\Models\subject;
 use Input;
 
@@ -601,6 +602,17 @@ class PendaftarController extends Controller
             'date_mod' => date('Y-m-d')
         ]);
 
+        DB::table('tblstudent_log')->insert([
+            'student_ic' => $data['id'],
+            'session_id' => $data['session'],
+            'semester_id' => 1,
+            'status_id' => 1,
+            'kuliah_id' => 0,
+            'date' => date("Y-m-d H:i:s"),
+            'remark' => null,
+            'add_staffID' => Auth::user()->ic
+        ]);
+
         DB::table('tblstudent_personal')->insert([
             'student_ic' => $data['id'],
             'date_birth' => $request->birth_date,
@@ -1082,20 +1094,36 @@ class PendaftarController extends Controller
         foreach($data['history'] as $key => $log)
         {
 
-            if($log->kuliah_id == 1)
+            // if($log->kuliah_id == 1)
+            // {
+
+            //     $kuliah[$key] = 'Holding';
+
+            // }elseif($log->kuliah_id == 2)
+            // {
+
+            //     $kuliah[$key] = 'Kuliah';
+
+            // }elseif($log->kuliah_id == 4)
+            // {
+
+            //     $kuliah[$key] = 'Latihan Industri';
+
+            // }else{
+
+            //     $kuliah[$key] = '';
+
+            // }
+
+            if($log->kuliah_id == 0)
             {
 
-                $kuliah[$key] = 'Holding';
+                $kuliah[$key] = 'No';
 
             }elseif($log->kuliah_id == 2)
             {
 
-                $kuliah[$key] = 'Kuliah';
-
-            }elseif($log->kuliah_id == 4)
-            {
-
-                $kuliah[$key] = 'Latihan Industri';
+                $kuliah[$key] = 'Yes';
 
             }else{
 
@@ -1136,6 +1164,8 @@ class PendaftarController extends Controller
 
             try{
                 $student = json_decode($studentData);
+
+                $stds = UserStudent::where('ic', $student->ic)->value('campus_id');
                 
                 DB::table('students')->where('ic', $student->ic)->update([
                     'intake' => $student->intake,
@@ -1151,9 +1181,10 @@ class PendaftarController extends Controller
                     'session_id' => $student->session,
                     'semester_id' => $student->semester,
                     'status_id' => $student->status,
-                    'kuliah_id' => $student->kuliah,
+                    'kuliah_id' => $stds,
                     'date' => date("Y-m-d H:i:s"),
-                    'remark' => $student->comment
+                    'remark' => $student->comment,
+                    'add_staffID' => Auth::user()->ic
                 ]);
 
                 $std_log = DB::table('tblstudent_log')
@@ -1165,20 +1196,36 @@ class PendaftarController extends Controller
                 foreach($std_log as $key => $log)
                 {
 
-                    if($log->kuliah_id == 1)
+                    // if($log->kuliah_id == 1)
+                    // {
+
+                    //     $kuliah[$key] = 'Holding';
+
+                    // }elseif($log->kuliah_id == 2)
+                    // {
+
+                    //     $kuliah[$key] = 'Kuliah';
+
+                    // }elseif($log->kuliah_id == 4)
+                    // {
+
+                    //     $kuliah[$key] = 'Latihan Industri';
+
+                    // }else{
+
+                    //     $kuliah[$key] = '';
+
+                    // }
+
+                    if($log->kuliah_id == 0)
                     {
 
-                        $kuliah[$key] = 'Holding';
+                        $kuliah[$key] = 'No';
 
                     }elseif($log->kuliah_id == 2)
                     {
 
-                        $kuliah[$key] = 'Kuliah';
-
-                    }elseif($log->kuliah_id == 4)
-                    {
-
-                        $kuliah[$key] = 'Latihan Industri';
+                        $kuliah[$key] = 'Yes';
 
                     }else{
 
