@@ -130,6 +130,9 @@
                         Status
                     </th>
                     <th style="width: 10%">
+                        Lectures Status
+                    </th>
+                    <th style="width: 10%">
                         Date
                     </th>
                     <th style="width: 20%">
@@ -154,6 +157,9 @@
                     </td>
                     <td>
                         {{ $hs->name }}
+                    </td>
+                    <td>
+                        {{ $kuliah[$key] }}
                     </td>
                     <td>
                         {{ $hs->date }}
