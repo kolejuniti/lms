@@ -579,137 +579,146 @@ class PendaftarController extends Controller
 
         }
 
-        //dd($request);
-
-        DB::table('students')->insert([
-            'name' => $data['name'],
-            'ic' => $data['id'],
-            'no_matric' => null,
-            'email' =>$request->email,
-            'intake' => $data['session'],
-            'batch' => $data['batch'],
-            'session' => $data['session'],
-            'semester' => 1,
-            'program' => $data['program'],
-            'password' => Hash::make('12345678'),
-            'status' => 1,
-            'campus_id' => 0,
-            'date_offer' => $request->dol,
-            'student_status' => 1,
-            'stafID_add' => Auth::user()->ic,
-            'date_add' => date('Y-m-d'),
-            'stafID_mod' => Auth::user()->ic,
-            'date_mod' => date('Y-m-d')
-        ]);
-
-        DB::table('tblstudent_log')->insert([
-            'student_ic' => $data['id'],
-            'session_id' => $data['session'],
-            'semester_id' => 1,
-            'status_id' => 1,
-            'kuliah_id' => 0,
-            'date' => date("Y-m-d H:i:s"),
-            'remark' => null,
-            'add_staffID' => Auth::user()->ic
-        ]);
-
-        DB::table('tblstudent_personal')->insert([
-            'student_ic' => $data['id'],
-            'date_birth' => $request->birth_date,
-            'advisor_id' => $request->EA,
-            'bank_name' => $request->bank_name,
-            'bank_no' => $request->bank_number,
-            'ptptn_no' => $request->PN,
-            'datetime' => $request->dt,
-            'religion_id' => $request->religion,
-            'nationality_id' => $request->race,
-            'sex_id' => $request->gender,
-            'state_id' => $request->birth_place,
-            'marriage_id' => $request->mstatus,
-            'statelevel_id' => $request->CL,
-            'citizenship_id' => $request->citizen,
-            'no_tel' => $request->np1,
-            'no_tel2' => $request->np2,
-            'no_telhome' => $request->np3,
-            'dun' => $request->dun,
-            'parlimen' => $request->parlimen,
-            'qualification' => $request->qualification,
-            'oku' => $request->oku,
-            'no_jkm' => $request->jkm
-        ]);
-
-        DB::table('tblstudent_pass')->insert([
-            'student_ic' => $data['id'],
-            'pass_type' => $request->pt,
-            'pass_no' => $request->spn,
-            'date_issued' => $request->di,
-            'date_expired' => $request->de
-        ]);
-
-        DB::table('tblstudent_address')->insert([
-            'student_ic' => $data['id'],
-            'address1' => $request->address1,
-            'address2' => $request->address2,
-            'address3' => $request->address3,
-            'city' => $request->city,
-            'postcode' => $request->postcode,
-            'state_id' => $request->state,
-            'country_id' => $request->country
-        ]);
-
-        $numWaris = count($request->input('w_name'));
-        for ($i = 0; $i < $numWaris; $i++) {
-
-            if($request->input('w_name')[$i] != '')
-            {
-                DB::table('tblstudent_waris')->insert([
-                    'student_ic' => $data['id'],
-                    'name' => $request->input('w_name')[$i],
-                    'ic' => $request->input('w_ic')[$i],
-                    'home_tel' => $request->input('w_notel_home')[$i],
-                    'phone_tel' => $request->input('w_notel')[$i],
-                    'occupation' => $request->input('occupation')[$i],
-                    'dependent_no' => $request->input('dependent')[$i],
-                    'kasar' => $request->input('w_kasar')[$i],
-                    'bersih' => $request->input('w_bersih')[$i],
-                    'relationship' => $request->input('relationship')[$i],
-                    'race' => $request->input('w_race')[$i],
-                    'status' => $request->input('w_status')[$i]
-                ]);
-            }
-        }
-
-        DB::table('student_form')->insert([
-            'student_ic' => $data['id'],
-            'main' => $request->main,
-            'pre_registration' => $request->PR,
-            // 'c19' => $request->c19,
-            'complete_form' => $request->CF,
-            'copy_ic' => $request->copyic,
-            'copy_birth' => $request->copybc,
-            'copy_spm' => $request->copyspm,
-            'copy_school' => $request->coppysc,
-            'copy_pic' => $request->copypic,
-            'copy_pincome' => $request->copypp
-        ]);
-
-        /*$subject = DB::table('subjek')->where([
-            ['prgid','=', $data['program']],
-            ['semesterid','=', 1],
-        ])->get();
-
-        foreach($subject as $key)
+        if(DB::table('students')->where('ic', $data['id'])->exists())
         {
-            student::create([
-                'student_ic' => $data['id'],
-                'courseid' => $key->sub_id,
-                'sessionid' => $data['session'],
-                'semesterid' => 1,
-                'status' => 'ACTIVE'
-            ]);
-        }*/
 
-        //$this->suratTawaran($data['id']);
+            return false;
+
+        }else{
+
+            //dd($request);
+
+            DB::table('students')->insert([
+                'name' => $data['name'],
+                'ic' => $data['id'],
+                'no_matric' => null,
+                'email' =>$request->email,
+                'intake' => $data['session'],
+                'batch' => $data['batch'],
+                'session' => $data['session'],
+                'semester' => 1,
+                'program' => $data['program'],
+                'password' => Hash::make('12345678'),
+                'status' => 1,
+                'campus_id' => 0,
+                'date_offer' => $request->dol,
+                'student_status' => 1,
+                'stafID_add' => Auth::user()->ic,
+                'date_add' => date('Y-m-d'),
+                'stafID_mod' => Auth::user()->ic,
+                'date_mod' => date('Y-m-d')
+            ]);
+
+            DB::table('tblstudent_log')->insert([
+                'student_ic' => $data['id'],
+                'session_id' => $data['session'],
+                'semester_id' => 1,
+                'status_id' => 1,
+                'kuliah_id' => 0,
+                'date' => date("Y-m-d H:i:s"),
+                'remark' => null,
+                'add_staffID' => Auth::user()->ic
+            ]);
+
+            DB::table('tblstudent_personal')->insert([
+                'student_ic' => $data['id'],
+                'date_birth' => $request->birth_date,
+                'advisor_id' => $request->EA,
+                'bank_name' => $request->bank_name,
+                'bank_no' => $request->bank_number,
+                'ptptn_no' => $request->PN,
+                'datetime' => $request->dt,
+                'religion_id' => $request->religion,
+                'nationality_id' => $request->race,
+                'sex_id' => $request->gender,
+                'state_id' => $request->birth_place,
+                'marriage_id' => $request->mstatus,
+                'statelevel_id' => $request->CL,
+                'citizenship_id' => $request->citizen,
+                'no_tel' => $request->np1,
+                'no_tel2' => $request->np2,
+                'no_telhome' => $request->np3,
+                'dun' => $request->dun,
+                'parlimen' => $request->parlimen,
+                'qualification' => $request->qualification,
+                'oku' => $request->oku,
+                'no_jkm' => $request->jkm
+            ]);
+
+            DB::table('tblstudent_pass')->insert([
+                'student_ic' => $data['id'],
+                'pass_type' => $request->pt,
+                'pass_no' => $request->spn,
+                'date_issued' => $request->di,
+                'date_expired' => $request->de
+            ]);
+
+            DB::table('tblstudent_address')->insert([
+                'student_ic' => $data['id'],
+                'address1' => $request->address1,
+                'address2' => $request->address2,
+                'address3' => $request->address3,
+                'city' => $request->city,
+                'postcode' => $request->postcode,
+                'state_id' => $request->state,
+                'country_id' => $request->country
+            ]);
+
+            $numWaris = count($request->input('w_name'));
+            for ($i = 0; $i < $numWaris; $i++) {
+
+                if($request->input('w_name')[$i] != '')
+                {
+                    DB::table('tblstudent_waris')->insert([
+                        'student_ic' => $data['id'],
+                        'name' => $request->input('w_name')[$i],
+                        'ic' => $request->input('w_ic')[$i],
+                        'home_tel' => $request->input('w_notel_home')[$i],
+                        'phone_tel' => $request->input('w_notel')[$i],
+                        'occupation' => $request->input('occupation')[$i],
+                        'dependent_no' => $request->input('dependent')[$i],
+                        'kasar' => $request->input('w_kasar')[$i],
+                        'bersih' => $request->input('w_bersih')[$i],
+                        'relationship' => $request->input('relationship')[$i],
+                        'race' => $request->input('w_race')[$i],
+                        'status' => $request->input('w_status')[$i]
+                    ]);
+                }
+            }
+
+            DB::table('student_form')->insert([
+                'student_ic' => $data['id'],
+                'main' => $request->main,
+                'pre_registration' => $request->PR,
+                // 'c19' => $request->c19,
+                'complete_form' => $request->CF,
+                'copy_ic' => $request->copyic,
+                'copy_birth' => $request->copybc,
+                'copy_spm' => $request->copyspm,
+                'copy_school' => $request->coppysc,
+                'copy_pic' => $request->copypic,
+                'copy_pincome' => $request->copypp
+            ]);
+
+            /*$subject = DB::table('subjek')->where([
+                ['prgid','=', $data['program']],
+                ['semesterid','=', 1],
+            ])->get();
+
+            foreach($subject as $key)
+            {
+                student::create([
+                    'student_ic' => $data['id'],
+                    'courseid' => $key->sub_id,
+                    'sessionid' => $data['session'],
+                    'semesterid' => 1,
+                    'status' => 'ACTIVE'
+                ]);
+            }*/
+
+            //$this->suratTawaran($data['id']);
+
+        }
 
         return redirect(route('pendaftar.create'))->with('newStud', $data['id']);
     }
