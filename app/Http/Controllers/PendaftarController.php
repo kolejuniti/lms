@@ -1091,45 +1091,54 @@ class PendaftarController extends Controller
                            ->where('student_ic', $request->student)
                            ->get();
 
-        foreach($data['history'] as $key => $log)
+        if(count($data['history']) > 0)
         {
 
-            // if($log->kuliah_id == 1)
-            // {
-
-            //     $kuliah[$key] = 'Holding';
-
-            // }elseif($log->kuliah_id == 2)
-            // {
-
-            //     $kuliah[$key] = 'Kuliah';
-
-            // }elseif($log->kuliah_id == 4)
-            // {
-
-            //     $kuliah[$key] = 'Latihan Industri';
-
-            // }else{
-
-            //     $kuliah[$key] = '';
-
-            // }
-
-            if($log->kuliah_id == 0)
+            foreach($data['history'] as $key => $log)
             {
 
-                $kuliah[$key] = 'No';
+                // if($log->kuliah_id == 1)
+                // {
 
-            }elseif($log->kuliah_id == 2)
-            {
+                //     $kuliah[$key] = 'Holding';
 
-                $kuliah[$key] = 'Yes';
+                // }elseif($log->kuliah_id == 2)
+                // {
 
-            }else{
+                //     $kuliah[$key] = 'Kuliah';
 
-                $kuliah[$key] = '';
+                // }elseif($log->kuliah_id == 4)
+                // {
+
+                //     $kuliah[$key] = 'Latihan Industri';
+
+                // }else{
+
+                //     $kuliah[$key] = '';
+
+                // }
+
+                if($log->kuliah_id == 0)
+                {
+
+                    $kuliah[$key] = 'No';
+
+                }elseif($log->kuliah_id == 2)
+                {
+
+                    $kuliah[$key] = 'Yes';
+
+                }else{
+
+                    $kuliah[$key] = '';
+
+                }
 
             }
+
+        }else{
+
+            $kuliah = [];
 
         }
 
