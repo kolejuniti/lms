@@ -72,7 +72,7 @@ use Carbon\Carbon;
 
         @endphp
 
-        <p>UNITI/KUSB/2023/040729050173</p>
+        <p>UNITI/KUSB/2023/{{ $data['student']->ic }}</p>
         <br>
         <p>{{ $formattedDate }}</p>
         <br>
@@ -108,13 +108,11 @@ use Carbon\Carbon;
             <li>Memenuhi syarat kemasukan ke program yang dipohon dan maklumat-maklumat yang diberikan adalah benar. Sekiranya terdapat pemalsuan maklumat dalam borang permohonan dan dokumen yang berkaitan, pihak Kolej UNITI berhak menarik balik tawaran ini atau saudara/i diberhentikan daripada pengajian pada bila-bila masa.</li>
             <li>Menjelaskan yuran seperti yang dilampirkan.</li>
         </ol>
-        <br>
         <p>Jika saudara/i menerima tawaran ini, sila :</p>
         <ol type="a">
             <li>Kembalikan Borang Jawapan Penerimaan tawaran kemasukan ke KOLEJ UNITI kepada Penolong Pendaftar Kemasukan dan Rekod Pelajar.</li>
             <li>Hadir untuk mendaftarkan diri mengikuti maklumat di atas.</li>
         </ol>
-        <br>
         <p>Semasa mendaftar saudara/i dikehendaki membawa dokumen asal dan salinan yang disahkan berikut :</p>
         <div class="row">
             <div class="d-flex p-2">
@@ -152,7 +150,6 @@ use Carbon\Carbon;
         <p>* Universiti Teknologi MARA (UiTM) tidak bertanggungjawab menyerap pelajar program usahasama sekiranya Kolej UNITI menghadapi masalah untuk mengendalikan program.</p>
         <p>* Kos perkhidmatan UiTM RM300.00 tidak akan dikembalikan setelah pelajar mendaftar di Kolej (program UiTM sahaja)</p>
         <p>* Tawaran ini terbatal serta-merta jika anda berstatus bukan Melayu/Bumiputra dan tidak memiliki kelayakan minima seperti yang telah ditetapkan oleh pihak UiTM</p>
-
     </body>
 </html>
 
