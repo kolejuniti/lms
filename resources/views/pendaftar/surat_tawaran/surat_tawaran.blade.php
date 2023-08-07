@@ -95,16 +95,11 @@ use Carbon\Carbon;
         </div>
         <br>
         <p>Saudara/Saudari,</p>
-        <br>
-        <p>TAWARAN KEMASUKAN KE PROGRAM AKADEMIK KOLEJ UNITI SESI <b>{{ $data['student']->intake }}</b></p>
-        <br>
-        <p><b>TAHNIAH</b> dan <b>SUKACITA</b> di maklumkan, saudara/saudari di tawarkan untuk mengikuti pengajian program <b>{{ $data['student']->progname }}</b> di KOLEJ UNITI.</p>
-        <br>
-        <p>Untuk pengetahuan saudara/saudari, program yang diikuti adalah program akademik yang dikendalikan oleh <b>KOLEJ UNITI di PERSIARAN UNITI VILLAGE, TANJUNG AGAS, 71250 PORT DICKSON, NEGERI SEMBILAN DARUL KHUSUS.</b> Setelah memenuhi semua keperluan, saudara/saudari akan <b>DIANUGERAHKAN DIPLOMA OLEH KOLEJ UNITI ATAU UiTM DAN UPM.</b></p>
-        <br>
-        <p>Tawaran ini adalah sah untuk tujuan di atas sahaja.</p>
-        <br>
-        <ol>
+        <p class="mt-2">TAWARAN KEMASUKAN KE PROGRAM AKADEMIK KOLEJ UNITI SESI <b>{{ $data['student']->intake }}</b></p>
+        <p class="mt-2"><b>TAHNIAH</b> dan <b>SUKACITA</b> di maklumkan, saudara/saudari di tawarkan untuk mengikuti pengajian program <b>{{ $data['student']->progname }}</b> di KOLEJ UNITI.</p>
+        <p class="mt-2">Untuk pengetahuan saudara/saudari, program yang diikuti adalah program akademik yang dikendalikan oleh <b>KOLEJ UNITI di PERSIARAN UNITI VILLAGE, TANJUNG AGAS, 71250 PORT DICKSON, NEGERI SEMBILAN DARUL KHUSUS.</b> Setelah memenuhi semua keperluan, saudara/saudari akan <b>DIANUGERAHKAN DIPLOMA OLEH KOLEJ UNITI ATAU UiTM DAN UPM.</b></p>
+        <p class="mt-2">Tawaran ini adalah sah untuk tujuan di atas sahaja.</p>
+        <ol class="mt-2">
             <li>Memenuhi syarat kemasukan ke program yang dipohon dan maklumat-maklumat yang diberikan adalah benar. Sekiranya terdapat pemalsuan maklumat dalam borang permohonan dan dokumen yang berkaitan, pihak Kolej UNITI berhak menarik balik tawaran ini atau saudara/i diberhentikan daripada pengajian pada bila-bila masa.</li>
             <li>Menjelaskan yuran seperti yang dilampirkan.</li>
         </ol>
@@ -145,7 +140,7 @@ use Carbon\Carbon;
 
         <p><b>AMIR HAMZAH BIN MD. ISA</b><br>
         KETUA EKSEKUTIF<br>
-        <b>KOLEJ UNITI</b></p>
+        <b>KOLEJ UNITI</b></p><br>
         <p>* Pihak Kolej berhak menarik balik tawaran ini di atas apa-apa jua alasan dari semasa ke semasa</p>
         <p>* Universiti Teknologi MARA (UiTM) tidak bertanggungjawab menyerap pelajar program usahasama sekiranya Kolej UNITI menghadapi masalah untuk mengendalikan program.</p>
         <p>* Kos perkhidmatan UiTM RM300.00 tidak akan dikembalikan setelah pelajar mendaftar di Kolej (program UiTM sahaja)</p>
