@@ -531,7 +531,7 @@
                             <select class="form-select" id="program" name="program" required>
                               <option value="-" selected disabled>-</option>
                                 @foreach ($program as $prg)
-                                <option value="{{ $prg->id }}" {{ ($prg->id == $student->program) ? 'selected' : ''}}>{{$prg->progname }} ({{ $prg->progcode }})</option> 
+                                <option value="{{ $prg->id }}" {{ ($prg->id == $student->program) ? 'selected' : ''}}>{{ $prg->progcode }} - {{$prg->progname }}</option> 
                                 @endforeach
                             </select>
                           </div>
