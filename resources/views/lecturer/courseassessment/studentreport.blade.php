@@ -489,7 +489,7 @@
                                     ])->exists())
                                       @if(DB::table('tblclassmarks')->where([
                                       ['course_id', $id],
-                                      ['assessment', 'other']
+                                      ['assessment', 'lain-lain']
                                       ])->first() != null)
                                         @foreach ((array) $overallother[$ky][$key] as $ag)
                                         <td style="background-color: #677ee2">
