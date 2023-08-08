@@ -107,8 +107,8 @@ class KP_Controller extends Controller
         "assignment" => "assignment",
         "midterm" => "midterm",
         "final" => "final",
-        "paperwork" => "paperwork",
-        "practical" => "practical",
+        // "paperwork" => "paperwork",
+        // "practical" => "practical",
         "lain-lain" => "lain-lain",
         "extra" => "extra"
        );
