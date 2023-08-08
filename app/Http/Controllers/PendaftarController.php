@@ -476,7 +476,7 @@ class PendaftarController extends Controller
 
         $data['batch'] = DB::table('tblbatch')->get();
 
-        $data['state'] = DB::table('tblstate')->get();
+        $data['state'] = DB::table('tblstate')->orderBy('state_name')->get();
 
         $data['gender'] = DB::table('tblsex')->get();
 
@@ -500,9 +500,9 @@ class PendaftarController extends Controller
 
         $data['country'] = DB::table('tblcountry')->get();
         
-        $data['dun'] = DB::table('tbldun')->get();
+        $data['dun'] = DB::table('tbldun')->orderBy('name')->get();
 
-        $data['parlimen'] = DB::table('tblparlimen')->get();
+        $data['parlimen'] = DB::table('tblparlimen')->orderBy('name')->get();
 
         $data['qualification'] = DB::table('tblqualification_std')->get();
 
@@ -742,7 +742,7 @@ class PendaftarController extends Controller
 
         $data['batch'] = DB::table('tblbatch')->get();
 
-        $data['state'] = DB::table('tblstate')->get();
+        $data['state'] = DB::table('tblstate')->orderBy('state_name')->get();
 
         $data['gender'] = DB::table('tblsex')->get();
 
@@ -765,10 +765,10 @@ class PendaftarController extends Controller
         $data['pass'] = DB::table('tblpass_type')->get();
 
         $data['country'] = DB::table('tblcountry')->get();
+        
+        $data['dun'] = DB::table('tbldun')->orderBy('name')->get();
 
-        $data['dun'] = DB::table('tbldun')->get();
-
-        $data['parlimen'] = DB::table('tblparlimen')->get();
+        $data['parlimen'] = DB::table('tblparlimen')->orderBy('name')->get();
 
         $data['qualification'] = DB::table('tblqualification_std')->get();
 
