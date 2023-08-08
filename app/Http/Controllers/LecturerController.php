@@ -2446,7 +2446,7 @@ class LecturerController extends Controller
                     $percentother = DB::table('tblclassmarks')
                                 ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
                                 ['subjek.id', request()->id],
-                                ['assessment', 'other']
+                                ['assessment', 'lain-lain']
                                 ])->first();
 
                     if($others = DB::table('tblclassother')
