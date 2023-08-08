@@ -174,7 +174,7 @@
                                     @php
                                     $markpercen = DB::table('tblclassmarks')->where([
                                     ['course_id', $id],
-                                    ['assessment', 'other']
+                                    ['assessment', 'lain-lain']
                                     ])->first();
                                     @endphp
                                     @if ($markpercen != null)
