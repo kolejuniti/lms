@@ -1,6 +1,15 @@
 @extends('../layouts.pendaftar')
 
 @section('main')
+
+<style>
+  .form-control,
+  .form-select {
+      border: 1px solid black;
+      padding: 5px;
+  }
+  </style>
+  
 <!-- Content Header (Page header) -->
 <div class="content-wrapper" style="min-height: 695.8px;">
   <div class="container-full">
