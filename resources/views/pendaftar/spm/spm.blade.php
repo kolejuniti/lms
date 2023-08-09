@@ -120,10 +120,10 @@
                         </div>
                     </div>
                 </div>
-                <div class="card-body">
-                    <div class="row mb-2">
+                <div class="card-body d-flex justify-content-center">
+                    <div class="col-md-12">
                         @if (count($data['spm']) == 0)
-                            <div class="col-md-6">
+                            <div class="col-md-12">
                                 <div class="row">
                                     <div class="col-md-5">
                                         <div class="form-group">
@@ -136,7 +136,7 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-md-1 align-self-center "> <div class="d-flex justify-content-center align-middle">-</div></div>
+                                    <div class="col-md-2 align-self-center "> <div class="d-flex justify-content-center align-middle">-</div></div>
                                     <div class="col-md-5">
                                         <div class="form-group">
                                             <label class="form-label" for="grade">Grade</label>
@@ -150,7 +150,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-12">
                                 <div class="row">
                                     <div class="col-md-5">
                                         <div class="form-group">
@@ -163,7 +163,7 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-md-1 align-self-center "> <div class="d-flex justify-content-center align-middle">-</div></div>
+                                    <div class="col-md-2 align-self-center "> <div class="d-flex justify-content-center align-middle">-</div></div>
                                     <div class="col-md-5">
                                         <div class="form-group">
                                             <label class="form-label" for="grade">Grade</label>
@@ -177,7 +177,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-12">
                                 <div class="row">
                                     <div class="col-md-5">
                                         <div class="form-group">
@@ -190,7 +190,7 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-md-1 align-self-center "> <div class="d-flex justify-content-center align-middle">-</div></div>
+                                    <div class="col-md-2 align-self-center "> <div class="d-flex justify-content-center align-middle">-</div></div>
                                     <div class="col-md-5">
                                         <div class="form-group">
                                             <label class="form-label" for="grade">Grade</label>
@@ -204,7 +204,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-12">
                                 <div class="row">
                                     <div class="col-md-5">
                                         <div class="form-group">
@@ -217,7 +217,7 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-md-1 align-self-center "> <div class="d-flex justify-content-center align-middle">-</div></div>
+                                    <div class="col-md-2 align-self-center "> <div class="d-flex justify-content-center align-middle">-</div></div>
                                     <div class="col-md-5">
                                         <div class="form-group">
                                             <label class="form-label" for="grade">Grade</label>
@@ -238,7 +238,7 @@
                             @php
                                 $count++;
                             @endphp
-                            <div class="col-md-6">
+                            <div class="col-md-12">
                                 <div class="row">
                                     <div class="col-md-5">
                                         <div class="form-group">
@@ -251,7 +251,7 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-md-1 align-self-center "> <div class="d-flex justify-content-center align-middle">-</div></div>
+                                    <div class="col-md-2 align-self-center "> <div class="d-flex justify-content-center align-middle">-</div></div>
                                     <div class="col-md-5">
                                         <div class="form-group">
                                             <label class="form-label" for="grade">Grade</label>
@@ -268,7 +268,7 @@
                             @endforeach
                         @else
                             @foreach ($data['spm'] as $key=> $req)
-                            <div class="col-md-6">
+                            <div class="col-md-12">
                                 <div class="row">
                                     <div class="col-md-5">
                                         <div class="form-group">
@@ -281,7 +281,7 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-md-1 align-self-center "> <div class="d-flex justify-content-center align-middle">-</div></div>
+                                    <div class="col-md-2 align-self-center "> <div class="d-flex justify-content-center align-middle">-</div></div>
                                     <div class="col-md-5">
                                         <div class="form-group">
                                             <label class="form-label" for="grade">Grade</label>
