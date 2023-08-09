@@ -1,6 +1,15 @@
 @extends('../layouts.pendaftar')
 
 @section('main')
+
+<style>
+.form-control,
+.form-select {
+    border: 1px solid black;
+    padding: 5px;
+}
+
+</style>
 <!-- Content Header (Page header) -->
 <div class="content-wrapper" style="min-height: 695.8px;">
   <div class="container-full">
@@ -416,7 +425,7 @@
                     </div>
                   </div>
 
-                  <div id="forms-container">
+                  {{-- <div id="forms-container">
                     <div class="card mb-3" id="card-1">
                       <div class="card-header">
                         <b>Heir (Waris)</b>
@@ -520,7 +529,7 @@
                     <div class="form-group">
                       <button id="add-form" class="btn btn-primary pull-right" type="button">Add Waris</button>
                     </div>
-                  </div>
+                  </div> --}}
 
                   <div class="card mb-3">
                     <div class="card-header">
