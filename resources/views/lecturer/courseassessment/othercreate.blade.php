@@ -73,6 +73,13 @@ div.form-actions.btn-group > button{
 
         <!-- Main content -->
         <section class="content">
+            @if ($errors->any())
+                <div class="alert alert-danger">
+                    @foreach ($errors->all() as $error)
+                        <span>{{ $error }}</span>
+                    @endforeach
+                </div>
+            @endif
             <div class="row">
                 <form action="/lecturer/other/insert" method="POST" enctype="multipart/form-data">
                 @csrf
@@ -190,8 +197,6 @@ div.form-actions.btn-group > button{
         </section>
     </div>
 </div>
-
-
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jQuery-formBuilder/3.4.2/form-builder.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jQuery-formBuilder/3.4.2/form-render.min.js"></script>
