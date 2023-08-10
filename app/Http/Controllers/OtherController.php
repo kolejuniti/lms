@@ -174,78 +174,126 @@ class OtherController extends Controller
             
         $otherid = empty($request->other) ? '' : $request->other;
 
+        $percentage = DB::table('tblclassmarks')->where([
+            ['course_id', $classid],
+            ['assessment', 'lain-lain']
+        ])->first();
+
+        //dd($percentage);
+
         if($group != null && $chapter != null)
         {
         
             if( !empty($otherid) ){
+
+                $total_mark = DB::table('tblclassother')->where([
+                    ['classid', $classid],
+                    ['sessionid', $sessionid],
+                    ['addby', $user->ic]
+                ])->where('id', '!=', $otherid)->sum('total_mark');
+
+                $fullmarks = $total_mark + $marks;
+
+                if($fullmarks > $percentage->mark_percentage)
+                {
+
+                    return redirect()->back()->withErrors(['Marks cannot exceeds ' . $percentage->mark_percentage - $total_mark . ' , please lower the marks']);
+
+                }else{
       
-                $other = DB::table('tblclassother')->where('id', $otherid)->first();
+                    $other = DB::table('tblclassother')->where('id', $otherid)->first();
 
-                DB::table('tblclassother_group')->where('otherid', $otherid)->delete();
+                    DB::table('tblclassother_group')->where('otherid', $otherid)->delete();
 
-                DB::table('tblclassother_chapter')->where('otherid', $otherid)->delete();
+                    DB::table('tblclassother_chapter')->where('otherid', $otherid)->delete();
 
-                $q = DB::table('tblclassother')->where('id', $otherid)->update([
-                    "title" => $title,
-                    "no" => $no,
-                    "total_mark" => $marks,
-                    "addby" => $user->ic,
-                    "status" => 2
-                ]);
-
-                foreach($group as $grp)
-                {
-                    $gp = explode('|', $grp);
-                    
-                    DB::table('tblclassother_group')->insert([
-                        "groupid" => $gp[0],
-                        "groupname" => $gp[1],
-                        "otherid" => $otherid
+                    $q = DB::table('tblclassother')->where('id', $otherid)->update([
+                        "title" => $title,
+                        "no" => $no,
+                        "total_mark" => $marks,
+                        "addby" => $user->ic,
+                        "status" => 2
                     ]);
-                }
 
-                foreach($chapter as $chp)
-                {
-                    DB::table('tblclassother_chapter')->insert([
-                        "chapterid" => $chp,
-                        "otherid" => $otherid
-                    ]);
+                    foreach($group as $grp)
+                    {
+                        $gp = explode('|', $grp);
+                        
+                        DB::table('tblclassother_group')->insert([
+                            "groupid" => $gp[0],
+                            "groupname" => $gp[1],
+                            "otherid" => $otherid
+                        ]);
+                    }
+
+                    foreach($chapter as $chp)
+                    {
+                        DB::table('tblclassother_chapter')->insert([
+                            "chapterid" => $chp,
+                            "otherid" => $otherid
+                        ]);
+                    }
                 }
 
             }else{
-                $q = DB::table('tblclassother')->insertGetId([
-                    "classid" => $classid,
-                    "sessionid" => $sessionid,
-                    "title" => $title,
-                    "no" => $no,
-                    "total_mark" => $marks,
-                    "addby" => $user->ic,
-                    "status" => 2
-                ]);
 
-                foreach($group as $grp)
+                if($percentage->mark_percentage != null || $percentage->mark_percentage != 0)
                 {
-                    $gp = explode('|', $grp);
-                    
-                    DB::table('tblclassother_group')->insert([
-                        "groupid" => $gp[0],
-                        "groupname" => $gp[1],
-                        "otherid" => $q
-                    ]);
-                }
 
-                foreach($chapter as $chp)
-                {
-                    DB::table('tblclassother_chapter')->insert([
-                        "chapterid" => $chp,
-                        "otherid" => $q
-                    ]);
+                    $total_mark = DB::table('tblclassother')->where([
+                        ['classid', $classid],
+                        ['sessionid', $sessionid],
+                        ['addby', $user->ic]
+                    ])->sum('total_mark');
+
+                    $fullmarks = $total_mark + $marks;
+
+                    if($fullmarks > $percentage->mark_percentage)
+                    {
+
+                        return redirect()->back()->withErrors(['Marks cannot exceeds ' . $percentage->mark_percentage - $total_mark . ' , please lower the marks']);
+
+                    }else{
+
+                        $q = DB::table('tblclassother')->insertGetId([
+                            "classid" => $classid,
+                            "sessionid" => $sessionid,
+                            "title" => $title,
+                            "no" => $no,
+                            "total_mark" => $marks,
+                            "addby" => $user->ic,
+                            "status" => 2
+                        ]);
+
+                        foreach($group as $grp)
+                        {
+                            $gp = explode('|', $grp);
+                            
+                            DB::table('tblclassother_group')->insert([
+                                "groupid" => $gp[0],
+                                "groupname" => $gp[1],
+                                "otherid" => $q
+                            ]);
+                        }
+
+                        foreach($chapter as $chp)
+                        {
+                            DB::table('tblclassother_chapter')->insert([
+                                "chapterid" => $chp,
+                                "otherid" => $q
+                            ]);
+                        }
+                    }
+                }else{
+
+                    return redirect()->back()->withErrors(['Percentage is not set yet, please consult the person in charge (KETUA PROGRAM)']);
+
                 }
             }
         
         }else{
 
-            return redirect()->back()->withErrors(['Please fill in the group and sub-chapter checkbox !']);
+            return back()->withErrors(['Please fill in the group and sub-chapter checkbox !']);
 
         }
         
