@@ -153,9 +153,22 @@ class OtherController extends Controller
             
         }
 
+        $percentage = DB::table('tblclassmarks')->where([
+            ['course_id', $courseid],
+            ['assessment', 'lain-lain']
+        ])->first();
+
+        $total_mark = DB::table('tblclassother')->where([
+            ['classid', $courseid],
+            ['sessionid', $sessionid],
+            ['addby', $user->ic]
+        ])->sum('total_mark');
+
+        $maxMark = $percentage->mark_percentage - $total_mark;
+
         //dd($folder);
 
-        return view('lecturer.courseassessment.othercreate', compact(['group', 'folder', 'title', 'data']));
+        return view('lecturer.courseassessment.othercreate', compact(['group', 'folder', 'title', 'data', 'maxMark']));
     }
 
     public function insertother(Request $request)
