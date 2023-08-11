@@ -124,7 +124,7 @@ div.form-actions.btn-group > button{
                                     </div>
                                     <div class="col-md-3 mb-4">
                                         <label for="total-marks" class="form-label "><strong>Total Marks</strong><span> (%)</span></label>
-                                        <input type="number" id="total-marks" name="marks" class="form-control" 
+                                        <input type="number" id="total-marks" name="marks" class="form-control" max="{{ $maxMark }}"
                                         value="{{ empty($data['other']->total_mark) ? "" : $data['other']->total_mark }}" required>
                                     </div>
                                 </div>
