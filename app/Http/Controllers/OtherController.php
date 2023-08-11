@@ -161,7 +161,8 @@ class OtherController extends Controller
         $total_mark = DB::table('tblclassother')->where([
             ['classid', $courseid],
             ['sessionid', $sessionid],
-            ['addby', $user->ic]
+            ['addby', $user->ic],
+            ['status', '!=', 3]
         ])->sum('total_mark');
 
         $maxMark = $percentage->mark_percentage - $total_mark;
@@ -202,7 +203,8 @@ class OtherController extends Controller
                 $total_mark = DB::table('tblclassother')->where([
                     ['classid', $classid],
                     ['sessionid', $sessionid],
-                    ['addby', $user->ic]
+                    ['addby', $user->ic],
+                    ['status', '!=', 3]
                 ])->where('id', '!=', $otherid)->sum('total_mark');
 
                 $fullmarks = $total_mark + $marks;
@@ -256,7 +258,8 @@ class OtherController extends Controller
                     $total_mark = DB::table('tblclassother')->where([
                         ['classid', $classid],
                         ['sessionid', $sessionid],
-                        ['addby', $user->ic]
+                        ['addby', $user->ic],
+                        ['status', '!=', 3]
                     ])->sum('total_mark');
 
                     $fullmarks = $total_mark + $marks;
