@@ -2606,14 +2606,14 @@ class LecturerController extends Controller
                         {
                             $valGrade[$ky][$keys] = $grd->code;
 
-                            $ponterGrade[$ky][$keys] = $grd->grade_value;
+                            $pointerGrade[$ky][$keys] = $grd->grade_value;
 
                             break;
                         }else{
 
                             $valGrade[$ky][$keys] = null;
 
-                            $ponterGrade[$ky][$keys] = 0;
+                            $pointerGrade[$ky][$keys] = 0;
                         }
 
                     }
@@ -2624,7 +2624,8 @@ class LecturerController extends Controller
                         ['sessionid', $std->session_id],
                         ['courseid', $std->course_id]
                         ])->update([
-                            'grade' => $valGrade[$ky][$keys]
+                            'grade' => $valGrade[$ky][$keys],
+                            'pointer' => $pointerGrade[$ky][$keys]
                         ]);
             
                 }
