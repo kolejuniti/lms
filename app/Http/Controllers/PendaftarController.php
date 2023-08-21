@@ -1727,18 +1727,30 @@ class PendaftarController extends Controller
                 ->distinct('courseid')
                 ->sum('credit');
 
-                $grade_pointer_c = DB::table('student_subjek as ss1')
-                ->join(DB::raw('(SELECT courseid, MAX(id) as max_id FROM student_subjek GROUP BY courseid) as ss2'),
-                function($join) {
-                    $join->on('ss1.courseid', '=', 'ss2.courseid')
-                        ->on('ss1.id', '=', 'ss2.max_id');
-                })
-                ->select('ss1.courseid', DB::raw('SUM(ss1.credit * ss1.pointer) as total'))
-                ->where('ss1.student_ic', $std)
-                ->where('ss1.semesterid', '<=', $data->semester)
-                ->whereIn('ss1.course_status_id', [1, 2, 12, 15])
-                ->groupBy('ss1.courseid')
-                ->value('total');
+                // $grade_pointer_c = DB::table('student_subjek as ss1')
+                // ->join(DB::raw('(SELECT courseid, MAX(id) as max_id FROM student_subjek GROUP BY courseid) as ss2'),
+                // function($join) {
+                //     $join->on('ss1.courseid', '=', 'ss2.courseid')
+                //         ->on('ss1.id', '=', 'ss2.max_id');
+                // })
+                // ->select('ss1.courseid', DB::raw('SUM(ss1.credit * ss1.pointer) as total'))
+                // ->where('ss1.student_ic', $std)
+                // ->where('ss1.semesterid', '<=', $data->semester)
+                // ->whereIn('ss1.course_status_id', [1, 2, 12, 15])
+                // ->groupBy('ss1.courseid')
+                // ->value('total');
+
+                $subQuery = DB::table('student_subjek')->select('courseid', DB::raw('MAX(id) as cid'))
+                    ->where('student_ic', $std)
+                    ->where('semesterid', '<=', $data->semester)
+                    ->groupBy('courseid');
+
+                $result = DB::table(DB::raw("({$subQuery->toSql()}) as a"))
+                    ->join('student_subjek as b', 'a.cid', '=', 'b.courseid')
+                    ->select(DB::raw('SUM(b.pointer*b.credit) as grade_c'))
+                    ->first();
+
+                $grade_pointer_c = $result->grade_c;
 
 
                 $cgpa = DB::table('student_subjek')
