@@ -1748,9 +1748,9 @@ class PendaftarController extends Controller
                             ->mergeBindings($sub_query)
                             ->join('student_subjek as b', 'a.cid', '=', 'b.courseid')
                             ->select(DB::raw('SUM(b.pointer*b.credit) as grade_c'))
-                            ->first();
+                            ->value('grade_c');
                         
-                $grade_pointer_c = $result->grade_c;
+                $grade_pointer_c = $result;
 
                 $cgpa = DB::table('student_subjek')
                 ->select('courseid', DB::raw('ROUND(SUM(credit * pointer) / 2) as total'))
