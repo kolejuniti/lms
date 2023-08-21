@@ -1725,7 +1725,8 @@ class PendaftarController extends Controller
                 ])->where('semesterid', '<=', $data->semester)
                 ->whereIn('course_status_id', [1,2,12,15])
                 ->distinct('courseid')
-                ->sum('credit');
+                ->selectRaw('SUM(credit) as total')
+                ->value('total');
 
                 $grade_pointer = DB::table('student_subjek')
                     ->selectRaw('MAX(id) as max_id')
@@ -1784,15 +1785,28 @@ class PendaftarController extends Controller
                 //     // Do something with $courseid and $total
                 // }
 
+                // $cgpa = DB::table('student_subjek')
+                // ->select('courseid', DB::raw('ROUND(SUM(credit * pointer) / 2) as total'))
+                // ->where([
+                //     ['student_ic', $std]
+                // ])->where('semesterid', '<=', $data->semester)
+                // ->whereIn('course_status_id', [1,2,12,15])
+                // ->groupBy('courseid')
+                // ->groupBy(DB::raw('(SELECT MAX(id) FROM student_subjek as ss2 WHERE ss2.courseid = student_subjek.courseid)'))
+                // ->value('total');
+
+                $cgpa_old = DB::table('student_subjek')
+                    ->selectRaw('MAX(id) as max_id')
+                    ->where('student_ic', $std)
+                    ->where('semesterid', '<=', $data->semester)
+                    ->whereIn('course_status_id', [1, 2, 12, 15])
+                    ->groupBy('courseid')
+                    ->get();
+
                 $cgpa = DB::table('student_subjek')
-                ->select('courseid', DB::raw('ROUND(SUM(credit * pointer) / 2) as total'))
-                ->where([
-                    ['student_ic', $std]
-                ])->where('semesterid', '<=', $data->semester)
-                ->whereIn('course_status_id', [1,2,12,15])
-                ->groupBy('courseid')
-                ->groupBy(DB::raw('(SELECT MAX(id) FROM student_subjek as ss2 WHERE ss2.courseid = student_subjek.courseid)'))
-                ->value('total');
+                    ->whereIn('id', $cgpa_old->pluck('max_id'))
+                    ->selectRaw('ROUND(SUM(credit * pointer) / SUM(credit), 2) as total')
+                    ->value('total');
 
                 if($cgpa >= 3.67 && $cgpa <= 4)
                 {
