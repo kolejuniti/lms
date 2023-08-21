@@ -1735,8 +1735,7 @@ class PendaftarController extends Controller
                 ->whereIn('id', function ($query) {
                     $query->select(DB::raw('MAX(id)'))
                         ->from('student_subjek as ss2')
-                        ->whereRaw('ss2.courseid = student_subjek.courseid')
-                        ->groupBy('courseid');
+                        ->whereRaw('ss2.courseid = student_subjek.courseid');
                 })
                 ->value('total');
 
