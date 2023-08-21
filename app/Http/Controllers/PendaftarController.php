@@ -1745,12 +1745,10 @@ class PendaftarController extends Controller
                     ->where('semesterid', '<=', $data->semester)
                     ->groupBy('courseid');
 
-                $result = DB::table(DB::raw("({$subQuery->toSql()}) as a"))
+                $grade_pointer_c = DB::table(DB::raw("({$subQuery->toSql()}) as a"))
                     ->join('student_subjek as b', 'a.cid', '=', 'b.courseid')
                     ->select(DB::raw('SUM(b.pointer*b.credit) as grade_c'))
-                    ->first();
-
-                $grade_pointer_c = $result->grade_c;
+                    ->value('grade_c');
 
 
                 $cgpa = DB::table('student_subjek')
