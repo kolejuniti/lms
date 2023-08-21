@@ -1684,7 +1684,7 @@ class PendaftarController extends Controller
                     ['student_ic', $std],
                     ['sessionid', $data->session],
                     ['semesterid', $data->semester]
-                ])->whereIn('course_status_id', [1,2,12])->sum('credit');
+                ])->whereIn('course_status_id', [1,2,12,15])->sum('credit');
 
                 $passed_credit_s = DB::table('student_subjek')->where([
                     ['student_ic', $std],
@@ -1698,7 +1698,7 @@ class PendaftarController extends Controller
                     ['sessionid', $data->session],
                     ['semesterid', $data->semester]
                 ])
-                ->whereIn('course_status_id', [1,2,12])
+                ->whereIn('course_status_id', [1,2,12,15])
                 ->selectRaw('SUM(credit * pointer) as total')
                 ->value('total');
 
@@ -1708,14 +1708,14 @@ class PendaftarController extends Controller
                     ['sessionid', $data->session],
                     ['semesterid', $data->semester]
                 ])
-                ->whereIn('course_status_id', [1,2,12])
+                ->whereIn('course_status_id', [1,2,12,15])
                 ->selectRaw('SUM(credit * pointer) / SUM(credit) as total')
                 ->value('total');
 
                 $total_credit_c = DB::table('student_subjek')->where([
                     ['student_ic', $std]
                 ])->where('semesterid', '<=', $data->semester)
-                ->whereIn('course_status_id', [1,2,12])->sum('credit');
+                ->whereIn('course_status_id', [1,2,12,15])->sum('credit');
 
                 $passed_credit_c = DB::table('student_subjek')->where([
                     ['student_ic', $std]
@@ -1725,7 +1725,7 @@ class PendaftarController extends Controller
                 $count_credit_c = DB::table('student_subjek')->where([
                     ['student_ic', $std]
                 ])->where('semesterid', '<=', $data->semester)
-                ->whereIn('course_status_id', [1,2,12])
+                ->whereIn('course_status_id', [1,2,12,15])
                 ->distinct('courseid')
                 ->sum('credit');
 
@@ -1734,7 +1734,7 @@ class PendaftarController extends Controller
                 ->where([
                     ['student_ic', $std]
                 ])->where('semesterid', '<=', $data->semester)
-                ->whereIn('course_status_id', [1,2,12])
+                ->whereIn('course_status_id', [1,2,12,15])
                 ->groupBy('courseid')
                 ->groupBy(DB::raw('(SELECT MAX(id) FROM student_subjek as ss2 WHERE ss2.courseid = student_subjek.courseid)'))
                 ->value('total');
@@ -1744,7 +1744,7 @@ class PendaftarController extends Controller
                 ->where([
                     ['student_ic', $std]
                 ])->where('semesterid', '<=', $data->semester)
-                ->whereIn('course_status_id', [1,2,12])
+                ->whereIn('course_status_id', [1,2,12,15])
                 ->groupBy('courseid')
                 ->groupBy(DB::raw('(SELECT MAX(id) FROM student_subjek as ss2 WHERE ss2.courseid = student_subjek.courseid)'))
                 ->value('total');
