@@ -1729,10 +1729,8 @@ class PendaftarController extends Controller
 
                 $grade_pointer_c = DB::table('student_subjek')
                 ->where([
-                    ['student_ic', $std],
-                    ['sessionid', $data->session],
-                    ['semesterid', $data->semester]
-                ])
+                    ['student_ic', $std]
+                ])->where('semesterid', '<=', $data->semester)
                 ->whereIn('course_status_id', [1, 2, 12, 15])
                 ->selectRaw('SUM(credit * pointer) as total')
                 ->selectRaw('MAX(id) as max_id')
