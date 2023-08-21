@@ -1949,6 +1949,7 @@ class LecturerController extends Controller
         $overallall = [];
         $avgoverall = [];
         $valGrade = [];
+        $pointerGrade = [];
         $user = Auth::user();
 
         $id = request()->id;
@@ -2605,10 +2606,14 @@ class LecturerController extends Controller
                         {
                             $valGrade[$ky][$keys] = $grd->code;
 
+                            $ponterGrade[$ky][$keys] = $grd->grade_value;
+
                             break;
                         }else{
 
                             $valGrade[$ky][$keys] = null;
+
+                            $ponterGrade[$ky][$keys] = 0;
                         }
 
                     }
