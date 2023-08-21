@@ -1745,6 +1745,7 @@ class PendaftarController extends Controller
                             ->groupBy('courseid');
 
                 $result = DB::table(DB::raw("({$sub_query->toSql()}) as a"))
+                            ->mergeBindings($sub_query)
                             ->join('student_subjek as b', 'a.cid', '=', 'b.courseid')
                             ->select(DB::raw('SUM(b.pointer*b.credit) as grade_c'))
                             ->first();
