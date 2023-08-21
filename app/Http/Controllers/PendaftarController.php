@@ -1667,9 +1667,7 @@ class PendaftarController extends Controller
         {
 
             $students = DB::table('students')->where([
-                ['program', $data->program],
-                ['session', $data->session],
-                ['semester', $data->semester]
+                ['program', $data->program]
             ])->pluck('ic');
 
             foreach($students as $std)
