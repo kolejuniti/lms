@@ -1727,7 +1727,7 @@ class PendaftarController extends Controller
                 ->distinct('courseid')
                 ->sum('credit');
 
-                $grade_pointer_s = DB::table('student_subjek')
+                $grade_pointer_c = DB::table('student_subjek')
                 ->where([
                     ['student_ic', $std],
                     ['sessionid', $data->session],
@@ -1811,7 +1811,7 @@ class PendaftarController extends Controller
                     'total_credit_c' => $total_credit_c,
                     'passed_credit_c' => $passed_credit_c,
                     'count_credit_c' => $count_credit_c,
-                    'grade_pointer_c' => $grade_pointer_c->total,
+                    'grade_pointer_c' => $grade_pointer_c,
                     'cgpa' => $cgpa,
                     'transcript_status_id' => $transcript_status_id
                 ]);
