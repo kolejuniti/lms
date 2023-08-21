@@ -1727,33 +1727,31 @@ class PendaftarController extends Controller
                 ->distinct('courseid')
                 ->sum('credit');
 
-                // $grade_pointer_c = DB::table('student_subjek')
-                // ->select('courseid', DB::raw('SUM(credit * pointer) as total'))
-                // ->where([
-                //     ['student_ic', $std]
-                // ])->where('semesterid', '<=', $data->semester)
-                // ->whereIn('course_status_id', [1,2,12,15])
-                // ->groupBy('courseid')
-                // ->groupBy(DB::raw('(SELECT MAX(id) FROM student_subjek as ss2 WHERE ss2.courseid = student_subjek.courseid)'))
-                // ->value('total');
+                $grade_pointer_c = DB::table('student_subjek')
+                ->select('courseid', DB::raw('SUM(credit * pointer) as total'))
+                ->where([
+                    ['student_ic', $std]
+                ])->where('semesterid', '<=', $data->semester)
+                ->whereIn('course_status_id', [1,2,12,15])
+                ->value('total');
 
-                $sub_query = DB::table('student_subjek')
-                            ->where([
-                                ['student_ic', $std]
-                            ])->where('semesterid', '<=', $data->semester)
-                            ->select('courseid', DB::raw('MAX(id) as cid'))
-                            ->groupBy('courseid');
+                // $sub_query = DB::table('student_subjek')
+                //             ->where([
+                //                 ['student_ic', $std]
+                //             ])->where('semesterid', '<=', $data->semester)
+                //             ->select('courseid', DB::raw('MAX(id) as cid'))
+                //             ->groupBy('courseid');
 
-                $result = DB::table(DB::raw("({$sub_query->toSql()}) as a"))
-                            ->mergeBindings($sub_query)
-                            ->join('student_subjek as b', 'a.cid', '=', 'b.courseid')
-                            ->where([
-                                ['b.student_ic', $std]
-                            ])->where('b.semesterid', '<=', $data->semester)
-                            ->select(DB::raw('SUM(b.pointer*b.credit) as grade_c'))
-                            ->value('grade_c');
+                // $result = DB::table(DB::raw("({$sub_query->toSql()}) as a"))
+                //             ->mergeBindings($sub_query)
+                //             ->join('student_subjek as b', 'a.cid', '=', 'b.courseid')
+                //             ->where([
+                //                 ['b.student_ic', $std]
+                //             ])->where('b.semesterid', '<=', $data->semester)
+                //             ->select(DB::raw('SUM(b.pointer*b.credit) as grade_c'))
+                //             ->value('grade_c');
                         
-                $grade_pointer_c = $result;
+                // $grade_pointer_c = $result;
 
                 $cgpa = DB::table('student_subjek')
                 ->select('courseid', DB::raw('ROUND(SUM(credit * pointer) / 2) as total'))
