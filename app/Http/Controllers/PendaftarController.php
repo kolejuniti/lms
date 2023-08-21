@@ -1747,6 +1747,9 @@ class PendaftarController extends Controller
                 $result = DB::table(DB::raw("({$sub_query->toSql()}) as a"))
                             ->mergeBindings($sub_query)
                             ->join('student_subjek as b', 'a.cid', '=', 'b.courseid')
+                            ->where([
+                                ['b.student_ic', $std]
+                            ])->where('b.semesterid', '<=', $data->semester)
                             ->select(DB::raw('SUM(b.pointer*b.credit) as grade_c'))
                             ->value('grade_c');
                         
