@@ -1732,12 +1732,6 @@ class PendaftarController extends Controller
                 ->where('student_ic', $std)
                 ->where('semesterid', '<=', $data->semester)
                 ->whereIn('course_status_id', [1, 2, 12, 15])
-                ->whereIn('id', function ($query) {
-                    $query->select(DB::raw('MAX(id)'))
-                        ->from('student_subjek as ss2')
-                        ->whereRaw('ss2.courseid = student_subjek.courseid')
-                        ->groupBy('courseid');
-                })
                 ->groupBy('courseid')
                 ->value('total');
 
