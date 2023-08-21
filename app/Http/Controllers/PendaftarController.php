@@ -1727,15 +1727,28 @@ class PendaftarController extends Controller
                 ->distinct('courseid')
                 ->sum('credit');
 
+                $grade_pointer = DB::table('student_subjek')
+                    ->selectRaw('MAX(id) as max_id')
+                    ->where('student_ic', $std)
+                    ->where('semesterid', '<=', $data->semester)
+                    ->whereIn('course_status_id', [1, 2, 12, 15])
+                    ->groupBy('courseid')
+                    ->get();
+
                 $grade_pointer_c = DB::table('student_subjek')
-                ->where([
-                    ['student_ic', $std]
-                ])->where('semesterid', '<=', $data->semester)
-                ->whereIn('course_status_id', [1, 2, 12, 15])
-                ->selectRaw('SUM(credit * pointer) as total')
-                ->selectRaw('MAX(id) as max_id')
-                ->groupBy('courseid')
-                ->value('total');
+                    ->whereIn('id', $grade_pointer->pluck('max_id'))
+                    ->selectRaw('SUM(credit * pointer) as total')
+                    ->value('total');
+
+                // $grade_pointer_c = DB::table('student_subjek')
+                // ->where([
+                //     ['student_ic', $std]
+                // ])->where('semesterid', '<=', $data->semester)
+                // ->whereIn('course_status_id', [1, 2, 12, 15])
+                // ->selectRaw('SUM(credit * pointer) as total')
+                // ->selectRaw('MAX(id) as max_id')
+                // ->groupBy('courseid')
+                // ->value('total');
 
 
                 // $sub_query = DB::table('student_subjek')
@@ -1755,6 +1768,21 @@ class PendaftarController extends Controller
                 //             ->value('grade_c');
                         
                 // $grade_pointer_c = $result;
+
+                // $grade_pointers = DB::table('student_subjek')
+                //     ->where('student_ic', $std)
+                //     ->where('semesterid', '<=', $data->semester)
+                //     ->whereIn('course_status_id', [1, 2, 12, 15])
+                //     ->select('courseid', DB::raw('SUM(credit * pointer) as total'))
+                //     ->groupBy('courseid')
+                //     ->get();
+
+                // // Now you can iterate through the collection to access each course's total
+                // foreach ($grade_pointers as $grade_pointer) {
+                //     $courseid = $grade_pointer->courseid;
+                //     $total = $grade_pointer->total;
+                //     // Do something with $courseid and $total
+                // }
 
                 $cgpa = DB::table('student_subjek')
                 ->select('courseid', DB::raw('ROUND(SUM(credit * pointer) / 2) as total'))
