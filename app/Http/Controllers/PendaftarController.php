@@ -1728,7 +1728,7 @@ class PendaftarController extends Controller
                 ->sum('credit');
 
                 $grade_pointer_c = DB::table('student_subjek')
-                ->select('courseid', DB::raw('SUM(credit * pointer) as total'))
+                ->select(DB::raw('SUM(credit * pointer) as total'))
                 ->where([
                     ['student_ic', $std]
                 ])->where('semesterid', '<=', $data->semester)
