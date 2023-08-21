@@ -1728,13 +1728,12 @@ class PendaftarController extends Controller
                 ->sum('credit');
 
                 $grade_pointer_c = DB::table('student_subjek')
-                ->select('courseid', DB::raw('SUM(credit * pointer) as total'))
+                ->select('courseid', DB::raw('MAX(id)'), DB::raw('SUM(credit * pointer) as total'))
                 ->where([
                     ['student_ic', $std]
                 ])->where('semesterid', '<=', $data->semester)
                 ->whereIn('course_status_id', [1,2,12,15])
                 ->groupBy('courseid')
-                ->groupBy(DB::raw('(SELECT MAX(id) FROM student_subjek as ss2 WHERE ss2.courseid = student_subjek.courseid)'))
                 ->first();
 
                 // $sub_query = DB::table('student_subjek')
