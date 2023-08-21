@@ -1747,6 +1747,8 @@ class PendaftarController extends Controller
 
                 $grade_pointer_c = DB::table(DB::raw("({$subQuery->toSql()}) as a"))
                     ->join('student_subjek as b', 'a.cid', '=', 'b.courseid')
+                    ->where('b.student_ic', $std)
+                    ->where('b.semesterid', '<=', $data->semester)
                     ->select(DB::raw('SUM(b.pointer*b.credit) as grade_c'))
                     ->value('grade_c');
 
