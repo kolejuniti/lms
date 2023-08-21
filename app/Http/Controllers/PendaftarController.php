@@ -1727,16 +1727,17 @@ class PendaftarController extends Controller
                 ->distinct('courseid')
                 ->sum('credit');
 
-                $grade_pointer_c = DB::table('student_subjek as ss1')
-                ->select('ss1.courseid', DB::raw('SUM(ss1.credit * ss1.pointer) as total'))
-                ->join(DB::raw('(SELECT courseid, MAX(id) as max_id FROM student_subjek GROUP BY courseid) as ss2'), function ($join) {
-                    $join->on('ss1.courseid', '=', 'ss2.courseid');
-                })
-                ->where('ss1.student_ic', $std)
-                ->where('ss1.semesterid', '<=', $data->semester)
-                ->whereIn('ss1.course_status_id', [1, 2, 12, 15])
-                ->groupBy('ss1.courseid')
-                ->first();
+                $grade_pointer_s = DB::table('student_subjek')
+                ->where([
+                    ['student_ic', $std],
+                    ['sessionid', $data->session],
+                    ['semesterid', $data->semester]
+                ])
+                ->whereIn('course_status_id', [1, 2, 12, 15])
+                ->selectRaw('SUM(credit * pointer) as total')
+                ->selectRaw('MAX(id) as max_id')
+                ->groupBy('courseid')
+                ->value('total');
 
 
                 // $sub_query = DB::table('student_subjek')
