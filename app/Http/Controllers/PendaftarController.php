@@ -1733,7 +1733,6 @@ class PendaftarController extends Controller
                     ['student_ic', $std]
                 ])->where('semesterid', '<=', $data->semester)
                 ->whereIn('course_status_id', [1,2,12,15])
-                ->groupBy('courseid')
                 ->first();
 
                 // $sub_query = DB::table('student_subjek')
