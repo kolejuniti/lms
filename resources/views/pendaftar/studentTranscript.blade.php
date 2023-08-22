@@ -91,21 +91,34 @@
               <thead>
                   <tr>
                       <th style="width: 1%">
-                          No.
-                      </th>
-                      <th style="width: 15%">
-                          Name
-                      </th>
-                      <th style="width: 15%">
-                          No. IC
-                      </th>
-                      <th style="width: 10%">
-                          No. Matric
-                      </th>
-                      <th style="width: 10%">
-                          Program
+                        No.
                       </th>
                       <th style="width: 20%">
+                        Name
+                      </th>
+                      <th style="width: 5%">
+                        No. Ic / Passport
+                      </th>
+                      <th style="width: 5%">
+                        Credit Semester
+                      </th>
+                      <th style="width: 5%">
+                        Grade Semester
+                      </th>
+                      <th style="width: 5%">
+                        PNGS
+                      </th>
+                      <th style="width: 5%">
+                        Credit Total
+                      </th>
+                      <th style="width: 5%">
+                        Grade Total
+                      </th>
+                      <th style="width: 5%">
+                        PNGK
+                      </th>
+                      <th style="width: 5%">
+                        Result
                       </th>
                   </tr>
               </thead>
