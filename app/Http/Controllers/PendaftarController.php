@@ -1666,17 +1666,20 @@ class PendaftarController extends Controller
         if($data->program != null && $data->session != null && $data->semester != null)
         {
 
+            DB::table('student_transcript')
+            ->join('students', 'student_transcript.student_ic', 'students.ic')
+            ->where([
+                ['students.program', $data->program],
+                ['student_transcript.session_id', $data->session],
+                ['student_transcript.semester', $data->semester]
+            ])->delete();
+
             $students = DB::table('students')->where([
                 ['program', $data->program]
             ])->pluck('ic');
 
             foreach($students as $std)
             {
-                DB::table('student_transcript')->where([
-                    ['student_ic', $std],
-                    ['session_id', $data->session],
-                    ['semester', $data->semester]
-                ])->delete();
 
                 $total_credit_s = DB::table('student_subjek')->where([
                     ['student_ic', $std],
