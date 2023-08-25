@@ -108,6 +108,7 @@ Route::post('/pendaftar/student/status/getReportStd', [App\Http\Controllers\Pend
 Route::get('/pendaftar/student/report', [App\Http\Controllers\PendaftarController::class, 'studentReport'])->name('pendaftar.student.studentreport');
 Route::post('/pendaftar/student/report/getStudentReport', [App\Http\Controllers\PendaftarController::class, 'getStudentReport']);
 Route::get('/pendaftar/student/transcript', [App\Http\Controllers\PendaftarController::class, 'studentTranscript'])->name('pendaftar.student.transcript');
+Route::post('/pendaftar/student/transcript/getTranscript', [App\Http\Controllers\PendaftarController::class, 'getTranscript']);
 Route::post('/pendaftar/student/transcript/addTranscript', [App\Http\Controllers\PendaftarController::class, 'addTranscript']);
 
 
