@@ -275,76 +275,162 @@
       // session.hidden = false;
       // document.getElementById('semester-card').hidden = false;
       
-      getStudent(selected_program,selected_session,selected_year,selected_semester,selected_status);
+      getTranscript(selected_program,selected_session,selected_semester);
 
     })
 
     $(document).on('change', '#session', function(e){
     selected_session = $(e.target).val();
 
-      getStudent(selected_program,selected_session,selected_year,selected_semester,selected_status);
+      getTranscript(selected_program,selected_session,selected_semester);
 
     });
 
     $(document).on('change', '#semester', function(e){
     selected_semester = $(e.target).val();
 
-      getStudent(selected_program,selected_session,selected_year,selected_semester,selected_status);
+      getTranscript(selected_program,selected_session,selected_semester);
 
     });
 
-    function getStudent(program,session,year,semester,status)
+    function getTranscript(program,session,semester)
     {
 
-      $('#complex_header').DataTable().destroy();
+      // $('#complex_header').DataTable().destroy();
 
-      return $.ajax({
+      if(program != "" && session != "" && semester != "")
+      {
+
+        //alert(program + session + semester);
+
+        return $.ajax({
               headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
-              url      : "{{ url('pendaftar/group/getStudentTableIndex') }}",
+              url      : "{{ url('pendaftar/student/transcript/getTranscript') }}",
               method   : 'POST',
-              data 	 : {program: program,session: session,year: year,semester: semester,status: status},
-              beforeSend:function(xhr){
-                $("#complex_header").LoadingOverlay("show", {
-                  image: `<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="24px" height="30px" viewBox="0 0 24 30" style="enable-background:new 0 0 50 50;" xml:space="preserve">
-                    <rect x="0" y="10" width="4" height="10" fill="#333" opacity="0.2">
-                    <animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0s" dur="0.6s" repeatCount="indefinite"></animate>
-                    <animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0s" dur="0.6s" repeatCount="indefinite"></animate>
-                    <animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0s" dur="0.6s" repeatCount="indefinite"></animate>
-                    </rect>
-                    <rect x="8" y="10" width="4" height="10" fill="#333" opacity="0.2">
-                    <animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0.15s" dur="0.6s" repeatCount="indefinite"></animate>
-                    <animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0.15s" dur="0.6s" repeatCount="indefinite"></animate>
-                    <animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0.15s" dur="0.6s" repeatCount="indefinite"></animate>
-                    </rect>
-                    <rect x="16" y="10" width="4" height="10" fill="#333" opacity="0.2">
-                    <animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0.3s" dur="0.6s" repeatCount="indefinite"></animate>
-                    <animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0.3s" dur="0.6s" repeatCount="indefinite"></animate>
-                    <animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0.3s" dur="0.6s" repeatCount="indefinite"></animate>
-                    </rect>
-                  </svg>`,
-                  background:"rgba(255,255,255, 0.3)",
-                  imageResizeFactor : 1,    
-                  imageAnimation : "2000ms pulse" , 
-                  imageColor: "#019ff8",
-                  text : "Please wait...",
-                  textResizeFactor: 0.15,
-                  textColor: "#019ff8",
-                  textColor: "#019ff8"
-                });
-                $("#complex_header").LoadingOverlay("hide");
-              },
+              data 	 : {program: program,session: session,semester: semester},
+              // beforeSend:function(xhr){
+              //   $("#complex_header").LoadingOverlay("show", {
+              //     image: `<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="24px" height="30px" viewBox="0 0 24 30" style="enable-background:new 0 0 50 50;" xml:space="preserve">
+              //       <rect x="0" y="10" width="4" height="10" fill="#333" opacity="0.2">
+              //       <animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0s" dur="0.6s" repeatCount="indefinite"></animate>
+              //       <animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0s" dur="0.6s" repeatCount="indefinite"></animate>
+              //       <animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0s" dur="0.6s" repeatCount="indefinite"></animate>
+              //       </rect>
+              //       <rect x="8" y="10" width="4" height="10" fill="#333" opacity="0.2">
+              //       <animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0.15s" dur="0.6s" repeatCount="indefinite"></animate>
+              //       <animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0.15s" dur="0.6s" repeatCount="indefinite"></animate>
+              //       <animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0.15s" dur="0.6s" repeatCount="indefinite"></animate>
+              //       </rect>
+              //       <rect x="16" y="10" width="4" height="10" fill="#333" opacity="0.2">
+              //       <animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0.3s" dur="0.6s" repeatCount="indefinite"></animate>
+              //       <animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0.3s" dur="0.6s" repeatCount="indefinite"></animate>
+              //       <animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0.3s" dur="0.6s" repeatCount="indefinite"></animate>
+              //       </rect>
+              //     </svg>`,
+              //     background:"rgba(255,255,255, 0.3)",
+              //     imageResizeFactor : 1,    
+              //     imageAnimation : "2000ms pulse" , 
+              //     imageColor: "#019ff8",
+              //     text : "Please wait...",
+              //     textResizeFactor: 0.15,
+              //     textColor: "#019ff8",
+              //     textColor: "#019ff8"
+              //   });
+              //   $("#complex_header").LoadingOverlay("hide");
+              // },
               error:function(err){
                   alert("Error");
                   console.log(err);
               },
-              success  : function(data){
-                  $('#complex_header').removeAttr('hidden');
-                  $('#complex_header').html(data);
-                  
-                  $('#complex_header').DataTable();
-                  //window.location.reload();
+              success:function(res){
+                  try{
+                      if(res.message == "Success"){
+
+                            console.log(res.log);
+
+                            var parsedData = JSON.parse(res.log);
+                            console.log(parsedData);
+                            // alert("Success! Student's Result has been generated!");
+                        
+                            // Start with an empty table structure
+                            var newTable = "<table id='table_projectprogress_course' class='table table-striped projects display dataTable no-footer' style='width: 100%;'>" +
+                                                "<thead class='thead-themed'>" +
+                                                "<tr>" +
+                                                    "<th style='width: 1%'>No.</th>" +
+                                                    "<th style='width: 20%'>Name</th>" +
+                                                    "<th style='width: 5%'>No. Ic / Passport</th>" +
+                                                    "<th style='width: 5%'>Credit Semester</th>" +
+                                                    "<th style='width: 5%'>Grade Semester</th>" +
+                                                    "<th style='width: 5%'>PNGS</th>" +
+                                                    "<th style='width: 5%'>Credit Total</th>" +
+                                                    "<th style='width: 5%'>Grade Total</th>" +
+                                                    "<th style='width: 5%'>PNGK</th>" +
+                                                    "<th style='width: 5%'>Result</th>" +
+                                                    // "<th style='width: 20%'></th>" +
+                                                "</tr>" +
+                                                "</thead>" +
+                                                "<tbody>";
+
+                            // Add new rows
+                            $.each(res.data, function(i, item) {
+                                var newRow = "<tr>" +
+                                    "<td>" + (i+1) + "</td>" +
+                                    "<td>" + item.name + "</td>" +
+                                    "<td>" + item.student_ic + "</td>" +
+                                    "<td>" + item.total_credit_s + "</td>" +
+                                    "<td>" + item.grade_pointer_s + "</td>" +
+                                    "<td>" + item.gpa + "</td>" +
+                                    "<td>" + item.total_credit_c + "</td>" +
+                                    "<td>" + item.grade_pointer_c + "</td>" +
+                                    "<td>" + item.cgpa + "</td>" +
+                                    "<td>" + item.transcript_status_id + "</td>" +
+                                    // "<td class='project-actions text-right' style='text-align: center;'>" +
+                                    //   "<a class='btn btn-info btn-sm pr-2' href='#' onclick='updatePackage(\"" + item.id + "\")'>" +
+                                    //       "<i class='ti-pencil-alt'></i> Edit" +
+                                    //   "</a>" +
+                                    //   "<a class='btn btn-danger btn-sm' href='#' onclick='deletePackage(\"" + item.id + "\")'>" +
+                                    //       "<i class='ti-trash'></i> Delete" +
+                                    //   "</a>" +
+                                    // "</td>" +
+                                "</tr>";
+                                newTable += newRow;
+                            });
+
+                            // Close table structure
+                            newTable += "</tbody></table>";
+
+                            // Replace the div contents with the new table
+                            $('#add-student-div').html(newTable);
+
+                            // set datatable
+                            $('#table_projectprogress_course').DataTable({
+                                "searching": true, // Enable search feature
+                                "lengthChange": true, // Enable page length change
+                                "pageLength": 10 // Set default number of rows per page
+                            });
+                      
+
+                      }else{
+                          $('.error-field').html('');
+                          if(res.message == "Field Error"){
+                              for (f in res.error) {
+                                  $('#'+f+'_error').html(res.error[f]);
+                              }
+                          }
+                          else if(res.message == "Group code already existed inside the system"){
+                              $('#classcode_error').html(res.message);
+                          }
+                          else{
+                              alert(res.message);
+                          }
+                          $("html, body").animate({ scrollTop: 0 }, "fast");
+                      }
+                  }catch(err){
+                      alert("Ops sorry, there is an error");
+                  }
               }
           });
+        }
     }
 
     function submit()
