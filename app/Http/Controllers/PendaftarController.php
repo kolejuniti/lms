@@ -1884,7 +1884,7 @@ class PendaftarController extends Controller
 
                             $total = DB::table('student_transcript')
                                      ->where('student_ic', $std)
-                                     ->where('semesterid', '<', $data->semester)
+                                     ->where('semester', '<', $data->semester)
                                      ->whereIn('transcript_status_id', [3,4])
                                      ->count();
 
@@ -1902,7 +1902,7 @@ class PendaftarController extends Controller
 
                             $total = DB::table('student_transcript')
                                      ->where('student_ic', $std)
-                                     ->where('semesterid', '<', $data->semester)
+                                     ->where('semester', '<', $data->semester)
                                      ->whereIn('transcript_status_id', [4,5])
                                      ->count();
 
