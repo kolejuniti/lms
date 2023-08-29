@@ -549,6 +549,12 @@ Route::post('/finance/package/tabungkhas/storeTabungkhas', [App\Http\Controllers
 Route::post('/finance/package/tabungkhas/getProgram2', [App\Http\Controllers\FinanceController::class, 'getProgram2']);
 Route::post('/finance/package/tabungkhas/registerPRG2', [App\Http\Controllers\FinanceController::class, 'registerPRG2']);
 Route::post('/finance/package/tabungkhas/unregisterPRG2', [App\Http\Controllers\FinanceController::class, 'unregisterPRG2']);
+Route::get('/finance/package/insentifkhas', [App\Http\Controllers\FinanceController::class, 'insentifkhas'])->name('finance.package.insentifkhas');
+Route::get('/finance/package/insentifkhas/getInsentifkhas', [App\Http\Controllers\FinanceController::class, 'getInsentifkhas']);
+Route::post('/finance/package/insentifkhas/storeInsentifkhas', [App\Http\Controllers\FinanceController::class, 'storeInsentifkhas']);
+Route::post('/finance/package/insentifkhas/getProgram3', [App\Http\Controllers\FinanceController::class, 'getProgram3']);
+Route::post('/finance/package/insentifkhas/registerPRG3', [App\Http\Controllers\FinanceController::class, 'registerPRG3']);
+Route::post('/finance/package/insentifkhas/unregisterPRG3', [App\Http\Controllers\FinanceController::class, 'unregisterPRG3']);
 Route::get('/finance/package/sponsorPackage', [App\Http\Controllers\FinanceController::class, 'sponsorPackage'])->name('finance.package.sponsorPackage');
 Route::get('/finance/package/sponsorPackage/getsponsorPackage', [App\Http\Controllers\FinanceController::class, 'getsponsorPackage']);
 Route::post('/finance/package/sponsorPackage/storeSponsorPackage', [App\Http\Controllers\FinanceController::class, 'storeSponsorPackage']);
