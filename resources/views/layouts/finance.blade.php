@@ -284,6 +284,7 @@
 				<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
 					<li><a href="{{ route('finance.package.incentive') }}" class="{{ (route('finance.package.incentive') == Request::url()) ? 'active' : ''}}">Incentives</a></li>
 					<li><a href="{{ route('finance.package.tabungkhas') }}" class="{{ (route('finance.package.tabungkhas') == Request::url()) ? 'active' : ''}}">Tabung Khas</a></li>
+					<li><a href="{{ route('finance.package.insentifkhas') }}" class="{{ (route('finance.package.insentifkhas') == Request::url()) ? 'active' : ''}}">Insentif Khas</a></li>
 					<li><a href="{{ route('finance.package.payment') }}" class="{{ (route('finance.package.payment') == Request::url()) ? 'active' : ''}}">Payment</a></li>
 				</ul>
 			  </li>
