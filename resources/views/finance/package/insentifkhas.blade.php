@@ -56,7 +56,7 @@
                       </select>
                     </div>
                   </div>
-                  <div class="col-md-6" id="package-card">
+                  {{-- <div class="col-md-6" id="package-card">
                     <div class="form-group">
                       <label class="form-label" for="package">Package PTPTN</label>
                       <select class="form-select" id="package" name="package">
@@ -66,7 +66,7 @@
                         @endforeach
                       </select>
                     </div>
-                  </div> 
+                  </div>  --}}
                   <div class="col-md-6" id="type-card">
                     <div class="form-group">
                       <label class="form-label" for="type">Insentif Type</label>
@@ -154,7 +154,7 @@
     var formData = new FormData();
 
     getInput = {
-      package : $('#package').val(),
+      // package : $('#package').val(),
       type : $('#type').val(),
       intake : $('#intake').val(),
       amount : $('#amount').val()

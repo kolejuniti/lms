@@ -17,9 +17,9 @@
                         <th>
                         Intake
                         </th>
-                        <th>
+                        {{-- <th>
                         Package PTPTN
-                        </th>
+                        </th> --}}
                         <th>
                         Insentif Type
                         </th>
@@ -40,9 +40,9 @@
                             <td >
                             {{ $dt->intake }}
                             </td>
-                            <td >
+                            {{-- <td >
                             {{ $dt->package }}
-                            </td>
+                            </td> --}}
                             <td >
                             {{ $dt->type }}
                             </td>
