@@ -1442,6 +1442,70 @@ class FinanceController extends Controller
                     }
                 }
 
+                //INSENTIFKHAS
+
+                $insentif = DB::table('tblinsentifkhas')
+                                ->join('tblprocess_type', 'tblinsentifkhas.process_type_id', 'tblprocess_type.id')
+                                ->where([
+                                    ['tblinsentifkhas.intake_id', $student->intake]
+                                ])->select('tblinsentifkhas.*', 'tblprocess_type.code');
+
+                if($insentif->exists())
+                {
+                    $insentifs = $insentif->get();
+
+                    foreach($insentifs as $key => $icv)
+                    {
+                        if(DB::table('tblinsentifkhas_program')->where([['insentifkhas_id', $icv->id],['program_id', $student->program]])->exists())
+                        {
+                            $ref_no = DB::table('tblref_no')->where('id', 8)->first();
+
+                            DB::table('tblref_no')->where('id', $ref_no->id)->update([
+                                'ref_no' => $ref_no->ref_no + 1
+                            ]);
+
+                            $id = DB::table('tblpayment')->insertGetId([
+                                'student_ic' => $student->ic,
+                                'date' => date('Y-m-d'),
+                                'ref_no' => $ref_no->code . $ref_no->ref_no + 1,
+                                'session_id' => $student->session,
+                                'semester_id' => $student->semester,
+                                'program_id' => $student->program,
+                                'amount' => $icv->amount,
+                                'process_status_id' => 2,
+                                'process_type_id' => $icv->process_type_id,
+                                'add_staffID' => Auth::user()->ic,
+                                'add_date' => date('Y-m-d'),
+                                'mod_staffID' => Auth::user()->ic,
+                                'mod_date' => date('Y-m-d')
+                            ]);
+
+                            DB::table('tblpaymentmethod')->insert([
+                                'payment_id' => $id,
+                                'claim_method_id' => 10,
+                                'bank_id' => 11,
+                                'no_document' => $icv->code . $id,
+                                'amount' => $icv->amount,
+                                'add_staffID' => Auth::user()->ic,
+                                'add_date' => date('Y-m-d'),
+                                'mod_staffID' => Auth::user()->ic,
+                                'mod_date' => date('Y-m-d')
+                            ]);
+
+                            DB::table('tblpaymentdtl')->insert([
+                                'payment_id' => $id,
+                                'claimDtl_id' => $icv->id,
+                                'claim_type_id' => 9,
+                                'amount' => $icv->amount,
+                                'add_staffID' => Auth::user()->ic,
+                                'add_date' => date('Y-m-d'),
+                                'mod_staffID' => Auth::user()->ic,
+                                'mod_date' => date('Y-m-d')
+                            ]);
+                        }
+                    }
+                }
+
             }else{
 
                 DB::table('students')->where('ic', $student->ic)->update([
@@ -4809,7 +4873,7 @@ class FinanceController extends Controller
 
         //dd($data['type']);
 
-        $data['session'] = DB::table('sessions')->get();
+        $data['session'] = DB::table('sessions')->orderBy('SessionID', 'desc')->get();
 
         return view('finance.package.tabungkhas', compact('data'));
 
@@ -4904,6 +4968,117 @@ class FinanceController extends Controller
         DB::table('tbltabungkhas_program')
         ->where([
             ['tabungkhas_id', $request->id],
+            ['program_id', $request->prg]
+        ])->delete();
+
+        return response()->json($request->id);
+
+    }
+
+    public function insentifkhas()
+    {
+        // $data['package'] = DB::table('tblpackage')->get();
+
+        $data['type'] = DB::table('tblprocess_type')
+                        ->where('name', 'NOT LIKE', '%TABUNG%')->get();
+
+        //dd($data['type']);
+
+        $data['session'] = DB::table('sessions')->orderBy('SessionID', 'desc')->get();
+
+        return view('finance.package.insentifkhas', compact('data'));
+
+    }
+
+    public function getInsentifkhas()
+    {
+
+        $data['insentifkhas'] = DB::table('tblinsentifkhas AS t1')
+                             ->join('sessions AS t2_intake', 't1.intake_id', 't2_intake.SessionID')
+                            //  ->join('tblpackage', 't1.package_id', 'tblpackage.id')
+                             ->join('tblprocess_type', 't1.process_type_id', 'tblprocess_type.id')
+                             ->select('t1.*', 't2_intake.SessionName AS intake', 'tblprocess_type.name AS type')
+                             ->get();
+
+        return view('finance.package.getInsentifkhas', compact('data'));
+
+    }
+
+    public function storeInsentifkhas(Request $request)
+    {
+
+        $data = json_decode($request->formData);
+
+        if($data->intake != null)
+        {
+
+            //$session = DB::table('sessions')
+            //           ->whereBetween('SessionID', [$data->from, $data->to])
+            //           ->get();
+
+            //foreach($session as $ses)
+            //{
+
+            //    DB::table('tblinsentifkhas')->insert(
+            //        'session'
+            //    )
+
+            //}
+
+            DB::table('tblinsentifkhas')->insert([
+                'intake_id' => $data->intake,
+                // 'package_id' => $data->package,
+                'process_type_id' => $data->type,
+                'amount' => $data->amount
+            ]);
+
+            return ["message"=>"Success"];
+
+        }else{
+
+            return ["message"=>"Please select all required field!"];
+
+        }
+    }
+
+    public function getProgram3(Request $request)
+    {
+
+        $data['registered'] = DB::table('tblprogramme')
+                              ->join('tblinsentifkhas_program', 'tblprogramme.id', 'tblinsentifkhas_program.program_id')
+                              ->where('tblinsentifkhas_program.insentifkhas_id', $request->id)
+                              ->select('tblprogramme.*')
+                              ->get();
+
+        $collection = collect($data['registered']);
+
+        $data['unregistered'] = DB::table('tblprogramme')
+                              ->whereNotIn('id', $collection->pluck('id'))
+                              ->get();
+
+        $data['id'] = $request->id;
+
+        return view('finance.package.getProgram', compact('data'));
+    }
+
+    public function registerPRG3(Request $request)
+    {
+   
+        DB::table('tblinsentifkhas_program')->insert([
+            'insentifkhas_id' => $request->id,
+            'program_id' => $request->prg
+        ]);
+
+        return response()->json($request->id);
+
+    }
+
+    public function unregisterPRG3(Request $request)
+    {
+
+        DB::table('tblinsentifkhas_program')
+        ->where([
+            ['insentifkhas_id', $request->id],
             ['program_id', $request->prg]
         ])->delete();
 
