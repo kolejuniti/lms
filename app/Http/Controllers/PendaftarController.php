@@ -1954,5 +1954,72 @@ class PendaftarController extends Controller
 
     }
 
+    public function studentResult()
+    {
+
+        return view('pendaftar.studentResult');
+
+    }
+
+    public function getStudentResult(Request $request)
+    {
+        $data['student'] = DB::table('students')
+                           ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
+                           ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+                           ->join('sessions AS t1', 'students.intake', 't1.SessionID')
+                           ->join('sessions AS t2', 'students.session', 't2.SessionID')
+                           ->select('students.*', 'tblstudent_status.name AS statusName', 'tblprogramme.progname AS program', 'students.program AS progid', 't1.SessionName AS intake_name', 't2.SessionName AS session_name')
+                           ->where('ic', $request->student)->first();
+
+        $data['result'] = DB::table('student_transcript')
+                ->join('students', 'student_transcript.student_ic', 'students.ic')
+                ->join('sessions', 'student_transcript.session_id', 'sessions.SessionID')
+                ->join('transcript_status', 'student_transcript.transcript_status_id', 'transcript_status.id')
+                ->where([
+                    ['student_transcript.student_ic', $request->student],
+                ])->select('student_transcript.*', 'students.name', 'students.no_matric', 'students.semester', 'sessions.SessionName','transcript_status.status_name AS transcript_status_id')
+                ->get();
+
+        return view('pendaftar.getStudentResult', compact('data'));
+
+    }
+
+    public function overallResult(Request $request)
+    {
+
+        $data['transcript'] = DB::table('student_transcript')
+                            ->join('students', 'student_transcript.student_ic', 'students.ic')
+                            ->join('sessions', 'student_transcript.session_id', 'sessions.SessionID')
+                            ->join('transcript_status', 'student_transcript.transcript_status_id', 'transcript_status.id')
+                            ->where([
+                                ['student_transcript.id', $request->id],
+                            ])->select('student_transcript.*', 'students.name', 'students.no_matric', 'students.semester', 'sessions.SessionName','transcript_status.status_name AS transcript_status_id')
+                            ->first();
+
+        $data['student'] = DB::table('students')
+                           ->join('sessions AS A1', 'students.intake', 'A1.SessionID')
+                           ->join('sessions AS A2', 'students.session', 'A2.SessionID')
+                           ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+                           ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
+                           ->select('students.*', 'tblprogramme.progname AS program', 'tblstudent_status.name AS status', 'A1.SessionName AS intake', 'A2.SessionName AS session')
+                           ->where('students.ic', $data['transcript']->student_ic)
+                           ->first();
+
+        $data['subject'] = DB::table('student_subjek')
+                           ->join('subjek', function($join){
+                                $join->on('student_subjek.courseid', 'subjek.sub_id');
+                                $join->on('student_subjek.semesterid', 'subjek.semesterid');
+                           })
+                           ->where([
+                            ['student_subjek.student_ic', $data['student']->ic],
+                            ['student_subjek.semesterid', $data['transcript']->semester]
+                           ])
+                           ->select('student_subjek.*', 'subjek.course_name', 'subjek.course_code')
+                           ->get();
+
+        return view('pendaftar.results', compact('data'));
+
+    }
+
     
 }
