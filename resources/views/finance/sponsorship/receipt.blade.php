@@ -28,6 +28,12 @@
          size: A4 potrait; 
          margin: 0.5cm; /* reduce margin */
       }
+      @media print {
+         .container {
+            transform: scale(1.7);
+            transform-origin: top left;
+         }
+      }
       * {
          margin: 0;
          padding: 0;
@@ -46,7 +52,7 @@
          font-size: 100%;
          vertical-align: baseline;
          background: transparent;
-         font-size: 5px; /* reduce font-size */
+         font-size: 6px; /* reduce font-size */
       }
       .container {
          transform: scale(0.8); /* scale down everything */
