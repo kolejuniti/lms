@@ -385,7 +385,7 @@ class FinanceController extends Controller
 
         $data['method'] = DB::table('tblpayment_method')->get();
 
-        $data['bank'] = DB::table('tblpayment_bank')->get();
+        $data['bank'] = DB::table('tblpayment_bank')->orderBy('name', 'asc')->get();
 
         return  view('finance.payment.paymentGetStudent', compact('data'));
 
@@ -1546,7 +1546,7 @@ class FinanceController extends Controller
 
         $data['method'] = DB::table('tblpayment_method')->get();
 
-        $data['bank'] = DB::table('tblpayment_bank')->get();
+        $data['bank'] = DB::table('tblpayment_bank')->orderBy('name', 'asc')->get();
 
         $data['tuition'] = DB::table('tblclaimdtl')
                             ->join('tblclaim', 'tblclaimdtl.claim_id', 'tblclaim.id')
@@ -1750,6 +1750,9 @@ class FinanceController extends Controller
                                         <th style="width: 10%">
                                             Amount
                                         </th>
+                                        <th style="width: 10%">
+                                            Document No.
+                                        </th>
                                         <th style="width: 20%">
                                             Remark
                                         </th>
@@ -1772,6 +1775,9 @@ class FinanceController extends Controller
                             </td>
                             <td style="width: 30%">
                             '. $dtl->amount .'
+                            </td>
+                            <td style="width: 30%">
+                            '. $dtl->no_document .'
                             </td>
                             <td>
                               <a class="btn btn-danger btn-sm" href="#" onclick="deletedtl('. $dtl->id .','. $main->id .')">
@@ -2275,7 +2281,7 @@ class FinanceController extends Controller
 
                     $data['method'] = DB::table('tblpayment_method')->get();
 
-                    $data['bank'] = DB::table('tblpayment_bank')->get();
+                    $data['bank'] = DB::table('tblpayment_bank')->orderBy('name', 'asc')->get();
  
                 
                 }else{
@@ -2389,6 +2395,9 @@ class FinanceController extends Controller
                                         <th style="width: 10%">
                                             Amount
                                         </th>
+                                        <th style="width: 10%">
+                                            Document No.
+                                        </th>
                                         <th style="width: 20%">
                                             Remark
                                         </th>
@@ -2411,6 +2420,9 @@ class FinanceController extends Controller
                             </td>
                             <td style="width: 30%">
                             '. $dtl->amount .'
+                            </td>
+                            <td style="width: 30%">
+                            '. $dtl->no_document .'
                             </td>
                             <td>
                               <a class="btn btn-danger btn-sm" href="#" onclick="deletedtl('. $dtl->id .','. $main->id .')">
@@ -4338,7 +4350,7 @@ class FinanceController extends Controller
 
         $data['method'] = DB::table('tblpayment_method')->get();
 
-        $data['bank'] = DB::table('tblpayment_bank')->get();
+        $data['bank'] = DB::table('tblpayment_bank')->orderBy('name', 'asc')->get();
 
         $data['type'] = DB::table('tblstudentclaim')->get();
 
