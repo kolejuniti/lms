@@ -229,7 +229,12 @@ function save(ic)
 
 }
 
-
+document.addEventListener('keydown', function(event) {
+  if (event.key === 'Enter') {
+    event.preventDefault();
+    add(); // Call your add() function or form submission logic
+  }
+});
 
 function add(ic)
 {
