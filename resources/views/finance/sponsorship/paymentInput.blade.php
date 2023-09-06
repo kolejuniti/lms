@@ -182,6 +182,13 @@ function add()
 
 }
 
+document.addEventListener('keydown', function(event) {
+  if (event.key === 'Enter') {
+    event.preventDefault();
+    add2(); // Call your add() function or form submission logic
+  }
+});
+
 function add2(id)
 {
 
