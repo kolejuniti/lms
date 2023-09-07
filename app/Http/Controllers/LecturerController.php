@@ -1302,6 +1302,8 @@ class LecturerController extends Controller
         $data = $request->validate([
             'group' => ['required'],
             'date' => ['required'],
+            'date2' => ['required'],
+            'class' => ['required'],
             //'schedule' => ['required'],
             'student' => [],
             'absentall' => [],
@@ -1321,8 +1323,10 @@ class LecturerController extends Controller
             DB::table('tblclassattendance')->insert([
                 'groupid' => $group[0],
                 'groupname' => $group[1],
-                //'classscheduleid' => $data['schedule'],
-                'classdate' => $data['date']
+                //'classscheduleid' => $data['schedule'],\
+                'classtype' => $data['class'],
+                'classdate' => $data['date'],
+                'classend' => $data['date2']
             ]);
 
         }else{
@@ -1338,7 +1342,9 @@ class LecturerController extends Controller
                         'groupid' => $group[0],
                         'groupname' => $group[1],
                         //'classscheduleid' => $data['schedule'],
-                        'classdate' => $data['date']
+                        'classtype' => $data['class'],
+                        'classdate' => $data['date'],
+                        'classend' => $data['date2']
                     ]);
                 }
             }
@@ -1361,7 +1367,9 @@ class LecturerController extends Controller
                         'groupid' => $group[0],
                         'groupname' => $group[1],
                         'excuse' => $exs,
-                        'classdate' => $data['date']
+                        'classtype' => $data['class'],
+                        'classdate' => $data['date'],
+                        'classend' => $data['date2']
                     ]);
                 }
             }
@@ -1380,7 +1388,9 @@ class LecturerController extends Controller
                             'groupid' => $group[0],
                             'groupname' => $group[1],
                             'mc' => TRUE,
-                            'classdate' => $data['date']
+                            'classtype' => $data['class'],
+                            'classdate' => $data['date'],
+                            'classend' => $data['date2']
                         ]);
                     }
                 }
