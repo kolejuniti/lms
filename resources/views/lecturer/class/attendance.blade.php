@@ -62,10 +62,10 @@
                         </select>
                       </div>
                     </div>   
-                    <div class="col-md-6" id = "date-group">
+                    <div class="col-md-6" id ="date-group">
                         <div class="bootstrap-datepicker">
                         <div class="form-group">
-                          <label class="form-label" for="date">Date</label>
+                          <label class="form-label" for="date">Class Start</label>
                           <div class="input-group">
                           <input id="date" name="date" value="" type="datetime-local" class="form-control" >
                           <!--<input id="schedule" name="schedule" value="" type="text" class="form-control" hidden>-->
@@ -82,6 +82,34 @@
                         </select>
                       </div>
                     </div>  
+                    <div class="col-md-6" id ="date2-group">
+                      <div class="bootstrap-datepicker">
+                      <div class="form-group">
+                        <label class="form-label" for="date2">Class End</label>
+                        <div class="input-group">
+                        <input id="date2" name="date2" value="" type="datetime-local" class="form-control" >
+                        <!--<input id="schedule" name="schedule" value="" type="text" class="form-control" hidden>-->
+                        </div>
+                      </div>
+                      </div>
+                    </div>
+                    <div class="col-md-9 mt-3" id="payment-card">
+                      <div class="form-group">
+                          <label class="form-label" for="class">Class Type</label>
+                          <fieldset>
+                              <div class="form-check">
+                                  <input class="form-check-input" type="radio" name="class" id="class1" value="1">
+                                  <label for="class1">
+                                      Class
+                                  </label>
+                                  <input class="form-check-input" type="radio" name="class" id="class2" value="2">
+                                  <label for="class2">
+                                      Replacement Class
+                                  </label>
+                              </div>
+                          </fieldset>
+                      </div>
+                    </div>
                     <!--<input type="time" min="00:00:00" max="01:30:00">
                     <div class="col-md-12">
                         <div class="form-group">

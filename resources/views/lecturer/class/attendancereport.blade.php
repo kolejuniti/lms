@@ -36,8 +36,8 @@
         </div>
     </div>
 
-    <!-- Main content -->
-    <section class="content">
+      <!-- Main content -->
+      <section class="content">
         <div class="row">
           <div class="col-12">
             @if(count($groups) > 0)
@@ -52,7 +52,7 @@
                       <div class="row">
                         <div id = "status">
                           <div class="col-sm-12">
-                            <table id="myTable{{$grp->group_name}}" class="table table-striped projects display dataTable no-footer" style="width: 100%;" role="grid" aria-describedby="complex_header_info">
+                            <table id="myTable{{$grp->group_name}}" class="w-100 table table-bordered display margin-top-10 w-p100 table-layout: fixed;" style="width: 100%;" role="grid" aria-describedby="complex_header_info">
                               <script>
                                 // Wait for the DOM to be ready before running the script
                                 $(document).ready(function() {
@@ -64,85 +64,68 @@
                                         paging: false,
                                         // Define buttons to add to the table
                                         buttons: [
-                                            // Copy button with footer enabled
-                                            { extend: 'copyHtml5', footer: true },
-                                            // Excel export button with footer enabled
-                                            { extend: 'excelHtml5', footer: true },
-                                            // CSV export button with footer enabled
-                                            { extend: 'csvHtml5', footer: true },
-                                            // PDF export button with custom settings
-                                            {
-                                                extend: 'pdfHtml5',
-                                                // Set page orientation to landscape
-                                                orientation: 'landscape',
-                                                // Set page size to A2
-                                                pageSize: 'A2',
-                                                // Customize the exported PDF document
-                                                customize: function (doc) {
-                                                    // Set the table width to 100% to fill the page
-                                                    doc.content[1].table.widths = Array(doc.content[1].table.body[0].length + 1).join('*').split('');
-
-                                                    // Define the custom header function
-                                                    var header = function() {
-                                                        return {
-                                                            // Create a stack to place text objects one below the other
-                                                            stack: [
-                                                                {
-                                                                    // Align the first line of text to the left
-                                                                    alignment: 'left',
-                                                                    // Insert the NAME text with the variable
-                                                                    text: 'NAME: {{ $grp->name }}',
-                                                                    // Set the font size to 14
-                                                                    fontSize: 14,
-                                                                    // Make the text bold
-                                                                    bold: true,
-                                                                    // Set the margin [left, top, right, bottom]
-                                                                    margin: [40, 20, 0, 0]
-                                                                },
-                                                                {
-                                                                    // Align the second line of text to the left
-                                                                    alignment: 'left',
-                                                                    // Insert the SUBJEK text with the variables
-                                                                    text: 'SUBJEK: {{ $grp->course_name }} ({{ $grp->course_code }})',
-                                                                    // Set the font size to 14
-                                                                    fontSize: 14,
-                                                                    // Make the text bold
-                                                                    bold: true,
-                                                                    // Set the margin [left, top, right, bottom]
-                                                                    margin: [40, 0, 0, 0]
-                                                                }
-                                                            ]
-                                                        };
-                                                    };
-                                                    
-                                                    // Add the custom header to the PDF document
-                                                    doc.content.splice(0, 0, header());
-                                                }
+                                          {
+                                            text: 'Excel',
+                                            action: function () {
+                                              // get the HTML table to export
+                                              const table = document.getElementById("myTable{{$grp->group_name}}");
+                                              
+                                              // create a new Workbook object
+                                              const wb = XLSX.utils.book_new();
+                                              
+                                              // add a new worksheet to the Workbook object
+                                              const ws = XLSX.utils.table_to_sheet(table);
+                                              XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
+                                              
+                                              // trigger the download of the Excel file
+                                              XLSX.writeFile(wb, "exported-data.xlsx");
                                             }
+                                          }
                                         ],
                                     });
                                 });
                               </script>
                               <thead>
                                 <tr>
-                                  <th style="text-align: center">
+                                  <th style="text-align: center" rowspan="2">
                                     No.
                                   </th>
-                                  <th style="text-align: center">
+                                  <th style="text-align: center" rowspan="2">
                                     Name
                                   </th>
-                                  <th style="text-align: center">
+                                  <th style="text-align: center" rowspan="2">
                                     IC
                                   </th>
-                                  <th style="text-align: center">
+                                  <th style="text-align: center" rowspan="2">
                                     Matric No.
                                   </th>
-                                  <th style="text-align: center">
+                                  <th style="text-align: center" rowspan="2">
                                     Group Name
                                   </th>
                                   @foreach ($list[$ky] as $key=>$ls)
+                                  <th>
+                                    <div style="display: flex; justify-content: center; align-items: center;">
+                                        <span style="margin-right: 5px;">{{ $ls->classdate }}</span>
+                                        <span style="margin-right: 5px;">-</span>
+                                        @if($ls->classend != null)
+                                        <span style="margin-right: 5px;">{{ $ls->classend }}</span>
+                                        @else
+                                        <span>NONE</span>
+                                        @endif
+                                    </div>
+                                  </th>                                
+                                  @endforeach
+                                </tr>
+                                <tr>
+                                  @foreach ($list[$ky] as $key=>$ls)
                                   <th style="text-align: center">
-                                    {{ $ls->classdate }}
+                                    @if($ls->classtype == 1)
+                                      <span >Class
+                                    @elseif($ls->classtype == 2)
+                                      <span >Replacement</span>
+                                    @else
+                                      <span >None</span>
+                                    @endif
                                   </th>
                                   @endforeach
                                 </tr>
@@ -165,12 +148,7 @@
                                   <td style="text-align: center">
                                     <span >{{ $std->group_name }}</span>
                                   </td>
-                              
-                                  <!-- QUIZ -->
-
-      
                                     @foreach ($list[$ky] as $keys => $ls)
-                                     
                                       <td style="text-align: center">
                                         <span >{{ $status[$ky][$key][$keys] }}</span>
                                       </td>
