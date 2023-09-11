@@ -151,7 +151,7 @@ Route::get('/AR/semester', [App\Http\Controllers\AR_Controller::class, 'studentS
 Route::get('/AR/semester/getStudentSemester', [App\Http\Controllers\AR_Controller::class, 'getStudentSemester']);
 Route::post('/AR/semester/updatesemester', [App\Http\Controllers\AR_Controller::class, 'updateSemester']);
 
-
+Route::get('/lecturer/getSuratAmaran', [App\Http\Controllers\LecturerController::class, 'getSuratAmaran'])->name('lecturer.suratamaran');
 
 Route::get('/lecturer', [App\Http\Controllers\LecturerController::class, 'index'])->name('lecturer');
 Route::get('/lecturer/setting', [App\Http\Controllers\LecturerController::class, 'setting'])->name('lecturer.setting');
@@ -234,6 +234,7 @@ Route::patch('/lecturer/class/announcement/list/update/{id}', [App\Http\Controll
 
 Route::get('/lecturer/report/{id}', [App\Http\Controllers\LecturerController::class, 'assessmentreport'])->name('lecturer.report');
 Route::get('/lecturer/report/{id}/{student}', [App\Http\Controllers\LecturerController::class, 'studentreport'])->name('lecturer.report.student');
+
 
 Route::post('/update-data', [App\Http\Controllers\LecturerController::class, 'autoudateData']);
 
@@ -476,6 +477,9 @@ Route::post('/student/final/submitfinal', [App\Http\Controllers\FinalController:
 Route::get('/student/forum/{id}', [App\Http\Controllers\ForumController::class, 'studForum'])->name('student.forum');
 Route::post('/student/forum/{id}/insert', [App\Http\Controllers\ForumController::class, 'studinsertTopic']);
 Route::post('/student/forum/{id}/topic/insert', [App\Http\Controllers\ForumController::class, 'studinsertForum']);
+
+Route::get('/student/warning/{id}', [App\Http\Controllers\StudentController::class, 'warningLetter'])->name('student.warning');
+Route::get('/student/warning/{id}/getWarningLetter', [App\Http\Controllers\StudentController::class, 'getWarningLetter']);
 
 Route::get('/finance_dashboard', [App\Http\Controllers\FinanceController::class, 'dashboard'])->name('finance.dashboard');
 Route::get('/finance', [App\Http\Controllers\FinanceController::class, 'index'])->name('finance');
