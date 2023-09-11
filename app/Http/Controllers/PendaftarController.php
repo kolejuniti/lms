@@ -1977,7 +1977,7 @@ class PendaftarController extends Controller
                 ->join('transcript_status', 'student_transcript.transcript_status_id', 'transcript_status.id')
                 ->where([
                     ['student_transcript.student_ic', $request->student],
-                ])->select('student_transcript.*', 'students.name', 'students.no_matric', 'students.semester', 'sessions.SessionName','transcript_status.status_name AS transcript_status_id')
+                ])->select('student_transcript.*', 'students.name', 'students.no_matric', 'sessions.SessionName','transcript_status.status_name AS transcript_status_id')
                 ->get();
 
         return view('pendaftar.getStudentResult', compact('data'));
