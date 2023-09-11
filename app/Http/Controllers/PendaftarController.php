@@ -2006,15 +2006,11 @@ class PendaftarController extends Controller
                            ->first();
 
         $data['subject'] = DB::table('student_subjek')
-                           ->join('subjek', function($join){
-                                $join->on('student_subjek.courseid', 'subjek.sub_id');
-                                $join->on('student_subjek.semesterid', 'subjek.semesterid');
-                           })
+                           ->join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
                            ->where([
                             ['student_subjek.student_ic', $data['student']->ic],
                             ['student_subjek.semesterid', $data['transcript']->semester]
                            ])
-                           ->groupBy('student_subjek.courseid')
                            ->select('student_subjek.*', 'subjek.course_name', 'subjek.course_code')
                            ->get();
 
