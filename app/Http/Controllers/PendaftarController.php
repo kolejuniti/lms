@@ -2014,7 +2014,7 @@ class PendaftarController extends Controller
                             ['student_subjek.student_ic', $data['student']->ic],
                             ['student_subjek.semesterid', $data['transcript']->semester]
                            ])
-                           ->groupBy('student_subjek.id')
+                           ->groupBy('student_subjek.courseid')
                            ->select('student_subjek.*', 'subjek.course_name', 'subjek.course_code')
                            ->get();
 
