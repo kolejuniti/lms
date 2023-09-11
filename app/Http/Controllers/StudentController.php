@@ -1018,4 +1018,62 @@ class StudentController extends Controller
                                                                                   'other', 'otherlist', 'totalother', 'markother', 'percentageother', 'total_allother',
                                                                                   'extra', 'extralist', 'totalextra', 'markextra', 'percentageextra', 'total_allextra'));
     }
+
+    public function warningLetter(Request $request)
+    {
+        $courseid = Session::get('CourseID');
+
+        $data['student'] = DB::table('students')
+                           ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
+                           ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+                           ->join('sessions AS t1', 'students.intake', 't1.SessionID')
+                           ->join('sessions AS t2', 'students.session', 't2.SessionID')
+                           ->select('students.*', 'tblstudent_status.name AS statusName', 'tblprogramme.progname AS program', 'students.program AS progid', 't1.SessionName AS intake_name', 't2.SessionName AS session_name')
+                           ->where('ic',  Session::get('StudInfo')->ic)->first();
+
+        $data['letter'] = DB::table('tblstudent_warning')
+                          ->join('student_subjek', function($join){
+                            $join->on('tblstudent_warning.groupid', 'student_subjek.group_id');
+                            $join->on('tblstudent_warning.groupname', 'student_subjek.group_name');
+                          })
+                          ->join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
+                          ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
+                          ->where([
+                            ['tblstudent_warning.student_ic', Session::get('StudInfo')->ic],
+                            ['subjek.id', $courseid],
+                            ['student_subjek.sessionid', Session::get('SessionID')]
+                          ])
+                          ->groupBy('tblstudent_warning.id')
+                          ->select('tblstudent_warning.*', 'subjek.course_name', 'subjek.course_code', 'sessions.SessionName', 'student_subjek.semesterid')
+                          ->get();
+
+        return view('student.warningletter.warningLetter', compact('data'));
+        
+    }
+
+    public function getWarningLetter(Request $request)
+    {
+        $data['warning'] = DB::table('tblstudent_warning')->where('id', $request->id)->first();
+
+        $data['student'] = DB::table('students')
+                           ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
+                           ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+                           ->join('sessions AS t1', 'students.intake', 't1.SessionID')
+                           ->join('sessions AS t2', 'students.session', 't2.SessionID')
+                           ->select('students.*', 'tblstudent_status.name AS statusName', 'tblprogramme.progname AS program', 'students.program AS progid', 't1.SessionName AS intake_name', 't2.SessionName AS session_name')
+                           ->where('ic',  Session::get('StudInfo')->ic)->first();
+
+        $data['attendance'] = DB::table('tblclassattendance')
+                              ->where([
+                                ['student_ic', $data['student']->ic],
+                                ['groupid', $data['warning']->groupid],
+                                ['groupname', $data['warning']->groupname],
+                              ])
+                              ->where('tblclassattendance.classdate', '<=', $data['warning']->created_at)
+                              ->get();                              
+
+
+        return view('lecturer.class.surat_amaran.surat_amaran', compact('data'));
+
+    }
 }

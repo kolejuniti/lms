@@ -15,6 +15,8 @@ use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
 use League\Flysystem\AwsS3V3\PortableVisibilityConverter;
 use Mail;
+// use PDF;
+// use Twilio\Rest\Client;
 
 class LecturerController extends Controller
 {
@@ -1350,29 +1352,46 @@ class LecturerController extends Controller
             }
 
             
+            // Filter the 'excuse' array from $data to remove any NULL values.
+            // array_filter() is used to filter the array based on a callback function.
             $filtered_excuse = array_filter($data['excuse'], function ($value) {
-                return !is_null($value);
+                return !is_null($value);  // Returns TRUE if the value is NOT NULL, thus keeping it in the filtered array.
             });
 
+            // Reindex the $filtered_excuse array so the keys start from 0 and go up sequentially.
+            // This is useful especially if some items were removed by array_filter, to make sure array keys are consistent.
             $reindexed_excuse = array_values($filtered_excuse);
 
-            foreach($reindexed_excuse as $key => $exs)
-            {
-                if(DB::table('tblclassattendance')->where([['student_ic', $data['ic'][$key]],['groupid', $group[0]],['groupname', $group[1]],['classdate', $data['date']]])->exists())
-                {
+            // Loop through each excuse in the reindexed array.
+            foreach($reindexed_excuse as $key => $exs) {
+                
+                // Check if a record with the given criteria already exists in the 'tblclassattendance' table.
+                // The criteria include the student's IC, group ID, group name, and class date.
+                if(DB::table('tblclassattendance')->where([
+                    ['student_ic', $data['ic'][$key]],
+                    ['groupid', $group[0]],
+                    ['groupname', $group[1]],
+                    ['classdate', $data['date']]
+                ])->exists()) {
                     
-                }else{
+                    // If the record exists, do nothing (this section is empty).
+                    
+                } else {
+                    // If the record doesn't exist, insert a new record into the 'tblclassattendance' table.
+                    // The data for the new record is populated using values from the $data array, the current excuse from the loop ($exs),
+                    // and some additional data like group ID and group name.
                     DB::table('tblclassattendance')->insert([
-                        'student_ic' => $data['ic'][$key],
-                        'groupid' => $group[0],
-                        'groupname' => $group[1],
-                        'excuse' => $exs,
-                        'classtype' => $data['class'],
-                        'classdate' => $data['date'],
-                        'classend' => $data['date2']
+                        'student_ic' => $data['ic'][$key],  // Student's IC from the $data array, using the current key from the loop.
+                        'groupid' => $group[0],             // Group ID (presumably from a previously defined $group array).
+                        'groupname' => $group[1],           // Group name (also from the $group array).
+                        'excuse' => $exs,                   // The current excuse from the loop.
+                        'classtype' => $data['class'],      // Class type from the $data array.
+                        'classdate' => $data['date'],       // Class start date from the $data array.
+                        'classend' => $data['date2']        // Class end date from the $data array.
                     ]);
                 }
             }
+
 
             if(isset($data['mc']))
             {
@@ -1396,6 +1415,228 @@ class LecturerController extends Controller
                 }
             }
         }
+
+        //check warning
+
+        $IC = (isset($data['student'])) ? $data['student'] : [];
+
+        $MC = (isset($data['mc'])) ? $data['mc'] : [];
+
+        $exists = array_merge($IC,$MC);
+
+        $absent = DB::table('student_subjek')->where([
+            ['group_id', $group[0]],
+            ['group_name', $group[1]]
+        ])->whereNotIn('student_ic', $exists)->pluck('student_ic');
+
+        $totalclass = DB::table('tblclassattendance')
+                 ->where([
+                    ['tblclassattendance.groupid', $group[0]],
+                    ['tblclassattendance.groupname', $group[1]]
+                 ])->groupBy('tblclassattendance.classdate')->count();
+
+        if($totalclass > 0){
+            
+            if(count($absent) > 0)
+            {
+
+                foreach($absent as $key => $abs)
+                {
+
+                    if(DB::table('tblstudent_warning')->where([['student_ic', $abs],['groupid', $group[0]],['groupname', $group[1]]])->count() > 0)
+                    {
+
+                        if(DB::table('tblstudent_warning')->where([['student_ic', $abs],['groupid', $group[0]],['groupname', $group[1]]])->count() == 1)
+                        {
+
+                            if($totalclass >= 6)
+                            {
+
+                                $exists = DB::table('tblclassattendance')
+                                ->where([
+                                ['tblclassattendance.student_ic', $abs],
+                                ['tblclassattendance.groupid', $group[0]],
+                                ['tblclassattendance.groupname', $group[1]]
+                                ])->groupBy('tblclassattendance.classdate')->count();
+
+                                $totalAbsent = $totalclass - $exists;
+
+                                if($totalAbsent >= 6)
+                                {
+
+                                    DB::table('tblstudent_warning')->insert([
+                                        'student_ic' => $abs,
+                                        'groupid' => $group[0],
+                                        'groupname' => $group[1],
+                                        'warning' => 2
+                                    ]);
+
+                                    // $view = view('lecturer.class.surat_amaran.surat_amaran'); // Replace 'your_view_name' with the name of your HTML view
+                                    // $pdf = PDF::loadHTML($view->render())->stream();
+
+                                    // // Save the PDF to a temporary file
+                                    // $pdfPath = storage_path('app/public/tmp_pdf_' . time() . '.pdf');
+                                    // file_put_contents($pdfPath, $pdf->output());
+
+                                    // $publicPath = asset('storage/tmp_pdf_' . time() . '.pdf');
+
+                                    // // Send to WhatsApp
+                                    // $sid    = env('TWILIO_SID');
+                                    // $token  = env('TWILIO_TOKEN');
+                                    // $twilio = new Client($sid, $token);
+
+                                    // $message = $twilio->messages->create(
+                                    //     'whatsapp:+60162667041', // the recipient's Whatsapp number
+                                    //     [
+                                    //         "from" => env('TWILIO_WHATSAPP_FROM'),
+                                    //         "body" => 'Here is your PDF document:',
+                                    //         "mediaUrl" => $publicPath
+                                    //     ]
+                                    // );
+
+                                    // // Cleanup: Delete the temporary PDF
+                                    // unlink($pdfPath);
+
+                                }
+
+                            }
+
+                        }elseif(DB::table('tblstudent_warning')->where([['student_ic', $abs],['groupid', $group[0]],['groupname', $group[1]]])->count() == 2)
+                        {
+
+                            if($totalclass >= 9)
+                            {
+
+                                $exists = DB::table('tblclassattendance')
+                                ->where([
+                                ['tblclassattendance.student_ic', $abs],
+                                ['tblclassattendance.groupid', $group[0]],
+                                ['tblclassattendance.groupname', $group[1]]
+                                ])->groupBy('tblclassattendance.classdate')->count();
+
+                                $totalAbsent = $totalclass - $exists;
+
+                                if($totalAbsent >= 9)
+                                {
+
+                                    DB::table('tblstudent_warning')->insert([
+                                        'student_ic' => $abs,
+                                        'groupid' => $group[0],
+                                        'groupname' => $group[1],
+                                        'warning' => 3
+                                    ]);
+
+                                    
+
+                                }
+
+                            }
+
+                        }
+
+
+                    }else{
+
+                        if($totalclass >= 3)
+                        {
+
+                            $exists = DB::table('tblclassattendance')
+                            ->where([
+                               ['tblclassattendance.student_ic', $abs],
+                               ['tblclassattendance.groupid', $group[0]],
+                               ['tblclassattendance.groupname', $group[1]]
+                            ])->groupBy('tblclassattendance.classdate')->count();
+
+                            $totalAbsent = $totalclass - $exists;
+
+                            if($totalAbsent >= 3)
+                            {
+
+                                DB::table('tblstudent_warning')->insert([
+                                    'student_ic' => $abs,
+                                    'groupid' => $group[0],
+                                    'groupname' => $group[1],
+                                    'warning' => 1
+                                ]);
+
+                                // $view = view('lecturer.class.surat_amaran.surat_amaran'); // Replace 'your_view_name' with the name of your HTML view
+                                // $pdf = PDF::loadHTML($view->render())->stream();
+
+                                // // Save the PDF to a temporary file
+                                // $pdfPath = storage_path('app/public/tmp_pdf_' . time() . '.pdf');
+                                // file_put_contents($pdfPath, $pdf->output());
+
+                                // $publicPath = asset('storage/tmp_pdf_' . time() . '.pdf');
+
+                                // // Send to WhatsApp
+                                // $sid    = env('TWILIO_SID');
+                                // $token  = env('TWILIO_TOKEN');
+                                // $twilio = new Client($sid, $token);
+
+                                // $message = $twilio->messages->create(
+                                //     'whatsapp:+60162667041', // the recipient's Whatsapp number
+                                //     [
+                                //         "from" => env('TWILIO_WHATSAPP_FROM'),
+                                //         "body" => 'Here is your PDF document:',
+                                //         "mediaUrl" => $publicPath
+                                //     ]
+                                // );
+
+                                // // Cleanup: Delete the temporary PDF
+                                // unlink($pdfPath);
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+
+        // set_time_limit(300); // Set time limit to 300 seconds (5 minutes)
+
+        // $view = view('lecturer.class.surat_amaran.surat_amaran'); // Replace 'your_view_name' with the name of your HTML view
+        // $pdf = PDF::loadHTML($view->render());
+
+        // // Use a single timestamp for both paths
+        // $timestamp = time();
+
+        // // Save the PDF to a temporary file
+        // $pdfPath = storage_path('app' . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'tmp_pdf_' . $timestamp . '.pdf');
+        // //dd($pdfPath);
+
+        // // Save the generated PDF to the path
+        // $pdf->save($pdfPath);
+
+        // // $relativePath = 'storage' . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'tmp_pdf_' . $timestamp . '.pdf';
+        // // $pdf->save($relativePath);
+
+
+        // $publicPath = asset('storage/tmp_pdf_' . $timestamp . '.pdf');
+
+        // dd($publicPath);
+
+        // // Send to WhatsApp
+        // $sid    = env('TWILIO_SID');
+        // $token  = env('TWILIO_TOKEN');
+        // $twilio = new Client($sid, $token);
+
+        // $message = $twilio->messages->create(
+        //     'whatsapp:+60162667041', // the recipient's Whatsapp number
+        //     [
+        //         "from" => env('TWILIO_WHATSAPP_FROM'),
+        //         "body" => 'Here is your PDF document:',
+        //         "mediaUrl" => $publicPath
+        //     ]
+        // );
+
+        // // Cleanup: Delete the temporary PDF
+        // unlink($pdfPath);
+
 
         return redirect()->back()->with('message', 'Student attendance has been submitted!');
 
@@ -3964,6 +4205,13 @@ class LecturerController extends Controller
 
         // update the data
         return response()->json(['status' => 'success']);
+    }
+
+    public function getSuratAmaran()
+    {
+
+        return view('lecturer.class.surat_amaran.surat_amaran');
+
     }
   
 }
