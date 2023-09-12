@@ -30,7 +30,7 @@
       }
       @media print {
          .container {
-            transform: scale(1.7);
+            transform: scale(1.0);
             transform-origin: top left;
          }
       }
@@ -44,6 +44,7 @@
          vertical-align: baseline;
          background: transparent;
          font-size: 8px; /* reduce font-size */
+         table-layout: fixed;
       }
       h2,h3,p {
          margin: 0;
