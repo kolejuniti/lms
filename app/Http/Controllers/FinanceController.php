@@ -3133,7 +3133,7 @@ class FinanceController extends Controller
         ->where('tblclaim.process_status_id', 2)
         ->unionALL($reg)
         ->select('tblclaim.id', 'tblclaim.date AS unified_date', 'tblclaim.ref_no','tblclaim.date AS date', 'tblclaim.process_type_id', DB::raw('SUM(tblclaimdtl.amount) AS amount'), 'tblprocess_status.name AS status', 'students.no_matric', 'students.name AS name', 'students.ic')
-        ->orderBy('unified_date', 'asc')
+        ->orderBy('unified_date', 'desc')
         ->get();
 
         
@@ -3161,7 +3161,7 @@ class FinanceController extends Controller
         ->groupBy('tblclaim.id')
         ->select('tblclaim.id', 'tblclaim.date AS unified_date', 'tblclaim.ref_no','tblclaim.date AS date', 'tblclaim.process_type_id', DB::raw('SUM(tblclaimdtl.amount) AS amount'), 'tblprocess_status.name AS status', 'students.no_matric', 'students.name AS name', 'students.ic');
         
-        $data['student'] = $reg->union($reg2)->orderBy('unified_date', 'asc')->get();
+        $data['student'] = $reg->union($reg2)->orderBy('unified_date', 'desc')->get();
 
         }else{
 
