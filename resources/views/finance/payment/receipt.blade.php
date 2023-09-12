@@ -43,7 +43,7 @@
          font-size: 100%;
          vertical-align: baseline;
          background: transparent;
-         font-size: 5px; /* reduce font-size */
+         font-size: 8px; /* reduce font-size */
       }
       h2,h3,p {
          margin: 0;
@@ -53,7 +53,7 @@
          font-size: 100%;
          vertical-align: baseline;
          background: transparent;
-         font-size: 6px; /* reduce font-size */
+         font-size: 9px; /* reduce font-size */
       }
       .container {
          transform: scale(0.8); /* scale down everything */
