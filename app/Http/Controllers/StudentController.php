@@ -24,6 +24,11 @@ class StudentController extends Controller
 
         $student = auth()->guard('student')->user();
 
+        if (!$student) {
+            // handle the error, e.g., redirect back with an error message
+            return redirect()->back()->withErrors(['message' => 'Student is not logged in']);
+        }
+
         $user = Session::put('StudInfo', $student);
 
         $lecturer = [];
