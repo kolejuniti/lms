@@ -121,31 +121,31 @@
                   <table class="table table-striped">
                      <thead>
                         <tr class="line">
-                           <td><strong>#</strong></td>
-                           <td class="text-center"><strong>KAEDAH BAYARAN</strong></td>
-                           <td class="text-center"><strong>BANK</strong></td>
-                           <td class="text-center"><strong>NO. DOKUMEN</strong></td>
-                           <td class="text-center"><strong>AMAUN</strong></td>
+                           <td style="width: 10px;"><strong>#</strong></td>
+                           <td class="text-center; width: 50px;"><strong>KAEDAH BAYARAN</strong></td>
+                           <td class="text-center; width: 50px;"><strong>BANK</strong></td>
+                           <td class="text-center; width: 50px;"><strong>NO. DOKUMEN</strong></td>
+                           <td class="text-center; width: 50px;"><strong>AMAUN</strong></td>
                         </tr>
                      </thead>
                      <tbody>
                         @foreach ($data['method'] as $key => $dtl)
                         <tr>
                            <td>{{ $key+1 }}</td>
-                           <td style="text-align: center">{{ $dtl->method }}</td>
-                           <td style="text-align: center">{{ $dtl->bank }}</td>
+                           <td>{{ $dtl->method }}</td>
+                           <td>{{ $dtl->bank }}</td>
                            @if ($dtl->no_document == null)
-                           <td style="text-align: center">TIADA</td>
+                           <td>TIADA</td>
                            @else
-                           <td style="text-align: center">{{ $dtl->no_document }}</td>
+                           <td>{{ $dtl->no_document }}</td>
                            @endif
-                           <td style="text-align: center">{{ $data['total'] }}</td>
+                           <td>{{ $data['total'] }}</td>
                         </tr>
                         @endforeach
                         <tr>
                            <td colspan="3">
-                           </td><td class="text-center"><strong>Jumlah :</strong></td>
-                           <td class="text-center"><strong>{{ $data['total'] }}</strong></td>
+                           </td><td class="text-center; width: 50px;"><strong>Jumlah :</strong></td>
+                           <td class="text-center; width: 50px;"><strong>{{ $data['total'] }}</strong></td>
                         </tr>
                      </tbody>
                   </table>
@@ -157,10 +157,10 @@
                   <table class="table table-striped">
                      <thead>
                         <tr class="line">
-                           <td><strong>#</strong></td>
-                           <td class="text-center"><strong>MAKLUMAT BAYARAN</strong></td>
-                           <td class="text-center"><strong>SEMESTER</strong></td>
-                           <td class="text-center"><strong>AMAUN</strong></td>
+                           <td style="width: 10px;"><strong>#</strong></td>
+                           <td class="text-center; width: 50px;"><strong>MAKLUMAT BAYARAN</strong></td>
+                           <td class="text-center; width: 50px;"><strong>SEMESTER</strong></td>
+                           <td class="text-center; width: 50px;"><strong>AMAUN</strong></td>
                         </tr>
                      </thead>
                      <tbody>
@@ -172,16 +172,16 @@
                         @if ($dtl->amount != 0)
                         <tr>
                            <td>{{ $count+1 }}</td>
-                           <td style="text-align: center">{{ $dtl->name }}</td>
-                           <td style="text-align: center">{{ $dtl->groupid }}</td>
-                           <td style="text-align: center">{{ $dtl->total_amount }}</td>
+                           <td>{{ $dtl->name }}</td>
+                           <td>{{ $dtl->groupid }}</td>
+                           <td>{{ $dtl->total_amount }}</td>
                         </tr>
                         @endif
                         @endforeach
                         <tr>
                            <td colspan="2">
-                           </td><td class="text-center"><strong>Jumlah Keseluruhan :</strong></td>
-                           <td class="text-center"><strong>{{ $data['total'] }}</strong></td>
+                           </td><td class="text-center; width: 50px;"><strong>Jumlah Keseluruhan :</strong></td>
+                           <td class="text-center; width: 50px;"><strong>{{ $data['total'] }}</strong></td>
                         </tr>
                      </tbody>
                   </table>
