@@ -61,7 +61,7 @@
                                     {{ $req->status }}
                                     </td>
                                     <td>
-                                    {{ $req->amount }}
+                                    {{ number_format($req->amount, 2, '.', '') }}
                                     </td>
                                 </tr>
                                 @endforeach
