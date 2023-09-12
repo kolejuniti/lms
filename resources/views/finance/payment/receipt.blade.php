@@ -34,15 +34,17 @@
             transform-origin: top left;
          }
       }
-      table {
-         table-layout: fixed;  /* Add this line */
-         width: 100%;  /* Add this line */
-      }
-      td {
-         word-wrap: break-word;  /* Add this line */
-         /* ... other styles ... */
-      }
 
+      * {
+         margin: 0;
+         padding: 0;
+         border: 0;
+         outline: 0;
+         vertical-align: baseline;
+         background: transparent;
+         font-size: 8px; /* reduce font-size */
+         table-layout: fixed;
+      }
       h2,h3,p {
          margin: 0;
          padding: 0;
@@ -55,7 +57,14 @@
       .container {
          transform: scale(0.1); /* scale down everything */
       }
-    
+      /* table {
+         table-layout: fixed;  
+         width: 100%;  
+      }
+      td {
+         word-wrap: break-word;  
+        
+      } */
    </style>
 
  </head>
@@ -113,7 +122,7 @@
 
                <div class="col-md-12">
                   <h3>KAEDAH</h3>
-                  <table class="table table-striped">
+                  <table class="w-100 table table-bordered display margin-top-10 w-p100 table-layout: fixed;">
                      <thead>
                         <tr class="line">
                            <td><strong>#</strong></td>
