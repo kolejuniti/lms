@@ -413,7 +413,7 @@
                               $industry = count(DB::table('students')->where([
                                     ['students.status', 2],
                                     ['students.student_status', 4],
-                                    ['students.campus', 1]
+                                    ['students.campus_id', 1]
                                     ])->get());
                             @endphp
                             {{ $industry }}
