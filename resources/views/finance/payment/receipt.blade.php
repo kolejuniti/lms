@@ -57,7 +57,7 @@
          font-size: 9px; /* reduce font-size */
       }
       .container {
-         transform: scale(0.8); /* scale down everything */
+         transform: scale(0.1); /* scale down everything */
       }
    </style>
 
