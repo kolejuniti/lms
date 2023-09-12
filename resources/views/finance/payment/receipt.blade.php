@@ -122,10 +122,10 @@
 
                <div class="col-md-12">
                   <h3>KAEDAH</h3>
-                  <table class="w-100 table table-bordered display margin-top-10 w-p100 table-layout: fixed;">
+                  <table class="table table-striped">
                      <thead>
                         <tr class="line">
-                           <td><strong>#</strong></td>
+                           <td style="width: 1%"><strong>#</strong></td>
                            <td class="text-center"><strong>KAEDAH BAYARAN</strong></td>
                            <td class="text-center"><strong>BANK</strong></td>
                            <td class="text-center"><strong>NO. DOKUMEN</strong></td>
@@ -160,7 +160,7 @@
                   <table class="table table-striped">
                      <thead>
                         <tr class="line">
-                           <td><strong>#</strong></td>
+                           <td style="width: 1%"><strong>#</strong></td>
                            <td class="text-center"><strong>MAKLUMAT BAYARAN</strong></td>
                            <td class="text-center"><strong>SEMESTER</strong></td>
                            <td class="text-center"><strong>AMAUN</strong></td>
