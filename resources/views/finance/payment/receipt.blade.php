@@ -35,29 +35,26 @@
          }
       }
 
-      * {
-         margin: 0;
-         padding: 0;
-         border: 0;
-         outline: 0;
-         font-size: 100%;
-         vertical-align: baseline;
-         background: transparent;
-         font-size: 8px; /* reduce font-size */
-         table-layout: fixed;
-      }
+   
       h2,h3,p {
          margin: 0;
          padding: 0;
          border: 0;
          outline: 0;
-         font-size: 100%;
          vertical-align: baseline;
          background: transparent;
          font-size: 9px; /* reduce font-size */
       }
       .container {
          transform: scale(0.1); /* scale down everything */
+      }
+      table {
+         table-layout: fixed;  /* Add this line */
+         width: 100%;  /* Add this line */
+      }
+      td {
+         word-wrap: break-word;  /* Add this line */
+         /* ... other styles ... */
       }
    </style>
 
