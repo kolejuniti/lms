@@ -2071,7 +2071,10 @@ class FinanceController extends Controller
                           
         $data['detail'] = $detail->get();
 
-        $data['total'] = $detail->sum('tblpaymentdtl.amount');
+        $data['total'] = DB::table('tblpaymentdtl')
+                        ->where('tblpaymentdtl.payment_id', $request->id)
+                        ->sum('tblpaymentdtl.amount');
+
 
         $method = DB::table('tblpaymentmethod')
                           ->join('tblpayment_method', 'tblpaymentmethod.claim_method_id', 'tblpayment_method.id')
