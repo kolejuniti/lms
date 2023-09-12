@@ -413,7 +413,6 @@
                               $industry = count(DB::table('students')->where([
                                     ['students.status', 2],
                                     ['students.student_status', 4],
-                                    ['students.campus_id', 1]
                                     ])->get());
                             @endphp
                             {{ $industry }}
@@ -441,9 +440,9 @@
                           <td style="text-align: center">
                             @php
                               $postpone = count(DB::table('students')->where([
-                                    ['students.status', 6],
-                                    // ['students.campus_id', 0],
-                                    // ['students.student_status', 2]
+                                    ['students.status', 3],
+                                    ['students.campus_id', 0],
+                                    ['students.student_status', 2]
                                     ])->get());
                             @endphp
                             {{ $postpone }}
@@ -518,7 +517,6 @@
                               $industry = count(DB::table('students')->where([
                                     ['students.status', 2],
                                     ['students.student_status', 4],
-                                    ['students.campus_id', 1]
                                     ])->get());
                             @endphp
                             {{ $industry }}
