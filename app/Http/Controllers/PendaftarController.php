@@ -1567,7 +1567,7 @@ class PendaftarController extends Controller
                                     ['students.program', $prg->id],
                                     ['students.status', 2],
                                     ['students.student_status', 4],
-                                    //['students.campus_id', 1]
+                                    ['students.campus_id', 1]
                                     ])->get());
 
             $data['active'][$key] = count(DB::table('students')
@@ -1582,16 +1582,13 @@ class PendaftarController extends Controller
                                     ->where([
                                     ['students.program', $prg->id],
                                     ['students.status', 2],
-                                    ['students.campus_id', 0],
-                                    ['students.student_status', 2]
-                                    ])->get());
+                                    ['students.campus_id', 0]
+                                    ])->whereIn('students.student_status', [2,4])->get());
                                     
             $data['postpone'][$key] = count(DB::table('students')
                                     ->where([
                                     ['students.program', $prg->id],
-                                    ['students.status', 3],
-                                    ['students.campus_id', 0],
-                                    ['students.student_status', 2]
+                                    ['students.status', 6]
                                     ])->get());
 
             $data['dismissed'][$key] = count(DB::table('students')
