@@ -524,7 +524,7 @@
                           </td>
                           @php
 
-                          $total_all = $active + $aol + $postpone;
+                          $total_all = $active + $aol + $postpone + $holding;
 
                           @endphp
                           <td style="text-align: center" colspan="3">
@@ -557,7 +557,7 @@
                           </td>
                           @php
 
-                          $total_all = $industry + $active + $aol + $postpone;
+                          $total_all = $industry + $active + $aol + $postpone + $holding;
 
                           @endphp
                           <td style="text-align: center" colspan="4">
