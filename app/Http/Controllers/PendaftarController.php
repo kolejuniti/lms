@@ -1385,21 +1385,17 @@ class PendaftarController extends Controller
                                        ->get());
 
             $data['holding_m1'][$key] = count(DB::table('students')
-                                       ->join('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
                                        ->where([
                                        ['students.program', $prg->id],
                                        ['students.status', 2],
-                                       ['students.student_status', 1],
-                                       ['tblstudent_personal.sex_id', 1]
+                                       ['students.student_status', 1]
                                        ])->get());
    
             $data['holding_f1'][$key] = count(DB::table('students')
-                                       ->join('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
                                        ->where([
                                        ['students.program', $prg->id],
                                        ['students.status', 2],
-                                       ['students.student_status', 1],
-                                       ['tblstudent_personal.sex_id', 2]
+                                       ['students.student_status', 1]
                                        ])->get());
 
             $data['ms1'][$key] = count(DB::table('students')
