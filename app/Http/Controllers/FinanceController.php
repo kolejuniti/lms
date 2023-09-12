@@ -2077,7 +2077,7 @@ class FinanceController extends Controller
                           ->join('tblpayment_method', 'tblpaymentmethod.claim_method_id', 'tblpayment_method.id')
                           ->leftjoin('tblpayment_bank', 'tblpaymentmethod.bank_id', 'tblpayment_bank.id')
                           ->where('tblpaymentmethod.payment_id', $request->id)
-                          ->select('tblpaymentmethod.*', 'tblpayment_method.name AS method', 'tblpayment_bank.name AS bank')
+                          ->select('tblpaymentmethod.*', 'tblpayment_method.name AS method', 'tblpayment_bank.name AS bank', DB::raw('SUM(tblpaymentmethod.amount) AS amount'))
                           ->groupBy('tblpaymentmethod.claim_method_id','tblpaymentmethod.bank_id','tblpaymentmethod.no_document');
                           
         $data['method'] = $method->get();
