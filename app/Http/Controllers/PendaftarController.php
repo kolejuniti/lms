@@ -1360,7 +1360,9 @@ class PendaftarController extends Controller
 
         $data['sum'] = [];
 
-        $data['program'] = DB::table('tblprogramme')->join('tblfaculty', 'tblprogramme.facultyid', 'tblfaculty.id')->select('tblprogramme.*', 'tblfaculty.facultyname')->get();
+        $data['program'] = DB::table('tblprogramme')
+                           ->join('tblfaculty', 'tblprogramme.facultyid', 'tblfaculty.id')
+                           ->select('tblprogramme.*', 'tblfaculty.facultyname', 'tblfaculty.facultycode')->get();
 
         $data['faculty'] = DB::table('tblfaculty')->get();
 
