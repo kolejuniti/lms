@@ -441,9 +441,7 @@
                           <td style="text-align: center">
                             @php
                               $postpone = count(DB::table('students')->where([
-                                    ['students.status', 3],
-                                    ['students.campus_id', 0],
-                                    ['students.student_status', 2]
+                                    ['students.status', 6]
                                     ])->get());
                             @endphp
                             {{ $postpone }}
