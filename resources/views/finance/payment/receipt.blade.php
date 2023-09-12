@@ -34,8 +34,15 @@
             transform-origin: top left;
          }
       }
+      table {
+         table-layout: fixed;  /* Add this line */
+         width: 100%;  /* Add this line */
+      }
+      td {
+         word-wrap: break-word;  /* Add this line */
+         /* ... other styles ... */
+      }
 
-   
       h2,h3,p {
          margin: 0;
          padding: 0;
@@ -48,14 +55,7 @@
       .container {
          transform: scale(0.1); /* scale down everything */
       }
-      table {
-         table-layout: fixed;  /* Add this line */
-         width: 100%;  /* Add this line */
-      }
-      td {
-         word-wrap: break-word;  /* Add this line */
-         /* ... other styles ... */
-      }
+    
    </style>
 
  </head>
