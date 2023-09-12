@@ -149,11 +149,11 @@
                         @foreach ($data['program'] as $key=>$prg)
                         <tr>
                           <td style="text-align: center">
-                          {{ $prg->facultyname }} <br>
+                          {{ $prg->facultycode }} <br>
                           {{ $data['sum'][$key] }}
                           </td>
                           <td>
-                          {{ $prg->progname }}
+                          {{ $prg->progcode }}
                           </td>
                           <td>
                             @foreach ((array) $data['holding_m1'][$key] as $ms1)
@@ -469,16 +469,48 @@
                           @endphp
                           @foreach ($semester as $sem)
                             @php
-                              $total = count(DB::table('students')
-                              ->where([
-                                ['semester', $sem->id],
-                                ['status', 2],
-                                ['student_status', 2]
-                                ])->get())
+                              if($sem->id != 1)
+                              {
+
+                                $total = count(DB::table('students')
+                                          ->where([
+                                            ['semester', $sem->id],
+                                            ['status', 2],
+                                            ['student_status', 2],
+                                            ['campus_id', 1]
+                                          ])->get());
+
+                              }else{
+
+                                $holding = count(DB::table('students')
+                                          ->where([
+                                            ['semester', $sem->id],
+                                            ['status', 2],
+                                            ['student_status', 1]
+                                          ])->get());
+
+                                $total = count(DB::table('students')
+                                          ->where([
+                                            ['semester', $sem->id],
+                                            ['status', 2],
+                                            ['student_status', 2]
+                                          ])->get());
+
+                              }
                             @endphp
-                            <td colspan="{{ ($sem->id == 1) ? '4' : '2' }}" style="text-align: center">
-                              {{ $total }}
-                            </td>
+
+                            @if($sem->id != 1)
+                              <td colspan="{{ ($sem->id == 1) ? '4' : '2' }}" style="text-align: center">
+                                {{ $total }}
+                              </td>
+                            @else
+                              <td colspan="2" style="text-align: center">
+                                {{ $holding }}
+                              </td>
+                              <td colspan="2" style="text-align: center">
+                                {{ $total }}
+                              </td>
+                            @endif
                           @endforeach
                           <td style="text-align: center">
                             @php
@@ -512,8 +544,9 @@
                             ->where([
                               ['semester', 1],
                               ['status', 2],
-                              ['student_status', 2]
-                              ])->get())
+                              ])
+                              ->whereIn('student_status', [1,2])
+                              ->get())
                           @endphp
                           <td colspan="4" style="text-align: center">
                             {{ $total }}
