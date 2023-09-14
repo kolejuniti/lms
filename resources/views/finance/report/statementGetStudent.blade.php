@@ -142,13 +142,13 @@
                                 <div class="row mb-5">
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <p>PACKAGE &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ isset($data['package']->package) ? $data['package']->package : null }}</p>
+                                            <p>PACKAGE &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ isset($data['package']->package) ? $data['package']->package : 0.00 }}</p>
                                         </div>
                                         <div class="form-group">
-                                            <p>METHOD &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ isset($data['package']->type) ? $data['package']->type : null }}</p>
+                                            <p>METHOD &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ isset($data['package']->type) ? $data['package']->type : 0.00 }}</p>
                                         </div>
                                         <div class="form-group">
-                                            <p>PAYMENT &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ isset($data['sponsor']->amount) ? $data['sponsor']->amount : null }}</p>
+                                            <p>PAYMENT &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ isset($data['sponsor']->amount) ? $data['sponsor']->amount : 0.00 }}</p>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
@@ -163,18 +163,36 @@
                                                     <th>Semester 6</th>
                                                 </tr>
                                                 <tr>
-                                                    <td>{{ isset($data['package']->semester_1) ? $data['package']->semester_1 : null }}</td>
-                                                    <td>{{ isset($data['package']->semester_2) ? $data['package']->semester_2 : null }}</td>
-                                                    <td>{{ isset($data['package']->semester_3) ? $data['package']->semester_3 : null }}</td>
-                                                    <td>{{ isset($data['package']->semester_4) ? $data['package']->semester_4 : null }}</td>
-                                                    <td>{{ isset($data['package']->semester_5) ? $data['package']->semester_5 : null }}</td>
-                                                    <td>{{ isset($data['package']->semester_6) ? $data['package']->semester_6 : null }}</td>
+                                                    <td>{{ isset($data['package']->semester_1) ? $data['package']->semester_1 : 0 }}</td>
+                                                    <td>{{ isset($data['package']->semester_2) ? $data['package']->semester_2 : 0 }}</td>
+                                                    <td>{{ isset($data['package']->semester_3) ? $data['package']->semester_3 : 0 }}</td>
+                                                    <td>{{ isset($data['package']->semester_4) ? $data['package']->semester_4 : 0 }}</td>
+                                                    <td>{{ isset($data['package']->semester_5) ? $data['package']->semester_5 : 0 }}</td>
+                                                    <td>{{ isset($data['package']->semester_6) ? $data['package']->semester_6 : 0 }}</td>
                                                 </tr>
                                                 <!-- More rows can be added here -->
                                             </table>
                                         </div>
                                         <div class="form-group">
-                                            <p>CURRENT ARREARS &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ isset($data['value']) ? $data['value'] : null }}</p>
+                                            <p>CURRENT ARREARS &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ isset($data['value']) ? $data['value'] : 0.00 }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card mb-3" id="stud_info">
+                            <div class="card-body">
+                                <div class="row mb-5">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <p>CURRENT ARREARS &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ isset($data['current_balance']) ? $data['current_balance'] : 0.00 }}</p>
+                                        </div>
+                                        <div class="form-group">
+                                            <p>SPECIAL FINANCING ARREARS &nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ isset($data['pk_balance']) ? $data['pk_balance'] : 0.00 }}</p>
+                                        </div>
+                                        <div class="form-group">
+                                            <p>TOTAL ARREARS &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ isset($data['total_balance']) ? $data['total_balance'] : 0.00 }}</p>
                                         </div>
                                     </div>
                                 </div>
