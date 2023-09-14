@@ -3111,14 +3111,14 @@ class FinanceController extends Controller
         if($package->payment_type_id == 3 || $package->payment_type_id == 11 || $package->payment_type_id == 14)
         {
 
-            $discount = DB::table('tblclaim')
+            $discount = abs(DB::table('tblclaim')
                         ->join('tblclaimdtl', 'tblclaim.id', 'tblclaimdtl.claim_id')
                         ->where([
                             ['tblclaim.student_ic', $request->student],
                             ['tblclaim.process_type_id', 5],
                             ['tblclaim.process_status_id', 2],
                             ['tblclaim.remark', 'LIKE', '%Diskaun Yuran Kediaman%']
-                        ])->sum('tblclaimdtl.amount');
+                        ])->sum('tblclaimdtl.amount'));
 
         }
 
@@ -3135,7 +3135,7 @@ class FinanceController extends Controller
                 if($data['sum3'] <= ($package->amount - $discount))
                 {
 
-                    $data['current_balance'] = 123;
+                    $data['current_balance'] = 0.00;
 
                 }elseif($data['sum3'] > ($package->amount - $discount))
                 {
@@ -3162,7 +3162,7 @@ class FinanceController extends Controller
             if($package->payment_type_id == 3 || $package->payment_type_id == 11 || $package->payment_type_id == 14)
             {
 
-                if($data['current_balance'] == 0)
+                if($data['current_balance'] == 0.00)
                 {
 
                     $data['pk_balance'] = $data['sum3'];
@@ -3181,7 +3181,7 @@ class FinanceController extends Controller
             if($package->payment_type_id == 3 || $package->payment_type_id == 11 || $package->payment_type_id == 14)
             {
 
-                if($data['current_balance'] == 0)
+                if($data['current_balance'] == 0.00)
                 {
 
                     $data['pk_balance'] = $data['sum3'];
