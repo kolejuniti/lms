@@ -3122,7 +3122,7 @@ class FinanceController extends Controller
 
         }
 
-        if($package->package_id ==5)
+        if($package->package_id == 5)
         {
 
             $data['current_balance'] = $data['sum3'];
@@ -3135,7 +3135,7 @@ class FinanceController extends Controller
                 if($data['sum3'] <= ($package->amount - $discount))
                 {
 
-                    $data['current_balance'] = 0;
+                    $data['current_balance'] = 123;
 
                 }elseif($data['sum3'] > ($package->amount - $discount))
                 {
