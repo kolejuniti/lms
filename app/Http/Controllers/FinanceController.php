@@ -3102,6 +3102,104 @@ class FinanceController extends Controller
 
         $data['sum3_3'] = end($data['total3']);
 
+        //TUNGGAKAN
+
+        //TUNGGAKAN SEMASA
+
+        $package = DB::table('tblpackage_sponsorship')->where('student_ic', $request->student)->first();
+
+        if($package->payment_type_id == 3 || $package->payment_type_id == 11 || $package->payment_type_id == 14)
+        {
+
+            $discount = DB::table('tblclaim')
+                        ->join('tblclaimdtl', 'tblclaim.id', 'tblclaimdtl.claim_id')
+                        ->where([
+                            ['tblclaim.student_ic', $request->student],
+                            ['tblclaim.process_type_id', 5],
+                            ['tblclaim.process_status_id', 2],
+                            ['tblclaim.remark', 'LIKE', '%Diskaun Yuran Kediaman%']
+                        ])->sum('tblclaimdtl.amount');
+
+        }
+
+        if($package->package_id ==5)
+        {
+
+            $data['current_balance'] = $data['sum3'];
+
+        }else{
+
+            if($package->payment_type_id == 3 || $package->payment_type_id == 11 || $package->payment_type_id == 14)
+            {
+
+                if($data['sum3'] <= ($package->amount - $discount))
+                {
+
+                    $data['current_balance'] = 0;
+
+                }elseif($data['sum3'] > ($package->amount - $discount))
+                {
+
+                    $data['current_balance'] = $data['sum3'] - ($package->amount - $discount);
+
+                }
+
+            }else{
+
+                $data['current_balance'] = $data['sum3'];
+
+            }
+
+        }
+
+        //TNUGGAKAN PEMBIAYAAN KHAS
+
+        $stddetail = DB::table('students')->where('ic', $request->student)->select('program', 'semester')->first();
+
+        if(($stddetail->program == 7 || $stddetail->program == 8) && $stddetail->program >= 5)
+        {
+
+            if($package->payment_type_id == 3 || $package->payment_type_id == 11 || $package->payment_type_id == 14)
+            {
+
+                if($data['current_balance'] == 0)
+                {
+
+                    $data['pk_balance'] = $data['sum3'];
+
+                }else{
+
+                    $data['pk_balance'] = ($package->amount - $discount);
+
+                }
+
+            }
+
+        }elseif($stddetail->program >= 6)
+        {
+
+            if($package->payment_type_id == 3 || $package->payment_type_id == 11 || $package->payment_type_id == 14)
+            {
+
+                if($data['current_balance'] == 0)
+                {
+
+                    $data['pk_balance'] = $data['sum3'];
+
+                }else{
+
+                    $data['pk_balance'] = ($package->amount - $discount);
+
+                }
+
+            }
+
+        }
+
+        //TUNGGAKAN KESELURUHAN
+
+        $data['total_balance'] = $data['sum3'];
+
         return view('finance.report.statementGetStudent', compact('data'));
 
 
