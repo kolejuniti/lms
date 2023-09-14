@@ -186,13 +186,13 @@
                                 <div class="row mb-5">
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <p>CURRENT ARREARS &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ isset($data['current_balance']) ? number_format($data['current_balance'], 2) : 0.00 }}</p>
+                                            <p>TUNGGAKAN SEMASA &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ isset($data['current_balance']) ? number_format($data['current_balance'], 2) : 0.00 }}</p>
                                         </div>
                                         <div class="form-group">
-                                            <p>SPECIAL FINANCING ARREARS &nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ isset($data['pk_balance']) ? number_format($data['pk_balance'], 2) : 0.00 }}</p>
+                                            <p>TUNGGAKAN PEMBIAYAAN KHAS &nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ isset($data['pk_balance']) ? number_format($data['pk_balance'], 2) : 0.00 }}</p>
                                         </div>
                                         <div class="form-group">
-                                            <p>TOTAL ARREARS &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ isset($data['total_balance']) ? number_format($data['total_balance'], 2) : 0.00 }}</p>
+                                            <p>TUNGGAKAN KESELURUHAN &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ isset($data['total_balance']) ? number_format($data['total_balance'], 2) : 0.00 }}</p>
                                         </div>
                                     </div>
                                 </div>
