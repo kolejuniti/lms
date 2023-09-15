@@ -730,6 +730,7 @@ class PendaftarController extends Controller
                    ->leftjoin('tblstudent_address', 'students.ic', 'tblstudent_address.student_ic')
                    ->leftjoin('tblstudent_pass', 'students.ic', 'tblstudent_pass.student_ic')
                    ->leftjoin('student_form', 'students.ic', 'student_form.student_ic')
+                   ->select('students.*', 'tblstudent_personal.*', 'tblstudent_address.*', 'tblstudent_pass.*', 'student_form.*', 'tblstudent_personal.state_id AS place_birth')
                    ->where('ic',request()->ic)->first();
 
         $data['waris'] = DB::table('tblstudent_waris')->where('student_ic', $student->ic)->get();
