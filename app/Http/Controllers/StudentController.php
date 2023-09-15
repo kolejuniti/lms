@@ -41,7 +41,8 @@ class StudentController extends Controller
         ->where([
                 ['sessions.Status', 'ACTIVE'],
                 ['tblprogramme.progstatusid', 1],
-                ['student_subjek.student_ic', $student->ic]
+                ['student_subjek.student_ic', $student->ic],
+                ['subjek.prgid', $student->program]
                 ])
         ->select('subjek.id','subjek.course_name','subjek.course_code','student_subjek.courseid','sessions.SessionName','sessions.SessionID')
         ->groupBy('student_subjek.courseid')
@@ -137,7 +138,8 @@ class StudentController extends Controller
             ->where([
                     ['sessions.Status', 'ACTIVE'],
                     ['tblprogramme.progstatusid', 1],
-                    ['student_subjek.student_ic', $student->ic]
+                    ['student_subjek.student_ic', $student->ic],
+                    ['subjek.prgid', $student->program]
                     ])
             ->where('student_subjek.sessionid','LIKE','%'.$request->session.'%')
             ->where('subjek.course_name','LIKE','%'.$request->search."%")
@@ -168,7 +170,8 @@ class StudentController extends Controller
             ->where([
                     ['sessions.Status', 'ACTIVE'],
                     ['tblprogramme.progstatusid', 1],
-                    ['student_subjek.student_ic', $student->ic]
+                    ['student_subjek.student_ic', $student->ic],
+                    ['subjek.prgid', $student->program]
                     ])
             ->where('subjek.course_name','LIKE','%'.$request->search."%")
             ->select('subjek.id','subjek.course_name','subjek.course_code','student_subjek.courseid','sessions.SessionName','sessions.SessionID')
@@ -199,7 +202,8 @@ class StudentController extends Controller
             ->where([
                     ['sessions.Status', 'ACTIVE'],
                     ['tblprogramme.progstatusid', 1],
-                    ['student_subjek.student_ic', $student->ic]
+                    ['student_subjek.student_ic', $student->ic],
+                    ['subjek.prgid', $student->program]
                     ])
             ->where('student_subjek.sessionid','LIKE','%'.$request->session.'%')
             ->select('subjek.id','subjek.course_name','subjek.course_code','student_subjek.courseid','sessions.SessionName','sessions.SessionID')
@@ -228,7 +232,8 @@ class StudentController extends Controller
             ->where([
                     ['sessions.Status', 'ACTIVE'],
                     ['tblprogramme.progstatusid', 1],
-                    ['student_subjek.student_ic', $student->ic]
+                    ['student_subjek.student_ic', $student->ic],
+                    ['subjek.prgid', $student->program]
                     ])
             ->select('subjek.id','subjek.course_name','subjek.course_code','student_subjek.courseid','sessions.SessionName','sessions.SessionID')
             ->groupBy('student_subjek.courseid')
