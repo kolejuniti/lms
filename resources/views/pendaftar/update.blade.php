@@ -78,7 +78,7 @@
                             <select class="form-select" id="birth_place" name="birth_place">
                               <option value="-" selected disabled>-</option>
                                 @foreach ($data['state'] as $state)
-                                <option value="{{ $state->id }}" {{ ($student->state_id == $state->id) ? 'selected' : '' }}>{{ $state->state_name}}</option> 
+                                <option value="{{ $state->id }}" {{ ($student->place_birth == $state->id) ? 'selected' : '' }}>{{ $state->state_name}}</option> 
                                 @endforeach
                             </select>
                           </div>
@@ -248,6 +248,20 @@
                         </div>
                       </div>
                       <div class="row">
+                        <div class="col-md-6 mt-4">
+                          <div class="form-group">
+                              <input type="checkbox" id="oku" class="filled-in" name="oku" value="1" {{ ($student->oku != null) ? 'checked'  : '' }}>
+                              <label for="oku">OKU</label>
+                          </div>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                          <div class="form-group">
+                            <label class="form-label" for="jkm">JKM</label>
+                            <input type="text" class="form-control" id="jkm" name="jkm" value="{{ $student->no_jkm }}">
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row">
                         <div class="col-md-6">
                           <div class="form-group">
                             <label for="bank_name" class="form-label">Choose a bank:</label>
@@ -291,20 +305,6 @@
                           <div class="form-group">
                             <label class="form-label" for="dt">Date/Time</label>
                             <input type="datetime-local" class="form-control" id="dt" placeholder="Enter Bank Name" name="dt" value="{{ $student->datetime }}">
-                          </div>
-                        </div>
-                        <div class="col-md-6 mb-2">
-                          <div class="form-group">
-                            <label class="form-label" for="jkm">JKM</label>
-                            <input type="text" class="form-control" id="jkm" name="jkm" value="{{ $student->no_jkm }}">
-                          </div>
-                        </div>
-                      </div>
-                      <div class="row">
-                        <div class="col-md-6">
-                          <div class="form-group">
-                              <input type="checkbox" id="oku" class="filled-in" name="oku" value="1" {{ ($student->oku != null) ? 'checked'  : '' }}>
-                              <label for="oku">OKU</label>
                           </div>
                         </div>
                       </div>
