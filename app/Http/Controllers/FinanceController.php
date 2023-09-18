@@ -2235,7 +2235,14 @@ class FinanceController extends Controller
                    ->where([['tblpayment.student_ic', null],['tblpayment.process_status_id',2]])
                    ->select('tblpayment.*', 'tblsponsor_library.name', 'tblsponsor_library.code')->get();
 
-        return view('finance.sponsorship.payment', compact('payment'));
+        foreach($payment as $key => $pym)
+        {
+
+            $method[$key] = DB::table('tblpaymentmethod')->where('payment_id', $pym->id)->get();
+
+        }
+
+        return view('finance.sponsorship.payment', compact('payment','method'));
 
     }
 
