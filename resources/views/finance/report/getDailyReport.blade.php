@@ -1377,7 +1377,7 @@
 <!-- Insentif student -->
 <div class="card mb-3" id="stud_info">
   <div class="card-header">
-  <b>Insentif</b>
+  <b>Insentif Naik Semester</b>
   </div>
   <div class="card-body p-0">
     <table id="myTable" class="table table-striped projects display dataTable">
