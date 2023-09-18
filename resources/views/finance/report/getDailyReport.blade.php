@@ -1682,9 +1682,7 @@
           @endforeach
           </td>
           <td>
-            @php
-              $totalInsentifMco = 0;
-            @endphp
+            
           @foreach ($data['InsentifMcoStudDetail'][$key] as $mth)
             <div>{{ $mth->amount }}</div>
         
