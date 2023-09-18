@@ -168,7 +168,7 @@
                      </thead>
                      <tbody>
                         @foreach ($data['detail'] as $keys => $dtl)
-                        @if ($dtl->amount != 0)
+                        @if ($dtl->total_amount != 0)
                         <tr>
                            <td>{{ $keys+1 }}</td>
                            <td>{{ $dtl->name }}</td>
