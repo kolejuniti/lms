@@ -2922,7 +2922,7 @@ class FinanceController extends Controller
                 // }
                 
 
-            }elseif(array_intersect([1,6,7,8,9,15,16,17,18,19], (array) $req->process_type_id))
+            }elseif(array_intersect([1,6,7,8,9,10,11,12,13,14,15,16,17,18,19], (array) $req->process_type_id))
             {
 
                 $data['total'][$key] = $val - $req->amount;
@@ -3108,91 +3108,102 @@ class FinanceController extends Controller
 
         $package = DB::table('tblpackage_sponsorship')->where('student_ic', $request->student)->first();
 
-        if($package->payment_type_id == 3 || $package->payment_type_id == 11 || $package->payment_type_id == 14)
+        if($package != null)
         {
-
-            $discount = abs(DB::table('tblclaim')
-                        ->join('tblclaimdtl', 'tblclaim.id', 'tblclaimdtl.claim_id')
-                        ->where([
-                            ['tblclaim.student_ic', $request->student],
-                            ['tblclaim.process_type_id', 5],
-                            ['tblclaim.process_status_id', 2],
-                            ['tblclaim.remark', 'LIKE', '%Diskaun Yuran Kediaman%']
-                        ])->sum('tblclaimdtl.amount'));
-
-        }
-
-        if($package->package_id == 5)
-        {
-
-            $data['current_balance'] = $data['sum3'];
-
-        }else{
 
             if($package->payment_type_id == 3 || $package->payment_type_id == 11 || $package->payment_type_id == 14)
             {
 
-                if($data['sum3'] <= ($package->amount - $discount))
-                {
+                $discount = abs(DB::table('tblclaim')
+                            ->join('tblclaimdtl', 'tblclaim.id', 'tblclaimdtl.claim_id')
+                            ->where([
+                                ['tblclaim.student_ic', $request->student],
+                                ['tblclaim.process_type_id', 5],
+                                ['tblclaim.process_status_id', 2],
+                                ['tblclaim.remark', 'LIKE', '%Diskaun Yuran Kediaman%']
+                            ])->sum('tblclaimdtl.amount'));
 
-                    $data['current_balance'] = 0.00;
+            }
 
-                }elseif($data['sum3'] > ($package->amount - $discount))
-                {
-
-                    $data['current_balance'] = $data['sum3'] - ($package->amount - $discount);
-
-                }
-
-            }else{
+            if($package->package_id == 5)
+            {
 
                 $data['current_balance'] = $data['sum3'];
 
-            }
+            }else{
 
-        }
-
-        //TNUGGAKAN PEMBIAYAAN KHAS
-
-        $stddetail = DB::table('students')->where('ic', $request->student)->select('program', 'semester')->first();
-
-        if(($stddetail->program == 7 || $stddetail->program == 8) && $stddetail->program >= 5)
-        {
-
-            if($package->payment_type_id == 3 || $package->payment_type_id == 11 || $package->payment_type_id == 14)
-            {
-
-                if($data['current_balance'] == 0.00)
+                if($package->payment_type_id == 3 || $package->payment_type_id == 11 || $package->payment_type_id == 14)
                 {
 
-                    $data['pk_balance'] = $data['sum3'];
+                    if($data['sum3'] <= ($package->amount - $discount))
+                    {
+
+                        $data['current_balance'] = 0.00;
+
+                    }elseif($data['sum3'] > ($package->amount - $discount))
+                    {
+
+                        $data['current_balance'] = $data['sum3'] - ($package->amount - $discount);
+
+                    }
 
                 }else{
 
-                    $data['pk_balance'] = ($package->amount - $discount);
+                    $data['current_balance'] = $data['sum3'];
 
                 }
 
             }
 
-        }elseif($stddetail->program >= 6)
-        {
+            //TNUGGAKAN PEMBIAYAAN KHAS
 
-            if($package->payment_type_id == 3 || $package->payment_type_id == 11 || $package->payment_type_id == 14)
+            $stddetail = DB::table('students')->where('ic', $request->student)->select('program', 'semester')->first();
+
+            if(($stddetail->program == 7 || $stddetail->program == 8) && $stddetail->program >= 5)
             {
 
-                if($data['current_balance'] == 0.00)
+                if($package->payment_type_id == 3 || $package->payment_type_id == 11 || $package->payment_type_id == 14)
                 {
 
-                    $data['pk_balance'] = $data['sum3'];
+                    if($data['current_balance'] == 0.00)
+                    {
 
-                }else{
+                        $data['pk_balance'] = $data['sum3'];
 
-                    $data['pk_balance'] = ($package->amount - $discount);
+                    }else{
+
+                        $data['pk_balance'] = ($package->amount - $discount);
+
+                    }
+
+                }
+
+            }elseif($stddetail->program >= 6)
+            {
+
+                if($package->payment_type_id == 3 || $package->payment_type_id == 11 || $package->payment_type_id == 14)
+                {
+
+                    if($data['current_balance'] == 0.00)
+                    {
+
+                        $data['pk_balance'] = $data['sum3'];
+
+                    }else{
+
+                        $data['pk_balance'] = ($package->amount - $discount);
+
+                    }
 
                 }
 
             }
+
+        }else{
+
+            $data['current_balance'] = 0.00;
+
+            $data['pk_balance'] = 0.00;
 
         }
 
