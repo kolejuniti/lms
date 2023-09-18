@@ -172,7 +172,7 @@
                         <tr>
                            <td>{{ $keys+1 }}</td>
                            <td>{{ $dtl->name }}</td>
-                           <td>{{ $dtl->groupid }}</td>
+                           <td>{{ $data['payment']->semester_id }}</td>
                            <td>{{ $dtl->total_amount }}</td>
                         </tr>
                         @endif
