@@ -1693,7 +1693,7 @@
           @endforeach
           </td>
           <td>
-            {{-- <div>{{ number_format($totalInsentifMco, 2) }}</div> --}}
+            <div>{{ number_format($totalInsentifMco, 2) }}</div>
             @php
               $totalInsentifMcoALL += $totalInsentifMco;
             @endphp
