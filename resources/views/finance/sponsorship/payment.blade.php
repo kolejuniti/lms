@@ -67,14 +67,14 @@
                         Amount
                     </th>
                     <th style="width: 5%">
-                        Status
+                        No Document
                     </th>
                     <th style="width: 20%">
                     </th>
                 </tr>
             </thead>
             <tbody id="table">
-            @foreach ($payment as $key=> $pym)
+            @foreach ($payment as $key => $pym)
               <tr>
                 <td>
                   {{ $key+1 }}
@@ -89,7 +89,9 @@
                   {{ $pym->amount }}
                 </td>
                 <td>
-                  {{ $pym->process_status_id }}
+                  @foreach($method[$key] as $mtd)
+                  {{ $mtd->no_document }}
+                  @endforeach
                 </td>
                 <td class="project-actions text-right" style="text-align: center;">
                   <a class="btn btn-info btn-sm btn-sm mr-2" href="/finance/sponsorship/payment/student?id={{ $pym->id }}">
