@@ -664,27 +664,27 @@ class PendaftarController extends Controller
                 'country_id' => $request->country
             ]);
 
-            $numWaris = count($request->input('w_name'));
-            for ($i = 0; $i < $numWaris; $i++) {
+            // $numWaris = count($request->input('w_name'));
+            // for ($i = 0; $i < $numWaris; $i++) {
 
-                if($request->input('w_name')[$i] != '')
-                {
-                    DB::table('tblstudent_waris')->insert([
-                        'student_ic' => $data['id'],
-                        'name' => $request->input('w_name')[$i],
-                        'ic' => $request->input('w_ic')[$i],
-                        'home_tel' => $request->input('w_notel_home')[$i],
-                        'phone_tel' => $request->input('w_notel')[$i],
-                        'occupation' => $request->input('occupation')[$i],
-                        'dependent_no' => $request->input('dependent')[$i],
-                        'kasar' => $request->input('w_kasar')[$i],
-                        'bersih' => $request->input('w_bersih')[$i],
-                        'relationship' => $request->input('relationship')[$i],
-                        'race' => $request->input('w_race')[$i],
-                        'status' => $request->input('w_status')[$i]
-                    ]);
-                }
-            }
+            //     if($request->input('w_name')[$i] != '')
+            //     {
+            //         DB::table('tblstudent_waris')->insert([
+            //             'student_ic' => $data['id'],
+            //             'name' => $request->input('w_name')[$i],
+            //             'ic' => $request->input('w_ic')[$i],
+            //             'home_tel' => $request->input('w_notel_home')[$i],
+            //             'phone_tel' => $request->input('w_notel')[$i],
+            //             'occupation' => $request->input('occupation')[$i],
+            //             'dependent_no' => $request->input('dependent')[$i],
+            //             'kasar' => $request->input('w_kasar')[$i],
+            //             'bersih' => $request->input('w_bersih')[$i],
+            //             'relationship' => $request->input('relationship')[$i],
+            //             'race' => $request->input('w_race')[$i],
+            //             'status' => $request->input('w_status')[$i]
+            //         ]);
+            //     }
+            // }
 
             DB::table('student_form')->insert([
                 'student_ic' => $data['id'],
