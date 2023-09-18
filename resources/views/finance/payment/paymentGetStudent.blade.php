@@ -68,7 +68,7 @@
                     <div class="form-group">
                     <label class="form-label" for="type">About</label>
                     <select class="form-select" id="type" name="type">
-                        <option value="1" selected>PRE REGISTRATION</option>
+                        <option value="57" selected>PRE REGISTRATION</option>
                     </select>
                     </div>
                 </div>
