@@ -3946,7 +3946,7 @@ class FinanceController extends Controller
 
                 //oldinsentifmco
 
-                if($pym->process_type_id == 15 && $pym->process_type_id == 21)
+                if($pym->process_type_id == 15 || $pym->process_type_id == 21)
                 {
 
                     $data['InsentifMco'][] = $pym;
@@ -3993,8 +3993,8 @@ class FinanceController extends Controller
 
                 //oldtabungkhas
 
-                if($pym->process_type_id == 16 && $pym->process_type_id == 17 && $pym->process_type_id == 18 && $pym->process_type_id == 19 && $pym->process_type_id == 20
-                   && $pym->process_type_id == 22 && $pym->process_type_id == 23 && $pym->process_type_id == 24 && $pym->process_type_id == 25)
+                if($pym->process_type_id == 16 || $pym->process_type_id == 17 || $pym->process_type_id == 18 || $pym->process_type_id == 19 || $pym->process_type_id == 20
+                   || $pym->process_type_id == 22 || $pym->process_type_id == 23 || $pym->process_type_id == 24 || $pym->process_type_id == 25)
                 {
 
                     $data['tabungkhas'][] = $pym;
