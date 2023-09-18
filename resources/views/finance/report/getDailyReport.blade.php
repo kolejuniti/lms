@@ -1642,7 +1642,7 @@
       </thead>
       <tbody id="table">
       @php
-      $totalInsentifALL = 0;
+      $totalInsentifMcoALL = 0;
       @endphp
       @foreach ($data['InsentifMco'] as $key => $rgs)
         <tr>
@@ -1682,14 +1682,21 @@
           @endforeach
           </td>
           <td>
-            
+            @php
+              $totalInsentifMco = 0;
+            @endphp
           @foreach ($data['InsentifMcoStudDetail'][$key] as $mth)
             <div>{{ $mth->amount }}</div>
-        
+            @php
+              $totalInsentifMco += $mth->amount;
+            @endphp
           @endforeach
           </td>
           <td>
-        
+            {{-- <div>{{ number_format($totalInsentifMco, 2) }}</div> --}}
+            @php
+              $totalInsentifMcoALL += $totalInsentifMco;
+            @endphp
           </td>
         </tr>
       @endforeach
@@ -1700,7 +1707,7 @@
                   TOTAL
               </td>
               <td>
-                 
+                  {{ number_format($totalInsentifMcoALL, 2) }}
               </td>
             </tr>
       </tfoot>
