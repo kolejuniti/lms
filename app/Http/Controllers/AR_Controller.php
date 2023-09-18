@@ -655,8 +655,9 @@ class AR_Controller extends Controller
         $getCourse =  DB::table('student_subjek')
                       ->join('students', 'student_subjek.student_ic', 'students.ic')
                       ->join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
-                      ->where('students.ic', $data['student']->ic)
+                      ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
                     //   ->where('student_subjek.sessionid', $data['student']->session)
+                      ->where('students.ic', $data['student']->ic)
                       ->where('subjek.prgid', $data['student']->program);
 
         $data['allCourse'] = $getCourse->select('student_subjek.id as IDS', 'student_subjek.courseid', 'student_subjek.semesterid AS semester', 'sessions.SessionName', 'subjek.*')->orderBy('student_subjek.semesterid')->get();
@@ -700,8 +701,9 @@ class AR_Controller extends Controller
         $getCourse =  DB::table('student_subjek')
                       ->join('students', 'student_subjek.student_ic', 'students.ic')
                       ->join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
-                      ->where('students.ic', $data['student']->ic)
+                      ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
                     //   ->where('student_subjek.sessionid', $data['student']->session)
+                      ->where('students.ic', $data['student']->ic)
                       ->where('subjek.prgid', $data['student']->program);
 
         $data['allCourse'] = $getCourse->select('student_subjek.id as IDS', 'student_subjek.courseid', 'student_subjek.semesterid AS semester', 'sessions.SessionName', 'subjek.*')->orderBy('student_subjek.semesterid')->get();
