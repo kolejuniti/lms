@@ -3710,7 +3710,7 @@ class FinanceController extends Controller
 
                 //newinsentifMco
 
-                if($pym->process_type_id == 9)
+                if($pym->process_type_id == 15 && $pym->process_type_id == 21)
                 {
 
                     $data['InsentifMco'][] = $pym;
