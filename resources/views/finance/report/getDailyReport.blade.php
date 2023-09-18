@@ -1687,16 +1687,11 @@
             @endphp
           @foreach ($data['InsentifMcoStudDetail'][$key] as $mth)
             <div>{{ $mth->amount }}</div>
-            {{-- @php
-              $totalInsentifMco += $mth->amount;
-            @endphp --}}
+        
           @endforeach
           </td>
           <td>
-            {{-- <div>{{ number_format($totalInsentifMco, 2) }}</div> --}}
-            {{-- @php
-              $totalInsentifMcoALL += $totalInsentifMco;
-            @endphp --}}
+        
           </td>
         </tr>
       @endforeach
@@ -1707,7 +1702,7 @@
                   TOTAL
               </td>
               <td>
-                  {{-- {{ number_format($totalInsentifMcoALL, 2) }} --}}
+                 
               </td>
             </tr>
       </tfoot>
