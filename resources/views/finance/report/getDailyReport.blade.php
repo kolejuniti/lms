@@ -1707,7 +1707,7 @@
                   TOTAL
               </td>
               <td>
-                 
+                  {{-- {{ number_format($totalInsentifMcoALL, 2) }} --}}
               </td>
             </tr>
       </tfoot>
