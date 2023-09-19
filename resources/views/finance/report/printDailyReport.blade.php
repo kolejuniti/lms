@@ -25,7 +25,7 @@
    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
    <style>
     @page {
-       size: A5 landscape; /* reduced height for A5 size in landscape orientation */
+       size: A4; /* reduced height for A5 size in landscape orientation */
        margin: 1cm;
      }
      * {
@@ -33,20 +33,18 @@
          padding: 0;
          border: 0;
          outline: 0;
-         font-size: 100%;
          vertical-align: baseline;
          background: transparent;
-         font-size: 7px;
+         font-size: 9px;
      }
      h2,h3,p {
          margin: 0;
          padding: 0;
          border: 0;
          outline: 0;
-         font-size: 100%;
          vertical-align: baseline;
          background: transparent;
-         font-size: 7px;
+         font-size: 9px;
      }
      </style>
   </head>
