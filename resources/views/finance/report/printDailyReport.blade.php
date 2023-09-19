@@ -8,10 +8,7 @@
    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>EduHub - @yield('title')</title>
     <!-- Vendors Style-->
-     <link rel="stylesheet" href="{{ asset('assets/src/css/vendors_css.css') }}">
-   <!-- Style-->  
-   <link rel="stylesheet" href="{{ asset('assets/src/css/style.css') }}">
-   <link rel="stylesheet" href="{{ asset('assets/src/css/skin_color.css') }}">
+   
    {{-- <link rel="stylesheet" media="screen, print" href="{{ asset('assets/src/css/datagrid/datatables/datatables.bundle.css') }}"> --}}
    {{-- <link rel="stylesheet" href="{{ asset('assets/assets/vendor_components/datatable/datatables.css') }}"> --}}
    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
@@ -50,9 +47,41 @@
          font-size: 8px;
      }
 
-     .container {
-         transform: scale(1.0); /* scale down everything */
-      }
+     /* Base table styles */
+table {
+    width: 100%;            /* Make the table take up the full width */
+    border-collapse: collapse; /* Remove gaps between cells */
+    font-size: 16px;        /* Set base font size */
+    margin-bottom: 20px;   /* Add space below the table */
+}
+
+/* Headers */
+th {
+    background-color: #f4f4f4;  /* Light gray background */
+    font-weight: bold;      /* Bold font for headers */
+    text-align: left;       /* Left-align header text */
+    padding: 10px;          /* Add padding */
+    border: 1px solid #ddd; /* Light gray border */
+}
+
+/* Cells */
+td {
+    padding: 10px;          /* Add padding to cells */
+    border: 1px solid #ddd; /* Light gray border */
+    vertical-align: top;    /* Align content to top */
+}
+
+/* Rows */
+tr:nth-child(even) {
+    background-color: #f9f9f9; /* Alternate row color for better readability */
+}
+
+tr:hover {
+    background-color: #e6e6e6; /* Highlight row on hover */
+}
+
+
+     
      </style>
   </head>
   
