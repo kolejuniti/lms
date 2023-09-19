@@ -8,7 +8,10 @@
    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>EduHub - @yield('title')</title>
     <!-- Vendors Style-->
-   
+     <link rel="stylesheet" href="{{ asset('assets/src/css/vendors_css.css') }}">
+   <!-- Style-->  
+   <link rel="stylesheet" href="{{ asset('assets/src/css/style.css') }}">
+   <link rel="stylesheet" href="{{ asset('assets/src/css/skin_color.css') }}">
    {{-- <link rel="stylesheet" media="screen, print" href="{{ asset('assets/src/css/datagrid/datatables/datatables.bundle.css') }}"> --}}
    {{-- <link rel="stylesheet" href="{{ asset('assets/assets/vendor_components/datatable/datatables.css') }}"> --}}
    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
@@ -34,8 +37,7 @@
          vertical-align: baseline;
          background: transparent;
          font-size: 8px;
-         table-layout: fixed;
-         padding: 1px 1px;
+         padding: 1px;   
      }
      h2,h3,p {
          margin: 0;
@@ -47,26 +49,18 @@
          font-size: 8px;
      }
 
-     /* Base table styles */
-table {
-    width: 100%;            /* Make the table take up the full width */
-    border-collapse: collapse; /* Remove gaps between cells */
-    font-size: 16px;        /* Set base font size */
-    margin-bottom: 20px;   /* Add space below the table */
-}
-
-/* Headers */
+     /* Headers */
 th {
     background-color: #f4f4f4;  /* Light gray background */
     font-weight: bold;      /* Bold font for headers */
     text-align: left;       /* Left-align header text */
-    padding: 10px;          /* Add padding */
+    padding: 5px;          /* Add padding */
     border: 1px solid #ddd; /* Light gray border */
 }
 
 /* Cells */
 td {
-    padding: 10px;          /* Add padding to cells */
+    padding: 5px;          /* Add padding to cells */
     border: 1px solid #ddd; /* Light gray border */
     vertical-align: top;    /* Align content to top */
 }
@@ -79,9 +73,6 @@ tr:nth-child(even) {
 tr:hover {
     background-color: #e6e6e6; /* Highlight row on hover */
 }
-
-
-     
      </style>
   </head>
   
@@ -653,12 +644,12 @@ tr:hover {
             
             <div class="row justify-content-center">
                 <!-- pecahan -->
-                <div class="card col-md-4 mb-3" id="stud_info" style="margin-right: 2%">
+                <div class="card col-md-2 mb-3" id="stud_info" style="margin-right: 2%">
                 <div class="card-header mx-auto">
                 <b>Pre Registration</b>
                 </div>
                 <div class="card-body p-0">
-                    <table class="w-100 table table-bordered display margin-top-10 w-p100">
+                    <table class="">
                     <thead>
                         <tr>
                             <th style="width: 1%">
@@ -703,12 +694,12 @@ tr:hover {
                 </div>
             
                 <!-- pecahan -->
-                <div class="card col-md-4 mb-3" id="stud_info" style="margin-right: 2%">
+                <div class="card col-md-2 mb-3" id="stud_info" style="margin-right: 2%">
                 <div class="card-header mx-auto">
                 <b>New Student</b>
                 </div>
                 <div class="card-body p-0">
-                    <table class="w-100 table table-bordered display margin-top-10 w-p100">
+                    <table class="">
                     <thead>
                         <tr>
                             <th style="width: 1%">
