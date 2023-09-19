@@ -47,6 +47,10 @@
          background: transparent;
          font-size: 8px;
      }
+
+     .container {
+         transform: scale(1.0); /* scale down everything */
+      }
      </style>
   </head>
   
