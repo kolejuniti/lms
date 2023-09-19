@@ -28,6 +28,7 @@
        size: A4; /* reduced height for A5 size in landscape orientation */
        margin: 1cm;
      }
+ 
      * {
          margin: 0;
          padding: 0;
@@ -37,6 +38,7 @@
          background: transparent;
          font-size: 8px;
          table-layout: fixed;
+         padding: 1px 1px;
      }
      h2,h3,p {
          margin: 0;
