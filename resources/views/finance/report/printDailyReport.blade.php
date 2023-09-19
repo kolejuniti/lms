@@ -47,10 +47,6 @@
          background: transparent;
          font-size: 8px;
      }
-
-     .container {
-         transform: scale(1.0); /* scale down everything */
-      }
      </style>
   </head>
   
@@ -683,10 +679,10 @@
                             <th style="width: 1%">
                                 No.
                             </th>
-                            <th style="width: 5%">
+                            <th style="width: 2%">
                                 PROGRAM
                             </th>
-                            <th style="width: 5%">
+                            <th style="width: 2%">
                                 QUOTE
                             </th>
                         </tr>
@@ -720,156 +716,160 @@
                 </div>
                 <!-- /.card-body -->
                 </div>
-            
+            </div>
+
+            <div class="row justify-content-center">
                 <!-- pecahan -->
                 <div class="card col-md-2 mb-3" id="stud_info" style="margin-right: 2%">
-                <div class="card-header mx-auto">
-                <b>Old Student</b>
-                </div>
-                <div class="card-body p-0">
-                    <table class="w-100 table table-bordered display margin-top-10 w-p100">
-                    <thead>
-                        <tr>
-                            <th style="width: 1%">
-                                No.
-                            </th>
-                            <th style="width: 5%">
-                                PROGRAM
-                            </th>
-                            <th style="width: 5%">
-                                QUOTE
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody id="table">
+                    <div class="card-header mx-auto">
+                    <b>Old Student</b>
+                    </div>
+                    <div class="card-body p-0">
+                        <table class="w-100 table table-bordered display margin-top-10 w-p100">
+                        <thead>
+                            <tr>
+                                <th style="width: 1%">
+                                    No.
+                                </th>
+                                <th style="width: 2%">
+                                    PROGRAM
+                                </th>
+                                <th style="width: 2%">
+                                    QUOTE
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="table">
+                            @foreach ($data['program'] as $key => $prg)
+                            <tr>
+                            <td>
+                                {{ $key+1 }}
+                            </td>
+                            <td>
+                                {{ $prg->progcode }}
+                            </td>
+                            <td>
+                                {{ (!empty($data['oldTotals'])) ? $data['oldTotals'][$key] : 0}}
+                            </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="2" style="text-align: center">
+                                    TOTAL
+                                </td>
+                                <td>
+                                    {{ number_format(array_sum($data['oldTotals']), 2) }}
+                                </td>
+                            </tr>
+                        </tfoot>
+                        </table>
+                    </div>
+                    <!-- /.card-body -->
+                    </div>
+
+                    <!-- pecahan -->
+                    <div class="card col-md-2 mb-3" id="stud_info" style="margin-right: 2%">
+                    <div class="card-header mx-auto">
+                    <b>Withdraw</b>
+                    </div>
+                    <div class="card-body p-0">
+                        <table class="w-100 table table-bordered display margin-top-10 w-p100">
+                        <thead>
+                            <tr>
+                                <th style="width: 1%">
+                                    No.
+                                </th>
+                                <th style="width: 2%">
+                                    PROGRAM
+                                </th>
+                                <th style="width: 2%">
+                                    QUOTE
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="table">
                         @foreach ($data['program'] as $key => $prg)
                         <tr>
-                        <td>
+                            <td>
                             {{ $key+1 }}
-                        </td>
-                        <td>
+                            </td>
+                            <td>
                             {{ $prg->progcode }}
-                        </td>
-                        <td>
-                            {{ (!empty($data['oldTotals'])) ? $data['oldTotals'][$key] : 0}}
-                        </td>
+                            </td>
+                            <td>
+                            {{ (!empty($data['withdrawTotals'])) ? $data['withdrawTotals'][$key] : 0}}
+                            </td>
                         </tr>
                         @endforeach
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <td colspan="2" style="text-align: center">
-                                TOTAL
-                            </td>
-                            <td>
-                                {{ number_format(array_sum($data['oldTotals']), 2) }}
-                            </td>
-                        </tr>
-                    </tfoot>
-                    </table>
-                </div>
-                <!-- /.card-body -->
-                </div>
-            
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="2" style="text-align: center">
+                                    TOTAL
+                                </td>
+                                <td>
+                                    {{ number_format(array_sum($data['withdrawTotals']), 2) }}
+                                </td>
+                            </tr>
+                        </tfoot>
+                        </table>
+                    </div>
+                    <!-- /.card-body -->
+                    </div>
+            </div>
+
+            <div class="row justify-content-center">
                 <!-- pecahan -->
                 <div class="card col-md-2 mb-3" id="stud_info" style="margin-right: 2%">
-                <div class="card-header mx-auto">
-                <b>Withdraw</b>
-                </div>
-                <div class="card-body p-0">
-                    <table class="w-100 table table-bordered display margin-top-10 w-p100">
-                    <thead>
+                    <div class="card-header mx-auto">
+                        <b>Graduate</b>
+                    </div>
+                    <div class="card-body p-0">
+                        <table class="w-100 table table-bordered display margin-top-10 w-p100">
+                        <thead>
+                            <tr>
+                                <th style="width: 1%">
+                                    No.
+                                </th>
+                                <th style="width: 2%">
+                                    PROGRAM
+                                </th>
+                                <th style="width: 2%">
+                                    QUOTE
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="table">
+                        @foreach ($data['program'] as $key => $prg)
                         <tr>
-                            <th style="width: 1%">
-                                No.
-                            </th>
-                            <th style="width: 5%">
-                                PROGRAM
-                            </th>
-                            <th style="width: 5%">
-                                QUOTE
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody id="table">
-                    @foreach ($data['program'] as $key => $prg)
-                    <tr>
-                        <td>
-                        {{ $key+1 }}
-                        </td>
-                        <td>
-                        {{ $prg->progcode }}
-                        </td>
-                        <td>
-                        {{ (!empty($data['withdrawTotals'])) ? $data['withdrawTotals'][$key] : 0}}
-                        </td>
-                    </tr>
-                    @endforeach
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <td colspan="2" style="text-align: center">
-                                TOTAL
+                            <td>
+                            {{ $key+1 }}
                             </td>
                             <td>
-                                {{ number_format(array_sum($data['withdrawTotals']), 2) }}
-                            </td>
-                        </tr>
-                    </tfoot>
-                    </table>
-                </div>
-                <!-- /.card-body -->
-                </div>
-            
-                <!-- pecahan -->
-                <div class="card col-md-2 mb-3" id="stud_info" style="margin-right: 2%">
-                <div class="card-header mx-auto">
-                    <b>Graduate</b>
-                </div>
-                <div class="card-body p-0">
-                    <table class="w-100 table table-bordered display margin-top-10 w-p100">
-                    <thead>
-                        <tr>
-                            <th style="width: 1%">
-                                No.
-                            </th>
-                            <th style="width: 5%">
-                                PROGRAM
-                            </th>
-                            <th style="width: 5%">
-                                QUOTE
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody id="table">
-                    @foreach ($data['program'] as $key => $prg)
-                    <tr>
-                        <td>
-                        {{ $key+1 }}
-                        </td>
-                        <td>
-                        {{ $prg->progcode }}
-                        </td>
-                        <td>
-                        {{ (!empty($data['graduateTotals'])) ? $data['graduateTotals'][$key] : 0}}
-                        </td>
-                    </tr>
-                    @endforeach
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <td colspan="2" style="text-align: center">
-                                TOTAL
+                            {{ $prg->progcode }}
                             </td>
                             <td>
-                                {{ number_format(array_sum($data['graduateTotals']), 2) }}
+                            {{ (!empty($data['graduateTotals'])) ? $data['graduateTotals'][$key] : 0}}
                             </td>
                         </tr>
-                    </tfoot>
-                    </table>
-                </div>
-                <!-- /.card-body -->
-                </div>
+                        @endforeach
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="2" style="text-align: center">
+                                    TOTAL
+                                </td>
+                                <td>
+                                    {{ number_format(array_sum($data['graduateTotals']), 2) }}
+                                </td>
+                            </tr>
+                        </tfoot>
+                        </table>
+                    </div>
+                    <!-- /.card-body -->
+                    </div>
             </div>
             
             <!-- hostel student -->
@@ -1347,10 +1347,10 @@
                             <th style="width: 1%">
                                 No.
                             </th>
-                            <th style="width: 5%">
+                            <th style="width: 2%">
                                 PROGRAM
                             </th>
-                            <th style="width: 5%">
+                            <th style="width: 2%">
                                 QUOTE
                             </th>
                         </tr>
@@ -1397,10 +1397,10 @@
                             <th style="width: 1%">
                                 No.
                             </th>
-                            <th style="width: 5%">
+                            <th style="width: 2%">
                                 PROGRAM
                             </th>
-                            <th style="width: 5%">
+                            <th style="width: 2%">
                                 QUOTE
                             </th>
                         </tr>
@@ -1569,10 +1569,10 @@
                             <th style="width: 1%">
                                 No.
                             </th>
-                            <th style="width: 5%">
+                            <th style="width: 2%">
                                 PROGRAM
                             </th>
-                            <th style="width: 5%">
+                            <th style="width: 2%">
                                 QUOTE
                             </th>
                         </tr>
@@ -1619,10 +1619,10 @@
                             <th style="width: 1%">
                                 No.
                             </th>
-                            <th style="width: 5%">
+                            <th style="width: 2%">
                                 PROGRAM
                             </th>
-                            <th style="width: 5%">
+                            <th style="width: 2%">
                                 QUOTE
                             </th>
                         </tr>
@@ -1791,10 +1791,10 @@
                             <th style="width: 1%">
                                 No.
                             </th>
-                            <th style="width: 5%">
+                            <th style="width: 2%">
                                 PROGRAM
                             </th>
-                            <th style="width: 5%">
+                            <th style="width: 2%">
                                 QUOTE
                             </th>
                         </tr>
@@ -1841,10 +1841,10 @@
                             <th style="width: 1%">
                                 No.
                             </th>
-                            <th style="width: 5%">
+                            <th style="width: 2%">
                                 PROGRAM
                             </th>
-                            <th style="width: 5%">
+                            <th style="width: 2%">
                                 QUOTE
                             </th>
                         </tr>
@@ -1993,10 +1993,10 @@
                             <th style="width: 1%">
                                 No.
                             </th>
-                            <th style="width: 5%">
+                            <th style="width: 2%">
                                 PROGRAM
                             </th>
-                            <th style="width: 5%">
+                            <th style="width: 2%">
                                 QUOTE
                             </th>
                         </tr>
@@ -2043,10 +2043,10 @@
                             <th style="width: 1%">
                                 No.
                             </th>
-                            <th style="width: 5%">
+                            <th style="width: 2%">
                                 PROGRAM
                             </th>
-                            <th style="width: 5%">
+                            <th style="width: 2%">
                                 QUOTE
                             </th>
                         </tr>
