@@ -142,10 +142,10 @@
                                 <div class="row mb-5">
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <p>PACKAGE &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ isset($data['package']->package) ? number_format($data['package']->package, 2) : 0.00 }}</p>
+                                            <p>PACKAGE &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ isset($data['package']->package) ? $data['package']->package : 0 }}</p>
                                         </div>
                                         <div class="form-group">
-                                            <p>METHOD &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ isset($data['package']->type) ? number_format($data['package']->type, 2) : 0.00 }}</p>
+                                            <p>METHOD &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ isset($data['package']->type) ? $data['package']->type : 0 }}</p>
                                         </div>
                                         <div class="form-group">
                                             <p>PAYMENT &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ isset($data['sponsor']->amount) ? number_format($data['sponsor']->amount, 2) : 0.00 }}</p>
