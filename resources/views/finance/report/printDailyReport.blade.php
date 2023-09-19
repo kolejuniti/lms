@@ -61,7 +61,7 @@
                 <b>Pre Registration</b>
                 </div>
                 <div class="card-body p-0">
-                <table class="table table-striped">
+                <table class="w-100 table table-bordered display margin-top-10 w-p100">
                     <thead>
                         <tr>
                             <th style="width: 1%">
@@ -173,7 +173,7 @@
                 <b>New Student</b>
                 </div>
                 <div class="card-body p-0">
-                <table class="table table-striped">
+                <table class="w-100 table table-bordered display margin-top-10 w-p100">
                     <thead>
                         <tr>
                             <th style="width: 1%">
@@ -285,7 +285,7 @@
                 <b>Old Student</b>
                 </div>
                 <div class="card-body p-0">
-                <table class="table table-striped">
+                <table class="w-100 table table-bordered display margin-top-10 w-p100">
                     <thead>
                         <tr>
                             <th style="width: 1%">
@@ -397,7 +397,7 @@
                     <b>Withdraw Student</b>
                 </div>
                 <div class="card-body p-0">
-                    <table class="table table-striped">
+                    <table class="w-100 table table-bordered display margin-top-10 w-p100">
                         <thead>
                             <tr>
                                 <th style="width: 1%">
@@ -509,7 +509,7 @@
                 <b>Graduate Student</b>
                 </div>
                 <div class="card-body p-0">
-                <table class="table table-striped">
+                <table class="w-100 table table-bordered display margin-top-10 w-p100">
                     <thead>
                         <tr>
                             <th style="width: 1%">
@@ -622,7 +622,7 @@
                 <b>Pre Registration</b>
                 </div>
                 <div class="card-body p-0">
-                    <table class="table table-striped">
+                    <table class="w-100 table table-bordered display margin-top-10 w-p100">
                     <thead>
                         <tr>
                             <th style="width: 1%">
@@ -672,7 +672,7 @@
                 <b>New Student</b>
                 </div>
                 <div class="card-body p-0">
-                    <table class="table table-striped">
+                    <table class="w-100 table table-bordered display margin-top-10 w-p100">
                     <thead>
                         <tr>
                             <th style="width: 1%">
@@ -722,7 +722,7 @@
                 <b>Old Student</b>
                 </div>
                 <div class="card-body p-0">
-                    <table class="table table-striped">
+                    <table class="w-100 table table-bordered display margin-top-10 w-p100">
                     <thead>
                         <tr>
                             <th style="width: 1%">
@@ -772,7 +772,7 @@
                 <b>Withdraw</b>
                 </div>
                 <div class="card-body p-0">
-                    <table class="table table-striped">
+                    <table class="w-100 table table-bordered display margin-top-10 w-p100">
                     <thead>
                         <tr>
                             <th style="width: 1%">
@@ -822,7 +822,7 @@
                     <b>Graduate</b>
                 </div>
                 <div class="card-body p-0">
-                    <table class="table table-striped">
+                    <table class="w-100 table table-bordered display margin-top-10 w-p100">
                     <thead>
                         <tr>
                             <th style="width: 1%">
@@ -873,7 +873,7 @@
                 <b>Hostel Collection</b>
                 </div>
                 <div class="card-body p-0">
-                <table class="table table-striped">
+                <table class="w-100 table table-bordered display margin-top-10 w-p100">
                     <thead>
                         <tr>
                             <th >
@@ -947,7 +947,7 @@
                 <b>Convocation Collection</b>
                 </div>
                 <div class="card-body p-0">
-                <table class="table table-striped">
+                <table class="w-100 table table-bordered display margin-top-10 w-p100">
                     <thead>
                         <tr>
                             <th >
@@ -1021,7 +1021,7 @@
                 <b>Fine Collection</b>
                 </div>
                 <div class="card-body p-0">
-                <table class="table table-striped">
+                <table class="w-100 table table-bordered display margin-top-10 w-p100">
                     <thead>
                         <tr>
                             <th >
@@ -1095,7 +1095,7 @@
                 <b>Others</b>
                 </div>
                 <div class="card-body p-0">
-                <table class="table table-striped">
+                <table class="w-100 table table-bordered display margin-top-10 w-p100">
                     <thead>
                         <tr>
                             <th style="width: 1%">
@@ -1215,7 +1215,7 @@
                 <b>Excess Student</b>
                 </div>
                 <div class="card-body p-0">
-                <table class="table table-striped">
+                <table class="w-100 table table-bordered display margin-top-10 w-p100">
                     <thead>
                         <tr>
                             <th style="width: 1%">
@@ -1336,7 +1336,7 @@
                 <b>New Student</b>
                 </div>
                 <div class="card-body p-0">
-                    <table class="table table-striped">
+                    <table class="w-100 table table-bordered display margin-top-10 w-p100">
                     <thead>
                         <tr>
                             <th style="width: 1%">
@@ -1386,7 +1386,7 @@
                 <b>Old Student</b>
                 </div>
                 <div class="card-body p-0">
-                    <table class="table table-striped">
+                    <table class="w-100 table table-bordered display margin-top-10 w-p100">
                     <thead>
                         <tr>
                             <th style="width: 1%">
@@ -1437,7 +1437,7 @@
                 <b>Insentif</b>
                 </div>
                 <div class="card-body p-0">
-                <table class="table table-striped">
+                <table class="w-100 table table-bordered display margin-top-10 w-p100">
                     <thead>
                         <tr>
                             <th style="width: 1%">
@@ -1558,7 +1558,7 @@
                 <b>New Student</b>
                 </div>
                 <div class="card-body p-0">
-                    <table class="table table-striped">
+                    <table class="w-100 table table-bordered display margin-top-10 w-p100">
                     <thead>
                         <tr>
                             <th style="width: 1%">
@@ -1608,7 +1608,7 @@
                 <b>Old Student</b>
                 </div>
                 <div class="card-body p-0">
-                    <table class="table table-striped">
+                    <table class="w-100 table table-bordered display margin-top-10 w-p100">
                     <thead>
                         <tr>
                             <th style="width: 1%">
@@ -1659,7 +1659,7 @@
                 <b>Tabung Khas</b>
                 </div>
                 <div class="card-body p-0">
-                <table class="table table-striped">
+                <table class="w-100 table table-bordered display margin-top-10 w-p100">
                     <thead>
                         <tr>
                             <th style="width: 1%">
@@ -1780,7 +1780,7 @@
                 <b>New Student</b>
                 </div>
                 <div class="card-body p-0">
-                    <table class="table table-striped">
+                    <table class="w-100 table table-bordered display margin-top-10 w-p100">
                     <thead>
                         <tr>
                             <th style="width: 1%">
@@ -1830,7 +1830,7 @@
                 <b>Old Student</b>
                 </div>
                 <div class="card-body p-0">
-                    <table class="table table-striped">
+                    <table class="w-100 table table-bordered display margin-top-10 w-p100">
                     <thead>
                         <tr>
                             <th style="width: 1%">
@@ -1881,7 +1881,7 @@
                 <b>Sponsorship</b>
                 </div>
                 <div class="card-body p-0">
-                <table class="table table-striped">
+                <table class="w-100 table table-bordered display margin-top-10 w-p100">
                     <thead>
                         <tr>
                             <th style="width: 1%">
@@ -1982,7 +1982,7 @@
                 <b>New Student</b>
                 </div>
                 <div class="card-body p-0">
-                    <table class="table table-striped">
+                    <table class="w-100 table table-bordered display margin-top-10 w-p100">
                     <thead>
                         <tr>
                             <th style="width: 1%">
@@ -2032,7 +2032,7 @@
                 <b>Old Student</b>
                 </div>
                 <div class="card-body p-0">
-                    <table class="table table-striped">
+                    <table class="w-100 table table-bordered display margin-top-10 w-p100">
                     <thead>
                         <tr>
                             <th style="width: 1%">
