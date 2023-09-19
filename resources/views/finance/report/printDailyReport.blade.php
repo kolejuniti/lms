@@ -622,7 +622,7 @@
             
             <div class="row justify-content-center">
                 <!-- pecahan -->
-                <div class="card col-md-6 mb-3" id="stud_info" style="margin-right: 2%">
+                <div class="card col-md-4 mb-3" id="stud_info" style="margin-right: 2%">
                 <div class="card-header mx-auto">
                 <b>Pre Registration</b>
                 </div>
@@ -672,7 +672,7 @@
                 </div>
             
                 <!-- pecahan -->
-                <div class="card col-md-6 mb-3" id="stud_info" style="margin-right: 2%">
+                <div class="card col-md-4 mb-3" id="stud_info" style="margin-right: 2%">
                 <div class="card-header mx-auto">
                 <b>New Student</b>
                 </div>
