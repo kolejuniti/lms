@@ -35,7 +35,8 @@
          outline: 0;
          vertical-align: baseline;
          background: transparent;
-         font-size: 9px;
+         font-size: 8px;
+         table-layout: fixed;
      }
      h2,h3,p {
          margin: 0;
@@ -44,8 +45,12 @@
          outline: 0;
          vertical-align: baseline;
          background: transparent;
-         font-size: 9px;
+         font-size: 8px;
      }
+
+     .container {
+         transform: scale(1.0); /* scale down everything */
+      }
      </style>
   </head>
   
@@ -628,10 +633,10 @@
                             <th style="width: 1%">
                                 No.
                             </th>
-                            <th style="width: 5%">
+                            <th style="width: 2%">
                                 PROGRAM
                             </th>
-                            <th style="width: 5%">
+                            <th style="width: 2%">
                                 QUOTE
                             </th>
                         </tr>
