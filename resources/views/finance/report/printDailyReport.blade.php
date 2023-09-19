@@ -8,10 +8,10 @@
    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>EduHub - @yield('title')</title>
     <!-- Vendors Style-->
-     <link rel="stylesheet" href="{{ asset('assets/src/css/vendors_css.css') }}">
-   <!-- Style-->  
-   <link rel="stylesheet" href="{{ asset('assets/src/css/style.css') }}">
-   <link rel="stylesheet" href="{{ asset('assets/src/css/skin_color.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/src/css/vendors_css.css') }}">
+    <!-- Style-->  
+    <link rel="stylesheet" href="{{ asset('assets/src/css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/src/css/skin_color.css') }}">
    {{-- <link rel="stylesheet" media="screen, print" href="{{ asset('assets/src/css/datagrid/datatables/datatables.bundle.css') }}"> --}}
    {{-- <link rel="stylesheet" href="{{ asset('assets/assets/vendor_components/datatable/datatables.css') }}"> --}}
    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
@@ -48,6 +48,22 @@
          background: transparent;
          font-size: 8px;
      }
+
+     .table-fit-content {
+    width: auto;         /* Fit to content, rather than stretching to full width */
+    max-width: 30%;     /* Ensure it doesn't overflow the parent container */
+    border-collapse: collapse;
+    margin: auto;        /* Center the table if smaller than the parent width */
+}
+
+
+     /* Base table styles */
+table {
+    width: 100%;            /* Make the table take up the full width */
+    border-collapse: collapse; /* Remove gaps between cells */
+    font-size: 16px;        /* Set base font size */
+    margin-bottom: 20px;   /* Add space below the table */
+}
 
      /* Headers */
 th {
@@ -649,7 +665,7 @@ tr:hover {
                 <b>Pre Registration</b>
                 </div>
                 <div class="card-body p-0">
-                    <table class="">
+                    <table class="table-fit-content">
                     <thead>
                         <tr>
                             <th style="width: 1%">
@@ -699,7 +715,7 @@ tr:hover {
                 <b>New Student</b>
                 </div>
                 <div class="card-body p-0">
-                    <table class="">
+                    <table class="table-fit-content">
                     <thead>
                         <tr>
                             <th style="width: 1%">
