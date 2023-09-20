@@ -304,17 +304,22 @@ class TreasurerController extends Controller
                     {
                         $data = DB::table('tblclaimdtl')->where('id', $phy->id)->first();
 
-                        DB::table('tblclaimdtl')->insert([
-                            'claim_id' => $payment->id,
-                            'claim_package_id' => $data->claim_package_id,
-                            'price' => $data->price,
-                            'unit' => $data->unit,
-                            'amount' => intval($paymentinput2[$i]->payment) * -1,
-                            'add_staffID' => Auth::user()->ic,
-                            'add_date' => date('Y-m-d'),
-                            'mod_staffID' => Auth::user()->ic,
-                            'mod_date' => date('Y-m-d')
-                        ]);
+                        if($paymentinput2[$i]->payment != null)
+                        {
+
+                            DB::table('tblclaimdtl')->insert([
+                                'claim_id' => $payment->id,
+                                'claim_package_id' => $data->claim_package_id,
+                                'price' => $data->price,
+                                'unit' => $data->unit,
+                                'amount' => intval($paymentinput2[$i]->payment) * -1,
+                                'add_staffID' => Auth::user()->ic,
+                                'add_date' => date('Y-m-d'),
+                                'mod_staffID' => Auth::user()->ic,
+                                'mod_date' => date('Y-m-d')
+                            ]);
+
+                        }
                     }
 
                     $ref_no = DB::table('tblref_no')

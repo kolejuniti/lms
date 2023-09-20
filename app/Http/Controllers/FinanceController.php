@@ -2798,16 +2798,21 @@ class FinanceController extends Controller
                     {
                         $claimdtl = DB::table('tblclaimdtl')->where('id', $phy->id)->first();
 
-                        DB::table('tblpaymentdtl')->insert([
-                            'payment_id' => $payment->id,
-                            'claimDtl_id' => $phy->id,
-                            'claim_type_id' => $claimdtl->claim_package_id,
-                            'amount' => $paymentinput2[$i]->payment,
-                            'add_staffID' => Auth::user()->ic,
-                            'add_date' => date('Y-m-d'),
-                            'mod_staffID' => Auth::user()->ic,
-                            'mod_date' => date('Y-m-d')
-                        ]);
+                        if($paymentinput2[$i]->payment != null)
+                        {
+
+                            DB::table('tblpaymentdtl')->insert([
+                                'payment_id' => $payment->id,
+                                'claimDtl_id' => $phy->id,
+                                'claim_type_id' => $claimdtl->claim_package_id,
+                                'amount' => $paymentinput2[$i]->payment,
+                                'add_staffID' => Auth::user()->ic,
+                                'add_date' => date('Y-m-d'),
+                                'mod_staffID' => Auth::user()->ic,
+                                'mod_date' => date('Y-m-d')
+                            ]);
+
+                        }
                     }
 
                     /*$ref_no = DB::table('tblref_no')
