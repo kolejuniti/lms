@@ -3825,6 +3825,7 @@ class FinanceController extends Controller
                     if(DB::table('tblpaymentdtl')
                     ->join('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
                     ->where('tblpaymentdtl.payment_id', $pym->id)
+                    ->where('tblpaymentdtl.amount', '!=', 0)
                     ->whereIn('tblstudentclaim.groupid', [1])->exists())
                     {
 
@@ -4108,6 +4109,7 @@ class FinanceController extends Controller
                     if(DB::table('tblpaymentdtl')
                     ->join('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
                     ->where('tblpaymentdtl.payment_id', $pym->id)
+                    ->where('tblpaymentdtl.amount', '!=', 0)
                     ->whereIn('tblstudentclaim.groupid', [1])->exists())
                     {
 
