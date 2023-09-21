@@ -790,6 +790,17 @@ class QuizController extends Controller
 
     public function studentquizstatus()
     {
+        $courseid = DB::table('subjek')->where('id', Session::get('CourseIDS'))->value('sub_id');
+
+        $group = DB::table('user_subjek')
+                ->join('users', 'user_subjek.user_ic', 'users.ic')
+                ->where([
+                    ['user_subjek.course_id', $courseid],
+                    ['user_subjek.session_id', Session::get('SessionIDS')]
+                    ])
+                ->select('user_subjek.id')
+                ->first();
+
         $quiz = DB::table('student_subjek')
                 ->join('tblclassquiz_group', function($join){
                     $join->on('student_subjek.group_id', 'tblclassquiz_group.groupid');
@@ -797,7 +808,7 @@ class QuizController extends Controller
                 })
                 ->join('tblclassquiz', 'tblclassquiz_group.quizid', 'tblclassquiz.id')
                 ->where([
-                    ['tblclassquiz.classid', Session::get('CourseIDS')],
+                    ['student_subjek.group_id', $group->id],
                     ['tblclassquiz.sessionid', Session::get('SessionIDS')],
                     ['tblclassquiz.id', request()->quiz],
                     ['student_subjek.student_ic', Session::get('StudInfos')->ic]
