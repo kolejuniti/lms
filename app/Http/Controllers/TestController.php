@@ -744,6 +744,17 @@ class TestController extends Controller
 
         Session::put('StudInfos', $student);
 
+        $courseid = DB::table('subjek')->where('id', request()->id)->value('sub_id');
+
+        $group = DB::table('user_subjek')
+                ->join('users', 'user_subjek.user_ic', 'users.ic')
+                ->where([
+                    ['user_subjek.course_id', $courseid],
+                    ['user_subjek.session_id', request()->session]
+                    ])
+                ->select('user_subjek.id')
+                ->first();
+
         //dd($student->ic);
 
         $data = DB::table('tblclasstest')
@@ -756,7 +767,7 @@ class TestController extends Controller
                 ->join('user_subjek', 'tblclasstest_group.groupid', 'user_subjek.id')
                 ->select('tblclasstest.*', 'tblclasstest_group.groupname', 'users.name AS addby')
                 ->where([
-                    ['tblclasstest.classid', Session::get('CourseIDS')],
+                    ['user_subjek.id', $group->id],
                     ['tblclasstest.sessionid', Session::get('SessionIDS')],
                     ['student_subjek.student_ic', $student->ic],
                     ['tblclasstest.content','!=', null],
@@ -779,6 +790,17 @@ class TestController extends Controller
 
     public function studentteststatus()
     {
+        $courseid = DB::table('subjek')->where('id', Session::get('CourseIDS'))->value('sub_id');
+
+        $group = DB::table('user_subjek')
+                ->join('users', 'user_subjek.user_ic', 'users.ic')
+                ->where([
+                    ['user_subjek.course_id', $courseid],
+                    ['user_subjek.session_id', Session::get('SessionIDS')]
+                    ])
+                ->select('user_subjek.id')
+                ->first();
+
         $test = DB::table('student_subjek')
                 ->join('tblclasstest_group', function($join){
                     $join->on('student_subjek.group_id', 'tblclasstest_group.groupid');
@@ -786,7 +808,7 @@ class TestController extends Controller
                 })
                 ->join('tblclasstest', 'tblclasstest_group.testid', 'tblclasstest.id')
                 ->where([
-                    ['tblclasstest.classid', Session::get('CourseIDS')],
+                    ['student_subjek.group_id', $group->id],
                     ['tblclasstest.sessionid', Session::get('SessionIDS')],
                     ['tblclasstest.id', request()->test],
                     ['student_subjek.student_ic', Session::get('StudInfos')->ic]
@@ -1519,6 +1541,17 @@ class TestController extends Controller
 
         //dd($student->ic);
 
+        $courseid = DB::table('subjek')->where('id', request()->id)->value('sub_id');
+
+        $group = DB::table('user_subjek')
+                ->join('users', 'user_subjek.user_ic', 'users.ic')
+                ->where([
+                    ['user_subjek.course_id', $courseid],
+                    ['user_subjek.session_id', Session::get('SessionIDS')]
+                    ])
+                ->select('user_subjek.id')
+                ->first();
+
         $data = DB::table('tblclasstest')
                 ->join('tblclasstest_group', 'tblclasstest.id', 'tblclasstest_group.testid')
                 ->join('tblclassteststatus', 'tblclasstest.status', 'tblclassteststatus.id')
@@ -1529,7 +1562,7 @@ class TestController extends Controller
                 ->join('user_subjek', 'tblclasstest_group.groupid', 'user_subjek.id')
                 ->select('tblclasstest.*', 'tblclasstest_group.groupname','tblclassteststatus.statusname')
                 ->where([
-                    ['tblclasstest.classid', Session::get('CourseIDS')],
+                    ['user_subjek.id', $group->id],
                     ['tblclasstest.sessionid', Session::get('SessionIDS')],
                     ['student_subjek.student_ic', $student->ic],
                     ['tblclasstest.date_from', null],
