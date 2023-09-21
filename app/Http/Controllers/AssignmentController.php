@@ -488,6 +488,17 @@ class AssignmentController extends Controller
 
         //dd(Session::get('CourseIDS'));
 
+        $courseid = DB::table('subjek')->where('id', request()->id)->value('sub_id');
+
+        $group = DB::table('user_subjek')
+                ->join('users', 'user_subjek.user_ic', 'users.ic')
+                ->where([
+                    ['user_subjek.course_id', $courseid],
+                    ['user_subjek.session_id', request()->session]
+                    ])
+                ->select('user_subjek.id')
+                ->first();
+
         $data = DB::table('tblclassassign')
                 ->join('users', 'tblclassassign.addby', 'users.ic')
                 ->join('tblclassassign_group', 'tblclassassign.id', 'tblclassassign_group.assignid')
@@ -498,7 +509,7 @@ class AssignmentController extends Controller
                 ->join('user_subjek', 'tblclassassign_group.groupid', 'user_subjek.id')
                 ->select('tblclassassign.*', 'tblclassassign_group.groupname', 'users.name AS addby')
                 ->where([
-                    ['tblclassassign.classid', Session::get('CourseIDS')],
+                    ['user_subjek.id', $group->id],
                     ['tblclassassign.sessionid', Session::get('SessionIDS')],
                     ['student_subjek.student_ic', $student->ic],
                     ['tblclassassign.deadline','!=', null],
@@ -523,6 +534,17 @@ class AssignmentController extends Controller
 
     public function studentassignstatus()
     {
+        $courseid = DB::table('subjek')->where('id', Session::get('CourseIDS'))->value('sub_id');
+
+        $group = DB::table('user_subjek')
+                ->join('users', 'user_subjek.user_ic', 'users.ic')
+                ->where([
+                    ['user_subjek.course_id', $courseid],
+                    ['user_subjek.session_id', Session::get('SessionIDS')]
+                    ])
+                ->select('user_subjek.id')
+                ->first();
+
         $assign = DB::table('student_subjek')
                 ->join('tblclassassign_group', function($join){
                     $join->on('student_subjek.group_id', 'tblclassassign_group.groupid');
@@ -530,7 +552,7 @@ class AssignmentController extends Controller
                 })
                 ->join('tblclassassign', 'tblclassassign_group.assignid', 'tblclassassign.id')
                 ->where([
-                    ['tblclassassign.classid', Session::get('CourseIDS')],
+                    ['student_subjek.group_id', $group->id],
                     ['tblclassassign.sessionid', Session::get('SessionIDS')],
                     ['tblclassassign.id', request()->assign],
                     ['student_subjek.student_ic', Session::get('StudInfos')->ic]
@@ -1039,6 +1061,17 @@ class AssignmentController extends Controller
 
         //dd($student->ic);
 
+        $courseid = DB::table('subjek')->where('id', request()->id)->value('sub_id');
+
+        $group = DB::table('user_subjek')
+                ->join('users', 'user_subjek.user_ic', 'users.ic')
+                ->where([
+                    ['user_subjek.course_id', $courseid],
+                    ['user_subjek.session_id', request()->session]
+                    ])
+                ->select('user_subjek.id')
+                ->first();
+
         $data = DB::table('tblclassassign')
                 ->join('tblclassassign_group', 'tblclassassign.id', 'tblclassassign_group.assignid')
                 ->join('tblclassassignstatus', 'tblclassassign.status', 'tblclassassignstatus.id')
@@ -1049,7 +1082,7 @@ class AssignmentController extends Controller
                 ->join('user_subjek', 'tblclassassign_group.groupid', 'user_subjek.id')
                 ->select('tblclassassign.*', 'tblclassassign_group.groupname','tblclassassignstatus.statusname')
                 ->where([
-                    ['tblclassassign.classid', Session::get('CourseIDS')],
+                    ['user_subjek.id', $group->id],
                     ['tblclassassign.sessionid', Session::get('SessionIDS')],
                     ['student_subjek.student_ic', $student->ic],
                     ['tblclassassign.deadline', null],
