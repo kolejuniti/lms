@@ -490,7 +490,7 @@ class AssignmentController extends Controller
 
         $courseid = DB::table('subjek')->where('id', request()->id)->value('sub_id');
 
-        $group = DB::table('user_subjek')
+        $groupid = DB::table('user_subjek')
                 ->join('users', 'user_subjek.user_ic', 'users.ic')
                 ->where([
                     ['user_subjek.course_id', $courseid],
@@ -509,7 +509,7 @@ class AssignmentController extends Controller
                 ->join('user_subjek', 'tblclassassign_group.groupid', 'user_subjek.id')
                 ->select('tblclassassign.*', 'tblclassassign_group.groupname', 'users.name AS addby')
                 ->where([
-                    ['tblclassassign.classid', Session::get('CourseIDS')],
+                    ['user_subjek.id', $groupid->id],
                     ['tblclassassign.sessionid', Session::get('SessionIDS')],
                     ['student_subjek.student_ic', $student->ic],
                     ['tblclassassign.deadline','!=', null],
