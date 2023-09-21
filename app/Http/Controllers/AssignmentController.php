@@ -521,7 +521,7 @@ class AssignmentController extends Controller
             {
                 $group[] = DB::table('tblclassassign_group')
                         ->join('user_subjek', 'tblclassassign_group.groupid', 'user_subjek.id')
-                        ->where('tblclassassign_group.assignid', $dt->id)->get();
+                        ->where('tblclassassign_group.assignid', $dt->id)->first();
 
                 $chapter[] = DB::table('tblclassassign_chapter')
                         ->join('material_dir', 'tblclassassign_chapter.chapterid', 'material_dir.DrID')
