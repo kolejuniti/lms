@@ -509,14 +509,14 @@ class AssignmentController extends Controller
                 ->join('user_subjek', 'tblclassassign_group.groupid', 'user_subjek.id')
                 ->select('tblclassassign.*', 'tblclassassign_group.groupname', 'users.name AS addby')
                 ->where([
-                    ['user_subjek.id', $group->id],
+                    ['tblclassassign.courseid', Session::get('CourseIDS')],
                     ['tblclassassign.sessionid', Session::get('SessionIDS')],
                     ['student_subjek.student_ic', $student->ic],
                     ['tblclassassign.deadline','!=', null],
                     ['tblclassassign.status','!=', 3]
                 ])->get();
 
-            dd($data);
+            //dd($data);
 
       
             foreach($data as $key => $dt)
