@@ -509,7 +509,7 @@ class AssignmentController extends Controller
                 ->join('user_subjek', 'tblclassassign_group.groupid', 'user_subjek.id')
                 ->select('tblclassassign.*', 'tblclassassign_group.groupname', 'users.name AS addby')
                 ->where([
-                    ['tblclassassign.courseid', Session::get('CourseIDS')],
+                    ['tblclassassign.classid', Session::get('CourseIDS')],
                     ['tblclassassign.sessionid', Session::get('SessionIDS')],
                     ['student_subjek.student_ic', $student->ic],
                     ['tblclassassign.deadline','!=', null],
