@@ -517,13 +517,13 @@ class AssignmentController extends Controller
                 ])->get();
 
       
-            foreach($data as $dt)
+            foreach($data as $key => $dt)
             {
-                $group[] = DB::table('tblclassassign_group')
+                $group[$key] = DB::table('tblclassassign_group')
                         ->join('user_subjek', 'tblclassassign_group.groupid', 'user_subjek.id')
-                        ->where('tblclassassign_group.assignid', $dt->id)->first();
+                        ->where('tblclassassign_group.assignid', $dt->id)->get();
 
-                $chapter[] = DB::table('tblclassassign_chapter')
+                $chapter[$key] = DB::table('tblclassassign_chapter')
                         ->join('material_dir', 'tblclassassign_chapter.chapterid', 'material_dir.DrID')
                         ->where('tblclassassign_chapter.assignid', $dt->id)->get();
             }
