@@ -3424,6 +3424,7 @@ class FinanceController extends Controller
                    ->whereBetween('tblpayment.add_date', [$request->from, $request->to])
                    ->where('tblpayment.process_status_id', 2)
                    ->whereNotNull('tblpayment.ref_no')
+                   ->orderBy('tblpayment.ref_no', 'desc')
                    ->get();
 
         $sponsor = DB::table('tblpayment')
@@ -3433,6 +3434,7 @@ class FinanceController extends Controller
                    ->where('tblpayment.process_status_id', 2)
                    ->whereNotNull('tblpayment.student_ic')
                    ->whereNotNull('tblpayment.payment_sponsor_id')
+                   ->orderBy('tblpayment.ref_no', 'desc')
                    ->get();
 
         $data['program'] = DB::table('tblprogramme')->get();
@@ -4323,6 +4325,7 @@ class FinanceController extends Controller
         ->whereBetween('tblpayment.add_date', [$request->from, $request->to])
         ->where('tblpayment.process_status_id', 2)
         ->select('tblpayment.*', 'tblstudentclaim.groupid', 'tblpaymentdtl.amount', 'tblpaymentmethod.no_document', 'tblpayment_method.name AS method', 'tblpayment_bank.name AS bank')
+        ->orderBy('tblpayment.ref_no', 'desc')
         ->groupBy('tblpaymentdtl.id')->get();
 
 
@@ -4408,6 +4411,7 @@ class FinanceController extends Controller
                             'tblprogramme.progname', 
                             'tblstudentclaim.groupid',
                             'tblstudentclaim.name AS type')
+                  ->orderBy('tblclaim.ref_no', 'desc')
                   ->get();
 
         //dd($charge);
