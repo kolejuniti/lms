@@ -36,7 +36,7 @@
          outline: 0;
          vertical-align: baseline;
          background: transparent;
-         font-size: 8px;
+         font-size: 9px;
          padding: 1px;   
      }
      h2,h3,p {
@@ -46,7 +46,7 @@
          outline: 0;
          vertical-align: baseline;
          background: transparent;
-         font-size: 8px;
+         font-size: 9px;
      }
 
      .table-fit-content {
