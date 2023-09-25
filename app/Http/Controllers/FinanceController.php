@@ -385,7 +385,8 @@ class FinanceController extends Controller
 
         $data['method'] = DB::table('tblpayment_method')->get();
 
-        $data['bank'] = DB::table('tblpayment_bank')->orderBy('name', 'asc')->get();
+        $data['bank'] = DB::table('tblpayment_bank')
+                        ->select('tblpayment_bank.*', 'tblpayment_bank.code AS name')->orderBy('name', 'asc')->get();
 
         return  view('finance.payment.paymentGetStudent', compact('data'));
 
