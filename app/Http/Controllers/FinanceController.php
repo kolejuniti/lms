@@ -4324,7 +4324,7 @@ class FinanceController extends Controller
         ->join('tblpayment_method', 'tblpaymentmethod.claim_method_id', 'tblpayment_method.id')
         ->whereBetween('tblpayment.add_date', [$request->from, $request->to])
         ->where('tblpayment.process_status_id', 2)
-        ->select('tblpayment.*', 'tblstudentclaim.groupid', 'tblpaymentdtl.amount', 'tblpaymentmethod.no_document', 'tblpayment_method.name AS method', 'tblpayment_bank.name AS bank')
+        ->select('tblpayment.*', 'tblstudentclaim.groupid', 'tblstudentclaim.name AS type', 'tblpaymentdtl.amount', 'tblpaymentmethod.no_document', 'tblpayment_method.name AS method', 'tblpayment_bank.name AS bank')
         ->orderBy('tblpayment.ref_no', 'desc')
         ->groupBy('tblpaymentdtl.id')->get();
 
@@ -5667,6 +5667,7 @@ class FinanceController extends Controller
                 
                 if($voucher->from != null && $voucher->to != null && $voucher->amount != null && $voucher->expired != null)
                 {
+                    $student = DB::table('students')->where('ic', $voucher->ic)->first();
 
                     $prefix = substr($voucher->from, 0, 1); // Get the prefix from the first user input
 
@@ -5716,6 +5717,8 @@ class FinanceController extends Controller
 
                             DB::table('tblstudent_voucher')->insert([
                                 'student_ic' => $voucher->ic,
+                                'session_id' => $student->session,
+                                'semester_id' => $student->semester,
                                 'no_voucher' => $vch,
                                 'amount' => $voucher->amount,
                                 'status' => 1,
@@ -5752,6 +5755,9 @@ class FinanceController extends Controller
                                             Amount
                                         </th>
                                         <th>
+                                            Pickup Date
+                                        </th>
+                                        <th>
                                             Status
                                         </th>
                                         <th>
@@ -5773,10 +5779,24 @@ class FinanceController extends Controller
                             <td style="width: 15%">
                             '. $dtl->amount .'
                             </td>
-                            <td style="width: 30%">
+                            <td style="width: 15%">
+                            '. $dtl->pickup_date .'
+                            </td>
+                            <td style="width: 20%">
                             '. $dtl->name .'
                             </td>
-                            <td>';
+                            <td>
+                            <a class="btn btn-success btn-sm" href="#" onclick="claimVoucher('. $dtl->id .')">
+                                <i class="ti-check">
+                                </i>
+                                Claim
+                            </a>
+                            <a class="btn btn-warning btn-sm" href="#" onclick="unclaimVoucher('. $dtl->id .')">
+                                <i class="ti-close">
+                                </i>
+                                Un-Claim
+                            </a>
+                            ';
                             if($dtl->name != 'SAH')
                             {
                 $content .= '<a class="btn btn-danger btn-sm" href="#" onclick="deletedtl('. $dtl->id .')">
@@ -5801,7 +5821,10 @@ class FinanceController extends Controller
                             <td style="width: 15%">
                             '. $sum .'
                             </td>
-                            <td style="width: 30%">
+                            <td style="width: 15%">
+
+                            </td>
+                            <td style="width: 20%">
                             
                             </td>
                             <td>
@@ -5834,6 +5857,232 @@ class FinanceController extends Controller
 
     }
 
+    public function claimVoucherDtl(Request $request)
+    {
+        $student = DB::table('tblstudent_voucher')->where('id', $request->id)->first();
+
+        DB::table('tblstudent_voucher')->where('id', $request->id)->update([
+            'pickup_date' => date('Y-m-d')
+        ]);
+
+        $details = DB::table('tblstudent_voucher')
+                            ->join('tblprocess_status', 'tblstudent_voucher.status', 'tblprocess_status.id')
+                            ->select('tblstudent_voucher.*', 'tblprocess_status.name')
+                            ->where([
+                                ['tblstudent_voucher.student_ic', $student->student_ic]
+                            ])
+                            ->get();
+
+        $sum = DB::table('tblstudent_voucher')->where('tblstudent_voucher.student_ic', $student->student_ic)->sum('amount');
+
+        $content = "";
+        $content .= '<thead>
+                        <tr>
+                            <th style="width: 1%">
+                                No.
+                            </th>
+                            <th>
+                                No. Vouchar
+                            </th>
+                            <th>
+                                Amountss
+                            </th>
+                            <th>
+                                Pickup Date
+                            </th>
+                            <th>
+                                Status
+                            </th>
+                            <th>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="table">';
+                    
+        foreach($details as $key => $dtl){
+        //$registered = ($dtl->status == 'ACTIVE') ? 'checked' : '';
+        $content .= '
+            <tr>
+                <td style="width: 1%">
+                '. $key+1 .'
+                </td>
+                <td style="width: 15%">
+                '. $dtl->no_voucher .'
+                </td>
+                <td style="width: 15%">
+                '. $dtl->amount .'
+                </td>
+                <td style="width: 15%">
+                '. $dtl->pickup_date .'
+                </td>
+                <td style="width: 20%">
+                '. $dtl->name .'
+                </td>
+                <td>
+                <a class="btn btn-success btn-sm" href="#" onclick="claimVoucher('. $dtl->id .')">
+                    <i class="ti-check">
+                    </i>
+                    Claim
+                </a>
+                <a class="btn btn-warning btn-sm" href="#" onclick="unclaimVoucher('. $dtl->id .')">
+                    <i class="ti-close">
+                    </i>
+                    Un-Claim
+                </a>';
+                if($dtl->name != 'SAH')
+                {
+    $content .= '<a class="btn btn-danger btn-sm" href="#" onclick="deletedtl('. $dtl->id .')">
+                        <i class="ti-trash">
+                        </i>
+                        Delete
+                    </a>';
+                }
+    $content .= '</td>
+            </tr>
+            ';
+            }
+        $content .= '</tbody>';
+        $content .= '<tfoot>
+            <tr>
+                <td style="width: 1%">
+                
+                </td>
+                <td style="width: 15%">
+                TOTAL AMOUNT  :
+                </td>
+                <td style="width: 15%">
+                '. $sum .'
+                </td>
+                <td style="width: 15%">
+                
+                </td>
+                <td style="width: 20%">
+                
+                </td>
+                <td>
+            
+                </td>
+            </tr>
+        </tfoot>';
+        
+
+        return $content;
+
+    }
+
+    public function unclaimVoucherDtl(Request $request)
+    {
+        $student = DB::table('tblstudent_voucher')->where('id', $request->id)->first();
+
+        DB::table('tblstudent_voucher')->where('id', $request->id)->update([
+            'pickup_date' => null
+        ]);
+
+        $details = DB::table('tblstudent_voucher')
+                            ->join('tblprocess_status', 'tblstudent_voucher.status', 'tblprocess_status.id')
+                            ->select('tblstudent_voucher.*', 'tblprocess_status.name')
+                            ->where([
+                                ['tblstudent_voucher.student_ic', $student->student_ic]
+                            ])
+                            ->get();
+
+        $sum = DB::table('tblstudent_voucher')->where('tblstudent_voucher.student_ic', $student->student_ic)->sum('amount');
+
+        $content = "";
+        $content .= '<thead>
+                        <tr>
+                            <th style="width: 1%">
+                                No.
+                            </th>
+                            <th>
+                                No. Vouchar
+                            </th>
+                            <th>
+                                Amount
+                            </th>
+                            <th>
+                                Pickup Date
+                            </th>
+                            <th>
+                                Status
+                            </th>
+                            <th>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="table">';
+                    
+        foreach($details as $key => $dtl){
+        //$registered = ($dtl->status == 'ACTIVE') ? 'checked' : '';
+        $content .= '
+            <tr>
+                <td style="width: 1%">
+                '. $key+1 .'
+                </td>
+                <td style="width: 15%">
+                '. $dtl->no_voucher .'
+                </td>
+                <td style="width: 15%">
+                '. $dtl->amount .'
+                </td>
+                <td style="width: 15%">
+                '. $dtl->pickup_date .'
+                </td>
+                <td style="width: 20%">
+                '. $dtl->name .'
+                </td>
+                <td>
+                <a class="btn btn-success btn-sm" href="#" onclick="claimVoucher('. $dtl->id .')">
+                    <i class="ti-check">
+                    </i>
+                    Claim
+                </a>
+                <a class="btn btn-warning btn-sm" href="#" onclick="unclaimVoucher('. $dtl->id .')">
+                    <i class="ti-close">
+                    </i>
+                    Un-Claim
+                </a>';
+                if($dtl->name != 'SAH')
+                {
+    $content .= '<a class="btn btn-danger btn-sm" href="#" onclick="deletedtl('. $dtl->id .')">
+                        <i class="ti-trash">
+                        </i>
+                        Delete
+                    </a>';
+                }
+    $content .= '</td>
+            </tr>
+            ';
+            }
+        $content .= '</tbody>';
+        $content .= '<tfoot>
+            <tr>
+                <td style="width: 1%">
+                
+                </td>
+                <td style="width: 15%">
+                TOTAL AMOUNT  :
+                </td>
+                <td style="width: 15%">
+                '. $sum .'
+                </td>
+                <td style="width: 15%">
+                
+                </td>
+                <td style="width: 20%">
+                
+                </td>
+                <td>
+            
+                </td>
+            </tr>
+        </tfoot>';
+        
+
+        return $content;
+
+    }
+
     public function deleteVoucherDtl(Request $request)
     {
         $student = DB::table('tblstudent_voucher')->where('id', $request->id)->first();
@@ -5863,6 +6112,9 @@ class FinanceController extends Controller
                                 Amount
                             </th>
                             <th>
+                                Pickup Date
+                            </th>
+                            <th>
                                 Status
                             </th>
                             <th>
@@ -5884,10 +6136,23 @@ class FinanceController extends Controller
                 <td style="width: 15%">
                 '. $dtl->amount .'
                 </td>
-                <td style="width: 30%">
+                <td style="width: 15%">
+                '. $dtl->pickup_date .'
+                </td>
+                <td style="width: 20%">
                 '. $dtl->name .'
                 </td>
-                <td>';
+                <td>
+                <a class="btn btn-success btn-sm" href="#" onclick="claimVoucher('. $dtl->id .')">
+                    <i class="ti-check">
+                    </i>
+                    Claim
+                </a>
+                <a class="btn btn-warning btn-sm" href="#" onclick="unclaimVoucher('. $dtl->id .')">
+                    <i class="ti-close">
+                    </i>
+                    Un-Claim
+                </a>';
                 if($dtl->name != 'SAH')
                 {
     $content .= '<a class="btn btn-danger btn-sm" href="#" onclick="deletedtl('. $dtl->id .')">
@@ -5912,7 +6177,10 @@ class FinanceController extends Controller
                 <td style="width: 15%">
                 '. $sum .'
                 </td>
-                <td style="width: 30%">
+                <td style="width: 15%">
+                
+                </td>
+                <td style="width: 20%">
                 
                 </td>
                 <td>
