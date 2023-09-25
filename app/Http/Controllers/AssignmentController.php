@@ -539,10 +539,11 @@ class AssignmentController extends Controller
         $courseid = DB::table('subjek')->where('id', Session::get('CourseIDS'))->value('sub_id');
 
         $group = DB::table('user_subjek')
+                ->join('student_subjek', 'user_subjek.id', 'student_subjek.group_id')
                 ->join('users', 'user_subjek.user_ic', 'users.ic')
                 ->where([
-                    ['user_subjek.course_id', $courseid],
-                    ['user_subjek.session_id', Session::get('SessionIDS')]
+                    ['student_subjek.courseid', $courseid],
+                    ['student_subjek.sessionid', Session::get('SessionIDS')]
                     ])
                 ->select('user_subjek.id')
                 ->first();
@@ -1066,10 +1067,11 @@ class AssignmentController extends Controller
         $courseid = DB::table('subjek')->where('id', request()->id)->value('sub_id');
 
         $group = DB::table('user_subjek')
+                ->join('student_subjek', 'user_subjek.id', 'student_subjek.group_id')
                 ->join('users', 'user_subjek.user_ic', 'users.ic')
                 ->where([
-                    ['user_subjek.course_id', $courseid],
-                    ['user_subjek.session_id', request()->session]
+                    ['student_subjek.courseid', $courseid],
+                    ['student_subjek.sessionid', request()->session]
                     ])
                 ->select('user_subjek.id')
                 ->first();
