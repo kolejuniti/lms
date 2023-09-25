@@ -1080,6 +1080,9 @@ tr:hover {
                             <th >
                                 No. Resit
                             </th>
+                            <th>
+                                Type
+                            </th>
                             <th >
                                 Method
                             </th>
@@ -1105,6 +1108,9 @@ tr:hover {
                         </td>
                         <td>
                         {{ $rgs->ref_no }}
+                        </td>
+                        <td>
+                        {{ $rgs->type }}
                         </td>
                         <td>
                         {{ $rgs->method }}
