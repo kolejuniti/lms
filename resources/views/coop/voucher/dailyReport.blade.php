@@ -139,7 +139,7 @@
 
                 $('#form-student').html(data);
             
-                $('#voucher_table').DataTable({
+                $('#myTable').DataTable({
                   dom: 'lBfrtip', // if you remove this line you will see the show entries dropdown
                   
                   buttons: [

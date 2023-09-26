@@ -38,6 +38,7 @@
       </thead>
       <tbody id="table">
       @foreach ($data['voucher'] as $key => $vcr)
+        @if($vcr->status == 'SAH')
         <tr>
           <td>
           {{ $key+1 }}
@@ -67,6 +68,7 @@
           {{ $vcr->amount }}
           </td>
         </tr>
+        @endif
       @endforeach
       </tbody>
       <tfoot>
