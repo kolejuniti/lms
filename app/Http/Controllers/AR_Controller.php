@@ -1215,15 +1215,7 @@ class AR_Controller extends Controller
             $data['result'][] = DB::table('tblpayment')
                               ->leftjoin('tblpaymentdtl', 'tblpayment.id', 'tblpaymentdtl.payment_id')
                               ->where('tblpayment.student_ic', $student->ic)
-                              ->select(
-
-                                DB::raw('CASE
-                                            WHEN IFNULL(SUM(tblpaymentdtl.amount), 0) < 250 THEN "R"
-                                            WHEN IFNULL(SUM(tblpaymentdtl.amount), 0) >= 250 THEN "R1"
-                                         END AS group'),
-                                DB::raw('IFNULL(SUM(tblpaymentdtl.amount), 0) AS amount')
-
-                              )->get();
+                              ->select('tblpayment.amount', 'tblpayment.sponsor_id')->get();
 
             }
 
