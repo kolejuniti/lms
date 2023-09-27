@@ -72,7 +72,7 @@
           {{ $rgs->ea }}
           </td>
           <td>
-          {{ $data['result'][$key]->group }}
+          {{ $data['result'][$key]->group_alias }}
           </td>
           <td>
           {{ $data['result'][$key]->amount }}
