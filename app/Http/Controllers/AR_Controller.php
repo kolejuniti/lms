@@ -1182,5 +1182,60 @@ class AR_Controller extends Controller
         }
     }
 
+    public function studentReportR()
+    {
+
+        $data['session'] = DB::table('sessions')->get();
+
+        return view('pendaftar_akademik.reportR.reportR', compact('data'));
+
+    }
+
+    public function getStudentReportR(Request $request)
+    {
+
+        if($request->from && $request->to && $request->session)
+        {
+
+            $data['student'] = DB::table('students')
+                               ->join('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
+                               ->join('sessions', 'students.intake', 'sessions.SessionID')
+                               ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+                               ->join('tbledu_advisor', 'tblstudent_personal.advisor_id', 'tbledu_advisor.id')
+                               ->where('students.status', 1)
+                               ->where('students.semester', 1)
+                               ->where('students.intake', $request->session)
+                               ->whereBetween('students.date_add', [$request->from, $request->session])
+                               ->select('students.*', 'tblstudent_personal.no_tel', 'sessions.SessionName', 'tblprogramme.progcode', 'tbledu_advisor.name AS ea')
+                               ->get();
+
+            foreach($data['student'] as $key => $student)
+            {
+
+            $data['result'][$key] = DB::table('tblpayment')
+                              ->join('tblpaymentdtl', 'tblpayment.id', 'tblpaymentdtl.payment_id')
+                              ->join('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
+                              ->where('tblpayment.process_status_id', 2)
+                              ->whereNotIn('tblpayment.process_type_id', [8])
+                              ->whereNotIn('tblstudentclaim.group_id', [4,5])
+                              ->where('tblpayment.student_ic', $student->ic)
+                              ->select(
+
+                                DB::raw('CASE
+                                            WHEN IFNULL(SUM(tblpaymentdtl.amount), 0) < 250 THEN "R"
+                                            WHEN IFNULL(SUM(tblpaymentdtl.amount), 0) >= 250 THEN "R1"
+                                         END AS group'),
+                                DB::raw('IFNULL(SUM(tblpaymentdtl.amount), 0) AS amount')
+
+                              )->first();
+
+            }
+
+            return view('pendaftar_akademik.reportR.getReportR', compact('data'));
+
+        }
+
+    }
+
     
 }
