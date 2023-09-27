@@ -150,6 +150,8 @@ Route::post('/AR/campus/updatecampus', [App\Http\Controllers\AR_Controller::clas
 Route::get('/AR/semester', [App\Http\Controllers\AR_Controller::class, 'studentSemester'])->name('pendaftar_akademik.semester');
 Route::get('/AR/semester/getStudentSemester', [App\Http\Controllers\AR_Controller::class, 'getStudentSemester']);
 Route::post('/AR/semester/updatesemester', [App\Http\Controllers\AR_Controller::class, 'updateSemester']);
+Route::get('/AR/reportR', [App\Http\Controllers\AR_Controller::class, 'studentReportR'])->name('pendaftar_akademik.reportR');
+Route::get('/AR/reportR/getStudentReportR', [App\Http\Controllers\AR_Controller::class, 'getStudentReportR']);
 
 Route::get('/lecturer/getSuratAmaran', [App\Http\Controllers\LecturerController::class, 'getSuratAmaran'])->name('lecturer.suratamaran');
 
@@ -578,6 +580,8 @@ Route::get('/finance/voucher/student', [App\Http\Controllers\FinanceController::
 Route::post('/finance/voucher/student/getStudent', [App\Http\Controllers\FinanceController::class, 'getStudentVoucher']);
 Route::post('/finance/voucher/student/storeVoucherDtl', [App\Http\Controllers\FinanceController::class, 'storeVoucherDtl']);
 Route::post('/finance/voucher/student/deleteVoucherDtl', [App\Http\Controllers\FinanceController::class, 'deleteVoucherDtl']);
+Route::post('/finance/voucher/student/claimVoucherDtl', [App\Http\Controllers\FinanceController::class, 'claimVoucherDtl']);
+Route::post('/finance/voucher/student/unclaimVoucherDtl', [App\Http\Controllers\FinanceController::class, 'unclaimVoucherDtl']);
 
 
 Route::get('/treasurer_dashboard', [App\Http\Controllers\TreasurerController::class, 'dashboard'])->name('treasurer.dashboard');
