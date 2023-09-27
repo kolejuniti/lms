@@ -1218,18 +1218,16 @@ class AR_Controller extends Controller
                               ->where('tblpayment.process_status_id', 2)
                               ->whereNotIn('tblpayment.process_type_id', [8])
                               ->whereNotIn('tblstudentclaim.group_id', [4,5])
-                              ->where('tblpayment.student_ic', $student->ic)
-                              ->select('tblpayment.amount', 'tblpayment.date as group')
-                              ->first();
-                            //   ->select(
+                              ->where('tblpayment.student_ic', '050108040246')
+                              ->select(
 
-                            //     DB::raw('CASE
-                            //                 WHEN IFNULL(SUM(tblpaymentdtl.amount), 0) < 250 THEN "R"
-                            //                 WHEN IFNULL(SUM(tblpaymentdtl.amount), 0) >= 250 THEN "R1"
-                            //              END AS group'),
-                            //     DB::raw('IFNULL(SUM(tblpaymentdtl.amount), 0) AS amount')
+                                DB::raw('CASE
+                                            WHEN IFNULL(SUM(tblpaymentdtl.amount), 0) < 250 THEN "R"
+                                            WHEN IFNULL(SUM(tblpaymentdtl.amount), 0) >= 250 THEN "R1"
+                                         END AS group'),
+                                DB::raw('IFNULL(SUM(tblpaymentdtl.amount), 0) AS amount')
 
-                            //   )->first();
+                              )->first();
 
             }
 
