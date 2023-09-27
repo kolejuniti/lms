@@ -1227,7 +1227,7 @@ class AR_Controller extends Controller
                                          END AS group'),
                                 DB::raw('IFNULL(SUM(tblpaymentdtl.amount), 0) AS amount')
 
-                              )->first();
+                              )->get();
 
             }
 
