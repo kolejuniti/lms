@@ -1214,7 +1214,6 @@ class AR_Controller extends Controller
 
             $data['result'][] = DB::table('tblpayment')
                               ->leftjoin('tblpaymentdtl', 'tblpayment.id', 'tblpaymentdtl.payment_id')
-                              ->leftjoin('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
                               ->where('tblpayment.student_ic', $student->ic)
                               ->select(
 
