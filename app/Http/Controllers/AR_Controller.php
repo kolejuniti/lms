@@ -1198,14 +1198,14 @@ class AR_Controller extends Controller
         {
 
             $data['student'] = DB::table('students')
-                               ->join('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
-                               ->join('sessions', 'students.intake', 'sessions.SessionID')
-                               ->join('tblprogramme', 'students.program', 'tblprogramme.id')
-                               ->join('tbledu_advisor', 'tblstudent_personal.advisor_id', 'tbledu_advisor.id')
+                               ->leftjoin('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
+                               ->leftjoin('sessions', 'students.intake', 'sessions.SessionID')
+                               ->leftjoin('tblprogramme', 'students.program', 'tblprogramme.id')
+                               ->leftjoin('tbledu_advisor', 'tblstudent_personal.advisor_id', 'tbledu_advisor.id')
                                ->where('students.status', 1)
                                ->where('students.semester', 1)
                                ->where('students.intake', $request->session)
-                               ->whereBetween('students.date_add', [$request->from, $request->session])
+                               ->whereBetween('students.date_add', [$request->from, $request->to])
                                ->select('students.*', 'tblstudent_personal.no_tel', 'sessions.SessionName', 'tblprogramme.progcode', 'tbledu_advisor.name AS ea')
                                ->get();
 
