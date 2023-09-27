@@ -72,10 +72,10 @@
           {{ $rgs->ea }}
           </td>
           <td>
-          {{ $data['result'][$key]->group }}
+          {{-- {{ $data['result'][$key]->group }} --}}
           </td>
           <td>
-          {{ $data['result'][$key]->amount }}
+          {{-- {{ $data['result'][$key]->amount }} --}}
           </td>
         </tr>
       @endforeach
