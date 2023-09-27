@@ -1218,7 +1218,7 @@ class AR_Controller extends Controller
                               ->where('tblpayment.student_ic', $student->ic)
                               ->where('tblpayment.process_status_id', 2)
                               ->whereNotIn('tblpayment.process_type_id', [8])
-                              ->whereNotIn('tblstudentclaim.group_id', [4,5])
+                              ->whereNotIn('tblstudentclaim.groupid', [4,5])
                               ->select(
 
                                 DB::raw('CASE
