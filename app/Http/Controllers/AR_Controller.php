@@ -1214,7 +1214,7 @@ class AR_Controller extends Controller
 
             $data['result'][] = DB::table('tblpayment')
                               ->where('tblpayment.student_ic', $student->ic)
-                              ->select('tblpayment.payment', 'tblpayment.program_id as group')
+                              ->select('tblpayment.amount', 'tblpayment.program_id as group')
                               ->first();
                             //   ->select(
 
