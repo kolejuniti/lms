@@ -1213,18 +1213,21 @@ class AR_Controller extends Controller
             {
 
             $data['result'][] = DB::table('tblpayment')
+                              ->leftjoin('tblpaymentdtl', 'tblpayment.id', 'tblpaymentdtl.payment_id')
+                              ->leftjoin('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
                               ->where('tblpayment.student_ic', $student->ic)
-                              ->select('tblpayment.amount', 'tblpayment.program_id as group')
-                              ->first();
-                            //   ->select(
+                              ->where('tblpayment.process_status_id', 2)
+                              ->whereNotIn('tblpayment.process_type_id', [8])
+                              ->whereNotIn('tblstudentclaim.group_id', [4,5])
+                              ->select(
 
-                            //     DB::raw('CASE
-                            //                 WHEN IFNULL(SUM(tblpaymentdtl.amount), 0) < 250 THEN "R"
-                            //                 WHEN IFNULL(SUM(tblpaymentdtl.amount), 0) >= 250 THEN "R1"
-                            //              END AS group'),
-                            //     DB::raw('IFNULL(SUM(tblpaymentdtl.amount), 0) AS amount')
+                                DB::raw('CASE
+                                            WHEN IFNULL(SUM(tblpaymentdtl.amount), 0) < 250 THEN "R"
+                                            WHEN IFNULL(SUM(tblpaymentdtl.amount), 0) >= 250 THEN "R1"
+                                         END AS group'),
+                                DB::raw('IFNULL(SUM(tblpaymentdtl.amount), 0) AS amount')
 
-                            //   )->first();
+                              )->first();
 
             }
 
