@@ -42,9 +42,6 @@
           </tr>
       </thead>
       <tbody id="table">
-      @php
-      $totalPreALL = 0;
-      @endphp
       @foreach ($data['student'] as $key => $rgs)
         <tr>
           <td>
@@ -75,10 +72,10 @@
           {{ $rgs->ea }}
           </td>
           <td>
-          {{ $data['result'][$key]->group }}
+          {{-- {{ $data['result'][$key]->group }} --}}
           </td>
           <td>
-          {{ $data['result'][$key]->amount }}
+          {{-- {{ $data['result'][$key]->amount }} --}}
           </td>
         </tr>
       @endforeach
