@@ -757,7 +757,7 @@ class QuizController extends Controller
                 ->select('user_subjek.id')
                 ->first();
 
-        dd($group);
+        //dd($group);
 
         $data = DB::table('tblclassquiz')
                 ->join('users', 'tblclassquiz.addby', 'users.ic')
