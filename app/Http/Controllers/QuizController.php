@@ -750,6 +750,7 @@ class QuizController extends Controller
                 ->join('student_subjek', 'user_subjek.id', 'student_subjek.group_id')
                 ->join('users', 'user_subjek.user_ic', 'users.ic')
                 ->where([
+                    ['student_subjek.courseid', $student->ic],
                     ['student_subjek.courseid', $courseid],
                     ['student_subjek.sessionid', request()->session]
                     ])
