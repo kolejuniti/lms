@@ -4513,7 +4513,7 @@ class FinanceController extends Controller
                     foreach($data['otherDetail'] as $keys => $dtl)
                     {
 
-                        if($dtl->claim_package_id == $chrgs->id)
+                        if($chrgs->id == $dtl->claim_package_id)
                         {
 
                             $data['otherTotal'][$key][$keys] =+  $dtl->amount;
