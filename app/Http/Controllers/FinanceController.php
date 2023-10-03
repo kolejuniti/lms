@@ -4371,9 +4371,11 @@ class FinanceController extends Controller
     {
         $data['newStudent'] = [];
         $data['newStudentTotal'] = [];
+        $data['newStudentTotals'] = [];
 
         $data['oldStudent'] = [];
         $data['oldStudentTotal'] = [];
+        $data['oldStudentTotals'] = [];
 
         $data['debit'] = [];
         $data['debitTotal'] = [];
@@ -4390,12 +4392,15 @@ class FinanceController extends Controller
 
         $data['creditFee'] = [];
         $data['creditFeeTotal'] = [];
+        $data['creditFeeTotals'] = [];
 
         $data['creditFine'] = [];
         $data['creditFineTotal'] = [];
+        $data['creditFineTotals'] = [];
 
         $data['creditDiscount'] = [];
         $data['creditDiscountTotal'] = [];
+        $data['creditDiscountTotals'] = [];
 
         $charge = DB::table('tblclaim')
                   ->join('tblclaimdtl', 'tblclaim.id', 'tblclaimdtl.claim_id')
@@ -4433,17 +4438,23 @@ class FinanceController extends Controller
 
                 foreach($data['program'] as $key => $prg)
                 {
-           
-                    if($crg->program == $prg->id)
+                    foreach($data['newStudent'] as $keys => $dbt)
                     {
+           
+                        if($dbt->program == $prg->id)
+                        {
 
-                        $data['newStudentTotal'][$key] =+  collect($data['newStudent'])->sum('amount');
+                            $data['newStudentTotal'][$key][$keys] =+  $dbt->amount;
 
-                    }else{
+                        }else{
 
-                        $data['newStudentTotal'][$key] = 0;
+                            $data['newStudentTotal'][$key][$keys] =+ 0;
+
+                        }
 
                     }
+
+                    $data['newStudentTotals'][$key] =+ array_sum($data['newStudentTotal'][$key]);
 
                 }
 
@@ -4456,17 +4467,23 @@ class FinanceController extends Controller
 
                 foreach($data['program'] as $key => $prg)
                 {
-           
-                    if($crg->program == $prg->id)
+                    foreach($data['oldStudent'] as $keys => $dbt)
                     {
+           
+                        if($dbt->program == $prg->id)
+                        {
 
-                        $data['oldStudentTotal'][$key] =+  collect($data['oldStudent'])->sum('amount');
+                            $data['oldStudentTotal'][$key][$keys] =+  $dbt->amount;
 
-                    }else{
+                        }else{
 
-                        $data['oldStudentTotal'][$key] = 0;
+                            $data['oldStudentTotal'][$key][$keys] =+ 0;
+
+                        }
 
                     }
+
+                    $data['oldStudentTotals'][$key] =+ array_sum($data['oldStudentTotal'][$key]);
 
                 }
 
@@ -4546,17 +4563,23 @@ class FinanceController extends Controller
 
                 foreach($data['program'] as $key => $prg)
                 {
-           
-                    if($crg->program == $prg->id)
+                    foreach($data['creditFee'] as $keys => $dbt)
                     {
+           
+                        if($dbt->program == $prg->id)
+                        {
 
-                        $data['creditFeeTotal'][$key] =+  collect($data['creditFee'])->sum('amount');
+                            $data['creditFeeTotal'][$key][$keys] =+  $dbt->amount;
 
-                    }else{
+                        }else{
 
-                        $data['creditFeeTotal'][$key] = 0;
+                            $data['creditFeeTotal'][$key][$keys] =+ 0;
+
+                        }
 
                     }
+
+                    $data['creditFeeTotals'][$key] =+ array_sum($data['creditFeeTotal'][$key]);
 
                 }
 
@@ -4569,17 +4592,23 @@ class FinanceController extends Controller
 
                 foreach($data['program'] as $key => $prg)
                 {
-           
-                    if($crg->program == $prg->id)
+                    foreach($data['creditFine'] as $keys => $dbt)
                     {
+           
+                        if($dbt->program == $prg->id)
+                        {
 
-                        $data['creditFineTotal'][$key] =+  collect($data['creditFine'])->sum('amount');
+                            $data['creditFineTotal'][$key][$keys] =+  $dbt->amount;
 
-                    }else{
+                        }else{
 
-                        $data['creditFineTotal'][$key] = 0;
+                            $data['creditFineTotal'][$key][$keys] =+ 0;
+
+                        }
 
                     }
+
+                    $data['creditFineTotals'][$key] =+ array_sum($data['creditFineTotal'][$key]);
 
                 }
 
@@ -4592,17 +4621,23 @@ class FinanceController extends Controller
 
                 foreach($data['program'] as $key => $prg)
                 {
-           
-                    if($crg->program == $prg->id)
+                    foreach($data['creditDiscount'] as $keys => $dbt)
                     {
+           
+                        if($dbt->program == $prg->id)
+                        {
 
-                        $data['creditDiscountTotal'][$key] =+  collect($data['creditDiscount'])->sum('amount');
+                            $data['creditDiscountTotal'][$key][$keys] =+  $dbt->amount;
 
-                    }else{
+                        }else{
 
-                        $data['creditDiscountTotal'][$key] = 0;
+                            $data['creditDiscountTotal'][$key][$keys] =+ 0;
+
+                        }
 
                     }
+
+                    $data['creditDiscountTotals'][$key] =+ array_sum($data['creditDiscountTotal'][$key]);
 
                 }
 
