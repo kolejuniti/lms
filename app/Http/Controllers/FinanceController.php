@@ -4506,8 +4506,10 @@ class FinanceController extends Controller
 
                 $data['otherDetail'][] = DB::table('tblclaimdtl')->where('claim_id', $crg->id)->get();
 
+                $try = DB::table('tblclaimdtl')->where('claim_id', $crg->id)->get();
+
                 // Convert the data to JSON format
-        $jsonData = $data['otherDetail']->toJson();
+        $jsonData = $try->toJson();
 
         // Return the JSON data as part of the response
         return response()->json([
