@@ -4478,15 +4478,19 @@ class FinanceController extends Controller
 
                 foreach($data['program'] as $key => $prg)
                 {
-           
-                    if($crg->program == $prg->id)
+                    foreach($data['debit'] as $keys => $dbt)
                     {
+           
+                        if($dbt->program == $prg->id)
+                        {
 
-                        $data['debitTotal'][$key] =+ $crg->amount;
+                            $data['debitTotal'][$key] =+  collect($data['debit'])->sum('amount');
 
-                    }else{
+                        }else{
 
-                        $data['debitTotal'][$key] = 0;
+                            $data['debitTotal'][$key] = 0;
+
+                        }
 
                     }
 
