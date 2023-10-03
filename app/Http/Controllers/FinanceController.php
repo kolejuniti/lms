@@ -4486,7 +4486,7 @@ class FinanceController extends Controller
 
                     }else{
 
-                        $data['debitTotal'][$key] = 5;
+                        $data['debitTotal'][$key] = 0;
 
                     }
 
@@ -4508,12 +4508,12 @@ class FinanceController extends Controller
 
                 //program
 
-                foreach($data['otherCharge'] as $key => $crg)
+                foreach($data['otherCharge'] as $key => $chrgs)
                 {
                     foreach($data['otherDetail'] as $keys => $dtl)
                     {
 
-                        if($dtl->claim_package_id == $crg->id)
+                        if($dtl->claim_package_id == $chrgs->id)
                         {
 
                             $data['otherTotal'][$key][$keys] =+  collect($data['otherDetail'][$keys])->sum('amount');
