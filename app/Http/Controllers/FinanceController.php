@@ -4504,13 +4504,13 @@ class FinanceController extends Controller
 
                 $data['other'][] = $crg;
 
-                $data['otherDetail'][] = DB::table('tblclaimdtl')->where('claim_id', $crg->id)->get();
+                $data['otherDetail'] = DB::table('tblclaimdtl')->where('claim_id', $crg->id)->get();
 
                 //program
 
                 foreach($data['otherCharge'] as $key => $chrgs)
                 {
-                    foreach($data['otherDetail'][$i] as $keys => $dtl)
+                    foreach($data['otherDetail'] as $keys => $dtl)
                     {
 
                         if($chrgs->id == $dtl->claim_package_id)
