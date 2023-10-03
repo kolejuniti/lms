@@ -4414,7 +4414,7 @@ class FinanceController extends Controller
                   ->orderBy('tblclaim.ref_no', 'desc')
                   ->get();
 
-        //dd($charge);
+        dd($charge);
 
         $data['program'] = DB::table('tblprogramme')->get();
 
@@ -4513,11 +4513,16 @@ class FinanceController extends Controller
                     foreach($data['otherDetail'] as $keys => $dtl)
                     {
 
-                     
+                        if($chrgs->id == $dtl->claim_package_id)
+                        {
 
                             $data['otherTotal'][$key][$keys] =+  $dtl->amount;
 
-                      
+                        }else{
+
+                            $data['otherTotal'][$key][$keys] = null;
+
+                        }
 
                     }
 
