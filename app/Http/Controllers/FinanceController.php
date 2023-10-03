@@ -4516,7 +4516,7 @@ class FinanceController extends Controller
                         if($dtl->claim_package_id == $chrgs->id)
                         {
 
-                            $data['otherTotal'][$key][$keys] =+  collect($data['otherDetail'][$keys])->sum('amount');
+                            $data['otherTotal'][$key][$keys] =+  $dtl->amount;
 
                         }else{
 
