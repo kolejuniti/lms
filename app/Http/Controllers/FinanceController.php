@@ -4420,7 +4420,7 @@ class FinanceController extends Controller
 
         $data['otherCharge'] = DB::table('tblstudentclaim')->where('groupid', 5)->get();
 
-        foreach($charge as $crg)
+        foreach($charge as $i => $crg)
         {
 
             if($crg->process_type_id == 2 && $crg->process_status_id == 2 && $crg->semester_id == 1)
@@ -4506,21 +4506,11 @@ class FinanceController extends Controller
 
                 $data['otherDetail'][] = DB::table('tblclaimdtl')->where('claim_id', $crg->id)->get();
 
-                $try = DB::table('tblclaimdtl')->where('claim_id', $crg->id)->get();
-
-                // Convert the data to JSON format
-        $jsonData = $try->toJson();
-
-        // Return the JSON data as part of the response
-        return response()->json([
-            'data' => $jsonData,
-        ]);
-
                 //program
 
                 foreach($data['otherCharge'] as $key => $chrgs)
                 {
-                    foreach($data['otherDetail'] as $keys => $dtl)
+                    foreach($data['otherDetail'][$i] as $keys => $dtl)
                     {
 
                         if($chrgs->id == $dtl->claim_package_id)
