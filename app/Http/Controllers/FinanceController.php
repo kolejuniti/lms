@@ -4482,7 +4482,7 @@ class FinanceController extends Controller
                     if($crg->program == $prg->id)
                     {
 
-                        $data['debitTotal'][$key] =+  collect($data['debit'])->sum('amount');
+                        $data['debitTotal'][$key] =+ $crg->amount;
 
                     }else{
 
