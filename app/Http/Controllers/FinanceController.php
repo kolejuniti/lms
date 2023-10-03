@@ -4414,7 +4414,13 @@ class FinanceController extends Controller
                   ->orderBy('tblclaim.ref_no', 'desc')
                   ->get();
 
-        dd($charge);
+        // Convert the data to JSON format
+        $jsonData = $charge->toJson();
+
+        // Return the JSON data as part of the response
+        return response()->json([
+            'data' => $jsonData,
+        ]);
 
         $data['program'] = DB::table('tblprogramme')->get();
 
