@@ -337,7 +337,7 @@
           {{ $rgs->no_matric }}
           </td>
           <td>
-          {{ $rgs->progname }}
+          {{ $rgs->program }}
           </td>
           <td>
           {{ $rgs->type }}
