@@ -4486,7 +4486,7 @@ class FinanceController extends Controller
 
                     }else{
 
-                        $data['debitTotal'][$key] = 0;
+                        $data['debitTotal'][$key] = 5;
 
                     }
 
