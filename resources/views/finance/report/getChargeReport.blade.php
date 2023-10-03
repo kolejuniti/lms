@@ -201,7 +201,7 @@
             {{ $prg->progcode }}
           </td>
           <td>
-            {{ (!empty($data['newStudent'])) ? $data['newStudentTotal'][$key] : 0}}
+            {{ (!empty($data['newStudentTotals'])) ? $data['newStudentTotals'][$key] : 0}}
           </td>
         </tr>
         @endforeach
@@ -212,7 +212,7 @@
                   TOTAL
               </td>
               <td>
-                  {{ number_format(array_sum($data['newStudentTotal']), 2) }}
+                  {{ number_format(array_sum($data['newStudentTotals']), 2) }}
               </td>
             </tr>
         </tfoot>
@@ -250,7 +250,7 @@
             {{ $prg->progcode }}
           </td>
           <td>
-            {{ (!empty($data['oldStudent'])) ? $data['oldStudentTotal'][$key] : 0}}
+            {{ (!empty($data['oldStudentTotals'])) ? $data['oldStudentTotals'][$key] : 0}}
           </td>
         </tr>
         @endforeach
@@ -261,7 +261,7 @@
                   TOTAL
               </td>
               <td>
-                  {{ number_format(array_sum($data['oldStudentTotal']), 2) }}
+                  {{ number_format(array_sum($data['oldStudentTotals']), 2) }}
               </td>
             </tr>
         </tfoot>
@@ -786,7 +786,7 @@
             {{ $prg->progcode }}
           </td>
           <td>
-            {{ (!empty($data['creditFee'])) ? $data['creditFeeTotal'][$key] : 0}}
+            {{ (!empty($data['creditFeeTotals'])) ? $data['creditFeeTotals'][$key] : 0}}
           </td>
         </tr>
         @endforeach
@@ -797,7 +797,7 @@
                   TOTAL
               </td>
               <td>
-                  {{ number_format(array_sum($data['creditFeeTotal']), 2) }}
+                  {{ number_format(array_sum($data['creditFeeTotals']), 2) }}
               </td>
             </tr>
         </tfoot>
@@ -936,7 +936,7 @@
             {{ $prg->progcode }}
           </td>
           <td>
-            {{ (!empty($data['creditFine'])) ? $data['creditFineTotal'][$key] : 0}}
+            {{ (!empty($data['creditFineTotals'])) ? $data['creditFineTotals'][$key] : 0}}
           </td>
         </tr>
         @endforeach
@@ -947,7 +947,7 @@
                   TOTAL
               </td>
               <td>
-                  {{ number_format(array_sum($data['creditFineTotal']), 2) }}
+                  {{ number_format(array_sum($data['creditFineTotals']), 2) }}
               </td>
             </tr>
         </tfoot>
@@ -1086,7 +1086,7 @@
             {{ $prg->progcode }}
           </td>
           <td>
-            {{ (!empty($data['creditDiscount'])) ? $data['creditDiscountTotal'][$key] : 0}}
+            {{ (!empty($data['creditDiscountTotals'])) ? $data['creditDiscountTotals'][$key] : 0}}
           </td>
         </tr>
         @endforeach
@@ -1097,7 +1097,7 @@
                   TOTAL
               </td>
               <td>
-                  {{ number_format(array_sum($data['creditDiscountTotal']), 2) }}
+                  {{ number_format(array_sum($data['creditDiscountTotals']), 2) }}
               </td>
             </tr>
         </tfoot>
