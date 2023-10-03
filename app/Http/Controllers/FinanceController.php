@@ -4513,8 +4513,9 @@ class FinanceController extends Controller
                     foreach($data['otherDetail'] as $keys => $dtl)
                     {
 
+                     
 
-                            $data['otherTotal'][$key][$keys] = null;
+                            $data['otherTotal'][$key][$keys] =+  $dtl->amount;
 
                       
 
