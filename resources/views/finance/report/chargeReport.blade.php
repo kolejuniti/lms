@@ -129,10 +129,7 @@
                 console.log(err);
             },
             success  : function(data){
-                // Display the JSON data in the console
-                console.log(data.data);
-
-      
+                $('#form-student').html(data);
             }
         });
 
