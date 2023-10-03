@@ -4113,7 +4113,7 @@ class FinanceController extends Controller
             }elseif($pym->status == 8 && $pym->sponsor_id == null && $pym->semester != 1)
             {
 
-                if($pym->process_type_id == 1 && $pym->process_status_id == 2)
+                if(($pym->process_type_id == 1 || $pym->process_type_id == 8) && $pym->process_status_id == 2)
                 {
 
                     //graduate
