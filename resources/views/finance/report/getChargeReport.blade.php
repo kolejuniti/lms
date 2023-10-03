@@ -400,7 +400,7 @@
             {{ $prg->progcode }}
           </td>
           <td>
-            {{ (!empty($data['debit'])) ? $data['debitTotal'][$key] : 0}}
+            {{ (!empty($data['debitTotals'])) ? $data['debitTotals'][$key] : 0}}
           </td>
         </tr>
         @endforeach
@@ -411,7 +411,7 @@
                   TOTAL
               </td>
               <td>
-                  {{ number_format(array_sum($data['debitTotal']), 2) }}
+                  {{ number_format(array_sum($data['debitTotals']), 2) }}
               </td>
             </tr>
         </tfoot>
@@ -561,7 +561,7 @@
           {{ $key+1 }}
           </td>
           <td>
-          {{ $rgs->id }}
+          {{ $rgs->date }}
           </td>
           <td>
           {{ $rgs->ref_no }}
