@@ -561,7 +561,7 @@
           {{ $key+1 }}
           </td>
           <td>
-          {{ $rgs->date }}
+          {{ $rgs->id }}
           </td>
           <td>
           {{ $rgs->ref_no }}
