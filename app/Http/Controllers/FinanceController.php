@@ -4485,7 +4485,7 @@ class FinanceController extends Controller
                         if($dbt->program == $prg->id)
                         {
 
-                            $data['debitTotal'][$key][$keys] =+  $crg->amount;
+                            $data['debitTotal'][$key][$keys] +=  $crg->amount;
 
                         }else{
 
@@ -4495,7 +4495,7 @@ class FinanceController extends Controller
 
                     }
 
-                    $data['debitTotals'][$key] =+ array_sum($data['debitTotal'][$key]);
+                    $data['debitTotals'][$key] += array_sum($data['debitTotal'][$key]);
 
                 }
 
