@@ -4512,24 +4512,11 @@ class FinanceController extends Controller
                 {
                     foreach($data['otherDetail'] as $keys => $dtl)
                     {
-                        // Convert the data to JSON format
-                        $jsonData = $dtl->claim_package_id->toJson();
 
-                        // Return the JSON data as part of the response
-                        return response()->json([
-                            'data' => $jsonData,
-                        ]);
-
-                        if($chrgs->id == $dtl->claim_package_id)
-                        {
-
-                            $data['otherTotal'][$key][$keys] =+  $dtl->amount;
-
-                        }else{
 
                             $data['otherTotal'][$key][$keys] = null;
 
-                        }
+                      
 
                     }
 
