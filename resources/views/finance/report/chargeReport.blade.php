@@ -129,6 +129,12 @@
                 console.log(err);
             },
             success  : function(data){
+              // Display the JSON data in the console
+              console.log(data.data);
+
+              // Parse the JSON data if needed
+              var parsedData = JSON.parse(data.data);
+              console.log(parsedData);
                 $('#form-student').html(data);
             }
         });
