@@ -4377,6 +4377,7 @@ class FinanceController extends Controller
 
         $data['debit'] = [];
         $data['debitTotal'] = [];
+        $data['debitTotals'] = [];
 
         $data['fine'] = [];
         $data['fineTotal'] = [];
@@ -4484,15 +4485,17 @@ class FinanceController extends Controller
                         if($dbt->program == $prg->id)
                         {
 
-                            $data['debitTotal'][$key] =+  collect($data['debit'])->sum('amount');
+                            $data['debitTotal'][$key][$keys] =+  collect($data['debit'])->sum('amount');
 
                         }else{
 
-                            $data['debitTotal'][$key] = 5;
+                            $data['debitTotal'][$key][$keys] = null;
 
                         }
 
                     }
+
+                    $data['debitTotals'][$key] =+ array_sum($data['debitTotal'][$key]);
 
                 }
 
