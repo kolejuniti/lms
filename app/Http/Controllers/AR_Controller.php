@@ -1060,10 +1060,20 @@ class AR_Controller extends Controller
 
         if($request->session != '' && $request->session != $student->session)
         {
+            if($student->status != 6)
+            {
+
+                $newsem = $student->semester + 1;
+
+            }else{
+
+                $newsem = $student->semester;
+
+            }
 
             DB::table('students')->where('no_matric', $request->no_matric)->update([
                 'session' => $request->session,
-                'semester' => $student->semester + 1
+                'semester' => $newsem
             ]);
 
             $userUpt = UserStudent::where('no_matric', $request->no_matric)->first();
