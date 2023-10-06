@@ -2106,8 +2106,6 @@ class FinanceController extends Controller
                 ['tblpaymentdtl.claimDtl_id', $tsy->id],
                 ['tblpayment.student_ic', $request->student],
                 ['tblpaymentdtl.claim_type_id', $tsy->claim_package_id],
-                ['tblpayment.session_id', $tsy->session_id],
-                ['tblpayment.semester_id', $tsy->semester_id],
                 ['tblpayment.program_id', $data['student']->progid],
                 ['tblpayment.process_status_id', 2]
             ]);
