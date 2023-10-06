@@ -512,6 +512,12 @@ Route::post('/finance/payment/tuition/storeTuition', [App\Http\Controllers\Finan
 Route::post('/finance/payment/tuition/storeTuitionDtl', [App\Http\Controllers\FinanceController::class, 'storeTuitionDtl']);
 Route::post('/finance/payment/tuition/confirmTuition', [App\Http\Controllers\FinanceController::class, 'confirmTuition']);
 Route::post('/finance/payment/tuition/deleteTuition', [App\Http\Controllers\FinanceController::class, 'deleteTuition']);
+Route::get('/finance/payment/refund', [App\Http\Controllers\FinanceController::class, 'studentRefund'])->name('finance.payment.refund');
+Route::post('/finance/payment/refund/getStudent', [App\Http\Controllers\FinanceController::class, 'getStudentRefund']);
+Route::post('/finance/payment/refund/storerefund', [App\Http\Controllers\FinanceController::class, 'storeRefund']);
+Route::post('/finance/payment/refund/storerefundDtl', [App\Http\Controllers\FinanceController::class, 'storeRefundDtl']);
+Route::post('/finance/payment/refund/confirmrefund', [App\Http\Controllers\FinanceController::class, 'confirmRefund']);
+Route::post('/finance/payment/refund/deleterefund', [App\Http\Controllers\FinanceController::class, 'deleteRefund']);
 Route::get('/finance/sponsorship/library', [App\Http\Controllers\FinanceController::class, 'sponsorLibrary'])->name('sponsorship.library');
 Route::post('/finance/sponsorship/library/create', [App\Http\Controllers\FinanceController::class, 'createSponsor']);
 Route::post('/finance/sponsorship/library/update', [App\Http\Controllers\FinanceController::class, 'updateSponsor']);
