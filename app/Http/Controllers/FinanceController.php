@@ -2123,7 +2123,7 @@ class FinanceController extends Controller
 
             }else{
 
-                $data['balance'][] = $a;
+                $data['balance'][] = 1;
 
             }
 
