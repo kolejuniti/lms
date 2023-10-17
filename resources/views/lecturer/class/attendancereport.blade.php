@@ -176,7 +176,12 @@
                                   </th>
                                   @foreach ($list[$ky] as $key=>$ls)
                                   <th style="text-align: center">
-                                    <a class="btn btn-danger btn-sm" href="#" onclick="deleteMaterial('{{ $ls->classdate }}', '{{ $ls->groupid }}', '{{ $ls->groupname }}')" data-order="">
+                                    <a class="btn btn-info btn-sm" href="/lecturer/class/attendance/edit?from={{ $ls->classdate }}&&to={{ $ls->classend }}&&group={{ $ls->groupid }}&&name={{ $ls->groupname }}">
+                                      <i class="ti-trash">
+                                      </i>
+                                      Edit
+                                    </a>
+                                    <a class="btn btn-danger btn-sm mt-2" href="#" onclick="deleteMaterial('{{ $ls->classdate }}', '{{ $ls->classend }}', '{{ $ls->groupid }}', '{{ $ls->groupname }}')" data-order="">
                                       <i class="ti-trash">
                                       </i>
                                       Delete
@@ -255,7 +260,7 @@
 
     }
 
-    function deleteMaterial(date,group,name){     
+    function deleteMaterial(from,to,group,name){     
       Swal.fire({
       title: "Are you sure?",
       text: "This will be permanent",
@@ -268,7 +273,7 @@
                     headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
                     url      : "{{ url('/lecturer/class/attendance/deleteAttendance') }}",
                     method   : 'POST',
-                    data 	 : {date:date, group:group, name:name},
+                    data 	 : {from:from, to:to, group:group, name:name},
                     error:function(err){
                         alert("Error");
                         console.log(err);
