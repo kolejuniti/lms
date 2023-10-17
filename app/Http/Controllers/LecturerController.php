@@ -1732,22 +1732,27 @@ class LecturerController extends Controller
 
         }else{
 
-            foreach($data['student'] as $std)
+            if(isset($data['student']))
             {
-                if(DB::table('tblclassattendance')->where([['student_ic', $std],['groupid', $group[0]],['groupname', $group[1]],['classdate', $data['date']]])->exists())
+
+                foreach($data['student'] as $std)
                 {
-                    
-                }else{
-                    DB::table('tblclassattendance')->insert([
-                        'student_ic' => $std,
-                        'groupid' => $group[0],
-                        'groupname' => $group[1],
-                        //'classscheduleid' => $data['schedule'],
-                        'classtype' => $data['class'],
-                        'classdate' => $data['date'],
-                        'classend' => $data['date2']
-                    ]);
+                    if(DB::table('tblclassattendance')->where([['student_ic', $std],['groupid', $group[0]],['groupname', $group[1]],['classdate', $data['date']]])->exists())
+                    {
+                        
+                    }else{
+                        DB::table('tblclassattendance')->insert([
+                            'student_ic' => $std,
+                            'groupid' => $group[0],
+                            'groupname' => $group[1],
+                            //'classscheduleid' => $data['schedule'],
+                            'classtype' => $data['class'],
+                            'classdate' => $data['date'],
+                            'classend' => $data['date2']
+                        ]);
+                    }
                 }
+
             }
 
             
