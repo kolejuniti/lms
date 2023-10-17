@@ -1641,6 +1641,183 @@ class LecturerController extends Controller
         return redirect()->back()->with('message', 'Student attendance has been submitted!');
 
     }
+    
+    public function classAttendanceEdit(Request $request)
+    {
+        
+        $data['student'] = student::join('students', 'student_subjek.student_ic', 'students.ic')
+                        ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
+                        ->where('group_id', $request->group)->where('group_name', $request->name)
+                        ->where('student_subjek.sessionid', Session::get('SessionID'))
+                        ->whereNotIn('students.status', [4,5,6,7,16])
+                        ->orderBy('students.name')
+                        ->get();
+
+        foreach($data['student'] as $std)
+        {
+
+            $data['attendance'][] = DB::table('tblclassattendance')
+            ->where([
+             ['student_ic', $std->ic],
+             ['classdate', $request->from],
+             ['classend', $request->to],
+             ['groupid', $request->group],
+             ['groupname', $request->name]
+            ])->first();
+
+        }
+
+        //dd($data['attendance']);
+
+        $time = DB::table('tblclassattendance')
+                           ->where([
+                            ['classdate', $request->from],
+                            ['classend', $request->to],
+                            ['groupid', $request->group],
+                            ['groupname', $request->name]
+                           ])->first();
+
+        $data['from'] = $time->classdate;
+
+        $data['to'] = $time->classend;
+
+        $data['type'] = $time->classtype;
+        
+        $data['group'] = $request->group;
+
+        $data['name'] = $request->name;
+        
+        return view('lecturer.class.attendance_edit', compact('data'));
+
+
+    }
+
+    public function updateAttendance(Request $request)
+    {
+        
+        $data = $request->validate([
+            'group' => ['required'],
+            'date' => ['required'],
+            'date2' => ['required'],
+            'class' => ['required'],
+            //'schedule' => ['required'],
+            'student' => [],
+            'absentall' => [],
+            'excuse' => [],
+            'ic' => [],
+            'mc' => [],
+        ]);
+
+        $group = explode('|', $data['group']);
+
+        DB::table('tblclassattendance')->where([
+            ['classdate', $request->oldfrom],
+            ['classend', $request->oldto],
+            ['groupid', $group[0]],
+            ['groupname', $group[1]]
+        ])->delete();
+
+        if(isset($data['absentall'])){
+
+            //dd($data['absentall']);
+
+            DB::table('tblclassattendance')->insert([
+                'groupid' => $group[0],
+                'groupname' => $group[1],
+                //'classscheduleid' => $data['schedule'],\
+                'classtype' => $data['class'],
+                'classdate' => $data['date'],
+                'classend' => $data['date2']
+            ]);
+
+        }else{
+
+            foreach($data['student'] as $std)
+            {
+                if(DB::table('tblclassattendance')->where([['student_ic', $std],['groupid', $group[0]],['groupname', $group[1]],['classdate', $data['date']]])->exists())
+                {
+                    
+                }else{
+                    DB::table('tblclassattendance')->insert([
+                        'student_ic' => $std,
+                        'groupid' => $group[0],
+                        'groupname' => $group[1],
+                        //'classscheduleid' => $data['schedule'],
+                        'classtype' => $data['class'],
+                        'classdate' => $data['date'],
+                        'classend' => $data['date2']
+                    ]);
+                }
+            }
+
+            
+            // Filter the 'excuse' array from $data to remove any NULL values.
+            // array_filter() is used to filter the array based on a callback function.
+            $filtered_excuse = array_filter($data['excuse'], function ($value) {
+                return !is_null($value);  // Returns TRUE if the value is NOT NULL, thus keeping it in the filtered array.
+            });
+
+            // Reindex the $filtered_excuse array so the keys start from 0 and go up sequentially.
+            // This is useful especially if some items were removed by array_filter, to make sure array keys are consistent.
+            $reindexed_excuse = array_values($filtered_excuse);
+
+            // Loop through each excuse in the reindexed array.
+            foreach($reindexed_excuse as $key => $exs) {
+                
+                // Check if a record with the given criteria already exists in the 'tblclassattendance' table.
+                // The criteria include the student's IC, group ID, group name, and class date.
+                if(DB::table('tblclassattendance')->where([
+                    ['student_ic', $data['ic'][$key]],
+                    ['groupid', $group[0]],
+                    ['groupname', $group[1]],
+                    ['classdate', $data['date']]
+                ])->exists()) {
+                    
+                    // If the record exists, do nothing (this section is empty).
+                    
+                } else {
+                    // If the record doesn't exist, insert a new record into the 'tblclassattendance' table.
+                    // The data for the new record is populated using values from the $data array, the current excuse from the loop ($exs),
+                    // and some additional data like group ID and group name.
+                    DB::table('tblclassattendance')->insert([
+                        'student_ic' => $data['ic'][$key],  // Student's IC from the $data array, using the current key from the loop.
+                        'groupid' => $group[0],             // Group ID (presumably from a previously defined $group array).
+                        'groupname' => $group[1],           // Group name (also from the $group array).
+                        'excuse' => $exs,                   // The current excuse from the loop.
+                        'classtype' => $data['class'],      // Class type from the $data array.
+                        'classdate' => $data['date'],       // Class start date from the $data array.
+                        'classend' => $data['date2']        // Class end date from the $data array.
+                    ]);
+                }
+            }
+
+
+            if(isset($data['mc']))
+            {
+
+                foreach($data['mc'] as $std)
+                {
+                    if(DB::table('tblclassattendance')->where([['student_ic', $std],['groupid', $group[0]],['groupname', $group[1]],['classdate', $data['date']]])->exists())
+                    {
+                        
+                    }else{
+                        DB::table('tblclassattendance')->insert([
+                            'student_ic' => $std,
+                            'groupid' => $group[0],
+                            'groupname' => $group[1],
+                            'mc' => TRUE,
+                            'classtype' => $data['class'],
+                            'classdate' => $data['date'],
+                            'classend' => $data['date2']
+                        ]);
+                    }
+                }
+            }
+        }
+
+        return redirect()->back()->with('message', 'Student attendance has been submitted!');
+
+    }
 
     public function onlineClass() 
     {
@@ -3469,7 +3646,8 @@ class LecturerController extends Controller
     {
 
         DB::table('tblclassattendance')->where([
-            ['classdate', $request->date],
+            ['classdate', $request->from],
+            ['classend', $request->to],
             ['groupid', $request->group],
             ['groupname', $request->name]
         ])->delete();
