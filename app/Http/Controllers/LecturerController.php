@@ -1755,45 +1755,49 @@ class LecturerController extends Controller
 
             }
 
+            if(isset($data['excuse']))
+            {
             
-            // Filter the 'excuse' array from $data to remove any NULL values.
-            // array_filter() is used to filter the array based on a callback function.
-            $filtered_excuse = array_filter($data['excuse'], function ($value) {
-                return !is_null($value);  // Returns TRUE if the value is NOT NULL, thus keeping it in the filtered array.
-            });
+                // Filter the 'excuse' array from $data to remove any NULL values.
+                // array_filter() is used to filter the array based on a callback function.
+                $filtered_excuse = array_filter($data['excuse'], function ($value) {
+                    return !is_null($value);  // Returns TRUE if the value is NOT NULL, thus keeping it in the filtered array.
+                });
 
-            // Reindex the $filtered_excuse array so the keys start from 0 and go up sequentially.
-            // This is useful especially if some items were removed by array_filter, to make sure array keys are consistent.
-            $reindexed_excuse = array_values($filtered_excuse);
+                // Reindex the $filtered_excuse array so the keys start from 0 and go up sequentially.
+                // This is useful especially if some items were removed by array_filter, to make sure array keys are consistent.
+                $reindexed_excuse = array_values($filtered_excuse);
 
-            // Loop through each excuse in the reindexed array.
-            foreach($reindexed_excuse as $key => $exs) {
-                
-                // Check if a record with the given criteria already exists in the 'tblclassattendance' table.
-                // The criteria include the student's IC, group ID, group name, and class date.
-                if(DB::table('tblclassattendance')->where([
-                    ['student_ic', $data['ic'][$key]],
-                    ['groupid', $group[0]],
-                    ['groupname', $group[1]],
-                    ['classdate', $data['date']]
-                ])->exists()) {
+                // Loop through each excuse in the reindexed array.
+                foreach($reindexed_excuse as $key => $exs) {
                     
-                    // If the record exists, do nothing (this section is empty).
-                    
-                } else {
-                    // If the record doesn't exist, insert a new record into the 'tblclassattendance' table.
-                    // The data for the new record is populated using values from the $data array, the current excuse from the loop ($exs),
-                    // and some additional data like group ID and group name.
-                    DB::table('tblclassattendance')->insert([
-                        'student_ic' => $data['ic'][$key],  // Student's IC from the $data array, using the current key from the loop.
-                        'groupid' => $group[0],             // Group ID (presumably from a previously defined $group array).
-                        'groupname' => $group[1],           // Group name (also from the $group array).
-                        'excuse' => $exs,                   // The current excuse from the loop.
-                        'classtype' => $data['class'],      // Class type from the $data array.
-                        'classdate' => $data['date'],       // Class start date from the $data array.
-                        'classend' => $data['date2']        // Class end date from the $data array.
-                    ]);
+                    // Check if a record with the given criteria already exists in the 'tblclassattendance' table.
+                    // The criteria include the student's IC, group ID, group name, and class date.
+                    if(DB::table('tblclassattendance')->where([
+                        ['student_ic', $data['ic'][$key]],
+                        ['groupid', $group[0]],
+                        ['groupname', $group[1]],
+                        ['classdate', $data['date']]
+                    ])->exists()) {
+                        
+                        // If the record exists, do nothing (this section is empty).
+                        
+                    } else {
+                        // If the record doesn't exist, insert a new record into the 'tblclassattendance' table.
+                        // The data for the new record is populated using values from the $data array, the current excuse from the loop ($exs),
+                        // and some additional data like group ID and group name.
+                        DB::table('tblclassattendance')->insert([
+                            'student_ic' => $data['ic'][$key],  // Student's IC from the $data array, using the current key from the loop.
+                            'groupid' => $group[0],             // Group ID (presumably from a previously defined $group array).
+                            'groupname' => $group[1],           // Group name (also from the $group array).
+                            'excuse' => $exs,                   // The current excuse from the loop.
+                            'classtype' => $data['class'],      // Class type from the $data array.
+                            'classdate' => $data['date'],       // Class start date from the $data array.
+                            'classend' => $data['date2']        // Class end date from the $data array.
+                        ]);
+                    }
                 }
+
             }
 
 
