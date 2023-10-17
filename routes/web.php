@@ -200,6 +200,8 @@ Route::post('/lecturer/class/attendance/getStudentProgram', [App\Http\Controller
 Route::post('/lecturer/class/attendance/getStudents', [App\Http\Controllers\LecturerController::class, 'getStudents']);
 Route::post('/lecturer/class/attendance/getDate', [App\Http\Controllers\LecturerController::class, 'getDate']);
 Route::post('/lecturer/class/attendance/store', [App\Http\Controllers\LecturerController::class, 'storeAttendance'])->name('lecturer.attendance.store');
+Route::get('/lecturer/class/attendance/edit', [App\Http\Controllers\LecturerController::class, 'classAttendanceEdit'])->name('lecturer.class.attendance.edit');
+Route::post('/lecturer/class/attendance/edit/update', [App\Http\Controllers\LecturerController::class, 'updateAttendance'])->name('lecturer.attendance.update');
 Route::get('/lecturer/class/attendance/report', [App\Http\Controllers\LecturerController::class, 'reportAttendance'])->name('lecturer.attendance.report');
 //Route::get('/lecturer/class/attendance/report', [App\Http\Controllers\LecturerController::class, 'listAttendance'])->name('lecturer.attendance.report');
 //Route::get('/lecturer/class/attendance/report/{date}/{group}', [App\Http\Controllers\LecturerController::class, 'reportAttendance']);
