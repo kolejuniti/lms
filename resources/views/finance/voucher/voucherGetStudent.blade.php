@@ -73,6 +73,12 @@
                         <input type="text" class="form-control" onkeypress="return event.charCode != 32" name="to" id="to">
                     </div>
                 </div> 
+                <div class="col-md-2" id="voucher-card">
+                    <div class="form-group">
+                        <label class="form-label" for="voucher">Total Voucher</label>
+                        <input type="number" class="form-control" name="voucher" id="voucher" value="0" readonly>
+                    </div>
+                </div> 
             </div>
             <div class="col-md-6" hidden>
                 <input type="text" class="form-control" name="ic" id="ic" value="{{ $data['student']->ic }}">
@@ -84,11 +90,17 @@
                         <input type="number" class="form-control" name="amount" id="amount">
                     </div>
                 </div> 
+                <div class="col-md-2" id="total-card">
+                    <div class="form-group">
+                        <label class="form-label" for="total">Total Amount (RM)</label>
+                        <input type="number" class="form-control" name="total" id="total" readonly>
+                    </div>
+                </div>
             </div>
             <div class="row">
-                <div class="col-md-2" id="amount-card">
+                <div class="col-md-2" id="expired-card">
                     <div class="form-group">
-                        <label class="form-label" for="amount">Expiry Date</label>
+                        <label class="form-label" for="expired">Expiry Date</label>
                         <input type="date" class="form-control" name="expired" id="expired">
                     </div>
                 </div> 
@@ -118,6 +130,9 @@
                                         Amount
                                     </th>
                                     <th>
+                                        Pickup Date
+                                    </th>
+                                    <th>
                                         Status
                                     </th>
                                     <th>
@@ -130,18 +145,31 @@
                                     <td style="width: 1%">
                                       {{ $key+1 }}
                                     </td>
-                                    <th>
+                                    <th style="width: 15%">
                                       {{ $vcr->no_voucher }}
                                     </td>
-                                    <th>
+                                    <th style="width: 15%">
                                       {{ $vcr->amount }}
                                     </td>
-                                    <th>
+                                    <th style="width: 15%">
+                                      {{ $vcr->pickup_date }}
+                                    </td>
+                                    <th style="width: 20%">
                                       {{ $vcr->name }}
                                     </td>
                                     <th>
+                                        <a class="btn btn-success btn-sm" href="#" onclick="claimVoucher('{{ $vcr->id }}')">
+                                            <i class="ti-check">
+                                            </i>
+                                            Claim
+                                        </a>
+                                        <a class="btn btn-warning btn-sm" href="#" onclick="unclaimVoucher('{{ $vcr->id }}')">
+                                            <i class="ti-close">
+                                            </i>
+                                            Un-Claim
+                                        </a>
                                         @if($vcr->name != 'SAH')
-                                        <a class="btn btn-danger btn-sm" href="#" onclick="deletedtl('{{ $vcr->id }}')" {{ ($vcr->name === 'SAH' ? 'disabled' : '')  }}>
+                                        <a class="btn btn-danger btn-sm" href="#" onclick="deletedtl('{{ $vcr->id }}')">
                                             <i class="ti-trash">
                                             </i>
                                             Delete
@@ -161,7 +189,10 @@
                                         <td style="width: 15%">
                                         {{ $data['sum'] }}
                                         </td>
-                                        <td style="width: 30%">
+                                        <td style="width: 15%">
+
+                                        </td>
+                                        <td style="width: 20%">
                                         
                                         </td>
                                         <td>
@@ -176,3 +207,83 @@
             </div>
         </div>
     </div>
+
+    <script>
+        // Declare from and to as global variables
+        let from = '';
+        let to = '';
+        let amount = 0;
+        let total_voucher = 0;
+        
+
+        $('#from').on('keyup', function(){
+
+            from = $(this).val();
+            totalvoucher(from,to);
+
+        });
+
+        $('#to').on('keyup', function(){
+
+            to = $(this).val();
+            totalvoucher(from,to);
+    
+
+        });
+
+        $('#amount').on('keyup', function(){
+
+            amount = $(this).val();
+            totalAmount(amount);
+         
+
+        });
+
+        function totalvoucher(from,to)
+        {
+            total_voucher = 0;
+
+            if(from && to)
+            {
+                // Remove non-digit characters from from and to
+                var lastFrom = from.replace(/\D/g, '');
+
+                // Remove non-digit characters from from and to
+                var lastTo = to.replace(/\D/g, '');
+
+                // Try to convert the last character to an integer.
+                var numFrom = parseInt(lastFrom);
+
+                // Try to convert the last character to an integer.
+                var numTo = parseInt(lastTo);
+
+                if(!isNaN(numFrom) && !isNaN(numTo)) {
+                    for(let i = numFrom; i <= numTo; i++) {
+                        total_voucher++;
+                    }
+                }
+
+            }
+
+            $('#voucher').val(total_voucher);
+            totalAmount(amount);
+
+        }
+
+        function totalAmount(amount)
+        {
+
+            let totalAmount = 0;
+
+            if(amount)
+            {
+
+                totalAmount = amount * total_voucher;
+
+            }
+
+            $('#total').val(totalAmount);
+
+        }
+
+    </script>

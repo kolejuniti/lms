@@ -92,7 +92,6 @@ $('#student').on('change', function(){
     getStudInfo(selectedStudent);
 });
 
-
 function getStudent(search)
 {
 
@@ -137,32 +136,33 @@ function getStudInfo(student)
 
 
                 $('#form-student').html(data);
+                $('#voucher_table').DataTable();
             
-                $('#myTable').DataTable({
-                  dom: 'lBfrtip', // if you remove this line you will see the show entries dropdown
+                // $('#myTable').DataTable({
+                //   dom: 'lBfrtip', // if you remove this line you will see the show entries dropdown
                   
-                  buttons: [
-                    {
-                        extend: 'excelHtml5',
-                        messageTop: output,
-                        title: 'Excel' + '-' + output,
-                        text:'Export to excel'
-                        //Columns to export
-                        //exportOptions: {
-                       //     columns: [0, 1, 2, 3,4,5,6]
-                       // }
-                    },
-                    {
-                        extend: 'pdfHtml5',
-                        title: 'PDF' + '-' + output,
-                        text: 'Export to PDF'
-                        //Columns to export
-                        //exportOptions: {
-                       //     columns: [0, 1, 2, 3, 4, 5, 6]
-                      //  }
-                    }
-                  ],
-                });
+                //   buttons: [
+                //     {
+                //         extend: 'excelHtml5',
+                //         messageTop: output,
+                //         title: 'Excel' + '-' + output,
+                //         text:'Export to excel'
+                //         //Columns to export
+                //         //exportOptions: {
+                //        //     columns: [0, 1, 2, 3,4,5,6]
+                //        // }
+                //     },
+                //     {
+                //         extend: 'pdfHtml5',
+                //         title: 'PDF' + '-' + output,
+                //         text: 'Export to PDF'
+                //         //Columns to export
+                //         //exportOptions: {
+                //        //     columns: [0, 1, 2, 3, 4, 5, 6]
+                //       //  }
+                //     }
+                //   ],
+                // });
                 //$('#student').selectpicker('refresh');
 
                 "use strict";
@@ -267,6 +267,50 @@ function deletedtl(id)
               });
           }
       });
+
+}
+
+function claimVoucher(id)
+{
+
+  return $.ajax({
+            headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
+            url      : "{{ url('finance/voucher/student/claimVoucherDtl') }}",
+            method   : 'POST',
+            data 	 : {id: id},
+            error:function(err){
+                alert("Error");
+                console.log(err);
+            },
+            success  : function(data){
+                alert("claim success!");
+                $('#voucher_table').html(data);
+                $('#voucher_table').DataTable();
+
+            }
+        });
+
+}
+
+function unclaimVoucher(id)
+{
+
+  return $.ajax({
+            headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
+            url      : "{{ url('finance/voucher/student/unclaimVoucherDtl') }}",
+            method   : 'POST',
+            data 	 : {id: id},
+            error:function(err){
+                alert("Error");
+                console.log(err);
+            },
+            success  : function(data){
+                alert("unclaim success");
+                $('#voucher_table').html(data);
+                $('#voucher_table').DataTable();
+
+            }
+        });
 
 }
 
