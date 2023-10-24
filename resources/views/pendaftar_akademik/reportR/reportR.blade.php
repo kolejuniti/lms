@@ -1,4 +1,4 @@
-@extends('layouts.finance')
+@extends('layouts.pendaftar')
 
 @section('main')
 
