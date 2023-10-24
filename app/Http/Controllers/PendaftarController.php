@@ -1367,6 +1367,15 @@ class PendaftarController extends Controller
 
         $data['faculty'] = DB::table('tblfaculty')->get();
 
+        $data['sessions'] = DB::table('sessions')
+                            ->join('students', 'sessions.SessionID', 'students.session')
+                            ->where('students.semester', 1)
+                            ->groupBy('sessions.SessionID')
+                            ->select('sessions.*')
+                            ->get();
+
+        dd($data['sessions']);
+
         foreach($data['faculty'] as $fcl)
         {
 
