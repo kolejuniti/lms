@@ -2034,6 +2034,13 @@ class PendaftarController extends Controller
         if($request->from && $request->to)
         {
 
+            
+            $data['R1M'] = 0;
+            $data['R1F'] = 0;
+
+            $data['R2M'] = 0;
+            $data['R2F'] = 0;
+
             // Define a function to create the base query
             $baseQuery = function () use ($request) {
                 return DB::table('students')
@@ -2056,59 +2063,77 @@ class PendaftarController extends Controller
             $studentOneQuery = ($baseQuery)()->where('students.status', 1);
             $data['studentR1'] = $studentOneQuery->get();
 
-            // Calculate the total amount of male students in studentOne
-            $data['R1M'] = $studentOneQuery->where('tblsex.id', 1)->count();
-
-            // Calculate the total amount of male students in studentOne
-            $data['R1F'] = $studentOneQuery->where('tblsex.id', 2)->count();
-            
-
             // Use the base query for studentR2
             $data['studentR2'] = ($baseQuery)()
                 ->where('students.status', '!=', 1)
                 ->get();
 
+
             foreach($data['studentR1'] as $key => $student)
             {
 
-            $data['resultR1'][] = DB::table('tblpayment')
-                              ->leftjoin('tblpaymentdtl', 'tblpayment.id', 'tblpaymentdtl.payment_id')
-                              ->leftjoin('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
-                              ->where('tblpayment.student_ic', $student->ic)
-                              ->where('tblpayment.process_status_id', 2)
-                              ->whereNotIn('tblpayment.process_type_id', [8])
-                              ->whereNotIn('tblstudentclaim.groupid', [4,5])
-                              ->select(
+                $data['resultR1'][] = DB::table('tblpayment')
+                                ->leftjoin('tblpaymentdtl', 'tblpayment.id', 'tblpaymentdtl.payment_id')
+                                ->leftjoin('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
+                                ->where('tblpayment.student_ic', $student->ic)
+                                ->where('tblpayment.process_status_id', 2)
+                                ->whereNotIn('tblpayment.process_type_id', [8])
+                                ->whereNotIn('tblstudentclaim.groupid', [4,5])
+                                ->select(
 
-                                DB::raw('CASE
-                                            WHEN IFNULL(SUM(tblpaymentdtl.amount), 0) < 250 THEN "R"
-                                            WHEN IFNULL(SUM(tblpaymentdtl.amount), 0) >= 250 THEN "R1"
-                                         END AS group_alias'),
-                                DB::raw('IFNULL(SUM(tblpaymentdtl.amount), 0) AS amount')
+                                    DB::raw('CASE
+                                                WHEN IFNULL(SUM(tblpaymentdtl.amount), 0) < 250 THEN "R"
+                                                WHEN IFNULL(SUM(tblpaymentdtl.amount), 0) >= 250 THEN "R1"
+                                            END AS group_alias'),
+                                    DB::raw('IFNULL(SUM(tblpaymentdtl.amount), 0) AS amount')
 
-                              )->first();
+                                )->first();
+
+                if($student->sex == 'L')
+                {
+                    $data['R1M'] = $data['R1M'] + 1;
+
+                }elseif($student->sex == 'P') 
+                {
+
+                    $data['R1F'] = $data['R1F'] + 1;
+                    
+                }
 
             }
+
+          
 
             foreach($data['studentR2'] as $key => $student)
             {
 
-            $data['resultR2'][] = DB::table('tblpayment')
-                              ->leftjoin('tblpaymentdtl', 'tblpayment.id', 'tblpaymentdtl.payment_id')
-                              ->leftjoin('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
-                              ->where('tblpayment.student_ic', $student->ic)
-                              ->where('tblpayment.process_status_id', 2)
-                              ->whereNotIn('tblpayment.process_type_id', [8])
-                              ->whereNotIn('tblstudentclaim.groupid', [4,5])
-                              ->select(
+                $data['resultR2'][] = DB::table('tblpayment')
+                                    ->leftjoin('tblpaymentdtl', 'tblpayment.id', 'tblpaymentdtl.payment_id')
+                                    ->leftjoin('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
+                                    ->where('tblpayment.student_ic', $student->ic)
+                                    ->where('tblpayment.process_status_id', 2)
+                                    ->whereNotIn('tblpayment.process_type_id', [8])
+                                    ->whereNotIn('tblstudentclaim.groupid', [4,5])
+                                    ->select(
 
-                                DB::raw('CASE
-                                            WHEN IFNULL(SUM(tblpaymentdtl.amount), 0) < 250 THEN "R"
-                                            WHEN IFNULL(SUM(tblpaymentdtl.amount), 0) >= 250 THEN "R1"
-                                         END AS group_alias'),
-                                DB::raw('IFNULL(SUM(tblpaymentdtl.amount), 0) AS amount')
+                                    DB::raw('CASE
+                                                WHEN IFNULL(SUM(tblpaymentdtl.amount), 0) < 250 THEN "R"
+                                                WHEN IFNULL(SUM(tblpaymentdtl.amount), 0) >= 250 THEN "R1"
+                                                END AS group_alias'),
+                                    DB::raw('IFNULL(SUM(tblpaymentdtl.amount), 0) AS amount')
 
-                              )->first();
+                                    )->first();
+
+                if($student->sex == 'L')
+                {
+                    $data['R2M'] = $data['R2M'] + 1;
+
+                }elseif($student->sex == 'P') 
+                {
+
+                    $data['R2F'] = $data['R2F'] + 1;
+                    
+                }
 
             }
 
