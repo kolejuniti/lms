@@ -1,4 +1,4 @@
-@extends('../layouts.pendaftar')
+@extends('../layouts.pendaftar_akademik')
 
 @section('main')
 <!-- Content Header (Page header) -->
