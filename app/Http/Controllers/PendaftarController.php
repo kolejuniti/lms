@@ -2052,10 +2052,16 @@ class PendaftarController extends Controller
                     );
             };
 
-            // Use the base query for studentR1
-            $data['studentR1'] = ($baseQuery)()
-                ->where('students.status', 1)
-                ->get();
+            // Use the base query for studentOne
+            $studentOneQuery = ($baseQuery)()->where('students.status', 1);
+            $data['studentR1'] = $studentOneQuery->get();
+
+            // Calculate the total amount of male students in studentOne
+            $data['R1M'] = $studentOneQuery->where('tblsex.id', 1)->count();
+
+            // Calculate the total amount of male students in studentOne
+            $data['R1F'] = $studentOneQuery->where('tblsex.id', 2)->count();
+            
 
             // Use the base query for studentR2
             $data['studentR2'] = ($baseQuery)()
