@@ -2019,5 +2019,97 @@ class PendaftarController extends Controller
 
     }
 
+    public function studentReportRs()
+    {
+
+        $data['session'] = DB::table('sessions')->get();
+
+        return view('pendaftar.reportRs.reportRs', compact('data'));
+
+    }
+
+    public function getStudentReportRs(Request $request)
+    {
+
+        if($request->from && $request->to)
+        {
+
+            // Define a function to create the base query
+            $baseQuery = function () use ($request) {
+                return DB::table('students')
+                    ->leftjoin('tblstudent_personal', 'students.ic', '=', 'tblstudent_personal.student_ic')
+                    ->leftjoin('sessions', 'students.intake', '=', 'sessions.SessionID')
+                    ->leftjoin('tblprogramme', 'students.program', '=', 'tblprogramme.id')
+                    ->leftjoin('tbledu_advisor', 'tblstudent_personal.advisor_id', '=', 'tbledu_advisor.id')
+                    ->leftjoin('tblsex', 'tblstudent_personal.sex_id', '=', 'tblsex.id')
+                    ->leftjoin('tblstudent_status', 'students.status', '=', 'tblstudent_status.id')
+                    ->where('students.semester', 1)
+                    ->whereBetween('students.date_add', [$request->from, $request->to])
+                    ->select(
+                        'students.*', 'tblstudent_personal.no_tel', 'sessions.SessionName',
+                        'tblprogramme.progcode', 'tbledu_advisor.name AS ea', 'tblsex.code AS sex',
+                        'tblstudent_status.name AS status'
+                    );
+            };
+
+            // Use the base query for studentR1
+            $data['studentR1'] = ($baseQuery)()
+                ->where('students.status', 1)
+                ->get();
+
+            // Use the base query for studentR2
+            $data['studentR2'] = ($baseQuery)()
+                ->where('students.status', '!=', 1)
+                ->get();
+
+            foreach($data['studentR1'] as $key => $student)
+            {
+
+            $data['resultR1'][] = DB::table('tblpayment')
+                              ->leftjoin('tblpaymentdtl', 'tblpayment.id', 'tblpaymentdtl.payment_id')
+                              ->leftjoin('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
+                              ->where('tblpayment.student_ic', $student->ic)
+                              ->where('tblpayment.process_status_id', 2)
+                              ->whereNotIn('tblpayment.process_type_id', [8])
+                              ->whereNotIn('tblstudentclaim.groupid', [4,5])
+                              ->select(
+
+                                DB::raw('CASE
+                                            WHEN IFNULL(SUM(tblpaymentdtl.amount), 0) < 250 THEN "R"
+                                            WHEN IFNULL(SUM(tblpaymentdtl.amount), 0) >= 250 THEN "R1"
+                                         END AS group_alias'),
+                                DB::raw('IFNULL(SUM(tblpaymentdtl.amount), 0) AS amount')
+
+                              )->first();
+
+            }
+
+            foreach($data['studentR2'] as $key => $student)
+            {
+
+            $data['resultR2'][] = DB::table('tblpayment')
+                              ->leftjoin('tblpaymentdtl', 'tblpayment.id', 'tblpaymentdtl.payment_id')
+                              ->leftjoin('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
+                              ->where('tblpayment.student_ic', $student->ic)
+                              ->where('tblpayment.process_status_id', 2)
+                              ->whereNotIn('tblpayment.process_type_id', [8])
+                              ->whereNotIn('tblstudentclaim.groupid', [4,5])
+                              ->select(
+
+                                DB::raw('CASE
+                                            WHEN IFNULL(SUM(tblpaymentdtl.amount), 0) < 250 THEN "R"
+                                            WHEN IFNULL(SUM(tblpaymentdtl.amount), 0) >= 250 THEN "R1"
+                                         END AS group_alias'),
+                                DB::raw('IFNULL(SUM(tblpaymentdtl.amount), 0) AS amount')
+
+                              )->first();
+
+            }
+
+            return view('pendaftar.reportRs.getReportRs', compact('data'));
+
+        }
+
+    }
     
 }
