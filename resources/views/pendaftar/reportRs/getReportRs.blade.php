@@ -40,10 +40,10 @@
                   EA
               </th>
               <th style="width: 5%">
-                  Amount
+                  Type
               </th>
               <th style="width: 5%">
-                  Type
+                  Amount
               </th>
           </tr>
       </thead>
@@ -108,6 +108,44 @@
 </div>
 
 <div class="card mb-3" id="stud_info">
+    <div class="card-body">
+        <div class="row mb-5">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <table class="w-100 table table-bordered display margin-top-10 w-p100">
+                        <thead>
+                            <tr>
+                                <th colspan="2" style="text-align:center">
+                                    Pecahan Pelajar Mengikut Jantina
+                                </th>
+                            </tr>
+                            <tr>
+                                <th style="text-align:center">
+                                    lelaki
+                                </th>
+                                <th style="text-align:center">
+                                    Perempuan
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="text-align:center">
+                                    {{ $data['R1M'] }}
+                                </td>
+                                <td style="text-align:center">
+                                    {{ $data['R1F'] }}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-3" id="stud_info">
     <div class="card-header">
     <b>Students Report R2</b>
     </div>
@@ -149,10 +187,10 @@
                     EA
                 </th>
                 <th style="width: 5%">
-                    Amount
+                    Type
                 </th>
                 <th style="width: 5%">
-                    Type
+                    Amount
                 </th>
             </tr>
         </thead>
