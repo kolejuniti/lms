@@ -1370,11 +1370,12 @@ class PendaftarController extends Controller
         $data['sessions'] = DB::table('sessions')
                             ->join('students', 'sessions.SessionID', 'students.intake')
                             ->where('students.semester', 1)
+                            ->where('students.status', 2)
                             ->groupBy('sessions.SessionID')
                             ->select('sessions.*')
                             ->get();
 
-        dd($data['sessions']);
+        //dd($data['sessions']);
 
         foreach($data['faculty'] as $fcl)
         {
@@ -1608,6 +1609,27 @@ class PendaftarController extends Controller
                                     ])->get());
 
                                  
+
+        }
+
+        foreach($data['sessions'] as $key => $ses)
+        {
+
+            $data['holding'][$key] = count(DB::table('students')
+                                           ->where([
+                                            ['students.semester', 1],
+                                            ['students.status', 2],
+                                            ['students.student_status', 1],
+                                            ['students.intake', $ses->SessionID]
+                                           ])->get());
+
+            $data['kuliah'][$key] = count(DB::table('students')
+                                           ->where([
+                                            ['students.semester', 1],
+                                            ['students.status', 2],
+                                            ['students.student_status', 2],
+                                            ['students.intake', $ses->SessionID]
+                                           ])->get());
 
         }
 
