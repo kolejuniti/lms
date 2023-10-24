@@ -574,6 +574,73 @@
             <!-- /.card -->
           </div>
         </div>
+        <div class="row">
+          <div class="card mb-3" id="stud_info">
+            <div class="card-body">
+                <div class="row mb-5">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <table class="w-100 table table-bordered display margin-top-10 w-p100">
+                                <thead>
+                                    <tr>
+                                        <th colspan="3" style="text-align:center">
+                                            Pecahan Pelajar Semester 1
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <th style="text-align:center">
+                                            INTAKE
+                                        </th>
+                                        <th style="text-align:center">
+                                            HOLDING
+                                        </th>
+                                        <th style="text-align:center">
+                                            KULIAH
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                  @php
+                                  $totalKuliah = 0;
+                                  $totalHolding = 0;
+                                  @endphp
+                                  @foreach($data['sessions'] as $key => $ses)
+                                    <tr>
+                                        <td style="text-align:center">
+                                            {{ $ses->SessionName }}
+                                        </td>
+                                        <td style="text-align:center">
+                                            {{ $data['holding'][$key] }}
+                                        </td>
+                                        <td style="text-align:center">
+                                            {{ $data['kuliah'][$key] }}
+                                      </td>
+                                    </tr>
+                                    @php
+                                    $totalKuliah += $data['kuliah'][$key];
+
+                                    $totalHolding += $data['holding'][$key];
+                                    @endphp
+                                  @endforeach
+                                </tbody>
+                                <tfoot>
+                                  <tr>
+                                    <td style="text-align:center">JUMLAH</td>
+                                    <td style="text-align:center">
+                                      {{ $totalHolding }}
+                                    </td>
+                                    <td style="text-align:center">
+                                      {{ $totalKuliah }}
+                                    </td>
+                                  </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
       </div>
     </section>
     <!-- /.content -->
