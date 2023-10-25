@@ -79,7 +79,9 @@
                                     $markpercen = DB::table('tblclassmarks')->where([
                                     ['course_id', $id],
                                     ['assessment', 'quiz']
-                                    ])->first();
+                                    ])
+                                    ->orderBy('tblclassmarks.id', 'desc')
+                                    ->first();
                                     @endphp
                                     @if ($markpercen != null)
                                     Overall QUIZ ({{ $markpercen->mark_percentage }}%)
@@ -103,7 +105,9 @@
                                     $markpercen = DB::table('tblclassmarks')->where([
                                     ['course_id', $id],
                                     ['assessment', 'test']
-                                    ])->first();
+                                    ])
+                                    ->orderBy('tblclassmarks.id', 'desc')
+                                    ->first();
                                     @endphp
                                     @if ($markpercen != null)
                                     Overall TEST ({{ $markpercen->mark_percentage }}%)
@@ -127,7 +131,9 @@
                                     $markpercen = DB::table('tblclassmarks')->where([
                                     ['course_id', $id],
                                     ['assessment', 'assignment']
-                                    ])->first();
+                                    ])
+                                    ->orderBy('tblclassmarks.id', 'desc')
+                                    ->first();
                                     @endphp
                                     @if ($markpercen != null)
                                     Overall ASSIGNMENT ({{ $markpercen->mark_percentage }}%)
@@ -151,7 +157,9 @@
                                     $markpercen = DB::table('tblclassmarks')->where([
                                     ['course_id', $id],
                                     ['assessment', 'extra']
-                                    ])->first();
+                                    ])
+                                    ->orderBy('tblclassmarks.id', 'desc')
+                                    ->first();
                                     @endphp
                                     @if ($markpercen != null)
                                     Overall EXTRA ({{ $markpercen->mark_percentage }}%)
@@ -175,7 +183,9 @@
                                     $markpercen = DB::table('tblclassmarks')->where([
                                     ['course_id', $id],
                                     ['assessment', 'lain-lain']
-                                    ])->first();
+                                    ])
+                                    ->orderBy('tblclassmarks.id', 'desc')
+                                    ->first();
                                     @endphp
                                     @if ($markpercen != null)
                                     Overall OTHER ({{ $markpercen->mark_percentage }}%)
@@ -199,7 +209,9 @@
                                     $markpercen = DB::table('tblclassmarks')->where([
                                     ['course_id', $id],
                                     ['assessment', 'midterm']
-                                    ])->first();
+                                    ])
+                                    ->orderBy('tblclassmarks.id', 'desc')
+                                    ->first();
                                     @endphp
                                     @if ($markpercen != null)
                                     Overall MIDTERM ({{ $markpercen->mark_percentage }}%)
@@ -223,7 +235,9 @@
                                     $markpercen = DB::table('tblclassmarks')->where([
                                     ['course_id', $id],
                                     ['assessment', 'final']
-                                    ])->first();
+                                    ])
+                                    ->orderBy('tblclassmarks.id', 'desc')
+                                    ->first();
                                     @endphp
                                     @if ($markpercen != null)
                                     Overall FINAL ({{ $markpercen->mark_percentage }}%)
@@ -286,7 +300,9 @@
                                       @if(DB::table('tblclassmarks')->where([
                                       ['course_id', $id],
                                       ['assessment', 'quiz']
-                                      ])->first() != null)
+                                      ])
+                                      ->orderBy('tblclassmarks.id', 'desc')
+                                      ->first() != null)
                                         @foreach ((array) $overallquiz[$ky][$key] as $ag)
                                         <td style="background-color: #677ee2">
                                           <span >{{ $ag }}</span>
@@ -337,7 +353,9 @@
                                       @if(DB::table('tblclassmarks')->where([
                                       ['course_id', $id],
                                       ['assessment', 'test']
-                                      ])->first() != null)
+                                      ])
+                                      ->orderBy('tblclassmarks.id', 'desc')
+                                      ->first() != null)
                                         @foreach ((array) $overalltest[$ky][$key] as $ag)
                                         <td style="background-color: #677ee2">
                                           <span >{{ $ag }}</span>
@@ -388,7 +406,9 @@
                                       @if(DB::table('tblclassmarks')->where([
                                       ['course_id', $id],
                                       ['assessment', 'assignment']
-                                      ])->first() != null)
+                                      ])
+                                      ->orderBy('tblclassmarks.id', 'desc')
+                                      ->first() != null)
                                         @foreach ((array) $overallassign[$ky][$key] as $ag)
                                         <td style="background-color: #677ee2">
                                           <span >{{ $ag }}</span>
@@ -439,7 +459,9 @@
                                       @if(DB::table('tblclassmarks')->where([
                                       ['course_id', $id],
                                       ['assessment', 'extra']
-                                      ])->first() != null)
+                                      ])
+                                      ->orderBy('tblclassmarks.id', 'desc')
+                                      ->first() != null)
                                         @foreach ((array) $overallextra[$ky][$key] as $ag)
                                         <td style="background-color: #677ee2">
                                           <span >{{ $ag }}</span>
@@ -490,7 +512,9 @@
                                       @if(DB::table('tblclassmarks')->where([
                                       ['course_id', $id],
                                       ['assessment', 'lain-lain']
-                                      ])->first() != null)
+                                      ])
+                                      ->orderBy('tblclassmarks.id', 'desc')
+                                      ->first() != null)
                                         @foreach ((array) $overallother[$ky][$key] as $ag)
                                         <td style="background-color: #677ee2">
                                           <span >{{ $ag }}</span>
@@ -541,7 +565,9 @@
                                       @if(DB::table('tblclassmarks')->where([
                                       ['course_id', $id],
                                       ['assessment', 'midterm']
-                                      ])->first() != null)
+                                      ])
+                                      ->orderBy('tblclassmarks.id', 'desc')
+                                      ->first() != null)
                                         @foreach ((array) $overallmidterm[$ky][$key] as $ag)
                                         <td style="background-color: #677ee2">
                                           <span >{{ $ag }}</span>
@@ -592,7 +618,9 @@
                                       @if(DB::table('tblclassmarks')->where([
                                       ['course_id', $id],
                                       ['assessment', 'final']
-                                      ])->first() != null)
+                                      ])
+                                      ->orderBy('tblclassmarks.id', 'desc')
+                                      ->first() != null)
                                         @foreach ((array) $overallfinal[$ky][$key] as $ag)
                                         <td style="background-color: #677ee2">
                                           <span >{{ $ag }}</span>
@@ -647,7 +675,9 @@
                                       @if(DB::table('tblclassmarks')->where([
                                       ['course_id', $id],
                                       ['assessment', 'quiz']
-                                      ])->first() != null)
+                                      ])
+                                      ->orderBy('tblclassmarks.id', 'desc')
+                                      ->first() != null)
                                         <td style="background-color: #677ee2">{{ $quizavgoverall }}</td>
                                       @else
                                       <td style="background-color: #677ee2">
@@ -678,7 +708,9 @@
                                       @if(DB::table('tblclassmarks')->where([
                                       ['course_id', $id],
                                       ['assessment', 'test']
-                                      ])->first() != null)
+                                      ])
+                                      ->orderBy('tblclassmarks.id', 'desc')
+                                      ->first() != null)
                                         <td style="background-color: #677ee2">{{ $testavgoverall }}</td>
                                       @else
                                       <td style="background-color: #677ee2">
@@ -709,7 +741,9 @@
                                       @if(DB::table('tblclassmarks')->where([
                                       ['course_id', $id],
                                       ['assessment', 'assignment']
-                                      ])->first() != null)
+                                      ])
+                                      ->orderBy('tblclassmarks.id', 'desc')
+                                      ->first() != null)
                                         <td style="background-color: #677ee2">{{ $assignavgoverall }}</td>
                                       @else
                                       <td style="background-color: #677ee2">
@@ -740,7 +774,9 @@
                                       @if(DB::table('tblclassmarks')->where([
                                       ['course_id', $id],
                                       ['assessment', 'extra']
-                                      ])->first() != null)
+                                      ])
+                                      ->orderBy('tblclassmarks.id', 'desc')
+                                      ->first() != null)
                                         <td style="background-color: #677ee2">{{ $extraavgoverall }}</td>
                                       @else
                                       <td style="background-color: #677ee2">
@@ -771,7 +807,9 @@
                                       @if(DB::table('tblclassmarks')->where([
                                       ['course_id', $id],
                                       ['assessment', 'other']
-                                      ])->first() != null)
+                                      ])
+                                      ->orderBy('tblclassmarks.id', 'desc')
+                                      ->first() != null)
                                         <td style="background-color: #677ee2">{{ $otheravgoverall }}</td>
                                       @else
                                       <td style="background-color: #677ee2">
@@ -802,7 +840,9 @@
                                       @if(DB::table('tblclassmarks')->where([
                                       ['course_id', $id],
                                       ['assessment', 'midterm']
-                                      ])->first() != null)
+                                      ])
+                                      ->orderBy('tblclassmarks.id', 'desc')
+                                      ->first() != null)
                                         <td style="background-color: #677ee2">{{ $midtermavgoverall }}</td>
                                       @else
                                       <td style="background-color: #677ee2">
@@ -833,7 +873,9 @@
                                       @if(DB::table('tblclassmarks')->where([
                                       ['course_id', $id],
                                       ['assessment', 'final']
-                                      ])->first() != null)
+                                      ])
+                                      ->orderBy('tblclassmarks.id', 'desc')
+                                      ->first() != null)
                                         <td style="background-color: #677ee2">{{ $finalavgoverall }}</td>
                                       @else
                                       <td style="background-color: #677ee2">
@@ -881,7 +923,9 @@
                                       @if(DB::table('tblclassmarks')->where([
                                       ['course_id', $id],
                                       ['assessment', 'quiz']
-                                      ])->first() != null)
+                                      ])
+                                      ->orderBy('tblclassmarks.id', 'desc')
+                                      ->first() != null)
                                         <td style="background-color: #677ee2">{{ $quizcollection->max() }}</td>
                                       @else
                                       <td style="background-color: #677ee2">
@@ -912,7 +956,9 @@
                                       @if(DB::table('tblclassmarks')->where([
                                       ['course_id', $id],
                                       ['assessment', 'test']
-                                      ])->first() != null)
+                                      ])
+                                      ->orderBy('tblclassmarks.id', 'desc')
+                                      ->first() != null)
                                         <td style="background-color: #677ee2">{{ $testcollection->max() }}</td>
                                       @else
                                       <td style="background-color: #677ee2">
@@ -943,7 +989,9 @@
                                       @if(DB::table('tblclassmarks')->where([
                                       ['course_id', $id],
                                       ['assessment', 'assignment']
-                                      ])->first() != null)
+                                      ])
+                                      ->orderBy('tblclassmarks.id', 'desc')
+                                      ->first() != null)
                                         <td style="background-color: #677ee2">{{ $assigncollection->max() }}</td>
                                       @else
                                       <td style="background-color: #677ee2">
@@ -974,7 +1022,9 @@
                                       @if(DB::table('tblclassmarks')->where([
                                       ['course_id', $id],
                                       ['assessment', 'extra']
-                                      ])->first() != null)
+                                      ])
+                                      ->orderBy('tblclassmarks.id', 'desc')
+                                      ->first() != null)
                                         <td style="background-color: #677ee2">{{ $extracollection->max() }}</td>
                                       @else
                                       <td style="background-color: #677ee2">
@@ -1005,7 +1055,9 @@
                                       @if(DB::table('tblclassmarks')->where([
                                       ['course_id', $id],
                                       ['assessment', 'other']
-                                      ])->first() != null)
+                                      ])
+                                      ->orderBy('tblclassmarks.id', 'desc')
+                                      ->first() != null)
                                         <td style="background-color: #677ee2">{{ $othercollection->max() }}</td>
                                       @else
                                       <td style="background-color: #677ee2">
@@ -1036,7 +1088,9 @@
                                       @if(DB::table('tblclassmarks')->where([
                                       ['course_id', $id],
                                       ['assessment', 'midterm']
-                                      ])->first() != null)
+                                      ])
+                                      ->orderBy('tblclassmarks.id', 'desc')
+                                      ->first() != null)
                                         <td style="background-color: #677ee2">{{ $midtermcollection->max() }}</td>
                                       @else
                                       <td style="background-color: #677ee2">
@@ -1067,7 +1121,9 @@
                                       @if(DB::table('tblclassmarks')->where([
                                       ['course_id', $id],
                                       ['assessment', 'final']
-                                      ])->first() != null)
+                                      ])
+                                      ->orderBy('tblclassmarks.id', 'desc')
+                                      ->first() != null)
                                         <td style="background-color: #677ee2">{{ $finalcollection->max() }}</td>
                                       @else
                                       <td style="background-color: #677ee2">
@@ -1115,7 +1171,9 @@
                                       @if(DB::table('tblclassmarks')->where([
                                       ['course_id', $id],
                                       ['assessment', 'quiz']
-                                      ])->first() != null)
+                                      ])
+                                      ->orderBy('tblclassmarks.id', 'desc')
+                                      ->first() != null)
                                         <td style="background-color: #677ee2">{{ $quizcollection->min() }}</td>
                                       @else
                                       <td style="background-color: #677ee2">
@@ -1146,7 +1204,9 @@
                                       @if(DB::table('tblclassmarks')->where([
                                       ['course_id', $id],
                                       ['assessment', 'test']
-                                      ])->first() != null)
+                                      ])
+                                      ->orderBy('tblclassmarks.id', 'desc')
+                                      ->first() != null)
                                         <td style="background-color: #677ee2">{{ $testcollection->min() }}</td>
                                       @else
                                       <td style="background-color: #677ee2">
@@ -1177,7 +1237,9 @@
                                       @if(DB::table('tblclassmarks')->where([
                                       ['course_id', $id],
                                       ['assessment', 'assignment']
-                                      ])->first() != null)
+                                      ])
+                                      ->orderBy('tblclassmarks.id', 'desc')
+                                      ->first() != null)
                                         <td style="background-color: #677ee2">{{ $assigncollection->min() }}</td>
                                       @else
                                       <td style="background-color: #677ee2">
@@ -1208,7 +1270,9 @@
                                       @if(DB::table('tblclassmarks')->where([
                                       ['course_id', $id],
                                       ['assessment', 'extra']
-                                      ])->first() != null)
+                                      ])
+                                      ->orderBy('tblclassmarks.id', 'desc')
+                                      ->first() != null)
                                         <td style="background-color: #677ee2">{{ $extracollection->min() }}</td>
                                       @else
                                       <td style="background-color: #677ee2">
@@ -1239,7 +1303,9 @@
                                       @if(DB::table('tblclassmarks')->where([
                                       ['course_id', $id],
                                       ['assessment', 'other']
-                                      ])->first() != null)
+                                      ])
+                                      ->orderBy('tblclassmarks.id', 'desc')
+                                      ->first() != null)
                                         <td style="background-color: #677ee2">{{ $othercollection->min() }}</td>
                                       @else
                                       <td style="background-color: #677ee2">
@@ -1270,7 +1336,9 @@
                                       @if(DB::table('tblclassmarks')->where([
                                       ['course_id', $id],
                                       ['assessment', 'midterm']
-                                      ])->first() != null)
+                                      ])
+                                      ->orderBy('tblclassmarks.id', 'desc')
+                                      ->first() != null)
                                         <td style="background-color: #677ee2">{{ $midtermcollection->min() }}</td>
                                       @else
                                       <td style="background-color: #677ee2">
@@ -1301,7 +1369,9 @@
                                       @if(DB::table('tblclassmarks')->where([
                                       ['course_id', $id],
                                       ['assessment', 'final']
-                                      ])->first() != null)
+                                      ])
+                                      ->orderBy('tblclassmarks.id', 'desc')
+                                      ->first() != null)
                                         <td style="background-color: #677ee2">{{ $finalcollection->min() }}</td>
                                       @else
                                       <td style="background-color: #677ee2">
