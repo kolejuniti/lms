@@ -1,6 +1,6 @@
 <div id="material-directory" class='row'>
 
-    @if (Auth::user()->usrtype == "ADM")
+    {{-- @if (Auth::user()->usrtype == "ADM") --}}
         @if (isset($folder))
             @foreach ($folder as $fdr)
             <div class="col-md-3 text-center">
@@ -113,7 +113,7 @@
             </div>
             @endforeach
         @endif
-    @endif
+    {{-- @endif --}}
 
     <div class="col-md-3 text-center">
         <a href="/admin/attendance/report">
@@ -165,7 +165,7 @@
         </a>  
     </div>
 
-    @if (Auth::user()->usrtype == "ADM")
+    {{-- @if (Auth::user()->usrtype == "ADM") --}}
         <div class="col-md-3 text-center">
             <a href="/admin/report/student">
                 <svg xmlns="http://www.w3.org/2000/svg" version="1.0" width="4em" height="4em" viewBox="0 0 1300.000000 1300.000000" preserveAspectRatio="xMidYMid meet">
@@ -203,5 +203,5 @@
                 </div>
             </a>  
         </div>
-    @endif
+    {{-- @endif --}}
 </div>
