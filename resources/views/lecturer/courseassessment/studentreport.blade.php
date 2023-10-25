@@ -1,5 +1,5 @@
 
-@extends((Auth::user()->usrtype == "LCT" && isset(request()->id)) ? 'layouts.lecturer.lecturer' : (Auth::user()->usrtype == "LCT" ? 'layouts.lecturer' : (Auth::user()->usrtype == "PL" && isset(request()->id) ? 'layouts.lecturer.lecturer' : (Auth::user()->usrtype == "PL" ? 'layouts.ketua_program' : (Auth::user()->usrtype == "AO" && isset(request()->id) ? 'layouts.lecturer.lecturer' : (Auth::user()->usrtype == "AO" ? 'layouts.ketua_program' : (Auth::user()->usrtype == "ADM" ? 'layouts.admin' : (Auth::user()->usrtype == "DN" ? 'layouts.dekan' : ''))))))))
+@extends((Auth::user()->usrtype == "LCT" && isset(request()->id)) ? 'layouts.lecturer.lecturer' : (Auth::user()->usrtype == "LCT" ? 'layouts.lecturer' : (Auth::user()->usrtype == "PL" && isset(request()->id) ? 'layouts.lecturer.lecturer' : (Auth::user()->usrtype == "PL" ? 'layouts.ketua_program' : (Auth::user()->usrtype == "AO" && isset(request()->id) ? 'layouts.lecturer.lecturer' : (Auth::user()->usrtype == "AO" ? 'layouts.ketua_program' : (Auth::user()->usrtype == "ADM" ? 'layouts.admin' : (Auth::user()->usrtype == "DN" ? 'layouts.dekan' : (Auth::user()->usrtype == "RGS" ? 'layouts.pendaftar' : '')))))))))
 
 
 @section('main')
