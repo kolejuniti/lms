@@ -284,6 +284,7 @@
 					</ul>
 				</li>
 
+				@if(Auth::user()->email == 'rosni@uniti.edu.my')
 				<li class="treeview">
 				    <a href="#"><i data-feather="archive"></i><span>Report</span>
 						<span class="pull-right-container">
@@ -295,6 +296,7 @@
 						<li><a href="/quality/report/attendance">Attendance</a></li>
 					</ul>
 				</li> 
+				@endif
 				<li>
 					<a href="{{ route('posting.staff') }}" class="{{ (route('posting.staff') == Request::url()) ? 'active' : ''}}"><i data-feather="tv"></i><span>Posting</span></a>
 				</li> 
