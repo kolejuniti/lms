@@ -2671,7 +2671,9 @@ class LecturerController extends Controller
                                 ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
                                 ['subjek.id', request()->id],
                                 ['assessment', 'quiz']
-                                ])->first();
+                                ])
+                                ->orderBy('tblclassmarks.id', 'desc')
+                                ->first();
 
                     if($quizs = DB::table('tblclassquiz')
                     ->join('tblclassquiz_group', 'tblclassquiz.id', 'tblclassquiz_group.quizid')
@@ -2725,7 +2727,9 @@ class LecturerController extends Controller
                                 ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
                                 ['subjek.id', request()->id],
                                 ['assessment', 'test']
-                                ])->first();
+                                ])
+                                ->orderBy('tblclassmarks.id', 'desc')
+                                ->first();
 
                     if($tests = DB::table('tblclasstest')
                     ->join('tblclasstest_group', 'tblclasstest.id', 'tblclasstest_group.testid')
@@ -2779,7 +2783,9 @@ class LecturerController extends Controller
                                 ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
                                 ['subjek.id', request()->id],
                                 ['assessment', 'assignment']
-                                ])->first();
+                                ])
+                                ->orderBy('tblclassmarks.id', 'desc')
+                                ->first();
 
                     if($assigns = DB::table('tblclassassign')
                     ->join('tblclassassign_group', 'tblclassassign.id', 'tblclassassign_group.assignid')
@@ -2832,7 +2838,9 @@ class LecturerController extends Controller
                                 ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
                                 ['subjek.id', request()->id],
                                 ['assessment', 'extra']
-                                ])->first();
+                                ])
+                                ->orderBy('tblclassmarks.id', 'desc')
+                                ->first();
 
                     if($extras = DB::table('tblclassextra')
                     ->join('tblclassextra_group', 'tblclassextra.id', 'tblclassextra_group.extraid')
@@ -2885,7 +2893,9 @@ class LecturerController extends Controller
                                 ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
                                 ['subjek.id', request()->id],
                                 ['assessment', 'lain-lain']
-                                ])->first();
+                                ])
+                                ->orderBy('tblclassmarks.id', 'desc')
+                                ->first();
 
                     if($others = DB::table('tblclassother')
                     ->join('tblclassother_group', 'tblclassother.id', 'tblclassother_group.otherid')
@@ -2938,7 +2948,9 @@ class LecturerController extends Controller
                                 ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
                                 ['subjek.id', request()->id],
                                 ['assessment', 'midterm']
-                                ])->first();
+                                ])
+                                ->orderBy('tblclassmarks.id', 'desc')
+                                ->first();
 
                     if($midterms = DB::table('tblclassmidterm')
                     ->join('tblclassmidterm_group', 'tblclassmidterm.id', 'tblclassmidterm_group.midtermid')
@@ -2991,7 +3003,9 @@ class LecturerController extends Controller
                                 ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
                                 ['subjek.id', request()->id],
                                 ['assessment', 'final']
-                                ])->first();
+                                ])
+                                ->orderBy('tblclassmarks.id', 'desc')
+                                ->first();
 
                     if($finals = DB::table('tblclassfinal')
                     ->join('tblclassfinal_group', 'tblclassfinal.id', 'tblclassfinal_group.finalid')
@@ -3139,7 +3153,9 @@ class LecturerController extends Controller
                                 ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
                                 ['subjek.id', Session::get('CourseID')],
                                 ['assessment', 'quiz']
-                                ])->first();
+                                ])
+                                ->orderBy('tblclassmarks.id', 'desc')
+                                ->first();
 
         //dd($percentquiz);
   
@@ -3176,7 +3192,9 @@ class LecturerController extends Controller
                                 ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
                                 ['subjek.id', Session::get('CourseID')],
                                 ['assessment', 'test']
-                                ])->first();
+                                ])
+                                ->orderBy('tblclassmarks.id', 'desc')
+                                ->first();
 
         //get marked test
         $test = DB::table('tblclassstudenttest')
@@ -3212,7 +3230,9 @@ class LecturerController extends Controller
                         ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
                         ['subjek.id', Session::get('CourseID')],
                         ['assessment', 'assignment']
-                        ])->first();
+                        ])
+                        ->orderBy('tblclassmarks.id', 'desc')
+                        ->first();
 
         //dd($percent);
   
@@ -3250,7 +3270,9 @@ class LecturerController extends Controller
                                 ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
                                 ['subjek.id', Session::get('CourseID')],
                                 ['assessment', 'midterm']
-                                ])->first();
+                                ])
+                                ->orderBy('tblclassmarks.id', 'desc')
+                                ->first();
 
         //dd($percent);
   
@@ -3287,7 +3309,9 @@ class LecturerController extends Controller
                                 ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
                                 ['subjek.id', Session::get('CourseID')],
                                 ['assessment', 'final']
-                                ])->first();
+                                ])
+                                ->orderBy('tblclassmarks.id', 'desc')
+                                ->first();
 
         //dd($percent);
   
@@ -3323,7 +3347,9 @@ class LecturerController extends Controller
                                 ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
                                 ['subjek.id', Session::get('CourseID')],
                                 ['assessment', 'paperwork']
-                                ])->first();
+                                ])
+                                ->orderBy('tblclassmarks.id', 'desc')
+                                ->first();
 
         //dd($percent);
   
@@ -3361,7 +3387,9 @@ class LecturerController extends Controller
                                 ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
                                 ['subjek.id', Session::get('CourseID')],
                                 ['assessment', 'practical']
-                                ])->first();
+                                ])
+                                ->orderBy('tblclassmarks.id', 'desc')
+                                ->first();
 
         //dd($percent);
   
@@ -3399,7 +3427,9 @@ class LecturerController extends Controller
                                 ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
                                 ['subjek.id', Session::get('CourseID')],
                                 ['assessment', 'lain-lain']
-                                ])->first();
+                                ])
+                                ->orderBy('tblclassmarks.id', 'desc')
+                                ->first();
 
         $other = DB::table('tblclassstudentother')
                 ->join('tblclassother', 'tblclassstudentother.otherid', 'tblclassother.id')
@@ -3433,7 +3463,9 @@ class LecturerController extends Controller
                                 ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
                                 ['subjek.id', Session::get('CourseID')],
                                 ['assessment', 'extra']
-                                ])->first();
+                                ])
+                                ->orderBy('tblclassmarks.id', 'desc')
+                                ->first();
 
         $extra = DB::table('tblclassstudentextra')
                 ->join('tblclassextra', 'tblclassstudentextra.extraid', 'tblclassextra.id')
@@ -4077,7 +4109,9 @@ class LecturerController extends Controller
                                 ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
                                 ['subjek.id', $grp->ID],
                                 ['assessment', 'quiz']
-                                ])->first();
+                                ])
+                                ->orderBy('tblclassmarks.id', 'desc')
+                                ->first();
 
                     if($quizs = DB::table('tblclassquiz')
                     ->join('tblclassquiz_group', 'tblclassquiz.id', 'tblclassquiz_group.quizid')
@@ -4122,7 +4156,9 @@ class LecturerController extends Controller
                                 ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
                                 ['subjek.id', $grp->ID],
                                 ['assessment', 'test']
-                                ])->first();
+                                ])
+                                ->orderBy('tblclassmarks.id', 'desc')
+                                ->first();
 
                     if($tests = DB::table('tblclasstest')
                     ->join('tblclasstest_group', 'tblclasstest.id', 'tblclasstest_group.testid')
@@ -4176,7 +4212,9 @@ class LecturerController extends Controller
                                 ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
                                 ['subjek.id', $grp->ID],
                                 ['assessment', 'assignment']
-                                ])->first();
+                                ])
+                                ->orderBy('tblclassmarks.id', 'desc')
+                                ->first();
 
                     if($assigns = DB::table('tblclassassign')
                     ->join('tblclassassign_group', 'tblclassassign.id', 'tblclassassign_group.assignid')
@@ -4221,7 +4259,9 @@ class LecturerController extends Controller
                                 ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
                                 ['subjek.id', $grp->ID],
                                 ['assessment', 'extra']
-                                ])->first();
+                                ])
+                                ->orderBy('tblclassmarks.id', 'desc')
+                                ->first();
 
                     if($extras = DB::table('tblclassextra')
                     ->join('tblclassextra_group', 'tblclassextra.id', 'tblclassextra_group.extraid')
@@ -4265,7 +4305,9 @@ class LecturerController extends Controller
                                 ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
                                 ['subjek.id', $grp->ID],
                                 ['assessment', 'other']
-                                ])->first();
+                                ])
+                                ->orderBy('tblclassmarks.id', 'desc')
+                                ->first();
 
                     if($others = DB::table('tblclassother')
                     ->join('tblclassother_group', 'tblclassother.id', 'tblclassother_group.otherid')
@@ -4309,7 +4351,9 @@ class LecturerController extends Controller
                                 ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
                                 ['subjek.id', $grp->ID],
                                 ['assessment', 'midterm']
-                                ])->first();
+                                ])
+                                ->orderBy('tblclassmarks.id', 'desc')
+                                ->first();
 
                     if($midterms = DB::table('tblclassmidterm')
                     ->join('tblclassmidterm_group', 'tblclassmidterm.id', 'tblclassmidterm_group.midtermid')
@@ -4354,7 +4398,9 @@ class LecturerController extends Controller
                                 ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
                                 ['subjek.id', $grp->ID],
                                 ['assessment', 'final']
-                                ])->first();
+                                ])
+                                ->orderBy('tblclassmarks.id', 'desc')
+                                ->first();
 
                     if($finals = DB::table('tblclassfinal')
                     ->join('tblclassfinal_group', 'tblclassfinal.id', 'tblclassfinal_group.finalid')
