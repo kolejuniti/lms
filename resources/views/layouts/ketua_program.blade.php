@@ -279,6 +279,7 @@
 							<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
 								<li><a href="{{ route('kp.group') }}" class="{{ (route('kp.group') == Request::url()) ? 'active' : ''}}">Group</a></li>
 								<li><a href="{{ route('pendaftar_akademik.student') }}" class="{{ (route('pendaftar_akademik.student') == Request::url()) ? 'active' : ''}}">Subject</a></li>
+								<li><a href="{{ route('all.student.spm.report') }}" class="{{ (route('all.student.spm.report') == Request::url()) ? 'active' : ''}}">Student Report SPM</a></li>
 							</ul>
 						</li>
 						<li><a href="{{ route('kp.coursemark') }}" class="{{ (route('kp.coursemark') == Request::url()) ? 'active' : ''}}">Marks</a></li>

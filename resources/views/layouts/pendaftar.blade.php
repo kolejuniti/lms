@@ -281,6 +281,7 @@
 						<li><a href="{{ route('pendaftar.student.studentreport') }}" class="{{ (route('pendaftar.student.studentreport') == Request::url()) ? 'active' : ''}}">Student Report</a></li>
 						<li><a href="{{ route('pendaftar_akademik.reportR') }}" class="{{ (route('pendaftar_akademik.reportR') == Request::url()) ? 'active' : ''}}">Student Report R</a></li>
 						<li><a href="{{ route('pendaftar.student.reportR') }}" class="{{ (route('pendaftar.student.reportR') == Request::url()) ? 'active' : ''}}">Student Report R1/R2</a></li>
+						<li><a href="{{ route('all.student.spm.report') }}" class="{{ (route('all.student.spm.report') == Request::url()) ? 'active' : ''}}">Student Report SPM</a></li>
 					</ul>
 				</li>
 
