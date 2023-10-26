@@ -110,11 +110,13 @@ function confirm()
 function redeem(id)
 {
 
+  let date = $('#r_date').val();
+
   return $.ajax({
             headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
             url      : "{{ url('coop/voucher/redeemVoucher') }}",
             method   : 'POST',
-            data 	 : {id: id},
+            data 	 : {id: id, date: date},
             error:function(err){
                 alert("Error");
                 console.log(err);

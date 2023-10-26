@@ -61,7 +61,7 @@
                 <div class="col-md-6" id="payment-card">
                     <div class="form-group">
                         <label class="form-label" for="date">Redeem Date</label>
-                        <input type="date" class="form-control" name="date" id="date" value="{{ $data['voucher']->redeem_date }}" readonly>
+                        <input type="date" class="form-control" name="r_date" id="r_date" value="{{ $data['voucher']->redeem_date }}" {{ ($data['voucher']->status == 'BARU') ? '' : 'readonly' }}>
                     </div>
                 </div>
             </div>
