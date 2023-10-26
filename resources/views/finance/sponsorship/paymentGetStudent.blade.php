@@ -99,7 +99,7 @@
                                     {{ $tsy->semester_id }}
                                     </td>
                                     <td>
-                                    {{ number_format((float)$data['balance'][$key], 4, '.', '') }}
+                                    {{ number_format((float)$data['balance'][$key], 2, '.', '') }}
                                     </td>
                                     <td>
                                         <div class="col-md-12" id="payment-card">
