@@ -25,7 +25,7 @@ Route::get('/loginAdmin', function () {
 
 Auth::routes();
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/home', [HomeController::class, 'index'])->name('home');
 
 Route::get('/SA', [App\Http\Controllers\SuperAdminController::class, 'index']);
 Route::post('/SA/import', [App\Http\Controllers\SuperAdminController::class, 'import']);
@@ -624,6 +624,8 @@ Route::post('/posting/staff/update', [App\Http\Controllers\AllController::class,
 Route::get('/posting/admin', [App\Http\Controllers\AllController::class, 'adminPosting'])->name('posting.admin');
 Route::post('/posting/admin/listStaff', [App\Http\Controllers\AllController::class, 'getStaffList']);
 Route::post('/posting/admin/getStaffPost', [App\Http\Controllers\AllController::class, 'getStaffPost']);
+Route::get('/all/student/spm/report', [App\Http\Controllers\AllController::class, 'studentSPM'])->name('all.student.spm.report');
+Route::post('/all/student/spm/report/getStudentSPM', [App\Http\Controllers\AllController::class, 'getStudentSPM']);
 
 Route::get('/yuran-pengajian', [App\Http\Controllers\PaymentController::class, 'showPaymentForm'])->name('yuran-pengajian');
 Route::post('/checkout', [App\Http\Controllers\PaymentController::class, 'createCheckoutSession'])->name('checkout');
