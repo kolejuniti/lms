@@ -68,7 +68,8 @@ class CoopController extends Controller
     public function redeemVoucher(Request $request)
     {
         $error = '';
-        $today = date('Y-m-d');
+        
+        ($request->date != null) ? $today = $request->date : $today = date('Y-m-d');
 
         $voucher = DB::table('tblstudent_voucher')->where('id', $request->id)->first();
 
@@ -80,7 +81,7 @@ class CoopController extends Controller
 
             DB::table('tblstudent_voucher')->where('id', $request->id)->update([
                 'status' => 2,
-                'redeem_date' => date('Y-m-d')
+                'redeem_date' => $today
             ]);
 
         }
