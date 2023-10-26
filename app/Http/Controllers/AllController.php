@@ -225,4 +225,56 @@ class AllController extends Controller
         return view('alluser.post.adminGetStaff', compact('data'));
 
     }
+
+    public function studentSPM()
+    {
+
+        $data['program'] = DB::table('tblprogramme')->get();
+
+        return view('alluser.student.spm.index', compact('data'));
+
+    }
+
+    public function getStudentSPM()
+    {
+
+        $data['student'] = DB::table('students')
+                    ->join('sessions', 'students.session', 'sessions.SessionID')
+                    ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
+                    ->select('students.*', 'sessions.SessionName', 'tblstudent_status.name AS status')
+                    ->where('students.program', request()->id)
+                    ->whereIn('students.status', [2,6])
+                    ->get();
+
+        foreach($data['student'] as $key => $std)
+        {
+
+            $data['spm'][$key] = DB::table('tblspm_dtl')
+                              ->join('tblsubject_spm', 'tblspm_dtl.subject_spm_id', 'tblsubject_spm.id')
+                              ->join('tblgrade_spm', 'tblspm_dtl.grade_spm_id', 'tblgrade_spm.id')
+                              ->where('tblspm_dtl.student_spm_ic', $std->ic)
+                              ->select('tblsubject_spm.name AS subject', 'tblgrade_spm.name AS grade')
+                              ->get();
+
+            // Check if the fetched data is less than 10
+            $fetchedDataCount = count($data['spm'][$key]);
+            if ($fetchedDataCount < 10) {
+                // Fill the remaining elements with null
+                for ($i = $fetchedDataCount; $i < 10; $i++) {
+                    $data['spm'][$key][] = null;
+                }
+            }
+
+            $data['result'][$key] = DB::table('tblspm_dtl')
+                              ->join('tblsubject_spm', 'tblspm_dtl.subject_spm_id', 'tblsubject_spm.id')
+                              ->join('tblgrade_spm', 'tblspm_dtl.grade_spm_id', 'tblgrade_spm.id')
+                              ->where('tblspm_dtl.student_spm_ic', $std->ic)
+                              ->whereNotIn('tblgrade_spm.id', [8,9,10,19,20,21,22])
+                              ->select(DB::raw('COUNT(tblspm_dtl.id) AS result'))
+                              ->value('result');
+        }
+
+        return view('alluser.student.spm.indexGetSPM', compact('data'));
+
+    }
 }
