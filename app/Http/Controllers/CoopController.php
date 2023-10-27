@@ -116,7 +116,7 @@ class CoopController extends Controller
                   ->join('students', 'tblstudent_voucher.student_ic', 'students.ic')
                   ->join('users', 'tblstudent_voucher.staff_ic', 'users.ic')
                   ->select('tblstudent_voucher.*', 'tblprocess_status.name AS status', 'students.name AS student', 'users.name AS staff')
-                  ->whereBetween('tblstudent_voucher.add_date', [$request->from, $request->to]);
+                  ->whereBetween('tblstudent_voucher.redeem_date', [$request->from, $request->to]);
 
         $data['sum'] = $voucher->sum('amount');
 
