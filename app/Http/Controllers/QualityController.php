@@ -16,6 +16,8 @@ use Carbon\Carbon;
 use League\Flysystem\AwsS3V3\PortableVisibilityConverter;
 use Mail;
 use Intervention\Image\Facades\Image;
+use App\Exports\TableExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class QualityController extends Controller
 {
@@ -70,6 +72,150 @@ class QualityController extends Controller
         }
 
         return view('quality.report.attendanceGetLecturer', compact('data'));
+
+    }
+
+    public function allReport(Request $request)
+    {
+
+        $data['faculty'] = DB::table('tblfaculty')->get();
+
+        foreach($data['faculty'] as $key => $fcl)
+        {
+
+            $baseQuery = function () use ($fcl){
+
+                return DB::table('users')->where('status', 'ACTIVE')->where('faculty', $fcl->id)->whereIn('usrtype', ['LCT','PL']);
+
+            };
+
+            $data['lecturer'][$key] = ($baseQuery)()->get();
+
+            $data['countCecturer'][$key] = ($baseQuery)()->count();
+
+            foreach($data['lecturer'][$key] as $key1 => $lct)
+            {
+                $data['course'][$key][$key1] = DB::table('user_subjek')
+                    ->join('subjek', 'user_subjek.course_id','=','subjek.sub_id')
+                    ->join('sessions', 'user_subjek.session_id','sessions.SessionID')
+                    ->where('user_subjek.user_ic', $lct->ic)
+                    ->select('subjek.*','user_subjek.id AS groupId','user_subjek.course_id','sessions.SessionName','sessions.SessionID')
+                    ->groupBy('subjek.sub_id', 'user_subjek.session_id')
+                    ->get();
+
+                foreach($data['course'][$key][$key1] as $key2 => $crs)
+                {
+
+                    $data['quiz'][$key][$key1][$key2] = count(DB::table('tblclassquiz')
+                                                        ->where([
+                                                            ['tblclassquiz.classid', $crs->id],
+                                                            ['tblclassquiz.sessionid', $crs->SessionID],
+                                                            ['tblclassquiz.status', 2],
+                                                        ])->get());
+
+                    $data['test'][$key][$key1][$key2] = count(DB::table('tblclasstest')
+                                                        ->where([
+                                                            ['tblclasstest.classid', $crs->id],
+                                                            ['tblclasstest.sessionid', $crs->SessionID],
+                                                            ['tblclasstest.status', 2],
+                                                        ])->get());
+
+                    $data['assignment'][$key][$key1][$key2] = count(DB::table('tblclassassign')
+                                                        ->where([
+                                                            ['tblclassassign.classid', $crs->id],
+                                                            ['tblclassassign.sessionid', $crs->SessionID],
+                                                            ['tblclassassign.status', 2],
+                                                        ])->get());
+                    
+                    $data['usage'][$key][$key1][$key2] = (count(DB::table('student_subjek')
+                                                         ->join('tblsubject_grade','student_subjek.grade','tblsubject_grade.code')
+                                                         ->where([
+                                                            ['student_subjek.courseid', $crs->sub_id],
+                                                            ['student_subjek.sessionid', $crs->SessionID],
+                                                            ['student_subjek.sessionid', $crs->groupId]
+                                                         ])
+                                                         ->whereNotIn('tblsubject_grade.id', [13,15])->get()) > 0) ? 'ACTIVE' : 'NOT ACTIVE';
+
+                }
+
+            }
+
+        }
+
+        //dd($data['countCecturer']);
+
+        return view('quality.report.allReport.index', compact('data'));
+
+    }
+
+    public function exportTableToExcel()
+    {
+
+        $data['faculty'] = DB::table('tblfaculty')->get();
+
+        foreach($data['faculty'] as $key => $fcl)
+        {
+
+            $baseQuery = function () use ($fcl){
+
+                return DB::table('users')->where('status', 'ACTIVE')->where('faculty', $fcl->id)->whereIn('usrtype', ['LCT','PL']);
+
+            };
+
+            $data['lecturer'][$key] = ($baseQuery)()->get();
+
+            $data['countCecturer'][$key] = ($baseQuery)()->count();
+
+            foreach($data['lecturer'][$key] as $key1 => $lct)
+            {
+                $data['course'][$key][$key1] = DB::table('user_subjek')
+                    ->join('subjek', 'user_subjek.course_id','=','subjek.sub_id')
+                    ->join('sessions', 'user_subjek.session_id','sessions.SessionID')
+                    ->where('user_subjek.user_ic', $lct->ic)
+                    ->select('subjek.*','user_subjek.id AS groupId','user_subjek.course_id','sessions.SessionName','sessions.SessionID')
+                    ->groupBy('subjek.sub_id', 'user_subjek.session_id')
+                    ->get();
+
+                foreach($data['course'][$key][$key1] as $key2 => $crs)
+                {
+
+                    $data['quiz'][$key][$key1][$key2] = count(DB::table('tblclassquiz')
+                                                        ->where([
+                                                            ['tblclassquiz.classid', $crs->id],
+                                                            ['tblclassquiz.sessionid', $crs->SessionID],
+                                                            ['tblclassquiz.status', 2],
+                                                        ])->get());
+
+                    $data['test'][$key][$key1][$key2] = count(DB::table('tblclasstest')
+                                                        ->where([
+                                                            ['tblclasstest.classid', $crs->id],
+                                                            ['tblclasstest.sessionid', $crs->SessionID],
+                                                            ['tblclasstest.status', 2],
+                                                        ])->get());
+
+                    $data['assignment'][$key][$key1][$key2] = count(DB::table('tblclassassign')
+                                                        ->where([
+                                                            ['tblclassassign.classid', $crs->id],
+                                                            ['tblclassassign.sessionid', $crs->SessionID],
+                                                            ['tblclassassign.status', 2],
+                                                        ])->get());
+
+                    $data['usage'][$key][$key1][$key2] = (count(DB::table('student_subjek')
+                                                        ->join('tblsubject_grade','student_subjek.grade','tblsubject_grade.code')
+                                                        ->where([
+                                                           ['student_subjek.courseid', $crs->sub_id],
+                                                           ['student_subjek.sessionid', $crs->SessionID],
+                                                           ['student_subjek.sessionid', $crs->groupId]
+                                                        ])
+                                                        ->whereNotIn('tblsubject_grade.id', [13,15])->get()) > 0) ? 'ACTIVE' : 'NOT ACTIVE';
+
+                }
+
+            }
+
+        }
+
+        return Excel::download(new TableExport($data), 'table.xlsx');
 
     }
 }
