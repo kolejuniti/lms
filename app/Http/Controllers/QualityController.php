@@ -134,7 +134,7 @@ class QualityController extends Controller
                                                             ['student_subjek.sessionid', $crs->SessionID],
                                                             ['student_subjek.sessionid', $crs->groupId]
                                                          ])
-                                                         ->whereNotIn('tblsubject_grade.id', [13,15])->get()) > 0) ? 'ACTIVE' : 'NOT ACTIVE';
+                                                         ->whereNotIn('tblsubject_grade.id', [13,15])->get()) > 0) ? 'GRADED' : 'NOT GRADED';
 
                 }
 
@@ -207,7 +207,7 @@ class QualityController extends Controller
                                                            ['student_subjek.sessionid', $crs->SessionID],
                                                            ['student_subjek.sessionid', $crs->groupId]
                                                         ])
-                                                        ->whereNotIn('tblsubject_grade.id', [13,15])->get()) > 0) ? 'ACTIVE' : 'NOT ACTIVE';
+                                                        ->whereNotIn('tblsubject_grade.id', [13,15])->get()) > 0) ? 'GRADED' : 'NOT GRADED';
 
                 }
 
