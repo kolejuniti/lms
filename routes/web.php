@@ -616,6 +616,8 @@ Route::get('/coop/voucher/report/dailyreport/getDailyReport', [App\Http\Controll
 
 Route::get('/quality/report/attendance', [App\Http\Controllers\QualityController::class, 'attendanceReport'])->name('quality.report.attendance');
 Route::post('/quality/report/attendance/getLecturer', [App\Http\Controllers\QualityController::class, 'getLectAttendance'])->name('quality.report.attendance.getLecturer');
+Route::get('/quality/report/allreport', [App\Http\Controllers\QualityController::class, 'allReport'])->name('quality.report.allReport');
+Route::get('/export-table', [App\Http\Controllers\QualityController::class, 'exportTableToExcel'])->name('export-table');
 
 Route::get('/posting/staff', [App\Http\Controllers\AllController::class, 'staffPosting'])->name('posting.staff');
 Route::post('/posting/staff/create', [App\Http\Controllers\AllController::class, 'postingCreate']);
