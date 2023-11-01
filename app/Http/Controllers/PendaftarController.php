@@ -2195,14 +2195,18 @@ class PendaftarController extends Controller
 
         $data['value'] = [];
         $data['b40'] = [];
-    
-        foreach ($request->val as $value) {
-            if (is_numeric($value)) {
-                $data['value'][] = $value;
-            } elseif ($value === 'yes') {
-                $data['b40'] = $value;
+
+        if($request->val)
+        {
+            foreach ($request->val as $value) {
+                if (is_numeric($value)) {
+                    $data['value'][] = $value;
+                } elseif ($value === 'yes') {
+                    $data['b40'] = $value;
+                }
             }
         }
+            
 
         $query = DB::table('students')
                           ->join('tblstudent_personal','students.ic','tblstudent_personal.student_ic')
