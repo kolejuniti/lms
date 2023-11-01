@@ -2173,5 +2173,74 @@ class PendaftarController extends Controller
         }
 
     }
+
+    public function incomeReport()
+    {
+        $loop = 21;
+
+        for($i = 15; $i <= $loop; $i++)
+        {
+
+            $stateNot[] = $i;
+            
+        }
+
+        $data['state'] = DB::table('tblstate')->whereNotIn('id', $stateNot)->get();
+
+        return view('pendaftar.income_report.index', compact('data'));
+    }
+
+    public function getIncomeReport(Request $request)
+    {
+
+        $data['value'] = [];
+        $data['b40'] = [];
+    
+        foreach ($request->val as $value) {
+            if (is_numeric($value)) {
+                $data['value'][] = $value;
+            } elseif ($value === 'yes') {
+                $data['b40'] = $value;
+            }
+        }
+
+        $query = DB::table('students')
+                          ->join('tblstudent_personal','students.ic','tblstudent_personal.student_ic')
+                          ->join('tblsex','tblstudent_personal.sex_id','tblsex.id')
+                          ->join('tblprogramme','students.program','tblprogramme.id')
+                          ->join('sessions','students.session','sessions.SessionID')
+                          ->join('tblstudent_status','students.status','tblstudent_status.id')
+                          ->join('tblstudent_address','students.ic','tblstudent_address.student_ic')
+                          ->join('tblstate','tblstudent_address.state_id','tblstate.id')
+                          ->join('tblstudent_waris','students.ic','tblstudent_waris.student_ic')
+                          ->where([
+                            ['students.status', 2]
+                          ])
+                          ->whereIn('tblstudent_address.state_id', $data['value'])
+                          ->groupBy('students.ic')
+                          ->orderBy('students.name')
+                          ->select('students.*', 'tblsex.code', 'tblprogramme.progcode', 'sessions.SessionName', 'tblstudent_status.name AS status','tblstudent_personal.no_tel',
+                                    DB::raw('CONCAT_WS(", ", tblstudent_address.address1, tblstudent_address.address2, tblstudent_address.address3, tblstudent_address.city, tblstudent_address.postcode, tblstate.state_name) AS full_address'),
+                                    'tblstudent_waris.dependent_no', DB::raw('SUM(tblstudent_waris.kasar) AS gajikasar'));
+
+        if($data['b40'])
+        {
+
+            $data['students'] = $query->havingRaw('SUM(tblstudent_waris.kasar) <= 4850')->get();
+
+        }else{
+
+            $data['students'] = $query->get();
+
+        }
+
+        // // Return the data as part of the response
+        // return response()->json([
+        //     'data' => $data['result'],
+        // ]);
+
+        return view('pendaftar.income_report.getStudents', compact('data'));
+
+    }
     
 }
