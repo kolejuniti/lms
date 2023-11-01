@@ -2216,7 +2216,6 @@ class PendaftarController extends Controller
                           ->where([
                             ['students.status', 2]
                           ])
-                          ->whereIn('tblstudent_address.state_id', $data['value'])
                           ->groupBy('students.ic')
                           ->orderBy('students.name')
                           ->select('students.*', 'tblsex.code', 'tblprogramme.progcode', 'sessions.SessionName', 'tblstudent_status.name AS status','tblstudent_personal.no_tel',
