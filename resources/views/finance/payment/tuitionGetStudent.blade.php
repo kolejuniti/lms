@@ -163,7 +163,7 @@
                                         <div class="col-md-12" id="payment-card">
                                             <div class="form-group">
                                                 <input type="text" class="form-control" name="phyid[]" id="phyid[]" value="{{ $tsy->id }}" hidden>
-                                                <input type="number" class="form-control" name="payment[]" id="payment[]" step='0.01' max="{{ $data['amount'][$key] }}">
+                                                <input type="number" class="form-control payment-input" name="payment[]" id="payment[]" step='0.01' max="{{ $data['amount'][$key] }}">
                                             </div>
                                         </div> 
                                     </td>
@@ -203,15 +203,13 @@
     </div>
     
     <script>
-    $('input[id="payment[]"]').keyup(function(){
-
+    $('.payment-input').on('input', function() {
         var sum = 0;
-        $('input[id="payment[]"]').each(function() {
-            sum += Number($(this).val());
+        $('.payment-input').each(function() {
+            sum += Number($(this).val()) || 0;
         });
 
         $('#sum2').val(sum);
         $('#text_sum').val(sum);
-
     });
     </script>
