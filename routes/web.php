@@ -115,6 +115,8 @@ Route::post('/pendaftar/student/result/getStudentResult', [App\Http\Controllers\
 Route::get('/pendaftar/student/result/overallResult', [App\Http\Controllers\PendaftarController::class, 'overallResult']);
 Route::get('/pendaftar/student/reportRs', [App\Http\Controllers\PendaftarController::class, 'studentReportRs'])->name('pendaftar.student.reportR');
 Route::get('/pendaftar/student/reportRs/getStudentReportR', [App\Http\Controllers\PendaftarController::class, 'getStudentReportRs']);
+Route::get('/pendaftar/student/incomeReport', [App\Http\Controllers\PendaftarController::class,'incomeReport'])->name('pendaftar.student.incomeReport');
+Route::post('/pendaftar/student/incomeReport/getIncomeReport', [App\Http\Controllers\PendaftarController::class,'getIncomeReport']);
 
 
 Route::get('/AR_dashboard', [App\Http\Controllers\AR_Controller::class, 'dashboard'])->name('pendaftar_akademik.dashboard');
