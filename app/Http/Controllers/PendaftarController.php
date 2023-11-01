@@ -2226,13 +2226,18 @@ class PendaftarController extends Controller
         if($data['b40'])
         {
 
-            $data['students'] = $query->havingRaw('SUM(tblstudent_waris.kasar) <= 4850')->get();
-
-        }else{
-
-            $data['students'] = $query->get();
+            $query = $query->havingRaw('SUM(tblstudent_waris.kasar) <= 4850');
 
         }
+
+        if($data['value'])
+        {
+
+            $query = $query->whereIn('tblstudent_address.state_id', $data['value']);
+
+        }
+
+        $data['students'] = $query->get();
 
         // // Return the data as part of the response
         // return response()->json([
