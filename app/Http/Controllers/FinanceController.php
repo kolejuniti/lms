@@ -2414,7 +2414,7 @@ class FinanceController extends Controller
                                 'payment_id' => $payment->id,
                                 'claimDtl_id' => $phy->id,
                                 'claim_type_id' => $claimdtl->claim_package_id,
-                                'amount' => intval($paymentinput2[$i]->payment) * -1,
+                                'amount' => $paymentinput2[$i]->payment * -1,
                                 'add_staffID' => Auth::user()->ic,
                                 'add_date' => date('Y-m-d'),
                                 'mod_staffID' => Auth::user()->ic,
