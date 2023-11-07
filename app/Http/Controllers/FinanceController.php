@@ -2097,6 +2097,7 @@ class FinanceController extends Controller
                             ->where('tblclaim.student_ic', $request->student)
                             ->where('tblclaim.program_id', $data['student']->progid)
                             ->where('tblclaim.process_status_id', 2)->where('tblclaim.process_type_id', '!=', 5)
+                            ->where('tblstudentclaim.groupid', 1)
                             ->select('tblclaimdtl.*', 'tblclaim.session_id', 'tblclaim.semester_id', 'tblstudentclaim.name')->get();
 
         foreach($data['tuition'] as $key => $tsy)
