@@ -2096,7 +2096,7 @@ class PendaftarController extends Controller
 
             // Use the base query for studentR2
             $data['studentR2'] = ($baseQuery)()
-                ->wherein('students.status', [2,4])
+                ->wherein('students.status', [2,4,6,16,17])
                 ->get();
 
 
