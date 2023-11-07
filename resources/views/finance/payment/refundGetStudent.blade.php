@@ -145,7 +145,6 @@
                             </thead>
                             <tbody id="table">
                                 @foreach ($data['tuition'] as $key => $tsy)
-                                @if($data['balance'][$key] < 0)
                                 <tr>
                                     <td>
                                     {{ date("Y-m-d") }}
@@ -168,7 +167,6 @@
                                         </div> 
                                     </td>
                                 </tr>
-                                @endif
                                 @endforeach
                                 <tfoot>
                                     <tr>
