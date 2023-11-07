@@ -806,7 +806,7 @@
                                     ])->exists())
                                       @if(DB::table('tblclassmarks')->where([
                                       ['course_id', $id],
-                                      ['assessment', 'other']
+                                      ['assessment', 'lain-lain']
                                       ])
                                       ->orderBy('tblclassmarks.id', 'desc')
                                       ->first() != null)
@@ -1054,7 +1054,7 @@
                                     ])->exists())
                                       @if(DB::table('tblclassmarks')->where([
                                       ['course_id', $id],
-                                      ['assessment', 'other']
+                                      ['assessment', 'lain-lain']
                                       ])
                                       ->orderBy('tblclassmarks.id', 'desc')
                                       ->first() != null)
@@ -1302,7 +1302,7 @@
                                     ])->exists())
                                       @if(DB::table('tblclassmarks')->where([
                                       ['course_id', $id],
-                                      ['assessment', 'other']
+                                      ['assessment', 'lain-lain']
                                       ])
                                       ->orderBy('tblclassmarks.id', 'desc')
                                       ->first() != null)
