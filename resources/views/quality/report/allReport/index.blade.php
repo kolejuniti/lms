@@ -56,6 +56,9 @@
                           Subject
                           </th>
                           <th style="text-align: center; border: 1px solid black;">
+                          Content
+                          </th>
+                          <th style="text-align: center; border: 1px solid black;">
                           Quiz
                           </th>
                           <th style="text-align: center; border: 1px solid black;">
@@ -66,6 +69,9 @@
                           </th>
                           <th style="text-align: center; border: 1px solid black;">
                           Usage
+                          </th>
+                          <th style="text-align: center; border: 1px solid black;">
+                          Active
                           </th>
                         </tr>
                       </thead>
@@ -90,10 +96,16 @@
                                             <?php $isNameDisplayed = true; ?>
                                         @endif
                                         <td style="border: 1px solid black; text-align: center">{{ $courseValue->course_name }}</td>
+                                        <td style="border: 1px solid black">
+                                          @foreach($data['content'][$facultyKey][$nameKey][$courseKey] as $content)
+                                          Chapter {{ $content->ChapterNo }} : {{ $content->DrName }} <br>
+                                          @endforeach
+                                        </td>
                                         <td style="border: 1px solid black; text-align: center">{{ $data['quiz'][$facultyKey][$nameKey][$courseKey] }}</td>
                                         <td style="border: 1px solid black; text-align: center">{{ $data['test'][$facultyKey][$nameKey][$courseKey] }}</td>
                                         <td style="border: 1px solid black; text-align: center">{{ $data['assignment'][$facultyKey][$nameKey][$courseKey] }}</td>
                                         <td style="border: 1px solid black; text-align: center">{{ $data['usage'][$facultyKey][$nameKey][$courseKey] }}</td>
+                                        <td style="border: 1px solid black; text-align: center">{{ $data['assessment'][$facultyKey][$nameKey][$courseKey] }}</td>
                                     </tr>
                                 @endforeach
                             @endforeach
