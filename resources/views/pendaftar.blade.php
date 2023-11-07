@@ -190,12 +190,12 @@
   </div>
 </div>
 
-@if(session('newStud'))
+{{-- @if(session('newStud'))
     <script>
       alert('Success! Student has been registered!')
       window.open('/pendaftar/surat_tawaran?ic={{ session("newStud") }}')
     </script>
-@endif
+@endif --}}
 
 <!-- DataTables  & Plugins -->
 <script src="../../plugins/datatables/jquery.dataTables.min.js"></script>
@@ -359,7 +359,13 @@
                 $('#complex_header').removeAttr('hidden');
                 $('#complex_header').html(data);
                 
-                $('#complex_header').DataTable();
+                $('#complex_header').DataTable({
+                  dom: 'lBfrtip', // if you remove this line you will see the show entries dropdown
+                  
+                  buttons: [
+                      'copy', 'csv', 'excel', 'pdf', 'print'
+                  ],
+                });
                 //window.location.reload();
             }
         });
