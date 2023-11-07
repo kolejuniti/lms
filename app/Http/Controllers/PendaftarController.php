@@ -2218,8 +2218,10 @@ class PendaftarController extends Controller
                           ->join('tblstate','tblstudent_address.state_id','tblstate.id')
                           ->join('tblstudent_waris','students.ic','tblstudent_waris.student_ic')
                           ->where([
-                            ['students.status', 2]
+                            ['students.status', 2],
+                            ['students.campus_id', 1]
                           ])
+                          ->whereIn('students.student_status', [1,2,4])
                           ->groupBy('students.ic')
                           ->orderBy('students.name')
                           ->select('students.*', 'tblsex.code', 'tblprogramme.progcode', 'sessions.SessionName', 'tblstudent_status.name AS status','tblstudent_personal.no_tel',
