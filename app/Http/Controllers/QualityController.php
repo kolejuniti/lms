@@ -80,6 +80,8 @@ class QualityController extends Controller
 
         $data['faculty'] = DB::table('tblfaculty')->get();
 
+        $data['assessment'] = [];
+
         foreach($data['faculty'] as $key => $fcl)
         {
 
@@ -106,10 +108,73 @@ class QualityController extends Controller
                 foreach($data['course'][$key][$key1] as $key2 => $crs)
                 {
 
+                    if(DB::table('tblclassquiz')
+                       ->join('tblclassstudentquiz', 'tblclassquiz.id', 'tblclassstudentquiz.quizid')
+                       ->where([
+                        ['tblclassquiz.classid', $crs->id],
+                        ['tblclassquiz.sessionid', $crs->SessionID],
+                        ['tblclassquiz.addby', $lct->ic],
+                        ['tblclassquiz.status', 2],
+                        ])
+                       ->whereNotIn('tblclassstudentquiz.final_mark', [null,0])->exists())
+                    {
+
+                        $data['assessment'][$key][$key1][$key2] = 'MARKED';
+
+                        break;
+
+                    }elseif(DB::table('tblclasstest')
+                    ->join('tblclassstudenttest', 'tblclasstest.id', 'tblclassstudenttest.testid')
+                    ->where([
+                        ['tblclasstest.classid', $crs->id],
+                        ['tblclasstest.sessionid', $crs->SessionID],
+                        ['tblclasstest.addby', $lct->ic],
+                        ['tblclasstest.status', 2],
+                        ])
+                    ->whereNotIn('tblclassstudenttest.final_mark', [null,0])->exists())
+                    {
+
+                        $data['assessment'][$key][$key1][$key2] = 'MARKED';
+
+                        break;
+
+                    }elseif(DB::table('tblclassassign')
+                    ->join('tblclassstudentassign', 'tblclassassign.id', 'tblclassstudentassign.assignid')
+                    ->where([
+                        ['tblclassassign.classid', $crs->id],
+                        ['tblclassassign.sessionid', $crs->SessionID],
+                        ['tblclassassign.addby', $lct->ic],
+                        ['tblclassassign.status', 2],
+                        ])
+                    ->whereNotIn('tblclassstudentassign.final_mark', [null,0])->exists())
+                    {
+
+                        $data['assessment'][$key][$key1][$key2] = 'MARKEDssss';
+
+                        break;
+
+                    }else{
+
+                        $data['assessment'][$key][$key1][$key2] = 'NOT MARKED';
+
+                        
+
+                    }
+
+                    $data['content'][$key][$key1][$key2] = DB::table('material_dir')
+                                                           ->join('lecturer_dir','material_dir.LecturerDirID','lecturer_dir.DrID')
+                                                           ->where([
+                                                            ['lecturer_dir.AddBy', $lct->ic],
+                                                            ['lecturer_dir.CourseID', $crs->id],
+                                                            ['lecturer_dir.SessionID', $crs->SessionID],
+                                                            ])
+                                                            ->select('material_dir.*')->get();
+
                     $data['quiz'][$key][$key1][$key2] = count(DB::table('tblclassquiz')
                                                         ->where([
                                                             ['tblclassquiz.classid', $crs->id],
                                                             ['tblclassquiz.sessionid', $crs->SessionID],
+                                                            ['tblclassquiz.addby', $lct->ic],
                                                             ['tblclassquiz.status', 2],
                                                         ])->get());
 
@@ -117,6 +182,7 @@ class QualityController extends Controller
                                                         ->where([
                                                             ['tblclasstest.classid', $crs->id],
                                                             ['tblclasstest.sessionid', $crs->SessionID],
+                                                            ['tblclasstest.addby', $lct->ic],
                                                             ['tblclasstest.status', 2],
                                                         ])->get());
 
@@ -124,6 +190,7 @@ class QualityController extends Controller
                                                         ->where([
                                                             ['tblclassassign.classid', $crs->id],
                                                             ['tblclassassign.sessionid', $crs->SessionID],
+                                                            ['tblclassassign.addby', $lct->ic],
                                                             ['tblclassassign.status', 2],
                                                         ])->get());
                     
@@ -142,7 +209,7 @@ class QualityController extends Controller
 
         }
 
-        //dd($data['countCecturer']);
+        //dd($data['content']);
 
         return view('quality.report.allReport.index', compact('data'));
 
