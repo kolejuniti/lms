@@ -2082,7 +2082,7 @@ class PendaftarController extends Controller
                     ->leftjoin('tblsex', 'tblstudent_personal.sex_id', '=', 'tblsex.id')
                     ->leftjoin('tblstudent_status', 'students.status', '=', 'tblstudent_status.id')
                     ->where('students.semester', 1)
-                    ->whereBetween('students.date_add', [$request->from, $request->to])
+                    ->whereBetween('students.date_offer', [$request->from, $request->to])
                     ->select(
                         'students.*', 'tblstudent_personal.no_tel', 'sessions.SessionName',
                         'tblprogramme.progcode', 'tbledu_advisor.name AS ea', 'tblsex.code AS sex',
