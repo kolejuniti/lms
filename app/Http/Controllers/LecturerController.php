@@ -4304,7 +4304,7 @@ class LecturerController extends Controller
                     $percentother = DB::table('tblclassmarks')
                                 ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
                                 ['subjek.id', $grp->ID],
-                                ['assessment', 'other']
+                                ['assessment', 'lain-lain']
                                 ])
                                 ->orderBy('tblclassmarks.id', 'desc')
                                 ->first();
