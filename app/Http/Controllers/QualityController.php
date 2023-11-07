@@ -108,7 +108,7 @@ class QualityController extends Controller
                 foreach($data['course'][$key][$key1] as $key2 => $crs)
                 {
 
-                    if(DB::table('tblclassquiz')
+                    if(count(DB::table('tblclassquiz')
                        ->join('tblclassstudentquiz', 'tblclassquiz.id', 'tblclassstudentquiz.quizid')
                        ->where([
                         ['tblclassquiz.classid', $crs->id],
@@ -116,14 +116,14 @@ class QualityController extends Controller
                         ['tblclassquiz.addby', $lct->ic],
                         ['tblclassquiz.status', 2],
                         ])
-                       ->whereNotIn('tblclassstudentquiz.final_mark', [null,0])->exists())
+                       ->whereNotIn('tblclassstudentquiz.final_mark', [null,0])->get()) > 0)
                     {
 
                         $data['assessment'][$key][$key1][$key2] = 'MARKED';
 
                         break;
 
-                    }elseif(DB::table('tblclasstest')
+                    }elseif(count(DB::table('tblclasstest')
                     ->join('tblclassstudenttest', 'tblclasstest.id', 'tblclassstudenttest.testid')
                     ->where([
                         ['tblclasstest.classid', $crs->id],
@@ -131,14 +131,14 @@ class QualityController extends Controller
                         ['tblclasstest.addby', $lct->ic],
                         ['tblclasstest.status', 2],
                         ])
-                    ->whereNotIn('tblclassstudenttest.final_mark', [null,0])->exists())
+                    ->whereNotIn('tblclassstudenttest.final_mark', [null,0])->get()) > 0)
                     {
 
                         $data['assessment'][$key][$key1][$key2] = 'MARKED';
 
                         break;
 
-                    }elseif(DB::table('tblclassassign')
+                    }elseif(count(DB::table('tblclassassign')
                     ->join('tblclassstudentassign', 'tblclassassign.id', 'tblclassstudentassign.assignid')
                     ->where([
                         ['tblclassassign.classid', $crs->id],
@@ -146,7 +146,7 @@ class QualityController extends Controller
                         ['tblclassassign.addby', $lct->ic],
                         ['tblclassassign.status', 2],
                         ])
-                    ->whereNotIn('tblclassstudentassign.final_mark', [null,0])->exists())
+                    ->whereNotIn('tblclassstudentassign.final_mark', [null,0])->get()) > 0)
                     {
 
                         $data['assessment'][$key][$key1][$key2] = 'MARKEDssss';
