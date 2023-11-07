@@ -43,85 +43,85 @@
                   </div>
                 </div> --}}
                 <div class="card-body" style="width: 100%; overflow-x: auto;">
-                    <table id="table_dismissed" class="w-100 table table-bordered display margin-top-10 w-p100 table-layout: fixed;" style="width: 100%;">
+                    <table id="table_dismissed" class="w-100 table display margin-top-10 w-p100 table-layout: fixed;" style="width: 100%;">
                       <thead style="background-color: darkcyan">
                         <tr>
-                          <th style="text-align: center" colspan="2"> </th>
-                          <th style="text-align: center" colspan="2">Holding</th>
-                          <th style="text-align: center" colspan="2">40</th>
-                          <th style="text-align: center" colspan="2">40</th>
-                          <th style="text-align: center" colspan="2">10</th>
-                          <th style="text-align: center" colspan="2">6</th>
-                          <th style="text-align: center" colspan="2">2</th>
-                          <th style="text-align: center" colspan="2">0</th>
-                          <th style="text-align: center" colspan="9"> </th>
+                          <th style="text-align: center; border: 1px solid black;" colspan="2"> </th>
+                          <th style="text-align: center; border: 1px solid black;" colspan="2">Holding</th>
+                          <th style="text-align: center; border: 1px solid black;" colspan="2">40</th>
+                          <th style="text-align: center; border: 1px solid black;" colspan="2">40</th>
+                          <th style="text-align: center; border: 1px solid black;" colspan="2">10</th>
+                          <th style="text-align: center; border: 1px solid black;" colspan="2">6</th>
+                          <th style="text-align: center; border: 1px solid black;" colspan="2">2</th>
+                          <th style="text-align: center; border: 1px solid black;" colspan="2">0</th>
+                          <th style="text-align: center; border: 1px solid black;" colspan="9"> </th>
                         </tr>
                         <tr>
-                          <th style="text-align: center; width: 1%" rowspan="2">
+                          <th style="text-align: center; width: 1%; border: 1px solid black;" rowspan="2">
                           Faculty
                           </th>
-                          <th style="text-align: center; width: 20%" rowspan="2">
+                          <th style="text-align: center; width: 20%; border: 1px solid black;" rowspan="2">
                           Program
                           </th>
-                          <th style="text-align: center; width: 5%" colspan="4">
+                          <th style="text-align: center; width: 5%; border: 1px solid black;" colspan="4">
                           Sem 1
                           </th>
-                          <th style="text-align: center; width: 5%" colspan="2">
+                          <th style="text-align: center; width: 5%; border: 1px solid black;" colspan="2">
                           Sem 2
                           </th>
-                          <th style="text-align: center; width: 5%" colspan="2">
+                          <th style="text-align: center; width: 5%; border: 1px solid black;" colspan="2">
                           Sem 3
                           </th>
-                          <th style="text-align: center; width: 5%" colspan="2">
+                          <th style="text-align: center; width: 5%; border: 1px solid black;" colspan="2">
                           Sem 4
                           </th>
-                          <th style="text-align: center; width: 5%" colspan="2">
+                          <th style="text-align: center; width: 5%; border: 1px solid black;" colspan="2">
                           Sem 5
                           </th>
-                          <th style="text-align: center; width: 5%" colspan="2">
+                          <th style="text-align: center; width: 5%; border: 1px solid black;" colspan="2">
                           Sem 6
                           </th>
-                          <th style="text-align: center; width: 5%" colspan="2">
+                          <th style="text-align: center; width: 5%; border: 1px solid black;" colspan="2">
                           Sem 7
                           </th>
-                          <th style="text-align: center; width: 5%" colspan="2">
+                          <th style="text-align: center; width: 5%; border: 1px solid black;" colspan="2">
                           Sem 8
                           </th>
-                          <th style="width: 10%; text-align: center" rowspan="2">
+                          <th style="width: 10%; text-align: center; border: 1px solid black;" rowspan="2">
                           Industry Training
                           </th>
-                          <th style="width: 10%; text-align: center" rowspan="2">
+                          <th style="width: 10%; text-align: center; border: 1px solid black;" rowspan="2">
                           Active
                           </th>
-                          <th style="width: 10%; text-align: center" rowspan="2">
+                          <th style="width: 10%; text-align: center; border: 1px solid black;" rowspan="2">
                           Active on Leave
                           </th>
-                          <th style="width: 10%; text-align: center" rowspan="2">
+                          <th style="width: 10%; text-align: center; border: 1px solid black;" rowspan="2">
                           Postpone
                           </th>
-                          <th style="width: 10%; text-align: center" rowspan="2">
+                          <th style="width: 10%; text-align: center; border: 1px solid black;" rowspan="2">
                           Dismissed
                           </th>
                         </tr>
                         <tr>
-                          <th>L</th>
-                          <th>P</th>
-                          <th>L</th>
-                          <th>P</th>
-                          <th>L</th>
-                          <th>P</th>
-                          <th>L</th>
-                          <th>P</th>
-                          <th>L</th>
-                          <th>P</th>
-                          <th>L</th>
-                          <th>P</th>
-                          <th>L</th>
-                          <th>P</th>
-                          <th>L</th>
-                          <th>P</th>
-                          <th>L</th>
-                          <th>P</th>
+                          <th style="border: 1px solid black;">L</th>
+                          <th style="border: 1px solid black;">P</th>
+                          <th style="border: 1px solid black;">L</th>
+                          <th style="border: 1px solid black;">P</th>
+                          <th style="border: 1px solid black;">L</th>
+                          <th style="border: 1px solid black;">P</th>
+                          <th style="border: 1px solid black;">L</th>
+                          <th style="border: 1px solid black;">P</th>
+                          <th style="border: 1px solid black;">L</th>
+                          <th style="border: 1px solid black;">P</th>
+                          <th style="border: 1px solid black;">L</th>
+                          <th style="border: 1px solid black;">P</th>
+                          <th style="border: 1px solid black;">L</th>
+                          <th style="border: 1px solid black;">P</th>
+                          <th style="border: 1px solid black;">L</th>
+                          <th style="border: 1px solid black;">P</th>
+                          <th style="border: 1px solid black;">L</th>
+                          <th style="border: 1px solid black;">P</th>
                       </tr>
                       </thead>
                       <tbody id="table">
@@ -148,14 +148,14 @@
                         @endphp
                         @foreach ($data['program'] as $key=>$prg)
                         <tr>
-                          <td style="text-align: center">
+                          <td style="text-align: center; border: 1px solid black;">
                           {{ $prg->facultycode }} <br>
                           {{ $data['sum'][$key] }}
                           </td>
-                          <td>
+                          <td style="text-align: center; border: 1px solid black;">
                           {{ $prg->progcode }}
                           </td>
-                          <td>
+                          <td style="border: 1px solid black;">
                             @foreach ((array) $data['holding_m1'][$key] as $ms1)
                             {{ $ms1 }}
                             @endforeach
@@ -164,7 +164,7 @@
                                 $totalSum_m1 += $sum_m1;
                             @endphp
                           </td>
-                          <td>
+                          <td style="border: 1px solid black;">
                             @foreach ((array) $data['holding_f1'][$key] as $ms1)
                             {{ $ms1 }}
                             @endforeach
@@ -173,7 +173,7 @@
                                 $totalSum_f1 += $sum_f1;
                             @endphp
                           </td>
-                          <td>
+                          <td style="border: 1px solid black;">
                             @foreach ((array) $data['ms1'][$key] as $ms1)
                             {{ $ms1 }}
                             @endforeach
@@ -182,7 +182,7 @@
                                 $totalSum_ms1 += $sum_ms1;
                             @endphp
                           </td>
-                          <td>
+                          <td style="border: 1px solid black;">
                             @foreach ((array) $data['fs1'][$key] as $fs1)
                             {{ $fs1 }}
                             @endforeach
@@ -191,7 +191,7 @@
                                 $totalSum_fs1 += $sum_fs1;
                             @endphp
                           </td>
-                          <td>
+                          <td style="border: 1px solid black;">
                             @foreach ((array) $data['ms2'][$key] as $ms2)
                             {{ $ms2 }}
                             @endforeach
@@ -200,7 +200,7 @@
                                 $totalSum_ms2 += $sum_ms2;
                             @endphp
                           </td>
-                          <td>
+                          <td style="border: 1px solid black;">
                             @foreach ((array) $data['fs2'][$key] as $fs2)
                             {{ $fs2 }}
                             @endforeach
@@ -209,7 +209,7 @@
                                 $totalSum_fs2 += $sum_fs2;
                             @endphp
                           </td>
-                          <td>
+                          <td style="border: 1px solid black;">
                             @foreach ((array) $data['ms3'][$key] as $ms3)
                             {{ $ms3 }}
                             @endforeach
@@ -218,7 +218,7 @@
                                 $totalSum_ms3 += $sum_ms3;
                             @endphp
                           </td>
-                          <td>
+                          <td style="border: 1px solid black;">
                             @foreach ((array) $data['fs3'][$key] as $fs3)
                             {{ $fs3 }}
                             @endforeach
@@ -227,7 +227,7 @@
                                 $totalSum_fs3 += $sum_fs3;
                             @endphp
                           </td>
-                          <td>
+                          <td style="border: 1px solid black;">
                             @foreach ((array) $data['ms4'][$key] as $ms4)
                             {{ $ms4 }}
                             @endforeach
@@ -236,7 +236,7 @@
                                 $totalSum_ms4 += $sum_ms4;
                             @endphp
                           </td>
-                          <td>
+                          <td style="border: 1px solid black;">
                             @foreach ((array) $data['fs4'][$key] as $fs4)
                             {{ $fs4 }}
                             @endforeach
@@ -245,7 +245,7 @@
                                 $totalSum_fs4 += $sum_fs4;
                             @endphp
                           </td>
-                          <td>
+                          <td style="border: 1px solid black;">
                             @foreach ((array) $data['ms5'][$key] as $ms5)
                             {{ $ms5 }}
                             @endforeach
@@ -254,7 +254,7 @@
                                 $totalSum_ms5 += $sum_ms5;
                             @endphp
                           </td>
-                          <td>
+                          <td style="border: 1px solid black;">
                             @foreach ((array) $data['fs5'][$key] as $fs5)
                             {{ $fs5 }}
                             @endforeach
@@ -263,7 +263,7 @@
                                 $totalSum_fs5 += $sum_fs5;
                             @endphp
                           </td>
-                          <td>
+                          <td style="border: 1px solid black;">
                             @foreach ((array) $data['ms6'][$key] as $ms6)
                             {{ $ms6 }}
                             @endforeach
@@ -272,7 +272,7 @@
                                 $totalSum_ms6 += $sum_ms6;
                             @endphp
                           </td>
-                          <td>
+                          <td style="border: 1px solid black;">
                             @foreach ((array) $data['fs6'][$key] as $fs6)
                             {{ $fs6 }}
                             @endforeach
@@ -281,7 +281,7 @@
                                 $totalSum_fs6 += $sum_fs6;
                             @endphp
                           </td>
-                          <td>
+                          <td style="border: 1px solid black;">
                             @foreach ((array) $data['ms7'][$key] as $ms7)
                             {{ $ms7 }}
                             @endforeach
@@ -290,7 +290,7 @@
                                 $totalSum_ms7 += $sum_ms7;
                             @endphp
                           </td>
-                          <td>
+                          <td style="border: 1px solid black;">
                             @foreach ((array) $data['fs7'][$key] as $fs7)
                             {{ $fs7 }}
                             @endforeach
@@ -299,7 +299,7 @@
                                 $totalSum_fs7 += $sum_fs7;
                             @endphp
                           </td>
-                          <td>
+                          <td style="border: 1px solid black;">
                             @foreach ((array) $data['ms8'][$key] as $ms8)
                             {{ $ms8 }}
                             @endforeach
@@ -308,7 +308,7 @@
                                 $totalSum_ms8 += $sum_ms8;
                             @endphp
                           </td>
-                          <td>
+                          <td style="border: 1px solid black;">
                             @foreach ((array) $data['fs8'][$key] as $fs8)
                             {{ $fs8 }}
                             @endforeach
@@ -317,27 +317,27 @@
                                 $totalSum_fs8 += $sum_fs8;
                             @endphp
                           </td>
-                          <td style="text-align: center">
+                          <td style="text-align: center; border: 1px solid black;">
                             @foreach ((array) $data['industry'][$key] as $industry)
                             {{ $industry }}
                             @endforeach
                           </td>
-                          <td style="text-align: center">
+                          <td style="text-align: center; border: 1px solid black;">
                             @foreach ((array) $data['active'][$key] as $active)
                             {{ $active }}
                             @endforeach
                           </td>
-                          <td style="text-align: center">
+                          <td style="text-align: center; border: 1px solid black;">
                             @foreach ((array) $data['active_leave'][$key] as $aol)
                             {{ $aol }}
                             @endforeach
                           </td>
-                          <td style="text-align: center">
+                          <td style="text-align: center; border: 1px solid black;">
                             @foreach ((array) $data['postpone'][$key] as $postpone)
                             {{ $postpone }}
                             @endforeach
                           </td>
-                          <td style="text-align: center">
+                          <td style="text-align: center; border: 1px solid black;">
                             @foreach ((array) $data['dismissed'][$key] as $dismissed)
                             {{ $dismissed }}
                             @endforeach
@@ -348,67 +348,67 @@
                       </tbody>
                       <tfoot style="background-color: darkcyan">
                         <tr>
-                          <td>
+                          <td style="border: 1px solid black;">
                             
                           </td>
-                          <td >
+                          <td style="border: 1px solid black;">
                             TOTAL STUDENT
                           </td>
-                          <td>
+                          <td style="border: 1px solid black;">
                             {{ $totalSum_m1 }}
                           </td>
-                          <td>
+                          <td style="border: 1px solid black;">
                             {{ $totalSum_f1 }}
                           </td>
-                          <td>
+                          <td style="border: 1px solid black;">
                             {{ $totalSum_ms1 }}
                           </td>
-                          <td>
+                          <td style="border: 1px solid black;">
                             {{ $totalSum_fs1 }}
                           </td>
-                          <td>
+                          <td style="border: 1px solid black;">
                             {{ $totalSum_ms2 }}
                           </td>
-                          <td>
+                          <td style="border: 1px solid black;">
                             {{ $totalSum_fs2 }}
                           </td>
-                          <td>
+                          <td style="border: 1px solid black;">
                             {{ $totalSum_ms3 }}
                           </td>
-                          <td>
+                          <td style="border: 1px solid black;">
                             {{ $totalSum_fs3 }}
                           </td>
-                          <td>
+                          <td style="border: 1px solid black;">
                             {{ $totalSum_ms4 }}
                           </td>
-                          <td>
+                          <td style="border: 1px solid black;">
                             {{ $totalSum_fs4 }}
                           </td>
-                          <td>
+                          <td style="border: 1px solid black;">
                             {{ $totalSum_ms5 }}
                           </td>
-                          <td>
+                          <td style="border: 1px solid black;">
                             {{ $totalSum_fs5 }}
                           </td>
-                          <td>
+                          <td style="border: 1px solid black;">
                             {{ $totalSum_ms6 }}
                           </td>
-                          <td>
+                          <td style="border: 1px solid black;">
                             {{ $totalSum_fs6 }}
                           </td>
-                          <td>
+                          <td style="border: 1px solid black;">
                             {{ $totalSum_ms7 }}
                           </td>
-                          <td>
+                          <td style="border: 1px solid black;">
                             {{ $totalSum_fs7 }}
                           </td>
-                          <td>
+                          <td style="border: 1px solid black;">
                             {{ $totalSum_ms8 }}
                           </td>
-                          <td>
+                          <td style="border: 1px solid black;">
                             {{ $totalSum_fs8 }}
                           </td>
-                          <td style="text-align: center">
+                          <td style="text-align: center; border: 1px solid black;">
                             @php
                               $industry = count(DB::table('students')->where([
                                     ['students.status', 2],
@@ -418,7 +418,7 @@
                             @endphp
                             {{ $industry }}
                           </td>
-                          <td style="text-align: center">
+                          <td style="text-align: center; border: 1px solid black;">
                             @php
                               $active = count(DB::table('students')->where([
                                     ['students.status', 2],
@@ -428,7 +428,7 @@
                             @endphp
                             {{ $active }}
                           </td>
-                          <td style="text-align: center">
+                          <td style="text-align: center; border: 1px solid black;">
                             @php
                               $aol = count(DB::table('students')->where([
                                     ['students.status', 2],
@@ -439,7 +439,7 @@
                             @endphp
                             {{ $aol }}
                           </td>
-                          <td style="text-align: center">
+                          <td style="text-align: center; border: 1px solid black;">
                             @php
                               $postpone = count(DB::table('students')->where([
                                     ['students.status', 6]
@@ -447,7 +447,7 @@
                             @endphp
                             {{ $postpone }}
                           </td>
-                          <td style="text-align: center">
+                          <td style="text-align: center; border: 1px solid black;">
                             @php
                               $dismissed = count(DB::table('students')->where([
                                     ['students.status', 4]
@@ -458,10 +458,10 @@
                           </td>
                         </tr>
                         <tr>
-                          <td>
+                          <td style="border: 1px solid black;">
                             
                           </td>
-                          <td >
+                          <td style="border: 1px solid black;">
 
                           </td>
                           @php
@@ -500,19 +500,19 @@
                             @endphp
 
                             @if($sem->id != 1)
-                              <td colspan="{{ ($sem->id == 1) ? '4' : '2' }}" style="text-align: center">
+                              <td colspan="{{ ($sem->id == 1) ? '4' : '2' }}" style="text-align: center; border: 1px solid black;">
                                 {{ $total }}
                               </td>
                             @else
-                              <td colspan="2" style="text-align: center">
+                              <td colspan="2" style="text-align: center; border: 1px solid black;">
                                 {{ $holding }}
                               </td>
-                              <td colspan="2" style="text-align: center">
+                              <td colspan="2" style="text-align: center; border: 1px solid black;">
                                 {{ $total }}
                               </td>
                             @endif
                           @endforeach
-                          <td style="text-align: center">
+                          <td style="text-align: center; border: 1px solid black;">
                             @php
                               $industry = count(DB::table('students')->where([
                                     ['students.status', 2],
@@ -527,17 +527,17 @@
                           $total_all = $active + $aol + $postpone + $holding;
 
                           @endphp
-                          <td style="text-align: center" colspan="3">
+                          <td style="text-align: center; border: 1px solid black;" colspan="3">
                             {{ $total_all }}
                           </td>
-                          <td style="text-align: center">
+                          <td style="text-align: center; border: 1px solid black;">
                           </td>
                         </tr>
                         <tr>
-                          <td>
+                          <td style="border: 1px solid black;">
                             
                           </td>
-                          <td >
+                          <td style="border: 1px solid black;">
                             
                           </td>
                           @php
@@ -549,10 +549,10 @@
                               ->whereIn('student_status', [1,2])
                               ->get())
                           @endphp
-                          <td colspan="4" style="text-align: center">
+                          <td colspan="4" style="text-align: center; border: 1px solid black;">
                             {{ $total }}
                           </td>
-                          <td colspan="14">
+                          <td colspan="14" style="border: 1px solid black;">
 
                           </td>
                           @php
@@ -560,10 +560,10 @@
                           $total_all = $industry + $active + $aol + $postpone + $holding;
 
                           @endphp
-                          <td style="text-align: center" colspan="4">
+                          <td style="text-align: center; border: 1px solid black;" colspan="4">
                             {{ $total_all }}
                           </td>
-                          <td style="text-align: center">
+                          <td style="text-align: center; border: 1px solid black;">
                           </td>
                         </tr>
                       </tfoot>
