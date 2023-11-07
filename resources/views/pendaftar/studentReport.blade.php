@@ -44,7 +44,7 @@
                 </div> --}}
                 <div class="card-body" style="width: 100%; overflow-x: auto;">
                     <table id="table_dismissed" class="w-100 table table-bordered display margin-top-10 w-p100 table-layout: fixed;" style="width: 100%;">
-                      <thead>
+                      <thead style="background-color: darkcyan">
                         <tr>
                           <th style="text-align: center" colspan="2"> </th>
                           <th style="text-align: center" colspan="2">Holding</th>
@@ -54,7 +54,7 @@
                           <th style="text-align: center" colspan="2">6</th>
                           <th style="text-align: center" colspan="2">2</th>
                           <th style="text-align: center" colspan="2">0</th>
-                          <th style="text-align: center" colspan="6"> </th>
+                          <th style="text-align: center" colspan="9"> </th>
                         </tr>
                         <tr>
                           <th style="text-align: center; width: 1%" rowspan="2">
@@ -346,7 +346,7 @@
                         @endforeach
                         
                       </tbody>
-                      <tfoot>
+                      <tfoot style="background-color: darkcyan">
                         <tr>
                           <td>
                             
@@ -580,7 +580,7 @@
                 <div class="row mb-5">
                     <div class="col-md-4">
                         <div class="form-group">
-                            <table class="w-100 table table-bordered display margin-top-10 w-p100">
+                            <table class="w-100 table table-bordered display margin-top-10 w-p100" style="background-color: darkcyan">
                                 <thead>
                                     <tr>
                                         <th colspan="3" style="text-align:center">
@@ -654,7 +654,17 @@
         paging: false,
 
         buttons: [
+              {
+                extend: 'print',
+                text: 'Print',
+                orientation: 'landscape', // Set the orientation to landscape
+                customize: function(doc) {
+                    // Customization options go here
+                    // For example, you can set the styles, modify the document, etc.
+                }
+            },
             {
+              
               text: 'Excel',
               action: function () {
                 // get the HTML table to export
