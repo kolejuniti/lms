@@ -80,7 +80,7 @@ class PendaftarController extends Controller
         
         if(!empty($request->year))
         {
-            $student->where('a.Year', $request->year);
+            $student->where('b.Year', $request->year);
         }
         
         if(!empty($request->semester))
