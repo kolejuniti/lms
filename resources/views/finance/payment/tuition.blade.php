@@ -202,7 +202,7 @@ function save(ic)
         success:function(res){
             try{
                 if(res.message == "Success"){
-                    alert("Success! Payment Details has been added!");
+                    // alert("Success! Payment Details has been added!");
                     $('#idpayment').val(res.data);
                     document.getElementById('confirm-card').hidden = false;
                 }else{
@@ -268,7 +268,7 @@ function add(ic)
           success:function(res){
               try{
                   if(res.message == "Success"){
-                      alert("Success! Payment Details has been added!");
+                      // alert("Success! Payment Details has been added!");
                       $('#payment_list').html(res.data);
                       $('#payment_list').DataTable();
                   }else{
