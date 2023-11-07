@@ -1872,7 +1872,7 @@ class FinanceController extends Controller
                     {
                         $claimdtl = DB::table('tblclaimdtl')->where('id', $phy->id)->first();
 
-                        if($paymentinput2[$i]->payment != null)
+                        if($paymentinput2[$i]->payment != null && $paymentinput2[$i]->payment != 0)
                         {
 
                             DB::table('tblpaymentdtl')->insert([
