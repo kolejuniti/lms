@@ -2209,14 +2209,14 @@ class PendaftarController extends Controller
             
 
         $query = DB::table('students')
-                          ->join('tblstudent_personal','students.ic','tblstudent_personal.student_ic')
-                          ->join('tblsex','tblstudent_personal.sex_id','tblsex.id')
-                          ->join('tblprogramme','students.program','tblprogramme.id')
-                          ->join('sessions','students.session','sessions.SessionID')
-                          ->join('tblstudent_status','students.status','tblstudent_status.id')
-                          ->join('tblstudent_address','students.ic','tblstudent_address.student_ic')
-                          ->join('tblstate','tblstudent_address.state_id','tblstate.id')
-                          ->join('tblstudent_waris','students.ic','tblstudent_waris.student_ic')
+                          ->leftjoin('tblstudent_personal','students.ic','tblstudent_personal.student_ic')
+                          ->leftjoin('tblsex','tblstudent_personal.sex_id','tblsex.id')
+                          ->leftjoin('tblprogramme','students.program','tblprogramme.id')
+                          ->leftjoin('sessions','students.session','sessions.SessionID')
+                          ->leftjoin('tblstudent_status','students.status','tblstudent_status.id')
+                          ->leftjoin('tblstudent_address','students.ic','tblstudent_address.student_ic')
+                          ->leftjoin('tblstate','tblstudent_address.state_id','tblstate.id')
+                          ->leftjoin('tblstudent_waris','students.ic','tblstudent_waris.student_ic')
                           ->where([
                             ['students.status', 2],
                             ['students.campus_id', 1]
