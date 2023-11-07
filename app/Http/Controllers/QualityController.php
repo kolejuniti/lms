@@ -116,12 +116,11 @@ class QualityController extends Controller
                         ['tblclassquiz.addby', $lct->ic],
                         ['tblclassquiz.status', 2],
                         ])
-                       ->whereNotIn('tblclassstudentquiz.final_mark', [null,0])->get()) > 0)
+                       ->whereNotIn('tblclassstudentquiz.final_mark', [0])->get()) > 0)
                     {
 
                         $data['assessment'][$key][$key1][$key2] = 'MARKED';
 
-                        break;
 
                     }elseif(count(DB::table('tblclasstest')
                     ->join('tblclassstudenttest', 'tblclasstest.id', 'tblclassstudenttest.testid')
@@ -131,12 +130,11 @@ class QualityController extends Controller
                         ['tblclasstest.addby', $lct->ic],
                         ['tblclasstest.status', 2],
                         ])
-                    ->whereNotIn('tblclassstudenttest.final_mark', [null,0])->get()) > 0)
+                    ->whereNotIn('tblclassstudenttest.final_mark', [0])->get()) > 0)
                     {
 
                         $data['assessment'][$key][$key1][$key2] = 'MARKED';
 
-                        break;
 
                     }elseif(count(DB::table('tblclassassign')
                     ->join('tblclassstudentassign', 'tblclassassign.id', 'tblclassstudentassign.assignid')
@@ -146,12 +144,11 @@ class QualityController extends Controller
                         ['tblclassassign.addby', $lct->ic],
                         ['tblclassassign.status', 2],
                         ])
-                    ->whereNotIn('tblclassstudentassign.final_mark', [null,0])->get()) > 0)
+                    ->whereNotIn('tblclassstudentassign.final_mark', [0])->get()) > 0)
                     {
 
-                        $data['assessment'][$key][$key1][$key2] = 'MARKEDssss';
+                        $data['assessment'][$key][$key1][$key2] = 'MARKED';
 
-                        break;
 
                     }else{
 
