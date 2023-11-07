@@ -7,6 +7,7 @@
     <meta name="author" content="">
    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>EduHub - @yield('title')</title>
+ 
     <!-- Vendors Style-->
     <link rel="stylesheet" href="{{ asset('assets/src/css/vendors_css.css') }}">
     <!-- Style-->  
@@ -26,7 +27,7 @@
    <style>
     @page {
        size: A4; /* reduced height for A5 size in landscape orientation */
-       margin: 1cm;
+       margin: 0cm;
      }
  
      * {
@@ -661,114 +662,118 @@ tr:hover {
             <div class="row justify-content-center">
                 <!-- pecahan -->
                 <div class="card col-md-2 mb-3" id="stud_info" style="margin-right: 2%">
-                <div class="card-header mx-auto">
-                <b>Pre Registration</b>
-                </div>
-                <div class="card-body p-0">
-                    <table class="table-fit-content">
-                    <thead>
+                    <div class="card-body p-0">
+                        <table class="table-fit-content">
+                        <thead>
+                            <tr>
+                                <th colspan="3" style="text-align: center">
+                                    Pre Registration
+                                </th>
+                            </tr>
+                            <tr>
+                                <th style="width: 1%">
+                                    No.
+                                </th>
+                                <th style="width: 5%">
+                                    PROGRAM
+                                </th>
+                                <th style="width: 5%">
+                                    QUOTE
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="table">
+                        @foreach ($data['program'] as $key => $prg)
                         <tr>
-                            <th style="width: 1%">
-                                No.
-                            </th>
-                            <th style="width: 5%">
-                                PROGRAM
-                            </th>
-                            <th style="width: 5%">
-                                QUOTE
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody id="table">
-                    @foreach ($data['program'] as $key => $prg)
-                    <tr>
-                        <td>
-                        {{ $key+1 }}
-                        </td>
-                        <td>
-                        {{ $prg->progcode }}
-                        </td>
-                        <td>
-                        {{ (!empty($data['preTotals'])) ? $data['preTotals'][$key] : 0}}
-                        </td>
-                    </tr>
-                    @endforeach
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <td colspan="2" style="text-align: center">
-                                TOTAL
+                            <td>
+                            {{ $key+1 }}
                             </td>
                             <td>
-                                {{ number_format(array_sum($data['preTotals']), 2) }}
+                            {{ $prg->progcode }}
+                            </td>
+                            <td>
+                            {{ (!empty($data['preTotals'])) ? $data['preTotals'][$key] : 0}}
                             </td>
                         </tr>
-                    </tfoot>
-                    </table>
-                </div>
-                <!-- /.card-body -->
+                        @endforeach
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="2" style="text-align: center">
+                                    TOTAL
+                                </td>
+                                <td>
+                                    {{ number_format(array_sum($data['preTotals']), 2) }}
+                                </td>
+                            </tr>
+                        </tfoot>
+                        </table>
+                    </div>
+                    <!-- /.card-body -->
                 </div>
             
                 <!-- pecahan -->
                 <div class="card col-md-2 mb-3" id="stud_info" style="margin-right: 2%">
-                <div class="card-header mx-auto">
-                <b>New Student</b>
-                </div>
-                <div class="card-body p-0">
-                    <table class="table-fit-content">
-                    <thead>
+                    <div class="card-body p-0">
+                        <table class="table-fit-content">
+                        <thead>
+                            <tr>
+                                <th colspan="3" style="text-align: center">
+                                    New Student
+                                </th>
+                            </tr>
+                            <tr>
+                                <th style="width: 1%">
+                                    No.
+                                </th>
+                                <th style="width: 2%">
+                                    PROGRAM
+                                </th>
+                                <th style="width: 2%">
+                                    QUOTE
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="table">
+                        @foreach ($data['program'] as $key => $prg)
                         <tr>
-                            <th style="width: 1%">
-                                No.
-                            </th>
-                            <th style="width: 2%">
-                                PROGRAM
-                            </th>
-                            <th style="width: 2%">
-                                QUOTE
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody id="table">
-                    @foreach ($data['program'] as $key => $prg)
-                    <tr>
-                        <td>
-                        {{ $key+1 }}
-                        </td>
-                        <td>
-                        {{ $prg->progcode }}
-                        </td>
-                        <td>
-                        {{ (!empty($data['newTotals'])) ? $data['newTotals'][$key] : 0}}
-                        </td>
-                    </tr>
-                    @endforeach
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <td colspan="2" style="text-align: center">
-                                TOTAL
+                            <td>
+                            {{ $key+1 }}
                             </td>
                             <td>
-                                {{ number_format(array_sum($data['newTotals']), 2) }}
+                            {{ $prg->progcode }}
+                            </td>
+                            <td>
+                            {{ (!empty($data['newTotals'])) ? $data['newTotals'][$key] : 0}}
                             </td>
                         </tr>
-                    </tfoot>
-                    </table>
+                        @endforeach
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="2" style="text-align: center">
+                                    TOTAL
+                                </td>
+                                <td>
+                                    {{ number_format(array_sum($data['newTotals']), 2) }}
+                                </td>
+                            </tr>
+                        </tfoot>
+                        </table>
+                    </div>
+                    <!-- /.card-body -->
                 </div>
-                <!-- /.card-body -->
-                </div>
-            </div>
 
-            <div class="row justify-content-center">
                 <!-- pecahan -->
                 <div class="card col-md-2 mb-3" id="stud_info" style="margin-right: 2%">
-                    <div class="card-header mx-auto">
-                    <b>Old Student</b>
-                    </div>
                     <div class="card-body p-0">
-                        <table class="w-100 table table-bordered display margin-top-10 w-p100">
+                        <table class="table-fit-content">
                         <thead>
+                            <tr>
+                                <th colspan="3" style="text-align: center">
+                                    Old Student
+                                </th>
+                            </tr>
                             <tr>
                                 <th style="width: 1%">
                                     No.
@@ -809,16 +814,18 @@ tr:hover {
                         </table>
                     </div>
                     <!-- /.card-body -->
-                    </div>
+                </div>
 
-                    <!-- pecahan -->
-                    <div class="card col-md-2 mb-3" id="stud_info" style="margin-right: 2%">
-                    <div class="card-header mx-auto">
-                    <b>Withdraw</b>
-                    </div>
+                <!-- pecahan -->
+                <div class="card col-md-2 mb-3" id="stud_info" style="margin-right: 2%">
                     <div class="card-body p-0">
-                        <table class="w-100 table table-bordered display margin-top-10 w-p100">
+                        <table class="table-fit-content">
                         <thead>
+                            <tr>
+                                <th colspan="3" style="text-align: center">
+                                    Withdraw
+                                </th>
+                            </tr>
                             <tr>
                                 <th style="width: 1%">
                                     No.
@@ -859,18 +866,18 @@ tr:hover {
                         </table>
                     </div>
                     <!-- /.card-body -->
-                    </div>
-            </div>
+                </div>
 
-            <div class="row justify-content-center">
                 <!-- pecahan -->
                 <div class="card col-md-2 mb-3" id="stud_info" style="margin-right: 2%">
-                    <div class="card-header mx-auto">
-                        <b>Graduate</b>
-                    </div>
                     <div class="card-body p-0">
-                        <table class="w-100 table table-bordered display margin-top-10 w-p100">
+                        <table class="table-fit-content">
                         <thead>
+                            <tr>
+                                <th colspan="3" style="text-align: center">
+                                    Graduate
+                                </th>
+                            </tr>
                             <tr>
                                 <th style="width: 1%">
                                     No.
@@ -911,7 +918,7 @@ tr:hover {
                         </table>
                     </div>
                     <!-- /.card-body -->
-                    </div>
+                </div>
             </div>
             
             <!-- hostel student -->
@@ -1385,12 +1392,14 @@ tr:hover {
             <div class="row justify-content-center">
                 <!-- pecahan -->
                 <div class="card col-md-2 mb-3" id="stud_info" style="margin-right: 2%">
-                <div class="card-header mx-auto">
-                <b>New Student</b>
-                </div>
                 <div class="card-body p-0">
-                    <table class="w-100 table table-bordered display margin-top-10 w-p100">
+                    <table class="table-fit-content">
                     <thead>
+                        <tr>
+                            <th colspan="3" style="text-align: center">
+                                New Student
+                            </th>
+                        </tr>
                         <tr>
                             <th style="width: 1%">
                                 No.
@@ -1435,12 +1444,14 @@ tr:hover {
             
                 <!-- pecahan -->
                 <div class="card col-md-2 mb-3" id="stud_info" style="margin-right: 2%">
-                <div class="card-header mx-auto">
-                <b>Old Student</b>
-                </div>
                 <div class="card-body p-0">
-                    <table class="w-100 table table-bordered display margin-top-10 w-p100">
+                    <table class="table-fit-content">
                     <thead>
+                        <tr>
+                            <th colspan="3" style="text-align: center">
+                                Old Student
+                            </th>
+                        </tr>
                         <tr>
                             <th style="width: 1%">
                                 No.
@@ -1607,12 +1618,14 @@ tr:hover {
             <div class="row justify-content-center">
                 <!-- pecahan -->
                 <div class="card col-md-2 mb-3" id="stud_info" style="margin-right: 2%">
-                <div class="card-header mx-auto">
-                <b>New Student</b>
-                </div>
                 <div class="card-body p-0">
-                    <table class="w-100 table table-bordered display margin-top-10 w-p100">
+                    <table class="table-fit-content">
                     <thead>
+                        <tr>
+                            <th colspan="3" style="text-align: center">
+                                New Student
+                            </th>
+                        </tr>
                         <tr>
                             <th style="width: 1%">
                                 No.
@@ -1657,12 +1670,14 @@ tr:hover {
             
                 <!-- pecahan -->
                 <div class="card col-md-2 mb-3" id="stud_info" style="margin-right: 2%">
-                <div class="card-header mx-auto">
-                <b>Old Student</b>
-                </div>
                 <div class="card-body p-0">
-                    <table class="w-100 table table-bordered display margin-top-10 w-p100">
+                    <table class="table-fit-content">
                     <thead>
+                        <tr>
+                            <th colspan="3" style="text-align: center">
+                                Old Student
+                            </th>
+                        </tr>
                         <tr>
                             <th style="width: 1%">
                                 No.
@@ -1829,12 +1844,14 @@ tr:hover {
             <div class="row justify-content-center">
                 <!-- pecahan -->
                 <div class="card col-md-2 mb-3" id="stud_info" style="margin-right: 2%">
-                <div class="card-header mx-auto">
-                <b>New Student</b>
-                </div>
                 <div class="card-body p-0">
-                    <table class="w-100 table table-bordered display margin-top-10 w-p100">
+                    <table class="table-fit-content">
                     <thead>
+                        <tr>
+                            <th colspan="3" style="text-align: center">
+                                New Student
+                            </th>
+                        </tr>
                         <tr>
                             <th style="width: 1%">
                                 No.
@@ -1879,12 +1896,14 @@ tr:hover {
             
                 <!-- pecahan -->
                 <div class="card col-md-2 mb-3" id="stud_info" style="margin-right: 2%">
-                <div class="card-header mx-auto">
-                <b>Old Student</b>
-                </div>
                 <div class="card-body p-0">
-                    <table class="w-100 table table-bordered display margin-top-10 w-p100">
+                    <table class="table-fit-content">
                     <thead>
+                        <tr>
+                            <th colspan="3" style="text-align: center">
+                                Old Student
+                            </th>
+                        </tr>
                         <tr>
                             <th style="width: 1%">
                                 No.
@@ -2031,12 +2050,14 @@ tr:hover {
             <div class="row justify-content-center">
                 <!-- pecahan -->
                 <div class="card col-md-2 mb-3" id="stud_info" style="margin-right: 2%">
-                <div class="card-header mx-auto">
-                <b>New Student</b>
-                </div>
                 <div class="card-body p-0">
-                    <table class="w-100 table table-bordered display margin-top-10 w-p100">
+                    <table class="table-fit-content">
                     <thead>
+                        <tr>
+                            <th colspan="3" style="text-align: center">
+                                New Student
+                            </th>
+                        </tr>
                         <tr>
                             <th style="width: 1%">
                                 No.
@@ -2081,12 +2102,14 @@ tr:hover {
             
                 <!-- pecahan -->
                 <div class="card col-md-2 mb-3" id="stud_info" style="margin-right: 2%">
-                <div class="card-header mx-auto">
-                <b>Old Student</b>
-                </div>
                 <div class="card-body p-0">
-                    <table class="w-100 table table-bordered display margin-top-10 w-p100">
+                    <table class="table-fit-content">
                     <thead>
+                        <tr>
+                            <th colspan="3" style="text-align: center">
+                                Old Student
+                            </th>
+                        </tr>
                         <tr>
                             <th style="width: 1%">
                                 No.
