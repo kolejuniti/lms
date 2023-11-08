@@ -83,17 +83,14 @@ use Carbon\Carbon;
         <p>{{ $data['address']->postcode }}</p>
         <p>{{ strtoupper($data['address']->state) }}</p>
         <p>{{ strtoupper($data['address']->country) }}</p>
-        <br>
-        <h2>MAKLUMAT PENDAFTARAN</h2>
-        <br>
-        <div class="col-3">
+        <h2 class="col-3 mt-2">MAKLUMAT PENDAFTARAN</h2>
+        <div class="col-3 mb-2 mt-2">
             <div style="border: 1px solid black; padding: 10px;">
             <p>Tarikh : {{ Carbon::createFromFormat('Y-m-d', $data['student']->date_offer)->format('d/m/Y'); }}</p>
             <p>Masa : 9.00 Pagi - 3.00 petang</p>
             <p>Tempat : PEJABAT UNITI VILLAGE</p>
             </div>
         </div>
-        <br>
         <p>Saudara/Saudari,</p>
         <p class="mt-2">TAWARAN KEMASUKAN KE PROGRAM AKADEMIK KOLEJ UNITI SESI <b>{{ $data['student']->intake }}</b></p>
         <p class="mt-2"><b>TAHNIAH</b> dan <b>SUKACITA</b> di maklumkan, saudara/saudari di tawarkan untuk mengikuti pengajian program <b>{{ $data['student']->progname }}</b> di KOLEJ UNITI.</p>
@@ -133,8 +130,7 @@ use Carbon\Carbon;
                 </div>
             </div>
         </div>
-        <p class="mt-1">Sekian, terima kasih.</p>
-        <br>
+        <p class="mt-1 mb-1">Sekian, terima kasih.</p>
         <p>Yang benar,</p>
         <img src="{{ asset('storage/signature/signature1.png') }}" alt="Image" width="5%" height="5%">
 
