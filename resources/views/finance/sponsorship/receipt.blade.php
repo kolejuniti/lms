@@ -57,6 +57,14 @@
       .container {
          transform: scale(0.8); /* scale down everything */
       }
+      table {
+         width: 100%; /* or a fixed width */
+         table-layout: fixed;
+      }
+      td, th {
+         width: 50%; /* Adjust the width as needed */
+         padding: 2px; /* Reduce padding */
+      }
    </style>
  </head>
  
@@ -118,7 +126,7 @@
                @if(!isset($invois))
                <div class="col-md-12">
                   <h3>KAEDAH</h3>
-                  <table class="table table-striped">
+                  <table>
                      <thead>
                         <tr class="line">
                            <td style="width: 10px;"><strong>#</strong></td>
@@ -154,7 +162,8 @@
 
                <div class="col-md-12">
                   <h3>BAYARAN</h3>
-                  <table class="table table-striped">
+                  {{-- class="table table-striped" --}}
+                  <table>
                      <thead>
                         <tr class="line">
                            <td style="width: 10px;"><strong>#</strong></td>
