@@ -185,7 +185,7 @@
                 return $(this).val();
             }).get();
 
-            //alert(val); // This will display the array of checked checkbox values in the console
+            $('#complex_header').DataTable().destroy();
 
             $.ajax({
                 headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
@@ -199,85 +199,16 @@
                 success  : function(data){
                     $('#table').html(data);
 
-                    // console.log(data.data);
+                    $('#complex_header').DataTable({
+                      dom: 'lBfrtip', // if you remove this line you will see the show entries dropdown
+                      
+                      buttons: [
+                          'copy', 'csv', 'excel', 'pdf', 'print'
+                      ],
+                    });
                 }
             });
         });
     });
-
-
-  function getStudent(program,session,year,semester,status)
-  {
-
-    $('#complex_header').DataTable().destroy();
-
-    return $.ajax({
-            headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
-            url      : "{{ url('pendaftar/group/getStudentTableIndex') }}",
-            method   : 'POST',
-            data 	 : {program: program,session: session,year: year,semester: semester,status: status},
-            beforeSend:function(xhr){
-              $("#complex_header").LoadingOverlay("show", {
-                image: `<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="24px" height="30px" viewBox="0 0 24 30" style="enable-background:new 0 0 50 50;" xml:space="preserve">
-                  <rect x="0" y="10" width="4" height="10" fill="#333" opacity="0.2">
-                  <animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0s" dur="0.6s" repeatCount="indefinite"></animate>
-                  <animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0s" dur="0.6s" repeatCount="indefinite"></animate>
-                  <animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0s" dur="0.6s" repeatCount="indefinite"></animate>
-                  </rect>
-                  <rect x="8" y="10" width="4" height="10" fill="#333" opacity="0.2">
-                  <animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0.15s" dur="0.6s" repeatCount="indefinite"></animate>
-                  <animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0.15s" dur="0.6s" repeatCount="indefinite"></animate>
-                  <animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0.15s" dur="0.6s" repeatCount="indefinite"></animate>
-                  </rect>
-                  <rect x="16" y="10" width="4" height="10" fill="#333" opacity="0.2">
-                  <animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0.3s" dur="0.6s" repeatCount="indefinite"></animate>
-                  <animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0.3s" dur="0.6s" repeatCount="indefinite"></animate>
-                  <animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0.3s" dur="0.6s" repeatCount="indefinite"></animate>
-                  </rect>
-                </svg>`,
-                background:"rgba(255,255,255, 0.3)",
-                imageResizeFactor : 1,    
-                imageAnimation : "2000ms pulse" , 
-                imageColor: "#019ff8",
-                text : "Please wait...",
-                textResizeFactor: 0.15,
-                textColor: "#019ff8",
-                textColor: "#019ff8"
-              });
-              $("#complex_header").LoadingOverlay("hide");
-            },
-            error:function(err){
-                alert("Error");
-                console.log(err);
-            },
-            success  : function(data){
-                $('#complex_header').removeAttr('hidden');
-                $('#complex_header').html(data);
-                
-                $('#complex_header').DataTable();
-                //window.location.reload();
-            }
-        });
-  }
-
-
-  function getProgram(ic)
-  {
-    return $.ajax({
-            headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
-            url      : "{{ url('pendaftar/getProgram') }}",
-            method   : 'POST',
-            data 	 : {ic: ic},
-            error:function(err){
-                alert("Error");
-                console.log(err);
-            },
-            success  : function(data){
-                $('#getModal').html(data);
-                $('#uploadModal').modal('show');
-            }
-        });
-
-  }
   </script>
 @endsection
