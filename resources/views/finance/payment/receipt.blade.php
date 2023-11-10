@@ -35,6 +35,13 @@
          }
       }
 
+      .table-fit-content {
+      width: auto;         /* Fit to content, rather than stretching to full width */
+      max-width: 30%;     /* Ensure it doesn't overflow the parent container */
+      border-collapse: collapse;
+      margin: auto;        /* Center the table if smaller than the parent width */
+   }
+
       * {
          margin: 0;
          padding: 0;
@@ -57,10 +64,16 @@
       .container {
          transform: scale(0.1); /* scale down everything */
       }
-      /* table {
-         table-layout: fixed;  
-         width: 100%;  
+      table {
+         width: 100%; /* or a fixed width */
+         table-layout: fixed;
       }
+      td, th {
+         width: 50%; /* Adjust the width as needed */
+         padding: 2px; /* Reduce padding */
+      }
+
+
       td {
          word-wrap: break-word;  
         
@@ -78,7 +91,7 @@
       <div class="grid invoice">
          <div class="grid-body">
             <div class="invoice-title">
-               <div class="row">
+               <div class="row mb-2">
                   <div class="col-12 d-flex">
                      <img src="{{ asset('assets/images/logo/Kolej-UNITI.png')}}" alt="" height="50">
                      <address>
@@ -90,7 +103,6 @@
                      </address>
                   </div>
                </div>
-               <br>
                {{-- <div class="row">
                   <div class="col-12">
                      <h2>Resit<br>
