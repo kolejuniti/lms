@@ -36,9 +36,9 @@
       <div class="card card-primary">
         <div class="card-header">
           <b>Search Student</b>
-          <button id="printButton" class="waves-effect waves-light btn btn-primary btn-sm">
+          {{-- <button id="printButton" class="waves-effect waves-light btn btn-primary btn-sm">
             <i class="ti-printer"></i>&nbsp Print
-          </button>
+          </button> --}}
         </div>
         <div class="card-body">
           <div class="row">
@@ -145,6 +145,14 @@
             },
             success  : function(data){
                 $('#form-student').html(data);
+
+                $('#myTable').DataTable({
+                  dom: 'lBfrtip', // if you remove this line you will see the show entries dropdown
+                  
+                  buttons: [
+                      'copy', 'csv', 'excel', 'pdf', 'print'
+                  ],
+                });
             }
         });
 
