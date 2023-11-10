@@ -35,13 +35,6 @@
          }
       }
 
-      .table-fit-content {
-      width: auto;         /* Fit to content, rather than stretching to full width */
-      max-width: 30%;     /* Ensure it doesn't overflow the parent container */
-      border-collapse: collapse;
-      margin: auto;        /* Center the table if smaller than the parent width */
-   }
-
       * {
          margin: 0;
          padding: 0;
@@ -74,10 +67,6 @@
       }
 
 
-      td {
-         word-wrap: break-word;  
-        
-      } */
    </style>
 
  </head>
@@ -134,7 +123,7 @@
 
                <div class="col-md-12">
                   <h3>KAEDAH</h3>
-                  <table class="table table-striped">
+                  <table>
                      <thead>
                         <tr class="line">
                            <td style="width: 10px;"><strong>#</strong></td>
@@ -169,7 +158,7 @@
 
                <div class="col-md-12">
                   <h3>BAYARAN</h3>
-                  <table class="table table-striped">
+                  <table>
                      <thead>
                         <tr class="line">
                            <td style="width: 10px;"><strong>#</strong></td>
