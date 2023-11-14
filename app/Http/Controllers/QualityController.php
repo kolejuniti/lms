@@ -240,40 +240,102 @@ class QualityController extends Controller
                     ->groupBy('subjek.sub_id', 'user_subjek.session_id')
                     ->get();
 
-                foreach($data['course'][$key][$key1] as $key2 => $crs)
-                {
-
-                    $data['quiz'][$key][$key1][$key2] = count(DB::table('tblclassquiz')
-                                                        ->where([
-                                                            ['tblclassquiz.classid', $crs->id],
-                                                            ['tblclassquiz.sessionid', $crs->SessionID],
-                                                            ['tblclassquiz.status', 2],
-                                                        ])->get());
-
-                    $data['test'][$key][$key1][$key2] = count(DB::table('tblclasstest')
-                                                        ->where([
-                                                            ['tblclasstest.classid', $crs->id],
-                                                            ['tblclasstest.sessionid', $crs->SessionID],
-                                                            ['tblclasstest.status', 2],
-                                                        ])->get());
-
-                    $data['assignment'][$key][$key1][$key2] = count(DB::table('tblclassassign')
-                                                        ->where([
-                                                            ['tblclassassign.classid', $crs->id],
-                                                            ['tblclassassign.sessionid', $crs->SessionID],
-                                                            ['tblclassassign.status', 2],
-                                                        ])->get());
-
-                    $data['usage'][$key][$key1][$key2] = (count(DB::table('student_subjek')
-                                                        ->join('tblsubject_grade','student_subjek.grade','tblsubject_grade.code')
-                                                        ->where([
-                                                           ['student_subjek.courseid', $crs->sub_id],
-                                                           ['student_subjek.sessionid', $crs->SessionID],
-                                                           ['student_subjek.sessionid', $crs->groupId]
-                                                        ])
-                                                        ->whereNotIn('tblsubject_grade.id', [13,15])->get()) > 0) ? 'GRADED' : 'NOT GRADED';
-
-                }
+                    foreach($data['course'][$key][$key1] as $key2 => $crs)
+                    {
+    
+                        if(count(DB::table('tblclassquiz')
+                           ->join('tblclassstudentquiz', 'tblclassquiz.id', 'tblclassstudentquiz.quizid')
+                           ->where([
+                            ['tblclassquiz.classid', $crs->id],
+                            ['tblclassquiz.sessionid', $crs->SessionID],
+                            ['tblclassquiz.addby', $lct->ic],
+                            ['tblclassquiz.status', 2],
+                            ])
+                           ->whereNotIn('tblclassstudentquiz.final_mark', [0])->get()) > 0)
+                        {
+    
+                            $data['assessment'][$key][$key1][$key2] = 'MARKED';
+    
+    
+                        }elseif(count(DB::table('tblclasstest')
+                        ->join('tblclassstudenttest', 'tblclasstest.id', 'tblclassstudenttest.testid')
+                        ->where([
+                            ['tblclasstest.classid', $crs->id],
+                            ['tblclasstest.sessionid', $crs->SessionID],
+                            ['tblclasstest.addby', $lct->ic],
+                            ['tblclasstest.status', 2],
+                            ])
+                        ->whereNotIn('tblclassstudenttest.final_mark', [0])->get()) > 0)
+                        {
+    
+                            $data['assessment'][$key][$key1][$key2] = 'MARKED';
+    
+    
+                        }elseif(count(DB::table('tblclassassign')
+                        ->join('tblclassstudentassign', 'tblclassassign.id', 'tblclassstudentassign.assignid')
+                        ->where([
+                            ['tblclassassign.classid', $crs->id],
+                            ['tblclassassign.sessionid', $crs->SessionID],
+                            ['tblclassassign.addby', $lct->ic],
+                            ['tblclassassign.status', 2],
+                            ])
+                        ->whereNotIn('tblclassstudentassign.final_mark', [0])->get()) > 0)
+                        {
+    
+                            $data['assessment'][$key][$key1][$key2] = 'MARKED';
+    
+    
+                        }else{
+    
+                            $data['assessment'][$key][$key1][$key2] = 'NOT MARKED';
+    
+                            
+    
+                        }
+    
+                        $data['content'][$key][$key1][$key2] = DB::table('material_dir')
+                                                               ->join('lecturer_dir','material_dir.LecturerDirID','lecturer_dir.DrID')
+                                                               ->where([
+                                                                ['lecturer_dir.AddBy', $lct->ic],
+                                                                ['lecturer_dir.CourseID', $crs->id],
+                                                                ['lecturer_dir.SessionID', $crs->SessionID],
+                                                                ])
+                                                                ->select('material_dir.*')->get();
+    
+                        $data['quiz'][$key][$key1][$key2] = count(DB::table('tblclassquiz')
+                                                            ->where([
+                                                                ['tblclassquiz.classid', $crs->id],
+                                                                ['tblclassquiz.sessionid', $crs->SessionID],
+                                                                ['tblclassquiz.addby', $lct->ic],
+                                                                ['tblclassquiz.status', 2],
+                                                            ])->get());
+    
+                        $data['test'][$key][$key1][$key2] = count(DB::table('tblclasstest')
+                                                            ->where([
+                                                                ['tblclasstest.classid', $crs->id],
+                                                                ['tblclasstest.sessionid', $crs->SessionID],
+                                                                ['tblclasstest.addby', $lct->ic],
+                                                                ['tblclasstest.status', 2],
+                                                            ])->get());
+    
+                        $data['assignment'][$key][$key1][$key2] = count(DB::table('tblclassassign')
+                                                            ->where([
+                                                                ['tblclassassign.classid', $crs->id],
+                                                                ['tblclassassign.sessionid', $crs->SessionID],
+                                                                ['tblclassassign.addby', $lct->ic],
+                                                                ['tblclassassign.status', 2],
+                                                            ])->get());
+                        
+                        $data['usage'][$key][$key1][$key2] = (count(DB::table('student_subjek')
+                                                             ->join('tblsubject_grade','student_subjek.grade','tblsubject_grade.code')
+                                                             ->where([
+                                                                ['student_subjek.courseid', $crs->sub_id],
+                                                                ['student_subjek.sessionid', $crs->SessionID],
+                                                                ['student_subjek.sessionid', $crs->groupId]
+                                                             ])
+                                                             ->whereNotIn('tblsubject_grade.id', [13,15])->get()) > 0) ? 'GRADED' : 'NOT GRADED';
+    
+                    }
 
             }
 
