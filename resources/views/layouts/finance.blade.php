@@ -328,6 +328,7 @@
 					<li><a href="{{ route('finance.receiptList') }}" class="{{ (route('finance.receiptList') == Request::url()) ? 'active' : ''}}">Receipt Report</a></li>
 					<li><a href="{{ route('finance.dailyReport') }}" class="{{ (route('finance.dailyReport') == Request::url()) ? 'active' : ''}}">Daily Report</a></li>
 					<li><a href="{{ route('finance.chargeReport') }}" class="{{ (route('finance.chargeReport') == Request::url()) ? 'active' : ''}}">Charge Report</a></li>
+					<li><a href="{{ route('finance.arrearsReport') }}" class="{{ (route('finance.arrearsReport') == Request::url()) ? 'active' : ''}}">Arrears Report</a></li>
 				</ul>
 			  </li>
 			  <li class="treeview">
@@ -338,6 +339,16 @@
 				</a>
 				<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
 					<li><a href="{{ route('finance.voucher.student') }}" class="{{ (route('finance.voucher.student') == Request::url()) ? 'active' : ''}}">Student</a></li>
+				</ul>
+			  </li>
+			  <li class="treeview">
+				<a href="#"><i data-feather="shopping-bag"></i><span>Debt Management</span>
+					<span class="pull-right-container">
+						<i class="fa fa-angle-left pull-right"></i>
+					</span>
+				</a>
+				<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
+					<li><a href="{{ route('finance.voucher.student') }}" class="{{ (route('finance.voucher.student') == Request::url()) ? 'active' : ''}}">Student Payment Claim Log</a></li>
 				</ul>
 			  </li>
 			  <li>
@@ -484,6 +495,7 @@
 <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdn.jsdelivr.net/npm/gasparesganga-jquery-loading-overlay@2.1.7/dist/loadingoverlay.min.js"></script>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
 
 <script src="http://spp3.intds.com.my/assets/js/formplugins/select2/select2.bundle.js"></script>
 
