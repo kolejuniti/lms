@@ -6726,4 +6726,667 @@ class FinanceController extends Controller
         return $content;
 
     }
+
+    public function arrearsReport()
+    {
+
+        $data['program'] = DB::table('tblprogramme')->get();
+
+
+        foreach($data['program'] as $key => $prg)
+                {
+
+                    // Define a function to create the base query
+                    $baseQuery = function () {
+                        return DB::table('tblclaim')
+                        ->join('tblclaimdtl', 'tblclaim.id', 'tblclaimdtl.claim_id')
+                        ->join('tblstudentclaim', 'tblclaimdtl.claim_package_id', 'tblstudentclaim.id');
+                    };
+
+                    $data['debt'][$key] = ($baseQuery)()->where([
+                                            ['tblclaim.program_id', $prg->id],
+                                            ['tblclaim.process_status_id', 2],
+                                            ['tblclaim.process_type_id', 2],
+                                            ['tblstudentclaim.groupid', 1],
+                                        ])
+                                        ->sum('tblclaimdtl.amount');
+
+                    $data['debtND'][$key] = ($baseQuery)()->where([
+                                            ['tblclaim.program_id', $prg->id],
+                                            ['tblclaim.process_status_id', 2],
+                                            ['tblclaim.process_type_id', 4],
+                                        ])
+                                        ->whereIn('tblstudentclaim.groupid', [1,4,5])
+                                        ->sum('tblclaimdtl.amount');
+
+                    $data['debtNK'][$key] = ($baseQuery)()->where([
+                                            ['tblclaim.program_id', $prg->id],
+                                            ['tblclaim.process_status_id', 2],
+                                            ['tblclaim.process_type_id', 5],
+                                        ])
+                                        ->whereIn('tblstudentclaim.groupid', [1,4,5])
+                                        ->sum('tblclaimdtl.amount');
+
+                    $baseQuery2 = function () {
+                                            return DB::table('tblpayment')
+                                            ->join('tblpaymentdtl', 'tblpayment.id', 'tblpaymentdtl.payment_id')
+                                            ->join('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id');
+                                        };
+
+                    $data['insentif'][$key] = ($baseQuery2)()->where([
+                                            ['tblpayment.program_id', $prg->id],
+                                            ['tblpayment.process_status_id', 2],
+                                            ['tblpayment.process_type_id', 9],
+                                        ])
+                                        ->whereIn('tblstudentclaim.groupid', [1])
+                                        ->sum('tblpaymentdtl.amount');
+
+                    $data['iNED'][$key] = ($baseQuery2)()->where([
+                                            ['tblpayment.program_id', $prg->id],
+                                            ['tblpayment.process_status_id', 2],
+                                            ['tblpayment.process_type_id', 10],
+                                        ])
+                                        ->whereIn('tblstudentclaim.groupid', [1,5])
+                                        ->sum('tblpaymentdtl.amount');
+
+                    $data['unitiFund'][$key] = ($baseQuery2)()->where([
+                                            ['tblpayment.program_id', $prg->id],
+                                            ['tblpayment.process_status_id', 2],
+                                            ['tblpayment.process_type_id', 12],
+                                        ])
+                                        ->whereIn('tblstudentclaim.groupid', [1])
+                                        ->sum('tblpaymentdtl.amount');
+
+                    $data['biasiswa'][$key] = ($baseQuery2)()->where([
+                                            ['tblpayment.program_id', $prg->id],
+                                            ['tblpayment.process_status_id', 2],
+                                            ['tblpayment.process_type_id', 13],
+                                        ])
+                                        ->whereIn('tblstudentclaim.groupid', [1])
+                                        ->sum('tblpaymentdtl.amount');
+
+                    $data['uef'][$key] = ($baseQuery2)()->where([
+                                            ['tblpayment.program_id', $prg->id],
+                                            ['tblpayment.process_status_id', 2],
+                                            ['tblpayment.process_type_id', 7],
+                                            ['tblpayment.payment_sponsor_id', 8],
+                                        ])
+                                        ->whereIn('tblstudentclaim.groupid', [1,4,5])
+                                        ->sum('tblpaymentdtl.amount');
+
+                    $data['dc19'][$key] = ($baseQuery2)()->where([
+                                            ['tblpayment.program_id', $prg->id],
+                                            ['tblpayment.process_status_id', 2],
+                                            ['tblpayment.process_type_id', 14],
+                                        ])
+                                        ->whereIn('tblstudentclaim.groupid', [1])
+                                        ->sum('tblpaymentdtl.amount');
+
+                    $data['iMCO'][$key] = ($baseQuery2)()->where([
+                                            ['tblpayment.program_id', $prg->id],
+                                            ['tblpayment.process_status_id', 2],
+                                            ['tblpayment.process_type_id', 15],
+                                        ])
+                                        ->whereIn('tblstudentclaim.groupid', [1])
+                                        ->sum('tblpaymentdtl.amount');
+
+                    $data['iKKU'][$key] = ($baseQuery2)()->where([
+                                            ['tblpayment.program_id', $prg->id],
+                                            ['tblpayment.process_status_id', 2],
+                                            ['tblpayment.process_type_id', 21],
+                                        ])
+                                        ->whereIn('tblstudentclaim.groupid', [1])
+                                        ->sum('tblpaymentdtl.amount');
+
+                    $data['tkB40'][$key] = ($baseQuery2)()->where([
+                                            ['tblpayment.program_id', $prg->id],
+                                            ['tblpayment.process_status_id', 2],
+                                            ['tblpayment.process_type_id', 16],
+                                        ])
+                                        ->whereIn('tblstudentclaim.groupid', [1])
+                                        ->sum('tblpaymentdtl.amount');
+
+                    $data['tkM40'][$key] = ($baseQuery2)()->where([
+                                            ['tblpayment.program_id', $prg->id],
+                                            ['tblpayment.process_status_id', 2],
+                                            ['tblpayment.process_type_id', 17],
+                                        ])
+                                        ->whereIn('tblstudentclaim.groupid', [1])
+                                        ->sum('tblpaymentdtl.amount');
+
+                    $data['tkT20'][$key] = ($baseQuery2)()->where([
+                                            ['tblpayment.program_id', $prg->id],
+                                            ['tblpayment.process_status_id', 2],
+                                            ['tblpayment.process_type_id', 18],
+                                        ])
+                                        ->whereIn('tblstudentclaim.groupid', [1])
+                                        ->sum('tblpaymentdtl.amount');
+
+                    $data['tk'][$key] = ($baseQuery2)()->where([
+                                            ['tblpayment.program_id', $prg->id],
+                                            ['tblpayment.process_status_id', 2],
+                                            ['tblpayment.process_type_id', 19],
+                                        ])
+                                        ->whereIn('tblstudentclaim.groupid', [1])
+                                        ->sum('tblpaymentdtl.amount');
+
+                    $data['trB40'][$key] = ($baseQuery2)()->where([
+                                            ['tblpayment.program_id', $prg->id],
+                                            ['tblpayment.process_status_id', 2],
+                                            ['tblpayment.process_type_id', 22],
+                                        ])
+                                        ->whereIn('tblstudentclaim.groupid', [1])
+                                        ->sum('tblpaymentdtl.amount');
+
+                    $data['trM40'][$key] = ($baseQuery2)()->where([
+                                            ['tblpayment.program_id', $prg->id],
+                                            ['tblpayment.process_status_id', 2],
+                                            ['tblpayment.process_type_id', 23],
+                                        ])
+                                        ->whereIn('tblstudentclaim.groupid', [1])
+                                        ->sum('tblpaymentdtl.amount');
+
+                    $data['trT20'][$key] = ($baseQuery2)()->where([
+                                            ['tblpayment.program_id', $prg->id],
+                                            ['tblpayment.process_status_id', 2],
+                                            ['tblpayment.process_type_id', 24],
+                                        ])
+                                        ->whereIn('tblstudentclaim.groupid', [1])
+                                        ->sum('tblpaymentdtl.amount');
+
+                    $data['tr'][$key] = ($baseQuery2)()->where([
+                                            ['tblpayment.program_id', $prg->id],
+                                            ['tblpayment.process_status_id', 2],
+                                            ['tblpayment.process_type_id', 25],
+                                        ])
+                                        ->whereIn('tblstudentclaim.groupid', [1])
+                                        ->sum('tblpaymentdtl.amount');
+
+                    $data['paymentNK'][$key] = ($baseQuery2)()->where([
+                                            ['tblpayment.program_id', $prg->id],
+                                            ['tblpayment.process_status_id', 2],
+                                            ['tblpayment.process_type_id', 5],
+                                        ])
+                                        ->whereIn('tblstudentclaim.groupid', [1,4,5])
+                                        ->sum('tblpaymentdtl.amount');
+
+                    $data['dailyPayment'][$key] = ($baseQuery2)()->where([
+                                            ['tblpayment.program_id', $prg->id],
+                                            ['tblpayment.process_status_id', 2],
+                                        ])
+                                        ->whereIn('tblpayment.process_type_id', [1,8])
+                                        ->whereIn('tblstudentclaim.groupid', [1,4,5])
+                                        ->sum('tblpaymentdtl.amount');
+
+                    $data['sponsor'][$key] = ($baseQuery2)()->where([
+                                            ['tblpayment.program_id', $prg->id],
+                                            ['tblpayment.process_status_id', 2],
+                                            ['tblpayment.process_type_id', 7],
+                                        ])
+                                        ->where('tblpayment.payment_sponsor_id', '!=', 8)
+                                        ->whereIn('tblstudentclaim.groupid', [1,4,5])
+                                        ->sum('tblpaymentdtl.amount');
+
+                    $data['refund'][$key] = ($baseQuery2)()->where([
+                                            ['tblpayment.program_id', $prg->id],
+                                            ['tblpayment.process_status_id', 2],
+                                            ['tblpayment.process_type_id', 6],
+                                        ])
+                                        ->whereIn('tblstudentclaim.groupid', [1,4,5])
+                                        ->sum('tblpaymentdtl.amount');
+
+                }
+
+        // dd($data['debt']);
+
+        return view('finance.report.arrearsReport', compact('data'));
+
+    }
+
+    public function getArrearsReport(Request $request)
+    {
+
+        $filtersData = $request->filtersData;
+
+        $validator = Validator::make($request->all(), [
+            'filtersData' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return ["message"=>"Field Error", "error" => $validator->messages()->get('*')];
+        }
+
+        try{ 
+            DB::beginTransaction();
+            DB::connection()->enableQueryLog();
+
+            try{
+
+                $filter = json_decode($filtersData);
+
+                if($filter->program == 'all')
+                {
+
+                    $data['program'] = DB::table('tblprogramme')->get();
+
+                }else{
+
+                    $data['program'] = DB::table('tblprogramme')->where('id', $filter->program)->get();
+                    
+                }
+
+                foreach($data['program'] as $key => $prg)
+                {
+
+                    // Define a function to create the base query
+                    $baseQuery = function () use ($filter) {
+                        return DB::table('tblclaim')
+                        ->join('tblclaimdtl', 'tblclaim.id', 'tblclaimdtl.claim_id')
+                        ->join('tblstudentclaim', 'tblclaimdtl.claim_package_id', 'tblstudentclaim.id')
+                        ->whereBetween('tblclaim.add_date', [$filter->from,$filter->to]);
+                    };
+
+                    $data['debt'][$key] = ($baseQuery)()->where([
+                                            ['tblclaim.program_id', $prg->id],
+                                            ['tblclaim.process_status_id', 2],
+                                            ['tblclaim.process_type_id', 2],
+                                            ['tblstudentclaim.groupid', 1],
+                                        ])
+                                        ->sum('tblclaimdtl.amount');
+
+                    $data['debtND'][$key] = ($baseQuery)()->where([
+                                            ['tblclaim.program_id', $prg->id],
+                                            ['tblclaim.process_status_id', 2],
+                                            ['tblclaim.process_type_id', 4],
+                                        ])
+                                        ->whereIn('tblstudentclaim.groupid', [1,4,5])
+                                        ->sum('tblclaimdtl.amount');
+
+                    $data['debtNK'][$key] = ($baseQuery)()->where([
+                                            ['tblclaim.program_id', $prg->id],
+                                            ['tblclaim.process_status_id', 2],
+                                            ['tblclaim.process_type_id', 5],
+                                        ])
+                                        ->whereIn('tblstudentclaim.groupid', [1,4,5])
+                                        ->sum('tblclaimdtl.amount');
+
+                    $baseQuery2 = function () use ($filter) {
+                                            return DB::table('tblpayment')
+                                            ->join('tblpaymentdtl', 'tblpayment.id', 'tblpaymentdtl.payment_id')
+                                            ->join('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
+                                            ->whereBetween('tblpayment.add_date', [$filter->from,$filter->to]);
+                                        };
+
+                    $data['insentif'][$key] = ($baseQuery2)()->where([
+                                            ['tblpayment.program_id', $prg->id],
+                                            ['tblpayment.process_status_id', 2],
+                                            ['tblpayment.process_type_id', 9],
+                                        ])
+                                        ->whereIn('tblstudentclaim.groupid', [1])
+                                        ->sum('tblpaymentdtl.amount');
+
+                    $data['iNED'][$key] = ($baseQuery2)()->where([
+                                            ['tblpayment.program_id', $prg->id],
+                                            ['tblpayment.process_status_id', 2],
+                                            ['tblpayment.process_type_id', 10],
+                                        ])
+                                        ->whereIn('tblstudentclaim.groupid', [1,5])
+                                        ->sum('tblpaymentdtl.amount');
+
+                    $data['unitiFund'][$key] = ($baseQuery2)()->where([
+                                            ['tblpayment.program_id', $prg->id],
+                                            ['tblpayment.process_status_id', 2],
+                                            ['tblpayment.process_type_id', 12],
+                                        ])
+                                        ->whereIn('tblstudentclaim.groupid', [1])
+                                        ->sum('tblpaymentdtl.amount');
+
+                    $data['biasiswa'][$key] = ($baseQuery2)()->where([
+                                            ['tblpayment.program_id', $prg->id],
+                                            ['tblpayment.process_status_id', 2],
+                                            ['tblpayment.process_type_id', 13],
+                                        ])
+                                        ->whereIn('tblstudentclaim.groupid', [1])
+                                        ->sum('tblpaymentdtl.amount');
+
+                    $data['uef'][$key] = ($baseQuery2)()->where([
+                                            ['tblpayment.program_id', $prg->id],
+                                            ['tblpayment.process_status_id', 2],
+                                            ['tblpayment.process_type_id', 7],
+                                            ['tblpayment.payment_sponsor_id', 8],
+                                        ])
+                                        ->whereIn('tblstudentclaim.groupid', [1,4,5])
+                                        ->sum('tblpaymentdtl.amount');
+
+                    $data['dc19'][$key] = ($baseQuery2)()->where([
+                                            ['tblpayment.program_id', $prg->id],
+                                            ['tblpayment.process_status_id', 2],
+                                            ['tblpayment.process_type_id', 14],
+                                        ])
+                                        ->whereIn('tblstudentclaim.groupid', [1])
+                                        ->sum('tblpaymentdtl.amount');
+
+                    $data['iMCO'][$key] = ($baseQuery2)()->where([
+                                            ['tblpayment.program_id', $prg->id],
+                                            ['tblpayment.process_status_id', 2],
+                                            ['tblpayment.process_type_id', 15],
+                                        ])
+                                        ->whereIn('tblstudentclaim.groupid', [1])
+                                        ->sum('tblpaymentdtl.amount');
+
+                    $data['iKKU'][$key] = ($baseQuery2)()->where([
+                                            ['tblpayment.program_id', $prg->id],
+                                            ['tblpayment.process_status_id', 2],
+                                            ['tblpayment.process_type_id', 21],
+                                        ])
+                                        ->whereIn('tblstudentclaim.groupid', [1])
+                                        ->sum('tblpaymentdtl.amount');
+
+                    $data['tkB40'][$key] = ($baseQuery2)()->where([
+                                            ['tblpayment.program_id', $prg->id],
+                                            ['tblpayment.process_status_id', 2],
+                                            ['tblpayment.process_type_id', 16],
+                                        ])
+                                        ->whereIn('tblstudentclaim.groupid', [1])
+                                        ->sum('tblpaymentdtl.amount');
+
+                    $data['tkM40'][$key] = ($baseQuery2)()->where([
+                                            ['tblpayment.program_id', $prg->id],
+                                            ['tblpayment.process_status_id', 2],
+                                            ['tblpayment.process_type_id', 17],
+                                        ])
+                                        ->whereIn('tblstudentclaim.groupid', [1])
+                                        ->sum('tblpaymentdtl.amount');
+
+                    $data['tkT20'][$key] = ($baseQuery2)()->where([
+                                            ['tblpayment.program_id', $prg->id],
+                                            ['tblpayment.process_status_id', 2],
+                                            ['tblpayment.process_type_id', 18],
+                                        ])
+                                        ->whereIn('tblstudentclaim.groupid', [1])
+                                        ->sum('tblpaymentdtl.amount');
+
+                    $data['tk'][$key] = ($baseQuery2)()->where([
+                                            ['tblpayment.program_id', $prg->id],
+                                            ['tblpayment.process_status_id', 2],
+                                            ['tblpayment.process_type_id', 19],
+                                        ])
+                                        ->whereIn('tblstudentclaim.groupid', [1])
+                                        ->sum('tblpaymentdtl.amount');
+
+                    $data['trB40'][$key] = ($baseQuery2)()->where([
+                                            ['tblpayment.program_id', $prg->id],
+                                            ['tblpayment.process_status_id', 2],
+                                            ['tblpayment.process_type_id', 22],
+                                        ])
+                                        ->whereIn('tblstudentclaim.groupid', [1])
+                                        ->sum('tblpaymentdtl.amount');
+
+                    $data['trM40'][$key] = ($baseQuery2)()->where([
+                                            ['tblpayment.program_id', $prg->id],
+                                            ['tblpayment.process_status_id', 2],
+                                            ['tblpayment.process_type_id', 23],
+                                        ])
+                                        ->whereIn('tblstudentclaim.groupid', [1])
+                                        ->sum('tblpaymentdtl.amount');
+
+                    $data['trT20'][$key] = ($baseQuery2)()->where([
+                                            ['tblpayment.program_id', $prg->id],
+                                            ['tblpayment.process_status_id', 2],
+                                            ['tblpayment.process_type_id', 24],
+                                        ])
+                                        ->whereIn('tblstudentclaim.groupid', [1])
+                                        ->sum('tblpaymentdtl.amount');
+
+                    $data['tr'][$key] = ($baseQuery2)()->where([
+                                            ['tblpayment.program_id', $prg->id],
+                                            ['tblpayment.process_status_id', 2],
+                                            ['tblpayment.process_type_id', 25],
+                                        ])
+                                        ->whereIn('tblstudentclaim.groupid', [1])
+                                        ->sum('tblpaymentdtl.amount');
+
+                    $data['paymentNK'][$key] = ($baseQuery2)()->where([
+                                            ['tblpayment.program_id', $prg->id],
+                                            ['tblpayment.process_status_id', 2],
+                                            ['tblpayment.process_type_id', 5],
+                                        ])
+                                        ->whereIn('tblstudentclaim.groupid', [1,4,5])
+                                        ->sum('tblpaymentdtl.amount');
+
+                    $data['dailyPayment'][$key] = ($baseQuery2)()->where([
+                                            ['tblpayment.program_id', $prg->id],
+                                            ['tblpayment.process_status_id', 2],
+                                        ])
+                                        ->whereIn('tblpayment.process_type_id', [1,8])
+                                        ->whereIn('tblstudentclaim.groupid', [1,4,5])
+                                        ->sum('tblpaymentdtl.amount');
+
+                    $data['sponsor'][$key] = ($baseQuery2)()->where([
+                                            ['tblpayment.program_id', $prg->id],
+                                            ['tblpayment.process_status_id', 2],
+                                            ['tblpayment.process_type_id', 7],
+                                        ])
+                                        ->where('tblpayment.payment_sponsor_id', '!=', 8)
+                                        ->whereIn('tblstudentclaim.groupid', [1,4,5])
+                                        ->sum('tblpaymentdtl.amount');
+
+                    $data['refund'][$key] = ($baseQuery2)()->where([
+                                            ['tblpayment.program_id', $prg->id],
+                                            ['tblpayment.process_status_id', 2],
+                                            ['tblpayment.process_type_id', 6],
+                                        ])
+                                        ->whereIn('tblstudentclaim.groupid', [1,4,5])
+                                        ->sum('tblpaymentdtl.amount');
+
+                    $data['balance'][$key] = ($data['debt'][$key] + $data['debtND'][$key] + $data['debtNK'][$key]) - 
+                                             (($data['insentif'][$key] + $data['iNED'][$key] + $data['unitiFund'][$key] + $data['biasiswa'][$key] + $data['uef'][$key] + $data['dc19'][$key] + $data['iMCO'][$key] + $data['iKKU'][$key] + $data['tkB40'][$key] + $data['tkM40'][$key] + $data['tkT20'][$key] + $data['tk'][$key] + $data['trB40'][$key] + $data['trM40'][$key] + $data['trT20'][$key] + $data['tr'][$key]) + 
+                                             ($data['paymentNK'][$key] + $data['dailyPayment'][$key] + $data['sponsor'][$key]) + 
+                                             ($data['refund'][$key]));
+
+                }
+
+                $content = "";
+                $content .= '<thead>
+                                <tr>
+                                    <th>  
+                                    </th>
+                                    <th colspan="3">
+                                        A Tuntutan
+                                    </th>
+                                    <th colspan="16">
+                                        B Diskaun Pengajian
+                                    </th>
+                                    <th colspan="3">
+                                        C Pengurangan Yuran
+                                    </th>
+                                    <th>
+                                        D
+                                    </th>
+                                    <th >
+                                    A-(B+C+D)
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <th>
+                                        Program
+                                    </th>
+                                    <th>
+                                        Yuran Pengajian (RM)
+                                    </th>
+                                    <th>
+                                        Nota Debit (RM) 
+                                    </th>
+                                    <th>
+                                        Nota Kredit (RM)
+                                    </th>
+                                    <th>
+                                        Insentif Naik Semester (RM)
+                                    </th>
+                                    <th>
+                                        Insentif Pendidikan iNED (RM)
+                                    </th>
+                                    <th>
+                                        UNITI Fund (RM)
+                                    </th>
+                                    <th>
+                                        Biasiswa (RM)
+                                    </th>
+                                    <th>
+                                        Uniti Education Fund (RM)
+                                    </th>
+                                    <th>
+                                        Diskaun Covid-19/Frontliners (RM)
+                                    </th>
+                                    <th>
+                                        Insentif MCO 3.0 (RM)
+                                    </th>
+                                    <th>
+                                        Insentif Khas Kolej UNITI (RM)
+                                    </th>
+                                    <th>
+                                        Tabung Khas B40 Kolej UNITI (RM)
+                                    </th>
+                                    <th>
+                                        Tabung Khas M40 Kolej UNITI (RM)
+                                    </th>
+                                    <th>
+                                        Tabung Khas T20 Kolej UNITI (RM)
+                                    </th>
+                                    <th>
+                                        Tabung Khas Kolej UNITI (RM)
+                                    </th>
+                                    <th>
+                                        Tabung Rahmah B40 Kolej UNITI (RM)
+                                    </th>
+                                    <th>
+                                        Tabung Rahmah M40 Kolej UNITI (RM)
+                                    </th>
+                                    <th>
+                                        Tabung Rahmah T20 Kolej UNITI (RM)
+                                    </th>
+                                    <th>
+                                        Rabung Rahmah Kolej UNITI (RM)
+                                    </th>
+                                    <th>
+                                        Nota Kredit (RM)
+                                    </th>
+                                    <th>
+                                        Penerimaan Kaunter (RM)
+                                    </th>
+                                    <th>
+                                        Bayaran Penaja (RM)
+                                    </th>
+                                    <th>
+                                        Bayaran Lebihan (RM)
+                                    </th>
+                                    <th>
+                                        Baki Tunggakan Yuran (RM)
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="table">';
+                            
+                foreach($data['program'] as $key => $prg){
+                    //$registered = ($std->status == 'ACTIVE') ? 'checked' : '';
+                    $content .= '
+                    <tr>
+                        <td>
+                        '. $prg->progcode .'
+                        </td>
+                        <td>
+                        '. $data['debt'][$key] .'
+                        </td>
+                        <td>
+                        '. $data['debtND'][$key] .'
+                        </td>
+                        <td>
+                        '. $data['debtNK'][$key] .'
+                        </td>
+                        <td>
+                        '. $data['insentif'][$key] .'
+                        </td>
+                        <td>
+                        '. $data['iNED'][$key] .'
+                        </td>
+                        <td>
+                        '. $data['unitiFund'][$key] .'
+                        </td>
+                        <td>
+                        '. $data['biasiswa'][$key] .'
+                        </td>
+                        <td>
+                        '. $data['uef'][$key] .'
+                        </td>
+                        <td>
+                        '. $data['dc19'][$key] .'
+                        </td>
+                        <td>
+                        '. $data['iMCO'][$key] .'
+                        </td>
+                        <td>
+                        '. $data['iKKU'][$key] .'
+                        </td>
+                        <td>
+                        '. $data['tkB40'][$key] .'
+                        </td>
+                        <td>
+                        '. $data['tkM40'][$key] .'
+                        </td>
+                        <td>
+                        '. $data['tkT20'][$key] .'
+                        </td>
+                        <td>
+                        '. $data['tk'][$key] .'
+                        </td>
+                        <td>
+                        '. $data['trB40'][$key] .'
+                        </td>
+                        <td>
+                        '. $data['trM40'][$key] .'
+                        </td>
+                        <td>
+                        '. $data['trT20'][$key] .'
+                        </td>
+                        <td>
+                        '. $data['tr'][$key] .'
+                        </td>
+                        <td>
+                        '. $data['paymentNK'][$key] .'
+                        </td>
+                        <td>
+                        '. $data['dailyPayment'][$key] .'
+                        </td>
+                        <td>
+                        '. $data['sponsor'][$key] .'
+                        </td>
+                        <td>
+                        '. $data['refund'][$key] .'
+                        </td>
+                        <td>
+                        '. $data['balance'][$key] .'
+                        </td>
+                    </tr>
+                    ';
+                    }
+                $content .= '</tbody>';
+                
+            }catch(QueryException $ex){
+                DB::rollback();
+                if($ex->getCode() == 23000){
+                    return ["message"=>"Class code already existed inside the system"];
+                }else{
+                    \Log::debug($ex);
+                    return ["message"=>"DB Error"];
+                }
+            }
+
+            DB::commit();
+        }catch(Exception $ex){
+            return ["message"=>"Error"];
+        }
+
+        return ["message"=>"Success", "data" => $content];
+
+    }
 }
