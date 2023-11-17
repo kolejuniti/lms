@@ -168,6 +168,9 @@
             },
             success  : function(data){
                 $('#add-student-div').html(data);
+                $('#table_projectprogress_course').DataTable({
+                    paging: false
+                });
 
             }
         });
