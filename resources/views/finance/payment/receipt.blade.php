@@ -42,7 +42,7 @@
          outline: 0;
          vertical-align: baseline;
          background: transparent;
-         font-size: 8px; /* reduce font-size */
+         font-size: 9px; /* reduce font-size */
          table-layout: fixed;
       }
       h2,h3,p {
@@ -144,13 +144,13 @@
                            @else
                            <td >{{ $dtl->no_document }}</td>
                            @endif
-                           <td>{{ $dtl->amount }}</td>
+                           <td>RM{{ number_format($dtl->amount, 2, '.', ',') }}</td>
                         </tr>
                         @endforeach
                         <tr>
                            <td colspan="3">
                            </td><td class="text-center; width: 50px;"><strong>Jumlah :</strong></td>
-                           <td class="text-center; width: 50px;"><strong>{{ $data['total2'] }}</strong></td>
+                           <td class="text-center; width: 50px;"><strong>RM{{ number_format($data['total2'], 2, '.', ',') }}</strong></td>
                         </tr>
                      </tbody>
                   </table>
@@ -174,14 +174,14 @@
                            <td>{{ $keys+1 }}</td>
                            <td>{{ $dtl->name }}</td>
                            <td>{{ $data['payment']->semester_id }}</td>
-                           <td>{{ $dtl->total_amount }}</td>
+                           <td>RM{{ number_format($dtl->total_amount, 2, '.', ',') }}</td>
                         </tr>
                         @endif
                         @endforeach
                         <tr>
                            <td colspan="2">
                            </td><td class="text-center; width: 50px;"><strong>Jumlah Keseluruhan :</strong></td>
-                           <td class="text-center; width: 50px;"><strong>{{ $data['total'] }}</strong></td>
+                           <td class="text-center; width: 50px;"><strong>RM{{ number_format($data['total'], 2, '.', ',') }}</strong></td>
                         </tr>
                      </tbody>
                   </table>
