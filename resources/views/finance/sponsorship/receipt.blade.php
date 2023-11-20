@@ -42,7 +42,7 @@
          font-size: 100%;
          vertical-align: baseline;
          background: transparent;
-         font-size: 8px; /* reduce font-size */
+         font-size: 9px; /* reduce font-size */
       }
       h2,h3,p {
          margin: 0;
@@ -147,13 +147,13 @@
                            @else
                            <td>{{ $dtl->no_document }}</td>
                            @endif
-                           <td>{{ $data['total'] }}</td>
+                           <td>{{ number_format($data['total'], 2, '.', ',') }}</td>
                         </tr>
                         @endforeach
                         <tr>
                            <td colspan="3">
                            </td><td class="text-center; width: 50px;"><strong>Jumlah :</strong></td>
-                           <td class="text-center; width: 50px;"><strong>{{ $data['total'] }}</strong></td>
+                           <td class="text-center; width: 50px;"><strong>{{ number_format($data['total'], 2, '.', ',') }}</strong></td>
                         </tr>
                      </tbody>
                   </table>
@@ -183,14 +183,14 @@
                            <td>{{ $count+1 }}</td>
                            <td>{{ $dtl->name }}</td>
                            <td>{{ $dtl->groupid }}</td>
-                           <td>{{ $dtl->total_amount }}</td>
+                           <td>{{ number_format($dtl->total_amount, 2, '.', ',') }}</td>
                         </tr>
                         @endif
                         @endforeach
                         <tr>
                            <td colspan="2">
                            </td><td class="text-center; width: 50px;"><strong>Jumlah Keseluruhan :</strong></td>
-                           <td class="text-center; width: 50px;"><strong>{{ $data['total'] }}</strong></td>
+                           <td class="text-center; width: 50px;"><strong>{{ number_format($data['total'], 2, '.', ',') }}</strong></td>
                         </tr>
                      </tbody>
                   </table>
