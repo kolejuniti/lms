@@ -315,6 +315,7 @@
 					<li><a href="{{ route('sponsorship.library') }}" class="{{ (route('sponsorship.library') == Request::url()) ? 'active' : ''}}">Sponsor Library</a></li>
 					<li><a href="{{ route('sponsorship.payment') }}" class="{{ (route('sponsorship.payment') == Request::url()) ? 'active' : ''}}">Sponsor Payment</a></li>
 					<li><a href="{{ route('finance.package.sponsorPackage') }}" class="{{ (route('finance.package.sponsorPackage') == Request::url()) ? 'active' : ''}}">Sponsor Package</a></li>
+					<li><a href="{{ route('finance.payment.report') }}" class="{{ (route('finance.payment.report') == Request::url()) ? 'active' : ''}}">Sponsor payment Report</a></li>
 				</ul>
 			  </li>
 			  <li class="treeview">
