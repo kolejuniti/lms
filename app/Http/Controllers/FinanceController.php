@@ -7218,7 +7218,7 @@ class FinanceController extends Controller
                                   ->select('tblpayment.*', 'tblpaymentmethod.no_document',
                                             DB::raw('(SELECT SUM(x.amount) FROM tblpayment as x WHERE x.sponsor_id = tblpayment.id AND x.process_status_id = 2) as used_amount'))
                                   ->where('tblpayment.process_status_id', 2)
-                                  ->where('tblpayment.process_status_id', $filter->sponsor)
+                                  ->where('tblpayment.payment_sponsor_id', $filter->sponsor)
                                   ->groupBy('tblpayment.id', 'tblpayment.date', 'tblpayment.ref_no')
                                   ->orderBy('tblpayment.date')
                                   ->get();
