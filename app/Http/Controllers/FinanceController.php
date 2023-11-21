@@ -7182,4 +7182,150 @@ class FinanceController extends Controller
         return ["message"=>"Success", "data" => $content];
 
     }
+
+    public function sponsorReport()
+    {
+
+        $data['sponsor'] = DB::table('tblsponsor_library')->get();
+
+        return view('finance.sponsorship.sponsorReport', compact('data'));
+
+    }
+
+    public function sponsorGetReport(Request $request)
+    {
+
+        $filtersData = $request->filtersData;
+
+        $validator = Validator::make($request->all(), [
+            'filtersData' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return ["message"=>"Field Error", "error" => $validator->messages()->get('*')];
+        }
+
+        try{ 
+            DB::beginTransaction();
+            DB::connection()->enableQueryLog();
+
+            try{
+
+                $filter = json_decode($filtersData);
+
+                $data['result'] = DB::table('tblpayment')
+                                  ->join('tblpaymentmethod','tblpayment.id','tblpaymentmethod.payment_id')
+                                  ->select('tblpayment.*', 'tblpaymentmethod.no_document',
+                                            DB::raw('(SELECT SUM(x.amount) FROM tblpayment as X WHERE x.sponsor_id = tblpayment.id AND x.process_status_id = 2) as used_amount'))
+                                  ->where('tblpayment.process_status_id', 2)
+                                  ->where('tblpayment.process_status_id', $filter->sponsor)
+                                  ->groupBy('tblpayment.id', 'tblpayment.date', 'tblpayment.ref_no')
+                                  ->orderBy('tblpayment.date')
+                                  ->get();
+
+                $content = "";
+                $content .= '<thead>
+                                <tr>
+                                    <th>
+                                    #
+                                    </th>
+                                    <th>
+                                        Date
+                                    </th>
+                                    <th>
+                                        Reference No.
+                                    </th>
+                                    <th>
+                                        Voucher No.
+                                    </th>
+                                    <th>
+                                        Total Payment
+                                    </th>
+                                    <th>
+                                        Distributed Amount
+                                    </th>
+                                    <th style="text-align: center;">
+                                        Student List
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="table">';
+                            
+                foreach($data['result'] as $key => $rst){
+                    //$registered = ($std->status == 'ACTIVE') ? 'checked' : '';
+                    $content .= '
+                    <tr>
+                        <td>
+                        '. $key+1 .'
+                        </td>
+                        <td>
+                        '. $rst->date .'
+                        </td>
+                        <td>
+                        '. $rst->ref_no .'
+                        </td>
+                        <td>
+                        '. $rst->no_document .'
+                        </td>
+                        <td>
+                        '. $rst->amount .'
+                        </td>
+                        <td>
+                        '. $rst->used_amount .'
+                        </td>
+                        <td style="text-align: center;">
+                            <a class="btn btn-info btn-sm" href="/finance/sponsorship/payment/report/showReportStudent?id='. $rst->id .'">
+                                Display
+                            </a>
+                        </td>
+                    </tr>
+                    ';
+                    }
+                $content .= '</tbody>';
+                
+            }catch(QueryException $ex){
+                DB::rollback();
+                if($ex->getCode() == 23000){
+                    return ["message"=>"Class code already existed inside the system"];
+                }else{
+                    \Log::debug($ex);
+                    return ["message"=>"DB Error"];
+                }
+            }
+
+            DB::commit();
+        }catch(Exception $ex){
+            return ["message"=>"Error"];
+        }
+
+        return ["message"=>"Success", "data" => $content];
+
+    }
+
+    public function showReportStudent(Request $request)
+    {
+
+        $data['info'] = DB::table('tblsponsor_library')
+                        ->join('tblpayment','tblsponsor_library.id','tblpayment.payment_sponsor_id')
+                        ->join('tblpaymentmethod','tblpayment.id','tblpaymentmethod.payment_id')
+                        ->where('tblpayment.id', $request->id)
+                        ->select(DB::raw('CONCAT(tblsponsor_library.code,"-",tblsponsor_library.name) as sponsor'),'tblpaymentmethod.no_document')
+                        ->first();
+
+        $data['students'] = DB::table('students')
+                            ->join('tblpayment','students.ic','tblpayment.student_ic')
+                            ->join('tblprogramme','students.program','tblprogramme.id')
+                            ->where([
+                                ['tblpayment.process_status_id', 2],
+                                ['tblpayment.sponsor_id', $request->id]
+                            ])
+                            ->select('students.*','tblprogramme.progcode','tblpayment.amount')
+                            ->orderBy('students.name')
+                            ->get();
+
+        // dd($data['students']);
+
+        return view('finance.sponsorship.sponsorStudentReport', compact('data'));
+
+    }
 }
