@@ -541,6 +541,9 @@ Route::post('/finance/sponsorship/payment/student/confirmStudent', [App\Http\Con
 Route::get('/finance/sponsorship/payment/getReceipt', [App\Http\Controllers\FinanceController::class, 'getReceipt'])->name('receipt');
 Route::get('/finance/sponsorship/payment/getReceipt2', [App\Http\Controllers\FinanceController::class, 'getReceipt2'])->name('receipt2');
 Route::get('/finance/sponsorship/payment/getReceipt3', [App\Http\Controllers\FinanceController::class, 'getReceipt3'])->name('receipt3');
+Route::get('/finance/sponsorship/payment/report', [App\Http\Controllers\FinanceController::class, 'sponsorReport'])->name('finance.payment.report');
+Route::post('/finance/sponsorship/payment/report/getReport', [App\Http\Controllers\FinanceController::class, 'sponsorGetReport']);
+Route::get('/finance/sponsorship/payment/report/showReportStudent', [App\Http\Controllers\FinanceController::class, 'showReportStudent']);
 Route::get('/finance/report/statement', [App\Http\Controllers\FinanceController::class, 'studentStatement'])->name('finance.statement');
 Route::post('/finance/report/statement/getStudent', [App\Http\Controllers\FinanceController::class, 'statementGetStudent']);
 Route::get('/finance/report/receiptlist', [App\Http\Controllers\FinanceController::class, 'receiptList'])->name('finance.receiptList');
