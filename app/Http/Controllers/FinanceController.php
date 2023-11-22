@@ -6972,10 +6972,10 @@ class FinanceController extends Controller
                                         ->whereIn('tblstudentclaim.groupid', [1,4,5])
                                         ->sum('tblpaymentdtl.amount');
 
-                    $data['balance'][$key] = ($data['debt'][$key] + $data['debtND'][$key] + $data['debtNK'][$key]) - 
-                                             (($data['insentif'][$key] + $data['iNED'][$key] + $data['unitiFund'][$key] + $data['biasiswa'][$key] + $data['uef'][$key] + $data['dc19'][$key] + $data['iMCO'][$key] + $data['iKKU'][$key] + $data['tkB40'][$key] + $data['tkM40'][$key] + $data['tkT20'][$key] + $data['tk'][$key] + $data['trB40'][$key] + $data['trM40'][$key] + $data['trT20'][$key] + $data['tr'][$key]) + 
-                                             ($data['paymentNK'][$key] + $data['dailyPayment'][$key] + $data['sponsor'][$key]) + 
-                                             ($data['refund'][$key]));
+                    // $data['balance'][$key] = ($data['debt'][$key] + $data['debtND'][$key] + $data['debtNK'][$key]) - 
+                    //                          (($data['insentif'][$key] + $data['iNED'][$key] + $data['unitiFund'][$key] + $data['biasiswa'][$key] + $data['uef'][$key] + $data['dc19'][$key] + $data['iMCO'][$key] + $data['iKKU'][$key] + $data['tkB40'][$key] + $data['tkM40'][$key] + $data['tkT20'][$key] + $data['tk'][$key] + $data['trB40'][$key] + $data['trM40'][$key] + $data['trT20'][$key] + $data['tr'][$key]) + 
+                    //                          ($data['paymentNK'][$key] + $data['dailyPayment'][$key] + $data['sponsor'][$key]) + 
+                    //                          ($data['refund'][$key]));
 
                 }
 
@@ -7155,9 +7155,6 @@ class FinanceController extends Controller
                         </td>
                         <td>
                         '. $data['refund'][$key] .'
-                        </td>
-                        <td>
-                        '. $data['balance'][$key] .'
                         </td>
                     </tr>
                     ';
