@@ -348,7 +348,7 @@
               try{
                
                       alert("Success! Status & Student info has been updated!")
-                      $('#complex_header').html(res.data);
+                      $('#complex_header').html(res);
 
                       $('#complex_header').DataTable({
                         dom: 'lBfrtip', // if you remove this line you will see the show entries dropdown
