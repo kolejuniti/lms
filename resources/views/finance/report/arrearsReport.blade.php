@@ -346,7 +346,7 @@
           },
           success:function(res){
               try{
-                  if(res.message == "Success"){
+               
                       alert("Success! Status & Student info has been updated!")
                       $('#complex_header').html(res.data);
 
@@ -398,21 +398,7 @@
                       // Remove the cells that are hidden
                       $("#complex_header td:first-child:hidden").remove();
                       
-                  }else{
-                      $('.error-field').html('');
-                      if(res.message == "Field Error"){
-                          for (f in res.error) {
-                              $('#'+f+'_error').html(res.error[f]);
-                          }
-                      }
-                      else if(res.message == "Group code already existed inside the system"){
-                          $('#classcode_error').html(res.message);
-                      }
-                      else{
-                          alert(res.message);
-                      }
-                      $("html, body").animate({ scrollTop: 0 }, "fast");
-                  }
+                
               }catch(err){
                   alert("Ops sorry, there is an error");
               }
