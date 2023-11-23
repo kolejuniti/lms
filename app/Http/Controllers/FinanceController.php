@@ -6749,11 +6749,7 @@ class FinanceController extends Controller
             return ["message"=>"Field Error", "error" => $validator->messages()->get('*')];
         }
 
-        try{ 
-            DB::beginTransaction();
-            DB::connection()->enableQueryLog();
-
-            try{
+    
 
                 $filter = json_decode($filtersData);
 
@@ -6970,21 +6966,7 @@ class FinanceController extends Controller
                 }
 
                 
-                
-            }catch(QueryException $ex){
-                DB::rollback();
-                if($ex->getCode() == 23000){
-                    return ["message"=>"Class code already existed inside the system"];
-                }else{
-                    \Log::debug($ex);
-                    return ["message"=>"DB Error"];
-                }
-            }
-
-            DB::commit();
-        }catch(Exception $ex){
-            return ["message"=>"Error"];
-        }
+        
 
         return ["message"=>"Success"];
 
