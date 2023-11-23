@@ -6966,9 +6966,8 @@ class FinanceController extends Controller
                 }
 
                 
-        
 
-        return ["message"=>"Success"];
+        return response()->json(['message' => 'Success']);
 
     }
 
