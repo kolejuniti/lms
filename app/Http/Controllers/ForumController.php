@@ -111,8 +111,10 @@ class ForumController extends Controller
 
         $course = DB::table('subjek')->where('id', Session::get('CourseIDS'))->first();
 
-        $topic = DB::table('tblforum_topic')->where([
-            ['CourseID', Session::get('CourseIDS')],
+
+        $topic = DB::table('tblforum_topic')
+        ->join('subjek', 'tblforum_topic.CourseID', 'subjek.id')->where([
+            ['subjek.sub_id', $course->sub_id],
             ['SessionID', Session::get('SessionIDS')]
         ])->get();
 
