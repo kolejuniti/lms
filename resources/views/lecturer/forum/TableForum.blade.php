@@ -3,8 +3,7 @@
 
     if(isset($TopicID) && $TopicID != ''){
         $forum = DB::table('tblforum')->where([
-            ['TopicID', $TopicID],
-            ['CourseID', Session::get('CourseIDS')]
+            ['TopicID', $TopicID]
         ])->orderBy('DateTime')->get();
 
         //dd($forum);
