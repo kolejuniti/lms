@@ -299,6 +299,17 @@
 						<li><a href="/quality/report/allreport">All Lecturer</a></li>
 					</ul>
 				</li> 
+				@else
+				<li class="treeview">
+				    <a href="#"><i data-feather="archive"></i><span>Report</span>
+						<span class="pull-right-container">
+							<i class="fa fa-angle-left pull-right"></i>
+						</span>
+				    </a>
+					<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
+						<li><a href="/admin/report/lecturer">Lecturer</a></li>
+					</ul>
+				</li> 
 				@endif
 				<li>
 					<a href="{{ route('posting.staff') }}" class="{{ (route('posting.staff') == Request::url()) ? 'active' : ''}}"><i data-feather="tv"></i><span>Posting</span></a>
