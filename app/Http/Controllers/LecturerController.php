@@ -15,8 +15,8 @@ use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
 use League\Flysystem\AwsS3V3\PortableVisibilityConverter;
 use Mail;
-// use PDF;
-// use Twilio\Rest\Client;
+use PDF;
+use Twilio\Rest\Client;
 
 class LecturerController extends Controller
 {
@@ -1314,6 +1314,25 @@ class LecturerController extends Controller
             'mc' => [],
         ]);
 
+        // Parse the times
+        $start = Carbon::parse($data['date']);
+        $end = Carbon::parse($data['date2']);
+
+        // Calculate the difference
+        $totalHours = $end->diffInHours($start);
+        $totalMinutes = $end->diffInMinutes($start) % 60; // To get remaining minutes after hours
+
+        //dd($totalHours);
+
+        if($totalHours < 1 || $totalHours > 4 || $totalMinutes != 0)
+        {
+
+            return back()->with('alert', 'Total hours cannot be below 1 or above 4, please check the time range');
+
+        }
+
+        //dd(Session::get('CourseID'));
+
         $group = explode('|', $data['group']);
 
         //$date = Carbon::createFromFormat('d/m/Y', $data['date'])->format('Y-m-d');
@@ -1435,7 +1454,13 @@ class LecturerController extends Controller
                     ['tblclassattendance.groupname', $group[1]]
                  ])->groupBy('tblclassattendance.classdate')->count();
 
-        if($totalclass > 0){
+        $course_credit = DB::table('subjek')->where('id', Session::get('CourseID'))
+                  ->select('course_credit', DB::raw('(course_credit * 14) as total'))->first();
+
+
+        //try to get the total credit -> total credit (47) (2 x 14) - amount of student absent time (4)
+
+        if($totalclass > 0){  
             
             if(count($absent) > 0)
             {
@@ -1443,7 +1468,38 @@ class LecturerController extends Controller
                 foreach($absent as $key => $abs)
                 {
 
-                    if(DB::table('tblstudent_warning')->where([['student_ic', $abs],['groupid', $group[0]],['groupname', $group[1]]])->count() > 0)
+                    $subQuery = DB::table('tblclassattendance')
+                                    ->select('tblclassattendance.classdate')
+                                    ->where([
+                                        ['tblclassattendance.groupid', $group[0]],
+                                        ['tblclassattendance.groupname', $group[1]],
+                                        ['tblclassattendance.student_ic', $abs]
+                                    ])
+                                    ->groupBy('tblclassattendance.classdate');
+
+                    $total_absent = DB::table('tblclassattendance')
+                    ->select(
+                        'tblclassattendance.classdate',
+                        'tblclassattendance.classend',
+                        DB::raw('HOUR(TIMEDIFF(tblclassattendance.classend, tblclassattendance.classdate)) as raw_diff')
+                    )
+                    ->where([
+                        ['tblclassattendance.groupid', $group[0]],
+                        ['tblclassattendance.groupname', $group[1]]
+                    ])
+                    ->whereNotIn('tblclassattendance.classdate', $subQuery)
+                    ->groupBy('tblclassattendance.classdate', 'tblclassattendance.classdate', 'tblclassattendance.classend')
+                    ->get();
+
+                    $totalhours = 0; // Initialize totalhours to 0 before the loop
+
+                    foreach ($total_absent as $ttl) {
+                        $totalhours += $ttl->raw_diff; // Correct operator usage for adding values
+                    }
+
+                    $total_absent = $course_credit->total - $totalhours;
+
+                    if(DB::table('tblstudent_warning')->where([['student_ic', $abs],['groupid', $group[0]],['groupname', $group[1]]])->exists())
                     {
 
                         if(DB::table('tblstudent_warning')->where([['student_ic', $abs],['groupid', $group[0]],['groupname', $group[1]]])->count() == 1)
@@ -1537,55 +1593,54 @@ class LecturerController extends Controller
 
                     }else{
 
-                        if($totalclass >= 3)
+                        $threshold = $course_credit->total - $course_credit->course_credit;
+
+                        if($total_absent <= $threshold)
                         {
 
-                            $exists = DB::table('tblclassattendance')
-                            ->where([
-                               ['tblclassattendance.student_ic', $abs],
-                               ['tblclassattendance.groupid', $group[0]],
-                               ['tblclassattendance.groupname', $group[1]]
-                            ])->groupBy('tblclassattendance.classdate')->count();
+                            $percentage = ($total_absent / $course_credit->total) * 100;
 
-                            $totalAbsent = $totalclass - $exists;
+                            //dd($percentage);
 
-                            if($totalAbsent >= 3)
-                            {
+                            DB::table('tblstudent_warning')->insert([
+                                'student_ic' => $abs,
+                                'groupid' => $group[0],
+                                'groupname' => $group[1],
+                                'balance_attendance' => $total_absent,
+                                'percentage_attendance' => $percentage,
+                                'warning' => 1
+                            ]);
 
-                                DB::table('tblstudent_warning')->insert([
-                                    'student_ic' => $abs,
-                                    'groupid' => $group[0],
-                                    'groupname' => $group[1],
-                                    'warning' => 1
-                                ]);
+                            //dd('try');
 
-                                // $view = view('lecturer.class.surat_amaran.surat_amaran'); // Replace 'your_view_name' with the name of your HTML view
-                                // $pdf = PDF::loadHTML($view->render())->stream();
+                            // $view = view('lecturer.class.surat_amaran.surat_amaran'); // Replace 'your_view_name' with the name of your HTML view
 
-                                // // Save the PDF to a temporary file
-                                // $pdfPath = storage_path('app/public/tmp_pdf_' . time() . '.pdf');
-                                // file_put_contents($pdfPath, $pdf->output());
+                            // //dd($view);
+                            // $pdf = PDF::loadHTML($view->render())->stream();
 
-                                // $publicPath = asset('storage/tmp_pdf_' . time() . '.pdf');
+                            // // Save the PDF to a temporary file
+                            // $pdfPath = storage_path('app/public/tmp_pdf_' . time() . '.pdf');
+                            // file_put_contents($pdfPath, $pdf->output());
 
-                                // // Send to WhatsApp
-                                // $sid    = env('TWILIO_SID');
-                                // $token  = env('TWILIO_TOKEN');
-                                // $twilio = new Client($sid, $token);
+                            // $publicPath = asset('storage/tmp_pdf_' . time() . '.pdf');
 
-                                // $message = $twilio->messages->create(
-                                //     'whatsapp:+60162667041', // the recipient's Whatsapp number
-                                //     [
-                                //         "from" => env('TWILIO_WHATSAPP_FROM'),
-                                //         "body" => 'Here is your PDF document:',
-                                //         "mediaUrl" => $publicPath
-                                //     ]
-                                // );
+                            //dd('try');
 
-                                // // Cleanup: Delete the temporary PDF
-                                // unlink($pdfPath);
+                            // // Send to WhatsApp
+                            // $sid    = env('TWILIO_SID');
+                            // $token  = env('TWILIO_TOKEN');
+                            // $twilio = new Client($sid, $token);
 
-                            }
+                            // $message = $twilio->messages->create(
+                            //     'whatsapp:+60162667041', // the recipient's Whatsapp number
+                            //     [
+                            //         "from" => env('TWILIO_WHATSAPP_FROM'),
+                            //         "body" => 'Here is your PDF document:'
+                            //     ]
+                            // );
+
+                            // Cleanup: Delete the temporary PDF
+                            // unlink($pdfPath);
 
                         }
 
@@ -1597,7 +1652,7 @@ class LecturerController extends Controller
 
         }
 
-        // set_time_limit(300); // Set time limit to 300 seconds (5 minutes)
+        set_time_limit(300); // Set time limit to 300 seconds (5 minutes)
 
         // $view = view('lecturer.class.surat_amaran.surat_amaran'); // Replace 'your_view_name' with the name of your HTML view
         // $pdf = PDF::loadHTML($view->render());
@@ -1620,21 +1675,20 @@ class LecturerController extends Controller
 
         // dd($publicPath);
 
-        // // Send to WhatsApp
-        // $sid    = env('TWILIO_SID');
-        // $token  = env('TWILIO_TOKEN');
-        // $twilio = new Client($sid, $token);
+        // Send to WhatsApp
+        $sid    = env('TWILIO_SID');
+        $token  = env('TWILIO_TOKEN');
+        $twilio = new Client($sid, $token);
 
-        // $message = $twilio->messages->create(
-        //     'whatsapp:+60162667041', // the recipient's Whatsapp number
-        //     [
-        //         "from" => env('TWILIO_WHATSAPP_FROM'),
-        //         "body" => 'Here is your PDF document:',
-        //         "mediaUrl" => $publicPath
-        //     ]
-        // );
+        $message = $twilio->messages->create(
+            'whatsapp:+60162667041', // the recipient's Whatsapp number
+            [
+                "from" => env('TWILIO_WHATSAPP_FROM'),
+                "body" => 'Here is your PDF document:'
+            ]
+        );
 
-        // // Cleanup: Delete the temporary PDF
+        // Cleanup: Delete the temporary PDF
         // unlink($pdfPath);
 
 
@@ -2668,7 +2722,7 @@ class LecturerController extends Controller
                     $sumquiz[$ky][$keys] = DB::table('tblclassstudentquiz')->where('userid', $std->ic)->whereIn('quizid', $quizid)->sum('final_mark');
 
                     $percentquiz = DB::table('tblclassmarks')
-                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
+                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
                                 ['subjek.id', request()->id],
                                 ['assessment', 'quiz']
                                 ])
@@ -2724,7 +2778,7 @@ class LecturerController extends Controller
                     $sumtest[$ky][$keys] = DB::table('tblclassstudenttest')->where('userid', $std->ic)->whereIn('testid', $testid)->sum('final_mark');
 
                     $percenttest = DB::table('tblclassmarks')
-                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
+                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
                                 ['subjek.id', request()->id],
                                 ['assessment', 'test']
                                 ])
@@ -2780,7 +2834,7 @@ class LecturerController extends Controller
                     $sumassign[$ky][$keys] = DB::table('tblclassstudentassign')->where('userid', $std->ic)->whereIn('assignid', $assignid)->sum('final_mark');
 
                     $percentassign = DB::table('tblclassmarks')
-                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
+                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
                                 ['subjek.id', request()->id],
                                 ['assessment', 'assignment']
                                 ])
@@ -2835,7 +2889,7 @@ class LecturerController extends Controller
                     $sumextra[$ky][$keys] = DB::table('tblclassstudentextra')->where('userid', $std->ic)->whereIn('extraid', $extraid)->sum('total_mark');
 
                     $percentextra = DB::table('tblclassmarks')
-                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
+                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
                                 ['subjek.id', request()->id],
                                 ['assessment', 'extra']
                                 ])
@@ -2890,7 +2944,7 @@ class LecturerController extends Controller
                     $sumother[$ky][$keys] = DB::table('tblclassstudentother')->where('userid', $std->ic)->whereIn('otherid', $otherid)->sum('total_mark');
 
                     $percentother = DB::table('tblclassmarks')
-                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
+                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
                                 ['subjek.id', request()->id],
                                 ['assessment', 'lain-lain']
                                 ])
@@ -2945,7 +2999,7 @@ class LecturerController extends Controller
                     $summidterm[$ky][$keys] = DB::table('tblclassstudentmidterm')->where('userid', $std->ic)->whereIn('midtermid', $midtermid)->sum('final_mark');
 
                     $percentmidterm = DB::table('tblclassmarks')
-                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
+                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
                                 ['subjek.id', request()->id],
                                 ['assessment', 'midterm']
                                 ])
@@ -3000,7 +3054,7 @@ class LecturerController extends Controller
                     $sumfinal[$ky][$keys] = DB::table('tblclassstudentfinal')->where('userid', $std->ic)->whereIn('finalid', $finalid)->sum('final_mark');
 
                     $percentfinal = DB::table('tblclassmarks')
-                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
+                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
                                 ['subjek.id', request()->id],
                                 ['assessment', 'final']
                                 ])
@@ -3150,7 +3204,7 @@ class LecturerController extends Controller
         //QUIZ
 
         $percentquiz = DB::table('tblclassmarks')
-                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
+                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
                                 ['subjek.id', Session::get('CourseID')],
                                 ['assessment', 'quiz']
                                 ])
@@ -3189,7 +3243,7 @@ class LecturerController extends Controller
         //TEST
 
         $percenttest = DB::table('tblclassmarks')
-                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
+                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
                                 ['subjek.id', Session::get('CourseID')],
                                 ['assessment', 'test']
                                 ])
@@ -3227,7 +3281,7 @@ class LecturerController extends Controller
         //ASSIGNMENT
 
         $percentassign = DB::table('tblclassmarks')
-                        ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
+                        ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
                         ['subjek.id', Session::get('CourseID')],
                         ['assessment', 'assignment']
                         ])
@@ -3267,7 +3321,7 @@ class LecturerController extends Controller
         // MIDTERM
 
         $percentmidterm = DB::table('tblclassmarks')
-                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
+                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
                                 ['subjek.id', Session::get('CourseID')],
                                 ['assessment', 'midterm']
                                 ])
@@ -3306,7 +3360,7 @@ class LecturerController extends Controller
         //FINAL
 
         $percentfinal = DB::table('tblclassmarks')
-                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
+                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
                                 ['subjek.id', Session::get('CourseID')],
                                 ['assessment', 'final']
                                 ])
@@ -3344,7 +3398,7 @@ class LecturerController extends Controller
         //PAPERWORK
 
         $percentpaperwork = DB::table('tblclassmarks')
-                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
+                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
                                 ['subjek.id', Session::get('CourseID')],
                                 ['assessment', 'paperwork']
                                 ])
@@ -3384,7 +3438,7 @@ class LecturerController extends Controller
         //PRACTICAL
 
         $percentpractical = DB::table('tblclassmarks')
-                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
+                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
                                 ['subjek.id', Session::get('CourseID')],
                                 ['assessment', 'practical']
                                 ])
@@ -3424,7 +3478,7 @@ class LecturerController extends Controller
         //OTHER
 
         $percentother = DB::table('tblclassmarks')
-                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
+                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
                                 ['subjek.id', Session::get('CourseID')],
                                 ['assessment', 'lain-lain']
                                 ])
@@ -3460,7 +3514,7 @@ class LecturerController extends Controller
         //EXTRA
 
         $percentextra = DB::table('tblclassmarks')
-                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
+                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
                                 ['subjek.id', Session::get('CourseID')],
                                 ['assessment', 'extra']
                                 ])
@@ -4106,7 +4160,7 @@ class LecturerController extends Controller
                     $sumquiz[$ky][$keys] = DB::table('tblclassstudentquiz')->where('userid', $std->ic)->whereIn('quizid', $quizid)->sum('final_mark');
 
                     $percentquiz = DB::table('tblclassmarks')
-                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
+                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
                                 ['subjek.id', $grp->ID],
                                 ['assessment', 'quiz']
                                 ])
@@ -4153,7 +4207,7 @@ class LecturerController extends Controller
                     $sumtest[$ky][$keys] = DB::table('tblclassstudenttest')->where('userid', $std->ic)->whereIn('testid', $testid)->sum('final_mark');
 
                     $percenttest = DB::table('tblclassmarks')
-                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
+                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
                                 ['subjek.id', $grp->ID],
                                 ['assessment', 'test']
                                 ])
@@ -4209,7 +4263,7 @@ class LecturerController extends Controller
                     $sumassign[$ky][$keys] = DB::table('tblclassstudentassign')->where('userid', $std->ic)->whereIn('assignid', $assignid)->sum('final_mark');
 
                     $percentassign = DB::table('tblclassmarks')
-                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
+                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
                                 ['subjek.id', $grp->ID],
                                 ['assessment', 'assignment']
                                 ])
@@ -4256,7 +4310,7 @@ class LecturerController extends Controller
                     $sumextra[$ky][$keys] = DB::table('tblclassstudentextra')->where('userid', $std->ic)->whereIn('extraid', $extraid)->sum('total_mark');
 
                     $percentextra = DB::table('tblclassmarks')
-                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
+                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
                                 ['subjek.id', $grp->ID],
                                 ['assessment', 'extra']
                                 ])
@@ -4302,7 +4356,7 @@ class LecturerController extends Controller
                     $sumother[$ky][$keys] = DB::table('tblclassstudentother')->where('userid', $std->ic)->whereIn('otherid', $otherid)->sum('total_mark');
 
                     $percentother = DB::table('tblclassmarks')
-                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
+                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
                                 ['subjek.id', $grp->ID],
                                 ['assessment', 'lain-lain']
                                 ])
@@ -4348,7 +4402,7 @@ class LecturerController extends Controller
                     $summidterm[$ky][$keys] = DB::table('tblclassstudentmidterm')->where('userid', $std->ic)->whereIn('midtermid', $midtermid)->sum('final_mark');
 
                     $percentmidterm = DB::table('tblclassmarks')
-                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
+                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
                                 ['subjek.id', $grp->ID],
                                 ['assessment', 'midterm']
                                 ])
@@ -4395,7 +4449,7 @@ class LecturerController extends Controller
                     $sumfinal[$ky][$keys] = DB::table('tblclassstudentfinal')->where('userid', $std->ic)->whereIn('finalid', $finalid)->sum('final_mark');
 
                     $percentfinal = DB::table('tblclassmarks')
-                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
+                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
                                 ['subjek.id', $grp->ID],
                                 ['assessment', 'final']
                                 ])

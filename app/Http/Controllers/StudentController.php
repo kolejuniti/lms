@@ -707,7 +707,7 @@ class StudentController extends Controller
         //QUIZ
 
         $percentquiz = DB::table('tblclassmarks')
-                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
+                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
                                 ['subjek.id', Session::get('CourseID')],
                                 ['assessment', 'quiz']
                                 ])->first();
@@ -752,7 +752,7 @@ class StudentController extends Controller
         //TEST
 
         $percenttest = DB::table('tblclassmarks')
-                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
+                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
                                 ['subjek.id', Session::get('CourseID')],
                                 ['assessment', 'test']
                                 ])->first();
@@ -797,7 +797,7 @@ class StudentController extends Controller
         //ASSIGNMENT
 
         $percentassign = DB::table('tblclassmarks')
-                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
+                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
                                 ['subjek.id', Session::get('CourseID')],
                                 ['assessment', 'assignment']
                                 ])->first();
@@ -842,7 +842,7 @@ class StudentController extends Controller
         //MIDTERM
 
         $percentmidterm = DB::table('tblclassmarks')
-                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
+                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
                                 ['subjek.id', Session::get('CourseID')],
                                 ['assessment', 'midterm']
                                 ])->first();
@@ -888,7 +888,7 @@ class StudentController extends Controller
         //FINAL
 
         $percentfinal = DB::table('tblclassmarks')
-                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
+                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
                                 ['subjek.id', Session::get('CourseID')],
                                 ['assessment', 'final']
                                 ])->first();
@@ -933,7 +933,7 @@ class StudentController extends Controller
         //OTHER
 
         $percentother = DB::table('tblclassmarks')
-                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
+                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
                                 ['subjek.id', Session::get('CourseID')],
                                 ['assessment', 'lain-lain']
                                 ])->first();
@@ -978,7 +978,7 @@ class StudentController extends Controller
         //EXTRA
 
         $percentextra = DB::table('tblclassmarks')
-                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
+                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
                                 ['subjek.id', Session::get('CourseID')],
                                 ['assessment', 'extra']
                                 ])->first();

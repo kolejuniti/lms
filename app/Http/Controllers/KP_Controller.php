@@ -91,14 +91,15 @@ class KP_Controller extends Controller
 
     public function assessment()
     {
+       $sub_id = DB::table('subjek')->where('id', request()->course)->value('sub_id');
 
-       $marks = DB::table('tblclassmarks')->where('course_id', request()->course);
+       $marks = DB::table('tblclassmarks')->where('course_id', $sub_id);
 
        $data['classmark'] = $marks->get();
 
        $type = $marks->pluck('assessment');
 
-       $data['course'] = request()->course;
+       $data['course'] = $sub_id;
                
 
        $assessment = array(
@@ -115,17 +116,22 @@ class KP_Controller extends Controller
 
        if($data['classmark']->isEmpty())
        {
-           foreach($assessment as $key){
+        //    foreach($assessment as $key){
 
-                $datas[] = DB::table('tblclassmarks')->insertGetId([
-                    'assessment' => $key,
-                    'course_id' => request()->course,
-                    'mark_percentage' => 0
-                ]);
+        //         $datas[] = DB::table('tblclassmarks')->insertGetId([
+        //             'assessment' => $key,
+        //             'course_id' => $sub_id,
+        //             'mark_percentage' => 0
+        //         ]);
 
-           }
+        //    }
 
-           $data['classmark'] = DB::table('tblclassmarks')->whereIn('id', $datas)->get();
+        //    $data['classmark'] = DB::table('tblclassmarks')->whereIn('id', $datas)->get();
+
+        $data['classmark'] = [];
+
+           $data['assessment'] = $assessment;
+
        }else{
 
         foreach ($data['classmark'] as $key => $value) {
@@ -190,7 +196,7 @@ class KP_Controller extends Controller
             'mark_percentage' => 0
         ]);
 
-        return redirect()->route('ketua_program');
+        return back();
     }
 
     public function edit()
