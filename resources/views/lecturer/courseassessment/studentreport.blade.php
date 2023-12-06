@@ -37,6 +37,12 @@
         </div>
     </div>
 
+    @php
+
+    $sub_id = DB::table('subjek')->where('id', $id)->value('sub_id');
+
+    @endphp
+
     <!-- Main content -->
     <section class="content">
         <div class="row">
@@ -77,7 +83,7 @@
                                   <th >
                                     @php
                                     $markpercen = DB::table('tblclassmarks')->where([
-                                    ['course_id', $id],
+                                    ['course_id', $sub_id],
                                     ['assessment', 'quiz']
                                     ])
                                     ->orderBy('tblclassmarks.id', 'desc')
@@ -103,7 +109,7 @@
                                   <th >
                                     @php
                                     $markpercen = DB::table('tblclassmarks')->where([
-                                    ['course_id', $id],
+                                    ['course_id', $sub_id],
                                     ['assessment', 'test']
                                     ])
                                     ->orderBy('tblclassmarks.id', 'desc')
@@ -129,7 +135,7 @@
                                   <th >
                                     @php
                                     $markpercen = DB::table('tblclassmarks')->where([
-                                    ['course_id', $id],
+                                    ['course_id', $sub_id],
                                     ['assessment', 'assignment']
                                     ])
                                     ->orderBy('tblclassmarks.id', 'desc')
@@ -155,7 +161,7 @@
                                   <th >
                                     @php
                                     $markpercen = DB::table('tblclassmarks')->where([
-                                    ['course_id', $id],
+                                    ['course_id', $sub_id],
                                     ['assessment', 'extra']
                                     ])
                                     ->orderBy('tblclassmarks.id', 'desc')
@@ -181,7 +187,7 @@
                                   <th >
                                     @php
                                     $markpercen = DB::table('tblclassmarks')->where([
-                                    ['course_id', $id],
+                                    ['course_id', $sub_id],
                                     ['assessment', 'lain-lain']
                                     ])
                                     ->orderBy('tblclassmarks.id', 'desc')
@@ -207,7 +213,7 @@
                                   <th >
                                     @php
                                     $markpercen = DB::table('tblclassmarks')->where([
-                                    ['course_id', $id],
+                                    ['course_id', $sub_id],
                                     ['assessment', 'midterm']
                                     ])
                                     ->orderBy('tblclassmarks.id', 'desc')
@@ -233,7 +239,7 @@
                                   <th >
                                     @php
                                     $markpercen = DB::table('tblclassmarks')->where([
-                                    ['course_id', $id],
+                                    ['course_id', $sub_id],
                                     ['assessment', 'final']
                                     ])
                                     ->orderBy('tblclassmarks.id', 'desc')
@@ -298,7 +304,7 @@
                                       ['tblclassquiz.status', '!=', 3]
                                     ])->exists())
                                       @if(DB::table('tblclassmarks')->where([
-                                      ['course_id', $id],
+                                      ['course_id', $sub_id],
                                       ['assessment', 'quiz']
                                       ])
                                       ->orderBy('tblclassmarks.id', 'desc')
@@ -351,7 +357,7 @@
                                       ['tblclasstest.status', '!=', 3]
                                     ])->exists())
                                       @if(DB::table('tblclassmarks')->where([
-                                      ['course_id', $id],
+                                      ['course_id', $sub_id],
                                       ['assessment', 'test']
                                       ])
                                       ->orderBy('tblclassmarks.id', 'desc')
@@ -404,7 +410,7 @@
                                       ['tblclassassign.status', '!=', 3]
                                     ])->exists())
                                       @if(DB::table('tblclassmarks')->where([
-                                      ['course_id', $id],
+                                      ['course_id', $sub_id],
                                       ['assessment', 'assignment']
                                       ])
                                       ->orderBy('tblclassmarks.id', 'desc')
@@ -457,7 +463,7 @@
                                       ['tblclassextra.status', '!=', 3]
                                     ])->exists())
                                       @if(DB::table('tblclassmarks')->where([
-                                      ['course_id', $id],
+                                      ['course_id', $sub_id],
                                       ['assessment', 'extra']
                                       ])
                                       ->orderBy('tblclassmarks.id', 'desc')
@@ -510,7 +516,7 @@
                                       ['tblclassother.status', '!=', 3]
                                     ])->exists())
                                       @if(DB::table('tblclassmarks')->where([
-                                      ['course_id', $id],
+                                      ['course_id', $sub_id],
                                       ['assessment', 'lain-lain']
                                       ])
                                       ->orderBy('tblclassmarks.id', 'desc')
@@ -563,7 +569,7 @@
                                       ['tblclassmidterm.status', '!=', 3]
                                     ])->exists())
                                       @if(DB::table('tblclassmarks')->where([
-                                      ['course_id', $id],
+                                      ['course_id', $sub_id],
                                       ['assessment', 'midterm']
                                       ])
                                       ->orderBy('tblclassmarks.id', 'desc')
@@ -616,7 +622,7 @@
                                       ['tblclassfinal.status', '!=', 3]
                                     ])->exists())
                                       @if(DB::table('tblclassmarks')->where([
-                                      ['course_id', $id],
+                                      ['course_id', $sub_id],
                                       ['assessment', 'final']
                                       ])
                                       ->orderBy('tblclassmarks.id', 'desc')
@@ -673,7 +679,7 @@
                                       ['tblclassquiz.status', '!=', 3]
                                     ])->exists())
                                       @if(DB::table('tblclassmarks')->where([
-                                      ['course_id', $id],
+                                      ['course_id', $sub_id],
                                       ['assessment', 'quiz']
                                       ])
                                       ->orderBy('tblclassmarks.id', 'desc')
@@ -706,7 +712,7 @@
                                       ['tblclasstest.status', '!=', 3]
                                     ])->exists())
                                       @if(DB::table('tblclassmarks')->where([
-                                      ['course_id', $id],
+                                      ['course_id', $sub_id],
                                       ['assessment', 'test']
                                       ])
                                       ->orderBy('tblclassmarks.id', 'desc')
@@ -739,7 +745,7 @@
                                       ['tblclassassign.status', '!=', 3]
                                     ])->exists())
                                       @if(DB::table('tblclassmarks')->where([
-                                      ['course_id', $id],
+                                      ['course_id', $sub_id],
                                       ['assessment', 'assignment']
                                       ])
                                       ->orderBy('tblclassmarks.id', 'desc')
@@ -772,7 +778,7 @@
                                       ['tblclassextra.status', '!=', 3]
                                     ])->exists())
                                       @if(DB::table('tblclassmarks')->where([
-                                      ['course_id', $id],
+                                      ['course_id', $sub_id],
                                       ['assessment', 'extra']
                                       ])
                                       ->orderBy('tblclassmarks.id', 'desc')
@@ -805,7 +811,7 @@
                                       ['tblclassother.status', '!=', 3]
                                     ])->exists())
                                       @if(DB::table('tblclassmarks')->where([
-                                      ['course_id', $id],
+                                      ['course_id', $sub_id],
                                       ['assessment', 'lain-lain']
                                       ])
                                       ->orderBy('tblclassmarks.id', 'desc')
@@ -838,7 +844,7 @@
                                       ['tblclassmidterm.status', '!=', 3]
                                     ])->exists())
                                       @if(DB::table('tblclassmarks')->where([
-                                      ['course_id', $id],
+                                      ['course_id', $sub_id],
                                       ['assessment', 'midterm']
                                       ])
                                       ->orderBy('tblclassmarks.id', 'desc')
@@ -871,7 +877,7 @@
                                       ['tblclassfinal.status', '!=', 3]
                                     ])->exists())
                                       @if(DB::table('tblclassmarks')->where([
-                                      ['course_id', $id],
+                                      ['course_id', $sub_id],
                                       ['assessment', 'final']
                                       ])
                                       ->orderBy('tblclassmarks.id', 'desc')
@@ -921,7 +927,7 @@
                                       ['tblclassquiz.status', '!=', 3]
                                     ])->exists())
                                       @if(DB::table('tblclassmarks')->where([
-                                      ['course_id', $id],
+                                      ['course_id', $sub_id],
                                       ['assessment', 'quiz']
                                       ])
                                       ->orderBy('tblclassmarks.id', 'desc')
@@ -954,7 +960,7 @@
                                       ['tblclasstest.status', '!=', 3]
                                     ])->exists())
                                       @if(DB::table('tblclassmarks')->where([
-                                      ['course_id', $id],
+                                      ['course_id', $sub_id],
                                       ['assessment', 'test']
                                       ])
                                       ->orderBy('tblclassmarks.id', 'desc')
@@ -987,7 +993,7 @@
                                       ['tblclassassign.status', '!=', 3]
                                     ])->exists())
                                       @if(DB::table('tblclassmarks')->where([
-                                      ['course_id', $id],
+                                      ['course_id', $sub_id],
                                       ['assessment', 'assignment']
                                       ])
                                       ->orderBy('tblclassmarks.id', 'desc')
@@ -1020,7 +1026,7 @@
                                       ['tblclassextra.status', '!=', 3]
                                     ])->exists())
                                       @if(DB::table('tblclassmarks')->where([
-                                      ['course_id', $id],
+                                      ['course_id', $sub_id],
                                       ['assessment', 'extra']
                                       ])
                                       ->orderBy('tblclassmarks.id', 'desc')
@@ -1053,7 +1059,7 @@
                                       ['tblclassother.status', '!=', 3]
                                     ])->exists())
                                       @if(DB::table('tblclassmarks')->where([
-                                      ['course_id', $id],
+                                      ['course_id', $sub_id],
                                       ['assessment', 'lain-lain']
                                       ])
                                       ->orderBy('tblclassmarks.id', 'desc')
@@ -1086,7 +1092,7 @@
                                       ['tblclassmidterm.status', '!=', 3]
                                     ])->exists())
                                       @if(DB::table('tblclassmarks')->where([
-                                      ['course_id', $id],
+                                      ['course_id', $sub_id],
                                       ['assessment', 'midterm']
                                       ])
                                       ->orderBy('tblclassmarks.id', 'desc')
@@ -1119,7 +1125,7 @@
                                       ['tblclassfinal.status', '!=', 3]
                                     ])->exists())
                                       @if(DB::table('tblclassmarks')->where([
-                                      ['course_id', $id],
+                                      ['course_id', $sub_id],
                                       ['assessment', 'final']
                                       ])
                                       ->orderBy('tblclassmarks.id', 'desc')
@@ -1169,7 +1175,7 @@
                                       ['tblclassquiz.status', '!=', 3]
                                     ])->exists())
                                       @if(DB::table('tblclassmarks')->where([
-                                      ['course_id', $id],
+                                      ['course_id', $sub_id],
                                       ['assessment', 'quiz']
                                       ])
                                       ->orderBy('tblclassmarks.id', 'desc')
@@ -1202,7 +1208,7 @@
                                       ['tblclasstest.status', '!=', 3]
                                     ])->exists())
                                       @if(DB::table('tblclassmarks')->where([
-                                      ['course_id', $id],
+                                      ['course_id', $sub_id],
                                       ['assessment', 'test']
                                       ])
                                       ->orderBy('tblclassmarks.id', 'desc')
@@ -1235,7 +1241,7 @@
                                       ['tblclassassign.status', '!=', 3]
                                     ])->exists())
                                       @if(DB::table('tblclassmarks')->where([
-                                      ['course_id', $id],
+                                      ['course_id', $sub_id],
                                       ['assessment', 'assignment']
                                       ])
                                       ->orderBy('tblclassmarks.id', 'desc')
@@ -1268,7 +1274,7 @@
                                       ['tblclassextra.status', '!=', 3]
                                     ])->exists())
                                       @if(DB::table('tblclassmarks')->where([
-                                      ['course_id', $id],
+                                      ['course_id', $sub_id],
                                       ['assessment', 'extra']
                                       ])
                                       ->orderBy('tblclassmarks.id', 'desc')
@@ -1301,7 +1307,7 @@
                                       ['tblclassother.status', '!=', 3]
                                     ])->exists())
                                       @if(DB::table('tblclassmarks')->where([
-                                      ['course_id', $id],
+                                      ['course_id', $sub_id],
                                       ['assessment', 'lain-lain']
                                       ])
                                       ->orderBy('tblclassmarks.id', 'desc')
@@ -1334,7 +1340,7 @@
                                       ['tblclassmidterm.status', '!=', 3]
                                     ])->exists())
                                       @if(DB::table('tblclassmarks')->where([
-                                      ['course_id', $id],
+                                      ['course_id', $sub_id],
                                       ['assessment', 'midterm']
                                       ])
                                       ->orderBy('tblclassmarks.id', 'desc')
@@ -1367,7 +1373,7 @@
                                       ['tblclassfinal.status', '!=', 3]
                                     ])->exists())
                                       @if(DB::table('tblclassmarks')->where([
-                                      ['course_id', $id],
+                                      ['course_id', $sub_id],
                                       ['assessment', 'final']
                                       ])
                                       ->orderBy('tblclassmarks.id', 'desc')
