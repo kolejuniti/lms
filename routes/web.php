@@ -65,6 +65,7 @@ Route::patch('/KP/{group}/updategroup/{id}', [App\Http\Controllers\KP_Controller
 Route::patch('/KP/{group}', [App\Http\Controllers\KP_Controller::class, 'update'])->name('kp.update');
 Route::patch('/KP/{course}/update/marks', [App\Http\Controllers\KP_Controller::class, 'update_marks'])->name('kp.update.marks');
 Route::post('/KP/{course}/insert/marks', [App\Http\Controllers\KP_Controller::class, 'insert_marks'])->name('kp.insert.marks');
+Route::delete('/KP/{course}/delete/marks', [App\Http\Controllers\KP_Controller::class, 'delete_marks']);
 Route::get('/KP/create/group', [App\Http\Controllers\KP_Controller::class, 'create_group'])->name('kp.group');
 Route::post('/KP/group/getStudentTable', [App\Http\Controllers\KP_Controller::class, 'getStudentTable']);
 Route::post('KP/group/getcourseoptions', [App\Http\Controllers\KP_Controller::class, 'getCourse']);
@@ -599,6 +600,8 @@ Route::post('/finance/voucher/student/storeVoucherDtl', [App\Http\Controllers\Fi
 Route::post('/finance/voucher/student/deleteVoucherDtl', [App\Http\Controllers\FinanceController::class, 'deleteVoucherDtl']);
 Route::post('/finance/voucher/student/claimVoucherDtl', [App\Http\Controllers\FinanceController::class, 'claimVoucherDtl']);
 Route::post('/finance/voucher/student/unclaimVoucherDtl', [App\Http\Controllers\FinanceController::class, 'unclaimVoucherDtl']);
+Route::get('finance/debt/claimLog', [App\Http\Controllers\FinanceController::class,'claimLog'])->name('finance.claimLog');
+Route::post('finance/debt/claimLog/getClaimLog', [App\Http\Controllers\FinanceController::class,'getClaimLog']);
 
 
 Route::get('/treasurer_dashboard', [App\Http\Controllers\TreasurerController::class, 'dashboard'])->name('treasurer.dashboard');
