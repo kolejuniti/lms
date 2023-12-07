@@ -145,6 +145,13 @@
   </div>
 </div>
 
+@if(session('alert'))
+    <script>
+        alert("{{ session('alert') }}")
+    </script>
+@endif
+
+
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.7.14/css/bootstrap-datetimepicker.min.css">
 
 <script src="{{ asset('assets/assets/vendor_components/dropzone/dropzone.js') }}"></script>
