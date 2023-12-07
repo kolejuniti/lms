@@ -180,7 +180,7 @@ class KP_Controller extends Controller
 
         
 
-        return redirect()->route('ketua_program');
+        return back();
 
     }
 
