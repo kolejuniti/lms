@@ -1674,41 +1674,41 @@ class LecturerController extends Controller
 
         }
 
-        set_time_limit(300); // Set time limit to 300 seconds (5 minutes)
+        // set_time_limit(300); // Set time limit to 300 seconds (5 minutes)
 
-        // $view = view('lecturer.class.surat_amaran.surat_amaran'); // Replace 'your_view_name' with the name of your HTML view
-        // $pdf = PDF::loadHTML($view->render());
+        // // $view = view('lecturer.class.surat_amaran.surat_amaran'); // Replace 'your_view_name' with the name of your HTML view
+        // // $pdf = PDF::loadHTML($view->render());
 
-        // // Use a single timestamp for both paths
-        // $timestamp = time();
+        // // // Use a single timestamp for both paths
+        // // $timestamp = time();
 
-        // // Save the PDF to a temporary file
-        // $pdfPath = storage_path('app' . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'tmp_pdf_' . $timestamp . '.pdf');
-        // //dd($pdfPath);
+        // // // Save the PDF to a temporary file
+        // // $pdfPath = storage_path('app' . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'tmp_pdf_' . $timestamp . '.pdf');
+        // // //dd($pdfPath);
 
-        // // Save the generated PDF to the path
-        // $pdf->save($pdfPath);
+        // // // Save the generated PDF to the path
+        // // $pdf->save($pdfPath);
 
-        // // $relativePath = 'storage' . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'tmp_pdf_' . $timestamp . '.pdf';
-        // // $pdf->save($relativePath);
+        // // // $relativePath = 'storage' . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'tmp_pdf_' . $timestamp . '.pdf';
+        // // // $pdf->save($relativePath);
 
 
-        // $publicPath = asset('storage/tmp_pdf_' . $timestamp . '.pdf');
+        // // $publicPath = asset('storage/tmp_pdf_' . $timestamp . '.pdf');
 
-        // dd($publicPath);
+        // // dd($publicPath);
 
-        // Send to WhatsApp
-        $sid    = env('TWILIO_SID');
-        $token  = env('TWILIO_TOKEN');
-        $twilio = new Client($sid, $token);
+        // // Send to WhatsApp
+        // $sid    = env('TWILIO_SID');
+        // $token  = env('TWILIO_TOKEN');
+        // $twilio = new Client($sid, $token);
 
-        $message = $twilio->messages->create(
-            'whatsapp:+60162667041', // the recipient's Whatsapp number
-            [
-                "from" => env('TWILIO_WHATSAPP_FROM'),
-                "body" => 'Here is your PDF document:'
-            ]
-        );
+        // $message = $twilio->messages->create(
+        //     'whatsapp:+60162667041', // the recipient's Whatsapp number
+        //     [
+        //         "from" => env('TWILIO_WHATSAPP_FROM'),
+        //         "body" => 'Here is your PDF document:'
+        //     ]
+        // );
 
         // Cleanup: Delete the temporary PDF
         // unlink($pdfPath);
