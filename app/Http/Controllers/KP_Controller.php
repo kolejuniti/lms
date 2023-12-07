@@ -199,6 +199,15 @@ class KP_Controller extends Controller
         return back();
     }
 
+    public function delete_marks(Request $request)
+    {
+
+        DB::table('tblclassmarks')->where('id', $request->id)->delete();
+
+        return true;
+
+    }
+
     public function edit()
     {
 
