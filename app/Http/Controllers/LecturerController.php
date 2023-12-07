@@ -1505,86 +1505,108 @@ class LecturerController extends Controller
                         if(DB::table('tblstudent_warning')->where([['student_ic', $abs],['groupid', $group[0]],['groupname', $group[1]]])->count() == 1)
                         {
 
-                            if($totalclass >= 6)
+                            $threshold = $course_credit->total - ($course_credit->course_credit * 2);
+
+                            if($total_absent <= $threshold)
                             {
 
-                                $exists = DB::table('tblclassattendance')
-                                ->where([
-                                ['tblclassattendance.student_ic', $abs],
-                                ['tblclassattendance.groupid', $group[0]],
-                                ['tblclassattendance.groupname', $group[1]]
-                                ])->groupBy('tblclassattendance.classdate')->count();
+                                $percentage = ($total_absent / $course_credit->total) * 100;
 
-                                $totalAbsent = $totalclass - $exists;
+                                //dd($percentage);
 
-                                if($totalAbsent >= 6)
-                                {
+                                DB::table('tblstudent_warning')->insert([
+                                    'student_ic' => $abs,
+                                    'groupid' => $group[0],
+                                    'groupname' => $group[1],
+                                    'balance_attendance' => $total_absent,
+                                    'percentage_attendance' => $percentage,
+                                    'warning' => 2
+                                ]);
 
-                                    DB::table('tblstudent_warning')->insert([
-                                        'student_ic' => $abs,
-                                        'groupid' => $group[0],
-                                        'groupname' => $group[1],
-                                        'warning' => 2
-                                    ]);
+                                //dd('try');
 
-                                    // $view = view('lecturer.class.surat_amaran.surat_amaran'); // Replace 'your_view_name' with the name of your HTML view
-                                    // $pdf = PDF::loadHTML($view->render())->stream();
+                                // $view = view('lecturer.class.surat_amaran.surat_amaran'); // Replace 'your_view_name' with the name of your HTML view
 
-                                    // // Save the PDF to a temporary file
-                                    // $pdfPath = storage_path('app/public/tmp_pdf_' . time() . '.pdf');
-                                    // file_put_contents($pdfPath, $pdf->output());
+                                // //dd($view);
+                                // $pdf = PDF::loadHTML($view->render())->stream();
 
-                                    // $publicPath = asset('storage/tmp_pdf_' . time() . '.pdf');
+                                // // Save the PDF to a temporary file
+                                // $pdfPath = storage_path('app/public/tmp_pdf_' . time() . '.pdf');
+                                // file_put_contents($pdfPath, $pdf->output());
 
-                                    // // Send to WhatsApp
-                                    // $sid    = env('TWILIO_SID');
-                                    // $token  = env('TWILIO_TOKEN');
-                                    // $twilio = new Client($sid, $token);
+                                // $publicPath = asset('storage/tmp_pdf_' . time() . '.pdf');
 
-                                    // $message = $twilio->messages->create(
-                                    //     'whatsapp:+60162667041', // the recipient's Whatsapp number
-                                    //     [
-                                    //         "from" => env('TWILIO_WHATSAPP_FROM'),
-                                    //         "body" => 'Here is your PDF document:',
-                                    //         "mediaUrl" => $publicPath
-                                    //     ]
-                                    // );
+                                //dd('try');
 
-                                    // // Cleanup: Delete the temporary PDF
-                                    // unlink($pdfPath);
+                                // // Send to WhatsApp
+                                // $sid    = env('TWILIO_SID');
+                                // $token  = env('TWILIO_TOKEN');
+                                // $twilio = new Client($sid, $token);
 
-                                }
+                                // $message = $twilio->messages->create(
+                                //     'whatsapp:+60162667041', // the recipient's Whatsapp number
+                                //     [
+                                //         "from" => env('TWILIO_WHATSAPP_FROM'),
+                                //         "body" => 'Here is your PDF document:'
+                                //     ]
+                                // );
+
+                                // Cleanup: Delete the temporary PDF
+                                // unlink($pdfPath);
 
                             }
 
                         }elseif(DB::table('tblstudent_warning')->where([['student_ic', $abs],['groupid', $group[0]],['groupname', $group[1]]])->count() == 2)
                         {
 
-                            if($totalclass >= 9)
+                            $threshold = $course_credit->total - ($course_credit->course_credit * 3);
+
+                            if($total_absent <= $threshold)
                             {
 
-                                $exists = DB::table('tblclassattendance')
-                                ->where([
-                                ['tblclassattendance.student_ic', $abs],
-                                ['tblclassattendance.groupid', $group[0]],
-                                ['tblclassattendance.groupname', $group[1]]
-                                ])->groupBy('tblclassattendance.classdate')->count();
+                                $percentage = ($total_absent / $course_credit->total) * 100;
 
-                                $totalAbsent = $totalclass - $exists;
+                                //dd($percentage);
 
-                                if($totalAbsent >= 9)
-                                {
+                                DB::table('tblstudent_warning')->insert([
+                                    'student_ic' => $abs,
+                                    'groupid' => $group[0],
+                                    'groupname' => $group[1],
+                                    'balance_attendance' => $total_absent,
+                                    'percentage_attendance' => $percentage,
+                                    'warning' => 3
+                                ]);
 
-                                    DB::table('tblstudent_warning')->insert([
-                                        'student_ic' => $abs,
-                                        'groupid' => $group[0],
-                                        'groupname' => $group[1],
-                                        'warning' => 3
-                                    ]);
+                                //dd('try');
 
-                                    
+                                // $view = view('lecturer.class.surat_amaran.surat_amaran'); // Replace 'your_view_name' with the name of your HTML view
 
-                                }
+                                // //dd($view);
+                                // $pdf = PDF::loadHTML($view->render())->stream();
+
+                                // // Save the PDF to a temporary file
+                                // $pdfPath = storage_path('app/public/tmp_pdf_' . time() . '.pdf');
+                                // file_put_contents($pdfPath, $pdf->output());
+
+                                // $publicPath = asset('storage/tmp_pdf_' . time() . '.pdf');
+
+                                //dd('try');
+
+                                // // Send to WhatsApp
+                                // $sid    = env('TWILIO_SID');
+                                // $token  = env('TWILIO_TOKEN');
+                                // $twilio = new Client($sid, $token);
+
+                                // $message = $twilio->messages->create(
+                                //     'whatsapp:+60162667041', // the recipient's Whatsapp number
+                                //     [
+                                //         "from" => env('TWILIO_WHATSAPP_FROM'),
+                                //         "body" => 'Here is your PDF document:'
+                                //     ]
+                                // );
+
+                                // Cleanup: Delete the temporary PDF
+                                // unlink($pdfPath);
 
                             }
 
