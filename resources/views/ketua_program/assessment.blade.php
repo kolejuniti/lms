@@ -46,6 +46,7 @@
                         <tr>
                           <th style="width: 10%">Assessments</th>
                           <th style="width: 1%">Mark Percentage (%)</th>
+                          <th style="width: 1%">Action</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -56,6 +57,13 @@
                             <div>
                               <input type="number" class="form-control" id="mark_{{ $datas->id }}" name="marks[]" value="{{ $datas->mark_percentage }}" min="0" max="100">
                             </div>
+                          </td>
+                          <td>
+                            <a class="btn btn-warning btn-sm" href="#" onclick="deleteMark('{{ $datas->id }}')">
+                              <i class="ti-trash">
+                              </i>
+                              delete
+                            </a>
                           </td>
                         </tr>
                         @endforeach
@@ -121,4 +129,35 @@
     <!-- /.content -->
   </div>
 </div>
+
+<script type="text/javascript">
+
+  function deleteMark(id){     
+      Swal.fire({
+    title: "Are you sure?",
+    text: "This will be permanent",
+    showCancelButton: true,
+    confirmButtonText: "Yes, delete it!"
+  }).then(function(res){
+    
+    if (res.isConfirmed){
+              $.ajax({
+                  headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
+                  url      : "{{ url('/KP/'. $data['course'] .'/delete/marks') }}",
+                  method   : 'DELETE',
+                  data 	 : {id:id},
+                  error:function(err){
+                      alert("Error");
+                      console.log(err);
+                  },
+                  success  : function(data){
+                      window.location.reload();
+                      alert("success");
+                  }
+              });
+          }
+      });
+  }
+
+</script>
 @endsection
