@@ -7557,7 +7557,7 @@ class FinanceController extends Controller
                 ])
             ->select('tblprocess_type.name AS process', 'tblpayment.ref_no','tblpayment.date', 'tblstudentclaim.name', 'tblpaymentdtl.amount', 'tblpayment.process_type_id', 'tblprogramme.progcode AS program', DB::raw('NULL as remark'));
 
-            $data['record'] = DB::table('tblclaimdtl')
+            $data['record'][$key] = DB::table('tblclaimdtl')
             ->leftJoin('tblclaim', 'tblclaimdtl.claim_id', 'tblclaim.id')
             ->leftJoin('tblprocess_type', 'tblclaim.process_type_id', 'tblprocess_type.id')
             ->leftJoin('tblstudentclaim', 'tblclaimdtl.claim_package_id', 'tblstudentclaim.id')
@@ -7573,26 +7573,26 @@ class FinanceController extends Controller
             ->orderBy('date')
             ->get();
 
-            $val = 0;
+            $data['total'] = 0;
 
-            foreach($data['record'] as $key => $req)
+            foreach($data['record'][$key] as $keys => $req)
             {
 
                 if(array_intersect([2,3,4,5], (array) $req->process_type_id))
                 {
-
-                    $data['total'][$key] = $val + $req->amount;
+ 
+                    $data['total'] += $req->amount;
                     
                 }elseif(array_intersect([1,6,7,8,9,10,11,12,13,14,15,16,17,18,19], (array) $req->process_type_id))
                 {
 
-                    $data['total'][$key] = $val - $req->amount;
+                    $data['total'] -= $req->amount;
 
                 }
 
-                $data['sum3'] = end($data['total']);
-
             }
+
+            $data['sum3'] = $data['total'];
 
             //TUNGGAKAN
 
