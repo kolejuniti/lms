@@ -349,7 +349,7 @@
 					</span>
 				</a>
 				<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
-					<li><a href="{{ route('finance.voucher.student') }}" class="{{ (route('finance.voucher.student') == Request::url()) ? 'active' : ''}}">Student Payment Claim Log</a></li>
+					<li><a href="{{ route('finance.claimLog') }}" class="{{ (route('finance.claimLog') == Request::url()) ? 'active' : ''}}">Student Payment Claim Log</a></li>
 				</ul>
 			  </li>
 			  <li>
