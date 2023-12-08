@@ -7475,4 +7475,238 @@ class FinanceController extends Controller
         return view('finance.sponsorship.sponsorStudentReport', compact('data'));
 
     }
+
+    public function claimLog()
+    {
+
+        $data['program'] = DB::table('tblprogramme')->get();
+
+        $data['status'] = DB::table('tblstudent_status')->get();
+
+        return view('finance.debt.claimLog', compact('data'));
+
+    }
+
+    public function getClaimLog(Request $request)
+    {
+
+        if($request->student)
+        {
+
+            $data['student'] = DB::table('students')
+                        ->where('ic', $request->student)
+                        ->select('name', 'ic', 'no_matric')
+                        ->get();
+
+        }else{
+
+            $student = DB::table('students');
+
+            if($request->program != 'all')
+            {
+
+                $student->where('program', $request->program);
+
+            }
+
+            if($request->status != 'all')
+            {
+
+                $student->where('status', $request->status);
+
+            }
+
+            $data['student'] = $student->select('name', 'ic', 'no_matric')->get();
+            
+        }
+
+        foreach($data['student'] as $key => $std)
+        {
+
+            $data['payment'][$key] = DB::table('tblpayment')
+                        ->select('tblpayment.add_date', DB::raw('SUM(tblpaymentdtl.amount) as amount'), DB::raw('DATEDIFF(CURDATE(), tblpayment.add_date) as days'))
+                        ->join('tblpaymentdtl', 'tblpayment.id', '=', 'tblpaymentdtl.payment_id')
+                        ->join('tblstudentclaim', 'tblpaymentdtl.claim_type_id', '=', 'tblstudentclaim.id')
+                        ->where('tblpayment.student_ic', $std->ic)
+                        ->where('tblpayment.process_status_id', 2)
+                        ->whereIn('tblpayment.process_type_id', [1])
+                        ->whereIn('tblstudentclaim.groupid', [1])
+                        ->groupBy('tblpayment.add_date')
+                        ->orderBy('tblpayment.add_date', 'desc')
+                        ->limit(1)
+                        ->get();
+
+            //block D
+
+            $data['current_balance'][$key] = 0.00;
+
+            $data['pk_balance'][$key] = 0.00;
+
+            $data['total_balance'][$key] = 0.00;
+
+            $record = DB::table('tblpaymentdtl')
+            ->leftJoin('tblpayment', 'tblpaymentdtl.payment_id', 'tblpayment.id')
+            ->leftJoin('tblprocess_type', 'tblpayment.process_type_id', 'tblprocess_type.id')
+            ->leftJoin('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
+            ->leftjoin('tblprogramme', 'tblpayment.program_id', 'tblprogramme.id')
+            ->where([
+                ['tblpayment.student_ic', $std->ic],
+                ['tblpayment.process_status_id', 2], 
+                ['tblstudentclaim.groupid', 1], 
+                ['tblpaymentdtl.amount', '!=', 0]
+                ])
+            ->select('tblprocess_type.name AS process', 'tblpayment.ref_no','tblpayment.date', 'tblstudentclaim.name', 'tblpaymentdtl.amount', 'tblpayment.process_type_id', 'tblprogramme.progcode AS program', DB::raw('NULL as remark'));
+
+            $data['record'] = DB::table('tblclaimdtl')
+            ->leftJoin('tblclaim', 'tblclaimdtl.claim_id', 'tblclaim.id')
+            ->leftJoin('tblprocess_type', 'tblclaim.process_type_id', 'tblprocess_type.id')
+            ->leftJoin('tblstudentclaim', 'tblclaimdtl.claim_package_id', 'tblstudentclaim.id')
+            ->leftjoin('tblprogramme', 'tblclaim.program_id', 'tblprogramme.id')
+            ->where([
+                ['tblclaim.student_ic', $std->ic],
+                ['tblclaim.process_status_id', 2],  
+                ['tblstudentclaim.groupid', 1],
+                ['tblclaimdtl.amount', '!=', 0]
+                ])
+            ->unionALL($record)
+            ->select('tblprocess_type.name AS process', 'tblclaim.ref_no','tblclaim.date', 'tblstudentclaim.name', 'tblclaimdtl.amount', 'tblclaim.process_type_id', 'tblprogramme.progcode AS program', 'tblclaim.remark')
+            ->orderBy('date')
+            ->get();
+
+            $val = 0;
+
+            foreach($data['record'] as $key => $req)
+            {
+
+                if(array_intersect([2,3,4,5], (array) $req->process_type_id))
+                {
+
+                    $data['total'][$key] = $val + $req->amount;
+                    
+                }elseif(array_intersect([1,6,7,8,9,10,11,12,13,14,15,16,17,18,19], (array) $req->process_type_id))
+                {
+
+                    $data['total'][$key] = $val - $req->amount;
+
+                }
+
+                $data['sum3'] = end($data['total']);
+
+            }
+
+            //TUNGGAKAN
+
+            //TUNGGAKAN SEMASA
+
+            $package = DB::table('tblpackage_sponsorship')->where('student_ic', $std->ic)->first();
+
+            if($package != null)
+            {
+
+                if($package->payment_type_id == 3 || $package->payment_type_id == 11 || $package->payment_type_id == 14)
+                {
+
+                    $discount = abs(DB::table('tblclaim')
+                                ->join('tblclaimdtl', 'tblclaim.id', 'tblclaimdtl.claim_id')
+                                ->where([
+                                    ['tblclaim.student_ic', $std->ic],
+                                    ['tblclaim.process_type_id', 5],
+                                    ['tblclaim.process_status_id', 2],
+                                    ['tblclaim.remark', 'LIKE', '%Diskaun Yuran Kediaman%']
+                                ])->sum('tblclaimdtl.amount'));
+
+                }
+
+                if($package->package_id == 5)
+                {
+
+                    $data['current_balance'][$key] = $data['sum3'];
+
+                }else{
+
+                    if($package->payment_type_id == 3 || $package->payment_type_id == 11 || $package->payment_type_id == 14)
+                    {
+
+                        if($data['sum3'] <= ($package->amount - $discount))
+                        {
+
+                            $data['current_balance'][$key] = 0.00;
+
+                        }elseif($data['sum3'] > ($package->amount - $discount))
+                        {
+
+                            $data['current_balance'][$key] = $data['sum3'] - ($package->amount - $discount);
+
+                        }
+
+                    }else{
+
+                        $data['current_balance'][$key] = $data['sum3'];
+
+                    }
+
+                }
+
+                //TNUGGAKAN PEMBIAYAAN KHAS
+
+                $stddetail = DB::table('students')->where('ic', $std->ic)->select('program', 'semester')->first();
+
+                if(($stddetail->program == 7 || $stddetail->program == 8) && $stddetail->program >= 5)
+                {
+
+                    if($package->payment_type_id == 3 || $package->payment_type_id == 11 || $package->payment_type_id == 14)
+                    {
+
+                        if($data['current_balance'][$key] == 0.00)
+                        {
+
+                            $data['pk_balance'][$key] = $data['sum3'];
+
+                        }else{
+
+                            $data['pk_balance'][$key] = ($package->amount - $discount);
+
+                        }
+
+                    }
+
+                }elseif($stddetail->program >= 6)
+                {
+
+                    if($package->payment_type_id == 3 || $package->payment_type_id == 11 || $package->payment_type_id == 14)
+                    {
+
+                        if($data['current_balance'][$key] == 0.00)
+                        {
+
+                            $data['pk_balance'][$key] = $data['sum3'];
+
+                        }else{
+
+                            $data['pk_balance'][$key] = ($package->amount - $discount);
+
+                        }
+
+                    }
+
+                }
+
+            }else{
+
+                $data['current_balance'][$key] = 0.00;
+
+                $data['pk_balance'][$key] = 0.00;
+
+            }
+
+            //TUNGGAKAN KESELURUHAN
+
+            $data['total_balance'][$key] = $data['sum3'];
+
+        }
+
+
+        return view('finance.debt.claimLogGetStudent', compact('data'));
+
+    }
 }
