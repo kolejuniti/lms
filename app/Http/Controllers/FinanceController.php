@@ -7964,16 +7964,20 @@ class FinanceController extends Controller
         $data = $request->validate([
             'date1' => ['required'],
             'date2' => ['required'],
-            'payment' => ['required'],
-            'note' => ['required','string'],
+            'payment' => ['required']
         ]);
+
+        // Convert the array to a comma-separated string
+        $notesString = implode(',', $request->note);
+
+        //dd($notesString);
 
         DB::table('student_payment_log')->insert([
             'student_ic' => $request->ic,
             'date_of_call' => $data['date1'],
             'date_of_payment' => $data['date2'],
             'amount' => $data['payment'],
-            'note' => $data['note'],
+            'note' => $notesString,
         ]);
 
         return redirect()->route('finance.studentClaimLog', ['ic' => $request->ic]);
