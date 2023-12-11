@@ -79,7 +79,7 @@
                                 
                             </td>
                             <th>
-                                {{ $data['current_balance'][$key] }}
+                                {{ number_format($data['current_balance'][$key], 2) }}
                             </td>
                             <th>
                                 {{ $data['pk_balance'][$key] }}
