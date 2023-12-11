@@ -79,9 +79,6 @@
                                 
                             </td>
                             <th>
-                                
-                            </td>
-                            <th>
                                 {{ $data['current_balance'][$key] }}
                             </td>
                             <th>
@@ -91,15 +88,16 @@
                                 {{ $data['total_balance'][$key] }}
                             </td>
                             <th>
-                                <a class="btn btn-success btn-sm" href="#" onclick="claimVoucher('{{ $std->ic }}')">
-                                    <i class="ti-check">
-                                    </i>
-                                    Claim
+                                @foreach($data['payment'][$key] as $pym)
+                                {{ $pym->days }}
+                                @endforeach
+                            </td>
+                            <th>
+                                <a class="btn btn-success btn-sm" href="/finance/debt/claimLog/{{ $std->ic }}">
+                                    Payment Log
                                 </a>
-                                <a class="btn btn-warning btn-sm" href="#" onclick="unclaimVoucher('{{ $std->ic }}')">
-                                    <i class="ti-close">
-                                    </i>
-                                    Un-Claim
+                                <a class="btn btn-warning btn-sm mt-2" href="#">
+                                    Letter of Arrears
                                 </a>
                             </td>
                             </tr>
