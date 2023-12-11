@@ -343,7 +343,7 @@
 				</ul>
 			  </li>
 			  <li class="treeview">
-				<a href="#"><i data-feather="shopping-bag"></i><span>Debt Management</span>
+				<a href="#"><i data-feather="file-text"></i><span>Debt Management</span>
 					<span class="pull-right-container">
 						<i class="fa fa-angle-left pull-right"></i>
 					</span>
