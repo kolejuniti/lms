@@ -49,58 +49,61 @@
                     </thead>
                     <tbody id="table">
                         @foreach ($data['student'] as $key => $std)
+
+                            @if(number_format($data['current_balance'][$key], 2) != 0.00)
                             <tr>
-                            <td>
-                                {{ $key+1 }}
-                            </td>
-                            <th>
-                                {{ $std->name }}
-                            </td>
-                            <th>
-                                {{ $std->ic }}
-                            </td>
-                            <th>
-                                {{ $std->no_matric }}
-                            </td>
-                            <th>
-                                @foreach($data['payment'][$key] as $pym)
-                                {{ $pym->add_date }}
-                                @endforeach
-                            </td>
-                            <th>
-                                @foreach($data['payment'][$key] as $pym)
-                                {{ $pym->amount }}
-                                @endforeach
-                            </td>
-                            <th>
-                                
-                            </td>
-                            <th>
-                                
-                            </td>
-                            <th>
-                                {{ number_format($data['current_balance'][$key], 2) }}
-                            </td>
-                            <th>
-                                {{ number_format($data['pk_balance'][$key], 2) }}
-                            </td>
-                            <th>
-                                {{ number_format($data['total_balance'][$key], 2) }}
-                            </td>
-                            <th>
-                                @foreach($data['payment'][$key] as $pym)
-                                {{ $pym->days }}
-                                @endforeach
-                            </td>
-                            <th>
-                                <a class="btn btn-success btn-sm" href="/finance/debt/claimLog/{{ $std->ic }}">
-                                    Payment Log
-                                </a>
-                                <a class="btn btn-warning btn-sm mt-2" href="#">
-                                    Letter of Arrears
-                                </a>
-                            </td>
+                                <td>
+                                    {{ $key+1 }}
+                                </td>
+                                <td>
+                                    {{ $std->name }}
+                                </td>
+                                <td>
+                                    {{ $std->ic }}
+                                </td>
+                                <td>
+                                    {{ $std->no_matric }}
+                                </td>
+                                <td>
+                                    @foreach($data['payment'][$key] as $pym)
+                                    {{ $pym->add_date }}
+                                    @endforeach
+                                </td>
+                                <td>
+                                    @foreach($data['payment'][$key] as $pym)
+                                    {{ $pym->amount }}
+                                    @endforeach
+                                </td>
+                                <td>
+                                    
+                                </td>
+                                <td>
+                                    
+                                </td>
+                                <td>
+                                    {{ number_format($data['current_balance'][$key], 2) }}
+                                </td>
+                                <td>
+                                    {{ number_format($data['pk_balance'][$key], 2) }}
+                                </td>
+                                <td>
+                                    {{ number_format($data['total_balance'][$key], 2) }}
+                                </td>
+                                <td>
+                                    @foreach($data['payment'][$key] as $pym)
+                                    {{ $pym->days }}
+                                    @endforeach
+                                </td>
+                                <td>
+                                    <a class="btn btn-success btn-sm" href="/finance/debt/claimLog/{{ $std->ic }}">
+                                        Payment Log
+                                    </a>
+                                    <a class="btn btn-warning btn-sm mt-2" href="#">
+                                        Letter of Arrears
+                                    </a>
+                                </td>
                             </tr>
+                            @endif
                         @endforeach 
                     </tbody>
                 </table>
