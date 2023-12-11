@@ -600,8 +600,13 @@ Route::post('/finance/voucher/student/storeVoucherDtl', [App\Http\Controllers\Fi
 Route::post('/finance/voucher/student/deleteVoucherDtl', [App\Http\Controllers\FinanceController::class, 'deleteVoucherDtl']);
 Route::post('/finance/voucher/student/claimVoucherDtl', [App\Http\Controllers\FinanceController::class, 'claimVoucherDtl']);
 Route::post('/finance/voucher/student/unclaimVoucherDtl', [App\Http\Controllers\FinanceController::class, 'unclaimVoucherDtl']);
-Route::get('finance/debt/claimLog', [App\Http\Controllers\FinanceController::class,'claimLog'])->name('finance.claimLog');
-Route::post('finance/debt/claimLog/getClaimLog', [App\Http\Controllers\FinanceController::class,'getClaimLog']);
+Route::get('/finance/debt/claimLog', [App\Http\Controllers\FinanceController::class,'claimLog'])->name('finance.claimLog');
+Route::get('/finance/debt/claimLog/{ic}', [App\Http\Controllers\FinanceController::class,'studentClaimLog'])->name('finance.studentClaimLog');
+Route::post('/finance/debt/claimLog/getClaimLog', [App\Http\Controllers\FinanceController::class,'getClaimLog']);
+Route::post('/finance/debt/claimLog/storeNote', [App\Http\Controllers\FinanceController::class,'storeNote']);
+Route::post('/finance/debt/claimLog/storeStudentLog/{ic}', [App\Http\Controllers\FinanceController::class,'storeStudentLog']);
+Route::post('/finance/debt/claimLog/deleteStudentLog', [App\Http\Controllers\FinanceController::class,'deleteStudentLog']);
+
 
 
 Route::get('/treasurer_dashboard', [App\Http\Controllers\TreasurerController::class, 'dashboard'])->name('treasurer.dashboard');
