@@ -263,7 +263,7 @@
                                     <div id="note_add">
                                         <div class="form-group">
                                             <label class="form-label" for="note">Note</label>
-                                            <select class="form-select" id="note" name="note">
+                                            <select class="form-select" id="note" name="note[]" multiple>
                                               <option value="-" selected disabled>-</option>
                                               @foreach ($data['note'] as $nt)
                                               <option value="{{ $nt->name }}">{{ $nt->name }}</option>
