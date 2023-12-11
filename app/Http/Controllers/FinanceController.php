@@ -7538,12 +7538,6 @@ class FinanceController extends Controller
 
             //block D
 
-            $data['current_balance'][$key] = 0.00;
-
-            $data['pk_balance'][$key] = 0.00;
-
-            $data['total_balance'][$key] = 0.00;
-
             $record = DB::table('tblpaymentdtl')
             ->leftJoin('tblpayment', 'tblpaymentdtl.payment_id', 'tblpayment.id')
             ->leftJoin('tblprocess_type', 'tblpayment.process_type_id', 'tblprocess_type.id')
