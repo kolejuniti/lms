@@ -7729,9 +7729,9 @@ class FinanceController extends Controller
 
         $data['sponsorship'] = DB::table('students')
         ->select('tblpackage.name as package_name', 'tblpayment_type.name as payment_type_name', 'tblpackage_sponsorship.amount')
-        ->join('tblpackage_sponsorship', 'students.ic', '=', 'tblpackage_sponsorship.student_ic')
-        ->join('tblpackage', 'tblpackage_sponsorship.package_id', '=', 'tblpackage.id')
-        ->join('tblpayment_type', 'tblpackage_sponsorship.payment_type_id', '=', 'tblpayment_type.id')
+        ->leftjoin('tblpackage_sponsorship', 'students.ic', '=', 'tblpackage_sponsorship.student_ic')
+        ->leftjoin('tblpackage', 'tblpackage_sponsorship.package_id', '=', 'tblpackage.id')
+        ->leftjoin('tblpayment_type', 'tblpackage_sponsorship.payment_type_id', '=', 'tblpayment_type.id')
         ->where('students.ic', request()->ic)
         ->first();
 
