@@ -82,10 +82,10 @@
                                 {{ number_format($data['current_balance'][$key], 2) }}
                             </td>
                             <th>
-                                {{ $data['pk_balance'][$key] }}
+                                {{ number_format($data['pk_balance'][$key], 2) }}
                             </td>
                             <th>
-                                {{ $data['total_balance'][$key] }}
+                                {{ number_format($data['total_balance'][$key], 2) }}
                             </td>
                             <th>
                                 @foreach($data['payment'][$key] as $pym)
