@@ -609,7 +609,7 @@
                               </select>
                             </div>
                           </div>
-                          <div class="col-md-6">
+                          {{-- <div class="col-md-6">
                             <div class="form-group">
                               <label class="form-label" for="w_race">Race <p style="color:red; display:inline-block;">*</p></label>
                               <select class="form-select" id="w_race" name="w_race[]">
@@ -619,7 +619,7 @@
                                 @endforeach
                               </select>
                             </div>
-                          </div>
+                          </div> --}}
                           <div class="col-md-6">
                             <div class="form-group">
                               <label class="form-label" for="w_kasar">Salary (Kasar) <p style="color:red; display:inline-block;">*</p></label>
@@ -688,7 +688,7 @@ $(document).ready(function() {
   $('#occupation').val(firstWaris.occupation);
   $('#dependent').val(firstWaris.dependent_no);
   $('#relationship').val(firstWaris.relationship);
-  $('#w_race').val(firstWaris.race);
+  //$('#w_race').val(firstWaris.race);
   $('#w_kasar').val(firstWaris.kasar);
   $('#w_bersih').val(firstWaris.bersih);
   $('#w_status').val(firstWaris.status);
@@ -706,7 +706,7 @@ $(document).ready(function() {
     newForm.find('input[name="w_kasar[]"]').val('{{ $waris->kasar }}');
     newForm.find('input[name="w_bersih[]"]').val('{{ $waris->bersih }}');
     newForm.find('select[name="relationship[]"]').val('{{ $waris->relationship }}');
-    newForm.find('select[name="w_race[]"]').val('{{ $waris->race }}');
+    //newForm.find('select[name="w_race[]"]').val('{{ $waris->race }}');
     newForm.find('select[name="w_status[]"]').val('{{ $waris->status }}');
     // Add a delete button to the card element
     var editButton = $('<div class="form-group" style="margin-left: 10px"><button class="btn btn-danger delete-form" type="button">Delete Form</button></div>');
