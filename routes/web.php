@@ -414,6 +414,7 @@ Route::post('/student/class/schedule/getschedule', [App\Http\Controllers\Student
 Route::get('/student/class/onlineclass/list', [App\Http\Controllers\StudentController::class, 'OnlineClassList'])->name('student.onlineclass.list');
 Route::get('/student/class/onlineclass/list/{id}', [App\Http\Controllers\StudentController::class, 'OnlineClassListView'])->name('student.onlineclass.list.view');
 Route::get('/student/class/announcement/list', [App\Http\Controllers\StudentController::class, 'AnnouncementList'])->name('student.announcement.list');
+Route::get('/student/affair/statement', [App\Http\Controllers\StudentController::class, 'studentStatement'])->name('student.affair.statement');
 
 Route::get('/student/report/{id}', [App\Http\Controllers\StudentController::class, 'studentreport'])->name('student.report.student');
 
