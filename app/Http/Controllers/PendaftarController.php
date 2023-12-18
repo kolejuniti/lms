@@ -68,27 +68,27 @@ class PendaftarController extends Controller
                      'b.SessionName AS session', 'tblstudent_status.name AS status',
                      'tblstudent_personal.no_tel', 'tblsex.sex_name AS gender');
 
-        if(!empty($request->program) || $request->program != '-')
+        if(!empty($request->program) && $request->program != '-')
         {
             $student->where('students.program', $request->program);
         }
         
-        if(!empty($request->session) || $request->session != '-')
+        if(!empty($request->session) && $request->session != '-')
         {
             $student->where('students.session', $request->session);
         }
         
-        if(!empty($request->year) || $request->year != '-')
+        if(!empty($request->year) && $request->year != '-')
         {
             $student->where('b.Year', $request->year);
         }
         
-        if(!empty($request->semester) || $request->semester != '-')
+        if(!empty($request->semester) && $request->semester != '-')
         {
             $student->where('students.semester', $request->semester);
         }
         
-        if(!empty($request->status) || $request->status != '-')
+        if(!empty($request->status) && $request->status != '-')
         {
             $student->where('students.status', $request->status);
         }
