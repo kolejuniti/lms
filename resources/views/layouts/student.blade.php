@@ -238,6 +238,17 @@
 				</li> 
 				<li>
 					<a href="{{ Storage::disk('linode')->url('classschedule/index.htm') }}" target="_blank"><i data-feather="layout"></i><span>Schedule</span></a>
+				</li>
+				<li class="treeview">
+					<a href="#"><i data-feather="users"></i><span>Student Affair</span>
+						<span class="pull-right-container">
+							<i class="fa fa-angle-left pull-right"></i>
+						</span>
+					</a>
+					<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
+						<li><a href="{{ route('student.affair.statement') }}" class="{{ (route('student.affair.statement') == Request::url()) ? 'active' : ''}}">Statement</a></li>
+						<li><a href="" class="">Result</a></li>
+					</ul>
 				</li> 
 				<li>
 					<a href="/yuran-pengajian" class=""><i data-feather="shopping-bag"></i><span>Payment</span></a>
