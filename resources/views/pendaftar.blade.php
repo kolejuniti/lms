@@ -40,7 +40,7 @@
               <div class="form-group">
                 <label class="form-label" for="year">Year</label>
                 <select class="form-select" id="year" name="year">
-                  <option value="-" selected disabled>-</option>
+                  <option value="-" selected>-</option>
                   @foreach ($year as $yr)
                   <option value="{{ $yr->year }}">{{ $yr->year }}</option> 
                   @endforeach
@@ -51,7 +51,7 @@
               <div class="form-group">
                 <label class="form-label" for="session">Session</label>
                 <select class="form-select" id="session" name="session">
-                  <option value="-" selected disabled>-</option>
+                  <option value="-" selected>-</option>
                   @foreach ($session as $ses)
                   <option value="{{ $ses->SessionID }}">{{ $ses->SessionName}}</option> 
                   @endforeach
@@ -62,7 +62,7 @@
               <div class="form-group">
                   <label class="form-label" for="program">Program</label>
                   <select class="form-select" id="program" name="program">
-                  <option value="-" selected disabled>-</option>
+                  <option value="-" selected>-</option>
                     @foreach ($program as $prg)
                     <option value="{{ $prg->id }}">{{ $prg->progname}}</option> 
                     @endforeach
@@ -73,7 +73,7 @@
               <div class="form-group">
                 <label class="form-label" for="semester">Semester</label>
                 <select class="form-select" id="semester" name="semester">
-                  <option value="-" selected disabled>-</option>
+                  <option value="-" selected>-</option>
                   @foreach ($semester as $ses)
                   <option value="{{ $ses->id }}">{{ $ses->semester_name}}</option> 
                   @endforeach
@@ -84,7 +84,7 @@
               <div class="form-group">
                 <label class="form-label" for="status">Status</label>
                 <select class="form-select" id="status" name="status">
-                  <option value="-" selected disabled>-</option>
+                  <option value="-" selected>-</option>
                   @foreach ($status as $sts)
                   <option value="{{ $sts->id }}">{{ $sts->name}}</option> 
                   @endforeach
