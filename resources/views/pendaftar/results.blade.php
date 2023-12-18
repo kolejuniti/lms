@@ -75,6 +75,7 @@
       <div class="grid invoice">
          <div class="grid-body">
             <div class="invoice-title">
+               @if(!isset(request()->std))
                <div class="row">
                   <div class="col-12 d-flex">
                      <img src="{{ asset('assets/images/logo/Kolej-UNITI.png')}}" alt="" height="50">
@@ -88,6 +89,7 @@
                   </div>
                </div>
                <br>
+               @endif
                {{-- <div class="row">
                   <div class="col-12">
                      <h2>Resit<br>
