@@ -95,7 +95,7 @@
                 <div class="col-md-12 mt-3">
                     <div class="form-group">
                         <label class="form-label">Comment</label>
-                        <textarea id="commenttxt" name="comment" class="mt-2" rows="10" cols="80" required></textarea>
+                        <textarea class="form-control" id="comment" name="comment" class="mt-2" rows="10" cols="80" onkeyup="this.value = this.value.toUpperCase();" required></textarea>
                     </div>   
                   </div>
             </div>

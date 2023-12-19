@@ -180,7 +180,8 @@ function submitForm(ic)
         semester: $('#semester').val(),
         status: $('#status').val(),
         kuliah: $('#kuliah').val(),
-        comment: editor.getData(),
+        comment: $('#comment').val(),
+        // comment: editor.getData(),
       };
 
     if(forminput.status == '' || forminput.comment == '')
