@@ -1152,7 +1152,7 @@ class PendaftarController extends Controller
 
         }
 
-        $data['session'] = DB::table('sessions')->get();
+        $data['session'] = DB::table('sessions')->orderBy('SessionID', 'DESC')->get();
 
         $data['semester'] = DB::table('semester')->get();
 
