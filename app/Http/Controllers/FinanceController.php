@@ -7483,7 +7483,7 @@ class FinanceController extends Controller
 
         $data['status'] = DB::table('tblstudent_status')->get();
 
-        return view('finance.debt.claimLog', compact('data'));
+        return view('finance.debt.claim_log.claimLog', compact('data'));
 
     }
 
@@ -7706,7 +7706,7 @@ class FinanceController extends Controller
         }
 
 
-        return view('finance.debt.claimLogGetStudent', compact('data'));
+        return view('finance.debt.claim_log.claimLogGetStudent', compact('data'));
 
     }
 
@@ -7939,7 +7939,7 @@ class FinanceController extends Controller
 
 
 
-        return view('finance.debt.studentClaimLog', compact('data'));
+        return view('finance.debt.claim_log.studentClaimLog', compact('data'));
 
     }
 
