@@ -609,7 +609,12 @@ Route::post('/finance/debt/claimLog/getClaimLog', [App\Http\Controllers\FinanceC
 Route::post('/finance/debt/claimLog/storeNote', [App\Http\Controllers\FinanceController::class,'storeNote']);
 Route::post('/finance/debt/claimLog/storeStudentLog/{ic}', [App\Http\Controllers\FinanceController::class,'storeStudentLog']);
 Route::post('/finance/debt/claimLog/deleteStudentLog', [App\Http\Controllers\FinanceController::class,'deleteStudentLog']);
-
+Route::get('/finance/debt/collectionReport', [App\Http\Controllers\FinanceController::class,'collectionReport'])->name('finance.collectionReport');
+Route::post('/finance/debt/collectionReport/getCollectionReport', [App\Http\Controllers\FinanceController::class,'getCollectionReport']);
+Route::get('/finance/debt/collectionExpectReport', [App\Http\Controllers\FinanceController::class,'collectionExpectReport'])->name('finance.collectionExpectReport');
+Route::post('/finance/debt/collectionExpectReport/getCollectionExpectReport', [App\Http\Controllers\FinanceController::class,'getCollectionExpectReport']);
+Route::get('/finance/debt/monthlyPayment', [App\Http\Controllers\FinanceController::class,'monthlyPayment'])->name('finance.monthlyPayment');
+Route::post('/finance/debt/monthlyPayment/getMonthlyPayment', [App\Http\Controllers\FinanceController::class,'getMonthlyPayment']);
 
 
 Route::get('/treasurer_dashboard', [App\Http\Controllers\TreasurerController::class, 'dashboard'])->name('treasurer.dashboard');
