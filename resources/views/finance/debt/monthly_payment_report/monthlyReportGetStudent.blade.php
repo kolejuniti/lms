@@ -45,6 +45,12 @@
                                 {{ $dr }}
                             </th>
                             @endforeach
+                            <th>
+                                Total (RM)
+                            </th>
+                            <th>
+                                Balance (RM)
+                            </th>
                         </tr>
                     </thead>
                     <tbody id="table">
@@ -83,11 +89,24 @@
                                 <td>
                                     {{ $data['log'][$key] ? $data['log'][$key]->note : '0' }}
                                 </td>
+                                @php
+                                $totalALL = 0;
+                                $total = 0;
+                                @endphp
                                 @foreach($data['dateRange'] as $key2 => $dr)
                                     <td @if($data['amount'][$key][$key2] != 0.00) style="background-color: orange;" @endif>
                                         {{ $data['amount'][$key][$key2] }}
                                     </td>
+                                    @php
+                                        $totalALL += $total;
+                                    @endphp
                                 @endforeach
+                                <td>
+                                    {{ number_format($totalALL, 2) }}
+                                </td>
+                                <td>
+                                    {{ number_format($data['total_balance'][$key], 2) }}
+                                </td>
                             </tr>
                         @endforeach 
                     </tbody>
