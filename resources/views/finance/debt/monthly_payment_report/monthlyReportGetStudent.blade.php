@@ -91,14 +91,13 @@
                                 </td>
                                 @php
                                 $totalALL = 0;
-                                $total = 0;
                                 @endphp
                                 @foreach($data['dateRange'] as $key2 => $dr)
                                     <td @if($data['amount'][$key][$key2] != 0.00) style="background-color: orange;" @endif>
                                         {{ $data['amount'][$key][$key2] }}
                                     </td>
                                     @php
-                                        $totalALL += $total;
+                                        $totalALL += $data['amount'][$key][$key2];
                                     @endphp
                                 @endforeach
                                 <td>
