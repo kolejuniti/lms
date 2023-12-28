@@ -84,7 +84,7 @@
                                     {{ $data['log'][$key] ? $data['log'][$key]->note : '0' }}
                                 </td>
                                 @foreach($data['dateRange'] as $key2 => $dr)
-                                    <td {{ $data['amount'][$key][$key2] != 0.00 ?}} style="background-color: orange;" {{ : '' }}>
+                                    <td {{ $data['amount'][$key][$key2] != 0.00 ? 'style="background-color: orange;"' : '' }}>
                                         {{ $data['amount'][$key][$key2] }}
                                     </td>
                                 @endforeach
