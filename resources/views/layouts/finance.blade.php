@@ -350,6 +350,9 @@
 				</a>
 				<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
 					<li><a href="{{ route('finance.claimLog') }}" class="{{ (route('finance.claimLog') == Request::url()) ? 'active' : ''}}">Student Payment Claim Log</a></li>
+					<li><a href="{{ route('finance.collectionReport') }}" class="{{ (route('finance.collectionReport') == Request::url()) ? 'active' : ''}}">Expectation Collection Report</a></li>
+					<li><a href="{{ route('finance.collectionExpectReport') }}" class="{{ (route('finance.collectionExpectReport') == Request::url()) ? 'active' : ''}}">Collection VS Expectation Payment Report</a></li>
+					<li><a href="{{ route('finance.monthlyPayment') }}" class="{{ (route('finance.monthlyPayment') == Request::url()) ? 'active' : ''}}">Student Monthly Payment Report</a></li>
 				</ul>
 			  </li>
 			  <li>
