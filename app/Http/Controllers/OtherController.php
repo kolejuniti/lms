@@ -156,7 +156,7 @@ class OtherController extends Controller
         $percentage = DB::table('tblclassmarks')
                         ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
                             ['subjek.id', $courseid],
-                            ['assessment', 'quiz']
+                            ['assessment', 'lain-lain']
                         ])
                         ->orderBy('tblclassmarks.id', 'desc')
                         ->first();
@@ -191,10 +191,13 @@ class OtherController extends Controller
             
         $otherid = empty($request->other) ? '' : $request->other;
 
-        $percentage = DB::table('tblclassmarks')->where([
-            ['course_id', $classid],
-            ['assessment', 'lain-lain']
-        ])->first();
+        $percentage = DB::table('tblclassmarks')
+                        ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
+                            ['subjek.id', $classid],
+                            ['assessment', 'lain-lain']
+                        ])
+                        ->orderBy('tblclassmarks.id', 'desc')
+                        ->first();
 
         //dd($percentage);
 
