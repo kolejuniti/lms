@@ -153,10 +153,13 @@ class OtherController extends Controller
             
         }
 
-        $percentage = DB::table('tblclassmarks')->where([
-            ['course_id', $courseid],
-            ['assessment', 'lain-lain']
-        ])->first();
+        $percentage = DB::table('tblclassmarks')
+                        ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
+                            ['subjek.id', $courseid],
+                            ['assessment', 'quiz']
+                        ])
+                        ->orderBy('tblclassmarks.id', 'desc')
+                        ->first();
 
         $total_mark = DB::table('tblclassother')->where([
             ['classid', $courseid],
