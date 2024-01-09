@@ -652,6 +652,12 @@ Route::post('/posting/admin/getStaffPost', [App\Http\Controllers\AllController::
 Route::get('/all/student/spm/report', [App\Http\Controllers\AllController::class, 'studentSPM'])->name('all.student.spm.report');
 Route::post('/all/student/spm/report/getStudentSPM', [App\Http\Controllers\AllController::class, 'getStudentSPM']);
 
+Route::get('/all/massage/user', [App\Http\Controllers\AllController::class, 'studentMassage']);
+Route::post('/all/massage/user/getStudentMassage', [App\Http\Controllers\AllController::class, 'getStudentMassage']);
+Route::post('/all/massage/user/sendMassage', [App\Http\Controllers\AllController::class, 'sendMassage']);
+Route::post('/all/massage/user/getMassage', [App\Http\Controllers\AllController::class, 'getMassage']);
+Route::get('/all/massage/student/countMessage', [App\Http\Controllers\AllController::class, 'countMessage']);
+
 Route::get('/yuran-pengajian', [App\Http\Controllers\PaymentController::class, 'showPaymentForm'])->name('yuran-pengajian');
 Route::post('/checkout', [App\Http\Controllers\PaymentController::class, 'createCheckoutSession'])->name('checkout');
 Route::get('/checkout/success', [App\Http\Controllers\PaymentController::class, 'handlePaymentSuccess'])->name('checkout.success');
