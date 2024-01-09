@@ -356,6 +356,9 @@
 				</ul>
 			  </li>
 			  <li>
+				<a href="/all/massage/user"><i data-feather="message-square"></i><span>Massage</span></a>
+			  </li> 
+			  <li>
 				<a href="{{ route('posting.staff') }}" class="{{ (route('posting.staff') == Request::url()) ? 'active' : ''}}"><i data-feather="tv"></i><span>Posting</span></a>
 			  </li> 
 		  </div>

@@ -270,6 +270,10 @@
 				</li> 
 
 				<li>
+					<a href="/all/massage/user"><i data-feather="message-square"></i><span>Massage</span></a>
+				</li> 
+
+				<li>
 					<a href="{{ Storage::disk('linode')->url('classschedule/index.htm') }}" target="_blank"><i data-feather="layout"></i><span>Schedule</span></a>
 				</li> 
 

@@ -94,6 +94,21 @@
 	.ck-editor__editable_inline {
 		min-height: 20em;
 	}
+
+	.count-circle {
+		background-color: red;
+		color: white;
+		border-radius: 50%;
+		padding: 2px 5px;
+		font-size: 12px;
+		margin-left: 5px;
+	}
+
+	.hidden {
+		display: none;
+	}
+
+
 </style>
 
 
@@ -250,6 +265,58 @@
 						<li><a href="{{ route('student.affair.result') }}" class="{{ (route('student.affair.result') == Request::url()) ? 'active' : ''}}">Result</a></li>
 					</ul>
 				</li> 
+				<li class="treeview">
+					<a href="#"><i data-feather="message-square"></i><span>Messages</span><span id="total-messages-count" class="count-circle hidden">0</span> <!-- Total count -->
+						<span class="pull-right-container">
+							<i class="fa fa-angle-left pull-right"></i>
+						</span>
+					</a>
+					<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
+						<li><a href="#" onclick="getMessage('FN')">UKP <span id="ukp-count" class="count-circle">0</span></a></li>
+						<li><a href="#" onclick="getMessage('RGS')">KRP <span id="krp-count" class="count-circle">0</span></a></li>
+						<li><a href="#">HEP</a></li>
+					</ul>
+				</li> 
+				<script>
+					let totalCount = 0;
+
+					function updateMessageCount(type, elementId) {
+						fetch(`/all/massage/student/countMessage?type=${type}`) // Replace with your API endpoint
+							.then(response => response.json())
+							.then(data => {
+								const count = data.count;
+								const element = document.getElementById(elementId);
+
+								if (count === 0) {
+									element.classList.add('hidden');
+								} else {
+									element.classList.remove('hidden');
+									element.innerText = count;
+								}
+
+								// Update total count
+								if (type === 'FN' || type === 'RGS') {
+									totalCount += count;
+									const totalElement = document.getElementById('total-messages-count');
+									if (totalCount === 0) {
+										totalElement.classList.add('hidden');
+									} else {
+										totalElement.classList.remove('hidden');
+										totalElement.innerText = totalCount;
+									}
+								}
+							})
+							.catch(error => console.error('Error:', error));
+					}
+
+					// Reset and update counts every second
+					setInterval(() => {
+						totalCount = 0; // Reset total count
+						updateMessageCount('FN', 'ukp-count'); // Update count for UKP
+						updateMessageCount('RGS', 'krp-count'); // Update count for KRP
+					}, 1000);
+
+				</script>
 				<li>
 					<a href="/yuran-pengajian" class=""><i data-feather="shopping-bag"></i><span>Payment</span></a>
 				</li>
@@ -349,9 +416,20 @@
 </div>
 <!-- ./wrapper -->
 	
+<div id="app">
+	<example-component></example-component>
+</div>
 			
 <!-- Page Content overlay -->
 <!-- Vendor JS -->
+
+<script>
+    window.Laravel = {
+        sessionUserId: 'STUDENT'
+    };
+  </script>
+
+<script src="{{ mix('js/app.js') }}"></script>
 
 <script src="{{ asset('assets/src/js/vendors.min.js') }}"></script>
 
