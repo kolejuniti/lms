@@ -277,4 +277,295 @@ class AllController extends Controller
         return view('alluser.student.spm.indexGetSPM', compact('data'));
 
     }
+
+    public function studentMassage()
+    {
+
+        return view('alluser.message.student_list.index');
+
+    }
+
+    public function getStudentMassage(Request $request)
+    {
+
+        $students = DB::table('students')
+            ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+            ->join('sessions AS a', 'students.intake', 'a.SessionID')
+            ->join('sessions AS b', 'students.session', 'b.SessionID')
+            ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
+            ->join('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
+            ->join('tblsex', 'tblstudent_personal.sex_id', 'tblsex.id')
+            ->select('students.*', 'tblprogramme.progname', 'a.SessionName AS intake', 
+                     'b.SessionName AS session', 'tblstudent_status.name AS status',
+                     'tblstudent_personal.no_tel', 'tblsex.sex_name AS gender')
+            ->where('students.name', 'LIKE', "%".$request->search."%")
+            ->orwhere('students.ic', 'LIKE', "%".$request->search."%")
+            ->orwhere('students.no_matric', 'LIKE', "%".$request->search."%")->get();
+
+        foreach($students as $key => $std)
+        {
+
+            $sponsor_id[$key] = DB::table('tblpayment')
+                                ->where([
+                                    ['student_ic', $std->ic],
+                                    ['sponsor_id', '!=', null]
+                                    ])
+                                ->latest('id')->first();
+
+            if($sponsor_id[$key] != null)
+            {
+
+                $sponsor[$key] = DB::table('tblpayment')
+                                ->join('tblsponsor_library', 'tblpayment.payment_sponsor_id', 'tblsponsor_library.id')
+                                ->where('tblpayment.id', $sponsor_id[$key]->sponsor_id)->pluck('tblsponsor_library.name')->first();
+
+            }else{
+
+                $sponsor[$key] = 'SENDIRI';
+
+            }
+
+            if($std->student_status == 1)
+            {
+
+                $student_status[$key] = 'Holding';
+
+            }elseif($std->student_status == 2)
+            {
+
+                $student_status[$key] = 'Kuliah';
+
+            }elseif($std->student_status == 4)
+            {
+
+                $student_status[$key] = 'Latihan Industri';
+
+            }
+
+        }
+
+        $content = "";
+        $content .= '<thead>
+                        <tr>
+                            <th style="width: 1%">
+                                No.
+                            </th>
+                            <th>
+                                Name
+                            </th>
+                            <th>
+                                No. IC
+                            </th>
+                            <th>
+                                No. Matric
+                            </th>
+                            <th>
+                                Program
+                            </th>
+                            <th>
+                                Intake
+                            </th>
+                            <th>
+                                Current Session
+                            </th>
+                            <th>
+                                Semester
+                            </th>
+                            <th>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="table">';
+                    
+        foreach($students as $key => $student){
+            //$registered = ($student->status == 'ACTIVE') ? 'checked' : '';
+            $content .= '
+            <tr>
+                <td style="width: 1%">
+                '. $key+1 .'
+                </td>
+                <td>
+                '. $student->name .'
+                </td>
+                <td>
+                '. $student->ic .'
+                </td>
+                <td>
+                '. $student->no_matric .'
+                </td>
+                <td>
+                '. $student->progname .'
+                </td>
+                <td>
+                '. $student->intake .'
+                </td>
+                <td>
+                '. $student->session .'
+                </td>
+                <td>
+                '. $student->semester .'
+                </td>';
+                
+
+            
+                $content .= '<td class="project-actions text-right" >
+                                <a class="btn btn-secondary btn-sm btn-sm mr-2 mb-2" href="#" onclick="getMessage(\''. $student->ic .'\')">
+                                    <i class="ti-eye">
+                                    </i>
+                                    Massage
+                                </a>
+                            </td>
+                        
+                        ';
+           
+            }
+            $content .= '</tr></tbody>';
+
+            return $content;
+
+    }
+
+    public function sendMassage(Request $request)
+    {
+
+        if($request->type != 'STUDENT')
+        {
+
+            if(!DB::table('tblmessage')->where([
+                ['user_type', Auth::user()->usrtype], 
+                ['recipient', $request->ic]
+            ])->exists())
+            {
+
+                $id = DB::table('tblmessage')->insertGetId([
+                        'sender' => Auth::user()->ic,
+                        'user_type' => Auth::user()->usrtype,
+                        'recipient' => $request->ic
+                    ]);
+
+            }else{
+
+                $id = DB::table('tblmessage')->where([
+                    ['user_type', Auth::user()->usrtype], 
+                    ['recipient', $request->ic]
+                ])->value('id');
+
+            }
+
+            DB::table('tblmessage_dtl')->insert([
+                'message_id' => $id,
+                'sender' => Auth::user()->ic,
+                'user_type' => $request->type,
+                'message' => $request->message,
+                'status' => 'NEW'
+            ]);
+
+        }else{
+
+
+            if(!DB::table('tblmessage')->where([
+                ['user_type', $request->ic], 
+                ['recipient', Auth::guard('student')->user()->ic]
+            ])->exists())
+            {
+    
+                $id = DB::table('tblmessage')->insertGetId([
+                        'sender' => null,
+                        'user_type' => $request->ic,
+                        'recipient' => Auth::guard('student')->user()->ic
+                    ]);
+    
+            }else{
+    
+                $id = DB::table('tblmessage')->where([
+                    ['user_type', $request->ic], 
+                    ['recipient', Auth::guard('student')->user()->ic]
+                ])->value('id');
+    
+            }
+
+            DB::table('tblmessage_dtl')->insert([
+                'message_id' => $id,
+                'sender' => Auth::guard('student')->user()->ic,
+                'user_type' => $request->type,
+                'message' => $request->message,
+                'status' => 'NEW'
+            ]);
+
+        }
+
+        
+
+
+        return response()->json(['message' => $request->message]);
+
+    }
+
+    public function getMassage(Request $request)
+    {
+
+        if($request->type != 'STUDENT')
+        {
+
+            DB::table('tblmessage')
+                ->join('tblmessage_dtl', 'tblmessage.id', '=', 'tblmessage_dtl.message_id')
+                ->where('tblmessage.user_type', $request->type)
+                ->where('tblmessage.recipient', $request->ic)
+                ->where('tblmessage_dtl.sender', '!=', Auth::user()->ic)
+                ->update([
+                    'status' => 'READ'
+                ]);
+
+            // Fetch messages and their details
+            $messages = DB::table('tblmessage')
+                ->join('tblmessage_dtl', 'tblmessage.id', '=', 'tblmessage_dtl.message_id')
+                ->where('tblmessage.user_type', $request->type)
+                ->where('tblmessage.recipient', $request->ic)
+                // If you want to include messages where the user is the recipient, uncomment the line below:
+                //->orWhere('tblmessage.recipient', Auth::user()->ic)
+                ->select('tblmessage_dtl.*', 'tblmessage_dtl.user_type', 'tblmessage.recipient', 'tblmessage.datetime as message_datetime')
+                ->get();
+
+        }else{
+
+            DB::table('tblmessage')
+                ->join('tblmessage_dtl', 'tblmessage.id', '=', 'tblmessage_dtl.message_id')
+                ->where('tblmessage.user_type', $request->ic)
+                ->where('tblmessage.recipient', Auth::guard('student')->user()->ic)
+                ->where('tblmessage_dtl.sender', '!=', Auth::guard('student')->user()->ic)
+                ->update([
+                    'status' => 'READ'
+                ]);
+
+            // Fetch messages and their details
+            $messages = DB::table('tblmessage')
+                ->join('tblmessage_dtl', 'tblmessage.id', '=', 'tblmessage_dtl.message_id')
+                ->where('tblmessage.user_type', $request->ic)
+                ->where('tblmessage.recipient', Auth::guard('student')->user()->ic)
+                // If you want to include messages where the user is the recipient, uncomment the line below:
+                //->orWhere('tblmessage.recipient', Auth::user()->ic)
+                ->select('tblmessage_dtl.*', 'tblmessage_dtl.user_type', 'tblmessage.recipient', 'tblmessage.datetime as message_datetime')
+                ->get();
+
+        }
+
+        return response()->json($messages);
+    }
+
+    public function countMessage(Request $request)
+    {
+
+        $count = DB::table('tblmessage')
+                    ->join('tblmessage_dtl', 'tblmessage.id', '=', 'tblmessage_dtl.message_id')
+                    ->where('tblmessage.user_type', $request->type)
+                    ->where('tblmessage.recipient', Auth::guard('student')->user()->ic)
+                    ->where('tblmessage_dtl.sender', '!=', Auth::guard('student')->user()->ic)
+                    ->where('tblmessage_dtl.status', 'NEW')
+                    ->count();
+
+        return response()->json(['count' => $count]);
+
+    }
+
+
 }
