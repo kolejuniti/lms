@@ -470,7 +470,6 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
 
-<script src="http://spp3.intds.com.my/assets/js/formplugins/select2/select2.bundle.js"></script>
 
 
 <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
