@@ -6,7 +6,9 @@
 
 require('./bootstrap');
 
-window.Vue = require('vue').default;
+import { createApp } from 'vue';
+const app = createApp({});
+
 
 /**
  * The following block of code may be used to automatically register your
@@ -19,7 +21,9 @@ window.Vue = require('vue').default;
 // const files = require.context('./', true, /\.vue$/i)
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
-Vue.component('example-component', require('./components/ExampleComponent.vue').default);
+import ExampleComponent from './components/TextBox/index.vue';
+app.component('example-component', ExampleComponent);
+
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -27,6 +31,13 @@ Vue.component('example-component', require('./components/ExampleComponent.vue').
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-const app = new Vue({
-    el: '#app',
-});
+// Define a global method to dispatch a custom event
+window.getMessage = function(ic) {
+    const event = new CustomEvent('message-requested', { detail: { ic } });
+    window.dispatchEvent(event);
+};
+
+app.mount('#app');
+
+
+
