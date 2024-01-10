@@ -278,6 +278,8 @@
 					</ul>
 				</li> 
 				<script>
+					let previousUkpCount = 0;
+					let previousKrpCount = 0;
 					let totalCount = 0;
 
 					function updateMessageCount(type, elementId) {
@@ -294,27 +296,37 @@
 									element.innerText = count;
 								}
 
-								// Update total count
-								if (type === 'FN' || type === 'RGS') {
-									totalCount += count;
-									const totalElement = document.getElementById('total-messages-count');
-									if (totalCount === 0) {
-										totalElement.classList.add('hidden');
-									} else {
-										totalElement.classList.remove('hidden');
-										totalElement.innerText = totalCount;
+								// Check for changes in count and update total accordingly
+								if (type === 'FN') {
+									if (previousUkpCount !== count) {
+										totalCount = totalCount - previousUkpCount + count;
+										previousUkpCount = count;
 									}
+								} else if (type === 'RGS') {
+									if (previousKrpCount !== count) {
+										totalCount = totalCount - previousKrpCount + count;
+										previousKrpCount = count;
+									}
+								}
+
+								// Update total count display
+								const totalElement = document.getElementById('total-messages-count');
+								if (totalCount === 0) {
+									totalElement.classList.add('hidden');
+								} else {
+									totalElement.classList.remove('hidden');
+									totalElement.innerText = totalCount;
 								}
 							})
 							.catch(error => console.error('Error:', error));
 					}
 
-					// Reset and update counts every second
+					// Update counts every second
 					setInterval(() => {
-						totalCount = 0; // Reset total count
-						updateMessageCount('FN', 'ukp-count'); // Update count for UKP
-						updateMessageCount('RGS', 'krp-count'); // Update count for KRP
+						updateMessageCount('FN', 'ukp-count');
+						updateMessageCount('RGS', 'krp-count');
 					}, 1000);
+
 
 				</script>
 				<li>
