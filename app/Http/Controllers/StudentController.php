@@ -702,7 +702,14 @@ class StudentController extends Controller
 
         $student = DB::table('students')
                 ->join('student_subjek', 'students.ic', 'student_subjek.student_ic')
-                ->where('students.ic', $students->ic)->first();
+                ->join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
+                ->join('user_subjek', 'student_subjek.group_id', 'user_subjek.id')
+                ->where([
+                    ['students.ic', $students->ic],
+                    ['subjek.id', request()->id],
+                    ['student_subjek.sessionid', Session::get('SessionID')]
+                    ])
+                ->select('student.ic', 'student_subjek.group_id', 'student_subjek.group_name')->first();
 
         //QUIZ
 
@@ -721,9 +728,12 @@ class StudentController extends Controller
         $markquiz = 0;
         
         $quiz = DB::table('tblclassquiz')
+                    ->join('tblclassquiz_group', 'tblclassquiz.id', 'tblclassquiz_group.quizid')
                     ->where([
                         ['tblclassquiz.classid', request()->id],
                         ['tblclassquiz.sessionid', Session::get('SessionID')],
+                        ['tblclassquiz_group.groupid', $student->group_id],
+                        ['tblclassquiz_group.groupname', $student->group_name],
                         ['status', 2]
                     ])->get();
         
