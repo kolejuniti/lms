@@ -777,11 +777,14 @@ class StudentController extends Controller
         $marktest = 0;
         
         $test = DB::table('tblclasstest')
+                    ->join('tblclasstest_group', 'tblclasstest.id', 'tblclasstest_group.testid')
                     ->where([
                         ['tblclasstest.classid', request()->id],
                         ['tblclasstest.sessionid', Session::get('SessionID')],
+                        ['tblclasstest_group.groupid', $student->group_id],
+                        ['tblclasstest_group.groupname', $student->group_name],
                         ['status', 2]
-                    ])->get();
+                    ])->select('tblclasstest.*')->get();
         
         foreach($test as $key => $qz)
         {
@@ -821,13 +824,16 @@ class StudentController extends Controller
 
         $totalassign = 0;
         $markassign = 0;
-        
+
         $assign = DB::table('tblclassassign')
+                    ->join('tblclassassign_group', 'tblclassassign.id', 'tblclassassign_group.assignid')
                     ->where([
                         ['tblclassassign.classid', request()->id],
                         ['tblclassassign.sessionid', Session::get('SessionID')],
+                        ['tblclassassign_group.groupid', $student->group_id],
+                        ['tblclassassign_group.groupname', $student->group_name],
                         ['status', 2]
-                    ])->get();
+                    ])->select('tblclassassign.*')->get();
         
         foreach($assign as $key => $qz)
         {
@@ -867,13 +873,16 @@ class StudentController extends Controller
 
         $totalmidterm = 0;
         $markmidterm = 0;
-        
+
         $midterm = DB::table('tblclassmidterm')
+                    ->join('tblclassmidterm_group', 'tblclassmidterm.id', 'tblclassmidterm_group.midtermid')
                     ->where([
                         ['tblclassmidterm.classid', request()->id],
                         ['tblclassmidterm.sessionid', Session::get('SessionID')],
+                        ['tblclassmidterm_group.groupid', $student->group_id],
+                        ['tblclassmidterm_group.groupname', $student->group_name],
                         ['status', 2]
-                    ])->get();
+                    ])->select('tblclassmidterm.*')->get();
         
         foreach($midterm as $key => $qz)
         {
@@ -916,11 +925,14 @@ class StudentController extends Controller
         $markfinal = 0;
         
         $final = DB::table('tblclassfinal')
+                    ->join('tblclassfinal_group', 'tblclassfinal.id', 'tblclassfinal_group.finalid')
                     ->where([
                         ['tblclassfinal.classid', request()->id],
                         ['tblclassfinal.sessionid', Session::get('SessionID')],
+                        ['tblclassfinal_group.groupid', $student->group_id],
+                        ['tblclassfinal_group.groupname', $student->group_name],
                         ['status', 2]
-                    ])->get();
+                    ])->select('tblclassfinal.*')->get();
         
         foreach($final as $key => $qz)
         {
@@ -960,13 +972,16 @@ class StudentController extends Controller
 
         $totalother = 0;
         $markother = 0;
-        
+
         $other = DB::table('tblclassother')
+                    ->join('tblclassother_group', 'tblclassother.id', 'tblclassother_group.otherid')
                     ->where([
                         ['tblclassother.classid', request()->id],
                         ['tblclassother.sessionid', Session::get('SessionID')],
+                        ['tblclassother_group.groupid', $student->group_id],
+                        ['tblclassother_group.groupname', $student->group_name],
                         ['status', 2]
-                    ])->get();
+                    ])->select('tblclassother.*')->get();
         
         foreach($other as $key => $qz)
         {
@@ -1006,13 +1021,16 @@ class StudentController extends Controller
 
         $totalextra = 0;
         $markextra = 0;
-        
+
         $extra = DB::table('tblclassextra')
+                    ->join('tblclassextra_group', 'tblclassextra.id', 'tblclassextra_group.extraid')
                     ->where([
                         ['tblclassextra.classid', request()->id],
                         ['tblclassextra.sessionid', Session::get('SessionID')],
+                        ['tblclassextra_group.groupid', $student->group_id],
+                        ['tblclassextra_group.groupname', $student->group_name],
                         ['status', 2]
-                    ])->get();
+                    ])->select('tblclassextra.*')->get();
         
         foreach($extra as $key => $qz)
         {
