@@ -709,7 +709,7 @@ class StudentController extends Controller
                     ['subjek.id', request()->id],
                     ['student_subjek.sessionid', Session::get('SessionID')]
                     ])
-                ->select('students.ic', 'student_subjek.group_id', 'student_subjek.group_name')->first();
+                ->select('students.*', 'student_subjek.group_id', 'student_subjek.group_name')->first();
 
         //QUIZ
 
