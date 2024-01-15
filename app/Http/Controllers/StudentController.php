@@ -735,7 +735,7 @@ class StudentController extends Controller
                         ['tblclassquiz_group.groupid', $student->group_id],
                         ['tblclassquiz_group.groupname', $student->group_name],
                         ['status', 2]
-                    ])->get();
+                    ])->select('tblclassquiz.*')->get();
         
         foreach($quiz as $key => $qz)
         {
