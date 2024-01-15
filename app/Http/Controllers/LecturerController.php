@@ -3264,7 +3264,8 @@ class LecturerController extends Controller
                 ->where([
                     ['tblclassstudentquiz.userid', request()->student],
                     ['tblclassquiz.classid', request()->id],
-                    ['tblclassquiz.sessionid', Session::get('SessionID')]
+                    ['tblclassquiz.sessionid', Session::get('SessionID')],
+                    ['tblclassquiz.status', 2]
                 ]);
         
         $totalquiz = $quiz->sum('tblclassquiz.total_mark');
@@ -3301,7 +3302,8 @@ class LecturerController extends Controller
                 ->where([
                     ['tblclassstudenttest.userid', request()->student],
                     ['tblclasstest.classid', request()->id],
-                    ['tblclasstest.sessionid', Session::get('SessionID')]
+                    ['tblclasstest.sessionid', Session::get('SessionID')],
+                    ['tblclasstest.status', 2]
                 ]);
         
         $totaltest = $test->sum('tblclasstest.total_mark');
@@ -3341,7 +3343,8 @@ class LecturerController extends Controller
                 ->where([
                     ['tblclassstudentassign.userid', request()->student],
                     ['tblclassassign.classid', request()->id],
-                    ['tblclassassign.sessionid', Session::get('SessionID')]
+                    ['tblclassassign.sessionid', Session::get('SessionID')],
+                    ['tblclassassign.status', 2]
                 ]);
         
         $totalassign = $assign->sum('tblclassassign.total_mark');
@@ -3380,7 +3383,8 @@ class LecturerController extends Controller
                 ->where([
                     ['tblclassstudentmidterm.userid', request()->student],
                     ['tblclassmidterm.classid', request()->id],
-                    ['tblclassmidterm.sessionid', Session::get('SessionID')]
+                    ['tblclassmidterm.sessionid', Session::get('SessionID')],
+                    ['tblclassmidterm.status', 2]
                 ]);
         
         $totalmidterm = $midterm->sum('tblclassmidterm.total_mark');
@@ -3419,7 +3423,8 @@ class LecturerController extends Controller
                 ->where([
                     ['tblclassstudentfinal.userid', request()->student],
                     ['tblclassfinal.classid', request()->id],
-                    ['tblclassfinal.sessionid', Session::get('SessionID')]
+                    ['tblclassfinal.sessionid', Session::get('SessionID')],
+                    ['tblclassfinal.status', 2]
                 ]);
         
         $totalfinal = $final->sum('tblclassfinal.total_mark');
@@ -3458,7 +3463,8 @@ class LecturerController extends Controller
                 ->where([
                     ['tblclassstudentpaperwork.userid', request()->student],
                     ['tblclasspaperwork.classid', request()->id],
-                    ['tblclasspaperwork.sessionid', Session::get('SessionID')]
+                    ['tblclasspaperwork.sessionid', Session::get('SessionID')],
+                    ['tblclasspaperwork.status', 2]
                 ]);
         
         $totalpaperwork = $paperwork->sum('tblclasspaperwork.total_mark');
@@ -3498,7 +3504,8 @@ class LecturerController extends Controller
                 ->where([
                     ['tblclassstudentpractical.userid', request()->student],
                     ['tblclasspractical.classid', request()->id],
-                    ['tblclasspractical.sessionid', Session::get('SessionID')]
+                    ['tblclasspractical.sessionid', Session::get('SessionID')],
+                    ['tblclasspractical.status', 2]
                 ]);
         
         $totalpractical = $practical->sum('tblclasspractical.total_mark');
@@ -3535,7 +3542,8 @@ class LecturerController extends Controller
                 ->where([
                     ['tblclassstudentother.userid', request()->student],
                     ['tblclassother.classid', request()->id],
-                    ['tblclassother.sessionid', Session::get('SessionID')]
+                    ['tblclassother.sessionid', Session::get('SessionID')],
+                    ['tblclassother.status', 2]
                 ]);
         
         $totalother = $other->sum('tblclassother.total_mark');
@@ -3571,7 +3579,8 @@ class LecturerController extends Controller
                 ->where([
                     ['tblclassstudentextra.userid', request()->student],
                     ['tblclassextra.classid', request()->id],
-                    ['tblclassextra.sessionid', Session::get('SessionID')]
+                    ['tblclassextra.sessionid', Session::get('SessionID')],
+                    ['tblclassextra.status', 2]
                 ]);
         
         $totalextra = $extra->sum('tblclassextra.total_mark');

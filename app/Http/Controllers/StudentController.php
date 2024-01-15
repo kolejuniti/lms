@@ -723,7 +723,8 @@ class StudentController extends Controller
         $quiz = DB::table('tblclassquiz')
                     ->where([
                         ['tblclassquiz.classid', request()->id],
-                        ['tblclassquiz.sessionid', Session::get('SessionID')]
+                        ['tblclassquiz.sessionid', Session::get('SessionID')],
+                        ['status', 2]
                     ])->get();
         
         foreach($quiz as $key => $qz)
@@ -768,7 +769,8 @@ class StudentController extends Controller
         $test = DB::table('tblclasstest')
                     ->where([
                         ['tblclasstest.classid', request()->id],
-                        ['tblclasstest.sessionid', Session::get('SessionID')]
+                        ['tblclasstest.sessionid', Session::get('SessionID')],
+                        ['status', 2]
                     ])->get();
         
         foreach($test as $key => $qz)
@@ -813,7 +815,8 @@ class StudentController extends Controller
         $assign = DB::table('tblclassassign')
                     ->where([
                         ['tblclassassign.classid', request()->id],
-                        ['tblclassassign.sessionid', Session::get('SessionID')]
+                        ['tblclassassign.sessionid', Session::get('SessionID')],
+                        ['status', 2]
                     ])->get();
         
         foreach($assign as $key => $qz)
@@ -858,7 +861,8 @@ class StudentController extends Controller
         $midterm = DB::table('tblclassmidterm')
                     ->where([
                         ['tblclassmidterm.classid', request()->id],
-                        ['tblclassmidterm.sessionid', Session::get('SessionID')]
+                        ['tblclassmidterm.sessionid', Session::get('SessionID')],
+                        ['status', 2]
                     ])->get();
         
         foreach($midterm as $key => $qz)
@@ -904,7 +908,8 @@ class StudentController extends Controller
         $final = DB::table('tblclassfinal')
                     ->where([
                         ['tblclassfinal.classid', request()->id],
-                        ['tblclassfinal.sessionid', Session::get('SessionID')]
+                        ['tblclassfinal.sessionid', Session::get('SessionID')],
+                        ['status', 2]
                     ])->get();
         
         foreach($final as $key => $qz)
@@ -949,7 +954,8 @@ class StudentController extends Controller
         $other = DB::table('tblclassother')
                     ->where([
                         ['tblclassother.classid', request()->id],
-                        ['tblclassother.sessionid', Session::get('SessionID')]
+                        ['tblclassother.sessionid', Session::get('SessionID')],
+                        ['status', 2]
                     ])->get();
         
         foreach($other as $key => $qz)
@@ -994,7 +1000,8 @@ class StudentController extends Controller
         $extra = DB::table('tblclassextra')
                     ->where([
                         ['tblclassextra.classid', request()->id],
-                        ['tblclassextra.sessionid', Session::get('SessionID')]
+                        ['tblclassextra.sessionid', Session::get('SessionID')],
+                        ['status', 2]
                     ])->get();
         
         foreach($extra as $key => $qz)
