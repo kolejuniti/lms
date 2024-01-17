@@ -270,7 +270,7 @@
 				</li> 
 
 				<li>
-					<a href="/all/massage/user"><i data-feather="message-square"></i><span>Massage</span></a>
+					<a href="/all/massage/user"><i data-feather="message-square"></i><span>Message</span></a>
 				</li> 
 
 				<li>
