@@ -111,7 +111,7 @@ input.collected-marks + label{
                                     </div>
                                     <div class="col-md-4 mb-4">
                                         <label for="marks" class="form-label "><strong>Total Mark</strong></label>
-                                        <input type="number" id="markss" name="markss" class="form-control collected-marks" max="{{ $data['totalmark'] }}"><br required>
+                                        <input type="number" id="markss" name="markss" class="form-control collected-marks" step="0.1" max="{{ $data['totalmark'] }}" required>
                                     </div>
                                     <hr>
                                     @if ($data['comments'] == null)
