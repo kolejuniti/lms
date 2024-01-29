@@ -26,12 +26,15 @@
   <style>
       @page {
          size: A4 potrait; 
-         margin: 0.5cm; /* reduce margin */
+         margin: 1cm; /* reduce margin */
       }
       @media print {
          .container {
             transform: scale(1.0);
             transform-origin: top left;
+         }
+         hr {
+            border-top: 1px solid #000; /* make sure the color is dark enough */
          }
       }
 
@@ -99,6 +102,7 @@
                   </div>
                </div> --}}
             </div>
+            <hr>
             <div class="row">
                <div class="col-md-12 d-flex p-2">
                   <div class="col-md-6" style="margin-right: 10px">
