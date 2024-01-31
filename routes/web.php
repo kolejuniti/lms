@@ -528,6 +528,10 @@ Route::post('/finance/payment/refund/storeRefund', [App\Http\Controllers\Finance
 Route::post('/finance/payment/refund/storeRefundDtl', [App\Http\Controllers\FinanceController::class, 'storeRefundDtl']);
 Route::post('/finance/payment/refund/confirmRefund', [App\Http\Controllers\FinanceController::class, 'confirmRefund']);
 Route::post('/finance/payment/refund/deleteRefund', [App\Http\Controllers\FinanceController::class, 'deleteRefund']);
+Route::get('/finance/payment/KWSPrefund', [App\Http\Controllers\FinanceController::class, 'studentKWSPRefund'])->name('finance.payment.KWSPrefund');
+Route::post('/finance/payment/KWSPrefund/getStudent', [App\Http\Controllers\FinanceController::class, 'getStudentKWSPrefund']);
+Route::post('/finance/payment/KWSPrefund/storeKWSPrefund', [App\Http\Controllers\FinanceController::class, 'storeKWSPrefund']);
+Route::post('/finance/payment/KWSPrefund/deleteKWSPrefund', [App\Http\Controllers\FinanceController::class, 'deleteKWSPrefund']);
 Route::get('/finance/sponsorship/library', [App\Http\Controllers\FinanceController::class, 'sponsorLibrary'])->name('sponsorship.library');
 Route::post('/finance/sponsorship/library/create', [App\Http\Controllers\FinanceController::class, 'createSponsor']);
 Route::post('/finance/sponsorship/library/update', [App\Http\Controllers\FinanceController::class, 'updateSponsor']);
@@ -659,12 +663,18 @@ Route::post('/all/massage/user/getMassage', [App\Http\Controllers\AllController:
 Route::get('/all/massage/student/countMessage', [App\Http\Controllers\AllController::class, 'countMessage']);
 
 Route::get('/yuran-pengajian', [App\Http\Controllers\PaymentController::class, 'showPaymentForm'])->name('yuran-pengajian');
+Route::post('/yuran-pengajian/submitPayment', [App\Http\Controllers\PaymentController::class, 'submitPayment'])->name('yuran-pengajian.submitpayment');
+Route::get('/yuran-pengajian/showQuotation', [App\Http\Controllers\PaymentController::class, 'showQuotation'])->name('yuran-pengajian.showQuotation');
+
 Route::post('/checkout', [App\Http\Controllers\PaymentController::class, 'createCheckoutSession'])->name('checkout');
 Route::get('/checkout/success', [App\Http\Controllers\PaymentController::class, 'handlePaymentSuccess'])->name('checkout.success');
 Route::get('/checkout/cancel', function () {
     return "Payment canceled!";
 })->name('checkout.cancel');
 Route::get('/checkout/receipt/{session_id}', [App\Http\Controllers\PaymentController::class, 'showReceipt'])->name('checkout.receipt');
+
+Route::post('/securepay-checkout', [App\Http\Controllers\PaymentController::class, 'securePayCheckout'])->name('securepay.checkout');
+Route::post('/checkout/securePay/receipt', [App\Http\Controllers\PaymentController::class, 'showReceiptSecurePay'])->name('checkout.receipt');
 
 
 Route::middleware(['preventBackHistory'])->group(function () {
