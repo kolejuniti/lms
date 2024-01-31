@@ -754,7 +754,7 @@ class FinanceController extends Controller
             if($student->no_matric == null)
             {
 
-                if($sum = DB::table('tblpayment')->where('student_ic', $student->ic)->whereNotIn('process_status_id', [1, 3])->sum('amount') >= 250)
+                if(DB::table('tblpayment')->where('student_ic', $student->ic)->whereNotIn('process_status_id', [1, 3])->sum('amount') >= 250)
                 {
                     $intake = DB::table('sessions')->where('SessionID', $student->intake)->first();
                     
@@ -8370,6 +8370,255 @@ class FinanceController extends Controller
         }
 
         return view('finance.debt.monthly_payment_report.monthlyReportGetStudent', compact('data'));
+
+    }
+
+    public function studentKWSPRefund()
+    {
+
+        return view('finance.payment.kwspNote');
+
+    }
+
+    public function getStudentKWSPrefund(Request $request)
+    {
+
+        $data['student'] = DB::table('students')
+        ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
+        ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+        ->join('sessions AS t1', 'students.intake', 't1.SessionID')
+        ->join('sessions AS t2', 'students.session', 't2.SessionID')
+        ->select('students.*', 'tblstudent_status.name AS status', 'tblprogramme.progname AS program', 'students.program AS progid', 't1.SessionName AS intake_name', 't2.SessionName AS session_name')
+        ->where('ic', $request->student)->first();
+
+        $data['method'] = DB::table('tblpayment_method')->get();
+
+        $data['bank'] = DB::table('tblpayment_bank')->orderBy('name', 'asc')->get();
+
+        $data['list'] = DB::table('tblkwsp_note')
+                        ->leftjoin('tblpayment_bank', 'tblkwsp_note.bank_id', 'tblpayment_bank.id')
+                        ->leftjoin('tblpayment_method', 'tblkwsp_note.payment_method_id', 'tblpayment_method.id')
+                        ->select('tblkwsp_note.*', 'tblpayment_bank.name AS bank', 'tblpayment_method.name AS method')
+                        ->where('tblkwsp_note.student_ic', $request->student)
+                        ->get();
+
+        return view('finance.payment.kwspNoteGetStudent', compact('data'));
+
+    }
+
+    public function storeKWSPrefund(Request $request)
+    {
+
+        $kwspDetails = $request->kwspDetails;
+
+        $validator = Validator::make($request->all(), [
+            'kwspDetails' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return ["message"=>"Field Error", "error" => $validator->messages()->get('*')];
+        }
+
+        try{ 
+            DB::beginTransaction();
+            DB::connection()->enableQueryLog();
+
+            try{
+                $data = json_decode($kwspDetails);
+                
+                if($data->date != null && $data->discount != null && $data->method != null && $data->amount != null)
+                {
+
+                    DB::table('tblkwsp_note')->insert([
+                        'student_ic' => $data->ic,
+                        'date' => $data->date,
+                        'payment_method_id' => $data->method,
+                        'bank_id' => $data->bank,
+                        'document_no' => $data->nodoc,
+                        'discount' => $data->discount,
+                        'amount' => $data->amount
+                    ]);
+
+                    $details = DB::table('tblkwsp_note')
+                    ->leftjoin('tblpayment_bank', 'tblkwsp_note.bank_id', 'tblpayment_bank.id')
+                    ->leftjoin('tblpayment_method', 'tblkwsp_note.payment_method_id', 'tblpayment_method.id')
+                    ->select('tblkwsp_note.*', 'tblpayment_bank.name AS bank', 'tblpayment_method.name AS method')
+                    ->where('tblkwsp_note.student_ic', $data->ic)
+                    ->get();
+
+                    $content = "";
+                    $content .= '<thead>
+                                    <tr>
+                                        <th style="width: 1%">
+                                            No.
+                                        </th>
+                                        <th>
+                                            Date
+                                        </th>
+                                        <th>
+                                            Payment Method
+                                        </th>
+                                        <th>
+                                            Bank
+                                        </th>
+                                        <th>
+                                            Document No.
+                                        </th>
+                                        <th>
+                                            Discount
+                                        </th>
+                                        <th>
+                                            Amount
+                                        </th>
+                                        <th>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody id="table">';
+                                
+                    foreach($details as $key => $dtl){
+                    //$registered = ($dtl->status == 'ACTIVE') ? 'checked' : '';
+                    $content .= '
+                        <tr>
+                            <td style="width: 1%">
+                            '. $key+1 .'
+                            </td>
+                            <td style="width: 15%">
+                            '. $dtl->date .'
+                            </td>
+                            <td style="width: 15%">
+                            '. $dtl->method .'
+                            </td>
+                            <td style="width: 15%">
+                            '. $dtl->bank .'
+                            </td>
+                            <td style="width: 20%">
+                            '. $dtl->document_no .'
+                            </td>
+                            <td style="width: 20%">
+                            '. $dtl->discount .'
+                            </td>
+                            <td style="width: 20%">
+                            '. $dtl->amount .'
+                            </td>
+                            <td>
+                                <a class="btn btn-danger btn-sm" href="#" onclick="deletedtl('. $dtl->id .', '. $dtl->student_ic .')">
+                                    <i class="ti-trash">
+                                    </i>
+                                    Delete
+                                </a>
+                            </td>
+                        </tr>
+                        ';
+                        }
+                    $content .= '</tbody>';
+
+                
+                }else{
+                    return ["message" => "Please fill all required field!"];
+                }
+                
+            }catch(QueryException $ex){
+                DB::rollback();
+                if($ex->getCode() == 23000){
+                    return ["message"=>"Class code already existed inside the system"];
+                }else{
+                    \Log::debug($ex);
+                    return ["message"=>"DB Error"];
+                }
+            }
+
+            DB::commit();
+        }catch(Exception $ex){
+            return ["message"=>"Error"];
+        }
+
+        return ["message" => "Success", "data" => $content];
+
+    }
+
+    public function deleteKWSPrefund(Request $request)
+    {
+
+        DB::table('tblkwsp_note')->where('id', $request->id)->delete();
+
+        $details = DB::table('tblkwsp_note')
+                    ->leftjoin('tblpayment_bank', 'tblkwsp_note.bank_id', 'tblpayment_bank.id')
+                    ->leftjoin('tblpayment_method', 'tblkwsp_note.payment_method_id', 'tblpayment_method.id')
+                    ->select('tblkwsp_note.*', 'tblpayment_bank.name AS bank', 'tblpayment_method.name AS method')
+                    ->where('tblkwsp_note.student_ic', $request->ic)
+                    ->get();
+
+        $content = "";
+        $content .= '<thead>
+                        <tr>
+                            <th style="width: 1%">
+                                No.
+                            </th>
+                            <th>
+                                Date
+                            </th>
+                            <th>
+                                Payment Method
+                            </th>
+                            <th>
+                                Bank
+                            </th>
+                            <th>
+                                Document No.
+                            </th>
+                            <th>
+                                Discount
+                            </th>
+                            <th>
+                                Amount
+                            </th>
+                            <th>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="table">';
+                    
+        foreach($details as $key => $dtl){
+        //$registered = ($dtl->status == 'ACTIVE') ? 'checked' : '';
+        $content .= '
+            <tr>
+                <td style="width: 1%">
+                '. $key+1 .'
+                </td>
+                <td style="width: 15%">
+                '. $dtl->date .'
+                </td>
+                <td style="width: 15%">
+                '. $dtl->method .'
+                </td>
+                <td style="width: 15%">
+                '. $dtl->bank .'
+                </td>
+                <td style="width: 20%">
+                '. $dtl->document_no .'
+                </td>
+                <td style="width: 20%">
+                '. $dtl->discount .'
+                </td>
+                <td style="width: 20%">
+                '. $dtl->amount .'
+                </td>
+                <td>
+                    <a class="btn btn-danger btn-sm" href="#" onclick="deletedtl('. $dtl->id .', '. $dtl->student_ic .')">
+                        <i class="ti-trash">
+                        </i>
+                        Delete
+                    </a>
+                </td>
+            </tr>
+            ';
+            }
+        $content .= '</tbody>';
+        
+
+        return $content;
+
 
     }
 }
