@@ -8169,7 +8169,7 @@ class FinanceController extends Controller
         ]);
 
         // Convert the array to a comma-separated string
-        $notesString = implode(',', $request->note);
+        $notesString = ($request->note) ? implode(',', $request->note) : '';
 
         //dd($notesString);
 
