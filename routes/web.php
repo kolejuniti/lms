@@ -563,6 +563,8 @@ Route::get('/finance/report/chargeReport', [App\Http\Controllers\FinanceControll
 Route::get('/finance/report/chargeReport/getChargeReport', [App\Http\Controllers\FinanceController::class, 'getChargeReport']);
 Route::get('finance/report/arrearsReport', [App\Http\Controllers\FinanceController::class,'arrearsReport'])->name('finance.arrearsReport');
 Route::post('finance/report/arrearsReport/getArrearsReport', [App\Http\Controllers\FinanceController::class,'getArrearsReport']);
+Route::get('finance/report/urReport', [App\Http\Controllers\FinanceController::class,'urReport'])->name('finance.urReport');
+Route::post('finance/report/urReport/getUrReport', [App\Http\Controllers\FinanceController::class,'getUrReport']);
 Route::get('/finance/payment/other', [App\Http\Controllers\FinanceController::class, 'studentOtherPayment'])->name('finance.payment.other');
 Route::post('/finance/payment/other/getStudent', [App\Http\Controllers\FinanceController::class, 'getOtherStudentPayment']);
 Route::post('/finance/payment/other/storePayment', [App\Http\Controllers\FinanceController::class, 'storeOtherPayment']);
