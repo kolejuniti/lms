@@ -7460,25 +7460,29 @@ class FinanceController extends Controller
                         '. $student[$key]->no_matric .'
                         </td>';
 
-                    foreach($method[$key] as $key2 => $mtd)
-                    {
-
-                    $total += $mtd->amount;
-                        
-                    $content .= '<td>
-                        '. $mtd->name .'
-                        </td>
-                        <td>
-                        '. $mtd->code .'
-                        </td>
-                        <td>
-                        '. $mtd->no_document .'
-                        </td>
-                        <td>
-                        '. $mtd->amount .'
-                        </td>';
-
+                    $content .= '<td>';
+                    foreach ($method[$key] as $key2 => $mtd) {
+                        $content .= "<div>{$mtd->name}</div>";
                     }
+                    $content .= '</td>';
+
+                    $content .= '<td>';
+                    foreach ($method[$key] as $key2 => $mtd) {
+                        $content .= "<div>{$mtd->code}</div>";
+                    }
+                    $content .= '</td>';
+
+                    $content .= '<td>';
+                    foreach ($method[$key] as $key2 => $mtd) {
+                        $content .= "<div>{$mtd->no_document}</div>";
+                    }
+                    $content .= '</td>';
+
+                    $content .= '<td>';
+                    foreach ($method[$key] as $key2 => $mtd) {
+                        $content .= "<div>{$mtd->amount}</div>";
+                    }
+                    $content .= '</td>';
 
                     $content .= '<td>
                         '. $pym->amount .'
