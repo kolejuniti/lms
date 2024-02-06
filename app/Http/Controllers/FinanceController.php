@@ -7480,6 +7480,8 @@ class FinanceController extends Controller
 
                     $content .= '<td>';
                     foreach ($method[$key] as $key2 => $mtd) {
+                        $total += $mtd->amount;
+
                         $content .= "<div>{$mtd->amount}</div>";
                     }
                     $content .= '</td>';
