@@ -7330,6 +7330,201 @@ class FinanceController extends Controller
 
     }
 
+    public function urReport()
+    {
+
+        return view('finance.report.urReport');
+
+    }
+
+    public function getUrReport(Request $request)
+    {
+
+        $filtersData = $request->filtersData;
+
+        $validator = Validator::make($request->all(), [
+            'filtersData' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return ["message"=>"Field Error", "error" => $validator->messages()->get('*')];
+        }
+
+        try{ 
+            DB::beginTransaction();
+            DB::connection()->enableQueryLog();
+
+            try{
+
+                $filter = json_decode($filtersData);
+
+                $payment = DB::table('tblpayment')
+                           ->leftjoin('tblprogramme', 'tblpayment.program_id', 'tblprogramme.id')
+                           ->where('tblpayment.add_date', '>=', $filter->from)
+                           ->where('tblpayment.add_date', '<=', $filter->to)
+                           ->where('tblpayment.process_status_id', 2)
+                           ->whereIn('tblpayment.process_type_id', [1,7])
+                           ->select('tblpayment.*', 'tblprogramme.progcode')
+                           ->get();
+
+
+                foreach($payment as $key => $pym)
+                {
+
+                    $student[$key] = DB::table('students')
+                               ->leftjoin('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
+                               ->leftjoin('tbledu_advisor', 'tblstudent_personal.advisor_id', 'tbledu_advisor.id')
+                               ->where('students.ic', $pym->student_ic)
+                               ->select('students.name', 'students.ic', 'students.no_matric', 'tbledu_advisor.name AS advisor')
+                               ->first();
+
+                    $method[$key] = DB::table('tblpaymentmethod')
+                              ->leftjoin('tblpayment_method', 'tblpaymentmethod.claim_method_id', 'tblpayment_method.id')
+                              ->leftjoin('tblpayment_bank', 'tblpaymentmethod.bank_id', 'tblpayment_bank.id')
+                              ->where('tblpaymentmethod.payment_id', $pym->id)
+                              ->select('tblpayment_method.name', 'tblpayment_bank.code', 'tblpaymentmethod.no_document', 'tblpaymentmethod.amount')
+                              ->get();
+
+                }
+
+
+
+                $content = "";
+                $content .= '<thead>
+                                <tr>
+                                    <th>
+                                        #
+                                    </th>
+                                    <th>
+                                        Receipt No.
+                                    </th>
+                                    <th>
+                                        Date
+                                    </th>
+                                    <th>
+                                        Name
+                                    </th>
+                                    <th>
+                                        IC No.
+                                    </th>
+                                    <th>
+                                        Matric No.
+                                    </th>
+                                    <th>
+                                        Payment Method
+                                    </th>
+                                    <th>
+                                        Bank
+                                    </th>
+                                    <th>
+                                        Document No.
+                                    </th>
+                                    <th>
+                                        Amount
+                                    </th>
+                                    <th>
+                                        Total
+                                    </th>
+                                    <th>
+                                        Program
+                                    </th>
+                                    <th>
+                                        EA
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="table">';
+                $total = 0;
+                
+                foreach($payment as $key => $pym){
+                    //$registered = ($std->status == 'ACTIVE') ? 'checked' : '';
+
+                    $content .= '
+                    <tr>
+                        <td>
+                        '. $key+1 .'
+                        </td>
+                        <td>
+                        '. $pym->ref_no .'
+                        </td>
+                        <td>
+                        '. $pym->date .'
+                        </td>
+                        <td>
+                        '. $student[$key]->name .'
+                        </td>
+                        <td>
+                        '. $student[$key]->ic .'
+                        </td>
+                        <td>
+                        '. $student[$key]->no_matric .'
+                        </td>';
+
+                    foreach($method[$key] as $key2 => $mtd)
+                    {
+
+                    $total += $mtd->amount;
+                        
+                    $content .= '<td>
+                        '. $mtd->name .'
+                        </td>
+                        <td>
+                        '. $mtd->code .'
+                        </td>
+                        <td>
+                        '. $mtd->no_document .'
+                        </td>
+                        <td>
+                        '. $mtd->amount .'
+                        </td>';
+
+                    }
+
+                    $content .= '<td>
+                        '. $pym->amount .'
+                        </td>
+                        <td>
+                        '. $pym->progcode .'
+                        </td>
+                        <td>
+                        '. $student[$key]->advisor .'
+                        </td>
+                    </tr>
+                    ';
+                    }
+
+                $content .= '</tbody>';
+
+                $content .= '<tfoot>
+                                <tr>
+                                    <td colspan="10">
+                                        Total :
+                                    </td>
+                                    <td>
+                                        '. $total .
+                                    '</td>
+                                </tr>
+                            </tfoot>';
+                
+            }catch(QueryException $ex){
+                DB::rollback();
+                if($ex->getCode() == 23000){
+                    return ["message"=>"Class code already existed inside the system"];
+                }else{
+                    \Log::debug($ex);
+                    return ["message"=>"DB Error"];
+                }
+            }
+
+            DB::commit();
+        }catch(Exception $ex){
+            return ["message"=>"Error"];
+        }
+
+        return response()->json(['message' => 'Success', 'data' => $content]);
+
+    }
+
     public function sponsorReport()
     {
 
