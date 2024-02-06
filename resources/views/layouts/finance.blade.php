@@ -331,6 +331,7 @@
 					<li><a href="{{ route('finance.dailyReport') }}" class="{{ (route('finance.dailyReport') == Request::url()) ? 'active' : ''}}">Daily Report</a></li>
 					<li><a href="{{ route('finance.chargeReport') }}" class="{{ (route('finance.chargeReport') == Request::url()) ? 'active' : ''}}">Charge Report</a></li>
 					<li><a href="{{ route('finance.arrearsReport') }}" class="{{ (route('finance.arrearsReport') == Request::url()) ? 'active' : ''}}">Arrears Report</a></li>
+					<li><a href="{{ route('finance.urReport') }}" class="{{ (route('finance.urReport') == Request::url()) ? 'active' : ''}}">UR Report</a></li>
 				</ul>
 			  </li>
 			  <li class="treeview">
