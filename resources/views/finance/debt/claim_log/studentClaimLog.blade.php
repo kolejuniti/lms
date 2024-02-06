@@ -245,13 +245,13 @@
                                     <div>
                                         <div class="form-group">
                                             <label>Date Contacted</label>
-                                            <input type="datetime-local" name="date1" id="date1" class="form-control">
+                                            <input type="date" name="date1" id="date1" class="form-control">
                                         </div>
                                     </div>
                                     <div>
                                         <div class="form-group">
                                             <label>Date Payment</label>
-                                            <input type="datetime-local" name="date2" id="date2" class="form-control">
+                                            <input type="date" name="date2" id="date2" class="form-control">
                                         </div>
                                     </div>
                                     <div>
