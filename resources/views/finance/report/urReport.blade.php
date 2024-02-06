@@ -8,13 +8,13 @@
     <div class="content-header">
       <div class="d-flex align-items-center">
         <div class="me-auto">
-          <h4 class="page-title">Debt & Payment Report</h4>
+          <h4 class="page-title">UR Report</h4>
           <div class="d-inline-block align-items-center">
             <nav>
               <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="#"><i class="mdi mdi-home-outline"></i></a></li>
                 <li class="breadcrumb-item" aria-current="page">Dashboard</li>
-                <li class="breadcrumb-item active" aria-current="page">Debt & Payment Report</li>
+                <li class="breadcrumb-item active" aria-current="page">UR Report</li>
               </ol>
             </nav>
           </div>
