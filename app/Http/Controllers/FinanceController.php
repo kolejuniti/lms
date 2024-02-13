@@ -8259,6 +8259,11 @@ class FinanceController extends Controller
         foreach($data['student'] as $key => $std)
         {
 
+            $data['latest'][$key] = DB::table('student_payment_log')
+                                       ->where('student_payment_log.student_ic', $std->ic)
+                                       ->orderBy('date_of_payment', 'DESC')
+                                       ->first();
+
             $data['payment'][$key] = DB::table('tblpayment')
                         ->select('tblpayment.add_date', DB::raw('SUM(tblpaymentdtl.amount) as amount'), DB::raw('DATEDIFF(CURDATE(), tblpayment.add_date) as days'))
                         ->join('tblpaymentdtl', 'tblpayment.id', '=', 'tblpaymentdtl.payment_id')
