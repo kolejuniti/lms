@@ -8872,7 +8872,7 @@ class FinanceController extends Controller
 
             //B
 
-            $data['payments'][$key] = DB::table('tblpayment')
+            $data['payments'][] = DB::table('tblpayment')
                                       ->join('tblpaymentdtl', 'tblpayment.id', 'tblpaymentdtl.payment_id')
                                       ->join('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
                                       ->where('tblpayment.student_ic', $std->ic)
@@ -8948,9 +8948,9 @@ class FinanceController extends Controller
 
             $data['total_balance'][$key] = $data['sum3'];
 
-            return view('finance.debt.collection_expectation_report.collection2ReportGetStudent', compact('data'));
-
         }
+
+        return view('finance.debt.collection_expectation_report.collection2ReportGetStudent', compact('data'));
 
     }
 
