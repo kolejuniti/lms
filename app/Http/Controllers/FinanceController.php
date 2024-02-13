@@ -2087,7 +2087,10 @@ class FinanceController extends Controller
                            ->select('students.*', 'tblstudent_status.name AS status', 'tblprogramme.progname AS program', 'students.program AS progid', 't1.SessionName AS intake_name', 't2.SessionName AS session_name')
                            ->where('ic', $request->student)->first();
 
-        $data['process'] = DB::table('tblprocess_type')->get();
+        $data['process'] = DB::table('tblprocess_type')
+                           ->whereNotIn('id', [2, 3, 4, 5])
+                           ->get();
+      
 
         $data['method'] = DB::table('tblpayment_method')->get();
 
