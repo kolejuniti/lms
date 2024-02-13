@@ -305,6 +305,137 @@
                 </div>
               </form>
             </div>
+
+            <div class="card card-primary">
+                <div class="card-header">
+                  <h3 class="card-title">SPMV / SVM Details</h3>
+                </div>
+                <!-- /.card-header -->
+                <!-- form start -->
+                <form action="/pendaftar/spm/{{ request()->ic }}/SPMVstore" method="POST">
+                  @csrf
+                  <div class="card-body">
+                    <div class="row mb-4">
+                      <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label" for="year">Year</label>
+                            <input type="text" class="form-control" id="year" name="year" value="{{ old('year', isset($data['spmv']->year) ? $data['spmv']->year : '') }}">
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label" for="turn">Turn No.</label>
+                            <input type="text" class="form-control" id="turn" name="turn" value="{{ old('turn', isset($data['spmv']->number_turn) ? $data['spmv']->number_turn : '') }}">
+                        </div>
+                      </div>
+                      <div class="col-md-9 mt-3" id="payment-card">
+                        <div class="form-group">
+                            <label class="form-label" for="class">Certificate Type</label>
+                            <fieldset>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="class" id="class1" value="spmv" {{ old('class', isset($data['spmv']) && $data['spmv']->cert_type == 'spmv' ? 'spmv' : '') == 'spmv' ? 'checked' : '' }}>
+                                    <label for="class1">
+                                        Sijil Pelajaran Malaysia Vokasional (SPMV)
+                                    </label>
+                                    <input class="form-check-input" type="radio" name="class" id="class2" value="svm" {{ old('class', isset($data['spmv']) && $data['spmv']->cert_type == 'svm' ? 'svm' : '') == 'svm' ? 'checked' : '' }}>
+                                    <label for="class2">
+                                        Sijil Vokasional Malaysia (SVM)
+                                    </label>
+                                </div>
+                            </fieldset>
+                        </div>
+                      </div>
+                      <hr>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label" for="pngka">Purata Nilai Gred Kumulatif Akademik (PNGKA)</label>
+                                <input type="number" class="form-control" id="pngka" name="pngka" step="0.01" value="{{ old('pngka', isset($data['spmv']->pngka) ? $data['spmv']->pngka : '') }}">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label" for="pngkv">Purata Nilai Gred Kumulatif Vokasional (PNGKV)</label>
+                                <input type="number" class="form-control" id="pngkv" name="pngkv" step="0.01" value="{{ old('pngkv', isset($data['spmv']->pngkv) ? $data['spmv']->pngkv : '') }}">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label" for="bmkv">Bahasa Melayu Kolej Vokasional 1104</label>
+                                <input type="text" class="form-control" id="bmkv" name="bmkv" value="{{ old('bmkv', isset($data['spmv']->bmkv) ? $data['spmv']->bmkv : '') }}">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label" for="sejarahspm">Sejrah SPM (Jika Perlu)</label>
+                                <input type="text" class="form-control" id="sejarahspm" name="sejarahspm" value="{{ old('sejarahspm', isset($data['spmv']->sejarahspm) ? $data['spmv']->sejarahspm : '') }}">
+                            </div>
+                        </div>
+                    </div>
+                  </div>
+                  <!-- /.box-body -->
+                  <div class="card-footer">
+                      <button type="submit" class="btn btn-primary pull-right mb-3">Submit</button>
+                  </div>
+                </form>
+            </div>
+
+            <div class="card card-primary">
+                <div class="card-header">
+                  <h3 class="card-title">SKM Details</h3>
+                </div>
+                <!-- /.card-header -->
+                <!-- form start -->
+                <form action="/pendaftar/spm/{{ request()->ic }}/SKMstore" method="POST">
+                  @csrf
+                  <div class="card-body">
+                    <div class="row mb-4">
+                      <div class="row">
+                        <div class="col-md-6 mt-4">
+                          <div class="form-group">
+                            <input type="checkbox" id="level" class="filled-in" name="level" value="1" {{ old('level', isset($data['skm']->tahap3) && $data['skm']->tahap3 ? '1' : '') == '1' ? 'checked' : '' }}>
+                              <label for="level">Level 3</label>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-9 mt-3" id="payment-card">
+                        <div class="form-group">
+                            <label class="form-label" for="class">Field Type</label>
+                            <fieldset>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="class" id="class3" value="0" {{ old('class', isset($data['skm']) && $data['skm']->in_field == '0' ? '0' : '') == '0' ? 'checked' : '' }}>
+                                    <label for="class3">
+                                        In field
+                                    </label>
+                                    <input class="form-check-input" type="radio" name="class" id="class4" value="1" {{ old('class', isset($data['skm']) && $data['skm']->in_field == '1' ? '1' : '') == '1' ? 'checked' : '' }}>
+                                    <label for="class4">
+                                        Public
+                                    </label>
+                                </div>
+                            </fieldset>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label" for="program">Program</label>
+                            <input type="text" class="form-control" id="program" name="program" value="{{ old('program', isset($data['skm']->program) ? $data['skm']->program : '') }}">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- /.box-body -->
+                  <div class="card-footer">
+                      <button type="submit" class="btn btn-primary pull-right mb-3">Submit</button>
+                  </div>
+                </form>
+            </div>
             <!-- /.card -->
           </div>
         </div>
