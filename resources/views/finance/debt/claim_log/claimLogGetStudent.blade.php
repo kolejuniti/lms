@@ -75,10 +75,10 @@
                                     @endforeach
                                 </td>
                                 <td>
-                                    
+                                    {{ $data['latest'][$key]->date_of_call }}
                                 </td>
                                 <td>
-                                    
+                                    {{ number_format($data['latest'][$key]->amount, 2) }}
                                 </td>
                                 <td>
                                     {{ number_format($data['current_balance'][$key], 2) }}
