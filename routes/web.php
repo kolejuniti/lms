@@ -99,6 +99,8 @@ Route::post('/pendaftar/group/getStudentTableIndex2', [App\Http\Controllers\Pend
 Route::post('/pendaftar/group/getGroupOption', [App\Http\Controllers\PendaftarController::class, 'getGroupOption']);
 Route::get('/pendaftar/spm/{ic}', [App\Http\Controllers\PendaftarController::class, 'spmIndex'])->name('pendaftar.spm');
 Route::post('/pendaftar/spm/{ic}/store', [App\Http\Controllers\PendaftarController::class, 'spmStore'])->name('pendaftar.spm.store');
+Route::post('/pendaftar/spm/{ic}/SPMVstore', [App\Http\Controllers\PendaftarController::class, 'SPMVStore'])->name('pendaftar.spmv.store');
+Route::post('/pendaftar/spm/{ic}/SKMstore', [App\Http\Controllers\PendaftarController::class, 'SKMStore'])->name('pendaftar.skm.store');
 Route::get('/pendaftar/student/edit', [App\Http\Controllers\PendaftarController::class, 'studentEdit'])->name('pendaftar.student.edit');
 Route::get('/pendaftar/student/status', [App\Http\Controllers\PendaftarController::class, 'studentStatus'])->name('pendaftar.student.status');
 Route::post('/pendaftar/student/status/listStudent', [App\Http\Controllers\PendaftarController::class, 'getStudentList']);
