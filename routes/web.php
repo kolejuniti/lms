@@ -524,6 +524,12 @@ Route::post('/finance/payment/tuition/storeTuition', [App\Http\Controllers\Finan
 Route::post('/finance/payment/tuition/storeTuitionDtl', [App\Http\Controllers\FinanceController::class, 'storeTuitionDtl']);
 Route::post('/finance/payment/tuition/confirmTuition', [App\Http\Controllers\FinanceController::class, 'confirmTuition']);
 Route::post('/finance/payment/tuition/deleteTuition', [App\Http\Controllers\FinanceController::class, 'deleteTuition']);
+Route::get('/finance/payment/incentive', [App\Http\Controllers\FinanceController::class, 'studentIncentive'])->name('finance.payment.incentive');
+Route::post('/finance/payment/incentive/getStudent', [App\Http\Controllers\FinanceController::class, 'getStudentIncentive']);
+Route::post('/finance/payment/incentive/storeIncentive2', [App\Http\Controllers\FinanceController::class, 'storeIncentive2']);
+Route::post('/finance/payment/incentive/storeIncentiveDtl', [App\Http\Controllers\FinanceController::class, 'storeIncentiveDtl']);
+Route::post('/finance/payment/incentive/confirmIncentive', [App\Http\Controllers\FinanceController::class, 'confirmIncentive']);
+Route::post('/finance/payment/incentive/deleteIncentive', [App\Http\Controllers\FinanceController::class, 'deleteIncentive']);
 Route::get('/finance/payment/refund', [App\Http\Controllers\FinanceController::class, 'studentRefund'])->name('finance.payment.refund');
 Route::post('/finance/payment/refund/getStudent', [App\Http\Controllers\FinanceController::class, 'getStudentRefund']);
 Route::post('/finance/payment/refund/storeRefund', [App\Http\Controllers\FinanceController::class, 'storeRefund']);
