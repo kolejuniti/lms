@@ -994,6 +994,11 @@ class PendaftarController extends Controller
 
         $data['grade'] = DB::table('tblgrade_spm')->get();
 
+        $data['spmv'] = DB::table('tblstudent_spmv')->where('student_ic', request()->ic)->first();
+
+        $data['skm'] = DB::table('tblstudent_skm')->where('student_ic', request()->ic)->first();
+
+ 
         return view('pendaftar.spm.spm', compact('data'));
 
     }
@@ -1042,6 +1047,58 @@ class PendaftarController extends Controller
 
             return back()->with('success', 'Successfully saved SPM data')->withInput();
         }
+
+    }
+
+    public function SPMVStore(Request $request)
+    {
+
+        if($request->year && $request->turn)
+        {
+
+            DB::table('tblstudent_spmv')->updateOrInsert(
+                ['student_ic' => $request->ic], 
+                [
+                    'year' => $request->year,
+                    'number_turn' => $request->turn,
+                    'cert_type' => $request->class,
+                    'pngka' => $request->pngka,
+                    'pngkv' => $request->pngkv,
+                    'bmkv' => $request->bmkv,
+                    'sejarahspm' => $request->sejarahspm,
+                ]);
+
+        }else{
+
+            return back()->with('error', 'Please complete the SPMV form.')->withInput();
+
+        }
+
+            return back()->with('success', 'Successfully saved SPMV data')->withInput();
+
+    }
+
+    public function SKMStore(Request $request)
+    {
+
+        if($request->class != null && $request->program != null)
+        {
+
+            DB::table('tblstudent_skm')->updateOrInsert(
+                ['student_ic' => $request->ic], 
+                [
+                    'tahap3' => $request->level ?? 0,
+                    'in_field' => $request->class,
+                    'program' => $request->program
+                ]);
+
+        }else{
+
+            return back()->with('error', 'Please complete the SKM form.')->withInput();
+
+        }
+
+            return back()->with('success', 'Successfully saved SKM data')->withInput();
 
     }
 
