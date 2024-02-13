@@ -40,6 +40,11 @@
                         </tr>
                     </thead>
                     <tbody id="table">
+                        @php
+                        $sum = 0;
+                        $sum2 = 0;  
+                        $total = 0; 
+                        @endphp
                         @foreach ($data['student'] as $key => $std)
                             <tr>
                                 <td>
@@ -61,13 +66,17 @@
                                     {{ $data['latest'][$key]->date_of_payment }}
                                 </td>
                                 <td>
-                                    {{ $data['latest'][$key]->amount }}
+                                    {{ number_format($data['latest'][$key]->amount, 2) }}
                                 </td>
                                 <td>
                                     @if($data['payments'][$key] != '')
                                         @foreach($data['payments'][$key] as $pym)
                                             @if($pym->payment_date != null)
                                                 {{ $pym->payment_date }}
+
+                                                @php
+                                                    $sum2 += $pym->amount;
+                                                @endphp
                                             @else
                                                 -
                                             @endif
@@ -79,7 +88,7 @@
                                 <td>
                                     @if($data['payments'][$key] != '')
                                         @foreach($data['payments'][$key] as $pym)
-                                        {{ $pym->amount }}
+                                        {{ number_format($pym->amount, 2) }}
                                         @endforeach
                                     @else
                                         0.00
@@ -88,9 +97,34 @@
                                 <td>
                                     {{ number_format($data['total_balance'][$key], 2) }}
                                 </td>
+
+                                @php
+                                    $sum += $data['latest'][$key]->amount;
+
+                                    $total += $data['total_balance'][$key];
+                                @endphp
                             </tr>
                         @endforeach 
                     </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="6">
+                                Total
+                            </td>
+                            <td>
+                                {{ number_format($sum, 2) }}
+                            </td>
+                            <td>
+
+                            </td>
+                            <td>
+                                {{ number_format($sum2, 2) }}
+                            </td>
+                            <td>
+                                {{ number_format($total, 2) }}
+                            </td>
+                        </tr>
+                    </tfoot>
                 </table>
             </div>
         </div>
