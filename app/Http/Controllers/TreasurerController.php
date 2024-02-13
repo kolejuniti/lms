@@ -491,8 +491,6 @@ class TreasurerController extends Controller
                     ['tblpaymentdtl.claimDtl_id', $clm->id],
                     ['tblpayment.student_ic', $request->ic],
                     ['tblpaymentdtl.claim_type_id', $clm->claim_package_id],
-                    ['tblpayment.session_id', $clm->session_id],
-                    ['tblpayment.semester_id', $clm->semester_id],
                     ['tblpayment.process_status_id', 2]
                 ]);
 
