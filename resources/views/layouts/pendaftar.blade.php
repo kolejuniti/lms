@@ -277,12 +277,14 @@
 						<li><a href="{{ route('pendaftar.student.edit') }}" class="{{ (route('pendaftar.student.edit') == Request::url()) ? 'active' : ''}}">Student Edit</a></li>
 						<li><a href="{{ route('pendaftar.create') }}" class="{{ (route('pendaftar.create') == Request::url()) ? 'active' : ''}}">Create Student</a></li>
 						<li><a href="{{ route('pendaftar.student.status') }}" class="{{ (route('pendaftar.student.status') == Request::url()) ? 'active' : ''}}">Update Status</a></li>
-						<li><a href="{{ route('pendaftar.student.viewstatus') }}" class="{{ (route('pendaftar.student.viewstatus') == Request::url()) ? 'active' : ''}}">Status Report</a></li>
+						{{-- <li><a href="{{ route('pendaftar.student.viewstatus') }}" class="{{ (route('pendaftar.student.viewstatus') == Request::url()) ? 'active' : ''}}">Status Report</a></li> --}}
 						<li><a href="{{ route('pendaftar.student.studentreport') }}" class="{{ (route('pendaftar.student.studentreport') == Request::url()) ? 'active' : ''}}">Student Report</a></li>
 						<li><a href="{{ route('pendaftar_akademik.reportR') }}" class="{{ (route('pendaftar_akademik.reportR') == Request::url()) ? 'active' : ''}}">Student Report R</a></li>
 						<li><a href="{{ route('pendaftar.student.reportR') }}" class="{{ (route('pendaftar.student.reportR') == Request::url()) ? 'active' : ''}}">Student Report R/R1/R2</a></li>
 						<li><a href="{{ route('all.student.spm.report') }}" class="{{ (route('all.student.spm.report') == Request::url()) ? 'active' : ''}}">Student Report SPM</a></li>
 						<li><a href="{{ route('pendaftar.student.incomeReport') }}" class="{{ (route('pendaftar.student.incomeReport') == Request::url()) ? 'active' : ''}}">Student Family Income Report</a></li>
+						<li><a href="{{ route('pendaftar.student.internationalReport') }}" class="{{ (route('pendaftar.student.internationalReport') == Request::url()) ? 'active' : ''}}">International Student Report</a></li>
+						<li><a href="{{ route('pendaftar.student.annualStudentReport') }}" class="{{ (route('pendaftar.student.annualStudentReport') == Request::url()) ? 'active' : ''}}">Annual Student Number Report</a></li>
 					</ul>
 				</li>
 
