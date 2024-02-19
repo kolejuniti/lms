@@ -120,6 +120,9 @@ Route::get('/pendaftar/student/reportRs', [App\Http\Controllers\PendaftarControl
 Route::get('/pendaftar/student/reportRs/getStudentReportR', [App\Http\Controllers\PendaftarController::class, 'getStudentReportRs']);
 Route::get('/pendaftar/student/incomeReport', [App\Http\Controllers\PendaftarController::class,'incomeReport'])->name('pendaftar.student.incomeReport');
 Route::post('/pendaftar/student/incomeReport/getIncomeReport', [App\Http\Controllers\PendaftarController::class,'getIncomeReport']);
+Route::get('/pendaftar/student/internationalReport', [App\Http\Controllers\PendaftarController::class,'internationalReport'])->name('pendaftar.student.internationalReport');
+Route::get('/pendaftar/student/annualStudentReport', [App\Http\Controllers\PendaftarController::class,'annualStudentReport'])->name('pendaftar.student.annualStudentReport');
+Route::post('/pendaftar/student/annualStudentReport/getAnnualStudentReport', [App\Http\Controllers\PendaftarController::class, 'getAnnualStudentReport']);
 
 
 Route::get('/AR_dashboard', [App\Http\Controllers\AR_Controller::class, 'dashboard'])->name('pendaftar_akademik.dashboard');
