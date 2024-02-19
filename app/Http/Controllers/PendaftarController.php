@@ -2309,5 +2309,76 @@ class PendaftarController extends Controller
         return view('pendaftar.income_report.getStudents', compact('data'));
 
     }
+
+    public function internationalReport()
+    {
+
+        $data['student'] = DB::table('students')
+                           ->join('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
+                           ->join('tblsex', 'tblstudent_personal.sex_id', 'tblsex.id')
+                           ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+                           ->join('sessions as intake', 'students.intake', 'intake.SessionID')
+                           ->join('sessions as sessions', 'students.session', 'sessions.SessionID')
+                           ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
+                           ->where('tblstudent_personal.statelevel_id', '!=', 1)
+                           ->select('students.*', 'tblsex.code', 'tblprogramme.progcode', 'intake.SessionName AS intake', 
+                                    'sessions.SessionName AS session', 'tblstudent_status.name AS status')
+                           ->orderBy('students.name')
+                           ->get();
+
+        return view('pendaftar.report.international_student.index', compact('data'));
+
+    }
+
+    public function annualStudentReport()
+    {
+
+        return view('pendaftar.report.annual_student_report.index');
+
+    }
+
+    public function getAnnualStudentReport(Request $request)
+    {
+
+        $ic = DB::table('tblstudent_log')
+        ->join('sessions', 'tblstudent_log.session_id', 'sessions.SessionID')
+        ->whereIn('tblstudent_log.student_ic', function($query){
+          $query->select('students.ic')
+                ->from('students')
+                ->where('students.no_matric', '!=', null)
+                ->where('students.status', '<>', 9);
+        })
+        ->where('sessions.Year', $request->year)
+        ->distinct()
+        ->pluck('tblstudent_log.student_ic');
+
+        $baseQuery = function () use ($ic, $request) {
+        return DB::table('students')
+        ->leftjoin('tblstudent_log', 'students.ic', 'tblstudent_log.student_ic')
+        ->leftjoin('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
+        ->leftjoin('tblsex', 'tblstudent_personal.sex_id', 'tblsex.id')
+        ->leftjoin('tblprogramme', 'students.program', 'tblprogramme.id')
+        ->leftjoin('sessions', 'tblstudent_log.session_id', 'sessions.SessionID')
+        ->leftjoin('tblstudent_status', 'tblstudent_log.status_id', 'tblstudent_status.id')
+        ->whereIn('students.ic', $ic)
+        ->where('sessions.Year', $request->year)
+        ->select('students.name', 'students.ic', 'students.no_matric', 'tblsex.code as gender', 'tblprogramme.progcode',
+                'sessions.SessionName AS session', 'tblstudent_log.semester_id AS semester', 'tblstudent_log.date', 'tblstudent_log.remark',
+                'tblstudent_status.name AS status');
+        };
+
+        $data['student1'] = ($baseQuery)()
+        ->where('tblstudent_log.semester_id', 1)
+        ->orderByDesc('tblstudent_log.id')
+        ->get();
+
+        $data['student2'] = ($baseQuery)()
+        ->where('tblstudent_log.semester_id', '>', 1)
+        ->orderByDesc('tblstudent_log.id')
+        ->get();
+
+        return view('pendaftar.report.annual_student_report.getStudent', compact('data'));
+
+    }
     
 }
