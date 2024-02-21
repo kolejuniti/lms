@@ -432,7 +432,7 @@ class PendaftarController extends Controller
                             <a class="btn btn-primary btn-sm btn-sm mr-2 mb-2" href="/pendaftar/spm/'. $student->ic .'">
                                 <i class="ti-ruler-pencil">
                                 </i>
-                                SPM
+                                SPM/SVM/SKM
                             </a>
                             <a class="btn btn-secondary btn-sm btn-sm mr-2 mb-2" href="#" onclick="getProgram(\''. $student->ic .'\')">
                                 <i class="ti-eye">
