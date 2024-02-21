@@ -8690,6 +8690,7 @@ class FinanceController extends Controller
         ->join('student_payment_log', 'students.ic', '=', 'student_payment_log.student_ic')
         ->select('student_payment_log.id','student_payment_log.date_of_call', 'student_payment_log.date_of_payment', 'student_payment_log.amount', 'student_payment_log.note')
         ->where('students.ic', '=', request()->ic)
+        ->orderBy('student_payment_log.date_of_call', 'DESC')
         ->get();
 
 
