@@ -67,6 +67,7 @@
                       <div class="form-group">
                           <label class="form-label" for="program">Program</label>
                           <select class="form-select" id="program" name="program">
+                            <option value="all" selected>All Program</option> 
                             @foreach ($data['program'] as $prg)
                             <option value="{{ $prg->id }}">{{ $prg->progcode }} - {{ $prg->progname }}</option> 
                             @endforeach
