@@ -583,13 +583,13 @@
         @foreach ($data['program'] as $key => $prg)
         <tr>
           <td>
-          {{ $key+1 }}
+            {{ $prg->program_ID }}
           </td>
           <td>
             {{ $prg->progcode }}
           </td>
           <td>
-          {{ (!empty($data['preTotals'])) ? $data['preTotals'][$key] : 0}}
+            {{ (!empty($data['preTotals'])) ? $data['preTotals'][$key] : 0}}
           </td>
         </tr>
         @endforeach
@@ -633,7 +633,7 @@
         @foreach ($data['program'] as $key => $prg)
         <tr>
           <td>
-            {{ $key+1 }}
+            {{ $prg->program_ID }}
           </td>
           <td>
             {{ $prg->progcode }}
@@ -683,7 +683,7 @@
           @foreach ($data['program'] as $key => $prg)
           <tr>
             <td>
-              {{ $key+1 }}
+              {{ $prg->program_ID }}
             </td>
             <td>
               {{ $prg->progcode }}
@@ -733,7 +733,7 @@
         @foreach ($data['program'] as $key => $prg)
         <tr>
           <td>
-            {{ $key+1 }}
+            {{ $prg->program_ID }}
           </td>
           <td>
             {{ $prg->progcode }}
@@ -783,7 +783,7 @@
         @foreach ($data['program'] as $key => $prg)
         <tr>
           <td>
-            {{ $key+1 }}
+            {{ $prg->program_ID }}
           </td>
           <td>
             {{ $prg->progcode }}
@@ -1303,7 +1303,7 @@
         @foreach ($data['program'] as $key => $prg)
         <tr>
           <td>
-            {{ $key+1 }}
+            {{ $prg->program_ID }}
           </td>
           <td>
             {{ $prg->progcode }}
@@ -1353,7 +1353,7 @@
         @foreach ($data['program'] as $key => $prg)
         <tr>
           <td>
-            {{ $key+1 }}
+            {{ $prg->program_ID }}
           </td>
           <td>
             {{ $prg->progcode }}
@@ -1525,7 +1525,7 @@
         @foreach ($data['program'] as $key => $prg)
         <tr>
           <td>
-            {{ $key+1 }}
+            {{ $prg->program_ID }}
           </td>
           <td>
             {{ $prg->progcode }}
@@ -1575,7 +1575,7 @@
         @foreach ($data['program'] as $key => $prg)
         <tr>
           <td>
-            {{ $key+1 }}
+            {{ $prg->program_ID }}
           </td>
           <td>
             {{ $prg->progcode }}
@@ -1605,7 +1605,7 @@
 <!-- InsentifMco student -->
 <div class="card mb-3" id="stud_info">
   <div class="card-header">
-  <b>Insentif Mco</b>
+  <b>Insentif Mco / Insentif Khas UNITI</b>
   </div>
   <div class="card-body p-0">
     <table id="myTable" class="table table-striped projects display dataTable">
@@ -1747,7 +1747,7 @@
         @foreach ($data['program'] as $key => $prg)
         <tr>
           <td>
-            {{ $key+1 }}
+            {{ $prg->program_ID }}
           </td>
           <td>
             {{ $prg->progcode }}
@@ -1797,7 +1797,7 @@
         @foreach ($data['program'] as $key => $prg)
         <tr>
           <td>
-            {{ $key+1 }}
+            {{ $prg->program_ID }}
           </td>
           <td>
             {{ $prg->progcode }}
@@ -1969,7 +1969,7 @@
         @foreach ($data['program'] as $key => $prg)
         <tr>
           <td>
-            {{ $key+1 }}
+            {{ $prg->program_ID }}
           </td>
           <td>
             {{ $prg->progcode }}
@@ -2019,7 +2019,7 @@
         @foreach ($data['program'] as $key => $prg)
         <tr>
           <td>
-            {{ $key+1 }}
+            {{ $prg->program_ID }}
           </td>
           <td>
             {{ $prg->progcode }}
@@ -2171,7 +2171,7 @@
         @foreach ($data['program'] as $key => $prg)
         <tr>
           <td>
-            {{ $key+1 }}
+            {{ $prg->program_ID }}
           </td>
           <td>
             {{ $prg->progcode }}
@@ -2221,7 +2221,7 @@
         @foreach ($data['program'] as $key => $prg)
         <tr>
           <td>
-            {{ $key+1 }}
+            {{ $prg->program_ID }}
           </td>
           <td>
             {{ $prg->progcode }}
