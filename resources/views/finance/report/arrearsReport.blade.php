@@ -66,8 +66,10 @@
               <div class="form-group">
                 <label class="form-label" for="status">Status</label>
                 <select class="form-select" id="status" name="status">
-                  <option value="-" selected disabled>-</option>
-               
+                  <option value="all" selected>All Status</option> 
+                  @foreach ($data['status'] as $sts)
+                  <option value="{{ $sts->id }}">{{ $sts->name}}</option> 
+                  @endforeach
                 </select>
               </div>
             </div>
@@ -325,7 +327,7 @@
         from: $('#from').val(),
         to: $('#to').val(),
         program: $('#program').val(),
-        semester: $('#semester').val(),
+        status: $('#status').val(),
       };
 
 
