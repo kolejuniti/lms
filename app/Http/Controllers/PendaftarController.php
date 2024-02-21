@@ -240,7 +240,7 @@ class PendaftarController extends Controller
                                 <a class="btn btn-primary btn-sm btn-sm mr-2 mb-2" href="/pendaftar/spm/'. $student->ic .'">
                                     <i class="ti-ruler-pencil">
                                     </i>
-                                    SPM
+                                    SPM/SVM/SKM
                                 </a>
                                 <a class="btn btn-secondary btn-sm btn-sm mr-2 mb-2" href="#" onclick="getProgram(\''. $student->ic .'\')">
                                     <i class="ti-eye">
@@ -2369,14 +2369,14 @@ class PendaftarController extends Controller
 
         $data['student1'] = ($baseQuery)()
         ->where('tblstudent_log.semester_id', 1)
-        ->orderByDesc('tblstudent_log.id')
         ->groupBy('students.ic')
+        ->orderByDesc('tblstudent_log.id')
         ->get();
 
         $data['student2'] = ($baseQuery)()
         ->where('tblstudent_log.semester_id', '>', 1)
-        ->orderByDesc('tblstudent_log.id')
         ->groupBy('students.ic')
+        ->orderByDesc('tblstudent_log.id')
         ->get();
 
         return view('pendaftar.report.annual_student_report.getStudent', compact('data'));
