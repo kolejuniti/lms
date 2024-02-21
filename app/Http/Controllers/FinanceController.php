@@ -8997,13 +8997,30 @@ class FinanceController extends Controller
 
         //A
 
-        $data['student'] = DB::table('students')
-                           ->join('sessions', 'students.session', 'sessions.SessionID')
-                           ->where('students.program', $request->program)
-                           ->where('students.status', 8)
-                           ->whereBetween('sessions.Year', [$request->from, $request->to])
-                           ->select('students.*', 'sessions.Year AS graduate')
-                           ->get();
+        if($request->program != 'all')
+        {
+
+            $data['student'] = DB::table('students')
+            ->join('sessions', 'students.session', 'sessions.SessionID')
+            ->where('students.program', $request->program)
+            ->where('students.status', 8)
+            ->whereBetween('sessions.Year', [$request->from, $request->to])
+            ->select('students.*', 'sessions.Year AS graduate')
+            ->get();
+
+        }else{
+
+
+            $data['student'] = DB::table('students')
+            ->join('sessions', 'students.session', 'sessions.SessionID')
+            ->where('students.status', 8)
+            ->whereBetween('sessions.Year', [$request->from, $request->to])
+            ->select('students.*', 'sessions.Year AS graduate')
+            ->get();
+
+        }
+
+        
 
         foreach($data['student'] as $key => $std)
         {
