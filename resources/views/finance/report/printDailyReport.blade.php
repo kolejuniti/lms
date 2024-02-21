@@ -686,7 +686,7 @@ tr:hover {
                         @foreach ($data['program'] as $key => $prg)
                         <tr>
                             <td>
-                            {{ $key+1 }}
+                            {{ $prg->program_ID }}
                             </td>
                             <td>
                             {{ $prg->progcode }}
@@ -738,7 +738,7 @@ tr:hover {
                         @foreach ($data['program'] as $key => $prg)
                         <tr>
                             <td>
-                            {{ $key+1 }}
+                            {{ $prg->program_ID }}
                             </td>
                             <td>
                             {{ $prg->progcode }}
@@ -790,7 +790,7 @@ tr:hover {
                             @foreach ($data['program'] as $key => $prg)
                             <tr>
                             <td>
-                                {{ $key+1 }}
+                                {{ $prg->program_ID }}
                             </td>
                             <td>
                                 {{ $prg->progcode }}
@@ -842,7 +842,7 @@ tr:hover {
                         @foreach ($data['program'] as $key => $prg)
                         <tr>
                             <td>
-                            {{ $key+1 }}
+                            {{ $prg->program_ID }}
                             </td>
                             <td>
                             {{ $prg->progcode }}
@@ -894,7 +894,7 @@ tr:hover {
                         @foreach ($data['program'] as $key => $prg)
                         <tr>
                             <td>
-                            {{ $key+1 }}
+                            {{ $prg->program_ID }}
                             </td>
                             <td>
                             {{ $prg->progcode }}
@@ -1416,7 +1416,7 @@ tr:hover {
                     @foreach ($data['program'] as $key => $prg)
                     <tr>
                         <td>
-                        {{ $key+1 }}
+                        {{ $prg->program_ID }}
                         </td>
                         <td>
                         {{ $prg->progcode }}
@@ -1468,7 +1468,7 @@ tr:hover {
                     @foreach ($data['program'] as $key => $prg)
                     <tr>
                         <td>
-                        {{ $key+1 }}
+                        {{ $prg->program_ID }}
                         </td>
                         <td>
                         {{ $prg->progcode }}
@@ -1498,7 +1498,7 @@ tr:hover {
             <!-- Insentif student -->
             <div class="card mb-3" id="stud_info">
                 <div class="card-header">
-                <b>Insentif</b>
+                <b>Insentif Naik Semester</b>
                 </div>
                 <div class="card-body p-0">
                 <table class="w-100 table table-bordered display margin-top-10 w-p100">
@@ -1618,51 +1618,277 @@ tr:hover {
             <div class="row justify-content-center">
                 <!-- pecahan -->
                 <div class="card col-md-2 mb-3" id="stud_info" style="margin-right: 2%">
-                <div class="card-body p-0">
-                    <table class="table-fit-content">
-                    <thead>
+                    <div class="card-body p-0">
+                        <table class="table-fit-content">
+                        <thead>
+                            <tr>
+                                <th colspan="3" style="text-align: center">
+                                    New Student
+                                </th>
+                            </tr>
+                            <tr>
+                                <th style="width: 1%">
+                                    No.
+                                </th>
+                                <th style="width: 2%">
+                                    PROGRAM
+                                </th>
+                                <th style="width: 2%">
+                                    QUOTE
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="table">
+                        @foreach ($data['program'] as $key => $prg)
                         <tr>
-                            <th colspan="3" style="text-align: center">
-                                New Student
-                            </th>
-                        </tr>
-                        <tr>
-                            <th style="width: 1%">
-                                No.
-                            </th>
-                            <th style="width: 2%">
-                                PROGRAM
-                            </th>
-                            <th style="width: 2%">
-                                QUOTE
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody id="table">
-                    @foreach ($data['program'] as $key => $prg)
-                    <tr>
-                        <td>
-                        {{ $key+1 }}
-                        </td>
-                        <td>
-                        {{ $prg->progcode }}
-                        </td>
-                        <td>
-                        {{ (!empty($data['newInsentifTotals'])) ? $data['newInsentifTotals'][$key] : 0}}
-                        </td>
-                    </tr>
-                    @endforeach
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <td colspan="2" style="text-align: center">
-                                TOTAL
+                            <td>
+                            {{ $prg->program_ID }}
                             </td>
                             <td>
-                                {{ number_format(array_sum($data['newInsentifTotals']), 2) }}
+                            {{ $prg->progcode }}
+                            </td>
+                            <td>
+                            {{ (!empty($data['newInsentifTotals'])) ? $data['newInsentifTotals'][$key] : 0}}
                             </td>
                         </tr>
-                    </tfoot>
+                        @endforeach
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="2" style="text-align: center">
+                                    TOTAL
+                                </td>
+                                <td>
+                                    {{ number_format(array_sum($data['newInsentifTotals']), 2) }}
+                                </td>
+                            </tr>
+                        </tfoot>
+                        </table>
+                    </div>
+                    <!-- /.card-body -->
+                </div>
+            
+                <!-- pecahan -->
+                <div class="card col-md-2 mb-3" id="stud_info" style="margin-right: 2%">
+                    <div class="card-body p-0">
+                        <table class="table-fit-content">
+                        <thead>
+                            <tr>
+                                <th colspan="3" style="text-align: center">
+                                    Old Student
+                                </th>
+                            </tr>
+                            <tr>
+                                <th style="width: 1%">
+                                    No.
+                                </th>
+                                <th style="width: 2%">
+                                    PROGRAM
+                                </th>
+                                <th style="width: 2%">
+                                    QUOTE
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="table">
+                        @foreach ($data['program'] as $key => $prg)
+                        <tr>
+                            <td>
+                            {{ $prg->program_ID }}
+                            </td>
+                            <td>
+                            {{ $prg->progcode }}
+                            </td>
+                            <td>
+                            {{ (!empty($data['oldInsentifTotals'])) ? $data['oldInsentifTotals'][$key] : 0}}
+                            </td>
+                        </tr>
+                        @endforeach
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="2" style="text-align: center">
+                                    TOTAL
+                                </td>
+                                <td>
+                                    {{ number_format(array_sum($data['oldInsentifTotals']), 2) }}
+                                </td>
+                            </tr>
+                        </tfoot>
+                        </table>
+                    </div>
+                    <!-- /.card-body -->
+                </div>
+            </div>
+
+            <!-- InsentifMco student -->
+            <div class="card mb-3" id="stud_info">
+                <div class="card-header">
+                <b>Tabung Khas</b>
+                </div>
+                <div class="card-body p-0">
+                    <table class="w-100 table table-bordered display margin-top-10 w-p100">
+                        <thead>
+                            <tr>
+                                <th style="width: 1%">
+                                    No.
+                                </th>
+                                <th style="width: 15%">
+                                    Name
+                                </th>
+                                <th style="width: 5%">
+                                    No.Matric
+                                </th>
+                                <th style="width: 5%">
+                                    Date
+                                </th>
+                                <th style="width: 5%">
+                                    No. Resit
+                                </th>
+                                <th style="width: 5%">
+                                    Type
+                                </th>
+                                <th style="width: 5%">
+                                    Method
+                                </th>
+                                <th style="width: 5%">
+                                    Bank
+                                </th>
+                                <th style="width: 5%">
+                                    No. Document
+                                </th>
+                                <th style="width: 5%">
+                                    Amount
+                                </th>
+                                <th style="width: 5%">
+                                    Total
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="table">
+                        @php
+                        $totalInsentifMcoALL = 0;
+                        @endphp
+                        @foreach ($data['InsentifMco'] as $key => $rgs)
+                          <tr>
+                            <td>
+                            {{ $key+1 }}
+                            </td>
+                            <td>
+                            {{ $rgs->name }}
+                            </td>
+                            <td>
+                            {{ $rgs->no_matric }}
+                            </td>
+                            <td>
+                            {{ $rgs->date }}
+                            </td>
+                            <td>
+                            {{ $rgs->ref_no }}
+                            </td>
+                            <td>
+                            @foreach ($data['InsentifMcoStudDetail'][$key] as $mth)
+                              <div>{{ $mth->type }}</div>
+                            @endforeach
+                            </td>
+                            <td>
+                            @foreach ($data['InsentifMcoStudMethod'][$key] as $mth)
+                              <div>{{ $mth->method }}</div>
+                            @endforeach
+                            </td>
+                            <td>
+                            @foreach ($data['InsentifMcoStudMethod'][$key] as $mth)
+                              <div>{{ $mth->bank }}</div>
+                            @endforeach
+                            </td>
+                            <td>
+                            @foreach ($data['InsentifMcoStudMethod'][$key] as $mth)
+                              <div>{{ $mth->no_document }}</div>
+                            @endforeach
+                            </td>
+                            <td>
+                              @php
+                                $totalInsentifMco = 0;
+                              @endphp
+                            @foreach ($data['InsentifMcoStudDetail'][$key] as $mth)
+                              <div>{{ $mth->amount }}</div>
+                              @php
+                                $totalInsentifMco += $mth->amount;
+                              @endphp
+                            @endforeach
+                            </td>
+                            <td>
+                              <div>{{ number_format($totalInsentifMco, 2) }}</div>
+                              @php
+                                $totalInsentifMcoALL += $totalInsentifMco;
+                              @endphp
+                            </td>
+                          </tr>
+                        @endforeach
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="10" style="text-align: center">
+                                    TOTAL
+                                </td>
+                                <td>
+                                    {{ number_format($totalInsentifMcoALL, 2) }}
+                                </td>
+                              </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            
+            <div class="row justify-content-center">
+                <!-- pecahan -->
+                <div class="card col-md-2 mb-3" id="stud_info" style="margin-right: 2%">
+                <div class="card-body p-0">
+                    <table class="table-fit-content">
+                        <thead>
+                            <tr>
+                                <th colspan="3" style="text-align: center">
+                                    New Student
+                                </th>
+                            </tr>
+                            <tr>
+                                <th style="width: 1%">
+                                    No.
+                                </th>
+                                <th style="width: 2%">
+                                    PROGRAM
+                                </th>
+                                <th style="width: 2%">
+                                    QUOTE
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="table">
+                            @foreach ($data['program'] as $key => $prg)
+                            <tr>
+                            <td>
+                                {{ $prg->program_ID }}
+                            </td>
+                            <td>
+                                {{ $prg->progcode }}
+                            </td>
+                            <td>
+                                {{ (!empty($data['newInsentifMcoTotals'])) ? $data['newInsentifMcoTotals'][$key] : 0}}
+                            </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="2" style="text-align: center">
+                                    TOTAL
+                                </td>
+                                <td>
+                                    {{ number_format(array_sum($data['newInsentifMcoTotals']), 2) }}
+                                </td>
+                            </tr>
+                        </tfoot>
                     </table>
                 </div>
                 <!-- /.card-body -->
@@ -1670,53 +1896,53 @@ tr:hover {
             
                 <!-- pecahan -->
                 <div class="card col-md-2 mb-3" id="stud_info" style="margin-right: 2%">
-                <div class="card-body p-0">
-                    <table class="table-fit-content">
-                    <thead>
-                        <tr>
-                            <th colspan="3" style="text-align: center">
-                                Old Student
-                            </th>
-                        </tr>
-                        <tr>
-                            <th style="width: 1%">
-                                No.
-                            </th>
-                            <th style="width: 2%">
-                                PROGRAM
-                            </th>
-                            <th style="width: 2%">
-                                QUOTE
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody id="table">
-                    @foreach ($data['program'] as $key => $prg)
-                    <tr>
-                        <td>
-                        {{ $key+1 }}
-                        </td>
-                        <td>
-                        {{ $prg->progcode }}
-                        </td>
-                        <td>
-                        {{ (!empty($data['oldInsentifTotals'])) ? $data['oldInsentifTotals'][$key] : 0}}
-                        </td>
-                    </tr>
-                    @endforeach
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <td colspan="2" style="text-align: center">
-                                TOTAL
-                            </td>
-                            <td>
-                                {{ number_format(array_sum($data['oldInsentifTotals']), 2) }}
-                            </td>
-                        </tr>
-                    </tfoot>
-                    </table>
-                </div>
+                    <div class="card-body p-0">
+                        <table class="table-fit-content">
+                            <thead>
+                                <tr>
+                                    <th colspan="3" style="text-align: center">
+                                        Old Student
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <th style="width: 1%">
+                                        No.
+                                    </th>
+                                    <th style="width: 2%">
+                                        PROGRAM
+                                    </th>
+                                    <th style="width: 2%">
+                                        QUOTE
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="table">
+                                @foreach ($data['program'] as $key => $prg)
+                                <tr>
+                                <td>
+                                    {{ $prg->program_ID }}
+                                </td>
+                                <td>
+                                    {{ $prg->progcode }}
+                                </td>
+                                <td>
+                                    {{ (!empty($data['oldInsentifMcoTotals'])) ? $data['oldInsentifMcoTotals'][$key] : 0}}
+                                </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                            <tfoot>
+                              <tr>
+                                  <td colspan="2" style="text-align: center">
+                                      TOTAL
+                                  </td>
+                                  <td>
+                                      {{ number_format(array_sum($data['oldInsentifMcoTotals']), 2) }}
+                                  </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
                 <!-- /.card-body -->
                 </div>
             </div>
@@ -1868,7 +2094,7 @@ tr:hover {
                     @foreach ($data['program'] as $key => $prg)
                     <tr>
                         <td>
-                        {{ $key+1 }}
+                        {{ $prg->program_ID }}
                         </td>
                         <td>
                         {{ $prg->progcode }}
@@ -1920,7 +2146,7 @@ tr:hover {
                     @foreach ($data['program'] as $key => $prg)
                     <tr>
                         <td>
-                        {{ $key+1 }}
+                        {{ $prg->program_ID }}
                         </td>
                         <td>
                         {{ $prg->progcode }}
@@ -2074,7 +2300,7 @@ tr:hover {
                     @foreach ($data['program'] as $key => $prg)
                     <tr>
                         <td>
-                        {{ $key+1 }}
+                        {{ $prg->program_ID }}
                         </td>
                         <td>
                         {{ $prg->progcode }}
@@ -2126,7 +2352,7 @@ tr:hover {
                     @foreach ($data['program'] as $key => $prg)
                     <tr>
                         <td>
-                        {{ $key+1 }}
+                        {{ $prg->program_ID }}
                         </td>
                         <td>
                         {{ $prg->progcode }}
