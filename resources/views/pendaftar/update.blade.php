@@ -421,12 +421,6 @@
                       </div>
                     </div>
                   </div>
-                  
-                  <div class="row">
-                    <div class="form-group">
-                      <button id="add-form" class="btn btn-primary pull-right" type="button">Add Waris</button>
-                    </div>
-                  </div>
 
                   <div class="card mb-3">
                     <div class="card-header">
@@ -645,6 +639,12 @@
                           </div>
                         </div>
                       </div>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="form-group">
+                      <button id="add-form" class="btn btn-primary pull-right" type="button">Add Waris</button>
                     </div>
                   </div>
                     
