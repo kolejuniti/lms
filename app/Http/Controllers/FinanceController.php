@@ -4408,6 +4408,18 @@ class FinanceController extends Controller
         $data['newInsentifMcoTotals'] = [];
         $data['oldInsentifMcoTotals'] = [];
 
+        $data['Cov19'] = [];
+        $data['Cov19StudMethod'] = [];
+        $data['Cov19StudDetail'] = [];
+        $data['newCov19Totals'] = [];
+        $data['oldCov19Totals'] = [];
+
+        $data['iNed'] = [];
+        $data['iNedStudMethod'] = [];
+        $data['iNedStudDetail'] = [];
+        $data['newiNedTotals'] = [];
+        $data['oldiNedTotals'] = [];
+
         $data['tabungkhas'] = [];
         $data['tabungkhasStudMethod'] = [];
         $data['tabungkhasStudDetail'] = [];
@@ -4784,7 +4796,7 @@ class FinanceController extends Controller
 
                     foreach($data['program'] as $key => $prg)
                     {
-                        foreach($data['Insentif'] as $keys => $rs)
+                        foreach($data['InsentifMco'] as $keys => $rs)
                         {
 
                             if($rs->program == $prg->id)
@@ -4801,6 +4813,102 @@ class FinanceController extends Controller
                         }
 
                         $data['newInsentifMcoTotals'][$key] =+ array_sum($data['newInsentifMcoTotal'][$key]);
+
+                    }
+                }
+
+                //newCov19
+
+                if($pym->process_type_id == 14)
+                {
+
+                    $data['Cov19'][] = $pym;
+
+                    $data['Cov19StudDetail'][] = DB::table('tblpaymentdtl')
+                                            ->join('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
+                                            ->where('tblpaymentdtl.payment_id', $pym->id)
+                                            ->where('tblpaymentdtl.amount', '!=', 0)
+                                            ->select('tblpaymentdtl.*', 'tblstudentclaim.name AS type')
+                                            ->get();
+             
+                    $data['Cov19StudMethod'][] = DB::table('tblpaymentmethod')
+                                            ->leftjoin('tblpayment_bank', 'tblpaymentmethod.bank_id', 'tblpayment_bank.id')
+                                            ->leftjoin('tblpayment_method', 'tblpaymentmethod.claim_method_id', 'tblpayment_method.id')
+                                            ->where('tblpaymentmethod.payment_id', $pym->id)
+                                            ->groupBy('tblpaymentmethod.id')
+                                            ->select('tblpaymentmethod.*', 'tblpayment_bank.name AS bank', 'tblpayment_method.name AS method')
+                                            ->get();
+
+
+                    //program
+
+                    foreach($data['program'] as $key => $prg)
+                    {
+                        foreach($data['Cov19'] as $keys => $rs)
+                        {
+
+                            if($rs->program == $prg->id)
+                            {
+
+                                $data['newCov19Total'][$key][$keys] =+  collect($data['Cov19StudDetail'][$keys])->sum('amount');
+
+                            }else{
+
+                                $data['newCov19Total'][$key][$keys] = null;
+
+                            }
+
+                        }
+
+                        $data['newCov19Totals'][$key] =+ array_sum($data['newCov19Total'][$key]);
+
+                    }
+                }
+
+                //newiNed
+
+                if($pym->process_type_id == 10)
+                {
+
+                    $data['iNed'][] = $pym;
+
+                    $data['iNedStudDetail'][] = DB::table('tblpaymentdtl')
+                                            ->join('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
+                                            ->where('tblpaymentdtl.payment_id', $pym->id)
+                                            ->where('tblpaymentdtl.amount', '!=', 0)
+                                            ->select('tblpaymentdtl.*', 'tblstudentclaim.name AS type')
+                                            ->get();
+             
+                    $data['iNedStudMethod'][] = DB::table('tblpaymentmethod')
+                                            ->leftjoin('tblpayment_bank', 'tblpaymentmethod.bank_id', 'tblpayment_bank.id')
+                                            ->leftjoin('tblpayment_method', 'tblpaymentmethod.claim_method_id', 'tblpayment_method.id')
+                                            ->where('tblpaymentmethod.payment_id', $pym->id)
+                                            ->groupBy('tblpaymentmethod.id')
+                                            ->select('tblpaymentmethod.*', 'tblpayment_bank.name AS bank', 'tblpayment_method.name AS method')
+                                            ->get();
+
+
+                    //program
+
+                    foreach($data['program'] as $key => $prg)
+                    {
+                        foreach($data['iNed'] as $keys => $rs)
+                        {
+
+                            if($rs->program == $prg->id)
+                            {
+
+                                $data['newiNedTotal'][$key][$keys] =+  collect($data['iNedStudDetail'][$keys])->sum('amount');
+
+                            }else{
+
+                                $data['newiNedTotal'][$key][$keys] = null;
+
+                            }
+
+                        }
+
+                        $data['newiNedTotals'][$key] =+ array_sum($data['newiNedTotal'][$key]);
 
                     }
                 }
@@ -5040,6 +5148,100 @@ class FinanceController extends Controller
                         }
 
                         $data['oldInsentifMcoTotals'][$key] =+ array_sum($data['oldInsentifMcoTotal'][$key]);
+
+                    }
+                }
+
+                //oldCov19
+
+                if($pym->process_type_id == 14)
+                {
+
+                    $data['Cov19'][] = $pym;
+
+                    $data['Cov19StudDetail'][] = DB::table('tblpaymentdtl')
+                                            ->join('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
+                                            ->where('tblpaymentdtl.payment_id', $pym->id)
+                                            ->where('tblpaymentdtl.amount', '!=', 0)
+                                            ->select('tblpaymentdtl.*', 'tblstudentclaim.name AS type')
+                                            ->get();
+             
+                    $data['Cov19StudMethod'][] = DB::table('tblpaymentmethod')
+                                            ->leftjoin('tblpayment_bank', 'tblpaymentmethod.bank_id', 'tblpayment_bank.id')
+                                            ->leftjoin('tblpayment_method', 'tblpaymentmethod.claim_method_id', 'tblpayment_method.id')
+                                            ->where('tblpaymentmethod.payment_id', $pym->id)
+                                            ->groupBy('tblpaymentmethod.id')
+                                            ->select('tblpaymentmethod.*', 'tblpayment_bank.name AS bank', 'tblpayment_method.name AS method')
+                                            ->get();
+
+                    //program
+
+                    foreach($data['program'] as $key => $prg)
+                    {
+                        foreach($data['Cov19'] as $keys => $rs)
+                        {
+
+                            if($rs->program == $prg->id)
+                            {
+
+                                $data['oldCov19Total'][$key][$keys] =+  collect($data['Cov19StudDetail'][$keys])->sum('amount');
+
+                            }else{
+
+                                $data['oldCov19Total'][$key][$keys] = null;
+
+                            }
+
+                        }
+
+                        $data['oldCov19Totals'][$key] =+ array_sum($data['oldCov19Total'][$key]);
+
+                    }
+                }
+
+                //oldiNed
+
+                if($pym->process_type_id == 10)
+                {
+
+                    $data['iNed'][] = $pym;
+
+                    $data['iNedStudDetail'][] = DB::table('tblpaymentdtl')
+                                            ->join('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
+                                            ->where('tblpaymentdtl.payment_id', $pym->id)
+                                            ->where('tblpaymentdtl.amount', '!=', 0)
+                                            ->select('tblpaymentdtl.*', 'tblstudentclaim.name AS type')
+                                            ->get();
+             
+                    $data['iNedStudMethod'][] = DB::table('tblpaymentmethod')
+                                            ->leftjoin('tblpayment_bank', 'tblpaymentmethod.bank_id', 'tblpayment_bank.id')
+                                            ->leftjoin('tblpayment_method', 'tblpaymentmethod.claim_method_id', 'tblpayment_method.id')
+                                            ->where('tblpaymentmethod.payment_id', $pym->id)
+                                            ->groupBy('tblpaymentmethod.id')
+                                            ->select('tblpaymentmethod.*', 'tblpayment_bank.name AS bank', 'tblpayment_method.name AS method')
+                                            ->get();
+
+                    //program
+
+                    foreach($data['program'] as $key => $prg)
+                    {
+                        foreach($data['iNed'] as $keys => $rs)
+                        {
+
+                            if($rs->program == $prg->id)
+                            {
+
+                                $data['oldiNedTotal'][$key][$keys] =+  collect($data['iNedStudDetail'][$keys])->sum('amount');
+
+                            }else{
+
+                                $data['oldiNedTotal'][$key][$keys] = null;
+
+                            }
+
+                        }
+
+                        $data['oldiNedTotals'][$key] =+ array_sum($data['oldiNedTotal'][$key]);
 
                     }
                 }
