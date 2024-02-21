@@ -4682,6 +4682,7 @@ class FinanceController extends Controller
                 ->join('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
                 ->where('tblpaymentdtl.payment_id', $pym->id)
                 ->where('tblpaymentdtl.amount', '!=', 0)
+                ->where('tblpaymentdtl.claim_type_id', '!=', 47)
                 ->whereIn('tblstudentclaim.groupid', [5])->exists())
                 {
 
@@ -4693,6 +4694,7 @@ class FinanceController extends Controller
                                             ->where('tblpaymentdtl.payment_id', $pym->id)
                                             ->whereIn('tblstudentclaim.groupid', [5])
                                             ->where('tblpaymentdtl.amount', '!=', 0)
+                                            ->where('tblpaymentdtl.claim_type_id', '!=', 47)
                                             ->select('tblpaymentdtl.*', 'tblstudentclaim.name AS type')
                                             ->get();
              
@@ -5350,7 +5352,7 @@ class FinanceController extends Controller
         ->join('tblpayment_method', 'tblpaymentmethod.claim_method_id', 'tblpayment_method.id')
         ->whereBetween('tblpayment.add_date', [$request->from, $request->to])
         ->where('tblpayment.process_status_id', 2)
-        ->select('tblpayment.*', 'tblstudentclaim.groupid', 'tblstudentclaim.name AS type', 'tblpaymentdtl.amount', 'tblpaymentmethod.no_document', 'tblpayment_method.name AS method', 'tblpayment_bank.name AS bank')
+        ->select('tblpayment.*', 'tblstudentclaim.groupid', 'tblstudentclaim.name AS type', 'tblpaymentdtl.amount', 'tblpaymentdtl.claim_type_id', 'tblpaymentmethod.no_document', 'tblpayment_method.name AS method', 'tblpayment_bank.name AS bank')
         ->orderBy('tblpayment.ref_no', 'desc')
         ->groupBy('tblpaymentdtl.id')->get();
 
@@ -5361,7 +5363,7 @@ class FinanceController extends Controller
             {
                 $data['hostel'][] = $ot;
 
-            }elseif(array_intersect([8], (array) $ot->process_type_id) && array_intersect([3], (array) $ot->groupid) && $ot->amount != 0)
+            }elseif(array_intersect([8], (array) $ot->process_type_id) && array_intersect([5], (array) $ot->groupid) && $ot->amount != 0 && $ot->claim_type_id == 47)
             {
                 $data['convo'][] = $ot;
 
