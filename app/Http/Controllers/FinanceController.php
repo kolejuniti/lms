@@ -7274,6 +7274,8 @@ class FinanceController extends Controller
 
         $data['program'] = DB::table('tblprogramme')->get();
 
+        $data['status'] = DB::table('tblstudent_status')->get();
+
         return view('finance.report.arrearsReport', compact('data'));
 
     }
@@ -7316,13 +7318,18 @@ class FinanceController extends Controller
                     // Define a function to create the base query
                     $baseQuery = function () use ($filter, $prg) {
                         return DB::table('tblclaim')
+                        ->join('students', 'tblclaim.student_ic', 'students.ic')
                         ->join('tblclaimdtl', 'tblclaim.id', 'tblclaimdtl.claim_id')
                         ->join('tblstudentclaim', 'tblclaimdtl.claim_package_id', 'tblstudentclaim.id')
                         ->whereBetween('tblclaim.add_date', [$filter->from,$filter->to])
                         ->where([
                             ['tblclaim.program_id', $prg->id],
                             ['tblclaim.process_status_id', 2],
-                        ]);
+                        ])
+                        ->when($filter->status != 'all', function ($query) use ($filter) {
+                            // Only applies this where condition if $filter->status is not 'all'
+                            return $query->where('students.student_status', '=', $filter->status);
+                        });
                     };
 
                     $data['debt'][$key] = ($baseQuery)()->where([
