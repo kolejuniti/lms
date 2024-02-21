@@ -118,8 +118,21 @@
                 //     (day<10 ? '0' : '') + day;
 
                   $('#form-student').html(data);
-                  $('#myTable').DataTable();
-                  $('#myTable2').DataTable();
+                  $('#myTable').DataTable({
+                    dom: 'lBfrtip', // if you remove this line you will see the show entries dropdown
+                    
+                    buttons: [
+                        'copy', 'csv', 'excel', 'pdf', 'print'
+                    ],
+                  });
+
+                  $('#myTable2').DataTable({
+                    dom: 'lBfrtip', // if you remove this line you will see the show entries dropdown
+                    
+                    buttons: [
+                        'copy', 'csv', 'excel', 'pdf', 'print'
+                    ],
+                  });
               }
           });
 
