@@ -5357,15 +5357,15 @@ class FinanceController extends Controller
 
         foreach($other as $ot)
         {
-            if(array_intersect([1], (array) $ot->process_type_id) && array_intersect([2], (array) $ot->groupid) && $ot->amount != 0)
+            if(array_intersect([8], (array) $ot->process_type_id) && array_intersect([2], (array) $ot->groupid) && $ot->amount != 0)
             {
                 $data['hostel'][] = $ot;
 
-            }elseif(array_intersect([1], (array) $ot->process_type_id) && array_intersect([3], (array) $ot->groupid) && $ot->amount != 0)
+            }elseif(array_intersect([8], (array) $ot->process_type_id) && array_intersect([3], (array) $ot->groupid) && $ot->amount != 0)
             {
                 $data['convo'][] = $ot;
 
-            }elseif(array_intersect([1], (array) $ot->process_type_id) && array_intersect([4], (array) $ot->groupid) && $ot->amount != 0)
+            }elseif(array_intersect([8], (array) $ot->process_type_id) && array_intersect([4], (array) $ot->groupid) && $ot->amount != 0)
             {
                 $data['fine'][] = $ot;
 
@@ -5745,7 +5745,7 @@ class FinanceController extends Controller
                         'semester_id' => $stddetail->semester,
                         'amount' => $payment->total,
                         'process_status_id' => 1,
-                        'process_type_id' => 1,
+                        'process_type_id' => 8,
                         'add_staffID' => Auth::user()->ic,
                         'add_date' => date('Y-m-d'),
                         'mod_staffID' => Auth::user()->ic,
@@ -6568,6 +6568,7 @@ class FinanceController extends Controller
                                   ->leftjoin('sessions', 'students.intake', 'sessions.SessionID')
                                   ->join('tblpackage', 'tblpackage_sponsorship.package_id', 'tblpackage.id')
                                   ->join('tblpayment_type', 'tblpackage_sponsorship.payment_type_id', 'tblpayment_type.id')
+                                  ->where('students.student_status', 2)
                                   ->select('tblpackage_sponsorship.*', 'tblpackage.name AS package', 'tblpayment_type.name AS type', 
                                            'students.name AS student', 'students.ic', 'students.semester','tblprogramme.progcode', 'sessions.SessionName')
                                   ->get();
