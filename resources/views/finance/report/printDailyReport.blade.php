@@ -1724,7 +1724,7 @@ tr:hover {
             <!-- InsentifMco student -->
             <div class="card mb-3" id="stud_info">
                 <div class="card-header">
-                <b>Tabung Khas</b>
+                <b>Insentif Mco / Insentif Khas UNITI</b>
                 </div>
                 <div class="card-body p-0">
                     <table class="w-100 table table-bordered display margin-top-10 w-p100">
