@@ -7554,13 +7554,18 @@ class FinanceController extends Controller
 
                     $baseQuery2 = function () use ($filter, $prg) {
                                             return DB::table('tblpayment')
+                                            ->join('students', 'tblpayment.student_ic', 'students.ic')
                                             ->join('tblpaymentdtl', 'tblpayment.id', 'tblpaymentdtl.payment_id')
                                             ->join('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
                                             ->whereBetween('tblpayment.add_date', [$filter->from,$filter->to])
                                             ->where([
                                                 ['tblpayment.program_id', $prg->id],
                                                 ['tblpayment.process_status_id', 2],
-                                            ]);
+                                            ])
+                                            ->when($filter->status != 'all', function ($query) use ($filter) {
+                                                // Only applies this where condition if $filter->status is not 'all'
+                                                return $query->where('students.student_status', '=', $filter->status);
+                                            });
                                         };
 
                     $data['insentif'][$key] = ($baseQuery2)()->where([
