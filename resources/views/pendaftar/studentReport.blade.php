@@ -580,21 +580,21 @@
                 <div class="row mb-5">
                     <div class="col-md-4">
                         <div class="form-group">
-                            <table class="w-100 table table-bordered display margin-top-10 w-p100" style="background-color: darkcyan">
+                            <table id="secondTable" class="w-100 table display margin-top-10 w-p100 table-layout: fixed;" style="background-color: darkcyan">
                                 <thead>
                                     <tr>
-                                        <th colspan="3" style="text-align:center">
+                                        <th colspan="3" style="text-align: center; border: 1px solid black;">
                                             Pecahan Pelajar Semester 1
                                         </th>
                                     </tr>
                                     <tr>
-                                        <th style="text-align:center">
+                                        <th style="text-align: center; border: 1px solid black;">
                                             INTAKE
                                         </th>
-                                        <th style="text-align:center">
+                                        <th style="text-align: center; border: 1px solid black;">
                                             HOLDING
                                         </th>
-                                        <th style="text-align:center">
+                                        <th style="text-align: center; border: 1px solid black;">
                                             KULIAH
                                         </th>
                                     </tr>
@@ -606,13 +606,13 @@
                                   @endphp
                                   @foreach($data['sessions'] as $key => $ses)
                                     <tr>
-                                        <td style="text-align:center">
+                                        <td style="text-align: center; border: 1px solid black;">
                                             {{ $ses->SessionName }}
                                         </td>
-                                        <td style="text-align:center">
+                                        <td style="text-align: center; border: 1px solid black;">
                                             {{ $data['holding'][$key] }}
                                         </td>
-                                        <td style="text-align:center">
+                                        <td style="text-align: center; border: 1px solid black;">
                                             {{ $data['kuliah'][$key] }}
                                       </td>
                                     </tr>
@@ -625,11 +625,11 @@
                                 </tbody>
                                 <tfoot>
                                   <tr>
-                                    <td style="text-align:center">JUMLAH</td>
-                                    <td style="text-align:center">
+                                    <td style="text-align: center; border: 1px solid black;">JUMLAH</td>
+                                    <td style="text-align: center; border: 1px solid black;">
                                       {{ $totalHolding }}
                                     </td>
-                                    <td style="text-align:center">
+                                    <td style="text-align: center; border: 1px solid black;">
                                       {{ $totalKuliah }}
                                     </td>
                                   </tr>
@@ -659,20 +659,39 @@
                 text: 'Print',
                 orientation: 'landscape', // Set the orientation to landscape
                 customize: function(win) {
-                     // This gets the HTML of the whole document in the print window
-                      var body = $(win.document.body);
+                  var body = $(win.document.body);
 
-                      // Clone the table and include the footer
-                      var table = $('#table_dismissed').clone();
-                      table.find('tfoot').show();
+                  // Clone the main table and ensure the footer is shown
+                  var mainTable = $('#table_dismissed').clone();
+                  mainTable.find('tfoot').show();
 
-                      // You can also directly append the `tfoot` to the table in the print document
-                      // or adjust the visibility as needed.
+                  // Also clone the additional table you want to include
+                  var additionalTable = $('#secondTable').clone();
+                  additionalTable.find('tfoot').show();
 
-                      body.html(''); // Clear the body first
-                      body.append(table); // Append the cloned table that includes the tfoot
+                  // Clear the body first
+                  body.html('');
 
-                      // Additional customizations can be done here, like adjusting styles for print
+                  // Append the cloned tables
+                  body.append('<h1>Student Report</h1>'); // Optional: Add a title or any additional content
+                  body.append(mainTable); // Append the main table
+                  body.append('<h2>Pecahan Pelajar Semester 1</h2>'); // Optional: Add subtitles or descriptions
+                  body.append(additionalTable); // Append the additional table
+
+                  // Additional customizations can be done here, like adjusting styles for print
+                  body.find('table').addClass('print-table').css({
+                      'border-collapse': 'collapse',
+                      'width': '100%'
+                  });
+                  body.find('th, td').css({
+                      'border': '1px solid black',
+                      'padding': '8px'
+                  });
+                  body.find('.print-table').css({
+                      'margin-bottom': '20px'
+                  });
+
+                  
                 }
             },
             {
