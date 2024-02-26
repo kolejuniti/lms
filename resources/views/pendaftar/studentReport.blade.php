@@ -658,9 +658,21 @@
                 extend: 'print',
                 text: 'Print',
                 orientation: 'landscape', // Set the orientation to landscape
-                customize: function(doc) {
-                    // Customization options go here
-                    // For example, you can set the styles, modify the document, etc.
+                customize: function(win) {
+                     // This gets the HTML of the whole document in the print window
+                      var body = $(win.document.body);
+
+                      // Clone the table and include the footer
+                      var table = $('#table_dismissed').clone();
+                      table.find('tfoot').show();
+
+                      // You can also directly append the `tfoot` to the table in the print document
+                      // or adjust the visibility as needed.
+
+                      body.html(''); // Clear the body first
+                      body.append(table); // Append the cloned table that includes the tfoot
+
+                      // Additional customizations can be done here, like adjusting styles for print
                 }
             },
             {
