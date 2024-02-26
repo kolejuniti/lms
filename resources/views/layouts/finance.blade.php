@@ -333,6 +333,7 @@
 					<li><a href="{{ route('finance.chargeReport') }}" class="{{ (route('finance.chargeReport') == Request::url()) ? 'active' : ''}}">Charge Report</a></li>
 					<li><a href="{{ route('finance.arrearsReport') }}" class="{{ (route('finance.arrearsReport') == Request::url()) ? 'active' : ''}}">Arrears Report</a></li>
 					<li><a href="{{ route('finance.urReport') }}" class="{{ (route('finance.urReport') == Request::url()) ? 'active' : ''}}">UR Report</a></li>
+					<li><a href="{{ route('finance.agingReport') }}" class="{{ (route('finance.agingReport') == Request::url()) ? 'active' : ''}}">Student Aging Report</a></li>
 				</ul>
 			  </li>
 			  <li class="treeview">
