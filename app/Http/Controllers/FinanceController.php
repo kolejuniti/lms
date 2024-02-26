@@ -9825,7 +9825,7 @@ class FinanceController extends Controller
                         if($data['sponsor_dtl'][$key] != null)
                         {
 
-                        $data['sponsor_dtl'][$key]->payment_type;
+                            $content .= ''. $data['sponsor_dtl'][$key]->payment_type .'';
 
                         }else{
                             $content .= '-';
