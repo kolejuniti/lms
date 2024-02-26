@@ -9805,7 +9805,7 @@ class FinanceController extends Controller
                         if($data['sponsor'][$key] != null)
                         {
 
-                        $data['sponsor'][$key];
+                            $content .= ''. $data['sponsor'][$key] .'';
 
                         }else{
                             $content .= '-';
