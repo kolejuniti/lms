@@ -43,7 +43,7 @@
                   <select class="form-select" id="program" name="program">
                     <option value="all" selected>All Program</option> 
                     @foreach ($data['program'] as $prg)
-                    <option value="{{ $prg->id }}">{{ $prg->progname}}</option> 
+                    <option value="{{ $prg->id }}">{{ $prg->progcode}} - {{ $prg->progname}}</option> 
                     @endforeach
                   </select>
               </div>
