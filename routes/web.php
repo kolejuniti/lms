@@ -578,6 +578,10 @@ Route::get('finance/report/urReport', [App\Http\Controllers\FinanceController::c
 Route::post('finance/report/urReport/getUrReport', [App\Http\Controllers\FinanceController::class,'getUrReport']);
 Route::get('finance/report/agingReport', [App\Http\Controllers\FinanceController::class,'agingReport'])->name('finance.agingReport');
 Route::post('finance/report/agingReport/getAgingReport', [App\Http\Controllers\FinanceController::class,'getAgingReport']);
+Route::get('finance/report/programAgingReport', [App\Http\Controllers\FinanceController::class,'programAgingReport'])->name('finance.programAgingReport');
+Route::post('finance/report/programAgingReport/getProgramAgingReport', [App\Http\Controllers\FinanceController::class,'getProgramAgingReport']);
+Route::get('finance/report/statusAgingReport', [App\Http\Controllers\FinanceController::class,'statusAgingReport'])->name('finance.statusAgingReport');
+Route::post('finance/report/statusAgingReport/getStatusAgingReport', [App\Http\Controllers\FinanceController::class,'getStatusAgingReport']);
 Route::get('/finance/payment/other', [App\Http\Controllers\FinanceController::class, 'studentOtherPayment'])->name('finance.payment.other');
 Route::post('/finance/payment/other/getStudent', [App\Http\Controllers\FinanceController::class, 'getOtherStudentPayment']);
 Route::post('/finance/payment/other/storePayment', [App\Http\Controllers\FinanceController::class, 'storeOtherPayment']);
