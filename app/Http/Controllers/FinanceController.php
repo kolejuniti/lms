@@ -10097,8 +10097,8 @@ class FinanceController extends Controller
                         // Define the first part of the union
                         $query = DB::table('students')
                         ->join('tblclaim', 'students.ic', 'tblclaim.student_ic')
-                        ->leftjoin('tblclaimdtl', 'tblclaim.id', '=', 'tblclaimdtl.claim_id')
-                        ->leftjoin('tblstudentclaim', 'tblclaimdtl.claim_package_id', '=', 'tblstudentclaim.id')
+                        ->join('tblclaimdtl', 'tblclaim.id', '=', 'tblclaimdtl.claim_id')
+                        ->join('tblstudentclaim', 'tblclaimdtl.claim_package_id', '=', 'tblstudentclaim.id')
                         ->where([
                             ['tblclaim.process_status_id', '=', 2],
                             ['tblstudentclaim.groupid', '=', 1]
@@ -10110,8 +10110,8 @@ class FinanceController extends Controller
                         // Define the second part of the union
                         $subQuery = DB::table('students')
                         ->join('tblpayment', 'students.ic', 'tblpayment.student_ic')
-                        ->leftjoin('tblpaymentdtl', 'tblpayment.id', '=', 'tblpaymentdtl.payment_id')
-                        ->leftjoin('tblstudentclaim', 'tblpaymentdtl.claim_type_id', '=', 'tblstudentclaim.id')
+                        ->join('tblpaymentdtl', 'tblpayment.id', '=', 'tblpaymentdtl.payment_id')
+                        ->join('tblstudentclaim', 'tblpaymentdtl.claim_type_id', '=', 'tblstudentclaim.id')
                         ->where([
                             ['tblpayment.process_status_id', '=', 2],
                             ['tblstudentclaim.groupid', '=', 1]
