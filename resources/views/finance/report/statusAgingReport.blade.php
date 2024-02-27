@@ -8,13 +8,13 @@
     <div class="content-header">
       <div class="d-flex align-items-center">
         <div class="me-auto">
-          <h4 class="page-title">Student Aging Report</h4>
+          <h4 class="page-title">Status Aging Report</h4>
           <div class="d-inline-block align-items-center">
             <nav>
               <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="#"><i class="mdi mdi-home-outline"></i></a></li>
                 <li class="breadcrumb-item" aria-current="page">Dashboard</li>
-                <li class="breadcrumb-item active" aria-current="page">Student Aging Report</li>
+                <li class="breadcrumb-item active" aria-current="page">Status Aging Report</li>
               </ol>
             </nav>
           </div>
@@ -37,17 +37,6 @@
         </div>
         <div class="card-body">
           <div class="row">
-            <div class="col-md-6 ml-3">
-              <div class="form-group">
-                  <label class="form-label" for="program">Program</label>
-                  <select class="form-select" id="program" name="program">
-                    <option value="all" selected>All Program</option> 
-                    @foreach ($data['program'] as $prg)
-                    <option value="{{ $prg->id }}">{{ $prg->progname}}</option> 
-                    @endforeach
-                  </select>
-              </div>
-            </div>
             <div class="col-md-6 mr-3" id="status-card">
               <div class="form-group">
                 <label class="form-label" for="status">Status</label>
@@ -76,37 +65,7 @@
             <thead>
               <tr>
                   <th>
-                      No
-                  </th>
-                  <th>
-                      Name
-                  </th>
-                  <th>
-                      IC
-                  </th>
-                  <th>
-                      Program
-                  </th>
-                  <th>
-                      No. Matric
-                  </th>
-                  <th>
-                      Session
-                  </th>
-                  <th>
-                      Semester
-                  </th>
-                  <th>
-                      Status
-                  </th>
-                  <th>
-                      Sponsor
-                  </th>
-                  <th>
-                      Package
-                  </th>
-                  <th>
-                      Payment Method
+                    Program
                   </th>
               </tr>
             </thead>
@@ -187,7 +146,6 @@
 
       forminput = {
         year: $('#year').val(),
-        program: $('#program').val(),
         status: $('#status').val(),
       };
 
@@ -198,7 +156,7 @@
 
       $.ajax({
           headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
-          url: '{{ url('/finance/report/agingReport/getAgingReport') }}',
+          url: '{{ url('/finance/report/statusAgingReport/getStatusAgingReport') }}',
           type: 'POST',
           data: formData,
           cache : false,
