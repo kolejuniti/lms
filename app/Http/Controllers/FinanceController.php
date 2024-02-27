@@ -7530,7 +7530,7 @@ class FinanceController extends Controller
                         ])
                         ->when($filter->status != 'all', function ($query) use ($filter) {
                             // Only applies this where condition if $filter->status is not 'all'
-                            return $query->where('students.student_status', '=', $filter->status);
+                            return $query->where('students.status', '=', $filter->status);
                         });
                     };
 
@@ -7564,7 +7564,7 @@ class FinanceController extends Controller
                                             ])
                                             ->when($filter->status != 'all', function ($query) use ($filter) {
                                                 // Only applies this where condition if $filter->status is not 'all'
-                                                return $query->where('students.student_status', '=', $filter->status);
+                                                return $query->where('students.status', '=', $filter->status);
                                             });
                                         };
 
@@ -9655,10 +9655,10 @@ class FinanceController extends Controller
                 $data['student'] = DB::table('students')
                                    ->leftjoin('sessions', 'students.session', 'sessions.SessionID')
                                    ->leftjoin('tblprogramme', 'students.program', 'tblprogramme.id')
-                                   ->leftjoin('tblstudent_status', 'students.student_status', 'tblstudent_status.id')
+                                   ->leftjoin('tblstudent_status', 'students.status', 'tblstudent_status.id')
                                    ->whereIn('students.program', $program)
                                    ->when($filter->status != 'all', function ($query) use ($filter){
-                                        return $query->where('students.student_status', $filter->status);
+                                        return $query->where('students.status', $filter->status);
                                    })
                                    ->select('students.name','students.ic', 'students.no_matric', 'tblprogramme.progcode', 
                                             'sessions.SessionName', 'students.semester', 'tblstudent_status.name AS status')->get();
