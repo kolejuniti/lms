@@ -9865,4 +9865,354 @@ class FinanceController extends Controller
         return response()->json(['message' => 'Success', 'data' => $content]);
 
     }
+
+    public function programAgingReport()
+    {
+
+        $data['program'] = DB::table('tblprogramme')->get();
+
+        return view('finance.report.programAgingReport', compact('data'));
+
+    }
+
+    public function getProgramAgingReport(Request $request)
+    {
+
+        $filtersData = $request->filtersData;
+
+        $validator = Validator::make($request->all(), [
+            'filtersData' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return ["message"=>"Field Error", "error" => $validator->messages()->get('*')];
+        }
+
+        try{ 
+            DB::beginTransaction();
+            DB::connection()->enableQueryLog();
+
+            try{
+
+                $filter = json_decode($filtersData);
+
+                if($filter->program == 'all')
+                {
+
+                    $data['program'] = DB::table('tblprogramme')->pluck('id');
+
+                }else{
+
+                    $data['program'] = DB::table('tblprogramme')->where('id', $filter->program)->pluck('id');
+                    
+                }
+
+                // Assuming $request->year has the value of 2019
+                $startYear = $filter->year; // Starting year
+                $currentYear = now()->year; // This gets the current year
+
+                // Create an array of years from start year to current year
+                $data['arrayYears'] = range($startYear, $currentYear);
+
+                foreach($data['program'] as $key => $prg)
+                {
+
+                    foreach($data['arrayYears'] as $key2 => $year)
+                    {
+
+                        // Define the first part of the union
+                        $query = DB::table('tblclaim')
+                        ->leftjoin('tblclaimdtl', 'tblclaim.id', '=', 'tblclaimdtl.claim_id')
+                        ->leftjoin('tblstudentclaim', 'tblclaimdtl.claim_package_id', '=', 'tblstudentclaim.id')
+                        ->where([
+                            ['tblclaim.process_status_id', '=', 2],
+                            ['tblstudentclaim.groupid', '=', 1]
+                        ])
+                        ->where('tblclaim.program_id', $prg)
+                        ->whereBetween(DB::raw('YEAR(tblclaim.add_date)'), [$filter->year, $year])
+                        ->select(DB::raw("IFNULL(SUM(tblclaimdtl.amount), 0) AS claim"), DB::raw('0 as payment'));
+
+                        // Define the second part of the union
+                        $subQuery = DB::table('tblpayment')
+                        ->leftjoin('tblpaymentdtl', 'tblpayment.id', '=', 'tblpaymentdtl.payment_id')
+                        ->leftjoin('tblstudentclaim', 'tblpaymentdtl.claim_type_id', '=', 'tblstudentclaim.id')
+                        ->where([
+                            ['tblpayment.process_status_id', '=', 2],
+                            ['tblstudentclaim.groupid', '=', 1]
+                        ])
+                        ->where('tblpayment.program_id', $prg)
+                        ->whereBetween(DB::raw('YEAR(tblpayment.add_date)'), [$filter->year, $year])
+                        ->select(DB::raw('0 as claim'), DB::raw("IFNULL(SUM(tblpaymentdtl.amount), 0) AS payment"))
+                        ->unionAll($query); // Here, use the Query Builder instance directly
+
+                        // Now, wrap the subquery and calculate the balance
+                        $data['balance'][$key][$key2] = DB::query()->fromSub($subQuery, 'sub')
+                        ->select(DB::raw('SUM(claim) - SUM(payment) AS balance'))
+                        ->get();
+
+                    }
+
+                }
+
+                $content = "";
+                $content .= '<thead>
+                                <tr>
+                                    <th rowspan="2">
+                                        Program
+                                    </th>
+                                    <th colspan="'. count($data['arrayYears']) .'" style="text-align: center">
+                                        AGING REPORT BY PROGRAM AND YEAR from '. $startYear .' UNTIL '. $currentYear; 
+                        $content .= '</th>
+                                </tr>
+                                <tr>';
+                                    foreach($data['arrayYears'] as $year)
+                                    {
+                                    $content .= 
+                                    '<th>
+                                    '. $year .'  
+                                    </th>';
+                                    }
+
+
+                    $content .= '</tr>
+                            </thead>
+                            <tbody id="table">';
+
+                            // Initialize totals array
+                            $totals = array_fill_keys($data['arrayYears'], 0);
+                            
+                foreach($data['program'] as $key => $prg){
+                    //$registered = ($std->status == 'ACTIVE') ? 'checked' : '';
+
+                    $program = DB::table('tblprogramme')->where('id', $prg)->select('progcode', 'progname')->first();
+
+                    $content .= '
+                    <tr>
+                        <td>
+                        '. $program->progcode .' - '. $program->progname .'
+                        </td>';
+                        foreach($data['arrayYears'] as $key2 => $year)
+                        {
+                            foreach($data['balance'][$key][$key2] as $balance)
+                            {
+                            // Add balance to totals
+                            $totals[$year] += $balance->balance;
+
+                            $content .= 
+                            '<td>
+                            '. $balance->balance .'  
+                            </td>';
+                            }
+                        }
+        $content .='</tr>
+                    ';
+                    }
+
+                $content .= '</tbody>';
+                $content .= '<tfoot>
+                        <tr>
+                            <td>
+                                TOTAL
+                            </td>';
+                            // Display totals in the footer
+                            foreach($totals as $yearTotal) {
+                                $content .= '<td>'. number_format($yearTotal, 2) .'</td>';
+                            }
+            $content .= '</tr>
+                    </tfoot>';
+
+            }catch(QueryException $ex){
+                DB::rollback();
+                if($ex->getCode() == 23000){
+                    return ["message"=>"Class code already existed inside the system"];
+                }else{
+                    \Log::debug($ex);
+                    return ["message"=>"DB Error"];
+                }
+            } 
+
+            DB::commit();
+        }catch(Exception $ex){
+            return ["message"=>"Error"];
+        }
+
+        return response()->json(['message' => 'Success', 'data' => $content]);
+
+    }
+
+    public function statusAgingReport()
+    {
+
+        $data['status'] = DB::table('tblstudent_status')->get();
+
+        return view('finance.report.statusAgingReport', compact('data'));
+
+    }
+
+    public function getStatusAgingReport(Request $request)
+    {
+
+        $filtersData = $request->filtersData;
+
+        $validator = Validator::make($request->all(), [
+            'filtersData' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return ["message"=>"Field Error", "error" => $validator->messages()->get('*')];
+        }
+
+        try{ 
+            DB::beginTransaction();
+            DB::connection()->enableQueryLog();
+
+            try{
+
+                $filter = json_decode($filtersData);
+
+                if($filter->status == 'all')
+                {
+
+                    $data['status'] = DB::table('tblstudent_status')->pluck('id');
+
+                }else{
+
+                    $data['status'] = DB::table('tblstudent_status')->where('id', $filter->status)->pluck('id');
+                    
+                }
+
+                // Assuming $request->year has the value of 2019
+                $startYear = $filter->year; // Starting year
+                $currentYear = now()->year; // This gets the current year
+
+                // Create an array of years from start year to current year
+                $data['arrayYears'] = range($startYear, $currentYear);
+
+                foreach($data['status'] as $key => $sts)
+                {
+
+                    foreach($data['arrayYears'] as $key2 => $year)
+                    {
+
+                        // Define the first part of the union
+                        $query = DB::table('tblclaim')
+                        ->join('students', 'tblclaim.student_ic', 'students.ic')
+                        ->leftjoin('tblclaimdtl', 'tblclaim.id', '=', 'tblclaimdtl.claim_id')
+                        ->leftjoin('tblstudentclaim', 'tblclaimdtl.claim_package_id', '=', 'tblstudentclaim.id')
+                        ->where([
+                            ['tblclaim.process_status_id', '=', 2],
+                            ['tblstudentclaim.groupid', '=', 1]
+                        ])
+                        ->where('students.student_status', $sts)
+                        ->whereBetween(DB::raw('YEAR(tblclaim.add_date)'), [$filter->year, $year])
+                        ->select(DB::raw("IFNULL(SUM(tblclaimdtl.amount), 0) AS claim"), DB::raw('0 as payment'));
+
+                        // Define the second part of the union
+                        $subQuery = DB::table('tblpayment')
+                        ->join('students', 'tblpayment.student_ic', 'students.ic')
+                        ->leftjoin('tblpaymentdtl', 'tblpayment.id', '=', 'tblpaymentdtl.payment_id')
+                        ->leftjoin('tblstudentclaim', 'tblpaymentdtl.claim_type_id', '=', 'tblstudentclaim.id')
+                        ->where([
+                            ['tblpayment.process_status_id', '=', 2],
+                            ['tblstudentclaim.groupid', '=', 1]
+                        ])
+                        ->where('students.student_status', $sts)
+                        ->whereBetween(DB::raw('YEAR(tblpayment.add_date)'), [$filter->year, $year])
+                        ->select(DB::raw('0 as claim'), DB::raw("IFNULL(SUM(tblpaymentdtl.amount), 0) AS payment"))
+                        ->unionAll($query); // Here, use the Query Builder instance directly
+
+                        // Now, wrap the subquery and calculate the balance
+                        $data['balance'][$key][$key2] = DB::query()->fromSub($subQuery, 'sub')
+                        ->select(DB::raw('SUM(claim) - SUM(payment) AS balance'))
+                        ->get();
+
+                    }
+
+                }
+
+                $content = "";
+                $content .= '<thead>
+                                <tr>
+                                    <th rowspan="2">
+                                        status
+                                    </th>
+                                    <th colspan="'. count($data['arrayYears']) .'" style="text-align: center">
+                                        AGING REPORT BY STATUS AND YEAR from '. $startYear .' UNTIL '. $currentYear; 
+                        $content .= '</th>
+                                </tr>
+                                <tr>';
+                                    foreach($data['arrayYears'] as $year)
+                                    {
+                                    $content .= 
+                                    '<th>
+                                    '. $year .'  
+                                    </th>';
+                                    }
+
+
+                    $content .= '</tr>
+                            </thead>
+                            <tbody id="table">';
+
+                            // Initialize totals array
+                            $totals = array_fill_keys($data['arrayYears'], 0);
+                            
+                foreach($data['status'] as $key => $sts){
+                    //$registered = ($std->status == 'ACTIVE') ? 'checked' : '';
+
+                    $status = DB::table('tblstudent_status')->where('id', $sts)->select('name')->first();
+
+                    $content .= '
+                    <tr>
+                        <td>
+                        '. $status->name .'
+                        </td>';
+                        foreach($data['arrayYears'] as $key2 => $year)
+                        {
+                            foreach($data['balance'][$key][$key2] as $balance)
+                            {
+                            // Add balance to totals
+                            $totals[$year] += $balance->balance;
+
+                            $content .= 
+                            '<td>
+                            '. $balance->balance .'  
+                            </td>';
+                            }
+                        }
+        $content .='</tr>
+                    ';
+                    }
+
+                $content .= '</tbody>';
+                $content .= '<tfoot>
+                        <tr>
+                            <td>
+                                TOTAL
+                            </td>';
+                            // Display totals in the footer
+                            foreach($totals as $yearTotal) {
+                                $content .= '<td>'. number_format($yearTotal, 2) .'</td>';
+                            }
+            $content .= '</tr>
+                    </tfoot>';
+
+            }catch(QueryException $ex){
+                DB::rollback();
+                if($ex->getCode() == 23000){
+                    return ["message"=>"Class code already existed inside the system"];
+                }else{
+                    \Log::debug($ex);
+                    return ["message"=>"DB Error"];
+                }
+            } 
+
+            DB::commit();
+        }catch(Exception $ex){
+            return ["message"=>"Error"];
+        }
+
+        return response()->json(['message' => 'Success', 'data' => $content]);
+
+    }
 }
