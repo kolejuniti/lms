@@ -10215,4 +10215,118 @@ class FinanceController extends Controller
         return response()->json(['message' => 'Success', 'data' => $content]);
 
     }
+
+    public function ctosReport()
+    {
+
+        $data['program'] = DB::table('tblprogramme')->get();
+
+        return view('finance.debt.ctos_report.ctosReport', compact('data'));
+
+    }
+
+    public function getCtosReport(Request $request)
+    {
+
+        //A
+
+        if($request->program == 'all')
+        {
+
+            $data['program'] = DB::table('tblprogramme')->pluck('id');
+
+        }else{
+
+            $data['program'] = DB::table('tblprogramme')->where('id', $request->program)->pluck('id');
+            
+        }
+
+        $data['student'] = DB::table('students')
+                           ->leftjoin('tblstudent_address', 'students.ic', 'tblstudent_address.student_ic')
+                           ->leftjoin('tblstate', 'tblstudent_address.state_id', 'tblstate.id')
+                           ->leftjoin('tblcountry', 'tblstudent_address.country_id', 'tblcountry.id')
+                           ->leftjoin('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
+                           ->leftjoin('sessions', 'students.session', 'sessions.SessionID')
+                           ->leftjoin('tblcountry AS b', 'tblstudent_personal.nationality_id', 'b.id')
+                           ->select(DB::raw('"" AS CM'), DB::raw('"" AS etr'), 'students.name', DB::raw('"" AS old_ic'), 'students.ic',
+                                    DB::raw('"" AS passport'), DB::raw('CASE WHEN tblstudent_personal.sex_id = 1 THEN "Mr" ELSE "Mrs" END AS salution'),
+                                    'tblstudent_personal.sex_id', DB::raw('"1" AS marital_status'), DB::raw('"3" AS house_status'),
+                                    DB::raw("CONCAT(tblstudent_address.address1, ',', tblstudent_address.address2, ',', tblstudent_address.address3) AS address"),
+                                    'tblstudent_address.city', 'tblstate.state_name', 'tblstudent_address.postcode', 'tblcountry.name AS country_name',
+                                    'tblstudent_personal.date_birth', 'b.name AS nationality_name', 'students.email', 'tblstudent_personal.no_tel',
+                                    DB::raw('"" AS ref_no'), DB::raw('"" AS account_no'))
+                           ->whereBetween('sessions.Year', [$request->from, $request->to])
+                           ->whereIn('students.program', $data['program'])
+                           ->get();
+                           
+
+        
+
+        foreach($data['student'] as $key => $std)
+        {
+
+            //B
+
+            $data['waris'][$key] = DB::table('tblstudent_waris')
+                                   ->select(
+                                    DB::raw('"I" AS sponsor'), DB::raw('"" AS old_ic'), 'tblstudent_waris.ic',
+                                    DB::raw('"" AS passport'), 'tblstudent_waris.name', DB::raw('"1" AS sponsor_status'),
+                                    DB::raw('"" AS remarks'), DB::raw('"" as notification'), DB::raw('"" AS relationship'),
+                                    DB::raw('"1" AS type')
+                                   )
+                                   ->where('tblstudent_waris.student_ic', $std->ic)
+                                   ->first();
+
+            //C
+
+            // Define the first part of the union
+            $query = DB::table('students')
+            ->leftjoin('tblclaim', 'students.ic', 'tblclaim.student_ic')
+            ->leftjoin('tblclaimdtl', 'tblclaim.id', '=', 'tblclaimdtl.claim_id')
+            ->leftjoin('tblstudentclaim', 'tblclaimdtl.claim_package_id', '=', 'tblstudentclaim.id')
+            ->where([
+                ['tblclaim.process_status_id', '=', 2],
+                ['tblstudentclaim.groupid', '=', 1]
+            ])
+            ->where('students.ic', $std->ic)
+            ->select(DB::raw("IFNULL(SUM(tblclaimdtl.amount), 0) AS claim"), DB::raw('0 as payment'));
+
+            // Define the second part of the union
+            $subQuery = DB::table('students')
+            ->leftjoin('tblpayment', 'students.ic', 'tblpayment.student_ic')
+            ->leftjoin('tblpaymentdtl', 'tblpayment.id', '=', 'tblpaymentdtl.payment_id')
+            ->leftjoin('tblstudentclaim', 'tblpaymentdtl.claim_type_id', '=', 'tblstudentclaim.id')
+            ->where([
+                ['tblpayment.process_status_id', '=', 2],
+                ['tblstudentclaim.groupid', '=', 1]
+            ])
+            ->where('students.ic', $std->ic)
+            ->select(DB::raw('0 as claim'), DB::raw("IFNULL(SUM(tblpaymentdtl.amount), 0) AS payment"))
+            ->unionAll($query); // Here, use the Query Builder instance directly
+
+            // Now, wrap the subquery and calculate the balance
+            $data['balance'][$key] = DB::query()->fromSub($subQuery, 'sub')
+            ->select(DB::raw('"" AS date'), DB::raw('SUM(claim) - SUM(payment) AS balance'), DB::raw('"" AS cr_limit'), DB::raw('"" AS cr_term'))
+            ->get();
+
+            //D
+
+            $data['lastPayment'][$key] = DB::table('tblpayment')
+                                   ->leftjoin('tblpaymentdtl', 'tblpayment.id', '=', 'tblpaymentdtl.payment_id')
+                                   ->leftjoin('tblstudentclaim', 'tblpaymentdtl.claim_type_id', '=', 'tblstudentclaim.id')
+                                   ->where([
+                                        ['tblpayment.student_ic', $std->ic],
+                                        ['tblpayment.process_status_id', 2],
+                                        ['tblstudentclaim.groupid', '=', 1]
+                                   ])
+                                   ->select(DB::raw('SUM(tblpaymentdtl.amount) AS last_payment'), DB::raw('"1" AS option'), DB::raw('"31" AS debt_type'), DB::raw('"" AS deletion') )
+                                   ->groupBy('tblpayment.add_date')
+                                   ->orderByDesc('tblpayment.add_date')
+                                   ->get();
+
+        }
+
+        return view('finance.debt.ctos_report.ctosReportGetStudent', compact('data'));
+
+    }
 }
