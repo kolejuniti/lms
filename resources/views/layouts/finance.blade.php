@@ -331,11 +331,12 @@
 					<li><a href="{{ route('finance.receiptList') }}" class="{{ (route('finance.receiptList') == Request::url()) ? 'active' : ''}}">Receipt Report</a></li>
 					<li><a href="{{ route('finance.dailyReport') }}" class="{{ (route('finance.dailyReport') == Request::url()) ? 'active' : ''}}">Daily Report</a></li>
 					<li><a href="{{ route('finance.chargeReport') }}" class="{{ (route('finance.chargeReport') == Request::url()) ? 'active' : ''}}">Charge Report</a></li>
-					<li><a href="{{ route('finance.arrearsReport') }}" class="{{ (route('finance.arrearsReport') == Request::url()) ? 'active' : ''}}">Arrears Report</a></li>
+					<li><a href="{{ route('finance.arrearsReport') }}" class="{{ (route('finance.arrearsReport') == Request::url()) ? 'active' : ''}}">Debt & Payment Report</a></li>
 					<li><a href="{{ route('finance.urReport') }}" class="{{ (route('finance.urReport') == Request::url()) ? 'active' : ''}}">UR Report</a></li>
 					<li><a href="{{ route('finance.agingReport') }}" class="{{ (route('finance.agingReport') == Request::url()) ? 'active' : ''}}">Student Aging Report</a></li>
 					<li><a href="{{ route('finance.programAgingReport') }}" class="{{ (route('finance.programAgingReport') == Request::url()) ? 'active' : ''}}">Program Aging Report</a></li>
 					<li><a href="{{ route('finance.statusAgingReport') }}" class="{{ (route('finance.statusAgingReport') == Request::url()) ? 'active' : ''}}">Status Aging Report</a></li>
+					<li><a href="{{ route('finance.studentArrearsReport') }}" class="{{ (route('finance.studentArrearsReport') == Request::url()) ? 'active' : ''}}">Student Arrears Report</a></li>
 				</ul>
 			  </li>
 			  <li class="treeview">
