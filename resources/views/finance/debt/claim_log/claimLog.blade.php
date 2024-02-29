@@ -207,189 +207,57 @@ function submit()
               //     (day<10 ? '0' : '') + day;
 
                 $('#form-student').html(data);
-                $('#voucher_table').DataTable();
-            }
-        });
+                $('#voucher_table').DataTable({
+                        dom: 'lBfrtip', // if you remove this line you will see the show entries dropdown
+                        paging: false,
 
+                        buttons: [
+                            {
+                              text: 'Excel',
+                              action: function () {
+                                // get the HTML table to export
+                                const table = document.getElementById("voucher_table");
+                                
+                                // create a new Workbook object
+                                const wb = XLSX.utils.book_new();
+                                
+                                // add a new worksheet to the Workbook object
+                                const ws = XLSX.utils.table_to_sheet(table);
+                                XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
+                                
+                                // trigger the download of the Excel file
+                                XLSX.writeFile(wb, "exported-data.xlsx");
+                              }
+                            }
+                        ],
 
+                      });
 
-}
-
-
-function add(ic)
-{
-
-  var forminput = [];
-  var formData = new FormData();
-
-  forminput = {
-    ic: $('#ic').val(),
-    from: $('#from').val(),
-    to: $('#to').val(),
-    amount: $('#amount').val(),
-    expired: $('#expired').val(),
-  };
-
-  formData.append('voucherDetail', JSON.stringify(forminput));
-
-  $.ajax({
-        headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
-        url: '{{ url('/finance/voucher/student/storeVoucherDtl') }}',
-        type: 'POST',
-        data: formData,
-        cache : false,
-        processData: false,
-        contentType: false,
-        error:function(err){
-            console.log(err);
-        },
-        success:function(res){
-            try{
-                if(res.message == "Success"){
-                    alert("Success! Payment Details has been added!");
-
-                    $('#voucher_table').html(res.data);
-
-                    if (res.exists && res.exists.length > 0) {
-                        var existingVouchers = res.exists.join(', ');
-                        alert('These vouchers already exist: ' + existingVouchers);
-                    }
-                    
-                    $('#voucher_table').DataTable();
-                    
-                }else{
-                    $('.error-field').html('');
-                    if(res.message == "Field Error"){
-                        for (f in res.error) {
-                            $('#'+f+'_error').html(res.error[f]);
+                      let db = document.getElementById("voucher_table");
+                      let dbRows = db.rows;
+                      let lastValue = "";
+                      let lastCounter = 1;
+                      let lastRow = 0;
+                      for (let i = 0; i < dbRows.length; i++) {
+                        let thisValue = dbRows[i].cells[0].innerHTML;
+                        if (thisValue == lastValue) {
+                          lastCounter++;
+                          dbRows[lastRow].cells[0].rowSpan = lastCounter;
+                          dbRows[i].cells[0].style.display = "none";
+                        } else {
+                          dbRows[i].cells[0].style.display = "table-cell";
+                          lastValue = thisValue;
+                          lastCounter = 1;
+                          lastRow = i;
                         }
-                    }
-                    else if(res.message == "Please fill all required field!"){
-                        alert(res.message);
-                    }
-                    else{
-                        alert(res.message);
-                    }
-                    $("html, body").animate({ scrollTop: 0 }, "fast");
-                }
-            }catch(err){
-                alert("Ops sorry, there is an error");
-            }
-        }
-    });
+                      }
 
-}
-
-function deletedtl(id)
-{
-
-  Swal.fire({
-    title: "Are you sure?",
-    text: "This will be permanent",
-    showCancelButton: true,
-    confirmButtonText: "Yes, delete it!"
-  }).then(function(res){
-    
-    if (res.isConfirmed){
-              $.ajax({
-                  headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
-                  url      : "{{ url('finance/voucher/student/deleteVoucherDtl') }}",
-                  method   : 'POST',
-                  data 	 : {id: id},
-                  error:function(err){
-                      alert("Error");
-                      console.log(err);
-                  },
-                  success  : function(data){
-                      alert("success");
-                      $('#voucher_table').html(data);
-                      $('#voucher_table').DataTable();
-                  }
-              });
-          }
-      });
-
-}
-
-function claimVoucher(id)
-{
-
-  return $.ajax({
-            headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
-            url      : "{{ url('finance/voucher/student/claimVoucherDtl') }}",
-            method   : 'POST',
-            data 	 : {id: id},
-            error:function(err){
-                alert("Error");
-                console.log(err);
-            },
-            success  : function(data){
-                alert("claim success!");
-                $('#voucher_table').html(data);
-                $('#voucher_table').DataTable();
-
+                      // Remove the cells that are hidden
+                      $("#voucher_table td:first-child:hidden").remove();
             }
         });
 
-}
 
-function unclaimVoucher(id)
-{
-
-  return $.ajax({
-            headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
-            url      : "{{ url('finance/voucher/student/unclaimVoucherDtl') }}",
-            method   : 'POST',
-            data 	 : {id: id},
-            error:function(err){
-                alert("Error");
-                console.log(err);
-            },
-            success  : function(data){
-                alert("unclaim success");
-                $('#voucher_table').html(data);
-                $('#voucher_table').DataTable();
-
-            }
-        });
-
-}
-
-function confirm()
-{
-
-  var id = $('#idpayment').val();
-
-  $.ajax({
-      headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
-      url      : "{{ url('finance/payment/confirmPayment') }}",
-      method   : 'POST',
-      data 	 : {id: id},
-      error:function(err){
-          alert("Error");
-          console.log(err);
-      },
-      success  : function(data){
-        try{
-          if(data.message == "Success")
-          {
-            alert(data.message);
-            if(data.alert != null)
-            {
-              alert(data.alert);
-            }
-
-            window.open('/finance/sponsorship/payment/getReceipt?id=' + data.id, '_blank');
-            window.location.reload();
-          }else{
-            alert(data.message);
-          }
-        }catch(err){
-            alert("Ops sorry, there is an error");
-        }
-        
-      }
-  });
 
 }
 

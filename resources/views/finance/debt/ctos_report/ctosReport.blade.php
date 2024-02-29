@@ -32,13 +32,13 @@
   <div class="content-header">
     <div class="d-flex align-items-center">
       <div class="me-auto">
-        <h4 class="page-title">Collection Report</h4>
+        <h4 class="page-title">CTOS Report</h4>
         <div class="d-inline-block align-items-center">
           <nav>
             <ol class="breadcrumb">
               <li class="breadcrumb-item"><a href="#"><i class="mdi mdi-home-outline"></i></a></li>
               <li class="breadcrumb-item" aria-current="page">Dashboard</li>
-              <li class="breadcrumb-item active" aria-current="page">Collection Report</li>
+              <li class="breadcrumb-item active" aria-current="page">CTOS Report</li>
             </ol>
           </nav>
         </div>
@@ -54,7 +54,7 @@
             <!-- general form elements -->
             <div class="card card-primary">
               <div class="card-header">
-                <h3 class="card-title">Expectation Collection Report</h3>
+                <h3 class="card-title">Student CTOS Report</h3>
               </div>
               <!-- /.card-header -->
               <div class="card mb-3">
@@ -63,16 +63,29 @@
                 </div>
                 <div class="card-body">
                   <div class="row">
+                    <div class="col-md-12 ml-3">
+                      <div class="form-group">
+                          <label class="form-label" for="program">Program</label>
+                          <select class="form-select" id="program" name="program">
+                            <option value="all" selected>All Program</option> 
+                            @foreach ($data['program'] as $prg)
+                            <option value="{{ $prg->id }}">{{ $prg->progcode }} - {{ $prg->progname }}</option> 
+                            @endforeach
+                          </select>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
                     <div class="col-md-6">
                       <div class="form-group">
                       <label class="form-label" for="from">FROM</label>
-                      <input type="date" class="form-control" id="from" name="from">
+                      <input type="number" class="form-control" min="1900" max="2099" step="1" placeholder="year" id="from" name="from" />
                       </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
                         <label class="form-label" for="name">TO</label>
-                        <input type="date" class="form-control" id="to" name="to">
+                        <input type="number" class="form-control" min="1900" max="2099" step="1" placeholder="year" id="to" name="to" />
                         </div>
                     </div>
                   </div>
@@ -103,14 +116,15 @@
 function submit()
 {
 
+  var program = $('#program').val();
   var from = $('#from').val();
   var to = $('#to').val();
 
   return $.ajax({
             headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
-            url      : "{{ url('finance/debt/collectionReport/getCollectionReport') }}",
+            url      : "{{ url('finance/debt/ctosReport/getCtosReport') }}",
             method   : 'POST',
-            data 	 : {from: from, to: to},
+            data 	 : {program: program, from: from, to: to},
             error:function(err){
                 alert("Error");
                 console.log(err);
@@ -126,6 +140,7 @@ function submit()
               //     (day<10 ? '0' : '') + day;
 
                 $('#form-student').html(data);
+
                 $('#voucher_table').DataTable({
                         dom: 'lBfrtip', // if you remove this line you will see the show entries dropdown
                         paging: false,
@@ -179,6 +194,9 @@ function submit()
 
 
 }
+
+
+
 
 </script>
 @endsection
