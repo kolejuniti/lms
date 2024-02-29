@@ -10331,4 +10331,270 @@ class FinanceController extends Controller
         return view('finance.debt.ctos_report.ctosReportGetStudent', compact('data'));
 
     }
+
+    public function studentArrearsReport()
+    {
+
+        $data['program'] = DB::table('tblprogramme')->get();
+
+        $data['session'] = DB::table('sessions')->get();
+
+        $data['status'] = DB::table('tblstudent_status')->get();
+
+        return view('finance.report.studentArrearsReport', compact('data'));
+
+    }
+
+    public function getStudentArrearsReport(Request $request)
+    {
+
+        $filtersData = $request->filtersData;
+
+        $validator = Validator::make($request->all(), [
+            'filtersData' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return ["message"=>"Field Error", "error" => $validator->messages()->get('*')];
+        }
+
+        try{ 
+            DB::beginTransaction();
+            DB::connection()->enableQueryLog();
+
+            try{
+
+                $filter = json_decode($filtersData);
+
+                if($filter->program == 'all')
+                {
+
+                    $program = DB::table('tblprogramme')->pluck('id');
+
+                }else{
+
+                    $program = DB::table('tblprogramme')->where('id', $filter->program)->pluck('id');
+                    
+                }
+
+                $data['student'] = DB::table('students')
+                                   ->leftjoin('sessions', 'students.session', 'sessions.SessionID')
+                                   ->leftjoin('tblprogramme', 'students.program', 'tblprogramme.id')
+                                   ->leftjoin('tblstudent_status', 'students.status', 'tblstudent_status.id')
+                                   ->whereIn('students.program', $program)
+                                   ->when($filter->status != 'all', function ($query) use ($filter){
+                                        return $query->where('students.status', $filter->status);
+                                   })
+                                   ->when($filter->session != 'all', function ($query) use ($filter){
+                                        return $query->where('students.session', $filter->session);
+                                    })
+                                   ->select('students.name','students.ic', 'students.no_matric', 'tblprogramme.progcode', 
+                                            'sessions.SessionName', 'students.semester', 'tblstudent_status.name AS status')
+                                   ->get();
+
+                foreach($data['student'] as $key => $std)
+                {
+                    //B
+
+                    $data['sponsor'][$key] = DB::table('tblpayment')
+                                       ->leftjoin('tblsponsor_library', 'tblpayment.payment_sponsor_id', 'tblsponsor_library.id')
+                                       ->where([
+                                            ['tblpayment.student_ic', $std->ic],
+                                            ['tblpayment.process_status_id', 2],
+                                            ['tblpayment.process_type_id', 7]
+                                       ])
+                                       ->orderBy('tblpayment.id', 'DESC')
+                                       ->value('code') ?? "SENDIRI";
+
+                    //C
+                    
+                    $result = DB::table('tblpackage_sponsorship')
+                              ->leftjoin('tblpackage', 'tblpackage_sponsorship.package_id', 'tblpackage.id')
+                              ->leftjoin('tblpayment_type', 'tblpackage_sponsorship.payment_type_id', 'tblpayment_type.id')
+                              ->where('tblpackage_sponsorship.student_ic', $std->ic)
+                              ->select('tblpackage.name AS package_name', 'tblpayment_type.name AS payment_type', 'tblpackage_sponsorship.amount')
+                              ->first();
+
+                    // Check if the result is null and set default values if it is
+                    $data['sponsor_dtl'][$key] = $result ?? (object)[
+                        'package_name' => '-',
+                        'payment_type' => '-',
+                        'amount' => '-'
+                    ];
+
+                    // Define the first part of the union
+                    $query = DB::table('tblclaim')
+                    ->leftjoin('tblclaimdtl', 'tblclaim.id', '=', 'tblclaimdtl.claim_id')
+                    ->leftjoin('tblstudentclaim', 'tblclaimdtl.claim_package_id', '=', 'tblstudentclaim.id')
+                    ->where([
+                        ['tblclaim.process_status_id', '=', 2],
+                        ['tblstudentclaim.groupid', '=', 1],
+                        ['tblclaim.student_ic', '=', $std->ic]
+                    ])
+                    ->select(DB::raw("IFNULL(SUM(tblclaimdtl.amount), 0) AS claim"), DB::raw('0 as payment'));
+
+                    // Define the second part of the union
+                    $subQuery = DB::table('tblpayment')
+                    ->leftjoin('tblpaymentdtl', 'tblpayment.id', '=', 'tblpaymentdtl.payment_id')
+                    ->leftjoin('tblstudentclaim', 'tblpaymentdtl.claim_type_id', '=', 'tblstudentclaim.id')
+                    ->where([
+                        ['tblpayment.process_status_id', '=', 2],
+                        ['tblstudentclaim.groupid', '=', 1],
+                        ['tblpayment.student_ic', '=', $std->ic]
+                    ])
+                    ->select(DB::raw('0 as claim'), DB::raw("IFNULL(SUM(tblpaymentdtl.amount), 0) AS payment"))
+                    ->unionAll($query); // Here, use the Query Builder instance directly
+
+                    // Now, wrap the subquery and calculate the balance
+                    $data['balance'][$key] = DB::query()->fromSub($subQuery, 'sub')
+                    ->select(DB::raw('SUM(claim) AS total_claim'), DB::raw('SUM(payment) AS total_payment'), DB::raw('SUM(claim) - SUM(payment) AS balance'))
+                    ->get();
+
+                }
+
+                $content = "";
+                $content .= '<thead>
+                                <tr>
+                                    <th>
+                                        No
+                                    </th>
+                                    <th>
+                                        Name
+                                    </th>
+                                    <th>
+                                        IC
+                                    </th>
+                                    <th>
+                                        No. Matric
+                                    </th>
+                                    <th>
+                                        Program
+                                    </th>
+                                    <th>
+                                        Session
+                                    </th>
+                                    <th>
+                                        Semester
+                                    </th>
+                                    <th>
+                                        Status
+                                    </th>
+                                    <th>
+                                        Sponsor
+                                    </th>
+                                    <th>
+                                        Package
+                                    </th>
+                                    <th>
+                                        Payment Method
+                                    </th>
+                                    <th>
+                                        Fee (RM)
+                                    </th>
+                                    <th>
+                                        Payment (RM)
+                                    </th>
+                                    <th>
+                                        Balance (RM)
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="table">';
+                            
+                foreach($data['student'] as $key => $std){
+                    //$registered = ($std->status == 'ACTIVE') ? 'checked' : '';
+
+                    $content .= '
+                    <tr>
+                        <td>
+                        '. $key+1 .'
+                        </td>
+                        <td>
+                        '. $std->name .'
+                        </td>
+                        <td>
+                        '. $std->ic .'
+                        </td>
+                        <td>
+                        '. $std->progcode .'
+                        </td>
+                        <td>
+                        '. $std->no_matric .'
+                        </td>
+                        <td>
+                        '. $std->SessionName .'
+                        </td>
+                        <td>
+                        '. $std->semester .'
+                        </td>
+                        <td>
+                        '. $std->status .'
+                        </td>
+                        <td>';
+                        if($data['sponsor'][$key] != null)
+                        {
+
+                            $content .= ''. $data['sponsor'][$key] .'';
+
+                        }else{
+                            $content .= '-';
+                        }
+            $content .= '</td>
+                        <td>';
+                        if($data['sponsor_dtl'][$key] != null)
+                        {
+
+                            $content .= ''. $data['sponsor_dtl'][$key]->package_name .'';
+
+                        }else{
+                            $content .= '-';
+                        }
+            $content .= '</td>
+                        <td>';
+                        if($data['sponsor_dtl'][$key] != null)
+                        {
+
+                            $content .= ''. $data['sponsor_dtl'][$key]->payment_type .'';
+
+                        }else{
+                            $content .= '-';
+                        }
+            $content .= '</td>';
+                        foreach($data['balance'][$key] as $blc)
+                        {
+
+                            $content .= '<td>
+                                            '. $blc->total_claim .'
+                                        </td>
+                                        <td>
+                                            '. $blc->total_payment .'
+                                        </td>
+                                        <td>
+                                            '. $blc->balance .'
+                                        </td>';
+
+                        }
+        $content .='</tr>';
+                    }
+
+                $content .= '</tbody>';
+
+            }catch(QueryException $ex){
+                DB::rollback();
+                if($ex->getCode() == 23000){
+                    return ["message"=>"Class code already existed inside the system"];
+                }else{
+                    \Log::debug($ex);
+                    return ["message"=>"DB Error"];
+                }
+            } 
+
+            DB::commit();
+        }catch(Exception $ex){
+            return ["message"=>"Error"];
+        }
+
+        return response()->json(['message' => 'Success', 'data' => $content]);
+
+    }
 }
