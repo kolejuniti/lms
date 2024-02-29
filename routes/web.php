@@ -638,6 +638,8 @@ Route::get('/finance/debt/collectionExpectReport', [App\Http\Controllers\Finance
 Route::post('/finance/debt/collectionExpectReport/getCollectionExpectReport', [App\Http\Controllers\FinanceController::class,'getCollectionExpectReport']);
 Route::get('/finance/debt/monthlyPayment', [App\Http\Controllers\FinanceController::class,'monthlyPayment'])->name('finance.monthlyPayment');
 Route::post('/finance/debt/monthlyPayment/getMonthlyPayment', [App\Http\Controllers\FinanceController::class,'getMonthlyPayment']);
+Route::get('/finance/debt/ctosReport', [App\Http\Controllers\FinanceController::class,'ctosReport'])->name('finance.ctosReport');
+Route::post('/finance/debt/ctosReport/getCtosReport', [App\Http\Controllers\FinanceController::class,'getCtosReport']);
 
 
 Route::get('/treasurer_dashboard', [App\Http\Controllers\TreasurerController::class, 'dashboard'])->name('treasurer.dashboard');
