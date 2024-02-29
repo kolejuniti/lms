@@ -10322,6 +10322,7 @@ class FinanceController extends Controller
                                    ->select(DB::raw('SUM(tblpaymentdtl.amount) AS last_payment'), DB::raw('"1" AS option'), DB::raw('"31" AS debt_type'), DB::raw('"" AS deletion') )
                                    ->groupBy('tblpayment.add_date')
                                    ->orderByDesc('tblpayment.add_date')
+                                   ->limit(1)
                                    ->get();
 
         }
