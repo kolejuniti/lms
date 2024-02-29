@@ -10317,6 +10317,7 @@ class FinanceController extends Controller
                                    ->leftjoin('tblstudentclaim', 'tblpaymentdtl.claim_type_id', '=', 'tblstudentclaim.id')
                                    ->where([
                                         ['tblpayment.student_ic', $std->ic],
+                                        ['tblpayment.process_type_id', 1],
                                         ['tblpayment.process_status_id', 2],
                                         ['tblstudentclaim.groupid', '=', 1]
                                    ])
@@ -10597,4 +10598,5 @@ class FinanceController extends Controller
         return response()->json(['message' => 'Success', 'data' => $content]);
 
     }
+
 }
