@@ -285,6 +285,9 @@
 						<li><a href="{{ route('pendaftar.student.incomeReport') }}" class="{{ (route('pendaftar.student.incomeReport') == Request::url()) ? 'active' : ''}}">Student Family Income Report</a></li>
 						<li><a href="{{ route('pendaftar.student.internationalReport') }}" class="{{ (route('pendaftar.student.internationalReport') == Request::url()) ? 'active' : ''}}">International Student Report</a></li>
 						<li><a href="{{ route('pendaftar.student.annualStudentReport') }}" class="{{ (route('pendaftar.student.annualStudentReport') == Request::url()) ? 'active' : ''}}">Annual Student Number Report</a></li>
+						<li><a href="{{ route('pendaftar_akademik.leave') }}" class="{{ (route('pendaftar_akademik.leave') == Request::url()) ? 'active' : ''}}">Student Leave</a></li>
+						<li><a href="{{ route('pendaftar_akademik.semester') }}" class="{{ (route('pendaftar_akademik.semester') == Request::url()) ? 'active' : ''}}">Student Semester</a></li>
+						<li><a href="{{ route('pendaftar.student.result') }}" class="{{ (route('pendaftar.student.result') == Request::url()) ? 'active' : ''}}">Student Result</a></li>
 					</ul>
 				</li>
 

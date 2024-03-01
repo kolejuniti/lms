@@ -265,13 +265,25 @@
 				<a href="{{ route('finance.dashboard') }}"><i data-feather="home"></i><span>Dashboard</span></a>
 			  </li>
 			  <li class="treeview">
-				<a href="#"><i data-feather="user-check"></i><span>Student</span>
+				<a href="#"><i data-feather="user-check"></i><span>Student Information</span>
 					<span class="pull-right-container">
 						<i class="fa fa-angle-left pull-right"></i>
 					</span>
 				</a>
 				<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
 					<li><a href="{{ route('pendaftar.student.edit') }}" class="{{ (route('pendaftar.student.edit') == Request::url()) ? 'active' : ''}}">Student Info</a></li>
+				</ul>
+			  </li>
+			  <li class="treeview">
+				<a href="#"><i data-feather="users"></i><span>Student</span>
+					<span class="pull-right-container">
+						<i class="fa fa-angle-left pull-right"></i>
+					</span>
+				</a>
+				<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
+					<li><a href="{{ route('pendaftar_akademik.leave') }}" class="{{ (route('pendaftar_akademik.leave') == Request::url()) ? 'active' : ''}}">Student Leave</a></li>
+					<li><a href="{{ route('pendaftar_akademik.semester') }}" class="{{ (route('pendaftar_akademik.semester') == Request::url()) ? 'active' : ''}}">Student Semester</a></li>
+					<li><a href="{{ route('pendaftar.student.result') }}" class="{{ (route('pendaftar.student.result') == Request::url()) ? 'active' : ''}}">Student Result</a></li>
 				</ul>
 			  </li>
 			  <li class="treeview">
