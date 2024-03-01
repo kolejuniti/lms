@@ -1,4 +1,4 @@
-@extends('../layouts.pendaftar')
+@extends((Auth::user()->usrtype == "RGS") ? 'layouts.pendaftar' : (Auth::user()->usrtype == "FN" ? 'layouts.finance' : (Auth::user()->usrtype == "AR" ? 'layouts.pendaftar_akademik' : '')))
 
 @section('main')
 <!-- Content Header (Page header) -->
@@ -8,13 +8,13 @@
   <div class="content-header">
     <div class="d-flex align-items-center">
       <div class="me-auto">
-        <h4 class="page-title">Registration</h4>
+        <h4 class="page-title">Update Status</h4>
         <div class="d-inline-block align-items-center">
           <nav>
             <ol class="breadcrumb">
               <li class="breadcrumb-item"><a href="#"><i class="mdi mdi-home-outline"></i></a></li>
-              <li class="breadcrumb-item" aria-current="page">Extra</li>
-              <li class="breadcrumb-item active" aria-current="page">Profile</li>
+              <li class="breadcrumb-item" aria-current="page">Dashboard</li>
+              <li class="breadcrumb-item active" aria-current="page">Update Status</li>
             </ol>
           </nav>
         </div>
@@ -30,7 +30,7 @@
             <!-- general form elements -->
             <div class="card card-primary">
               <div class="card-header">
-                <h3 class="card-title">Update Status</h3>
+                <h3 class="card-title">Update Student Status</h3>
               </div>
               <!-- /.card-header -->
               <div class="card mb-3">
