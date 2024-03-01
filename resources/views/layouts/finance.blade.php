@@ -281,7 +281,7 @@
 					</span>
 				</a>
 				<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
-					<li><a href="{{ route('pendaftar.student.edit') }}" class="{{ (route('pendaftar.student.edit') == Request::url()) ? 'active' : ''}}">Student Edit</a></li>
+					<li><a href="{{ route('pendaftar') }}" class="{{ (route('pendaftar') == Request::url()) ? 'active' : ''}}">Student List</a></li>
 					<li><a href="{{ route('pendaftar.student.status') }}" class="{{ (route('pendaftar.student.status') == Request::url()) ? 'active' : ''}}">Update Status</a></li>
 					<li><a href="{{ route('pendaftar.student.studentreport') }}" class="{{ (route('pendaftar.student.studentreport') == Request::url()) ? 'active' : ''}}">Student Report</a></li>
 					<li><a href="{{ route('pendaftar.student.internationalReport') }}" class="{{ (route('pendaftar.student.internationalReport') == Request::url()) ? 'active' : ''}}">International Student Report</a></li>
