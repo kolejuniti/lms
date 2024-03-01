@@ -692,9 +692,6 @@ $(document).ready(function() {
     newForm.find('select[name="relationship[]"]').val('{{ $waris->relationship }}');
     //newForm.find('select[name="w_race[]"]').val('{{ $waris->race }}');
     newForm.find('select[name="w_status[]"]').val('{{ $waris->status }}');
-    // Add a delete button to the card element
-    var editButton = $('<div class="form-group" style="margin-left: 10px"><button class="btn btn-danger delete-form" type="button">Delete Form</button></div>');
-    newForm.append(editButton);
     // Add the new card element to the forms container
     $('#forms-container').append(newForm);
   @endforeach
