@@ -246,6 +246,17 @@
 				</li>
 
 				<li class="treeview">
+					<a href="#"><i data-feather="user-check"></i><span>Student</span>
+						<span class="pull-right-container">
+							<i class="fa fa-angle-left pull-right"></i>
+						</span>
+					</a>
+					<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
+						<li><a href="{{ route('pendaftar.student.edit') }}" class="{{ (route('pendaftar.student.edit') == Request::url()) ? 'active' : ''}}">Student Info</a></li>
+					</ul>
+				</li>
+
+				<li class="treeview">
 				    <a href="#"><i data-feather="clipboard"></i><span>Report</span>
 						<span class="pull-right-container">
 							<i class="fa fa-angle-left pull-right"></i>
