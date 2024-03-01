@@ -232,6 +232,11 @@ class PendaftarController extends Controller
 
                 if (isset($request->edit)) {
                     $content .= '<td class="project-actions text-right" >
+                                <a class="btn btn-info btn-sm btn-sm mr-2 mb-2" href="/pendaftar/view/'. $student->ic .'">
+                                    <i class="ti-pencil-alt">
+                                    </i>
+                                    View
+                                </a>
                                 <a class="btn btn-info btn-sm btn-sm mr-2 mb-2" href="/pendaftar/edit/'. $student->ic .'">
                                     <i class="ti-pencil-alt">
                                     </i>
@@ -424,7 +429,15 @@ class PendaftarController extends Controller
 
             
                 $content .= '<td class="project-actions text-right" >
-                            <a class="btn btn-info btn-sm btn-sm mr-2 mb-2" href="/pendaftar/edit/'. $student->ic .'">
+                            <a class="btn btn-success btn-sm btn-sm mr-2 mb-2" href="/pendaftar/view/'. $student->ic .'">
+                                <i class="ti-info-alt">
+                                </i>
+                                View
+                            </a>
+                            ';
+                            if(Auth::user()->usrtype == "RGS")
+                            {
+                $content .= '<a class="btn btn-info btn-sm btn-sm mr-2 mb-2" href="/pendaftar/edit/'. $student->ic .'">
                                 <i class="ti-pencil-alt">
                                 </i>
                                 Edit
@@ -443,10 +456,9 @@ class PendaftarController extends Controller
                                 <i class="ti-trash">
                                 </i>
                                 Delete
-                            </a> -->
-                            </td>
-                        
-                        ';
+                            </a> -->';
+                            }
+                $content .= '</td>';
            
             }
             $content .= '</tr></tbody>';
@@ -721,6 +733,60 @@ class PendaftarController extends Controller
         }
 
         return redirect(route('pendaftar.create'))->with('newStud', $data['id']);
+    }
+
+    public function view()
+    {
+        $student = DB::table('students')
+                   ->leftjoin('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
+                   ->leftjoin('tblstudent_address', 'students.ic', 'tblstudent_address.student_ic')
+                   ->leftjoin('tblstudent_pass', 'students.ic', 'tblstudent_pass.student_ic')
+                   ->leftjoin('student_form', 'students.ic', 'student_form.student_ic')
+                   ->select('students.*', 'tblstudent_personal.*', 'tblstudent_address.*', 'tblstudent_pass.*', 'student_form.*', 'tblstudent_personal.state_id AS place_birth')
+                   ->where('ic',request()->ic)->first();
+
+        $data['waris'] = DB::table('tblstudent_waris')->where('student_ic', $student->ic)->get();
+
+        //dd($data['waris']);
+
+        $program = DB::table('tblprogramme')->get();
+
+        $session = DB::table('sessions')->get();
+
+        $data['batch'] = DB::table('tblbatch')->get();
+
+        $data['state'] = DB::table('tblstate')->orderBy('state_name')->get();
+
+        $data['gender'] = DB::table('tblsex')->get();
+
+        $data['race'] = DB::table('tblnationality')->orderBy('nationality_name')->get();
+
+        $data['relationship'] = DB::table('tblrelationship')->get();
+
+        $data['wstatus'] = DB::table('tblwaris_status')->get();
+
+        $data['religion'] =  DB::table('tblreligion')->orderBy('religion_name')->get();
+
+        $data['CL'] = DB::table('tblcitizenship_level')->get();
+
+        $data['citizen'] = DB::table('tblcitizenship')->get();
+
+        $data['mstatus'] = DB::table('tblmarriage')->get();
+
+        $data['EA'] = DB::table('tbledu_advisor')->get();
+
+        $data['pass'] = DB::table('tblpass_type')->get();
+
+        $data['country'] = DB::table('tblcountry')->get();
+        
+        $data['dun'] = DB::table('tbldun')->orderBy('name')->get();
+
+        $data['parlimen'] = DB::table('tblparlimen')->orderBy('name')->get();
+
+        $data['qualification'] = DB::table('tblqualification_std')->get();
+
+        return view('pendaftar.view', compact(['student','program','session','data']));
+
     }
 
     public function edit()
