@@ -134,6 +134,7 @@
                            <td class="text-center; width: 50px;"><strong>KAEDAH BAYARAN</strong></td>
                            <td class="text-center; width: 50px;"><strong>BANK</strong></td>
                            <td class="text-center; width: 50px;"><strong>NO. DOKUMEN</strong></td>
+                           <td class="text-center; width: 50px;"><strong></strong></td>
                            <td class="text-center; width: 50px;"><strong>AMAUN</strong></td>
                         </tr>
                      </thead>
@@ -148,11 +149,12 @@
                            @else
                            <td >{{ $dtl->no_document }}</td>
                            @endif
+                           <td></td>
                            <td>RM{{ number_format($dtl->amount, 2, '.', ',') }}</td>
                         </tr>
                         @endforeach
                         <tr>
-                           <td colspan="3">
+                           <td colspan="4">
                            </td><td class="text-center; width: 50px;"><strong>Jumlah :</strong></td>
                            <td class="text-center; width: 50px;"><strong>RM{{ number_format($data['total2'], 2, '.', ',') }}</strong></td>
                         </tr>
