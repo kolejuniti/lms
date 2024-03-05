@@ -3092,7 +3092,11 @@ class FinanceController extends Controller
 
     public function getReceipt(Request $request)
     {
-        $data['payment'] = DB::table('tblpayment')->where('id', $request->id)->first();
+        $data['payment'] = DB::table('tblpayment')->where('tblpayment.id', $request->id)
+                           ->join('sessions AS A2', 'tblpayment.session_id', 'A2.SessionID')
+                           ->join('tblprogramme', 'tblpayment.program_id', 'tblprogramme.id')
+                           ->select('tblpayment.*', 'tblprogramme.progname AS program', 'A2.SessionName AS session')
+                           ->first();
 
         $data['staff'] = DB::table('users')->where('ic', $data['payment']->add_staffID)->first();
 
@@ -3138,7 +3142,11 @@ class FinanceController extends Controller
 
     public function getReceipt2(Request $request)
     {
-        $data['payment'] = DB::table('tblpayment')->where('id', $request->id)->first();
+        $data['payment'] = DB::table('tblpayment')->where('tblpayment.id', $request->id)
+                           ->join('sessions AS A2', 'tblpayment.session_id', 'A2.SessionID')
+                           ->join('tblprogramme', 'tblpayment.program_id', 'tblprogramme.id')
+                           ->select('tblpayment.*', 'tblprogramme.progname AS program', 'A2.SessionName AS session')
+                           ->first();
 
         $data['staff'] = DB::table('users')->where('ic', $data['payment']->add_staffID)->first();
 
@@ -3179,7 +3187,11 @@ class FinanceController extends Controller
 
     public function getReceipt3(Request $request)
     {
-        $data['payment'] = DB::table('tblclaim')->where('id', $request->id)->first();
+        $data['payment'] = DB::table('tblclaim')->where('tblclaim.id', $request->id)
+                           ->join('sessions AS A2', 'tblclaim.session_id', 'A2.SessionID')
+                           ->join('tblprogramme', 'tblclaim.program_id', 'tblprogramme.id')
+                           ->select('tblclaim.*', 'tblprogramme.progname AS program', 'A2.SessionName AS session')
+                           ->first();
 
         $data['staff'] = DB::table('users')->where('ic', $data['payment']->add_staffID)->first();
 
