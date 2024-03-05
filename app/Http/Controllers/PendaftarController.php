@@ -2448,7 +2448,7 @@ class PendaftarController extends Controller
 
         $data['student1'] = ($baseQuery)()
         ->where('tblstudent_log.semester_id', 1)
-        ->groupBy('students.ic')
+        ->groupBy('tblstudent_log.student_ic')
         ->orderByDesc('tblstudent_log.id')
         ->select('students.name', 'students.ic', 'students.no_matric', 'tblsex.code as gender', 'tblprogramme.progcode',
                 'sessions.SessionName AS session', 'tblstudent_log.semester_id AS semester', 'tblstudent_log.date', 'tblstudent_log.remark',
@@ -2457,7 +2457,7 @@ class PendaftarController extends Controller
 
         $data['student2'] = ($baseQuery)()
         ->where('tblstudent_log.semester_id', '>', 1)
-        ->groupBy('students.ic')
+        ->groupBy('tblstudent_log.student_ic')
         ->orderByDesc('tblstudent_log.id')
         ->select('students.name', 'students.ic', 'students.no_matric', 'tblsex.code as gender', 'tblprogramme.progcode',
                 'sessions.SessionName AS session', 'tblstudent_log.semester_id AS semester', 'tblstudent_log.date', 'tblstudent_log.remark',
