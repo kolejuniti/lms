@@ -8495,24 +8495,24 @@ class FinanceController extends Controller
 
             $data['payment'][$key] = DB::table('tblpayment')
                         ->select('tblpayment.add_date', DB::raw('SUM(tblpaymentdtl.amount) as amount'), DB::raw('DATEDIFF(CURDATE(), tblpayment.add_date) as days'))
-                        ->join('tblpaymentdtl', 'tblpayment.id', '=', 'tblpaymentdtl.payment_id')
-                        ->join('tblstudentclaim', 'tblpaymentdtl.claim_type_id', '=', 'tblstudentclaim.id')
+                        ->leftjoin('tblpaymentdtl', 'tblpayment.id', '=', 'tblpaymentdtl.payment_id')
+                        ->leftjoin('tblstudentclaim', 'tblpaymentdtl.claim_type_id', '=', 'tblstudentclaim.id')
                         ->where('tblpayment.student_ic', $std->ic)
                         ->where('tblpayment.process_status_id', 2)
                         ->whereIn('tblpayment.process_type_id', [1])
                         ->whereIn('tblstudentclaim.groupid', [1])
-                        ->groupBy('tblpayment.add_date')
+                        ->groupBy('tblpayment.id')
                         ->orderBy('tblpayment.add_date', 'desc')
                         ->limit(1)
                         ->get();
 
             //block D
 
-            $data['current_balance'][$key] = 5.00;
+            $data['current_balance'][$key] = 10.00;
 
             $data['pk_balance'][$key] = 10.00;
 
-            $data['total_balance'][$key] = 15.00;
+            $data['total_balance'][$key] = 10.00;
 
             $record = DB::table('tblpaymentdtl')
             ->leftJoin('tblpayment', 'tblpaymentdtl.payment_id', 'tblpayment.id')
@@ -8529,7 +8529,7 @@ class FinanceController extends Controller
             'tblpaymentdtl.amount',
             'tblpayment.process_type_id', 'tblprogramme.progcode AS program', DB::raw('NULL as remark'));
 
-            $data['record'] = DB::table('tblclaimdtl')
+            $data['record'][$key] = DB::table('tblclaimdtl')
             ->leftJoin('tblclaim', 'tblclaimdtl.claim_id', 'tblclaim.id')
             ->leftJoin('tblprocess_type', 'tblclaim.process_type_id', 'tblprocess_type.id')
             ->leftJoin('tblstudentclaim', 'tblclaimdtl.claim_package_id', 'tblstudentclaim.id')
@@ -8549,24 +8549,24 @@ class FinanceController extends Controller
 
             $val = 0;
 
-            foreach($data['record'] as $key => $req)
+            foreach($data['record'][$key] as $key2 => $req)
             {
 
                 if(array_intersect([2,3,4,5,11], (array) $req->process_type_id) && $req->source == 'claim')
                 {
 
-                    $data['total'][$key] = $val + $req->amount;
+                    $val += $req->amount;
 
                 }elseif(array_intersect([1,5,6,7,8,9,10,12,13,14,15,16,17,18,19,20,21,22,23,24,25], (array) $req->process_type_id) && $req->source == 'payment')
                 {
 
-                    $data['total'][$key] = $val - $req->amount;
+                    $val += $req->amount;
 
                 }
 
             }   
 
-            $data['sum3'] = end($data['total']);
+            $data['sum3'] = $val;
 
             //TUNGGAKAN
 
@@ -8667,9 +8667,9 @@ class FinanceController extends Controller
 
             }else{
 
-                $data['current_balance'][$key] = 0.00;
+                $data['current_balance'][$key] = 15.00;
 
-                $data['pk_balance'][$key] = 0.00;
+                $data['pk_balance'][$key] = 15.00;
 
             }
 
