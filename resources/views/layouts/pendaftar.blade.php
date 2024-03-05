@@ -115,6 +115,12 @@
 	{
 		opacity:0.5 !important;
 	}
+
+	.multinav-scroll {
+		height: 97%; /* or whatever height you prefer */
+		overflow-y: auto; /* Enables vertical scrolling */
+		overflow-x: hidden; /* Hides horizontal scrollbar */
+	}
 </style>
 
 

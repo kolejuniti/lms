@@ -93,6 +93,12 @@
 	.ck-editor__editable_inline {
 		min-height: 20em;
 	}
+
+	.multinav-scroll {
+		height: 97%; /* or whatever height you prefer */
+		overflow-y: auto; /* Enables vertical scrolling */
+		overflow-x: hidden; /* Hides horizontal scrollbar */
+	}
 </style>
 
 
