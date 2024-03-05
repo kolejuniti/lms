@@ -50,7 +50,7 @@
                     <tbody id="table">
                         @foreach ($data['student'] as $key => $std)
 
-                            @if(number_format($data['total_balance'][$key], 2) > 0)
+                            
                             <tr>
                                 <td>
                                     {{ $key+1 }}
@@ -103,7 +103,7 @@
                                     </a>
                                 </td>
                             </tr>
-                            @endif
+                            
                         @endforeach 
                     </tbody>
                 </table>
