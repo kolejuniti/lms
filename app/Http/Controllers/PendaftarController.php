@@ -2452,13 +2452,13 @@ class PendaftarController extends Controller
         $data['student1'] = ($baseQuery)()
         ->where('tblstudent_log.semester_id', 1)
         ->groupBy('students.ic')
-        ->orderByDesc('tblstudent_log.id')
+        ->orderByDesc('tblstudent_log.date')
         ->get();
 
         $data['student2'] = ($baseQuery)()
         ->where('tblstudent_log.semester_id', '>', 1)
         ->groupBy('students.ic')
-        ->orderByDesc('tblstudent_log.id')
+        ->orderByDesc('tblstudent_log.date')
         ->get();
 
         return view('pendaftar.report.annual_student_report.getStudent', compact('data'));
