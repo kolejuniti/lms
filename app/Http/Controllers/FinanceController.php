@@ -8560,7 +8560,7 @@ class FinanceController extends Controller
                 }elseif(array_intersect([1,5,6,7,8,9,10,12,13,14,15,16,17,18,19,20,21,22,23,24,25], (array) $req->process_type_id) && $req->source == 'payment')
                 {
 
-                    $val += $req->amount;
+                    $val -= $req->amount;
 
                 }
 
