@@ -141,7 +141,7 @@
                                         <div class="form-group">
                                             <label class="form-label" for="grade">Grade</label>
                                             <select class="form-select" id="grade" name="grade[]" required>
-                                            <option value="" selected disabled>-</option>
+                                            <option value="" selected>-</option>
                                             @foreach ($data['grade'] as $grd)
                                                 <option value="{{ $grd->id }}" {{ old('grade.0') == $grd->id ? "selected": "" }}>{{$grd->name }}</option> 
                                             @endforeach
@@ -168,7 +168,7 @@
                                         <div class="form-group">
                                             <label class="form-label" for="grade">Grade</label>
                                             <select class="form-select" id="grade" name="grade[]" required>
-                                            <option value="" selected disabled>-</option>
+                                            <option value="" selected>-</option>
                                             @foreach ($data['grade'] as $grd)
                                                 <option value="{{ $grd->id }}" {{ old('grade.1') == $grd->id ? "selected": "" }}>{{$grd->name }}</option> 
                                             @endforeach
@@ -195,7 +195,7 @@
                                         <div class="form-group">
                                             <label class="form-label" for="grade">Grade</label>
                                             <select class="form-select" id="grade" name="grade[]" required>
-                                            <option value="" selected disabled>-</option>
+                                            <option value="" selected>-</option>
                                             @foreach ($data['grade'] as $grd)
                                                 <option value="{{ $grd->id }}" {{ old('grade.2') == $grd->id ? "selected": "" }}>{{$grd->name }}</option> 
                                             @endforeach
@@ -222,7 +222,7 @@
                                         <div class="form-group">
                                             <label class="form-label" for="grade">Grade</label>
                                             <select class="form-select" id="grade" name="grade[]" required>
-                                            <option value="" selected disabled>-</option>
+                                            <option value="" selected>-</option>
                                             @foreach ($data['grade'] as $grd)
                                                 <option value="{{ $grd->id }}" {{ old('grade.3') == $grd->id ? "selected": "" }}>{{$grd->name }}</option> 
                                             @endforeach
