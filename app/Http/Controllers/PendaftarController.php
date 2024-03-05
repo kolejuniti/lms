@@ -2163,7 +2163,7 @@ class PendaftarController extends Controller
                             ->join('transcript_status', 'student_transcript.transcript_status_id', 'transcript_status.id')
                             ->where([
                                 ['student_transcript.id', $request->id],
-                            ])->select('student_transcript.*', 'students.name', 'students.no_matric', 'sessions.SessionName','transcript_status.status_name AS transcript_status_id')
+                            ])->select('student_transcript.*', 'students.name', 'students.no_matric', 'sessions.SessionName AS session','transcript_status.status_name AS transcript_status_id')
                             ->first();
 
         $data['student'] = DB::table('students')
