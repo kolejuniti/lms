@@ -2443,22 +2443,25 @@ class PendaftarController extends Controller
         ->leftjoin('sessions', 'tblstudent_log.session_id', 'sessions.SessionID')
         ->leftjoin('tblstudent_status', 'tblstudent_log.status_id', 'tblstudent_status.id')
         ->whereIn('students.ic', $ic)
-        ->where('sessions.Year', $request->year)
-        ->select('students.name', 'students.ic', 'students.no_matric', 'tblsex.code as gender', 'tblprogramme.progcode',
-                'sessions.SessionName AS session', 'tblstudent_log.semester_id AS semester', 'tblstudent_log.date', 'tblstudent_log.remark',
-                'tblstudent_status.name AS status');
+        ->where('sessions.Year', $request->year);
         };
 
         $data['student1'] = ($baseQuery)()
         ->where('tblstudent_log.semester_id', 1)
         ->groupBy('students.ic')
-        ->orderByDesc('tblstudent_log.date')
+        ->orderByDesc('tblstudent_log.id')
+        ->select('students.name', 'students.ic', 'students.no_matric', 'tblsex.code as gender', 'tblprogramme.progcode',
+                'sessions.SessionName AS session', 'tblstudent_log.semester_id AS semester', 'tblstudent_log.date', 'tblstudent_log.remark',
+                'tblstudent_status.name AS status')
         ->get();
 
         $data['student2'] = ($baseQuery)()
         ->where('tblstudent_log.semester_id', '>', 1)
         ->groupBy('students.ic')
-        ->orderByDesc('tblstudent_log.date')
+        ->orderByDesc('tblstudent_log.id')
+        ->select('students.name', 'students.ic', 'students.no_matric', 'tblsex.code as gender', 'tblprogramme.progcode',
+                'sessions.SessionName AS session', 'tblstudent_log.semester_id AS semester', 'tblstudent_log.date', 'tblstudent_log.remark',
+                'tblstudent_status.name AS status')
         ->get();
 
         return view('pendaftar.report.annual_student_report.getStudent', compact('data'));
