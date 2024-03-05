@@ -8508,11 +8508,11 @@ class FinanceController extends Controller
 
             //block D
 
-            $data['current_balance'][$key] = 10.00;
+            $data['current_balance'][$key] = 0.00;
 
-            $data['pk_balance'][$key] = 10.00;
+            $data['pk_balance'][$key] = 0.00;
 
-            $data['total_balance'][$key] = 10.00;
+            $data['total_balance'][$key] = 0.00;
 
             $record = DB::table('tblpaymentdtl')
             ->leftJoin('tblpayment', 'tblpaymentdtl.payment_id', 'tblpayment.id')
@@ -8667,9 +8667,9 @@ class FinanceController extends Controller
 
             }else{
 
-                $data['current_balance'][$key] = 15.00;
+                $data['current_balance'][$key] = 0.00;
 
-                $data['pk_balance'][$key] = 15.00;
+                $data['pk_balance'][$key] = 0.00;
 
             }
 
