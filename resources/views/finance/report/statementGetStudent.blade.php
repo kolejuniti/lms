@@ -111,7 +111,7 @@
                                     @endif
                                     </td>
                                     <td>
-                                    {{  number_format($data['total'][$key], 2) }}
+                                    {{-- {{  number_format($data['total'][$key], 2) }} --}}
                                     </td>
                                 </tr>
                                 @endforeach
