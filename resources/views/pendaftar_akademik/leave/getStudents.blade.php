@@ -4,7 +4,7 @@
           <label class="form-label" for="campus">Campus</label>
           <select class="form-select" id="campus" name="campus" style="height:500px" multiple>
             @foreach ($data['campus'] as $cps)
-            <option value="{{ $cps->no_matric }}">{{ $cps->name }}</option>   
+            <option value="{{ $cps->no_matric }}">{{ $cps->name }} - {{ $cps->no_matric }}</option>   
             @endforeach
           </select>
       </div>
@@ -30,7 +30,7 @@
             <label class="form-label" for="leave">Leave</label>
             <select class="form-select" id="leave" name="leave" style="height:500px" multiple>
                 @foreach ($data['leave'] as $cps)
-                <option value="{{ $cps->no_matric }}">{{ $cps->name }}</option>   
+                <option value="{{ $cps->no_matric }}">{{ $cps->name }} - {{ $cps->no_matric }}</option>   
                 @endforeach
             </select>
         </div>
