@@ -90,7 +90,7 @@
                                     <td>
                                     @if($req->process_type_id == 1 || $req->process_type_id == 2)
                                     {{ $req->name }}
-                                    @elseif($req->process_type_id == 5)
+                                    @elseif($req->process_type_id == 5 || $req->process_type_id == 11)
                                     {{ $req->remark }}
                                     @else
                                     {{ $req->process }}
