@@ -97,14 +97,14 @@
                                     @endif
                                     </td>
                                     <td>
-                                    @if (array_intersect([2,3,4,5], (array) $req->process_type_id) && $req->source == 'claim')
+                                    @if (array_intersect([2,3,4,5,11], (array) $req->process_type_id) && $req->source == 'claim')
                                     {{ number_format($req->amount, 2) }}
                                     @else
                                     0.00
                                     @endif
                                     </td>
                                     <td>
-                                    @if (array_intersect([1,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19], (array) $req->process_type_id) && $req->source == 'payment')
+                                    @if (array_intersect([1,5,6,7,8,9,10,12,13,14,15,16,17,18,19], (array) $req->process_type_id) && $req->source == 'payment')
                                     {{ number_format($req->amount, 2) }}
                                     @else
                                     0.00
@@ -174,7 +174,7 @@
                                             </table>
                                         </div>
                                         <div class="form-group">
-                                            <p>CURRENT ARREARS &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ isset($data['value']) ? $data['value'] : 0.00 }}</p>
+                                            <p>CURRENT SEMESTER ARREARS &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ isset($data['value']) ? $data['value'] : 0.00 }}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -186,13 +186,14 @@
                                 <div class="row mb-5">
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <p>TUNGGAKAN SEMASA &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ isset($data['current_balance']) ? number_format($data['current_balance'], 2) : 0.00 }}</p>
+                                            <p>TUNGGAKAN SEMASA &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ isset($data['current_balance']) ? number_format($data['current_balance'], 2) : 0.00 }}</p>
                                         </div>
                                         <div class="form-group">
-                                            <p>TUNGGAKAN PEMBIAYAAN KHAS &nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ isset($data['pk_balance']) ? number_format($data['pk_balance'], 2) : 0.00 }}</p>
+                                            <p>TUNGGAKAN PAKEJ PEMBIAYAAN KHAS &nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ isset($data['pk_balance']) ? number_format($data['pk_balance'], 2) : 0.00 }}</p>
+                                            <p>(BAYARAN SELEPAS TAMAT PENGAJIAN)</p>
                                         </div>
                                         <div class="form-group">
-                                            <p>TUNGGAKAN KESELURUHAN &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ isset($data['total_balance']) ? number_format($data['total_balance'], 2) : 0.00 }}</p>
+                                            <p>TUNGGAKAN KESELURUHAN &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ isset($data['total_balance']) ? number_format($data['total_balance'], 2) : 0.00 }}</p>
                                         </div>
                                     </div>
                                 </div>
