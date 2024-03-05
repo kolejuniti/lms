@@ -3916,7 +3916,7 @@ class FinanceController extends Controller
             ['tblpaymentdtl.amount', '!=', 0]
             ])
         ->select(DB::raw("'payment' as source"), 'tblprocess_type.name AS process', 'tblpayment.ref_no','tblpayment.date', 'tblstudentclaim.name', 
-        DB::raw("COALESCE(CASE WHEN tblpaymentdtl.amount IS NOT NULL AND tblpaymentdtl.amount != 0 THEN tblpaymentdtl.amount ELSE 0 END, 0) as amount"),
+        'tblpaymentdtl.amount',
         'tblpayment.process_type_id', 'tblprogramme.progcode AS program', DB::raw('NULL as remark'));
 
         $data['record'] = DB::table('tblclaimdtl')
@@ -3932,7 +3932,7 @@ class FinanceController extends Controller
             ])
         ->unionALL($record)
         ->select(DB::raw("'claim' as source"), 'tblprocess_type.name AS process', 'tblclaim.ref_no','tblclaim.date', 'tblstudentclaim.name', 
-        DB::raw("COALESCE(CASE WHEN tblclaimdtl.amount IS NOT NULL AND tblclaimdtl.amount != 0 THEN tblclaimdtl.amount ELSE 0 END, 0) as amount"),
+        'tblclaimdtl.amount',
         'tblclaim.process_type_id', 'tblprogramme.progcode AS program', 'tblclaim.remark')
         ->orderBy('date')
         ->get();
