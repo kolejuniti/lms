@@ -2443,14 +2443,13 @@ class PendaftarController extends Controller
         ->leftjoin('sessions', 'tblstudent_log.session_id', 'sessions.SessionID')
         ->leftjoin('tblstudent_status', 'tblstudent_log.status_id', 'tblstudent_status.id')
         ->whereIn('students.ic', $ic)
-        ->limit(1)
-        ->orderByDesc('tblstudent_log.id')
         ->where('sessions.Year', $request->year);
         };
 
         $data['student1'] = ($baseQuery)()
         ->where('tblstudent_log.semester_id', 1)
         ->groupBy('tblstudent_log.student_ic')
+        ->orderBy('tblstudent_log.id', 'DESC')
         ->select('students.name', 'students.ic', 'students.no_matric', 'tblsex.code as gender', 'tblprogramme.progcode',
                 'sessions.SessionName AS session', 'tblstudent_log.semester_id AS semester', 'tblstudent_log.date', 'tblstudent_log.remark',
                 'tblstudent_status.name AS status')
@@ -2459,6 +2458,7 @@ class PendaftarController extends Controller
         $data['student2'] = ($baseQuery)()
         ->where('tblstudent_log.semester_id', '>', 1)
         ->groupBy('tblstudent_log.student_ic')
+        ->orderBy('tblstudent_log.id', 'DESC')
         ->select('students.name', 'students.ic', 'students.no_matric', 'tblsex.code as gender', 'tblprogramme.progcode',
                 'sessions.SessionName AS session', 'tblstudent_log.semester_id AS semester', 'tblstudent_log.date', 'tblstudent_log.remark',
                 'tblstudent_status.name AS status')
