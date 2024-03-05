@@ -547,7 +547,7 @@
                             ->where([
                               ['semester', 1],
                               ['status', 2],
-                              ['status', 6]
+                              ['campus_id', 1]
                               ])
                               ->whereIn('student_status', [1,2])
                               ->get())
