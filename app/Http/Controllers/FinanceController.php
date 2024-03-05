@@ -3997,7 +3997,11 @@ class FinanceController extends Controller
         $data['sum3'] = end($data['total']);
 
         $data['sponsor'] = DB::table('tblpackage_sponsorship')
-                       ->where('student_ic', $request->student)->first();
+                            ->join('tblpackage', 'tblpackage_sponsorship.package_id', 'tblpackage.id')
+                            ->join('tblpayment_type', 'tblpackage_sponsorship.payment_type_id', 'tblpayment_type.id')
+                            ->where('student_ic', $request->student)
+                            ->select('tblpackage_sponsorship.*', 'tblpackage.name AS package', 'tblpayment_type.name AS type')
+                            ->first();
 
         if($data['sponsor'] != null) {
 
