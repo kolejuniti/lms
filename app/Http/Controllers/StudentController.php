@@ -1175,7 +1175,7 @@ class StudentController extends Controller
         foreach($data['record'] as $key => $req)
         {
 
-            if(array_intersect([2,3,4,5], (array) $req->process_type_id) && $req->source == 'claim')
+            if(array_intersect([2,3,4,5,11], (array) $req->process_type_id) && $req->source == 'claim')
             {
 
                 $data['total'][$key] = $val + $req->amount;
@@ -1201,7 +1201,7 @@ class StudentController extends Controller
                 // }
                 
 
-            }elseif(array_intersect([1,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19], (array) $req->process_type_id) && $req->source == 'payment')
+            }elseif(array_intersect([1,5,6,7,8,9,10,12,13,14,15,16,17,18,19], (array) $req->process_type_id) && $req->source == 'payment')
             {
 
                 $data['total'][$key] = $val - $req->amount;
