@@ -3944,7 +3944,7 @@ class FinanceController extends Controller
         foreach($data['record'] as $key => $req)
         {
 
-            if(array_intersect([2,3,4,5], (array) $req->process_type_id) && $req->source == 'claim')
+            if(array_intersect([2,3,4,5,11], (array) $req->process_type_id) && $req->source == 'claim')
             {
 
                 $data['total'][$key] = $val + $req->amount;
@@ -3970,7 +3970,7 @@ class FinanceController extends Controller
                 // }
                 
 
-            }elseif(array_intersect([1,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25], (array) $req->process_type_id) && $req->source == 'payment')
+            }elseif(array_intersect([1,5,6,7,8,9,10,12,13,14,15,16,17,18,19,20,21,22,23,24,25], (array) $req->process_type_id) && $req->source == 'payment')
             {
 
                 $data['total'][$key] = $val - $req->amount;
@@ -4064,7 +4064,7 @@ class FinanceController extends Controller
         foreach($data['record2'] as $key => $req)
         {
 
-            if(array_intersect([2,3,4,5], (array) $req->process_type_id))
+            if(array_intersect([2,3,4,5,11], (array) $req->process_type_id))
             {
 
                 $data['total2'][$key] = $val + $req->amount;
@@ -4074,7 +4074,7 @@ class FinanceController extends Controller
                 $data['sum1_2'] += $req->amount;
                 
 
-            }elseif(array_intersect([1,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25], (array) $req->process_type_id))
+            }elseif(array_intersect([1,5,6,7,8,9,10,12,13,14,15,16,17,18,19,20,21,22,23,24,25], (array) $req->process_type_id))
             {
 
                 $data['total2'][$key] = $val - $req->amount;
@@ -4125,7 +4125,7 @@ class FinanceController extends Controller
         foreach($data['record3'] as $key => $req)
         {
 
-            if(array_intersect([2,3,4,5], (array) $req->process_type_id))
+            if(array_intersect([2,3,4,5,11], (array) $req->process_type_id))
             {
 
                 $data['total3'][$key] = $val + $req->amount;
@@ -4135,7 +4135,7 @@ class FinanceController extends Controller
                 $data['sum1_3'] += $req->amount;
                 
 
-            }elseif(array_intersect([1,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25], (array) $req->process_type_id))
+            }elseif(array_intersect([1,5,6,7,8,9,10,12,13,14,15,16,17,18,19,20,21,22,23,24,25], (array) $req->process_type_id))
             {
 
                 $data['total3'][$key] = $val - $req->amount;
@@ -4346,12 +4346,12 @@ class FinanceController extends Controller
     public function getReceiptProof(Request $request)
     {
 
-        if(array_intersect([2,3,4,5], (array) $request->type))
+        if(array_intersect([2,3,4,5,11], (array) $request->type))
         {
 
             return redirect()->route('receipt3', ['id' => $request->id]);
 
-        }elseif(array_intersect([1,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25], (array) $request->type)){
+        }elseif(array_intersect([1,5,6,7,8,9,10,12,13,14,15,16,17,18,19,20,21,22,23,24,25], (array) $request->type)){
 
             if(array_intersect([7], (array) $request->type))
             {
@@ -8544,7 +8544,7 @@ class FinanceController extends Controller
             foreach($data['record'][$key] as $keys => $req)
             {
 
-                if(array_intersect([2,3,4,5], (array) $req->process_type_id))
+                if(array_intersect([2,3,4,5,11], (array) $req->process_type_id))
                 {
  
                     $data['total'] += $req->amount;
@@ -8751,7 +8751,7 @@ class FinanceController extends Controller
         foreach($data['record'] as $keys => $req)
         {
 
-            if(array_intersect([2,3,4,5], (array) $req->process_type_id))
+            if(array_intersect([2,3,4,5,11], (array) $req->process_type_id))
             {
 
                 $data['total'] += $req->amount;
@@ -9044,12 +9044,12 @@ class FinanceController extends Controller
             foreach($data['record'] as $keys => $req)
             {
 
-                if(array_intersect([2,3,4,5], (array) $req->process_type_id))
+                if(array_intersect([2,3,4,5,11], (array) $req->process_type_id))
                 {
 
                     $data['total'] += $req->amount;
                     
-                }elseif(array_intersect([1,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25], (array) $req->process_type_id))
+                }elseif(array_intersect([1,5,6,7,8,9,10,12,13,14,15,16,17,18,19,20,21,22,23,24,25], (array) $req->process_type_id))
                 {
 
                     $data['total'] -= $req->amount;
@@ -9159,12 +9159,12 @@ class FinanceController extends Controller
             foreach($data['record'] as $keys => $req)
             {
 
-                if(array_intersect([2,3,4,5], (array) $req->process_type_id))
+                if(array_intersect([2,3,4,5,11], (array) $req->process_type_id))
                 {
 
                     $data['total'] += $req->amount;
                     
-                }elseif(array_intersect([1,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25], (array) $req->process_type_id))
+                }elseif(array_intersect([1,5,6,7,8,9,10,12,13,14,15,16,17,18,19,20,21,22,23,24,25], (array) $req->process_type_id))
                 {
 
                     $data['total'] -= $req->amount;
@@ -9329,7 +9329,7 @@ class FinanceController extends Controller
             foreach($data['record'] as $keys => $req)
             {
 
-                if(array_intersect([2,3,4,5], (array) $req->process_type_id))
+                if(array_intersect([2,3,4,5,11], (array) $req->process_type_id))
                 {
 
                     $data['total'] += $req->amount;
