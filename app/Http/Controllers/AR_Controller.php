@@ -871,10 +871,11 @@ class AR_Controller extends Controller
 
         $query = DB::table('students')->where(function($query) {
             $query->where('campus_id', 1)
+                  ->where('status', 2)
                   ->orWhereNull('campus_id');
         });
 
-        $query2 = DB::table('students')->where('campus_id', 0);
+        $query2 = DB::table('students')->where('status', 2)->where('campus_id', 0);
 
         if($program != '' && $session != '' && $semester != '')
         {
