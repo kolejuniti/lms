@@ -1543,7 +1543,8 @@ class PendaftarController extends Controller
                                     ['students.semester', 1],
                                     ['students.status', 2],
                                     ['students.student_status', 2],
-                                    ['tblstudent_personal.sex_id', 1]
+                                    ['tblstudent_personal.sex_id', 1],
+                                    ['students.campus_id', 1]
                                     ])->get());
             
             $data['fs1'][$key] = count(DB::table('students')
@@ -1553,7 +1554,8 @@ class PendaftarController extends Controller
                                     ['students.semester', 1],
                                     ['students.status', 2],
                                     ['students.student_status', 2],
-                                    ['tblstudent_personal.sex_id', 2]
+                                    ['tblstudent_personal.sex_id', 2],
+                                    ['students.campus_id', 1]
                                     ])->get());
             
             $data['ms2'][$key] = count(DB::table('students')
