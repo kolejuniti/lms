@@ -1565,7 +1565,8 @@ class PendaftarController extends Controller
                                     ['students.semester', 2],
                                     ['students.status', 2],
                                     ['students.student_status', 2],
-                                    ['tblstudent_personal.sex_id', 1]
+                                    ['tblstudent_personal.sex_id', 1],
+                                    ['students.campus_id', 1]
                                     ])->get());
 
             $data['fs2'][$key] = count(DB::table('students')
@@ -1575,7 +1576,8 @@ class PendaftarController extends Controller
                                     ['students.semester', 2],
                                     ['students.status', 2],
                                     ['students.student_status', 2],
-                                    ['tblstudent_personal.sex_id', 2]
+                                    ['tblstudent_personal.sex_id', 2],
+                                    ['students.campus_id', 1]
                                     ])->get());
 
             $data['ms3'][$key] = count(DB::table('students')
@@ -1585,7 +1587,8 @@ class PendaftarController extends Controller
                                     ['students.semester', 3],
                                     ['students.status', 2],
                                     ['students.student_status', 2],
-                                    ['tblstudent_personal.sex_id', 1]
+                                    ['tblstudent_personal.sex_id', 1],
+                                    ['students.campus_id', 1]
                                     ])->get());
 
             $data['fs3'][$key] = count(DB::table('students')
@@ -1595,7 +1598,8 @@ class PendaftarController extends Controller
                                     ['students.semester', 3],
                                     ['students.status', 2],
                                     ['students.student_status', 2],
-                                    ['tblstudent_personal.sex_id', 2]
+                                    ['tblstudent_personal.sex_id', 2],
+                                    ['students.campus_id', 1]
                                     ])->get());
                                     
             $data['ms4'][$key] = count(DB::table('students')
@@ -1605,7 +1609,8 @@ class PendaftarController extends Controller
                                     ['students.semester', 4],
                                     ['students.status', 2],
                                     ['students.student_status', 2],
-                                    ['tblstudent_personal.sex_id', 1]
+                                    ['tblstudent_personal.sex_id', 1],
+                                    ['students.campus_id', 1]
                                     ])->get());
 
             $data['fs4'][$key] = count(DB::table('students')
@@ -1615,7 +1620,8 @@ class PendaftarController extends Controller
                                     ['students.semester', 4],
                                     ['students.status', 2],
                                     ['students.student_status', 2],
-                                    ['tblstudent_personal.sex_id', 2]
+                                    ['tblstudent_personal.sex_id', 2],
+                                    ['students.campus_id', 1]
                                     ])->get());
 
             $data['ms5'][$key] = count(DB::table('students')
@@ -1625,7 +1631,8 @@ class PendaftarController extends Controller
                                     ['students.semester', 5],
                                     ['students.status', 2],
                                     ['students.student_status', 2],
-                                    ['tblstudent_personal.sex_id', 1]
+                                    ['tblstudent_personal.sex_id', 1],
+                                    ['students.campus_id', 1]
                                     ])->get());
 
             $data['fs5'][$key] = count(DB::table('students')
@@ -1635,7 +1642,8 @@ class PendaftarController extends Controller
                                     ['students.semester', 5],
                                     ['students.status', 2],
                                     ['students.student_status', 2],
-                                    ['tblstudent_personal.sex_id', 2]
+                                    ['tblstudent_personal.sex_id', 2],
+                                    ['students.campus_id', 1]
                                     ])->get());
 
             $data['ms6'][$key] = count(DB::table('students')
@@ -1645,7 +1653,8 @@ class PendaftarController extends Controller
                                     ['students.semester', 6],
                                     ['students.status', 2],
                                     ['students.student_status', 2],
-                                    ['tblstudent_personal.sex_id', 1]
+                                    ['tblstudent_personal.sex_id', 1],
+                                    ['students.campus_id', 1]
                                     ])->get());
 
             $data['fs6'][$key] = count(DB::table('students')
@@ -1655,7 +1664,8 @@ class PendaftarController extends Controller
                                     ['students.semester', 6],
                                     ['students.status', 2],
                                     ['students.student_status', 2],
-                                    ['tblstudent_personal.sex_id', 2]
+                                    ['tblstudent_personal.sex_id', 2],
+                                    ['students.campus_id', 1]
                                     ])->get());
 
             $data['ms7'][$key] = count(DB::table('students')
@@ -1665,7 +1675,8 @@ class PendaftarController extends Controller
                                     ['students.semester', 7],
                                     ['students.status', 2],
                                     ['students.student_status', 2],
-                                    ['tblstudent_personal.sex_id', 1]
+                                    ['tblstudent_personal.sex_id', 1],
+                                    ['students.campus_id', 1]
                                     ])->get());
 
             $data['fs7'][$key] = count(DB::table('students')
@@ -1675,7 +1686,8 @@ class PendaftarController extends Controller
                                     ['students.semester', 7],
                                     ['students.status', 2],
                                     ['students.student_status', 2],
-                                    ['tblstudent_personal.sex_id', 2]
+                                    ['tblstudent_personal.sex_id', 2],
+                                    ['students.campus_id', 1]
                                     ])->get());
 
             $data['ms8'][$key] = count(DB::table('students')
@@ -1685,7 +1697,8 @@ class PendaftarController extends Controller
                                     ['students.semester', 8],
                                     ['students.status', 2],
                                     ['students.student_status', 2],
-                                    ['tblstudent_personal.sex_id', 1]
+                                    ['tblstudent_personal.sex_id', 1],
+                                    ['students.campus_id', 1]
                                     ])->get());
 
             $data['fs8'][$key] = count(DB::table('students')
@@ -1695,7 +1708,8 @@ class PendaftarController extends Controller
                                     ['students.semester', 8],
                                     ['students.status', 2],
                                     ['students.student_status', 2],
-                                    ['tblstudent_personal.sex_id', 2]
+                                    ['tblstudent_personal.sex_id', 2],
+                                    ['students.campus_id', 1]
                                     ])->get());
 
             $data['industry'][$key] = count(DB::table('students')
