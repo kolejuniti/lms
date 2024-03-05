@@ -486,14 +486,16 @@
                                           ->where([
                                             ['semester', $sem->id],
                                             ['status', 2],
-                                            ['student_status', 1]
+                                            ['student_status', 1],
+                                            ['campus_id', 1]
                                           ])->get());
 
                                 $total = count(DB::table('students')
                                           ->where([
                                             ['semester', $sem->id],
                                             ['status', 2],
-                                            ['student_status', 2]
+                                            ['student_status', 2],
+                                            ['campus_id', 1]
                                           ])->get());
 
                               }
