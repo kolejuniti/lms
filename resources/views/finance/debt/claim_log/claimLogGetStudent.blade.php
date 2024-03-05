@@ -50,7 +50,7 @@
                     <tbody id="table">
                         @foreach ($data['student'] as $key => $std)
 
-                            
+                            @if(number_format($data['total_balance'][$key], 2) > 0)
                             <tr>
                                 <td>
                                     {{ $key+1 }}
@@ -75,10 +75,10 @@
                                     @endforeach
                                 </td>
                                 <td>
-                                    {{ $data['latest'][$key]->date_of_call }}
+                                    {{ isset($data['latest'][$key]) ? $data['latest'][$key]->date_of_call : null}}
                                 </td>
                                 <td>
-                                    {{ number_format($data['latest'][$key]->amount, 2) }}
+                                    {{ isset($data['latest'][$key]) ? number_format($data['latest'][$key]->amount, 2) : null }}
                                 </td>
                                 <td>
                                     {{ number_format($data['current_balance'][$key], 2) }}
@@ -103,7 +103,7 @@
                                     </a>
                                 </td>
                             </tr>
-                            
+                            @endif
                         @endforeach 
                     </tbody>
                 </table>
