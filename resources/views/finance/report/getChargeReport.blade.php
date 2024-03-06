@@ -207,7 +207,7 @@
         @endforeach
         </tbody>
         <tfoot>
-          <tr>
+            <tr>
               <td colspan="2" style="text-align: center">
                   TOTAL
               </td>
