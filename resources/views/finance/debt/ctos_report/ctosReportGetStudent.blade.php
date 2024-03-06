@@ -52,7 +52,7 @@
                     </thead>
                     <tbody id="table">
                         @foreach ($data['student'] as $key => $std)
-                            @if($data['balance'][0]->balance > 0)
+                            @if(optional($data['balance'][$key]->first())->balance > 0)
                             <tr>
                                 <td>
                                     {{ $key+1 }}
