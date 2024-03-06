@@ -583,6 +583,7 @@
                                 <option value="BEKERJA SENDIRI">BEKERJA SENDIRI</option>
                                 <option value="PESARA">PESARA</option>
                                 <option value="TIDAK BEKERJA">TIDAK BEKERJA</option>
+                                <option value="TIDAK BEKERJA/PENERIMA BANTUAN">TIDAK BEKERJA / PENERIMA BANTUAN</option>
                               </select>
                             </div>
                           </div>
