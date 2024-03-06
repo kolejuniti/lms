@@ -4169,7 +4169,11 @@ class FinanceController extends Controller
 
         $data['sum3_3'] = end($data['total3']);
 
-        //TUNGGAKAN
+        //TUNGGAKAN KESELURUHAN
+
+        $data['current_balance'] = $data['sum3'];
+
+        $data['total_balance'] = $data['current_balance'];
 
         //TUNGGAKAN SEMASA
 
@@ -4190,6 +4194,10 @@ class FinanceController extends Controller
                                 ['tblclaim.remark', 'LIKE', '%Diskaun Yuran Kediaman%']
                             ])->sum('tblclaimdtl.amount'));
 
+            }else{
+
+                $discount = 0;
+                
             }
 
             if($package->package_id == 5)
@@ -4207,16 +4215,14 @@ class FinanceController extends Controller
 
                         $data['current_balance'] = 0.00;
 
+                        $data['total_balance'] = 0.00;
+
                     }elseif($data['sum3'] > ($package->amount - $discount))
                     {
 
                         $data['current_balance'] = $data['sum3'] - ($package->amount - $discount);
 
                     }
-
-                }else{
-
-                    $data['current_balance'] = $data['sum3'];
 
                 }
 
@@ -4274,9 +4280,7 @@ class FinanceController extends Controller
 
         }
 
-        //TUNGGAKAN KESELURUHAN
 
-        $data['total_balance'] = $data['sum3'];
 
         return view('finance.report.statementGetStudent', compact('data'));
 
