@@ -8727,7 +8727,7 @@ class FinanceController extends Controller
         //C
 
         $data['waris'] = DB::table('students')
-        ->select('tblstudent_waris.name', 'tblstudent_waris.phone_tel')
+        ->select('tblstudent_waris.name', 'tblstudent_waris.phone_tel', 'tblstudent_waris.home_tel')
         ->join('tblstudent_waris', 'students.ic', '=', 'tblstudent_waris.student_ic')
         ->where('students.ic', request()->ic)
         ->get();
