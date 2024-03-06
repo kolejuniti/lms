@@ -150,7 +150,7 @@
     <b>Students Report R2</b>
     </div>
     <div class="card-body p-0">
-      <table id="myTable" class="table table-striped projects display dataTable">
+      <table id="myTable2" class="table table-striped projects display dataTable">
         <thead>
             <tr>
                 <th style="width: 1%">
