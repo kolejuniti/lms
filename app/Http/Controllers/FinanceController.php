@@ -8589,9 +8589,9 @@ class FinanceController extends Controller
 
             //TUNGGAKAN KESELURUHAN
 
-            $data['current_balance'] = $data['sum3'];
+            $data['current_balance'][$key] = $data['sum3'];
 
-            $data['total_balance'] = $data['current_balance'];
+            $data['total_balance'][$key] = $data['current_balance'][$key];
 
             //TUNGGAKAN SEMASA
 
@@ -8621,7 +8621,7 @@ class FinanceController extends Controller
                 if($package->package_id == 5)
                 {
 
-                    $data['current_balance'] = $data['sum3'];
+                    $data['current_balance'][$key] = $data['sum3'];
 
                 }else{
 
@@ -8631,14 +8631,14 @@ class FinanceController extends Controller
                         if($data['sum3'] <= ($package->amount - $discount))
                         {
 
-                            $data['current_balance'] = 0.00;
+                            $data['current_balance'][$key] = 0.00;
 
-                            $data['total_balance'] = 0.00;
+                            $data['total_balance'][$key] = 0.00;
 
                         }elseif($data['sum3'] > ($package->amount - $discount))
                         {
 
-                            $data['current_balance'] = $data['sum3'] - ($package->amount - $discount);
+                            $data['current_balance'][$key] = $data['sum3'] - ($package->amount - $discount);
 
                         }
 
@@ -8656,14 +8656,14 @@ class FinanceController extends Controller
                     if($package->payment_type_id == 3 || $package->payment_type_id == 11 || $package->payment_type_id == 14)
                     {
 
-                        if($data['current_balance'] == 0.00)
+                        if($data['current_balance'][$key] == 0.00)
                         {
 
-                            $data['pk_balance'] = $data['sum3'];
+                            $data['pk_balance'][$key] = $data['sum3'];
 
                         }else{
 
-                            $data['pk_balance'] = ($package->amount - $discount);
+                            $data['pk_balance'][$key] = ($package->amount - $discount);
 
                         }
 
@@ -8675,14 +8675,14 @@ class FinanceController extends Controller
                     if($package->payment_type_id == 3 || $package->payment_type_id == 11 || $package->payment_type_id == 14)
                     {
 
-                        if($data['current_balance'] == 0.00)
+                        if($data['current_balance'][$key] == 0.00)
                         {
 
-                            $data['pk_balance'] = $data['sum3'];
+                            $data['pk_balance'][$key] = $data['sum3'];
 
                         }else{
 
-                            $data['pk_balance'] = ($package->amount - $discount);
+                            $data['pk_balance'][$key] = ($package->amount - $discount);
 
                         }
 
@@ -8692,9 +8692,9 @@ class FinanceController extends Controller
 
             }else{
 
-                $data['current_balance'] = 0.00;
+                $data['current_balance'][$key] = 0.00;
 
-                $data['pk_balance'] = 0.00;
+                $data['pk_balance'][$key] = 0.00;
 
             }   
 
