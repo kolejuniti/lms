@@ -112,7 +112,7 @@
                                                 <tr>
                                                     <th>#</th>
                                                     <th>Waris/Guardian Name</th>
-                                                    <th colspan="2">Phone No.</th>
+                                                    <th colspan="2" style="text-align: center">Phone No.</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
