@@ -2427,9 +2427,8 @@ class FinanceController extends Controller
                     }
 
                     $ref_no = DB::table('tblref_no')
-                      ->join('tblpayment', 'tblref_no.process_type_id', 'tblpayment.process_type_id')
-                      ->where('tblpayment.id', $payment->id)
-                      ->select('tblref_no.*', 'tblpayment.student_ic')->first();
+                      ->where('tblref_no.process_type_id', 6)
+                      ->select('tblref_no.*')->first();
 
                     DB::table('tblref_no')->where('id', $ref_no->id)->update([
                         'ref_no' => $ref_no->ref_no + 1
@@ -2442,7 +2441,11 @@ class FinanceController extends Controller
 
                     //check if newstudent & more than 250
 
-                    $student = DB::table('students')->where('ic', $ref_no->student_ic)->first();
+                    $student = DB::table('students')
+                               ->join('tblpayment', 'students.ic', 'tblpayment.student_ic')
+                               ->where('tblpayment.id', $payment->id)
+                               ->select('students.*')
+                               ->first();
 
                     $alert = null;
 
