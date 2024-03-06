@@ -10321,7 +10321,7 @@ class FinanceController extends Controller
                 ['tblclaimdtl.amount', '!=', 0]
                 ])
             ->unionALL($record)
-            ->select(DB::raw("'claim' as source"), 'tblclaimdtl.amount', 'tblclaim.process_type_id')\
+            ->select(DB::raw("'claim' as source"), 'tblclaimdtl.amount', 'tblclaim.process_type_id')
             ->get();
 
             $val = 0;
