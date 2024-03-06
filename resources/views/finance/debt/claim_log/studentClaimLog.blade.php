@@ -116,13 +116,13 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
+                                                @foreach($data['waris'] as $key => $wrs)
                                                 <tr>
-                                                    @foreach($data['waris'] as $key => $wrs)
                                                     <td>{{ $key+1 }}</td>
                                                     <td>{{ $wrs->name }}</td>
                                                     <td>{{ $wrs->phone_tel }}</td>
-                                                    @endforeach
                                                 </tr>
+                                                @endforeach
                                             </tbody>
                                         </table>
                                     </div>
