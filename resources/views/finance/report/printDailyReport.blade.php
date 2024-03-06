@@ -1,32 +1,25 @@
 
 <head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
-   <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>EduHub - @yield('title')</title>
- 
-    <!-- Vendors Style-->
-    <link rel="stylesheet" href="{{ asset('assets/src/css/vendors_css.css') }}">
-    <!-- Style-->  
-    <link rel="stylesheet" href="{{ asset('assets/src/css/style.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/src/css/skin_color.css') }}">
-   {{-- <link rel="stylesheet" media="screen, print" href="{{ asset('assets/src/css/datagrid/datatables/datatables.bundle.css') }}"> --}}
-   {{-- <link rel="stylesheet" href="{{ asset('assets/assets/vendor_components/datatable/datatables.css') }}"> --}}
-   <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
- 
-   {{-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/css-skeletons@1.0.3/css/css-skeletons.min.css"/> --}}
-   <link rel="stylesheet" href="https://unpkg.com/css-skeletons@1.0.3/css/css-skeletons.min.css" />
- 
-   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-   <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.8.2/dist/alpine.min.js" defer></script>
-   
-   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
+   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <meta name="description" content="">
+   <meta name="author" content="">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+   <title>EduHub - @yield('title')</title>
+
+  {{-- <link rel="stylesheet" media="screen, print" href="{{ asset('assets/src/css/datagrid/datatables/datatables.bundle.css') }}"> --}}
+  {{-- <link rel="stylesheet" href="{{ asset('assets/assets/vendor_components/datatable/datatables.css') }}"> --}}
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+  {{-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/css-skeletons@1.0.3/css/css-skeletons.min.css"/> --}}
+  <link rel="stylesheet" href="https://unpkg.com/css-skeletons@1.0.3/css/css-skeletons.min.css" />
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  
    <style>
     @page {
-       size: A4; /* reduced height for A5 size in landscape orientation */
+       size: A4 potrait; /* reduced height for A5 size in landscape orientation */
        margin: 0cm;
      }
  
@@ -664,262 +657,252 @@ tr:hover {
                 <div class="card col-md-2 mb-3" id="stud_info" style="margin-right: 2%">
                     <div class="card-body p-0">
                         <table class="table-fit-content">
-                        <thead>
-                            <tr>
-                                <th colspan="3" style="text-align: center">
-                                    Pre Registration
-                                </th>
-                            </tr>
-                            <tr>
-                                <th style="width: 1%">
-                                    No.
-                                </th>
-                                <th style="width: 5%">
-                                    PROGRAM
-                                </th>
-                                <th style="width: 5%">
-                                    QUOTE
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody id="table">
-                        @foreach ($data['program'] as $key => $prg)
-                        <tr>
-                            <td>
-                            {{ $prg->program_ID }}
-                            </td>
-                            <td>
-                            {{ $prg->progcode }}
-                            </td>
-                            <td>
-                            {{ (!empty($data['preTotals'])) ? $data['preTotals'][$key] : 0}}
-                            </td>
-                        </tr>
-                        @endforeach
-                        </tbody>
-                        <tfoot>
-                            <tr>
-                                <td colspan="2" style="text-align: center">
-                                    TOTAL
-                                </td>
-                                <td>
-                                    {{ number_format(array_sum($data['preTotals']), 2) }}
-                                </td>
-                            </tr>
-                        </tfoot>
-                        </table>
-                    </div>
-                    <!-- /.card-body -->
-                </div>
-            
-                <!-- pecahan -->
-                <div class="card col-md-2 mb-3" id="stud_info" style="margin-right: 2%">
-                    <div class="card-body p-0">
-                        <table class="table-fit-content">
-                        <thead>
-                            <tr>
-                                <th colspan="3" style="text-align: center">
-                                    New Student
-                                </th>
-                            </tr>
-                            <tr>
-                                <th style="width: 1%">
-                                    No.
-                                </th>
-                                <th style="width: 2%">
-                                    PROGRAM
-                                </th>
-                                <th style="width: 2%">
-                                    QUOTE
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody id="table">
-                        @foreach ($data['program'] as $key => $prg)
-                        <tr>
-                            <td>
-                            {{ $prg->program_ID }}
-                            </td>
-                            <td>
-                            {{ $prg->progcode }}
-                            </td>
-                            <td>
-                            {{ (!empty($data['newTotals'])) ? $data['newTotals'][$key] : 0}}
-                            </td>
-                        </tr>
-                        @endforeach
-                        </tbody>
-                        <tfoot>
-                            <tr>
-                                <td colspan="2" style="text-align: center">
-                                    TOTAL
-                                </td>
-                                <td>
-                                    {{ number_format(array_sum($data['newTotals']), 2) }}
-                                </td>
-                            </tr>
-                        </tfoot>
-                        </table>
-                    </div>
-                    <!-- /.card-body -->
-                </div>
-
-                <!-- pecahan -->
-                <div class="card col-md-2 mb-3" id="stud_info" style="margin-right: 2%">
-                    <div class="card-body p-0">
-                        <table class="table-fit-content">
-                        <thead>
-                            <tr>
-                                <th colspan="3" style="text-align: center">
-                                    Old Student
-                                </th>
-                            </tr>
-                            <tr>
-                                <th style="width: 1%">
-                                    No.
-                                </th>
-                                <th style="width: 2%">
-                                    PROGRAM
-                                </th>
-                                <th style="width: 2%">
-                                    QUOTE
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody id="table">
-                            @foreach ($data['program'] as $key => $prg)
-                            <tr>
-                            <td>
-                                {{ $prg->program_ID }}
-                            </td>
-                            <td>
-                                {{ $prg->progcode }}
-                            </td>
-                            <td>
-                                {{ (!empty($data['oldTotals'])) ? $data['oldTotals'][$key] : 0}}
-                            </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                        <tfoot>
-                            <tr>
-                                <td colspan="2" style="text-align: center">
-                                    TOTAL
-                                </td>
-                                <td>
-                                    {{ number_format(array_sum($data['oldTotals']), 2) }}
-                                </td>
-                            </tr>
-                        </tfoot>
-                        </table>
-                    </div>
-                    <!-- /.card-body -->
-                </div>
-
-                <!-- pecahan -->
-                <div class="card col-md-2 mb-3" id="stud_info" style="margin-right: 2%">
-                    <div class="card-body p-0">
-                        <table class="table-fit-content">
-                        <thead>
-                            <tr>
-                                <th colspan="3" style="text-align: center">
-                                    Withdraw
-                                </th>
-                            </tr>
-                            <tr>
-                                <th style="width: 1%">
-                                    No.
-                                </th>
-                                <th style="width: 2%">
-                                    PROGRAM
-                                </th>
-                                <th style="width: 2%">
-                                    QUOTE
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody id="table">
-                        @foreach ($data['program'] as $key => $prg)
-                        <tr>
-                            <td>
-                            {{ $prg->program_ID }}
-                            </td>
-                            <td>
-                            {{ $prg->progcode }}
-                            </td>
-                            <td>
-                            {{ (!empty($data['withdrawTotals'])) ? $data['withdrawTotals'][$key] : 0}}
-                            </td>
-                        </tr>
-                        @endforeach
-                        </tbody>
-                        <tfoot>
-                            <tr>
-                                <td colspan="2" style="text-align: center">
-                                    TOTAL
-                                </td>
-                                <td>
-                                    {{ number_format(array_sum($data['withdrawTotals']), 2) }}
-                                </td>
-                            </tr>
-                        </tfoot>
-                        </table>
-                    </div>
-                    <!-- /.card-body -->
-                </div>
-
-                <!-- pecahan -->
-                <div class="card col-md-2 mb-3" id="stud_info" style="margin-right: 2%">
-                    <div class="card-body p-0">
-                        <table class="table-fit-content">
-                        <thead>
-                            <tr>
-                                <th colspan="3" style="text-align: center">
-                                    Graduate
-                                </th>
-                            </tr>
-                            <tr>
-                                <th style="width: 1%">
-                                    No.
-                                </th>
-                                <th style="width: 2%">
-                                    PROGRAM
-                                </th>
-                                <th style="width: 2%">
-                                    QUOTE
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody id="table">
-                        @foreach ($data['program'] as $key => $prg)
-                        <tr>
-                            <td>
-                            {{ $prg->program_ID }}
-                            </td>
-                            <td>
-                            {{ $prg->progcode }}
-                            </td>
-                            <td>
-                            {{ (!empty($data['graduateTotals'])) ? $data['graduateTotals'][$key] : 0}}
-                            </td>
-                        </tr>
-                        @endforeach
-                        </tbody>
-                        <tfoot>
-                            <tr>
-                                <td colspan="2" style="text-align: center">
-                                    TOTAL
-                                </td>
-                                <td>
-                                    {{ number_format(array_sum($data['graduateTotals']), 2) }}
-                                </td>
-                            </tr>
-                        </tfoot>
+                            <tbody id="table">
+                                <tr>
+                                    <td>
+                                        <table class="table-fit-content">
+                                            <thead>
+                                                <tr>
+                                                    <th colspan="3" style="text-align: center">
+                                                        Pre Registration
+                                                    </th>
+                                                </tr>
+                                                <tr>
+                                                    <th style="width: 1%">
+                                                        No.
+                                                    </th>
+                                                    <th style="width: 5%">
+                                                        PROGRAM
+                                                    </th>
+                                                    <th style="width: 5%">
+                                                        QUOTE
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="table">
+                                            @foreach ($data['program'] as $key => $prg)
+                                            <tr>
+                                                <td>
+                                                {{ $prg->program_ID }}
+                                                </td>
+                                                <td>
+                                                {{ $prg->progcode }}
+                                                </td>
+                                                <td>
+                                                {{ (!empty($data['preTotals'])) ? $data['preTotals'][$key] : 0}}
+                                                </td>
+                                            </tr>
+                                            @endforeach
+                                            </tbody>
+                                            <tfoot>
+                                                <tr>
+                                                    <td colspan="2" style="text-align: center">
+                                                        TOTAL
+                                                    </td>
+                                                    <td>
+                                                        {{ number_format(array_sum($data['preTotals']), 2) }}
+                                                    </td>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table class="table-fit-content">
+                                            <thead>
+                                                <tr>
+                                                    <th colspan="3" style="text-align: center">
+                                                        New Student
+                                                    </th>
+                                                </tr>
+                                                <tr>
+                                                    <th style="width: 1%">
+                                                        No.
+                                                    </th>
+                                                    <th style="width: 2%">
+                                                        PROGRAM
+                                                    </th>
+                                                    <th style="width: 2%">
+                                                        QUOTE
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="table">
+                                            @foreach ($data['program'] as $key => $prg)
+                                            <tr>
+                                                <td>
+                                                {{ $prg->program_ID }}
+                                                </td>
+                                                <td>
+                                                {{ $prg->progcode }}
+                                                </td>
+                                                <td>
+                                                {{ (!empty($data['newTotals'])) ? $data['newTotals'][$key] : 0}}
+                                                </td>
+                                            </tr>
+                                            @endforeach
+                                            </tbody>
+                                            <tfoot>
+                                                <tr>
+                                                    <td colspan="2" style="text-align: center">
+                                                        TOTAL
+                                                    </td>
+                                                    <td>
+                                                        {{ number_format(array_sum($data['newTotals']), 2) }}
+                                                    </td>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table class="table-fit-content">
+                                            <thead>
+                                                <tr>
+                                                    <th colspan="3" style="text-align: center">
+                                                        Old Student
+                                                    </th>
+                                                </tr>
+                                                <tr>
+                                                    <th style="width: 1%">
+                                                        No.
+                                                    </th>
+                                                    <th style="width: 2%">
+                                                        PROGRAM
+                                                    </th>
+                                                    <th style="width: 2%">
+                                                        QUOTE
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="table">
+                                                @foreach ($data['program'] as $key => $prg)
+                                                <tr>
+                                                <td>
+                                                    {{ $prg->program_ID }}
+                                                </td>
+                                                <td>
+                                                    {{ $prg->progcode }}
+                                                </td>
+                                                <td>
+                                                    {{ (!empty($data['oldTotals'])) ? $data['oldTotals'][$key] : 0}}
+                                                </td>
+                                                </tr>
+                                                @endforeach
+                                            </tbody>
+                                            <tfoot>
+                                                <tr>
+                                                    <td colspan="2" style="text-align: center">
+                                                        TOTAL
+                                                    </td>
+                                                    <td>
+                                                        {{ number_format(array_sum($data['oldTotals']), 2) }}
+                                                    </td>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table class="table-fit-content">
+                                            <thead>
+                                                <tr>
+                                                    <th colspan="3" style="text-align: center">
+                                                        Withdraw
+                                                    </th>
+                                                </tr>
+                                                <tr>
+                                                    <th style="width: 1%">
+                                                        No.
+                                                    </th>
+                                                    <th style="width: 2%">
+                                                        PROGRAM
+                                                    </th>
+                                                    <th style="width: 2%">
+                                                        QUOTE
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="table">
+                                            @foreach ($data['program'] as $key => $prg)
+                                            <tr>
+                                                <td>
+                                                {{ $prg->program_ID }}
+                                                </td>
+                                                <td>
+                                                {{ $prg->progcode }}
+                                                </td>
+                                                <td>
+                                                {{ (!empty($data['withdrawTotals'])) ? $data['withdrawTotals'][$key] : 0}}
+                                                </td>
+                                            </tr>
+                                            @endforeach
+                                            </tbody>
+                                            <tfoot>
+                                                <tr>
+                                                    <td colspan="2" style="text-align: center">
+                                                        TOTAL
+                                                    </td>
+                                                    <td>
+                                                        {{ number_format(array_sum($data['withdrawTotals']), 2) }}
+                                                    </td>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table class="table-fit-content">
+                                            <thead>
+                                                <tr>
+                                                    <th colspan="3" style="text-align: center">
+                                                        Graduate
+                                                    </th>
+                                                </tr>
+                                                <tr>
+                                                    <th style="width: 1%">
+                                                        No.
+                                                    </th>
+                                                    <th style="width: 2%">
+                                                        PROGRAM
+                                                    </th>
+                                                    <th style="width: 2%">
+                                                        QUOTE
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="table">
+                                            @foreach ($data['program'] as $key => $prg)
+                                            <tr>
+                                                <td>
+                                                {{ $prg->program_ID }}
+                                                </td>
+                                                <td>
+                                                {{ $prg->progcode }}
+                                                </td>
+                                                <td>
+                                                {{ (!empty($data['graduateTotals'])) ? $data['graduateTotals'][$key] : 0}}
+                                                </td>
+                                            </tr>
+                                            @endforeach
+                                            </tbody>
+                                            <tfoot>
+                                                <tr>
+                                                    <td colspan="2" style="text-align: center">
+                                                        TOTAL
+                                                    </td>
+                                                    <td>
+                                                        {{ number_format(array_sum($data['graduateTotals']), 2) }}
+                                                    </td>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </tbody>
                         </table>
                     </div>
                     <!-- /.card-body -->
                 </div>
             </div>
+
+            <br>
             
             <!-- hostel student -->
             <div class="card mb-3" id="stud_info">
@@ -1388,112 +1371,117 @@ tr:hover {
                 </div>
                 <!-- /.card-body -->
             </div>
-            
+
             <div class="row justify-content-center">
                 <!-- pecahan -->
                 <div class="card col-md-2 mb-3" id="stud_info" style="margin-right: 2%">
-                <div class="card-body p-0">
-                    <table class="table-fit-content">
-                    <thead>
-                        <tr>
-                            <th colspan="3" style="text-align: center">
-                                New Student
-                            </th>
-                        </tr>
-                        <tr>
-                            <th style="width: 1%">
-                                No.
-                            </th>
-                            <th style="width: 2%">
-                                PROGRAM
-                            </th>
-                            <th style="width: 2%">
-                                QUOTE
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody id="table">
-                    @foreach ($data['program'] as $key => $prg)
-                    <tr>
-                        <td>
-                        {{ $prg->program_ID }}
-                        </td>
-                        <td>
-                        {{ $prg->progcode }}
-                        </td>
-                        <td>
-                        {{ (!empty($data['newexcessTotals'])) ? $data['newexcessTotals'][$key] : 0}}
-                        </td>
-                    </tr>
-                    @endforeach
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <td colspan="2" style="text-align: center">
-                                TOTAL
-                            </td>
-                            <td>
-                                {{ number_format(array_sum($data['newexcessTotals']), 2) }}
-                            </td>
-                        </tr>
-                    </tfoot>
-                    </table>
-                </div>
-                <!-- /.card-body -->
-                </div>
-            
-                <!-- pecahan -->
-                <div class="card col-md-2 mb-3" id="stud_info" style="margin-right: 2%">
-                <div class="card-body p-0">
-                    <table class="table-fit-content">
-                    <thead>
-                        <tr>
-                            <th colspan="3" style="text-align: center">
-                                Old Student
-                            </th>
-                        </tr>
-                        <tr>
-                            <th style="width: 1%">
-                                No.
-                            </th>
-                            <th style="width: 2%">
-                                PROGRAM
-                            </th>
-                            <th style="width: 2%">
-                                QUOTE
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody id="table">
-                    @foreach ($data['program'] as $key => $prg)
-                    <tr>
-                        <td>
-                        {{ $prg->program_ID }}
-                        </td>
-                        <td>
-                        {{ $prg->progcode }}
-                        </td>
-                        <td>
-                        {{ (!empty($data['oldexcessTotals'])) ? $data['oldexcessTotals'][$key] : 0}}
-                        </td>
-                    </tr>
-                    @endforeach
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <td colspan="2" style="text-align: center">
-                                TOTAL
-                            </td>
-                            <td>
-                                {{ number_format(array_sum($data['oldexcessTotals']), 2) }}
-                            </td>
-                        </tr>
-                    </tfoot>
-                    </table>
-                </div>
-                <!-- /.card-body -->
+                    <div class="card-body p-0">
+                        <table class="table-fit-content">
+                            <tbody id="table">
+                                <tr>
+                                    <td>
+                                        <table class="table-fit-content">
+                                            <thead>
+                                                <tr>
+                                                    <th colspan="3" style="text-align: center">
+                                                        New Student
+                                                    </th>
+                                                </tr>
+                                                <tr>
+                                                    <th style="width: 1%">
+                                                        No.
+                                                    </th>
+                                                    <th style="width: 2%">
+                                                        PROGRAM
+                                                    </th>
+                                                    <th style="width: 2%">
+                                                        QUOTE
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="table">
+                                            @foreach ($data['program'] as $key => $prg)
+                                            <tr>
+                                                <td>
+                                                {{ $prg->program_ID }}
+                                                </td>
+                                                <td>
+                                                {{ $prg->progcode }}
+                                                </td>
+                                                <td>
+                                                {{ (!empty($data['newexcessTotals'])) ? $data['newexcessTotals'][$key] : 0}}
+                                                </td>
+                                            </tr>
+                                            @endforeach
+                                            </tbody>
+                                            <tfoot>
+                                                <tr>
+                                                    <td colspan="2" style="text-align: center">
+                                                        TOTAL
+                                                    </td>
+                                                    <td>
+                                                        {{ number_format(array_sum($data['newexcessTotals']), 2) }}
+                                                    </td>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table class="table-fit-content">
+                                            <thead>
+                                                <tr>
+                                                    <th colspan="3" style="text-align: center">
+                                                        Old Student
+                                                    </th>
+                                                </tr>
+                                                <tr>
+                                                    <th style="width: 1%">
+                                                        No.
+                                                    </th>
+                                                    <th style="width: 2%">
+                                                        PROGRAM
+                                                    </th>
+                                                    <th style="width: 2%">
+                                                        QUOTE
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="table">
+                                            @foreach ($data['program'] as $key => $prg)
+                                            <tr>
+                                                <td>
+                                                {{ $prg->program_ID }}
+                                                </td>
+                                                <td>
+                                                {{ $prg->progcode }}
+                                                </td>
+                                                <td>
+                                                {{ (!empty($data['oldexcessTotals'])) ? $data['oldexcessTotals'][$key] : 0}}
+                                                </td>
+                                            </tr>
+                                            @endforeach
+                                            </tbody>
+                                            <tfoot>
+                                                <tr>
+                                                    <td colspan="2" style="text-align: center">
+                                                        TOTAL
+                                                    </td>
+                                                    <td>
+                                                        {{ number_format(array_sum($data['oldexcessTotals']), 2) }}
+                                                    </td>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- /.card-body -->
                 </div>
             </div>
+
+            <br>
             
             <!-- Insentif student -->
             <div class="card mb-3" id="stud_info">
@@ -1614,112 +1602,117 @@ tr:hover {
                 </div>
                 <!-- /.card-body -->
             </div>
-            
+
             <div class="row justify-content-center">
                 <!-- pecahan -->
                 <div class="card col-md-2 mb-3" id="stud_info" style="margin-right: 2%">
                     <div class="card-body p-0">
                         <table class="table-fit-content">
-                        <thead>
-                            <tr>
-                                <th colspan="3" style="text-align: center">
-                                    New Student
-                                </th>
-                            </tr>
-                            <tr>
-                                <th style="width: 1%">
-                                    No.
-                                </th>
-                                <th style="width: 2%">
-                                    PROGRAM
-                                </th>
-                                <th style="width: 2%">
-                                    QUOTE
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody id="table">
-                        @foreach ($data['program'] as $key => $prg)
-                        <tr>
-                            <td>
-                            {{ $prg->program_ID }}
-                            </td>
-                            <td>
-                            {{ $prg->progcode }}
-                            </td>
-                            <td>
-                            {{ (!empty($data['newInsentifTotals'])) ? $data['newInsentifTotals'][$key] : 0}}
-                            </td>
-                        </tr>
-                        @endforeach
-                        </tbody>
-                        <tfoot>
-                            <tr>
-                                <td colspan="2" style="text-align: center">
-                                    TOTAL
-                                </td>
-                                <td>
-                                    {{ number_format(array_sum($data['newInsentifTotals']), 2) }}
-                                </td>
-                            </tr>
-                        </tfoot>
-                        </table>
-                    </div>
-                    <!-- /.card-body -->
-                </div>
-            
-                <!-- pecahan -->
-                <div class="card col-md-2 mb-3" id="stud_info" style="margin-right: 2%">
-                    <div class="card-body p-0">
-                        <table class="table-fit-content">
-                        <thead>
-                            <tr>
-                                <th colspan="3" style="text-align: center">
-                                    Old Student
-                                </th>
-                            </tr>
-                            <tr>
-                                <th style="width: 1%">
-                                    No.
-                                </th>
-                                <th style="width: 2%">
-                                    PROGRAM
-                                </th>
-                                <th style="width: 2%">
-                                    QUOTE
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody id="table">
-                        @foreach ($data['program'] as $key => $prg)
-                        <tr>
-                            <td>
-                            {{ $prg->program_ID }}
-                            </td>
-                            <td>
-                            {{ $prg->progcode }}
-                            </td>
-                            <td>
-                            {{ (!empty($data['oldInsentifTotals'])) ? $data['oldInsentifTotals'][$key] : 0}}
-                            </td>
-                        </tr>
-                        @endforeach
-                        </tbody>
-                        <tfoot>
-                            <tr>
-                                <td colspan="2" style="text-align: center">
-                                    TOTAL
-                                </td>
-                                <td>
-                                    {{ number_format(array_sum($data['oldInsentifTotals']), 2) }}
-                                </td>
-                            </tr>
-                        </tfoot>
+                            <tbody id="table">
+                                <tr>
+                                    <td>
+                                        <table class="table-fit-content">
+                                            <thead>
+                                                <tr>
+                                                    <th colspan="3" style="text-align: center">
+                                                        New Student
+                                                    </th>
+                                                </tr>
+                                                <tr>
+                                                    <th style="width: 1%">
+                                                        No.
+                                                    </th>
+                                                    <th style="width: 2%">
+                                                        PROGRAM
+                                                    </th>
+                                                    <th style="width: 2%">
+                                                        QUOTE
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="table">
+                                            @foreach ($data['program'] as $key => $prg)
+                                            <tr>
+                                                <td>
+                                                {{ $prg->program_ID }}
+                                                </td>
+                                                <td>
+                                                {{ $prg->progcode }}
+                                                </td>
+                                                <td>
+                                                {{ (!empty($data['newInsentifTotals'])) ? $data['newInsentifTotals'][$key] : 0}}
+                                                </td>
+                                            </tr>
+                                            @endforeach
+                                            </tbody>
+                                            <tfoot>
+                                                <tr>
+                                                    <td colspan="2" style="text-align: center">
+                                                        TOTAL
+                                                    </td>
+                                                    <td>
+                                                        {{ number_format(array_sum($data['newInsentifTotals']), 2) }}
+                                                    </td>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table class="table-fit-content">
+                                            <thead>
+                                                <tr>
+                                                    <th colspan="3" style="text-align: center">
+                                                        Old Student
+                                                    </th>
+                                                </tr>
+                                                <tr>
+                                                    <th style="width: 1%">
+                                                        No.
+                                                    </th>
+                                                    <th style="width: 2%">
+                                                        PROGRAM
+                                                    </th>
+                                                    <th style="width: 2%">
+                                                        QUOTE
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="table">
+                                            @foreach ($data['program'] as $key => $prg)
+                                            <tr>
+                                                <td>
+                                                {{ $prg->program_ID }}
+                                                </td>
+                                                <td>
+                                                {{ $prg->progcode }}
+                                                </td>
+                                                <td>
+                                                {{ (!empty($data['oldInsentifTotals'])) ? $data['oldInsentifTotals'][$key] : 0}}
+                                                </td>
+                                            </tr>
+                                            @endforeach
+                                            </tbody>
+                                            <tfoot>
+                                                <tr>
+                                                    <td colspan="2" style="text-align: center">
+                                                        TOTAL
+                                                    </td>
+                                                    <td>
+                                                        {{ number_format(array_sum($data['oldInsentifTotals']), 2) }}
+                                                    </td>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </tbody>
                         </table>
                     </div>
                     <!-- /.card-body -->
                 </div>
             </div>
+
+            <br>
 
             <!-- InsentifMco student -->
             <div class="card mb-3" id="stud_info">
@@ -1840,112 +1833,117 @@ tr:hover {
                 </div>
                 <!-- /.card-body -->
             </div>
-            
+
             <div class="row justify-content-center">
-                <!-- pecahan -->
-                <div class="card col-md-2 mb-3" id="stud_info" style="margin-right: 2%">
-                <div class="card-body p-0">
-                    <table class="table-fit-content">
-                        <thead>
-                            <tr>
-                                <th colspan="3" style="text-align: center">
-                                    New Student
-                                </th>
-                            </tr>
-                            <tr>
-                                <th style="width: 1%">
-                                    No.
-                                </th>
-                                <th style="width: 2%">
-                                    PROGRAM
-                                </th>
-                                <th style="width: 2%">
-                                    QUOTE
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody id="table">
-                            @foreach ($data['program'] as $key => $prg)
-                            <tr>
-                            <td>
-                                {{ $prg->program_ID }}
-                            </td>
-                            <td>
-                                {{ $prg->progcode }}
-                            </td>
-                            <td>
-                                {{ (!empty($data['newInsentifMcoTotals'])) ? $data['newInsentifMcoTotals'][$key] : 0}}
-                            </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                        <tfoot>
-                            <tr>
-                                <td colspan="2" style="text-align: center">
-                                    TOTAL
-                                </td>
-                                <td>
-                                    {{ number_format(array_sum($data['newInsentifMcoTotals']), 2) }}
-                                </td>
-                            </tr>
-                        </tfoot>
-                    </table>
-                </div>
-                <!-- /.card-body -->
-                </div>
-            
                 <!-- pecahan -->
                 <div class="card col-md-2 mb-3" id="stud_info" style="margin-right: 2%">
                     <div class="card-body p-0">
                         <table class="table-fit-content">
-                            <thead>
-                                <tr>
-                                    <th colspan="3" style="text-align: center">
-                                        Old Student
-                                    </th>
-                                </tr>
-                                <tr>
-                                    <th style="width: 1%">
-                                        No.
-                                    </th>
-                                    <th style="width: 2%">
-                                        PROGRAM
-                                    </th>
-                                    <th style="width: 2%">
-                                        QUOTE
-                                    </th>
-                                </tr>
-                            </thead>
                             <tbody id="table">
-                                @foreach ($data['program'] as $key => $prg)
                                 <tr>
-                                <td>
-                                    {{ $prg->program_ID }}
-                                </td>
-                                <td>
-                                    {{ $prg->progcode }}
-                                </td>
-                                <td>
-                                    {{ (!empty($data['oldInsentifMcoTotals'])) ? $data['oldInsentifMcoTotals'][$key] : 0}}
-                                </td>
+                                    <td>
+                                        <table class="table-fit-content">
+                                            <thead>
+                                                <tr>
+                                                    <th colspan="3" style="text-align: center">
+                                                        New Student
+                                                    </th>
+                                                </tr>
+                                                <tr>
+                                                    <th style="width: 1%">
+                                                        No.
+                                                    </th>
+                                                    <th style="width: 2%">
+                                                        PROGRAM
+                                                    </th>
+                                                    <th style="width: 2%">
+                                                        QUOTE
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="table">
+                                                @foreach ($data['program'] as $key => $prg)
+                                                <tr>
+                                                <td>
+                                                    {{ $prg->program_ID }}
+                                                </td>
+                                                <td>
+                                                    {{ $prg->progcode }}
+                                                </td>
+                                                <td>
+                                                    {{ (!empty($data['newInsentifMcoTotals'])) ? $data['newInsentifMcoTotals'][$key] : 0}}
+                                                </td>
+                                                </tr>
+                                                @endforeach
+                                            </tbody>
+                                            <tfoot>
+                                                <tr>
+                                                    <td colspan="2" style="text-align: center">
+                                                        TOTAL
+                                                    </td>
+                                                    <td>
+                                                        {{ number_format(array_sum($data['newInsentifMcoTotals']), 2) }}
+                                                    </td>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table class="table-fit-content">
+                                            <thead>
+                                                <tr>
+                                                    <th colspan="3" style="text-align: center">
+                                                        Old Student
+                                                    </th>
+                                                </tr>
+                                                <tr>
+                                                    <th style="width: 1%">
+                                                        No.
+                                                    </th>
+                                                    <th style="width: 2%">
+                                                        PROGRAM
+                                                    </th>
+                                                    <th style="width: 2%">
+                                                        QUOTE
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="table">
+                                                @foreach ($data['program'] as $key => $prg)
+                                                <tr>
+                                                <td>
+                                                    {{ $prg->program_ID }}
+                                                </td>
+                                                <td>
+                                                    {{ $prg->progcode }}
+                                                </td>
+                                                <td>
+                                                    {{ (!empty($data['oldInsentifMcoTotals'])) ? $data['oldInsentifMcoTotals'][$key] : 0}}
+                                                </td>
+                                                </tr>
+                                                @endforeach
+                                            </tbody>
+                                            <tfoot>
+                                              <tr>
+                                                  <td colspan="2" style="text-align: center">
+                                                      TOTAL
+                                                  </td>
+                                                  <td>
+                                                      {{ number_format(array_sum($data['oldInsentifMcoTotals']), 2) }}
+                                                  </td>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </td>
                                 </tr>
-                                @endforeach
                             </tbody>
-                            <tfoot>
-                              <tr>
-                                  <td colspan="2" style="text-align: center">
-                                      TOTAL
-                                  </td>
-                                  <td>
-                                      {{ number_format(array_sum($data['oldInsentifMcoTotals']), 2) }}
-                                  </td>
-                                </tr>
-                            </tfoot>
                         </table>
                     </div>
-                <!-- /.card-body -->
+                    <!-- /.card-body -->
                 </div>
             </div>
+
+            <br>
 
             <!-- Cov19 student -->
             <div class="card mb-3" id="stud_info">
@@ -2066,112 +2064,117 @@ tr:hover {
                 </div>
                 <!-- /.card-body -->
             </div>
-            
+
             <div class="row justify-content-center">
-                <!-- pecahan -->
-                <div class="card col-md-2 mb-3" id="stud_info" style="margin-right: 2%">
-                <div class="card-body p-0">
-                    <table class="table-fit-content">
-                        <thead>
-                            <tr>
-                                <th colspan="3" style="text-align: center">
-                                    New Student
-                                </th>
-                            </tr>
-                            <tr>
-                                <th style="width: 1%">
-                                    No.
-                                </th>
-                                <th style="width: 2%">
-                                    PROGRAM
-                                </th>
-                                <th style="width: 2%">
-                                    QUOTE
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody id="table">
-                            @foreach ($data['program'] as $key => $prg)
-                            <tr>
-                            <td>
-                                {{ $prg->program_ID }}
-                            </td>
-                            <td>
-                                {{ $prg->progcode }}
-                            </td>
-                            <td>
-                                {{ (!empty($data['newCov19Totals'])) ? $data['newCov19Totals'][$key] : 0}}
-                            </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                        <tfoot>
-                            <tr>
-                                <td colspan="2" style="text-align: center">
-                                    TOTAL
-                                </td>
-                                <td>
-                                    {{ number_format(array_sum($data['newCov19Totals']), 2) }}
-                                </td>
-                            </tr>
-                        </tfoot>
-                    </table>
-                </div>
-                <!-- /.card-body -->
-                </div>
-            
                 <!-- pecahan -->
                 <div class="card col-md-2 mb-3" id="stud_info" style="margin-right: 2%">
                     <div class="card-body p-0">
                         <table class="table-fit-content">
-                            <thead>
-                                <tr>
-                                    <th colspan="3" style="text-align: center">
-                                        Old Student
-                                    </th>
-                                </tr>
-                                <tr>
-                                    <th style="width: 1%">
-                                        No.
-                                    </th>
-                                    <th style="width: 2%">
-                                        PROGRAM
-                                    </th>
-                                    <th style="width: 2%">
-                                        QUOTE
-                                    </th>
-                                </tr>
-                            </thead>
                             <tbody id="table">
-                                @foreach ($data['program'] as $key => $prg)
                                 <tr>
-                                <td>
-                                    {{ $prg->program_ID }}
-                                </td>
-                                <td>
-                                    {{ $prg->progcode }}
-                                </td>
-                                <td>
-                                    {{ (!empty($data['oldCov19Totals'])) ? $data['oldCov19Totals'][$key] : 0}}
-                                </td>
+                                    <td>
+                                        <table class="table-fit-content">
+                                            <thead>
+                                                <tr>
+                                                    <th colspan="3" style="text-align: center">
+                                                        New Student
+                                                    </th>
+                                                </tr>
+                                                <tr>
+                                                    <th style="width: 1%">
+                                                        No.
+                                                    </th>
+                                                    <th style="width: 2%">
+                                                        PROGRAM
+                                                    </th>
+                                                    <th style="width: 2%">
+                                                        QUOTE
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="table">
+                                                @foreach ($data['program'] as $key => $prg)
+                                                <tr>
+                                                <td>
+                                                    {{ $prg->program_ID }}
+                                                </td>
+                                                <td>
+                                                    {{ $prg->progcode }}
+                                                </td>
+                                                <td>
+                                                    {{ (!empty($data['newCov19Totals'])) ? $data['newCov19Totals'][$key] : 0}}
+                                                </td>
+                                                </tr>
+                                                @endforeach
+                                            </tbody>
+                                            <tfoot>
+                                                <tr>
+                                                    <td colspan="2" style="text-align: center">
+                                                        TOTAL
+                                                    </td>
+                                                    <td>
+                                                        {{ number_format(array_sum($data['newCov19Totals']), 2) }}
+                                                    </td>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table class="table-fit-content">
+                                            <thead>
+                                                <tr>
+                                                    <th colspan="3" style="text-align: center">
+                                                        Old Student
+                                                    </th>
+                                                </tr>
+                                                <tr>
+                                                    <th style="width: 1%">
+                                                        No.
+                                                    </th>
+                                                    <th style="width: 2%">
+                                                        PROGRAM
+                                                    </th>
+                                                    <th style="width: 2%">
+                                                        QUOTE
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="table">
+                                                @foreach ($data['program'] as $key => $prg)
+                                                <tr>
+                                                <td>
+                                                    {{ $prg->program_ID }}
+                                                </td>
+                                                <td>
+                                                    {{ $prg->progcode }}
+                                                </td>
+                                                <td>
+                                                    {{ (!empty($data['oldCov19Totals'])) ? $data['oldCov19Totals'][$key] : 0}}
+                                                </td>
+                                                </tr>
+                                                @endforeach
+                                            </tbody>
+                                            <tfoot>
+                                              <tr>
+                                                  <td colspan="2" style="text-align: center">
+                                                      TOTAL
+                                                  </td>
+                                                  <td>
+                                                      {{ number_format(array_sum($data['oldCov19Totals']), 2) }}
+                                                  </td>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </td>
                                 </tr>
-                                @endforeach
                             </tbody>
-                            <tfoot>
-                              <tr>
-                                  <td colspan="2" style="text-align: center">
-                                      TOTAL
-                                  </td>
-                                  <td>
-                                      {{ number_format(array_sum($data['oldCov19Totals']), 2) }}
-                                  </td>
-                                </tr>
-                            </tfoot>
                         </table>
                     </div>
-                <!-- /.card-body -->
+                    <!-- /.card-body -->
                 </div>
             </div>
+
+            <br>
 
             <!-- InsentifMco student -->
             <div class="card mb-3" id="stud_info">
@@ -2292,112 +2295,117 @@ tr:hover {
                 </div>
                 <!-- /.card-body -->
             </div>
-            
+
             <div class="row justify-content-center">
-                <!-- pecahan -->
-                <div class="card col-md-2 mb-3" id="stud_info" style="margin-right: 2%">
-                <div class="card-body p-0">
-                    <table class="table-fit-content">
-                        <thead>
-                            <tr>
-                                <th colspan="3" style="text-align: center">
-                                    New Student
-                                </th>
-                            </tr>
-                            <tr>
-                                <th style="width: 1%">
-                                    No.
-                                </th>
-                                <th style="width: 2%">
-                                    PROGRAM
-                                </th>
-                                <th style="width: 2%">
-                                    QUOTE
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody id="table">
-                            @foreach ($data['program'] as $key => $prg)
-                            <tr>
-                            <td>
-                                {{ $prg->program_ID }}
-                            </td>
-                            <td>
-                                {{ $prg->progcode }}
-                            </td>
-                            <td>
-                                {{ (!empty($data['newiNedTotals'])) ? $data['newiNedTotals'][$key] : 0}}
-                            </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                        <tfoot>
-                            <tr>
-                                <td colspan="2" style="text-align: center">
-                                    TOTAL
-                                </td>
-                                <td>
-                                    {{ number_format(array_sum($data['newiNedTotals']), 2) }}
-                                </td>
-                            </tr>
-                        </tfoot>
-                    </table>
-                </div>
-                <!-- /.card-body -->
-                </div>
-            
                 <!-- pecahan -->
                 <div class="card col-md-2 mb-3" id="stud_info" style="margin-right: 2%">
                     <div class="card-body p-0">
                         <table class="table-fit-content">
-                            <thead>
-                                <tr>
-                                    <th colspan="3" style="text-align: center">
-                                        Old Student
-                                    </th>
-                                </tr>
-                                <tr>
-                                    <th style="width: 1%">
-                                        No.
-                                    </th>
-                                    <th style="width: 2%">
-                                        PROGRAM
-                                    </th>
-                                    <th style="width: 2%">
-                                        QUOTE
-                                    </th>
-                                </tr>
-                            </thead>
                             <tbody id="table">
-                                @foreach ($data['program'] as $key => $prg)
                                 <tr>
-                                <td>
-                                    {{ $prg->program_ID }}
-                                </td>
-                                <td>
-                                    {{ $prg->progcode }}
-                                </td>
-                                <td>
-                                    {{ (!empty($data['oldiNedTotals'])) ? $data['oldiNedTotals'][$key] : 0}}
-                                </td>
+                                    <td>
+                                        <table class="table-fit-content">
+                                            <thead>
+                                                <tr>
+                                                    <th colspan="3" style="text-align: center">
+                                                        New Student
+                                                    </th>
+                                                </tr>
+                                                <tr>
+                                                    <th style="width: 1%">
+                                                        No.
+                                                    </th>
+                                                    <th style="width: 2%">
+                                                        PROGRAM
+                                                    </th>
+                                                    <th style="width: 2%">
+                                                        QUOTE
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="table">
+                                                @foreach ($data['program'] as $key => $prg)
+                                                <tr>
+                                                <td>
+                                                    {{ $prg->program_ID }}
+                                                </td>
+                                                <td>
+                                                    {{ $prg->progcode }}
+                                                </td>
+                                                <td>
+                                                    {{ (!empty($data['newiNedTotals'])) ? $data['newiNedTotals'][$key] : 0}}
+                                                </td>
+                                                </tr>
+                                                @endforeach
+                                            </tbody>
+                                            <tfoot>
+                                                <tr>
+                                                    <td colspan="2" style="text-align: center">
+                                                        TOTAL
+                                                    </td>
+                                                    <td>
+                                                        {{ number_format(array_sum($data['newiNedTotals']), 2) }}
+                                                    </td>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table class="table-fit-content">
+                                            <thead>
+                                                <tr>
+                                                    <th colspan="3" style="text-align: center">
+                                                        Old Student
+                                                    </th>
+                                                </tr>
+                                                <tr>
+                                                    <th style="width: 1%">
+                                                        No.
+                                                    </th>
+                                                    <th style="width: 2%">
+                                                        PROGRAM
+                                                    </th>
+                                                    <th style="width: 2%">
+                                                        QUOTE
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="table">
+                                                @foreach ($data['program'] as $key => $prg)
+                                                <tr>
+                                                <td>
+                                                    {{ $prg->program_ID }}
+                                                </td>
+                                                <td>
+                                                    {{ $prg->progcode }}
+                                                </td>
+                                                <td>
+                                                    {{ (!empty($data['oldiNedTotals'])) ? $data['oldiNedTotals'][$key] : 0}}
+                                                </td>
+                                                </tr>
+                                                @endforeach
+                                            </tbody>
+                                            <tfoot>
+                                              <tr>
+                                                  <td colspan="2" style="text-align: center">
+                                                      TOTAL
+                                                  </td>
+                                                  <td>
+                                                      {{ number_format(array_sum($data['oldiNedTotals']), 2) }}
+                                                  </td>
+                                                </tr>
+                                            </tfoot>
+                                        </table>>
+                                    </td>
                                 </tr>
-                                @endforeach
                             </tbody>
-                            <tfoot>
-                              <tr>
-                                  <td colspan="2" style="text-align: center">
-                                      TOTAL
-                                  </td>
-                                  <td>
-                                      {{ number_format(array_sum($data['oldiNedTotals']), 2) }}
-                                  </td>
-                                </tr>
-                            </tfoot>
                         </table>
                     </div>
-                <!-- /.card-body -->
+                    <!-- /.card-body -->
                 </div>
             </div>
+
+            <br>
             
             <!-- tabungkhas student -->
             <div class="card mb-3" id="stud_info">
@@ -2518,113 +2526,118 @@ tr:hover {
                 </div>
                 <!-- /.card-body -->
             </div>
-            
+
             <div class="row justify-content-center">
                 <!-- pecahan -->
                 <div class="card col-md-2 mb-3" id="stud_info" style="margin-right: 2%">
-                <div class="card-body p-0">
-                    <table class="table-fit-content">
-                    <thead>
-                        <tr>
-                            <th colspan="3" style="text-align: center">
-                                New Student
-                            </th>
-                        </tr>
-                        <tr>
-                            <th style="width: 1%">
-                                No.
-                            </th>
-                            <th style="width: 2%">
-                                PROGRAM
-                            </th>
-                            <th style="width: 2%">
-                                QUOTE
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody id="table">
-                    @foreach ($data['program'] as $key => $prg)
-                    <tr>
-                        <td>
-                        {{ $prg->program_ID }}
-                        </td>
-                        <td>
-                        {{ $prg->progcode }}
-                        </td>
-                        <td>
-                        {{ (!empty($data['newtabungkhasTotals'])) ? $data['newtabungkhasTotals'][$key] : 0}}
-                        </td>
-                    </tr>
-                    @endforeach
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <td colspan="2" style="text-align: center">
-                                TOTAL
-                            </td>
-                            <td>
-                                {{ number_format(array_sum($data['newtabungkhasTotals']), 2) }}
-                            </td>
-                        </tr>
-                    </tfoot>
-                    </table>
-                </div>
-                <!-- /.card-body -->
-                </div>
-            
-                <!-- pecahan -->
-                <div class="card col-md-2 mb-3" id="stud_info" style="margin-right: 2%">
-                <div class="card-body p-0">
-                    <table class="table-fit-content">
-                    <thead>
-                        <tr>
-                            <th colspan="3" style="text-align: center">
-                                Old Student
-                            </th>
-                        </tr>
-                        <tr>
-                            <th style="width: 1%">
-                                No.
-                            </th>
-                            <th style="width: 2%">
-                                PROGRAM
-                            </th>
-                            <th style="width: 2%">
-                                QUOTE
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody id="table">
-                    @foreach ($data['program'] as $key => $prg)
-                    <tr>
-                        <td>
-                        {{ $prg->program_ID }}
-                        </td>
-                        <td>
-                        {{ $prg->progcode }}
-                        </td>
-                        <td>
-                        {{ (!empty($data['oldtabungkhasTotals'])) ? $data['oldtabungkhasTotals'][$key] : 0}}
-                        </td>
-                    </tr>
-                    @endforeach
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <td colspan="2" style="text-align: center">
-                                TOTAL
-                            </td>
-                            <td>
-                                {{ number_format(array_sum($data['oldtabungkhasTotals']), 2) }}
-                            </td>
-                        </tr>
-                    </tfoot>
-                    </table>
-                </div>
-                <!-- /.card-body -->
+                    <div class="card-body p-0">
+                        <table class="table-fit-content">
+                            <tbody id="table">
+                                <tr>
+                                    <td>
+                                        <table class="table-fit-content">
+                                            <thead>
+                                                <tr>
+                                                    <th colspan="3" style="text-align: center">
+                                                        New Student
+                                                    </th>
+                                                </tr>
+                                                <tr>
+                                                    <th style="width: 1%">
+                                                        No.
+                                                    </th>
+                                                    <th style="width: 2%">
+                                                        PROGRAM
+                                                    </th>
+                                                    <th style="width: 2%">
+                                                        QUOTE
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="table">
+                                            @foreach ($data['program'] as $key => $prg)
+                                            <tr>
+                                                <td>
+                                                {{ $prg->program_ID }}
+                                                </td>
+                                                <td>
+                                                {{ $prg->progcode }}
+                                                </td>
+                                                <td>
+                                                {{ (!empty($data['newtabungkhasTotals'])) ? $data['newtabungkhasTotals'][$key] : 0}}
+                                                </td>
+                                            </tr>
+                                            @endforeach
+                                            </tbody>
+                                            <tfoot>
+                                                <tr>
+                                                    <td colspan="2" style="text-align: center">
+                                                        TOTAL
+                                                    </td>
+                                                    <td>
+                                                        {{ number_format(array_sum($data['newtabungkhasTotals']), 2) }}
+                                                    </td>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table class="table-fit-content">
+                                            <thead>
+                                                <tr>
+                                                    <th colspan="3" style="text-align: center">
+                                                        Old Student
+                                                    </th>
+                                                </tr>
+                                                <tr>
+                                                    <th style="width: 1%">
+                                                        No.
+                                                    </th>
+                                                    <th style="width: 2%">
+                                                        PROGRAM
+                                                    </th>
+                                                    <th style="width: 2%">
+                                                        QUOTE
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="table">
+                                            @foreach ($data['program'] as $key => $prg)
+                                            <tr>
+                                                <td>
+                                                {{ $prg->program_ID }}
+                                                </td>
+                                                <td>
+                                                {{ $prg->progcode }}
+                                                </td>
+                                                <td>
+                                                {{ (!empty($data['oldtabungkhasTotals'])) ? $data['oldtabungkhasTotals'][$key] : 0}}
+                                                </td>
+                                            </tr>
+                                            @endforeach
+                                            </tbody>
+                                            <tfoot>
+                                                <tr>
+                                                    <td colspan="2" style="text-align: center">
+                                                        TOTAL
+                                                    </td>
+                                                    <td>
+                                                        {{ number_format(array_sum($data['oldtabungkhasTotals']), 2) }}
+                                                    </td>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- /.card-body -->
                 </div>
             </div>
-            
+
+            <br>
+        
             <!-- sponsorship student -->
             <div class="card mb-3" id="stud_info">
                 <div class="card-header">
@@ -2724,110 +2737,113 @@ tr:hover {
                 </div>
                 <!-- /.card-body -->
             </div>
-            
+
             <div class="row justify-content-center">
                 <!-- pecahan -->
                 <div class="card col-md-2 mb-3" id="stud_info" style="margin-right: 2%">
-                <div class="card-body p-0">
-                    <table class="table-fit-content">
-                    <thead>
-                        <tr>
-                            <th colspan="3" style="text-align: center">
-                                New Student
-                            </th>
-                        </tr>
-                        <tr>
-                            <th style="width: 1%">
-                                No.
-                            </th>
-                            <th style="width: 2%">
-                                PROGRAM
-                            </th>
-                            <th style="width: 2%">
-                                QUOTE
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody id="table">
-                    @foreach ($data['program'] as $key => $prg)
-                    <tr>
-                        <td>
-                        {{ $prg->program_ID }}
-                        </td>
-                        <td>
-                        {{ $prg->progcode }}
-                        </td>
-                        <td>
-                        {{ (!empty($data['newsponsorTotals'])) ? $data['newsponsorTotals'][$key] : 0}}
-                        </td>
-                    </tr>
-                    @endforeach
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <td colspan="2" style="text-align: center">
-                                TOTAL
-                            </td>
-                            <td>
-                                {{ number_format(array_sum($data['newsponsorTotals']), 2) }}
-                            </td>
-                        </tr>
-                    </tfoot>
-                    </table>
-                </div>
-                <!-- /.card-body -->
-                </div>
-            
-                <!-- pecahan -->
-                <div class="card col-md-2 mb-3" id="stud_info" style="margin-right: 2%">
-                <div class="card-body p-0">
-                    <table class="table-fit-content">
-                    <thead>
-                        <tr>
-                            <th colspan="3" style="text-align: center">
-                                Old Student
-                            </th>
-                        </tr>
-                        <tr>
-                            <th style="width: 1%">
-                                No.
-                            </th>
-                            <th style="width: 2%">
-                                PROGRAM
-                            </th>
-                            <th style="width: 2%">
-                                QUOTE
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody id="table">
-                    @foreach ($data['program'] as $key => $prg)
-                    <tr>
-                        <td>
-                        {{ $prg->program_ID }}
-                        </td>
-                        <td>
-                        {{ $prg->progcode }}
-                        </td>
-                        <td>
-                        {{ (!empty($data['oldsponsorTotals'])) ? $data['oldsponsorTotals'][$key] : 0}}
-                        </td>
-                    </tr>
-                    @endforeach
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <td colspan="2" style="text-align: center">
-                                TOTAL
-                            </td>
-                            <td>
-                                {{ number_format(array_sum($data['oldsponsorTotals']), 2) }}
-                            </td>
-                        </tr>
-                    </tfoot>
-                    </table>
-                </div>
-                <!-- /.card-body -->
+                    <div class="card-body p-0">
+                        <table class="table-fit-content">
+                            <tbody id="table">
+                                <tr>
+                                    <td>
+                                        <table class="table-fit-content">
+                                            <thead>
+                                                <tr>
+                                                    <th colspan="3" style="text-align: center">
+                                                        New Student
+                                                    </th>
+                                                </tr>
+                                                <tr>
+                                                    <th style="width: 1%">
+                                                        No.
+                                                    </th>
+                                                    <th style="width: 2%">
+                                                        PROGRAM
+                                                    </th>
+                                                    <th style="width: 2%">
+                                                        QUOTE
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="table">
+                                            @foreach ($data['program'] as $key => $prg)
+                                            <tr>
+                                                <td>
+                                                {{ $prg->program_ID }}
+                                                </td>
+                                                <td>
+                                                {{ $prg->progcode }}
+                                                </td>
+                                                <td>
+                                                {{ (!empty($data['newsponsorTotals'])) ? $data['newsponsorTotals'][$key] : 0}}
+                                                </td>
+                                            </tr>
+                                            @endforeach
+                                            </tbody>
+                                            <tfoot>
+                                                <tr>
+                                                    <td colspan="2" style="text-align: center">
+                                                        TOTAL
+                                                    </td>
+                                                    <td>
+                                                        {{ number_format(array_sum($data['newsponsorTotals']), 2) }}
+                                                    </td>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table class="table-fit-content">
+                                            <thead>
+                                                <tr>
+                                                    <th colspan="3" style="text-align: center">
+                                                        Old Student
+                                                    </th>
+                                                </tr>
+                                                <tr>
+                                                    <th style="width: 1%">
+                                                        No.
+                                                    </th>
+                                                    <th style="width: 2%">
+                                                        PROGRAM
+                                                    </th>
+                                                    <th style="width: 2%">
+                                                        QUOTE
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="table">
+                                            @foreach ($data['program'] as $key => $prg)
+                                            <tr>
+                                                <td>
+                                                {{ $prg->program_ID }}
+                                                </td>
+                                                <td>
+                                                {{ $prg->progcode }}
+                                                </td>
+                                                <td>
+                                                {{ (!empty($data['oldsponsorTotals'])) ? $data['oldsponsorTotals'][$key] : 0}}
+                                                </td>
+                                            </tr>
+                                            @endforeach
+                                            </tbody>
+                                            <tfoot>
+                                                <tr>
+                                                    <td colspan="2" style="text-align: center">
+                                                        TOTAL
+                                                    </td>
+                                                    <td>
+                                                        {{ number_format(array_sum($data['oldsponsorTotals']), 2) }}
+                                                    </td>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- /.card-body -->
                 </div>
             </div>
         </div>
