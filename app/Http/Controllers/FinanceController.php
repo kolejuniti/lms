@@ -8587,11 +8587,15 @@ class FinanceController extends Controller
 
             $data['sum3'] = $val;
 
-            //TUNGGAKAN
+            //TUNGGAKAN KESELURUHAN
+
+            $data['current_balance'] = $data['sum3'];
+
+            $data['total_balance'] = $data['current_balance'];
 
             //TUNGGAKAN SEMASA
 
-            $package = DB::table('tblpackage_sponsorship')->where('student_ic', $std->ic)->first();
+            $package = DB::table('tblpackage_sponsorship')->where('student_ic', $request->student)->first();
 
             if($package != null)
             {
@@ -8602,18 +8606,22 @@ class FinanceController extends Controller
                     $discount = abs(DB::table('tblclaim')
                                 ->join('tblclaimdtl', 'tblclaim.id', 'tblclaimdtl.claim_id')
                                 ->where([
-                                    ['tblclaim.student_ic', $std->ic],
+                                    ['tblclaim.student_ic', $request->student],
                                     ['tblclaim.process_type_id', 5],
                                     ['tblclaim.process_status_id', 2],
                                     ['tblclaim.remark', 'LIKE', '%Diskaun Yuran Kediaman%']
                                 ])->sum('tblclaimdtl.amount'));
 
+                }else{
+
+                    $discount = 0;
+                    
                 }
 
                 if($package->package_id == 5)
                 {
 
-                    $data['current_balance'][$key] = $data['sum3'];
+                    $data['current_balance'] = $data['sum3'];
 
                 }else{
 
@@ -8623,18 +8631,16 @@ class FinanceController extends Controller
                         if($data['sum3'] <= ($package->amount - $discount))
                         {
 
-                            $data['current_balance'][$key] = 0.00;
+                            $data['current_balance'] = 0.00;
+
+                            $data['total_balance'] = 0.00;
 
                         }elseif($data['sum3'] > ($package->amount - $discount))
                         {
 
-                            $data['current_balance'][$key] = $data['sum3'] - ($package->amount - $discount);
+                            $data['current_balance'] = $data['sum3'] - ($package->amount - $discount);
 
                         }
-
-                    }else{
-
-                        $data['current_balance'][$key] = $data['sum3'];
 
                     }
 
@@ -8642,41 +8648,41 @@ class FinanceController extends Controller
 
                 //TNUGGAKAN PEMBIAYAAN KHAS
 
-                $stddetail = DB::table('students')->where('ic', $std->ic)->select('program', 'semester')->first();
+                $stddetail = DB::table('students')->where('ic', $request->student)->select('program', 'semester')->first();
 
-                if(($stddetail->program == 7 || $stddetail->program == 8) && $stddetail->program >= 5)
+                if($stddetail->program == 7 || $stddetail->program == 8)
                 {
 
                     if($package->payment_type_id == 3 || $package->payment_type_id == 11 || $package->payment_type_id == 14)
                     {
 
-                        if($data['current_balance'][$key] == 0.00)
+                        if($data['current_balance'] == 0.00)
                         {
 
-                            $data['pk_balance'][$key] = $data['sum3'];
+                            $data['pk_balance'] = $data['sum3'];
 
                         }else{
 
-                            $data['pk_balance'][$key] = ($package->amount - $discount);
+                            $data['pk_balance'] = ($package->amount - $discount);
 
                         }
 
                     }
 
-                }elseif($stddetail->program >= 6)
+                }else
                 {
 
                     if($package->payment_type_id == 3 || $package->payment_type_id == 11 || $package->payment_type_id == 14)
                     {
 
-                        if($data['current_balance'][$key] == 0.00)
+                        if($data['current_balance'] == 0.00)
                         {
 
-                            $data['pk_balance'][$key] = $data['sum3'];
+                            $data['pk_balance'] = $data['sum3'];
 
                         }else{
 
-                            $data['pk_balance'][$key] = ($package->amount - $discount);
+                            $data['pk_balance'] = ($package->amount - $discount);
 
                         }
 
@@ -8686,15 +8692,11 @@ class FinanceController extends Controller
 
             }else{
 
-                $data['current_balance'][$key] = 0.00;
+                $data['current_balance'] = 0.00;
 
-                $data['pk_balance'][$key] = 0.00;
+                $data['pk_balance'] = 0.00;
 
-            }
-
-            //TUNGGAKAN KESELURUHAN
-
-            $data['total_balance'][$key] = $data['sum3'];
+            }   
 
         }
 
@@ -8798,11 +8800,15 @@ class FinanceController extends Controller
 
             $data['sum3'] = $val;
 
-        //TUNGGAKAN
+        //TUNGGAKAN KESELURUHAN
+
+        $data['current_balance'] = $data['sum3'];
+
+        $data['total_balance'] = $data['current_balance'];
 
         //TUNGGAKAN SEMASA
 
-        $package = DB::table('tblpackage_sponsorship')->where('student_ic', request()->ic)->first();
+        $package = DB::table('tblpackage_sponsorship')->where('student_ic', $request->student)->first();
 
         if($package != null)
         {
@@ -8813,12 +8819,16 @@ class FinanceController extends Controller
                 $discount = abs(DB::table('tblclaim')
                             ->join('tblclaimdtl', 'tblclaim.id', 'tblclaimdtl.claim_id')
                             ->where([
-                                ['tblclaim.student_ic', request()->ic],
+                                ['tblclaim.student_ic', $request->student],
                                 ['tblclaim.process_type_id', 5],
                                 ['tblclaim.process_status_id', 2],
                                 ['tblclaim.remark', 'LIKE', '%Diskaun Yuran Kediaman%']
                             ])->sum('tblclaimdtl.amount'));
 
+            }else{
+
+                $discount = 0;
+                
             }
 
             if($package->package_id == 5)
@@ -8836,6 +8846,8 @@ class FinanceController extends Controller
 
                         $data['current_balance'] = 0.00;
 
+                        $data['total_balance'] = 0.00;
+
                     }elseif($data['sum3'] > ($package->amount - $discount))
                     {
 
@@ -8843,19 +8855,15 @@ class FinanceController extends Controller
 
                     }
 
-                }else{
-
-                    $data['current_balance'] = $data['sum3'];
-
                 }
 
             }
 
             //TNUGGAKAN PEMBIAYAAN KHAS
 
-            $stddetail = DB::table('students')->where('ic', request()->ic)->select('program', 'semester')->first();
+            $stddetail = DB::table('students')->where('ic', $request->student)->select('program', 'semester')->first();
 
-            if(($stddetail->program == 7 || $stddetail->program == 8) && $stddetail->program >= 5)
+            if($stddetail->program == 7 || $stddetail->program == 8)
             {
 
                 if($package->payment_type_id == 3 || $package->payment_type_id == 11 || $package->payment_type_id == 14)
@@ -8874,7 +8882,7 @@ class FinanceController extends Controller
 
                 }
 
-            }elseif($stddetail->program >= 6)
+            }else
             {
 
                 if($package->payment_type_id == 3 || $package->payment_type_id == 11 || $package->payment_type_id == 14)
@@ -8902,10 +8910,6 @@ class FinanceController extends Controller
             $data['pk_balance'] = 0.00;
 
         }
-
-        //TUNGGAKAN KESELURUHAN
-
-        $data['total_balance'] = $data['sum3'];
 
         //E
 
