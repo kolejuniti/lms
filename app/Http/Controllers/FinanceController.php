@@ -4232,7 +4232,7 @@ class FinanceController extends Controller
 
             $stddetail = DB::table('students')->where('ic', $request->student)->select('program', 'semester')->first();
 
-            if(($stddetail->program == 7 || $stddetail->program == 8) && $stddetail->program >= 5)
+            if($stddetail->program == 7 || $stddetail->program == 8)
             {
 
                 if($package->payment_type_id == 3 || $package->payment_type_id == 11 || $package->payment_type_id == 14)
@@ -4251,7 +4251,7 @@ class FinanceController extends Controller
 
                 }
 
-            }elseif($stddetail->program >= 6)
+            }else
             {
 
                 if($package->payment_type_id == 3 || $package->payment_type_id == 11 || $package->payment_type_id == 14)
