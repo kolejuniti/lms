@@ -120,8 +120,8 @@
                                                 <tr>
                                                     <td>{{ $key+1 }}</td>
                                                     <td>{{ $wrs->name }}</td>
-                                                    <td>{{ $wrs->home_tel }}</td>
-                                                    <td>{{ $wrs->phone_tel }}</td>
+                                                    <td style="text-align: center">{{ $wrs->home_tel }}</td>
+                                                    <td style="text-align: center">{{ $wrs->phone_tel }}</td>
                                                 </tr>
                                                 @endforeach
                                             </tbody>
