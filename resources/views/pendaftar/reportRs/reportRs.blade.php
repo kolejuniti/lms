@@ -97,17 +97,7 @@
 <!-- Page specific script -->
 <script src="{{ asset('assets/src/js/pages/data-table.js') }}"></script>
 
-<script>
-     $(document).ready( function () {
-        $('#myTable').DataTable({
-          dom: 'lBfrtip', // if you remove this line you will see the show entries dropdown
-          
-          buttons: [
-              'copy', 'csv', 'excel', 'pdf', 'print'
-          ],
-        });
-    } );
-  </script>
+
 
   <script type="text/javascript">
     var from = '';
