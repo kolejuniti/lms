@@ -8808,7 +8808,7 @@ class FinanceController extends Controller
 
         //TUNGGAKAN SEMASA
 
-        $package = DB::table('tblpackage_sponsorship')->where('student_ic', $request->student)->first();
+        $package = DB::table('tblpackage_sponsorship')->where('student_ic', request()->ic)->first();
 
         if($package != null)
         {
@@ -8819,7 +8819,7 @@ class FinanceController extends Controller
                 $discount = abs(DB::table('tblclaim')
                             ->join('tblclaimdtl', 'tblclaim.id', 'tblclaimdtl.claim_id')
                             ->where([
-                                ['tblclaim.student_ic', $request->student],
+                                ['tblclaim.student_ic', request()->ic],
                                 ['tblclaim.process_type_id', 5],
                                 ['tblclaim.process_status_id', 2],
                                 ['tblclaim.remark', 'LIKE', '%Diskaun Yuran Kediaman%']
@@ -8861,7 +8861,7 @@ class FinanceController extends Controller
 
             //TNUGGAKAN PEMBIAYAAN KHAS
 
-            $stddetail = DB::table('students')->where('ic', $request->student)->select('program', 'semester')->first();
+            $stddetail = DB::table('students')->where('ic', request()->ic)->select('program', 'semester')->first();
 
             if($stddetail->program == 7 || $stddetail->program == 8)
             {
