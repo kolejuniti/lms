@@ -10296,54 +10296,54 @@ class FinanceController extends Controller
 
             //check current arrears
 
-            $record = DB::table('tblpaymentdtl')
-            ->leftJoin('tblpayment', 'tblpaymentdtl.payment_id', 'tblpayment.id')
-            ->leftJoin('tblprocess_type', 'tblpayment.process_type_id', 'tblprocess_type.id')
-            ->leftJoin('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
-            ->leftjoin('tblprogramme', 'tblpayment.program_id', 'tblprogramme.id')
-            ->where([
-                ['tblpayment.student_ic', $std->ic],
-                ['tblpayment.process_status_id', 2], 
-                ['tblstudentclaim.groupid', 1], 
-                ['tblpaymentdtl.amount', '!=', 0]
-                ])
-            ->select(DB::raw("'payment' as source"), 'tblpaymentdtl.amount', 'tblpayment.process_type_id');
+            // $record = DB::table('tblpaymentdtl')
+            // ->leftJoin('tblpayment', 'tblpaymentdtl.payment_id', 'tblpayment.id')
+            // ->leftJoin('tblprocess_type', 'tblpayment.process_type_id', 'tblprocess_type.id')
+            // ->leftJoin('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
+            // ->leftjoin('tblprogramme', 'tblpayment.program_id', 'tblprogramme.id')
+            // ->where([
+            //     ['tblpayment.student_ic', $std->ic],
+            //     ['tblpayment.process_status_id', 2], 
+            //     ['tblstudentclaim.groupid', 1], 
+            //     ['tblpaymentdtl.amount', '!=', 0]
+            //     ])
+            // ->select(DB::raw("'payment' as source"), 'tblpaymentdtl.amount', 'tblpayment.process_type_id');
 
-            $data['record'][$key] = DB::table('tblclaimdtl')
-            ->leftJoin('tblclaim', 'tblclaimdtl.claim_id', 'tblclaim.id')
-            ->leftJoin('tblprocess_type', 'tblclaim.process_type_id', 'tblprocess_type.id')
-            ->leftJoin('tblstudentclaim', 'tblclaimdtl.claim_package_id', 'tblstudentclaim.id')
-            ->leftjoin('tblprogramme', 'tblclaim.program_id', 'tblprogramme.id')
-            ->where([
-                ['tblclaim.student_ic', $std->ic],
-                ['tblclaim.process_status_id', 2],  
-                ['tblstudentclaim.groupid', 1],
-                ['tblclaimdtl.amount', '!=', 0]
-                ])
-            ->unionALL($record)
-            ->select(DB::raw("'claim' as source"), 'tblclaimdtl.amount', 'tblclaim.process_type_id')
-            ->get();
+            // $data['record'][$key] = DB::table('tblclaimdtl')
+            // ->leftJoin('tblclaim', 'tblclaimdtl.claim_id', 'tblclaim.id')
+            // ->leftJoin('tblprocess_type', 'tblclaim.process_type_id', 'tblprocess_type.id')
+            // ->leftJoin('tblstudentclaim', 'tblclaimdtl.claim_package_id', 'tblstudentclaim.id')
+            // ->leftjoin('tblprogramme', 'tblclaim.program_id', 'tblprogramme.id')
+            // ->where([
+            //     ['tblclaim.student_ic', $std->ic],
+            //     ['tblclaim.process_status_id', 2],  
+            //     ['tblstudentclaim.groupid', 1],
+            //     ['tblclaimdtl.amount', '!=', 0]
+            //     ])
+            // ->unionALL($record)
+            // ->select(DB::raw("'claim' as source"), 'tblclaimdtl.amount', 'tblclaim.process_type_id')
+            // ->get();
 
-            $val = 0;
+            // $val = 0;
 
-            foreach($data['record'][$key] as $key2 => $req)
-            {
+            // foreach($data['record'][$key] as $key2 => $req)
+            // {
 
-                if(array_intersect([2,3,4,5,11], (array) $req->process_type_id) && $req->source == 'claim')
-                {
+            //     if(array_intersect([2,3,4,5,11], (array) $req->process_type_id) && $req->source == 'claim')
+            //     {
 
-                    $val += $req->amount;
+            //         $val += $req->amount;
 
-                }elseif(array_intersect([1,5,6,7,8,9,10,12,13,14,15,16,17,18,19,20,21,22,23,24,25], (array) $req->process_type_id) && $req->source == 'payment')
-                {
+            //     }elseif(array_intersect([1,5,6,7,8,9,10,12,13,14,15,16,17,18,19,20,21,22,23,24,25], (array) $req->process_type_id) && $req->source == 'payment')
+            //     {
 
-                    $val -= $req->amount;
+            //         $val -= $req->amount;
 
-                }
+            //     }
 
-            }   
+            // }   
 
-            $data['total_balance'][$key] = $val;
+            // $data['total_balance'][$key] = $val;
 
             //B
 
