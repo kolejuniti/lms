@@ -112,7 +112,7 @@
                                                 <tr>
                                                     <th>#</th>
                                                     <th>Waris/Guardian Name</th>
-                                                    <th>Phone No.</th>
+                                                    <th colspan="2">Phone No.</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -120,6 +120,7 @@
                                                 <tr>
                                                     <td>{{ $key+1 }}</td>
                                                     <td>{{ $wrs->name }}</td>
+                                                    <td>{{ $wrs->home_tel }}</td>
                                                     <td>{{ $wrs->phone_tel }}</td>
                                                 </tr>
                                                 @endforeach
