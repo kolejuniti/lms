@@ -10296,24 +10296,6 @@ class FinanceController extends Controller
 
             //check current arrears
 
-            $data['latest'][$key] = DB::table('student_payment_log')
-                                       ->where('student_payment_log.student_ic', $std->ic)
-                                       ->orderBy('date_of_payment', 'DESC')
-                                       ->first();
-
-            $data['payment'][$key] = DB::table('tblpayment')
-                        ->select('tblpayment.add_date', DB::raw('SUM(tblpaymentdtl.amount) as amount'), DB::raw('DATEDIFF(CURDATE(), tblpayment.add_date) as days'))
-                        ->leftjoin('tblpaymentdtl', 'tblpayment.id', '=', 'tblpaymentdtl.payment_id')
-                        ->leftjoin('tblstudentclaim', 'tblpaymentdtl.claim_type_id', '=', 'tblstudentclaim.id')
-                        ->where('tblpayment.student_ic', $std->ic)
-                        ->where('tblpayment.process_status_id', 2)
-                        ->whereIn('tblpayment.process_type_id', [1])
-                        ->whereIn('tblstudentclaim.groupid', [1])
-                        ->groupBy('tblpayment.id')
-                        ->orderBy('tblpayment.add_date', 'desc')
-                        ->limit(1)
-                        ->get();
-
             $record = DB::table('tblpaymentdtl')
             ->leftJoin('tblpayment', 'tblpaymentdtl.payment_id', 'tblpayment.id')
             ->leftJoin('tblprocess_type', 'tblpayment.process_type_id', 'tblprocess_type.id')
@@ -10325,9 +10307,7 @@ class FinanceController extends Controller
                 ['tblstudentclaim.groupid', 1], 
                 ['tblpaymentdtl.amount', '!=', 0]
                 ])
-            ->select(DB::raw("'payment' as source"), 'tblprocess_type.name AS process', 'tblpayment.ref_no','tblpayment.date', 'tblstudentclaim.name', 
-            'tblpaymentdtl.amount',
-            'tblpayment.process_type_id', 'tblprogramme.progcode AS program', DB::raw('NULL as remark'));
+            ->select(DB::raw("'payment' as source"), 'tblpaymentdtl.amount', 'tblpayment.process_type_id');
 
             $data['record'][$key] = DB::table('tblclaimdtl')
             ->leftJoin('tblclaim', 'tblclaimdtl.claim_id', 'tblclaim.id')
@@ -10341,9 +10321,7 @@ class FinanceController extends Controller
                 ['tblclaimdtl.amount', '!=', 0]
                 ])
             ->unionALL($record)
-            ->select(DB::raw("'claim' as source"), 'tblprocess_type.name AS process', 'tblclaim.ref_no','tblclaim.date', 'tblstudentclaim.name', 
-            'tblclaimdtl.amount',
-            'tblclaim.process_type_id', 'tblprogramme.progcode AS program', 'tblclaim.remark')
+            ->select(DB::raw("'claim' as source"), 'tblclaimdtl.amount', 'tblclaim.process_type_id')
             ->orderBy('date')
             ->get();
 
