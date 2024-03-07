@@ -138,6 +138,9 @@
                     <th style="width: 20%">
                         Remark
                     </th>
+                    <th style="width: 10%">
+                        Staff
+                    </th>
                 </tr>
             </thead>
             <tbody id="table">
@@ -166,6 +169,9 @@
                     </td>
                     <td>
                         {!! $hs->remark !!}
+                    </td>
+                    <td>
+                        {{ $hs->staff }}
                     </td>
                 </tr>
             @endforeach
