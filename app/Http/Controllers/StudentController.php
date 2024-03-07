@@ -1469,6 +1469,8 @@ class StudentController extends Controller
 
         }
 
+        $data['total_all'] = $data['total_balance'] + $data['current_balance'] + $data['pk_balance'];
+
         return view('student.affair.statement.statement', compact('data'));
 
     }
