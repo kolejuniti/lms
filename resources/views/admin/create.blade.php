@@ -78,6 +78,7 @@
                           <option value="TS">Treasurer</option>
                           <option value="OTR">Others</option>
                           <option value="COOP">Cooperation</option>
+                          <option value="UR">UR</option>
                         </select>
                       </div>
                     </div>
