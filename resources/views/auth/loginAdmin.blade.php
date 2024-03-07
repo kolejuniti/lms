@@ -26,6 +26,54 @@
 	<script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.8.2/dist/alpine.min.js" defer></script>
 
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+	<style>
+		#gear {
+		  /* This transition applies to the transform property, making changes smooth over 0.5 seconds */
+		  transition: transform 0.5s ease-in-out;
+		  /* Ensures that the gear rotates around its center */
+		  transform-origin: center;
+		  /* Keeps the gear from moving on the page */
+		  transform-box: fill-box;
+		}
+	  
+		#gear:hover {
+		  /* This is the actual rotation animation on hover */
+		  transform: rotate(360deg);
+		}
+
+	
+		@keyframes pencilHoverAnimation {
+		
+			25% {
+				transform: translate(-1000px, 500px);
+			}
+			
+		
+		}
+
+		@keyframes writeMotion {
+		
+		25%, 75% {
+			transform: translate(-1000px, 500px) rotate(10deg); /* Pencil moves up to simulate writing */
+		}
+		75% {
+			transform: translate(-1000px, 500px) rotate(-10deg); /* Pencil moves up to simulate writing */
+		}
+		}
+
+		svg #pencil {
+		/* Assuming the pencil is vertical before animation, we set the origin to the bottom center */
+		transform-origin: center; 
+		}
+
+		svg:hover #pencil {
+		/* On hover, apply the sequence of moving to the center, rotating, and writing */
+		animation: pencilHoverAnimation 2s ease-in-out forwards, writeMotion 1s 0.5s infinite;
+		}
+
+	  </style>
+
 </head>
 @php
 	Auth::logout();
@@ -80,7 +128,7 @@
 										-21 98 -33 20 -96 46 -140 59 -79 22 -80 23 -80 55 0 27 7 36 49 63 59 38 128
 										110 163 171 81 139 79 340 -5 482 -65 111 -206 206 -338 228 -72 11 -82 11
 										-159 -1z"/>
-										<path d="M1480 1052 l0 -58 -56 -24 c-31 -12 -76 -38 -100 -56 -24 -19 -49
+										<path id="gear" d="M1480 1052 l0 -58 -56 -24 c-31 -12 -76 -38 -100 -56 -24 -19 -49
 										-34 -54 -34 -6 0 -28 11 -50 25 -22 14 -43 25 -48 25 -6 0 -92 -141 -109 -179
 										-2 -4 22 -19 52 -36 40 -21 54 -34 49 -45 -12 -29 -16 -135 -6 -176 l9 -41
 										-54 -32 c-51 -31 -53 -34 -40 -54 7 -12 31 -52 51 -89 21 -38 42 -68 48 -68 5
@@ -119,7 +167,7 @@
 										-63 -134 -69 0 -108 73 -69 128 33 48 92 50 132 6z"/>
 										<path d="M1072 1748 c-16 -16 -15 -23 4 -42 22 -22 300 -23 330 -2 15 12 17
 										18 8 33 -10 16 -29 18 -170 21 -116 2 -163 -1 -172 -10z"/>
-										<path d="M1913 1593 c-53 -11 -53 -9 -53 -530 l0 -483 56 -113 c61 -123 79
+										<path id="pencil" d="M1913 1593 c-53 -11 -53 -9 -53 -530 l0 -483 56 -113 c61 -123 79
 										-147 104 -147 27 0 54 38 109 153 l51 107 0 484 c0 582 14 529 -141 532 -57 1
 										-114 0 -126 -3z m207 -133 l0 -70 -100 0 -100 0 0 70 0 70 100 0 100 0 0 -70z
 										m0 -490 l0 -350 -100 0 -100 0 0 350 0 350 100 0 100 0 0 -350z m-30 -425 c0
@@ -143,6 +191,7 @@
 										<path d="M667 363 c-13 -12 -7 -51 9 -57 9 -3 172 -6 363 -6 287 0 351 3 367
 										14 15 12 17 18 8 33 -10 17 -36 18 -376 21 -200 1 -367 -1 -371 -5z"/>
 										</g>
+										<div id="line"></div>	
 										@elseif ($ut == 'PendaftarAkademik')
 										<g transform="translate(0.000000,250.000000) scale(0.100000,-0.100000)"
 										fill="#000000" stroke="none">
