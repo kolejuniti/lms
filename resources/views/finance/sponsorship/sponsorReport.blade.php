@@ -214,7 +214,6 @@
           success:function(res){
               try{
                   if(res.message == "Success"){
-                      alert("Success! Status & Student info has been updated!")
                       $('#complex_header').html(res.data);
 
                       $('#complex_header').DataTable({
