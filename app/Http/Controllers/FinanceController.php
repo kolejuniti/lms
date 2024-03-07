@@ -834,6 +834,14 @@ class FinanceController extends Controller
                             ->distinct('tblstudentclaimpackage.claim_id')
                          ->select('tblstudentclaim.id', 'tblstudentclaim.name')->get();
 
+        $data['balancePRE'] = DB::table('tblpayment')
+                              ->join('tblpaymentdtl', 'tblpayment.id', 'tblpaymentdtl.payment_id')
+                              ->where('tblpayment.student_ic', $request->student)
+                              ->select(DB::raw('SUM(tblpayment.amount) AS payment'))
+                              ->where('tblpaymentdtl.claim_type_id', 57)
+                              ->groupBy('tblpaymentdtl.claim_type_id')
+                              ->get();
+
         return  view('finance.payment.claimGetStudent', compact('data'));
 
     }
