@@ -231,20 +231,37 @@ class AllController extends Controller
 
         $data['program'] = DB::table('tblprogramme')->get();
 
+        $data['faculty'] = DB::table('tblfaculty')->get();
+
+        $data['year'] = DB::table('tblyear')->get();
+
         return view('alluser.student.spm.index', compact('data'));
 
     }
 
-    public function getStudentSPM()
+    public function getStudentSPM(Request $request)
     {
 
-        $data['student'] = DB::table('students')
+        $query = DB::table('students')
                     ->join('sessions', 'students.session', 'sessions.SessionID')
+                    ->join('sessions AS b', 'students.intake', 'b.SessionID')
                     ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
-                    ->select('students.*', 'sessions.SessionName', 'tblstudent_status.name AS status')
-                    ->where('students.program', request()->id)
-                    ->whereIn('students.status', [2,6])
-                    ->get();
+                    ->select('students.*', 'sessions.SessionName', 'tblstudent_status.name AS status');
+
+        if($request->program != '')
+        {
+            $query->where('students.program', $request->program);
+
+        }
+
+        if($request->year != '')
+        {
+            $query->where('b.Year', $request->year);
+
+        }
+
+        $data['student'] = $query->whereIn('students.status', [2,6])
+                           ->get();
 
         foreach($data['student'] as $key => $std)
         {
