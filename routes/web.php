@@ -664,6 +664,9 @@ Route::post('/coop/voucher/redeemVoucher', [App\Http\Controllers\CoopController:
 Route::get('/coop/voucher/report/dailyreport', [App\Http\Controllers\CoopController::class, 'dailyReport'])->name('coop.voucher.dailyReport');
 Route::get('/coop/voucher/report/dailyreport/getDailyReport', [App\Http\Controllers\CoopController::class, 'getDailyReport']);
 
+Route::group(['prefix' => 'ur'], function () {
+    Route::get('/dashboard', [App\Http\Controllers\CoopController::class, 'dashboard'])->name('ur.dashboard');
+});
 
 Route::get('/quality/report/attendance', [App\Http\Controllers\QualityController::class, 'attendanceReport'])->name('quality.report.attendance');
 Route::post('/quality/report/attendance/getLecturer', [App\Http\Controllers\QualityController::class, 'getLectAttendance'])->name('quality.report.attendance.getLecturer');
