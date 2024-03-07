@@ -42,7 +42,18 @@
                                           <select class="form-select" id="program" name="program">
                                             <option value="-" selected disabled>-</option>
                                             @foreach($data['program'] as $prg)
-                                            <option value="{{ $prg->id }}">{{ $prg->progname }}</option>
+                                            <option value="{{ $prg->id }}">{{ $prg->progcode }} - {{ $prg->progname }}</option>
+                                            @endforeach
+                                          </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                          <label class="form-label" for="year">Year</label>
+                                          <select class="form-select" id="year" name="year">
+                                            <option value="-" selected disabled>-</option>
+                                            @foreach($data['year'] as $prg)
+                                            <option value="{{ $prg->year }}">{{ $prg->year }}</option>
                                             @endforeach
                                           </select>
                                         </div>
@@ -61,19 +72,32 @@
 
 <script>
 
-$('#program').on('change', function()
-{
-    getStudent($(this).val());
+var selected_program = "";
+var selected_year = "";
+
+$(document).on('change', '#program', function(e){
+    selected_program = $(e.target).val();
+
+    getStudent(selected_program,selected_year);
+
 });
 
-function getStudent(id)
+
+$(document).on('change', '#year', function(e){
+    selected_year = $(e.target).val();
+
+    getStudent(selected_program,selected_year);
+
+});
+
+function getStudent(program,year)
 {
 
     return $.ajax({
             headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
             url      : "{{ url('all/student/spm/report/getStudentSPM') }}",
             method   : 'POST',
-            data 	 : {id: id},
+            data 	 : {program: program, year: year},
             error:function(err){
                 alert("Error");
                 console.log(err);
