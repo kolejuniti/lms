@@ -4261,6 +4261,8 @@ class FinanceController extends Controller
 
         }
 
+        $data['total_all'] = $data['total_balance'] + $data['current_balance'] + $data['pk_balance'];
+
 
 
         return view('finance.report.statementGetStudent', compact('data'));
@@ -8891,6 +8893,8 @@ class FinanceController extends Controller
             $data['pk_balance'] = 0.00;
 
         }
+
+        $data['total_all'] = $data['total_balance'] + $data['current_balance'] + $data['pk_balance'];
 
         //E
 
