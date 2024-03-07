@@ -3967,22 +3967,6 @@ class FinanceController extends Controller
                 $val = $val + $req->amount;
 
                 $data['sum1'] += $req->amount;
-
-                // if($req->process_type_id == 1)
-                // {
-
-                //     $data['name'] = $req->name;
-
-                // }elseif($req->process_type_id == 5)
-                // {
-
-                //     $data['name'] = $req->remark;
-
-                // }else{
-
-                //     $data['name'] = $req->process;
-
-                // }
                 
 
             }elseif(array_intersect([1,5,6,7,8,9,10,12,13,14,15,16,17,18,19,20,21,22,23,24,25], (array) $req->process_type_id) && $req->source == 'payment')
@@ -3993,17 +3977,6 @@ class FinanceController extends Controller
                 $val = $val - $req->amount;
 
                 $data['sum2'] += $req->amount;
-
-                // if(array_intersect([1,7], (array) $req->process_type_id))
-                // {
-
-                //     $data['name'] = $req->name;
-
-                // }else{
-
-                //     $data['name'] = $req->process;
-
-                // }
 
             }
 
@@ -4489,7 +4462,7 @@ class FinanceController extends Controller
                    ->whereBetween('tblpayment.add_date', [$request->from, $request->to])
                    ->where('tblpayment.process_status_id', 2)
                    ->whereNotNull('tblpayment.ref_no')
-                   ->orderBy('tblpayment.ref_no', 'desc')
+                   ->orderBy('tblpayment.ref_no', 'asc')
                    ->get();
 
         $sponsor = DB::table('tblpayment')
@@ -4499,7 +4472,7 @@ class FinanceController extends Controller
                    ->where('tblpayment.process_status_id', 2)
                    ->whereNotNull('tblpayment.student_ic')
                    ->whereNotNull('tblpayment.payment_sponsor_id')
-                   ->orderBy('tblpayment.ref_no', 'desc')
+                   ->orderBy('tblpayment.ref_no', 'asc')
                    ->get();
 
         $data['program'] = DB::table('tblprogramme')->get();
@@ -5586,7 +5559,7 @@ class FinanceController extends Controller
         ->whereBetween('tblpayment.add_date', [$request->from, $request->to])
         ->where('tblpayment.process_status_id', 2)
         ->select('tblpayment.*', 'tblstudentclaim.groupid', 'tblstudentclaim.name AS type', 'tblpaymentdtl.amount', 'tblpaymentdtl.claim_type_id', 'tblpaymentmethod.no_document', 'tblpayment_method.name AS method', 'tblpayment_bank.name AS bank')
-        ->orderBy('tblpayment.ref_no', 'desc')
+        ->orderBy('tblpayment.ref_no', 'asc')
         ->groupBy('tblpaymentdtl.id')->get();
 
 
