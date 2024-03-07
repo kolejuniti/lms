@@ -1,4 +1,5 @@
-@extends('layouts.finance')
+@extends((Auth::user()->usrtype == "FN") ? 'layouts.finance' : (Auth::user()->usrtype == "UR" ? 'layouts.ur' : ''))
+
 
 @section('main')
 <!-- Content Header (Page header) -->
