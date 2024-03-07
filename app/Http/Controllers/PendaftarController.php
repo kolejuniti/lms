@@ -1219,9 +1219,11 @@ class PendaftarController extends Controller
                            ->where('ic', $request->student)->first();
 
         $data['history'] = DB::table('tblstudent_log')
+                           ->join('users', 'tblstudent_log.add_staffID', 'users.ic')
                            ->join('sessions', 'tblstudent_log.session_id', 'sessions.SessionID')
                            ->join('tblstudent_status', 'tblstudent_log.status_id', 'tblstudent_status.id')
                            ->where('student_ic', $request->student)
+                           ->select('tblstudent_log.*', 'sessions.SessionName', 'tblstudent_status.name', 'users.name AS staff')
                            ->get();
 
         if(count($data['history']) > 0)
