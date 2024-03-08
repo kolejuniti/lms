@@ -7706,6 +7706,48 @@ class FinanceController extends Controller
                                              ($data['paymentNK'][$key] + $data['dailyPayment'][$key] + $data['sponsor'][$key]) + 
                                              ($data['refund'][$key]));
 
+                    // $optimizedQuery = function () use ($filter, $prg) {
+                    //     return DB::query()
+                    //         ->select(DB::raw("
+                    //             SUM(CASE WHEN tblpayment.process_type_id = 9 AND tblstudentclaim.groupid = 1 THEN tblpaymentdtl.amount ELSE 0 END) AS insentif,
+                    //             SUM(CASE WHEN tblpayment.process_type_id = 10 AND tblstudentclaim.groupid IN (1,5) THEN tblpaymentdtl.amount ELSE 0 END) AS iNED,
+                    //             SUM(CASE WHEN tblpayment.process_type_id = 12 AND tblstudentclaim.groupid = 1 THEN tblpaymentdtl.amount ELSE 0 END) AS unitiFund,
+                    //             SUM(CASE WHEN tblpayment.process_type_id = 13 AND tblstudentclaim.groupid = 1 THEN tblpaymentdtl.amount ELSE 0 END) AS biasiswa,
+                    //             SUM(CASE WHEN tblpayment.process_type_id = 7 AND tblpayment.payment_sponsor_id = 8 AND tblstudentclaim.groupid IN (1,4,5) THEN tblpaymentdtl.amount ELSE 0 END) AS uef,
+                    //             SUM(CASE WHEN tblpayment.process_type_id = 14 AND tblstudentclaim.groupid = 1 THEN tblpaymentdtl.amount ELSE 0 END) AS dc19,
+                    //             SUM(CASE WHEN tblpayment.process_type_id = 15 AND tblstudentclaim.groupid = 1 THEN tblpaymentdtl.amount ELSE 0 END) AS iMCO,
+                    //             SUM(CASE WHEN tblpayment.process_type_id = 21 AND tblstudentclaim.groupid = 1 THEN tblpaymentdtl.amount ELSE 0 END) AS iKKU,
+                    //             SUM(CASE WHEN tblpayment.process_type_id = 16 AND tblstudentclaim.groupid = 1 THEN tblpaymentdtl.amount ELSE 0 END) AS tkB40,
+                    //             SUM(CASE WHEN tblpayment.process_type_id = 17 AND tblstudentclaim.groupid = 1 THEN tblpaymentdtl.amount ELSE 0 END) AS tkM40,
+                    //             SUM(CASE WHEN tblpayment.process_type_id = 18 AND tblstudentclaim.groupid = 1 THEN tblpaymentdtl.amount ELSE 0 END) AS tkT20,
+                    //             SUM(CASE WHEN tblpayment.process_type_id = 19 AND tblstudentclaim.groupid = 1 THEN tblpaymentdtl.amount ELSE 0 END) AS tk,
+                    //             SUM(CASE WHEN tblpayment.process_type_id = 22 AND tblstudentclaim.groupid = 1 THEN tblpaymentdtl.amount ELSE 0 END) AS trB40,
+                    //             SUM(CASE WHEN tblpayment.process_type_id = 23 AND tblstudentclaim.groupid = 1 THEN tblpaymentdtl.amount ELSE 0 END) AS trM40,
+                    //             SUM(CASE WHEN tblpayment.process_type_id = 24 AND tblstudentclaim.groupid = 1 THEN tblpaymentdtl.amount ELSE 0 END) AS trT20,
+                    //             SUM(CASE WHEN tblpayment.process_type_id = 25 AND tblstudentclaim.groupid = 1 THEN tblpaymentdtl.amount ELSE 0 END) AS tr,
+                    //             SUM(CASE WHEN tblpayment.process_type_id = 5 AND tblstudentclaim.groupid IN (1,4,5) THEN tblpaymentdtl.amount ELSE 0 END) AS paymentNK,
+                    //             SUM(CASE WHEN tblpayment.process_type_id IN (1,8) AND tblstudentclaim.groupid IN (1,4,5) THEN tblpaymentdtl.amount ELSE 0 END) AS dailyPayment,
+                    //             SUM(CASE WHEN tblpayment.process_type_id = 7 AND tblpayment.payment_sponsor_id != 8 AND tblstudentclaim.groupid IN (1,4,5) THEN tblpaymentdtl.amount ELSE 0 END) AS sponsor,
+                    //             SUM(CASE WHEN tblpayment.process_type_id = 6 AND tblstudentclaim.groupid IN (1,4,5) THEN tblpaymentdtl.amount ELSE 0 END) AS refund,
+                    //         "))
+                    //         ->from('tblpayment')
+                    //         ->join('students', 'tblpayment.student_ic', '=', 'students.ic')
+                    //         ->join('tblpaymentdtl', 'tblpayment.id', '=', 'tblpaymentdtl.claim_id')
+                    //         ->join('tblstudentclaim', 'tblpaymentdtl.claim_package_id', '=', 'tblstudentclaim.id')
+                    //         ->join('tblpayment', 'students.ic', '=', 'tblpayment.student_ic')
+                    //         ->join('tblpaymentdtl', 'tblpayment.id', '=', 'tblpaymentdtl.payment_id')
+                    //         // Assuming tblpayment and tblpayment can be joined on a common condition
+                    //         ->whereBetween('tblpayment.add_date', [$filter->from, $filter->to])
+                    //         ->where('tblpayment.program_id', $prg->id)
+                    //         ->where('tblpayment.process_status_id', 2)
+                    //         ->when($filter->status != 'all', function ($query) use ($filter) {
+                    //             return $query->where('students.status', '=', $filter->status);
+                    //         });
+                    // };
+
+                    // // Execute the optimized query
+                    // $data = ($optimizedQuery)()->first();
+
                     // DB::table('tblarrears_report')->insert([
                     //     'add_date' => date("Y-m-d H:i:s"),
                     //     'program_id' => $prg->id,
@@ -7838,6 +7880,81 @@ class FinanceController extends Controller
                             </thead>
                             <tbody id="table">';
 
+                // Assuming $data['debt'] is a numeric array
+                $debtCollection = collect($data['debt']);
+
+                // Calculate the sum using the sum method
+                $debtTotal = $debtCollection->sum();
+
+                $debtNDCollection = collect($data['debtND']);
+                $debtNDTotal = $debtNDCollection->sum();
+                
+                $debtNKCollection = collect($data['debtNK']);
+                $debtNKTotal = $debtNKCollection->sum();
+
+                $insentifCollection = collect($data['insentif']);
+                $insentifTotal = $insentifCollection->sum();
+
+                $iNEDCollection = collect($data['iNED']);
+                $iNEDTotal = $iNEDCollection->sum();
+
+                $unitiFundCollection = collect($data['unitiFund']);
+                $unitiFundTotal = $unitiFundCollection->sum();
+
+                $biasiswaCollection = collect($data['biasiswa']);
+                $biasiswaTotal = $biasiswaCollection->sum();
+
+                $uefCollection = collect($data['uef']);
+                $uefTotal = $uefCollection->sum();
+
+                $dc19Collection = collect($data['dc19']);
+                $dc19Total = $dc19Collection->sum();
+
+                $iMCOCollection = collect($data['iMCO']);
+                $iMCOTotal = $iMCOCollection->sum();
+
+                $iKKUCollection = collect($data['iKKU']);
+                $iKKUTotal = $iKKUCollection->sum();
+
+                $tkB40Collection = collect($data['tkB40']);
+                $tkB40Total = $tkB40Collection->sum();
+
+                $tkM40Collection = collect($data['tkM40']);
+                $tkM40Total = $tkM40Collection->sum();
+
+                $tkT20Collection = collect($data['tkT20']);
+                $tkT20Total = $tkT20Collection->sum();
+
+                $tkCollection = collect($data['tk']);
+                $tkTotal = $tkCollection->sum();
+
+                $trB40Collection = collect($data['trB40']);
+                $trB40Total = $trB40Collection->sum();
+
+                $trM40Collection = collect($data['trM40']);
+                $trM40Total = $trM40Collection->sum();
+
+                $trT20Collection = collect($data['trT20']);
+                $trT20Total = $trT20Collection->sum();
+
+                $trCollection = collect($data['tr']);
+                $trTotal = $trCollection->sum();
+
+                $paymentNKCollection = collect($data['paymentNK']);
+                $paymentNKTotal = $paymentNKCollection->sum();
+
+                $dailyPaymentCollection = collect($data['dailyPayment']);
+                $dailyPaymentTotal = $dailyPaymentCollection->sum();
+
+                $sponsorCollection = collect($data['sponsor']);
+                $sponsorTotal = $sponsorCollection->sum();
+
+                $refundCollection = collect($data['refund']);
+                $refundTotal = $refundCollection->sum();
+
+                $balanceCollection = collect($data['balance']);
+                $balanceTotal = $balanceCollection->sum();
+                            
                 foreach($data['program'] as $key => $prg){
                     //$registered = ($std->status == 'ACTIVE') ? 'checked' : '';
 
@@ -7920,12 +8037,90 @@ class FinanceController extends Controller
                         </td>
                     </tr>
                     ';
+
+                    ob_flush();
                     }
 
                 $content .= '</tbody>';
 
                 $content .= '<tfoot>
-                            
+                                <tr>
+                                    <td>
+                                        Total :
+                                    </td>
+                                    <td>
+                                        '. $debtTotal .
+                                    '</td>
+                                    <td>
+                                        '. $debtNDTotal .
+                                    '</td>
+                                    <td>
+                                        '. $debtNKTotal .
+                                    '</td>
+                                    <td>
+                                        '. $insentifTotal .
+                                    '</td>
+                                    <td>
+                                        '. $iNEDTotal .
+                                    '</td>
+                                    <td>
+                                        '. $unitiFundTotal .
+                                    '</td>
+                                    <td>
+                                        '. $biasiswaTotal .
+                                    '</td>
+                                    <td>
+                                        '. $uefTotal .
+                                    '</td>
+                                    <td>
+                                        '. $dc19Total .
+                                    '</td>
+                                    <td>
+                                        '. $iMCOTotal .
+                                    '</td>
+                                    <td>
+                                        '. $iKKUTotal .
+                                    '</td>
+                                    <td>
+                                        '. $tkB40Total .
+                                    '</td>
+                                    <td>
+                                        '. $tkM40Total .
+                                    '</td>
+                                    <td>
+                                        '. $tkT20Total .
+                                    '</td>
+                                    <td>
+                                        '. $tkTotal .
+                                    '</td>
+                                    <td>
+                                        '. $trB40Total .
+                                    '</td>
+                                    <td>
+                                        '. $trM40Total .
+                                    '</td>
+                                    <td>
+                                        '. $trT20Total .
+                                    '</td>
+                                    <td>
+                                        '. $trTotal .
+                                    '</td>
+                                    <td>
+                                        '. $paymentNKTotal .
+                                    '</td>
+                                    <td>
+                                        '. $dailyPaymentTotal .
+                                    '</td>
+                                    <td>
+                                        '. $sponsorTotal .
+                                    '</td>
+                                    <td>
+                                        '. $refundTotal .
+                                    '</td>
+                                    <td>
+                                        '. $balanceTotal .
+                                    '</td>
+                                </tr>
                             </tfoot>';
                 
             }catch(QueryException $ex){
