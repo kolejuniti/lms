@@ -312,7 +312,7 @@ class TreasurerController extends Controller
                                 'claim_package_id' => $data->claim_package_id,
                                 'price' => $data->price,
                                 'unit' => $data->unit,
-                                'amount' => intval($paymentinput2[$i]->payment) * -1,
+                                'amount' => $paymentinput2[$i]->payment * -1,
                                 'add_staffID' => Auth::user()->ic,
                                 'add_date' => date('Y-m-d'),
                                 'mod_staffID' => Auth::user()->ic,
