@@ -8038,7 +8038,7 @@ class FinanceController extends Controller
                     </tr>
                     ';
 
-                    ob_flush();
+                    // ob_flush();
                     }
 
                 $content .= '</tbody>';
