@@ -260,8 +260,7 @@ class AllController extends Controller
 
         }
 
-        $data['student'] = $query->whereIn('students.status', [2,6])
-                           ->get();
+        $data['student'] = $query->get();
 
         foreach($data['student'] as $key => $std)
         {
