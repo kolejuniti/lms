@@ -256,7 +256,7 @@ class AllController extends Controller
 
         if($request->year != '')
         {
-            $query->where('b.Year', $request->year);
+            $query->where('sessions.Year', $request->year);
 
         }
 
