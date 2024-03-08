@@ -4263,7 +4263,7 @@ class FinanceController extends Controller
 
         }
 
-        $data['total_all'] = $data['total_balance'] + $data['current_balance'] + $data['pk_balance'];
+        $data['total_all'] =  $data['current_balance'] + $data['pk_balance'];
 
 
 
@@ -8898,7 +8898,7 @@ class FinanceController extends Controller
 
         }
 
-        $data['total_all'] = $data['total_balance'] + $data['current_balance'] + $data['pk_balance'];
+        $data['total_all'] = $data['current_balance'] + $data['pk_balance'];
 
         //E
 
