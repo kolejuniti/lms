@@ -1364,6 +1364,8 @@ class StudentController extends Controller
 
         $data['total_balance'] = $data['current_balance'];
 
+        $data['pk_balance'] = 0.00;
+
         //TUNGGAKAN SEMASA
 
         $package = DB::table('tblpackage_sponsorship')->where('student_ic', $student->ic)->first();
