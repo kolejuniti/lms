@@ -405,6 +405,7 @@ class KP_Controller extends Controller
     {
 
         $data['subject'] = DB::table('user_subjek')->where('user_ic', $request->ic)
+                           ->where('sessions.Status', 'ACTIVE')
                            ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
                            ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
                            ->select('user_subjek.id', 'subjek.course_name', 'subjek.course_code', 'sessions.SessionName')
