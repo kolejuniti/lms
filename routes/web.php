@@ -216,6 +216,7 @@ Route::post('/lecturer/class/attendance/store', [App\Http\Controllers\LecturerCo
 Route::get('/lecturer/class/attendance/edit', [App\Http\Controllers\LecturerController::class, 'classAttendanceEdit'])->name('lecturer.class.attendance.edit');
 Route::post('/lecturer/class/attendance/edit/update', [App\Http\Controllers\LecturerController::class, 'updateAttendance'])->name('lecturer.attendance.update');
 Route::get('/lecturer/class/attendance/report', [App\Http\Controllers\LecturerController::class, 'reportAttendance'])->name('lecturer.attendance.report');
+Route::get('/lecturer/class/attendance/print', [App\Http\Controllers\LecturerController::class, 'printAttendance'])->name('lecturer.attendance.print');
 //Route::get('/lecturer/class/attendance/report', [App\Http\Controllers\LecturerController::class, 'listAttendance'])->name('lecturer.attendance.report');
 //Route::get('/lecturer/class/attendance/report/{date}/{group}', [App\Http\Controllers\LecturerController::class, 'reportAttendance']);
 Route::post('/lecturer/class/attendance/deleteAttendance', [App\Http\Controllers\LecturerController::class, 'deleteAttendance']);
