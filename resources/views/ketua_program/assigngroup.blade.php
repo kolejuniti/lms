@@ -224,8 +224,7 @@
             method   : 'POST',
             data 	 : {course: course,session: session},
             error:function(err){
-                alert("Error");
-                console.log(err);
+                
             },
             success  : function(data){
                 $('#add-student-div').removeAttr('hidden');
@@ -257,10 +256,6 @@
             }
         });
   }
-
-  $(document).ready(function() {
-   
-});
 
 </script>
 @endsection
