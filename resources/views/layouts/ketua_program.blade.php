@@ -133,7 +133,7 @@
   <header class="main-header">
 	<div class="d-flex align-items-center logo-box justify-content-start">	
 		<!-- Logo -->
-		<a href="{{ url('KP') }}" class="logo">
+		<a href="{{ (Auth::user()->usrtype == 'PL') ? route('ketua_program') : route('pegawai_takbir') }}" class="logo">
 		  <!-- logo-->
 		  <div class="logo-mini w-30">
 			  <span class="light-logo"><img src="{{ asset('assets/images/logo/Kolej-UNITI.png')}}" alt="logo" class="unity"></span>
