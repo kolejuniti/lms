@@ -1465,8 +1465,6 @@ class StudentController extends Controller
 
         }else{
 
-            $data['current_balance'] = 0.00;
-
             $data['pk_balance'] = 0.00;
 
         }
