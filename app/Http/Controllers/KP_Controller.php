@@ -327,15 +327,17 @@ class KP_Controller extends Controller
             if(isset($request->course))
             {
                 $students = DB::table('student_subjek')
-                ->select('student_subjek.*', 'students.name','students.no_matric','students.intake')
+                ->select('student_subjek.*', 'students.name','students.no_matric','sessions.SessionName AS intake')
                 ->join('students', 'student_subjek.student_ic', 'students.ic')
+                ->join('sessions', 'students.intake', 'sessions.SessionID')
                 ->where('courseid',$request->course)
                 ->where('sessionid',$request->session)->get();
             }else
             {
                 $students = DB::table('student_subjek')
-                ->select('student_subjek.*', 'students.name','students.no_matric','students.intake')
+                ->select('student_subjek.*', 'students.name','students.no_matric','sessions.SessionName AS intake')
                 ->join('students', 'student_subjek.student_ic', 'students.ic')
+                ->join('sessions', 'students.intake', 'sessions.SessionID')
                 ->where('sessionid',$request->session)->get();
             }
         }
