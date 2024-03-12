@@ -69,6 +69,8 @@ Route::delete('/KP/{course}/delete/marks', [App\Http\Controllers\KP_Controller::
 Route::get('/KP/create/group', [App\Http\Controllers\KP_Controller::class, 'create_group'])->name('kp.group');
 Route::post('/KP/group/getStudentTable', [App\Http\Controllers\KP_Controller::class, 'getStudentTable']);
 Route::post('KP/group/getcourseoptions', [App\Http\Controllers\KP_Controller::class, 'getCourse']);
+Route::post('KP/group/getLecturerSubject', [App\Http\Controllers\KP_Controller::class, 'getLecturerSubject']);
+Route::post('KP/group/deleteLecturerSubject', [App\Http\Controllers\KP_Controller::class, 'deleteLecturerSubject']);
 Route::post('KP/group/getlectureroptions', [App\Http\Controllers\KP_Controller::class, 'getLecturer']);
 Route::patch('KP/group/update', [App\Http\Controllers\KP_Controller::class, 'update_group'])->name('kp.group.update');
 Route::get('/KP/lecturer', [App\Http\Controllers\KP_Controller::class, 'lecturerindex'])->name('kp.lecturer');
