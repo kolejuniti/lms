@@ -8,13 +8,13 @@
   <div class="content-header">
     <div class="d-flex align-items-center">
       <div class="me-auto">
-        <h4 class="page-title">Registration</h4>
+        <h4 class="page-title">Assign Lecturer</h4>
         <div class="d-inline-block align-items-center">
           <nav>
             <ol class="breadcrumb">
               <li class="breadcrumb-item"><a href="#"><i class="mdi mdi-home-outline"></i></a></li>
               <li class="breadcrumb-item" aria-current="page">Dashboard</li>
-              <li class="breadcrumb-item active" aria-current="page">Registration {{ (isset($data)) ? "Edit" : ""}}</li>
+              <li class="breadcrumb-item active" aria-current="page">Assign Lecturer {{ (isset($data)) ? "Edit" : ""}}</li>
             </ol>
           </nav>
         </div>
@@ -30,7 +30,7 @@
             <!-- general form elements -->
             <div class="card card-primary">
               <div class="card-header">
-                <h3 class="card-title">Registration {{ (isset($data)) ? "Edit" : ""}}</h3>
+                <h3 class="card-title">Assign Lecturer {{ (isset($data)) ? "Edit" : ""}}</h3>
               </div>
               <!-- /.card-header -->
               <!-- form start -->
@@ -45,6 +45,7 @@
                       <div class="form-group">
                         <label class="form-label" for="lct">Lecturer List</label>
                         <select class="form-select" id="lct" name="lct" {{ (isset($data)) ? 'DISABLED' : '' }}>
+                          <option value="-" selected disabled>-</option>
                           @foreach ($user as $users)
                           <option value="{{ $users->ic }}" {{ (isset($data)) ? (($data->user_ic == $users->ic) ? 'SELECTED' : '') : '' }}>{{ $users->name }}</option>
                           @endforeach
@@ -80,6 +81,14 @@
                           @endforeach
                         </select>
                       </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-12 mt-3">
+                        <div class="form-group mt-3">
+                            <label class="form-label">Registered Subject</label>
+                            <div id="add-student-div"></div>
+                        </div>
                     </div>
                   </div>
                 </div>
@@ -118,6 +127,13 @@
 
   });
 
+  $(document).on('change', '#lct', function(e){
+    selected_lecturer = $(e.target).val();
+
+    getLecturer(selected_lecturer);
+
+  });
+
   function getCourse(program,course)
   {
     return $.ajax({
@@ -136,5 +152,61 @@
             }
         });
   }
+
+  function getLecturer(ic)
+  {
+
+    return $.ajax({
+            headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
+            url      : "{{ url('KP/group/getLecturerSubject') }}",
+            method   : 'POST',
+            data 	 : {ic: ic},
+            error:function(err){
+                alert("Error");
+                console.log(err);
+            },
+            success  : function(data){
+              $('#add-student-div').removeAttr('hidden');
+              $('#add-student-div').html(data);
+              $('#add-student-div').selectpicker('refresh');
+
+            }
+        });
+
+  }
+
+  function deleteSubjek(id)
+  {
+    ic = $('#lct').val();
+
+    Swal.fire({
+    title: "Are you sure?",
+    text: "This will be permanent",
+    showCancelButton: true,
+    confirmButtonText: "Yes, delete it!"
+    }).then(function(res){
+      
+    if (res.isConfirmed){
+              $.ajax({
+                  headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
+                  url      : "{{ url('KP/group/deleteLecturerSubject') }}",
+                  method   : 'POST',
+                  data 	 : {id: id, ic: ic},
+                  error:function(err){
+                      alert("Error");
+                      console.log(err);
+                  },
+                  success  : function(data){
+                      alert("success");
+                      $('#add-student-div').removeAttr('hidden');
+                      $('#add-student-div').html(data);
+                      $('#add-student-div').selectpicker('refresh');
+                  }
+              });
+          }
+      });
+
+  }
+
 </script>
 @endsection
