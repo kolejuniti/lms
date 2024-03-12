@@ -40,16 +40,16 @@ class KP_Controller extends Controller
 
         //dd($programs);
 
-        $programs = DB::table('user_program')->join('tblprogramme', 'user_program.program_id', 'tblprogramme.id')->where('user_ic', $users->ic)->get();
+        $programs = DB::table('tblprogramme')->get();
 
         //this will fetch user data where usrtype is not ADM
-        $user = User::whereNot('usrtype',['ADM'])->get();
+        $user = User::whereIn('usrtype',['LCT', 'AO', 'PL'])->get();
 
         //$course = DB::table('subjek')
                   //->join('tblprogramme', 'subjek.prgid', 'tblprogramme.id')->whereIn('prgid', $programs)->get();
                   
 
-        $session = DB::table('sessions')
+        $session = DB::table('sessions')->where('status', 'ACTIVE')
                 ->get();
 
         return view('ketua_program.create')->with(compact('user','programs','session'));
@@ -79,7 +79,7 @@ class KP_Controller extends Controller
         ]);
 
         //this will redirect user to route named ketua_program
-        return redirect(($users->usrtype == 'KP') ? route('ketua_program') : route('pegawai_takbir'));
+        return back();
     }
 
     public function delete(Request $request)
@@ -409,6 +409,105 @@ class KP_Controller extends Controller
             ';
             }
             $content .= '</tbody></table>';
+
+            return $content;
+
+    }
+
+    public function getLecturerSubject(Request $request)
+    {
+
+        $data['subject'] = DB::table('user_subjek')->where('user_ic', $request->ic)
+                           ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+                           ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
+                           ->select('user_subjek.id', 'subjek.course_name', 'subjek.course_code', 'sessions.SessionName')
+                           ->get();
+
+        $content = "";
+        $content .= '
+        <div class="table-responsive" style="width:99.7%">
+        <table id="table_registerstudent" class="w-100 table text-fade table-bordered table-hover display nowrap margin-top-10 w-p100">
+            <thead class="thead-themed">
+            <th>Course</th>
+            <th>Session</th>
+            <th></th>
+            </thead>
+            <tbody>
+        ';
+        foreach($data['subject'] as $sbj){
+            //$registered = ($sbj->status == 'ACTIVE') ? 'checked' : '';
+            $content .= '
+            <tr>
+                <td >
+                    <p class="text-bold text-fade">'.$sbj->course_code.' - '.$sbj->course_name.'</p>
+                </td>
+                <td >
+                    <p class="text-bold text-fade">'.$sbj->SessionName.'</p>
+                </td>
+                <td >
+                    <a class="btn btn-danger btn-sm" href="#" onclick="deleteSubjek(\''. $sbj->id .'\')">
+                        <i class="ti-trash">
+                        </i>
+                        Delete
+                    </a>
+                </td>
+            </tr>
+            ';
+            }
+            $content .= '</tbody></table>';    
+
+            return $content;
+    }
+
+    public function deleteLecturerSubject(Request $request)
+    {
+
+        DB::table('student_subjek')->where('group_id', $request->id)
+        ->update([
+            'group_id' => null,
+            'group_name' => null
+        ]);
+
+        DB::table('user_subjek')->where('id', $request->id)->delete();
+
+        $data['subject'] = DB::table('user_subjek')->where('user_ic', $request->ic)
+                           ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+                           ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
+                           ->select('user_subjek.id', 'subjek.course_name', 'subjek.course_code', 'sessions.SessionName')
+                           ->get();
+
+        $content = "";
+        $content .= '
+        <div class="table-responsive" style="width:99.7%">
+        <table id="table_registerstudent" class="w-100 table text-fade table-bordered table-hover display nowrap margin-top-10 w-p100">
+            <thead class="thead-themed">
+            <th>Course</th>
+            <th>Session</th>
+            <th></th>
+            </thead>
+            <tbody>
+        ';
+        foreach($data['subject'] as $sbj){
+            //$registered = ($sbj->status == 'ACTIVE') ? 'checked' : '';
+            $content .= '
+            <tr>
+                <td >
+                    <p class="text-bold text-fade">'.$sbj->course_code.' - '.$sbj->course_name.'</p>
+                </td>
+                <td >
+                    <p class="text-bold text-fade">'.$sbj->SessionName.'</p>
+                </td>
+                <td >
+                    <a class="btn btn-danger btn-sm" href="#" onclick="deleteSubjek(\''. $sbj->id .'\')">
+                        <i class="ti-trash">
+                        </i>
+                        Delete
+                    </a>
+                </td>
+            </tr>
+            ';
+            }
+            $content .= '</tbody></table>';    
 
             return $content;
 
