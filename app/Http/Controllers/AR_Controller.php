@@ -598,7 +598,7 @@ class AR_Controller extends Controller
                 'status' => 'ACTIVE'
             ]);
 
-            if($data['student']->student_status == 1)
+            if($data['student']->student_status == 1 && $data['student']->student_status != 4)
             {
 
                 DB::table('students')->update([
@@ -623,7 +623,7 @@ class AR_Controller extends Controller
                     'status' => 'ACTIVE'
                 ]);
     
-                if($data['student']->student_status == 1)
+                if($data['student']->student_status == 1  && $data['student']->student_status != 4)
                 {
     
                     DB::table('students')->update([
