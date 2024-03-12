@@ -22,4 +22,35 @@ class URController extends Controller
         return view('dashboard');
 
     }
+
+    public function educationAdvisor()
+    {
+
+        $data['ea'] = DB::table('tbledu_advisor')->get();
+
+        return view('uniti_resources.staff.education_advisor.educationAdvisor', compact('data'));
+
+    }
+
+    public function postEducationAdvisor(Request $request)
+    {
+
+        DB::table('tbledu_advisor')->insert([
+            'name' => $request->name,
+            'ic' => $request->ic
+        ]);
+
+        return;
+
+    }
+
+    public function deleteEducationAdvisor()
+    {
+
+        DB::table('tbledu_advisor')->where('id', request()->id)->delete();
+
+
+        return true;
+
+    }
 }
