@@ -226,32 +226,17 @@ class KP_Controller extends Controller
     {
        $users = Auth::user();
 
-       //$programs = DB::table('user_program')->where('user_ic', $users->ic)->pluck('program_id');
-
-       $prog = DB::table('user_program')
-                   ->join('tblprogramme', 'user_program.program_id', 'tblprogramme.id')
-                   ->where('user_ic', $users->ic);
-
-        $programs = $prog->get();
-
-        $prgs = $prog->pluck('tblprogramme.id');
+       $programs = DB::table('tblprogramme')->get();
 
         $data = subject::join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
-            ->join('tblprogramme', 'subjek.prgid', 'tblprogramme.id')
             ->where('user_subjek.id', request()->group)
-            ->whereIn('tblprogramme.id', $prgs)
             ->first();
 
-       //dd($data);
+        $user = User::whereIn('usrtype',['LCT', 'AO', 'PL'])->get();
 
-       //this will fetch user data where usrtype is not ADM
-       $user = User::whereNot('usrtype',['ADM'])->where('faculty', $users->faculty)->get();
 
-       //$course = DB::table('subjek')
-                  //->join('tblprogramme', 'subjek.prgid', 'tblprogramme.id')->whereIn('prgid', $programs)->get();
-
-       $session = DB::table('sessions')
-               ->get();
+        $session = DB::table('sessions')->where('status', 'ACTIVE')
+        ->get();
  
         return view('ketua_program.create', compact('data', 'user', 'programs', 'session'));
     }
@@ -259,8 +244,6 @@ class KP_Controller extends Controller
     public function updategroup(Request $request)
     {
         $data = [
-                    'group_name' => $request->group,
-                    'user_ic' => $request->lct,
                     'course_id' => $request->course,
                     'session_id' => $request->session
                 ];
@@ -355,13 +338,15 @@ class KP_Controller extends Controller
                 ->join('students', 'student_subjek.student_ic', 'students.ic')
                 ->where('sessionid',$request->session)->get();
             }
-        }else
-        {
-            $students = DB::table('student_subjek')
-                ->select('student_subjek.*', 'students.name','students.no_matric','students.intake')
-                ->join('students', 'student_subjek.student_ic', 'students.ic')
-                ->where('courseid',$request->course)->get();
         }
+        
+        // else
+        // {
+        //     $students = DB::table('student_subjek')
+        //         ->select('student_subjek.*', 'students.name','students.no_matric','students.intake')
+        //         ->join('students', 'student_subjek.student_ic', 'students.ic')
+        //         ->where('courseid',$request->course)->get();
+        // }
 
         $content = "";
         $content .= '
@@ -530,6 +515,7 @@ class KP_Controller extends Controller
 
     public function getLecturer(Request $request)
     {
+        
         $lecturer = subject::where('course_id', $request->course)->where('session_id', $request->session)->get();
 
         $content = "";
