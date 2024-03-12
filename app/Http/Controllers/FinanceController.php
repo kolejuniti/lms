@@ -4263,11 +4263,16 @@ class FinanceController extends Controller
 
         $data['total_all'] =  $data['current_balance'] + $data['pk_balance'];
 
+        if(isset($request->print))
+        {
 
+            return view('finance.report.printStatement', compact('data'));
 
-        return view('finance.report.statementGetStudent', compact('data'));
+        }else{
 
+            return view('finance.report.statementGetStudent', compact('data'));
 
+        }
 
     }
 
