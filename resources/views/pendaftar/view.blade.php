@@ -473,6 +473,18 @@
                         </div>
                         <div class="col-md-6">
                           <div class="form-group">
+                            <label class="form-label" for="ses">Session <p style="color:red; display:inline-block;">*</p></label>
+                            <input type="text" class="form-control" id="ses" name="ses" value="{{ $student->session }}" readonly>
+                          </div>
+                        </div>
+                        <div class="col-md-6">
+                          <div class="form-group">
+                            <label class="form-label" for="sem">Semester <p style="color:red; display:inline-block;">*</p></label>
+                            <input type="text" class="form-control" id="sem" name="sem" value="{{ $student->semester }}" readonly>
+                          </div>
+                        </div>
+                        <div class="col-md-6">
+                          <div class="form-group">
                             <label class="form-label" for="dol">Date of Offer Letter <p style="color:red; display:inline-block;">*</p></label>
                             <input type="date" class="form-control" id="dol" name="dol" value="{{ $student->date_offer }}" readonly>
                           </div>
