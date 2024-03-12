@@ -1279,6 +1279,43 @@ class LecturerController extends Controller
             return $content;
     }
 
+    public function printAttendance(Request $request)
+    {
+
+        $group = explode('|', $request->group);
+
+        if(!empty($request->program))
+        {
+
+            $data['students'] = student::join('students', 'student_subjek.student_ic', 'students.ic')
+                        ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
+                        ->where('group_id', $group[0])->where('group_name', $group[1])
+                        ->where('student_subjek.sessionid', Session::get('SessionID'))
+                        ->where('students.program', $request->program)
+                        ->whereNotIn('students.status', [4,5,6,7,16])
+                        ->orderBy('students.name')
+                        ->get();
+
+        }else{
+
+            $data['students'] = student::join('students', 'student_subjek.student_ic', 'students.ic')
+                        ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
+                        ->where('group_id', $group[0])->where('group_name', $group[1])
+                        ->where('student_subjek.sessionid', Session::get('SessionID'))
+                        ->whereNotIn('students.status', [4,5,6,7,16])
+                        ->orderBy('students.name')
+                        ->get();
+
+        }
+
+        $data['course'] = DB::table('subjek')->where('id', Session::get('CourseID'))->first();
+
+        $data['session'] = DB::table('sessions')->where('SessionID', Session::get('SessionID'))->first();
+
+        return view('lecturer.class.printAttendance', compact('data'));
+
+    }
+
     public function getDate(Request $request)
     {
         //$day = DateTime::createFromFormat('d/m/Y', $request->date);
