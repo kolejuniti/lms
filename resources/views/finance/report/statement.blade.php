@@ -46,9 +46,9 @@
             <div class="card card-primary">
               <div class="card-header">
                 <h3 class="card-title">Student Statement</h3>
-                <a type="button" class="waves-effect waves-light btn btn-primary btn-sm" onclick="printDiv('printableArea')">
+                <button id="printButton" class="waves-effect waves-light btn btn-primary btn-sm">
                   <i class="ti-printer"></i>&nbsp Print
-                </a>
+                </button>
               </div>
               <!-- /.card-header -->
               <div class="card mb-3">
@@ -194,263 +194,32 @@ function getStudInfo(student)
 }
 
 
-function save(ic)
-{
-
-  var forminput = [];
-  var formData = new FormData();
-
-  forminput = {
-    ic: ic,
-    total: $('#ptotal').val()
-  };
-
-  formData.append('paymentData', JSON.stringify(forminput));
-
-  $.ajax({
-        headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
-        url: '{{ url('/finance/payment/tuition/storeTuition') }}',
-        type: 'POST',
-        data: formData,
-        cache : false,
-        processData: false,
-        contentType: false,
-        error:function(err){
-            console.log(err);
-        },
-        success:function(res){
-            try{
-                if(res.message == "Success"){
-                    alert("Success! Payment Details has been added!");
-                    $('#idpayment').val(res.data);
-                    document.getElementById('confirm-card').hidden = false;
-                }else{
-                    $('.error-field').html('');
-                    if(res.message == "Field Error"){
-                        for (f in res.error) {
-                            $('#'+f+'_error').html(res.error[f]);
-                        }
-                    }
-                    else if(res.message == "Please fill all required field!"){
-                        alert(res.message);
-                    }
-                    else{
-                        alert(res.message);
-                    }
-                    $("html, body").animate({ scrollTop: 0 }, "fast");
-                }
-            }catch(err){
-                alert("Ops sorry, there is an error");
-            }
-        }
+$(document).ready(function() {
+    $('#printButton').on('click', function(e) {
+      e.preventDefault();
+      printReport();
     });
+  });
 
+  function printReport() {
+    var student = $('#student').val();
 
-}
-
-
-
-function add(ic)
-{
-  if($('#idpayment').val() != '')
-  {
-
-    var forminput = [];
-    var formData = new FormData();
-
-    forminput = {
-      id: $('#idpayment').val(),
-      method: $('#method').val(),
-      bank: $('#bank').val(),
-      nodoc: $('#nodoc').val(),
-      amount: $('#amount').val(),
-    };
-
-    formData.append('paymentDetail', JSON.stringify(forminput));
-
-    $.ajax({
-          headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
-          url: '{{ url('/finance/payment/tuition/storeTuitionDtl') }}',
-          type: 'POST',
-          data: formData,
-          cache : false,
-          processData: false,
-          contentType: false,
-          error:function(err){
-              console.log(err);
-          },
-          success:function(res){
-              try{
-                  if(res.message == "Success"){
-                      alert("Success! Payment Details has been added!");
-                      $('#payment_list').html(res.data);
-                      $('#payment_list').DataTable();
-                  }else{
-                      $('.error-field').html('');
-                      if(res.message == "Field Error"){
-                          for (f in res.error) {
-                              $('#'+f+'_error').html(res.error[f]);
-                          }
-                      }
-                      else if(res.message == "Please fill all required field!"){
-                          alert(res.message);
-                      }
-                      else{
-                          alert(res.message);
-                      }
-                      $("html, body").animate({ scrollTop: 0 }, "fast");
-                  }
-              }catch(err){
-                  alert("Ops sorry, there is an error");
-              }
-          }
-      });
-
-  }else{
-
-    alert('Please save payment details first!');
-
+    return $.ajax({
+      headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+      url: "{{ url('finance/report/statement/getStudent?print=true') }}",
+      method: 'POST',
+      data: { student: student},
+      error: function(err) {
+        alert("Error");
+        console.log(err);
+      },
+      success: function(data) {
+        var newWindow = window.open();
+        newWindow.document.write(data);
+        newWindow.document.close();
+      }
+    });
   }
-
-
-}
-
-function deletedtl(dtl,id)
-{
-
-  Swal.fire({
-    title: "Are you sure?",
-    text: "This will be permanent",
-    showCancelButton: true,
-    confirmButtonText: "Yes, delete it!"
-  }).then(function(res){
-    
-    if (res.isConfirmed){
-              $.ajax({
-                  headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
-                  url      : "{{ url('finance/payment/tuition/deleteTuition') }}",
-                  method   : 'POST',
-                  data 	 : {dtl:dtl, id: id},
-                  error:function(err){
-                      alert("Error");
-                      console.log(err);
-                  },
-                  success  : function(data){
-                      alert("success");
-                      $('#payment_list').html(data);
-                      $('#payment_list').DataTable();
-                  }
-              });
-          }
-      });
-
-}
-
-
-function confirm()
-{
-
-  var id = $('#idpayment').val();
-  var sum = $('#sum').val();
-  var sum2 = $('#sum2').val();
-
-  if(sum != '' && sum2 != '')
-  {
-
-    if(parseInt(sum2) == parseInt(sum))
-    {
-
-    var forminput = [];
-    var formData = new FormData();
-
-    var input = [];
-    var input2 = [];
-
-    forminput = {
-      id: id,
-      sum: sum,
-      sum2: sum2,
-    };
-
-    formData.append('paymentDetail', JSON.stringify(forminput));
-    
-    $('input[id="phyid[]"]').each(function() {
-      input.push({
-            id : $(this).val()
-        });
-    });
-
-    $('input[id="payment[]"]').each(function() {
-      input2.push({
-            payment : $(this).val()
-        });
-    });
-
-    formData.append('paymentinput', JSON.stringify(input));
-    formData.append('paymentinput2', JSON.stringify(input2));
-
-    $.ajax({
-          headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
-          url: '{{ url('/finance/payment/tuition/confirmTuition') }}',
-          type: 'POST',
-          data: formData,
-          cache : false,
-          processData: false,
-          contentType: false,
-          error:function(err){
-              console.log(err);
-          },
-          success:function(res){
-              try{
-                  if(res.message == "Success"){
-                      alert("Success! Payment Details has been added!");
-                      window.open('/finance/sponsorship/payment/getReceipt?id=' + res.id, '_blank');
-                      window.location.reload();
-                  }else{
-                      $('.error-field').html('');
-                      if(res.message == "Field Error"){
-                          for (f in res.error) {
-                              $('#'+f+'_error').html(res.error[f]);
-                          }
-                      }
-                      else if(res.message == "Please fill all required field!"){
-                          alert(res.message);
-                      }
-                      else{
-                          alert(res.message);
-                      }
-                      $("html, body").animate({ scrollTop: 0 }, "fast");
-                  }
-              }catch(err){
-                  alert("Ops sorry, there is an error");
-              }
-          }
-      });
-
-    }else{
-
-      alert('Please make sure total of payment method equal to total of student due list!')
-
-    }
-
-  }else{
-
-    alert('Please submit & fill payment details first!');
-
-  }
-
-}
-
-function printDiv(divName) {
-     var printContents = document.getElementById(divName).innerHTML;
-     var originalContents = document.body.innerHTML;
-
-     document.body.innerHTML = printContents;
-
-     window.print();
-
-     document.body.innerHTML = originalContents;
-}
 
 </script>
 @endsection
