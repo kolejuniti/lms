@@ -278,7 +278,17 @@
 					<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
 						<li><a href="{{ route('finance.payment.report') }}" class="{{ (route('finance.payment.report') == Request::url()) ? 'active' : ''}}">Sponsor payment Report</a></li>
 					</ul>
-				  </li>
+				</li>
+				<li class="treeview">
+					<a href="#"><i data-feather="gift"></i><span>Staff</span>
+						<span class="pull-right-container">
+							<i class="fa fa-angle-left pull-right"></i>
+						</span>
+					</a>
+					<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
+						<li><a href="{{ route('ur.educationAdvisor') }}" class="{{ (route('ur.educationAdvisor') == Request::url()) ? 'active' : ''}}">Education Advisor</a></li>
+					</ul>
+				</li>
 				{{-- <li>
 					<a href="{{ route('posting.staff') }}" class="{{ (route('posting.staff') == Request::url()) ? 'active' : ''}}"><i data-feather="tv"></i><span>Posting</span></a>
 				</li> --}}
