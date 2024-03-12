@@ -64,9 +64,9 @@ class PendaftarController extends Controller
             ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
             ->join('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
             ->join('tblsex', 'tblstudent_personal.sex_id', 'tblsex.id')
-            ->select('students.*', 'tblprogramme.progname', 'a.SessionName AS intake', 
+            ->select('students.*', 'tblprogramme.progcode', 'a.SessionName AS intake', 
                      'b.SessionName AS session', 'tblstudent_status.name AS status',
-                     'tblstudent_personal.no_tel', 'tblsex.sex_name AS gender');
+                     'tblstudent_personal.no_tel', 'tblsex.code AS gender');
 
         if(!empty($request->program) && $request->program != '-')
         {
@@ -205,7 +205,7 @@ class PendaftarController extends Controller
                 '. $student->no_matric .'
                 </td>
                 <td>
-                '. $student->progname .'
+                '. $student->progcode .'
                 </td>
                 <td>
                 '. $student->intake .'
@@ -742,7 +742,8 @@ class PendaftarController extends Controller
                    ->leftjoin('tblstudent_address', 'students.ic', 'tblstudent_address.student_ic')
                    ->leftjoin('tblstudent_pass', 'students.ic', 'tblstudent_pass.student_ic')
                    ->leftjoin('student_form', 'students.ic', 'student_form.student_ic')
-                   ->select('students.*', 'tblstudent_personal.*', 'tblstudent_address.*', 'tblstudent_pass.*', 'student_form.*', 'tblstudent_personal.state_id AS place_birth')
+                   ->join('sessions', 'students.session', 'sessions.SessionID')
+                   ->select('students.*', 'tblstudent_personal.*', 'tblstudent_address.*', 'tblstudent_pass.*', 'student_form.*', 'tblstudent_personal.state_id AS place_birth', 'sessions.SessionName AS session')
                    ->where('ic',request()->ic)->first();
 
         $data['waris'] = DB::table('tblstudent_waris')->where('student_ic', $student->ic)->get();
