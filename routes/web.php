@@ -666,6 +666,9 @@ Route::get('/coop/voucher/report/dailyreport/getDailyReport', [App\Http\Controll
 
 Route::group(['prefix' => 'ur'], function () {
     Route::get('/dashboard', [App\Http\Controllers\CoopController::class, 'dashboard'])->name('ur.dashboard');
+    Route::get('/educationAdvisor', [App\Http\Controllers\URController::class, 'educationAdvisor'])->name('ur.educationAdvisor');
+    Route::post('/educationAdvisor/post', [App\Http\Controllers\URController::class, 'postEducationAdvisor']);
+    Route::delete('/educationAdvisor/delete', [App\Http\Controllers\URController::class, 'deleteEducationAdvisor'])->name('ur.educationAdvisor.delete');
 });
 
 Route::get('/quality/report/attendance', [App\Http\Controllers\QualityController::class, 'attendanceReport'])->name('quality.report.attendance');
