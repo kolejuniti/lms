@@ -119,7 +119,6 @@ tr:hover {
             <!--student info -->
             <div class="card mb-3" id="stud_info">
                 <div class="card-header">
-                <b>Student Info</b>
                 </div>
                 <div class="card-body">
                     <div class="row mb-5">
