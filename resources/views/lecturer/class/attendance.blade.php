@@ -123,6 +123,12 @@
                         </div>
                     </div>--> 
                   </div>
+                  <div class="card-header" id="export" hidden>
+                    <b>Search Student</b>
+                    <button id="printButton" class="waves-effect waves-light btn btn-primary btn-sm">
+                      <i class="ti-printer"></i>&nbsp Export
+                    </button>
+                  </div>
                   <div class="col-md-12">
                     <div class="form-group" >
                         <label class="form-label">Student List</label>
@@ -187,6 +193,12 @@ $(document).on('change', '#group', async function(e){
 
     await getStudents(selected_group);
     await getProgram(selected_group);
+
+    // Get a reference to the button element
+    const button = document.getElementById("export");
+
+    // Disable the button
+    button.hidden = false;
 })
 
 $(document).on('change', '#program', async function(e){
@@ -235,6 +247,7 @@ function getStudents(group,program)
   
             $('#attendance').removeAttr('hidden');
                 $('#attendance').html(data);
+                $('#table_registerstudent').DataTable();
                 $('#attendance').selectpicker('refresh');
 
                 
@@ -298,41 +311,33 @@ function CheckAll(elem) {
     }
  }
 
-//$(document).on('change', '#date', async function(e){
-   // input_date = $(e.target).val();
+ $(document).ready(function() {
+    $('#printButton').on('click', function(e) {
+      e.preventDefault();
+      printReport();
+    });
+  });
 
-  //  await getSchedule(selected_group, input_date);
-//})
+  function printReport() {
+    var group = $('#group').val();
+    var program = $('#program').val();
 
-//function getSchedule(group,date)
-//{
-
-    //return $.ajax({
-        //headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
-        //url      : "{{ url('lecturer/class/attendance/getDate') }}",
-        //method   : 'POST',
-        //data 	 : {group: group,date: date},
-        //error:function(err){
-           // alert("Error");
-            //console.log(err);
-        //},
-        //success  : function(data){
-            
-            //$('#lecturer-selection-div').removeAttr('hidden');
-            //$('#lecturer').selectpicker('refresh');
-           // if(data.message == "Fail")
-            //{
-              //  alert('The date '+data.day+' is not checked in shcedule! Please configure or pick another date.')
-                //document.querySelector('#date').value = '';
-            //}else
-            //{
-              //  document.querySelector('#schedule').value = data.dayid;
-            //}
-        //}
-    //});
-
-//}
-
+    return $.ajax({
+      headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+      url: "{{ url('lecturer/class/attendance/print') }}",
+      method: 'GET',
+      data: { group: group, program: program },
+      error: function(err) {
+        alert("Error");
+        console.log(err);
+      },
+      success: function(data) {
+        var newWindow = window.open();
+        newWindow.document.write(data);
+        newWindow.document.close();
+      }
+    });
+  }
 
 </script>
 @endsection
