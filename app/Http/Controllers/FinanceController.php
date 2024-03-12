@@ -1265,23 +1265,10 @@ class FinanceController extends Controller
                     foreach($subject as $key)
                     {
 
-                        if($key->prerequisite_id == 881)
+                        if($key->offer == 1)
                         {
 
-                            student::create([
-                                'student_ic' => $student->ic,
-                                'courseid' => $key->sub_id,
-                                'sessionid' => $student->session,
-                                'semesterid' => $key->semesterid,
-                                'course_status_id' => 15,
-                                'status' => 'ACTIVE'
-                            ]);
-
-                        }else{
-
-                            $check = DB::table('student_subjek')->where('courseid', $key->prerequisite_id)->value('course_status_id');
-
-                            if(isset($check) && $check != 2)
+                            if($key->prerequisite_id == 881)
                             {
 
                                 student::create([
@@ -1292,11 +1279,29 @@ class FinanceController extends Controller
                                     'course_status_id' => 15,
                                     'status' => 'ACTIVE'
                                 ]);
-                
+
+                            }else{
+
+                                $check = DB::table('student_subjek')->where('courseid', $key->prerequisite_id)->value('course_status_id');
+
+                                if(isset($check) && $check != 2)
+                                {
+
+                                    student::create([
+                                        'student_ic' => $student->ic,
+                                        'courseid' => $key->sub_id,
+                                        'sessionid' => $student->session,
+                                        'semesterid' => $key->semesterid,
+                                        'course_status_id' => 15,
+                                        'status' => 'ACTIVE'
+                                    ]);
+                    
+
+                                }
 
                             }
-
                         }
+                        
                     }
 
                     $alert = ['message' => 'Success'];
