@@ -572,7 +572,7 @@ class AR_Controller extends Controller
                       ->where([
                             ['subjek_structure.program_id', $data['student']->program],
                             ['subjek_structure.intake_id', $data['student']->intake],
-                            ['subjek_structure.semester_id', $data['student']->semester]
+                            ['subjek_structure.semester_id', '<=', $data['student']->semester]
                         ])
                       ->groupBy('subjek_structure.courseID')
                       ->orderBy('subjek_structure.semester_id');
@@ -590,7 +590,7 @@ class AR_Controller extends Controller
                              ->where([
                                 ['subjek_structure.program_id', $data['student']->program],
                                 ['subjek_structure.intake_id', $data['student']->intake],
-                                ['subjek_structure.semester_id', $data['student']->semester]
+                                ['subjek_structure.semester_id', '<=', $data['student']->semester]
                              ])
                              ->orderBy('subjek_structure.semester_id')
                              ->select('subjek.*')->get();
