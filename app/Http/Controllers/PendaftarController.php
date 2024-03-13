@@ -110,7 +110,7 @@ class PendaftarController extends Controller
 
                 $sponsor[$key] = DB::table('tblpayment')
                                 ->join('tblsponsor_library', 'tblpayment.payment_sponsor_id', 'tblsponsor_library.id')
-                                ->where('tblpayment.id', $sponsor_id[$key]->sponsor_id)->pluck('tblsponsor_library.name')->first();
+                                ->where('tblpayment.id', $sponsor_id[$key]->sponsor_id)->pluck('tblsponsor_library.code')->first();
 
             }else{
 
