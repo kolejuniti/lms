@@ -331,14 +331,16 @@ class KP_Controller extends Controller
                 ->join('students', 'student_subjek.student_ic', 'students.ic')
                 ->join('sessions', 'students.intake', 'sessions.SessionID')
                 ->where('student_subjek.courseid',$request->course)
-                ->where('student_subjek.sessionid',$request->session)->get();
+                ->where('student_subjek.sessionid',$request->session)
+                ->where('students.program', $request->program)->get();
             }else
             {
                 $students = DB::table('student_subjek')
                 ->select('student_subjek.*', 'students.name','students.no_matric','sessions.SessionName AS intake')
                 ->join('students', 'student_subjek.student_ic', 'students.ic')
                 ->join('sessions', 'students.intake', 'sessions.SessionID')
-                ->where('student_subjek.sessionid',$request->session)->get();
+                ->where('student_subjek.sessionid',$request->session)
+                ->where('students.program', $request->program)->get();
             }
         }
         
