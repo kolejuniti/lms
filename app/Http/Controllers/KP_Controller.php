@@ -542,7 +542,7 @@ $content .= '<tr>
         $content .= "<option value='-' disabled selected>-</option>";
         foreach($course as $crs){
             $content .= '<option value='. $crs->sub_id .'>
-            '. $crs->course_code .' : '. $crs->course_name.' (Semester '. $crs->semester_id .')</option>';
+            '. $crs->course_code .' : '. $crs->course_name.'</option>';
         };
         return $content;
 
