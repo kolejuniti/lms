@@ -31,7 +31,14 @@ class AR_Controller extends Controller
     {
 
         $data = [
-            'course' => DB::table('subjek')->leftjoin('tblprogramme', 'subjek.prgid', 'tblprogramme.id')->select('subjek.*', 'tblprogramme.progname')->get(),
+            // 'course' => DB::table('subjek')->leftjoin('tblprogramme', 'subjek.prgid', 'tblprogramme.id')->select('subjek.*', 'tblprogramme.progname')->get(),
+            'course' => DB::table('subjek')
+            ->join('subjek_structure', 'subjek.sub_id', '=', 'subjek_structure.courseID')
+            ->join('tblprogramme', 'subjek_structure.program_id', '=', 'tblprogramme.id')
+            ->select('subjek.id', 'subjek.course_name', 'subjek.course_code', 'subjek.course_credit', 'tblprogramme.progname', 'subjek_structure.semester_id AS semesterid')
+            ->groupBy('tblprogramme.id')
+            ->groupBy('subjek.id')
+            ->get(),
             'courselist' => DB::table('subjek')->groupBy('sub_id')->get(),
             'program' => DB::table('tblprogramme')->get()
         ];
