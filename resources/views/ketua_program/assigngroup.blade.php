@@ -218,11 +218,13 @@
 
   function getStudent(course,session)
   {
+    program = $('#program').val();
+
     return $.ajax({
             headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
             url      : "{{ url('KP/group/getStudentTable') }}",
             method   : 'POST',
-            data 	 : {course: course,session: session},
+            data 	 : {course: course,session: session,program: program},
             error:function(err){
                 
             },
