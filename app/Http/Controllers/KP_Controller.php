@@ -532,8 +532,8 @@ $content .= '<tr>
     public function getCourse(Request $request)
     {
         $course = DB::table('subjek')->join('subjek_structure', 'subjek.sub_id', 'subjek_structure.courseID')
-                //   ->groupBy('subjek_structure.program_id')
-                //   ->groupBy('subjek.id')
+                  ->groupBy('subjek_structure.program_id')
+                  ->groupBy('subjek.id')
                   ->select('subjek.sub_id', 'subjek.course_name', 'subjek.course_code', 'subjek_structure.semester_id')
                   ->where('subjek_structure.program_id', $request->program)->get();
 
