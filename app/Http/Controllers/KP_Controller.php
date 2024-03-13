@@ -365,6 +365,32 @@ class KP_Controller extends Controller
             <th></th>
             </thead>
             <tbody>
+            <tr>
+                <td>
+                    <label class="text-dark"><strong>SELECT ALL</strong></label><br>
+                </td>
+                <td>
+                    
+                </td>
+                <td>
+                    
+                </td>
+                <td>
+                    
+                </td>
+                <td>
+                    
+                </td>
+                <td>
+                    <div class="pull-right" >
+                        <input type="checkbox" id="checkboxAll"
+                            class="filled-in" name="checkall"
+                            onclick="CheckAll(this)"
+                        >
+                        <label for="checkboxAll"> </label>
+                    </div>
+                </td>
+            </tr>
         ';
         foreach($students as $student){
             //$registered = ($student->status == 'ACTIVE') ? 'checked' : '';
