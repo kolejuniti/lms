@@ -259,5 +259,9 @@
         });
   }
 
+  function CheckAll(elem) {
+    $('[name="student[]"]').prop("checked", $(elem).prop('checked'));
+  }
+
 </script>
 @endsection
