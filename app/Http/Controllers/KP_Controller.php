@@ -364,8 +364,8 @@ class KP_Controller extends Controller
             <th>Status</th>
             <th></th>
             </thead>
-            <tbody>
-            <tr>
+            <tbody>';
+$content .= '<tr>
                 <td>
                     <label class="text-dark"><strong>SELECT ALL</strong></label><br>
                 </td>
