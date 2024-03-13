@@ -332,7 +332,7 @@ class KP_Controller extends Controller
                 ->join('sessions', 'students.intake', 'sessions.SessionID')
                 ->where('student_subjek.courseid',$request->course)
                 ->where('student_subjek.sessionid',$request->session)
-                ->where('students.program', $request->program)->get();
+                ->where('students.program', $request->program)->orderBy('students.name')->get();
             }else
             {
                 $students = DB::table('student_subjek')
@@ -340,7 +340,7 @@ class KP_Controller extends Controller
                 ->join('students', 'student_subjek.student_ic', 'students.ic')
                 ->join('sessions', 'students.intake', 'sessions.SessionID')
                 ->where('student_subjek.sessionid',$request->session)
-                ->where('students.program', $request->program)->get();
+                ->where('students.program', $request->program)->orderBy('students.name')->get();
             }
         }
         
