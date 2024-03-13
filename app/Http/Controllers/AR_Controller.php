@@ -674,26 +674,37 @@ class AR_Controller extends Controller
         $getCourse =  DB::table('student_subjek')
                       ->join('students', 'student_subjek.student_ic', 'students.ic')
                       ->join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
+                      ->join('subjek_structure', function($join){
+                            $join->on('subjek.sub_id', 'subjek_structure.courseID');
+                        })
                       ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
                     //   ->where('student_subjek.sessionid', $data['student']->session)
                       ->where('students.ic', $data['student']->ic)
-                      ->where('subjek.prgid', $data['student']->program);
+                      ->where([
+                            ['subjek_structure.program_id', $data['student']->program],
+                            ['subjek_structure.intake_id', $data['student']->intake],
+                            ['subjek_structure.semester_id', '<=', $data['student']->semester]
+                        ])
+                      ->groupBy('subjek_structure.courseID')
+                      ->orderBy('subjek_structure.semester_id');
 
         $data['allCourse'] = $getCourse->select('student_subjek.id as IDS', 'student_subjek.courseid', 'student_subjek.semesterid AS semester', 'sessions.SessionName', 'subjek.*')->orderBy('student_subjek.semesterid')->get();
 
         $crsExists = $getCourse->where('student_subjek.course_status_id', '!=', 2)->pluck('student_subjek.courseid')->toArray();
 
         $data['regCourse'] = DB::table('subjek')->whereNotIn('sub_id', $crsExists)
-                             ->join('subjek_structure', function($join){
+                            ->join('subjek_structure', function($join){
                                 $join->on('subjek.sub_id', 'subjek_structure.courseID');
-                                $join->on('subjek.prgid', 'subjek_structure.program_id');
-                                $join->on('subjek.semesterid', 'subjek_structure.semester_id');
-                             })
-                             ->where('subjek_structure.intake_id', $data['student']->intake)
-                             ->whereIn('subjek.semesterid', $loop)
-                             ->where('prgid', $data['student']->program)
-                             ->orderBy('subjek.semesterid')
-                             ->select('subjek.*')->get();
+                            })
+                            ->where('subjek_structure.intake_id', $data['student']->intake)
+                            ->whereIn('subjek_structure.semester_id', $loop)
+                            ->where([
+                                ['subjek_structure.program_id', $data['student']->program],
+                                ['subjek_structure.intake_id', $data['student']->intake],
+                                ['subjek_structure.semester_id', '<=', $data['student']->semester]
+                            ])
+                            ->orderBy('subjek_structure.semester_id')
+                            ->select('subjek.*')->get();
 
         return view('pendaftar_akademik.getAllCourse', compact('data'));
 
@@ -720,26 +731,37 @@ class AR_Controller extends Controller
         $getCourse =  DB::table('student_subjek')
                       ->join('students', 'student_subjek.student_ic', 'students.ic')
                       ->join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
+                      ->join('subjek_structure', function($join){
+                            $join->on('subjek.sub_id', 'subjek_structure.courseID');
+                        })
                       ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
                     //   ->where('student_subjek.sessionid', $data['student']->session)
                       ->where('students.ic', $data['student']->ic)
-                      ->where('subjek.prgid', $data['student']->program);
+                      ->where([
+                            ['subjek_structure.program_id', $data['student']->program],
+                            ['subjek_structure.intake_id', $data['student']->intake],
+                            ['subjek_structure.semester_id', '<=', $data['student']->semester]
+                        ])
+                      ->groupBy('subjek_structure.courseID')
+                      ->orderBy('subjek_structure.semester_id');
 
         $data['allCourse'] = $getCourse->select('student_subjek.id as IDS', 'student_subjek.courseid', 'student_subjek.semesterid AS semester', 'sessions.SessionName', 'subjek.*')->orderBy('student_subjek.semesterid')->get();
 
         $crsExists = $getCourse->where('student_subjek.course_status_id', '!=', 2)->pluck('student_subjek.courseid')->toArray();
 
         $data['regCourse'] = DB::table('subjek')->whereNotIn('sub_id', $crsExists)
-                             ->join('subjek_structure', function($join){
+                            ->join('subjek_structure', function($join){
                                 $join->on('subjek.sub_id', 'subjek_structure.courseID');
-                                $join->on('subjek.prgid', 'subjek_structure.program_id');
-                                $join->on('subjek.semesterid', 'subjek_structure.semester_id');
-                             })
-                             ->where('subjek_structure.intake_id', $data['student']->intake)
-                             ->whereIn('subjek.semesterid', $loop)
-                             ->where('prgid', $data['student']->program)
-                             ->orderBy('subjek.semesterid')
-                             ->select('subjek.*')->get();
+                            })
+                            ->where('subjek_structure.intake_id', $data['student']->intake)
+                            ->whereIn('subjek_structure.semester_id', $loop)
+                            ->where([
+                                ['subjek_structure.program_id', $data['student']->program],
+                                ['subjek_structure.intake_id', $data['student']->intake],
+                                ['subjek_structure.semester_id', '<=', $data['student']->semester]
+                            ])
+                            ->orderBy('subjek_structure.semester_id')
+                            ->select('subjek.*')->get();
 
         return view('pendaftar_akademik.getAllCourse', compact('data'));
 
