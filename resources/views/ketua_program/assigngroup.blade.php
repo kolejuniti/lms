@@ -231,10 +231,8 @@
             success  : function(data){
                 $('#add-student-div').removeAttr('hidden');
                 $('#add-student-div').html(data);
+                $('#table_registerstudent').DataTable();
                 $('#add-student-div').selectpicker('refresh');
-                $('#table_registerstudent').DataTable( {
-                    responsive: true
-                } );
 
                 var $chkboxes = $('.filled-in');
                 var lastChecked = null;
