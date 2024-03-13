@@ -37,6 +37,7 @@ class AR_Controller extends Controller
             ->join('tblprogramme', 'subjek_structure.program_id', '=', 'tblprogramme.id')
             ->select('subjek.id', 'subjek.course_name', 'subjek.course_code', 'subjek.course_credit', 'tblprogramme.progname', 'subjek_structure.semester_id AS semesterid')
             ->groupBy('tblprogramme.id')
+            ->groupBy('subjek_structure.semester_id')
             ->groupBy('subjek.id')
             ->get(),
             'courselist' => DB::table('subjek')->groupBy('sub_id')->get(),
