@@ -258,6 +258,7 @@ class AR_Controller extends Controller
             'program' => DB::table('tblprogramme')->get(),
             'structure' => DB::table('structure')->get(),
             'intake' => DB::table('sessions')->get(),
+            'semester' => DB::table('semester')->get(),
             // 'assigned' => DB::table('subjek_structure')
             //             ->join('subjek', function($join)
             //             {
@@ -278,7 +279,7 @@ class AR_Controller extends Controller
 
     public function getCourse0(Request $request)
     {
-        $course = DB::table('subjek')->where('prgid', $request->program)->get();
+        $course = DB::table('subjek')->get();
 
         $content = "";
 
@@ -316,12 +317,10 @@ class AR_Controller extends Controller
                     ->join('subjek', function($join)
                     {
                         $join->on('subjek_structure.courseID', 'subjek.sub_id');
-                        $join->on('subjek_structure.program_id', 'subjek.prgid');
-                        $join->on('subjek_structure.semester_id', 'subjek.semesterid');
                     })
                     ->leftjoin('structure', 'subjek_structure.structure', 'structure.id')
                     ->leftjoin('sessions', 'subjek_structure.intake_id', 'sessions.SessionID')
-                    ->leftjoin('tblprogramme', 'subjek.prgid', 'tblprogramme.id');
+                    ->leftjoin('tblprogramme', 'subjek_structure.program_id', 'tblprogramme.id');
 
             if(isset($request->course))
             {
@@ -433,7 +432,7 @@ class AR_Controller extends Controller
 
         if (isset($data->course) && is_array($data->course) && count($data->course) > 0 
             && isset($data->intake) && is_array($data->intake) && count($data->intake) > 0
-            && isset($data->structure)) {
+            && isset($data->structure) && isset($data->semester) && isset($data->program)) {
             // The 'program' input is not empty, process the data
             $selectedCourse = $data->course;
 
@@ -450,7 +449,7 @@ class AR_Controller extends Controller
                 foreach($selectedIntake as $intakeID)
                 {
 
-                    if(DB::table('subjek_structure')->where([['courseID', $course->sub_id], ['structure', $data->structure], ['intake_id', $intakeID], ['program_id', $course->prgid], ['semester_id', $course->semesterid]])->exists())
+                    if(DB::table('subjek_structure')->where([['courseID', $course->sub_id], ['structure', $data->structure], ['intake_id', $intakeID], ['program_id', $data->program], ['semester_id', $data->semester]])->exists())
                     {
 
 
@@ -460,8 +459,8 @@ class AR_Controller extends Controller
                             'courseID' => $course->sub_id,
                             'structure' => $data->structure,
                             'intake_id' => $intakeID,
-                            'program_id' => $course->prgid,
-                            'semester_id' => $course->semesterid
+                            'program_id' => $data->program,
+                            'semester_id' => $data->semester
                         ]);
 
                     }
@@ -472,12 +471,10 @@ class AR_Controller extends Controller
             ->join('subjek', function($join)
             {
                 $join->on('subjek_structure.courseID', 'subjek.sub_id');
-                $join->on('subjek_structure.program_id', 'subjek.prgid');
-                $join->on('subjek_structure.semester_id', 'subjek.semesterid');
             })
             ->leftjoin('structure', 'subjek_structure.structure', 'structure.id')
             ->leftjoin('sessions', 'subjek_structure.intake_id', 'sessions.SessionID')
-            ->leftjoin('tblprogramme', 'subjek.prgid', 'tblprogramme.id')
+            ->leftjoin('tblprogramme', 'subjek_structure.program_id', 'tblprogramme.id')
             ->whereIn('subjek.id', $data->course)
             ->where('structure.id', $data->structure)
             ->whereIn('sessions.SessionID', $data->intake)
