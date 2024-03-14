@@ -3943,7 +3943,7 @@ class FinanceController extends Controller
             ['tblstudentclaim.groupid', 1], 
             ['tblpaymentdtl.amount', '!=', 0]
             ])
-        ->select(DB::raw("'payment' as source"), 'tblprocess_type.name AS process', 'tblpayment.ref_no','tblpayment.date', 'tblstudentclaim.name', 
+        ->select(DB::raw("'payment' as source"), 'tblprocess_type.name AS process', 'tblprocess_type.group_id', 'tblpayment.ref_no','tblpayment.date', 'tblstudentclaim.name', 
         'tblpaymentdtl.amount',
         'tblpayment.process_type_id', 'tblprogramme.progcode AS program', DB::raw('NULL as remark'));
 
@@ -3959,7 +3959,7 @@ class FinanceController extends Controller
             ['tblclaimdtl.amount', '!=', 0]
             ])
         ->unionALL($record)
-        ->select(DB::raw("'claim' as source"), 'tblprocess_type.name AS process', 'tblclaim.ref_no','tblclaim.date', 'tblstudentclaim.name', 
+        ->select(DB::raw("'claim' as source"), 'tblprocess_type.name AS process', 'tblprocess_type.group_id', 'tblclaim.ref_no','tblclaim.date', 'tblstudentclaim.name', 
         'tblclaimdtl.amount',
         'tblclaim.process_type_id', 'tblprogramme.progcode AS program', 'tblclaim.remark')
         ->orderBy('date')
@@ -3972,7 +3972,7 @@ class FinanceController extends Controller
         foreach($data['record'] as $key => $req)
         {
 
-            if(array_intersect([2,3,4,5,11], (array) $req->process_type_id) && $req->source == 'claim')
+            if(array_intersect([2], (array) $req->group_id) && $req->source == 'claim')
             {
 
                 $data['total'][$key] = $val + $req->amount;
@@ -3982,7 +3982,7 @@ class FinanceController extends Controller
                 $data['sum1'] += $req->amount;
                 
 
-            }elseif(array_intersect([1,5,6,7,8,9,10,12,13,14,15,16,17,18,19,20,21,22,23,24,25], (array) $req->process_type_id) && $req->source == 'payment')
+            }elseif(array_intersect([1], (array) $req->group_id) && $req->source == 'payment')
             {
 
                 $data['total'][$key] = $val - $req->amount;
