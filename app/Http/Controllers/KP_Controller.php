@@ -432,11 +432,18 @@ $content .= '<tr>
     public function getLecturerSubject(Request $request)
     {
 
-        $data['subject'] = DB::table('user_subjek')->where('user_ic', $request->ic)
+        $data['subject'] = DB::table('user_subjek')
                            ->where('sessions.Status', 'ACTIVE')
                            ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+                           ->join('subjek_structure', 'subjek.sub_id', 'subjek_structure.courseID')
                            ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
-                           ->select('user_subjek.id', 'subjek.course_name', 'subjek.course_code', 'sessions.SessionName')
+                           ->join('users', 'user_subjek.user_ic', 'users.ic')
+                           ->where([
+                            ['user_subjek.course_id', $request->course],
+                            ['user_subjek.session_id', $request->session], 
+                            ['subjek_structure.program_id', $request->program]
+                            ])
+                           ->select('users.name', 'users.no_staf','user_subjek.id', 'subjek.course_name', 'subjek.course_code', 'sessions.SessionName')
                            ->get();
 
         $content = "";
@@ -444,23 +451,35 @@ $content .= '<tr>
         <div class="table-responsive" style="width:99.7%">
         <table id="table_registerstudent" class="w-100 table text-fade table-bordered table-hover display nowrap margin-top-10 w-p100">
             <thead class="thead-themed">
+            <th>No.</th>
+            <th>Name</th>
+            <th>Staff No.</th>
             <th>Course</th>
             <th>Session</th>
             <th></th>
             </thead>
             <tbody>
         ';
-        foreach($data['subject'] as $sbj){
+        foreach($data['subject'] as $i => $sbj){
             //$registered = ($sbj->status == 'ACTIVE') ? 'checked' : '';
             $content .= '
             <tr>
-                <td >
-                    <p class="text-bold text-fade">'.$sbj->course_code.' - '.$sbj->course_name.'</p>
+                <td>
+                    '. $i+1 .'
                 </td>
-                <td >
-                    <p class="text-bold text-fade">'.$sbj->SessionName.'</p>
+                <td>
+                    '. $sbj->name .'
                 </td>
-                <td >
+                <td>
+                    '. $sbj->no_staf .'
+                </td>
+                <td>
+                    <p >'.$sbj->course_code.' - '.$sbj->course_name.'</p>
+                </td>
+                <td>
+                    <p>'.$sbj->SessionName.'</p>
+                </td>
+                <td>
                     <a class="btn btn-danger btn-sm" href="#" onclick="deleteSubjek(\''. $sbj->id .'\')">
                         <i class="ti-trash">
                         </i>
