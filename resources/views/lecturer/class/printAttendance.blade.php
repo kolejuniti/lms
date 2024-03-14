@@ -170,7 +170,7 @@ tr:hover {
                             <th>
                                 Tarikh
                             </th>
-                            @for($i = 0; $i < 7; $i++)
+                            @for($i = 0; $i < 12; $i++)
                             <th>
                             ............           
                             </th>
@@ -183,7 +183,7 @@ tr:hover {
                             <th>
                                 Masa Mula
                             </th>
-                            @for($i = 0; $i < 7; $i++)
+                            @for($i = 0; $i < 12; $i++)
                             <th>
                              
                             </th>
@@ -193,7 +193,7 @@ tr:hover {
                             <th>
                                 Masa Akhir
                             </th>
-                            @for($i = 0; $i < 7; $i++)
+                            @for($i = 0; $i < 12; $i++)
                             <th>
                              
                             </th>
@@ -203,7 +203,7 @@ tr:hover {
                             <th>
                                 No. Matriks
                             </th>
-                            <th colspan="7" style="text-align:center">
+                            <th colspan="12" style="text-align:center">
                                 KEHADIRAN
                             </th>
                         </tr>
@@ -220,7 +220,7 @@ tr:hover {
                             <td>
                                 {{ $std->no_matric }}
                             </td>
-                            @for($i = 0; $i < 7; $i++)
+                            @for($i = 0; $i < 12; $i++)
                             <td>
                              
                             </td>
