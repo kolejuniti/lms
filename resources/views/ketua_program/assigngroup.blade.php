@@ -125,8 +125,16 @@
                   <div class="row">
                     <div class="col-md-12 mt-3">
                         <div class="form-group mt-3">
-                            <label class="form-label">Registered Student</label>
+                            <label class="form-label">Unregistered Student</label>
                             <div id="add-student-div"></div>
+                        </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-12 mt-3">
+                        <div class="form-group mt-3">
+                            <label class="form-label">Registered Student</label>
+                            <div id="add-student-div2"></div>
                         </div>
                     </div>
                   </div>
@@ -174,6 +182,13 @@
 
     await getLecturer(selected_course, selected_session);
     await getStudent(selected_course, selected_session);
+  });
+
+  $(document).on('change', '#lecturer', function(e){
+    selected_lecturer = $(e.target).val();
+
+    getRegisteredStd(selected_lecturer);
+
   });
 
   function getCourse(program)
@@ -256,8 +271,56 @@
         });
   }
 
+  function getRegisteredStd(lecturer)
+  {
+
+    course = $('#course').val();
+    session = $('#session').val();
+    program = $('#program').val();
+
+    return $.ajax({
+            headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
+            url      : "{{ url('KP/group/getStudentTable2') }}",
+            method   : 'POST',
+            data 	 : {lecturer: lecturer, course: course, session: session, program: program},
+            error:function(err){
+                
+            },
+            success  : function(data){
+                $('#add-student-div2').removeAttr('hidden');
+                $('#add-student-div2').html(data);
+                $('#add-student-div2').selectpicker('refresh');
+
+                var $chkboxes = $('.filled-in');
+                var lastChecked = null;
+
+                $chkboxes.click(function(e) {
+                    if (!lastChecked) {
+                        lastChecked = this;
+                        return;
+                    }
+
+                    if (e.shiftKey) {
+                        var start = $chkboxes.index(this);
+                        var end = $chkboxes.index(lastChecked);
+
+                        $chkboxes.slice(Math.min(start,end), Math.max(start,end)+ 1).prop('checked', lastChecked.checked);
+                    }
+
+                    lastChecked = this;
+                });
+
+            }
+        });
+
+  }
+
   function CheckAll(elem) {
     $('[name="student[]"]').prop("checked", $(elem).prop('checked'));
+  }
+
+  function CheckAll2(elem) {
+    $('[name="student2[]"]').prop("checked", $(elem).prop('checked'));
   }
 
 </script>
