@@ -670,8 +670,10 @@ class AR_Controller extends Controller
         $data['students'] = DB::table('students')
         ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
         ->join('tblprogramme', 'students.program', 'tblprogramme.id')
-        ->select('students.*', 'tblstudent_status.name AS status', 'tblprogramme.progname AS program')
-        ->where('ic', $request->ic)->first();
+        ->join('sessions AS a', 'students.intake', 'a.SessionID')
+        ->join('sessions AS b', 'students.session', 'b.SessionID')
+        ->select('students.*', 'tblstudent_status.name AS status', 'tblprogramme.progname AS program', 'a.SessionName AS intake', 'b.SessionName AS session')
+        ->where('ic', $request->student)->first();
 
         $getCourse =  DB::table('student_subjek')
                       ->join('students', 'student_subjek.student_ic', 'students.ic')
@@ -727,8 +729,10 @@ class AR_Controller extends Controller
         $data['students'] = DB::table('students')
         ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
         ->join('tblprogramme', 'students.program', 'tblprogramme.id')
-        ->select('students.*', 'tblstudent_status.name AS status', 'tblprogramme.progname AS program')
-        ->where('ic', $request->ic)->first();
+        ->join('sessions AS a', 'students.intake', 'a.SessionID')
+        ->join('sessions AS b', 'students.session', 'b.SessionID')
+        ->select('students.*', 'tblstudent_status.name AS status', 'tblprogramme.progname AS program', 'a.SessionName AS intake', 'b.SessionName AS session')
+        ->where('ic', $request->student)->first();
 
         $getCourse =  DB::table('student_subjek')
                       ->join('students', 'student_subjek.student_ic', 'students.ic')
