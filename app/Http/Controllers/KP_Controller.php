@@ -443,6 +443,7 @@ $content .= '<tr>
                             ['user_subjek.session_id', $request->session], 
                             ['subjek_structure.program_id', $request->program]
                             ])
+                            ->groupBy('user_subjek.id')
                            ->select('users.name', 'users.no_staf','user_subjek.id', 'subjek.course_name', 'subjek.course_code', 'sessions.SessionName')
                            ->get();
 
