@@ -189,14 +189,14 @@ tr:hover {
                                             @endif
                                             </td>
                                             <td>
-                                            @if (array_intersect([2,3,4,5,11], (array) $req->process_type_id) && $req->source == 'claim')
+                                            @if (array_intersect([2], (array) $req->group_id) && $req->source == 'claim')
                                             {{ number_format($req->amount, 2) }}
                                             @else
                                             0.00
                                             @endif
                                             </td>
                                             <td>
-                                            @if (array_intersect([1,5,6,7,8,9,10,12,13,14,15,16,17,18,19,20,21,22,23,24,25], (array) $req->process_type_id) && $req->source == 'payment')
+                                            @if (array_intersect([1], (array) $req->group_id) && $req->source == 'payment')
                                             {{ number_format($req->amount, 2) }}
                                             @else
                                             0.00
@@ -353,14 +353,14 @@ tr:hover {
                                             {{ $req->name }}
                                             </td>
                                             <td>
-                                            @if (array_intersect([2,3,4,5,11], (array) $req->process_type_id))
+                                            @if (array_intersect([2,3,4,5,11], (array) $req->group_id))
                                             {{ number_format($req->amount, 2) }}
                                             @else
                                             0.00
                                             @endif
                                             </td>
                                             <td>
-                                            @if (array_intersect([1,5,6,7,8,9,10,12,13,14,15,16,17,18,19,20,21,22,23,24,25], (array) $req->process_type_id))
+                                            @if (array_intersect([1,5,6,7,8,9,10,12,13,14,15,16,17,18,19,20,21,22,23,24,25], (array) $req->group_id))
                                             {{ number_format($req->amount, 2) }}
                                             @else
                                             0.00
@@ -452,14 +452,14 @@ tr:hover {
                                             {{ $req->name }}
                                             </td>
                                             <td>
-                                            @if (array_intersect([2,3,4,5,11], (array) $req->process_type_id))
+                                            @if (array_intersect([2,3,4,5,11], (array) $req->group_id))
                                             {{ number_format($req->amount, 2) }}
                                             @else
                                             0.00
                                             @endif
                                             </td>
                                             <td>
-                                            @if (array_intersect([1,5,6,7,8,9,10,12,13,14,15,16,17,18,19,20,21,22,23,24,25], (array) $req->process_type_id))
+                                            @if (array_intersect([1,5,6,7,8,9,10,12,13,14,15,16,17,18,19,20,21,22,23,24,25], (array) $req->group_id))
                                             {{ number_format($req->amount, 2) }}
                                             @else
                                             0.00
