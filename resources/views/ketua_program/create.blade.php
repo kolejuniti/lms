@@ -40,18 +40,7 @@
                   @method('PATCH')
                 @endif
                 <div class="card-body">
-                  <div class="row"> 
-                    <div class="col-md-6">
-                      <div class="form-group">
-                        <label class="form-label" for="lct">Lecturer List</label>
-                        <select class="form-select" id="lct" name="lct" {{ (isset($data)) ? 'DISABLED' : '' }}>
-                          <option value="-" selected disabled>-</option>
-                          @foreach ($user as $users)
-                          <option value="{{ $users->ic }}" {{ (isset($data)) ? (($data->user_ic == $users->ic) ? 'SELECTED' : '') : '' }}>{{ $users->name }}</option>
-                          @endforeach
-                        </select>
-                      </div>
-                    </div>
+                  <div class="row">
                     <div class="col-md-6" id="program-card">
                       <div class="form-group">
                         <label class="form-label" for="program">Program</label>
@@ -62,16 +51,16 @@
                           @endforeach
                         </select>
                       </div>
-                    </div>   
-                  </div>
-                  <div class="row"> 
+                    </div>  
                     <div class="col-md-6">
                       <div class="form-group">
                         <label class="form-label" for="course">Course</label>
                         <select class="form-select" id="course" name="course">
                         </select>
                       </div>
-                    </div>
+                    </div> 
+                  </div>
+                  <div class="row">
                     <div class="col-md-6">
                       <div class="form-group">
                         <label class="form-label" for="session">Session</label>
@@ -81,8 +70,23 @@
                           @endforeach
                         </select>
                       </div>
+                    </div> 
+                    <div class="col-md-6">
+                      <div class="form-group">
+                          <label class="form-label" for="lct">Lecturer List</label>
+                          <select class="form-select" id="lct" name="lct" {{ isset($data) ? 'disabled' : '' }}>
+                              <option value="-" selected disabled>-</option>
+                              @foreach ($user as $usr)
+                                  <option value="{{ $usr->ic }}" {{ (isset($data) && $data->user_ic == $usr->ic) ? 'selected' : '' }}>{{ $usr->name }}</option>
+                              @endforeach
+                          </select>
+                      </div>
                     </div>
                   </div>
+                  <div>
+                    <button type="submit" class="btn btn-primary pull-right mb-3">Submit</button>
+                  </div>
+                  <br>
                   <div class="row">
                     <div class="col-md-12 mt-3">
                         <div class="form-group mt-3">
@@ -94,7 +98,7 @@
                 </div>
                 <!-- /.card-body -->
                 <div class="card-footer">
-                  <button type="submit" class="btn btn-primary pull-right mb-3">Submit</button>
+                  
                 </div>
               </form>
             </div>
@@ -124,13 +128,21 @@
     selected_program = $(e.target).val();
 
     await getCourse(selected_program,course);
+    await getLecturer(selected_program,selected_course,selected_session);
 
   });
 
-  $(document).on('change', '#lct', function(e){
-    selected_lecturer = $(e.target).val();
+  $(document).on('change', '#course', async function(e){
+    selected_course = $(e.target).val();
 
-    getLecturer(selected_lecturer);
+    await getLecturer(selected_program,selected_course,selected_session);
+
+  });
+
+  $(document).on('change', '#session', async function(e){
+    selected_session = $(e.target).val();
+
+    await getLecturer(selected_program,selected_course,selected_session);
 
   });
 
@@ -153,14 +165,14 @@
         });
   }
 
-  function getLecturer(ic)
+  function getLecturer(program,course,session)
   {
 
     return $.ajax({
             headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
             url      : "{{ url('KP/group/getLecturerSubject') }}",
             method   : 'POST',
-            data 	 : {ic: ic},
+            data 	 : {program: program, course: course, session: session},
             error:function(err){
                 alert("Error");
                 console.log(err);
