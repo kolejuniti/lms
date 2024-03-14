@@ -341,7 +341,9 @@ class KP_Controller extends Controller
                 ->join('sessions', 'students.intake', 'sessions.SessionID')
                 ->where('student_subjek.courseid',$request->course)
                 ->where('student_subjek.sessionid',$request->session)
-                ->where('students.program', $request->program)->orderBy('students.name')->get();
+                ->where('students.program', $request->program)
+                ->where('student_subjek.group_id', null)
+                ->orderBy('students.name')->get();
             }else
             {
                 $students = DB::table('student_subjek')
@@ -349,7 +351,9 @@ class KP_Controller extends Controller
                 ->join('students', 'student_subjek.student_ic', 'students.ic')
                 ->join('sessions', 'students.intake', 'sessions.SessionID')
                 ->where('student_subjek.sessionid',$request->session)
-                ->where('students.program', $request->program)->orderBy('students.name')->get();
+                ->where('students.program', $request->program)
+                ->where('student_subjek.group_id', null)
+                ->orderBy('students.name')->get();
             }
         }
         
@@ -425,6 +429,98 @@ $content .= '<tr>
                     <div class="pull-right" >
                         <input type="checkbox" id="student_checkbox_'.$student->id.'"
                             class="filled-in" name="student[]" value="'.$student->id.'" 
+                        >
+                        <label for="student_checkbox_'.$student->id.'"> </label>
+                    </div>
+                </td>
+            </tr>
+            ';
+            }
+            $content .= '</tbody></table>';
+
+            return $content;
+
+    }
+
+    public function getStudentTable2(Request $request)
+    {
+
+        if(isset($request->lecturer))
+        {
+            $students = DB::table('student_subjek')
+                ->select('student_subjek.*', 'students.name','students.no_matric','sessions.SessionName AS intake')
+                ->join('students', 'student_subjek.student_ic', 'students.ic')
+                ->join('sessions', 'students.intake', 'sessions.SessionID')
+                ->where('student_subjek.courseid',$request->course)
+                ->where('student_subjek.sessionid',$request->session)
+                ->where('student_subjek.group_id', $request->lecturer)
+                ->where('students.program', $request->program)->orderBy('students.name')->get();
+        }
+
+        $content = "";
+        $content .= '
+        <div class="table-responsive" style="width:99.7%">
+        <table id="table_registerstudent" class="w-100 table text-fade table-bordered table-hover display nowrap margin-top-10 w-p100">
+            <thead class="thead-themed">
+            <th>Name</th>
+            <th>Matric No</th>
+            <th>Intake</th>
+            <th>Group</th>
+            <th>Status</th>
+            <th></th>
+            </thead>
+            <tbody>';
+$content .= '<tr>
+                <td>
+                    <label class="text-dark"><strong>SELECT ALL</strong></label><br>
+                </td>
+                <td>
+                    
+                </td>
+                <td>
+                    
+                </td>
+                <td>
+                    
+                </td>
+                <td>
+                    
+                </td>
+                <td>
+                    <div class="pull-right" >
+                        <input type="checkbox" id="checkboxAll2"
+                            class="filled-in" name="checkall2"
+                            onclick="CheckAll2(this)"
+                        >
+                        <label for="checkboxAll2"> </label>
+                    </div>
+                </td>
+            </tr>
+        ';
+        foreach($students as $student){
+            //$registered = ($student->status == 'ACTIVE') ? 'checked' : '';
+            $content .= '
+            <tr>
+                <td >
+                    <label class="text-dark"><strong>'.$student->name.'</strong></label><br>
+                    <label>IC: '.$student->student_ic.'</label>
+                </td>
+                <td >
+                    <label>'.$student->no_matric.'</label>
+                </td>
+                <td >
+                    <p class="text-bold text-fade">'.$student->intake.'</p>
+                </td>
+                <td >
+                    <p class="text-bold text-fade">'.$student->group_name.'</p>
+                </td>
+                <td >
+                    <p class="text-bold text-fade">'.$student->status.'</p>
+                </td>
+                <td >
+                    <div class="pull-right" >
+                        <input type="checkbox" id="student_checkbox_'.$student->id.'"
+                            class="filled-in" name="student2[]" value="'.$student->id.'" 
                         >
                         <label for="student_checkbox_'.$student->id.'"> </label>
                     </div>
@@ -676,40 +772,44 @@ $content .= '<tr>
 
     public function update_group(Request $request)
     {
-        //dd($request->student);
-
-        //$register = $request->validate([
-            //'program' => 'required',
-            //'course' => 'required',
-           // 'session' => 'required',
-           // 'lecturer' => 'required',
-           // 'student' => 'required',
-        //]);
-
-
-
-        
-        //dd($request->student);
-
-        if(count($request->student) > 40)
+        if(isset($request->student2))
         {
 
-            return redirect()->back()->withErrors(['The limit for student in a group cannot exceed more than 40 !']);
+            foreach ($request->student2 as $stud) {
 
-        }else{
-
-            foreach ($request->student as $stud) {
- 
                 student::where('id', $stud)->update([
-                    'group_id' => $request->lecturer,
-                    'group_name' => $request->group
+                    'group_id' => null,
+                    'group_name' => null
                 ]);      
     
             }
 
-            return redirect(route('kp.group'));
+        }
+
+        if(isset($request->student))
+        {
+
+            if(count($request->student) > 40)
+            {
+
+                return redirect()->back()->withErrors(['The limit for student in a group cannot exceed more than 40 !']);
+
+            }else{
+
+                foreach ($request->student as $stud) {
+    
+                    student::where('id', $stud)->update([
+                        'group_id' => $request->lecturer,
+                        'group_name' => $request->group
+                    ]);      
+        
+                }
+
+            }
 
         }
+
+        return redirect(route('kp.group'));
 
     }
 
