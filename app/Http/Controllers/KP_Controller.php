@@ -70,16 +70,25 @@ class KP_Controller extends Controller
         ]);
 
         //this will create data in table [Please be noted that model need to be fillable with the same data]
-        subject::create([
-            //'group_name' => $data['group'],
-            'user_ic' => $data['lct'],
-            'course_id' => $data['course'],
-            'session_id' => $data['session'],
-            'addby' => $users->ic,
-        ]);
+        if(DB::table('user_subjek')->where([['user_ic', $data['lct']],['course_id', $data['course']], ['session_id', $data['session']]])->exist())
+        {
 
-        //this will redirect user to route named ketua_program
-        return back();
+            return back()->with('message', 'Lecturer already registered with the same details, please try again!');
+
+        }else{
+
+            subject::create([
+                //'group_name' => $data['group'],
+                'user_ic' => $data['lct'],
+                'course_id' => $data['course'],
+                'session_id' => $data['session'],
+                'addby' => $users->ic,
+            ]);
+
+            //this will redirect user to route named ketua_program
+            return back();
+
+        }
     }
 
     public function delete(Request $request)
