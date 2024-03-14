@@ -343,7 +343,7 @@ class AR_Controller extends Controller
 
             }
 
-            $data['course'] = $courses->select('subjek_structure.id', 'subjek.course_name', 'subjek.course_code','structure.structure_name', 'sessions.SessionName', 'tblprogramme.progname')->get();
+            $data['course'] = $courses->select('subjek_structure.id', 'subjek.course_name', 'subjek.course_code','structure.structure_name', 'subjek_structure.semester_id','sessions.SessionName', 'tblprogramme.progname')->get();
 
             // $ids = DB::table('subjek')->where('id', $request->course)->first();
 
@@ -370,6 +370,9 @@ class AR_Controller extends Controller
                             </th>
                             <th style="width: 5%">
                                 Program
+                            </th>
+                            <th style="width: 5%">
+                                Session
                             </th>
                             <th style="width: 5%">
                                 Semester
@@ -401,6 +404,9 @@ class AR_Controller extends Controller
                     </td>
                     <td style="width: 5%">
                     '. $crs->SessionName .'
+                    </td>
+                    <td style="width: 5%">
+                    '. $crs->semester_id .'
                     </td>
                     <td class="project-actions text-right" style="text-align: center;">
                     <a class="btn btn-danger btn-sm" href="#" onclick="deleteMaterial(\''. $crs->id .'\')">
@@ -478,7 +484,7 @@ class AR_Controller extends Controller
             ->whereIn('subjek.id', $data->course)
             ->where('structure.id', $data->structure)
             ->whereIn('sessions.SessionID', $data->intake)
-            ->select('subjek_structure.id', 'subjek.course_name', 'subjek.course_code','structure.structure_name', 'sessions.SessionName', 'tblprogramme.progname')->get();
+            ->select('subjek_structure.id', 'subjek.course_name', 'subjek.course_code','structure.structure_name', 'subjek_structure.semester_id', 'sessions.SessionName', 'tblprogramme.progname')->get();
 
 
             return response()->json(['message' => 'Success', 'data' => $datas]);
