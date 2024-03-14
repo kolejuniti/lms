@@ -48,9 +48,9 @@
                         <i class="fa fa-plus"></i> <i class="fa fa-object-group"></i> &nbsp Add Course
                     </a>
 
-                    <a type="button" class="waves-effect waves-light btn btn-success btn-sm" data-toggle="modal" data-target="#uploadModal2">
+                    {{-- <a type="button" class="waves-effect waves-light btn btn-success btn-sm" data-toggle="modal" data-target="#uploadModal2">
                       <i class="fa fa-plus"></i> <i class="fa fa-object-group"></i> &nbsp Update Course
-                    </a>
+                    </a> --}}
                 </div>
               </div>
           </div>
@@ -72,10 +72,13 @@
                         Credit
                     </th>
                     <th style="width: 10%">
-                        Program
+                        Prerequisite
                     </th>
                     <th style="width: 5%">
-                        Semester
+                        Course Level ID
+                    </th>
+                    <th style="width: 5%">
+                        Offer
                     </th>
                     <th style="width: 20%">
                     </th>
@@ -97,10 +100,13 @@
                   {{ $crs->course_credit }}
                 </td>
                 <td>
-                  {{ $crs->progname }}
+                  {{ $crs->prerequisite }}
                 </td>
                 <td>
-                  {{ $crs->semesterid }}
+                  {{ $crs->course_level_id }}
+                </td>
+                <td>
+                  {{ $crs->offer }}
                 </td>
                 <td class="project-actions text-right" style="text-align: center;">
                   <a class="btn btn-info btn-sm btn-sm mr-2" href="#" onclick="updateCourse('{{ $crs->id }}')">
@@ -138,12 +144,6 @@
                       <div class="row col-md-12">
                         <div>
                           <div class="form-group">
-                            <label>ID</label>
-                            <input type="number" name="id" id="id" class="form-control">
-                          </div>
-                        </div>
-                        <div>
-                          <div class="form-group">
                             <label>Course Name</label>
                             <input type="text" name="name" id="name" class="form-control">
                           </div>
@@ -162,26 +162,28 @@
                         </div>
                         <div>
                           <div class="form-group">
-                              <label class="form-label" for="program2">Program</label>
-                              <select class="form-select" id="program2" name="program2[]" style="height: 400px" multiple>
+                              <label class="form-label" for="prerequisite">Prerequisite</label>
+                              <select class="form-select" id="prerequisite" name="prerequisite">
                                 <option value="-" selected disabled>-</option>
-                                @foreach ($data['program'] as $prg)
-                                <option value="{{ $prg->id }}">{{ $prg->progname}}</option> 
+                                @foreach ($data['courselist'] as $prg)
+                                <option value="{{ $prg->sub_id }}">{{ $prg->course_code}} - {{ $prg->course_name}}</option> 
                                 @endforeach
                               </select>
                           </div>
                         </div>
                         <div>
                           <div class="form-group">
-                              <label class="form-label" for="semester">Semester</label>
-                              <select class="form-select" id="semester" name="semester">
-                              <option value="-" selected disabled>-</option>
-                                <option value="1">Semester 1</option> 
-                                <option value="2">Semester 2</option> 
-                                <option value="3">Semester 3</option> 
-                                <option value="4">Semester 4</option> 
-                                <option value="5">Semester 5</option> 
-                                <option value="6">Semester 6</option> 
+                            <label>Course Level ID</label>
+                            <input type="number" name="clid" id="clid" class="form-control">
+                          </div>
+                        </div>
+                        <div>
+                          <div class="form-group">
+                              <label class="form-label" for="offer">Offer</label>
+                              <select class="form-select" id="offer" name="offer">
+                                <option value="" selected disabled>-</option>
+                                <option value="1">Offered</option>
+                                <option value="0">Not Offered</option>
                               </select>
                           </div>
                         </div>
@@ -197,7 +199,7 @@
           </div>
         </div>
 
-        <div id="uploadModal2" class="modal" class="modal fade" role="dialog">
+        {{-- <div id="uploadModal2" class="modal" class="modal fade" role="dialog">
           <div class="modal-dialog">
               <!-- modal content-->
               <div class="modal-content">
@@ -260,7 +262,7 @@
                   </form>
               </div>
           </div>
-        </div>
+        </div> --}}
 
         <div id="uploadModal3" class="modal" class="modal fade" role="dialog">
           <div class="modal-dialog">
