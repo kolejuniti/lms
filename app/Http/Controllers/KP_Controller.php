@@ -70,7 +70,7 @@ class KP_Controller extends Controller
         ]);
 
         //this will create data in table [Please be noted that model need to be fillable with the same data]
-        if(DB::table('user_subjek')->where([['user_ic', $data['lct']],['course_id', $data['course']], ['session_id', $data['session']]])->exist())
+        if(DB::table('user_subjek')->where([['user_ic', $data['lct']],['course_id', $data['course']], ['session_id', $data['session']]])->exists())
         {
 
             return back()->with('message', 'Lecturer already registered with the same details, please try again!');
