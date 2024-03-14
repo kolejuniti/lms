@@ -610,7 +610,7 @@ class AR_Controller extends Controller
                                 ['subjek_structure.semester_id', '<=', $data['student']->semester]
                              ])
                              ->orderBy('subjek_structure.semester_id')
-                             ->select('subjek.*')->get();
+                             ->select('subjek.*', 'subjek_structure.semester_id AS semesterid')->get();
 
         return view('pendaftar_akademik.getAllCourse', compact('data'));
     }
@@ -723,7 +723,7 @@ class AR_Controller extends Controller
                                 ['subjek_structure.semester_id', '<=', $data['student']->semester]
                             ])
                             ->orderBy('subjek_structure.semester_id')
-                            ->select('subjek.*')->get();
+                            ->select('subjek.*', 'subjek_structure.semester_id AS semesterid')->get();
 
         return view('pendaftar_akademik.getAllCourse', compact('data'));
 
@@ -782,7 +782,7 @@ class AR_Controller extends Controller
                                 ['subjek_structure.semester_id', '<=', $data['student']->semester]
                             ])
                             ->orderBy('subjek_structure.semester_id')
-                            ->select('subjek.*')->get();
+                            ->select('subjek.*', 'subjek_structure.semester_id AS semesterid')->get();
 
         return view('pendaftar_akademik.getAllCourse', compact('data'));
 
