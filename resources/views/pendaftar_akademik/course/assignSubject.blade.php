@@ -375,7 +375,7 @@
                     alert("Success! Claim has been updated!");
                     
                     // Start with an empty table structure
-                    var newTable = '<thead><tr><th style="width: 1%">No.</th><th style="width: 20%">Course Name</th><th style="width: 5%">Course Code</th><th style="width: 5%">Credit</th><th style="width: 5%">Program</th><th style="width: 5%">Semester</th><th style="width: 20%"></th></tr></thead><tbody>';
+                    var newTable = '<thead><tr><th style="width: 1%">No.</th><th style="width: 20%">Course Name</th><th style="width: 5%">Course Code</th><th style="width: 5%">Credit</th><th style="width: 5%">Program</th><th style="width: 5%">Session</th><th style="width: 5%">Semester</th><th style="width: 20%"></th></tr></thead><tbody>';
 
                     // Add new rows
                     $.each(res.data, function(i, item) {
@@ -386,6 +386,7 @@
                       newTable += '<td style="width: 5%">' + item.structure_name + '</td>';
                       newTable += '<td style="width: 5%">' + item.progname + '</td>';
                       newTable += '<td style="width: 5%">' + item.SessionName + '</td>';
+                      newTable += '<td style="width: 5%">' + item.semester_id + '</td>';
                       newTable += '<td class="project-actions text-right" style="text-align: center;">';
                       newTable += '<a class="btn btn-danger btn-sm" href="#" onclick="deleteMaterial(\'' + item.id + '\')">';
                       newTable += '<i class="ti-trash"></i> Delete</a>';
