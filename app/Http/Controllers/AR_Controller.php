@@ -33,12 +33,8 @@ class AR_Controller extends Controller
         $data = [
             // 'course' => DB::table('subjek')->leftjoin('tblprogramme', 'subjek.prgid', 'tblprogramme.id')->select('subjek.*', 'tblprogramme.progname')->get(),
             'course' => DB::table('subjek')
-            ->join('subjek_structure', 'subjek.sub_id', '=', 'subjek_structure.courseID')
-            ->join('tblprogramme', 'subjek_structure.program_id', '=', 'tblprogramme.id')
-            ->select('subjek.id', 'subjek.course_name', 'subjek.course_code', 'subjek.course_credit', 'tblprogramme.progname', 'subjek_structure.semester_id AS semesterid')
-            ->groupBy('tblprogramme.id')
-            ->groupBy('subjek_structure.semester_id')
-            ->groupBy('subjek.id')
+            ->leftjoin('subjek AS b', 'subjek.prerequisite_id', 'b.sub_id')
+            ->select('subjek.*', 'b.course_name AS prerequisite')
             ->get(),
             'courselist' => DB::table('subjek')->groupBy('sub_id')->get(),
             'program' => DB::table('tblprogramme')->get()
@@ -127,12 +123,12 @@ class AR_Controller extends Controller
     public function createCourse(Request $request)
     {
         $data = $request->validate([
-            'id' => [],
-            'name' => [],
-            'code' => ['string'],
-            'credit' => [],
-            'program2' => ['required'],
-            'semester' => ['required']
+            'name' => ['required'],
+            'code' => ['required'],
+            'credit' => ['required'],
+            'prerequisite' => ['required'],
+            'clid' => ['required'],
+            'offer' => ['required']
         ]);
 
         //dd($request->upt);
@@ -142,75 +138,87 @@ class AR_Controller extends Controller
         {
 
             DB::table('subjek')->where('id', $request->idS)->update([
-                'sub_id' => $data['id'],
                 'course_name' => $data['name'],
                 'course_code' => $data['code'],
                 'course_credit' => $data['credit'],
-                'prgid' => $data['program2'],
-                'semesterid' => $data['semester']
+                'prerequisite_id' => $data['prerequisite'],
+                'course_level_id' => $data['clid'],
+                'offer' => $data['offer']
             ]);
-
-        }elseif(isset($request->upt))
-        {
-
-            $course = DB::table('subjek')->where('id', $request->course)->first();
-
-            // Check if program2 is a string, and if so, convert it to an array
-            if (is_string($data['program2'])) {
-                $data['program2'] = [$data['program2']];
-            }
-
-            // Do something with the selected programs
-            foreach ($data['program2'] as $programId) {
-
-                if(DB::table('subjek')->where([
-                    ['sub_id', $course->sub_id],
-                    ['prgid', $programId],
-                    ['semesterid', $data['semester']]
-                    ])->exists())
-                {
-
-                }else{
-
-                    DB::table('subjek')->insert([
-                        'sub_id' => $course->sub_id,
-                        'course_name' => $course->course_name,
-                        'course_code' => $course->course_code,
-                        'course_credit' => $course->course_credit,
-                        'prgid' => $programId,
-                        'semesterid' => $data['semester']
-                    ]);
-
-                }
-            }
-
 
         }else
         {
 
-            $recentId = DB::table('subjek')->latest()->value('sub_id');
+            $recentId = DB::table('subjek')->orderBy('sub_id', 'desc')->value('sub_id');
 
             $addID = $recentId + 1;
 
-            // Check if program2 is a string, and if so, convert it to an array
-            if (is_string($data['program2'])) {
-                $data['program2'] = [$data['program2']];
-            }
+            DB::table('subjek')->insert([
+                'sub_id' => $addID,
+                'course_name' => $data['name'],
+                'course_code' => $data['code'],
+                'course_credit' => $data['credit'],
+                'prerequisite_id' => $data['prerequisite'],
+                'course_level_id' => $data['clid'],
+                'offer' => $data['offer']
+            ]);
 
-            // Do something with the selected programs
-            foreach ($data['program2'] as $programId) {
+            // // Check if program2 is a string, and if so, convert it to an array
+            // if (is_string($data['program2'])) {
+            //     $data['program2'] = [$data['program2']];
+            // }
 
-                DB::table('subjek')->insert([
-                    'sub_id' => $addID,
-                    'course_name' => $data['name'],
-                    'course_code' => $data['code'],
-                    'course_credit' => $data['credit'],
-                    'prgid' => $programId,
-                    'semesterid' => $data['semester']
-                ]);
+            // // Do something with the selected programs
+            // foreach ($data['program2'] as $programId) {
 
-            }
+            //     DB::table('subjek')->insert([
+            //         'sub_id' => $addID,
+            //         'course_name' => $data['name'],
+            //         'course_code' => $data['code'],
+            //         'course_credit' => $data['credit'],
+            //         'prgid' => $programId,
+            //         'semesterid' => $data['semester']
+            //     ]);
+
+            // }
         }
+        
+        // elseif(isset($request->upt))
+        // {
+
+        //     $course = DB::table('subjek')->where('id', $request->course)->first();
+
+        //     // Check if program2 is a string, and if so, convert it to an array
+        //     if (is_string($data['program2'])) {
+        //         $data['program2'] = [$data['program2']];
+        //     }
+
+        //     // Do something with the selected programs
+        //     foreach ($data['program2'] as $programId) {
+
+        //         if(DB::table('subjek')->where([
+        //             ['sub_id', $course->sub_id],
+        //             ['prgid', $programId],
+        //             ['semesterid', $data['semester']]
+        //             ])->exists())
+        //         {
+
+        //         }else{
+
+        //             DB::table('subjek')->insert([
+        //                 'sub_id' => $course->sub_id,
+        //                 'course_name' => $course->course_name,
+        //                 'course_code' => $course->course_code,
+        //                 'course_credit' => $course->course_credit,
+        //                 'prgid' => $programId,
+        //                 'semesterid' => $data['semester']
+        //             ]);
+
+        //         }
+        //     }
+
+
+        // }
 
         return redirect(route('pendaftar_akademik'));
 
@@ -229,8 +237,12 @@ class AR_Controller extends Controller
     {
 
         $data = [
-            'course' => DB::table('subjek')->leftjoin('tblprogramme', 'subjek.prgid', 'tblprogramme.id')->select('subjek.*', 'tblprogramme.progname')->where('subjek.id', $request->id)->first(),
-            'program' => DB::table('tblprogramme')->get()
+            'course' => DB::table('subjek')
+            ->leftjoin('subjek AS b', 'subjek.prerequisite_id', 'b.sub_id')
+            ->select('subjek.*', 'b.course_name AS prerequisite')
+            ->where('subjek.id', $request->id)
+            ->first(),
+            'courselist' => DB::table('subjek')->groupBy('sub_id')->get(),
         ];
 
         return view('pendaftar_akademik.getCourse', compact('data'))->with('id', $request->id);
