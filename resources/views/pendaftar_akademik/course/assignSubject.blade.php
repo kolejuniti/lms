@@ -76,6 +76,17 @@
                     </select>
                 </div>
               </div>
+              <div class="col-md-4 ml-3">
+                <div class="form-group">
+                    <label class="form-label" for="semester">Semester</label>
+                    <select class="form-select" id="semester" name="semester">
+                    <option value="-" selected disabled>-</option>
+                      @foreach ($data['semester'] as $crs)
+                      <option value="{{ $crs->id }}">{{ $crs->id }}</option> 
+                      @endforeach
+                    </select>
+                </div>
+              </div>
                 <div class="pull-right">
                     <a type="button" class="waves-effect waves-light btn btn-info btn-sm" onclick="submit()">
                         <i class="fa fa-plus"></i> <i class="fa fa-object-group"></i> &nbsp Add Course
@@ -124,82 +135,6 @@
           </table>
         </div>
         <!-- /.card-body -->
-        <div id="uploadModal" class="modal" class="modal fade" role="dialog">
-          <div class="modal-dialog">
-              <!-- modal content-->
-              <div class="modal-content" id="getModal">
-                  <form action="/AR/course/create" method="post" role="form" enctype="multipart/form-data">
-                    @csrf
-                    @method('POST')
-                    <div class="modal-header">
-                        <div class="">
-                            <button class="close waves-effect waves-light btn btn-danger btn-sm pull-right" data-dismiss="modal">
-                                &times;
-                            </button>
-                        </div>
-                    </div>
-                    <div class="modal-body">
-                      <div class="row col-md-12">
-                        <div>
-                          <div class="form-group">
-                            <label>ID</label>
-                            <input type="number" name="id" id="id" class="form-control">
-                          </div>
-                        </div>
-                        <div>
-                          <div class="form-group">
-                            <label>Course Name</label>
-                            <input type="text" name="name" id="name" class="form-control">
-                          </div>
-                        </div>
-                        <div>
-                          <div class="form-group">
-                            <label>Course Code</label>
-                            <input type="text" name="code" id="code" class="form-control">
-                          </div>
-                        </div>
-                        <div>
-                          <div class="form-group">
-                            <label>Credit</label>
-                            <input type="text" name="credit" id="credit" class="form-control">
-                          </div>
-                        </div>
-                        {{-- <div>
-                          <div class="form-group">
-                              <label class="form-label" for="program2">Program</label>
-                              <select class="form-select" id="program2" name="program2">
-                              <option value="-" selected disabled>-</option>
-                                @foreach ($data['program'] as $prg)
-                                <option value="{{ $prg->id }}">{{ $prg->progname}}</option> 
-                                @endforeach
-                              </select>
-                          </div>
-                        </div>
-                        <div>
-                          <div class="form-group">
-                              <label class="form-label" for="semester">Semester</label>
-                              <select class="form-select" id="semester" name="semester">
-                              <option value="-" selected disabled>-</option>
-                                <option value="1">Semester 1</option> 
-                                <option value="2">Semester 2</option> 
-                                <option value="3">Semester 3</option> 
-                                <option value="4">Semester 4</option> 
-                                <option value="5">Semester 5</option> 
-                                <option value="6">Semester 6</option> 
-                              </select>
-                          </div>
-                        </div> --}}
-                      </div>
-                    </div>
-                    <div class="modal-footer">
-                        <div class="form-group pull-right">
-                            <input type="submit" name="addtopic" class="form-controlwaves-effect waves-light btn btn-primary btn-sm pull-right" value="submit">
-                        </div>
-                    </div>
-                  </form>
-              </div>
-          </div>
-        </div>
       </div>
       <!-- /.card -->
     </section>
@@ -416,7 +351,9 @@
     getInput = {
       course : $('#course').val(),
       structure : $('#structure').val(),
-      intake : $('#intake').val()
+      intake : $('#intake').val(),
+      semester : $('#semester').val(),
+      program : $('#program').val()
     };
 
     formData.append('addCourse', JSON.stringify(getInput));
