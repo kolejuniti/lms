@@ -10,7 +10,7 @@
         <!-- left column -->
         <div class="col-md-12">
           <div class="form-group">
-            <div class="alert alert-success">
+            <div class="alert alert-danger">
                 <span>{{ session()->get('message') }}</span>
             </div>
           </div>
