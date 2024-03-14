@@ -79,6 +79,7 @@
                       <div class="form-group">
                         <label class="form-label" for="session">Session</label>
                         <select class="form-select" id="session" name="session">
+                          <option value="-" selected disabled>-</option>
                           @foreach ($session as $sessions)
                             <option value="{{ $sessions->SessionID }}" {{ (isset($data)) ? (($data->session_id == $sessions->SessionID) ? 'SELECTED' : '') : '' }}>{{ $sessions->SessionName }}</option>
                           @endforeach
