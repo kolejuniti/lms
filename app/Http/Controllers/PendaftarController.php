@@ -1015,7 +1015,7 @@ class PendaftarController extends Controller
 
 
     public function getSubjectOption(Request $request){
-        $subject = DB::table('subjek')->where('prgid', $request->program)->get();
+        $subject = DB::table('subjek')->join('subjek_structure', 'subjek.sub_id', 'subjek_structure.courseID')->where('subjek_structure.program_id', $request->program)->get();
 
         $content = "";
 
