@@ -594,12 +594,13 @@ class AR_Controller extends Controller
                             ['subjek_structure.intake_id', $data['student']->intake],
                             ['subjek_structure.semester_id', '<=', $data['student']->semester]
                         ])
-                      ->groupBy('subjek_structure.courseID')
+                      ->groupBy('student_subjek.courseid')
+                      ->groupBy('student_subjek.semesterid')
                       ->orderBy('subjek_structure.semester_id');
 
         $data['allCourse'] = $getCourse->select('student_subjek.id as IDS', 'student_subjek.courseid', 'student_subjek.semesterid AS semester', 'sessions.SessionName', 'subjek.*')->orderBy('student_subjek.semesterid')->get();
 
-        $crsExists = $getCourse->where('student_subjek.course_status_id', '==', 1)->pluck('student_subjek.courseid')->toArray();
+        $crsExists = $getCourse->where('student_subjek.course_status_id', '!=', 2)->pluck('student_subjek.courseid')->toArray();
 
         $data['regCourse'] = DB::table('subjek')->whereNotIn('sub_id', $crsExists)
                              ->join('subjek_structure', function($join){
@@ -611,7 +612,6 @@ class AR_Controller extends Controller
                                 ['subjek_structure.intake_id', $data['student']->intake],
                                 ['subjek_structure.semester_id', '<=', $data['student']->semester]
                              ])
-                             ->groupBy('subjek_structure.courseID')
                              ->orderBy('subjek_structure.semester_id')
                              ->select('subjek.*', 'subjek_structure.semester_id AS semesterid')->get();
 
