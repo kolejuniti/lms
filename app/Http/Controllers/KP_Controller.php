@@ -852,8 +852,9 @@ $content .= '<tr>
 
         $group = subject::join('student_subjek', 'user_subjek.id', 'student_subjek.group_id')
                  ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
-                 ->join('tblprogramme', 'subjek.prgid', 'tblprogramme.id')
-                 ->whereIn('subjek.prgid', $programs)
+                 ->join('subjek_structure', 'subjek.sub_id', 'subjek_structure.courseID')
+                 ->join('tblprogramme', 'subjek_structure.program_id', 'tblprogramme.id')
+                 ->whereIn('subjek_structure.program_id', $programs)
                  ->where('user_subjek.user_ic', $lecturer->ic)->groupBy('student_subjek.group_id')->groupBy('student_subjek.group_name')
                  ->select('user_subjek.*','student_subjek.group_name','tblprogramme.progname','subjek.course_name','subjek.course_code','subjek.course_credit','subjek.semesterid')->get();
 
@@ -862,7 +863,8 @@ $content .= '<tr>
 
         $sum = subject::where('user_ic', $lecturer->ic)
                 ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
-                ->whereIn('subjek.prgid', $programs)->sum('subjek.course_credit');
+                ->join('subjek_structure', 'subjek.sub_id', 'subjek_structure.courseID')
+                ->whereIn('subjek_structure.program_id', $programs)->sum('subjek.course_credit');
 
                 //dd($group);
 
@@ -872,7 +874,8 @@ $content .= '<tr>
         {
             $sums[] = subject::where('user_ic', $lecturer->ic)
                     ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
-                    ->whereIn('subjek.prgid', $programs)
+                    ->join('subjek_structure', 'subjek.sub_id', 'subjek_structure.courseID')
+                    ->whereIn('subjek_structure.program_id', $programs)
                     ->where('user_subjek.session_id', $semses->SessionID)->sum('subjek.course_credit');
         }
 
@@ -927,7 +930,8 @@ $content .= '<tr>
         $user = Auth::user();
 
         $course = DB::table('subjek')
-                  ->join('user_program', 'subjek.prgid', 'user_program.program_id')
+                  ->join('subjek_structure', 'subjek.sub_id', 'subjek_structure.courseID')
+                  ->join('user_program', 'subjek_structure.program_id', 'user_program.program_id')
                   ->where('user_program.user_ic', $user->ic)
                   ->select('subjek.*')->get();
 
