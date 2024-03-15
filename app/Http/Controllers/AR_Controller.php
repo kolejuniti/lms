@@ -611,6 +611,7 @@ class AR_Controller extends Controller
                                 ['subjek_structure.intake_id', $data['student']->intake],
                                 ['subjek_structure.semester_id', '<=', $data['student']->semester]
                              ])
+                             ->groupBy('subjek_structure.courseID')
                              ->orderBy('subjek_structure.semester_id')
                              ->select('subjek.*', 'subjek_structure.semester_id AS semesterid')->get();
 
