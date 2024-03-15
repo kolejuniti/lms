@@ -601,7 +601,7 @@ class AR_Controller extends Controller
 
         $crsExists = $getCourse->where('student_subjek.course_status_id', '!=', 2)->pluck('student_subjek.courseid')->toArray();
 
-        $data['regCourse'] = DB::table('subjek')->whereNotIn('sub_id', $crsExists)
+        $data['regCourse'] = DB::table('subjek')
                              ->join('subjek_structure', function($join){
                                 $join->on('subjek.sub_id', 'subjek_structure.courseID');
                              })
