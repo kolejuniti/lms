@@ -76,7 +76,7 @@
                                 {{ $keys+1 }}
                                 </td>
                                 <td >
-                                {{ $crs->course_name }} {{ $crs->sub_id }}
+                                {{ $crs->course_name }}
                                 </td>
                                 <td>
                                 {{ $crs->course_code }}
@@ -156,7 +156,7 @@
                                 {{ $keys+1 }}
                                 </td>
                                 <td >
-                                {{ $crs->course_name }} {{ $crs->courseid }}
+                                {{ $crs->course_name }}
                                 </td>
                                 <td>
                                 {{ $crs->course_code }}
