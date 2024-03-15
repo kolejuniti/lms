@@ -605,7 +605,6 @@ class AR_Controller extends Controller
                              ->join('subjek_structure', function($join){
                                 $join->on('subjek.sub_id', 'subjek_structure.courseID');
                              })
-                             ->where('subjek_structure.intake_id', $data['student']->intake)
                              ->whereIn('subjek_structure.semester_id', $loop)
                              ->where([
                                 ['subjek_structure.program_id', $data['student']->program],
