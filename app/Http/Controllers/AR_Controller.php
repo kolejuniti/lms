@@ -599,7 +599,7 @@ class AR_Controller extends Controller
 
         $data['allCourse'] = $getCourse->select('student_subjek.id as IDS', 'student_subjek.courseid', 'student_subjek.semesterid AS semester', 'sessions.SessionName', 'subjek.*')->orderBy('student_subjek.semesterid')->get();
 
-        $crsExists = $getCourse->where('student_subjek.course_status_id', '!=', 2)->pluck('student_subjek.courseid')->toArray();
+        $crsExists = $getCourse->where('student_subjek.course_status_id', '==', 1)->pluck('student_subjek.courseid')->toArray();
 
         $data['regCourse'] = DB::table('subjek')->whereNotIn('sub_id', $crsExists)
                              ->join('subjek_structure', function($join){
