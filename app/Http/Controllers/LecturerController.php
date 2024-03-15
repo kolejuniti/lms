@@ -104,7 +104,8 @@ class LecturerController extends Controller
 
         $data = auth()->user()->subjects()
             ->join('subjek', 'user_subjek.course_id','=','subjek.sub_id')
-            ->join('tblprogramme', 'subjek.prgid', 'tblprogramme.id')
+            ->join('subjek_structure', 'subjek.sub_id', 'subjek_structure.courseID')
+            ->join('tblprogramme', 'subjek_structure.program_id', 'tblprogramme.id')
             ->join('sessions', 'user_subjek.session_id','sessions.SessionID')
             ->where('sessions.Status', 'ACTIVE')
             ->where('tblprogramme.progstatusid', 1)
@@ -122,7 +123,8 @@ class LecturerController extends Controller
 
         $data = auth()->user()->subjects()
             ->join('subjek', 'user_subjek.course_id','=','subjek.sub_id')
-            ->join('tblprogramme', 'subjek.prgid', 'tblprogramme.id')
+            ->join('subjek_structure', 'subjek.sub_id', 'subjek_structure.courseID')
+            ->join('tblprogramme', 'subjek_structure.program_id', 'tblprogramme.id')
             ->join('sessions', 'user_subjek.session_id','sessions.SessionID')
             ->where('sessions.Status', 'ACTIVE')
             ->where('tblprogramme.progstatusid', 1)
@@ -139,7 +141,8 @@ class LecturerController extends Controller
 
         $data = auth()->user()->subjects()
             ->join('subjek', 'user_subjek.course_id','=','subjek.sub_id')
-            ->join('tblprogramme', 'subjek.prgid', 'tblprogramme.id')
+            ->join('subjek_structure', 'subjek.sub_id', 'subjek_structure.courseID')
+            ->join('tblprogramme', 'subjek_structure.program_id', 'tblprogramme.id')
             ->join('sessions', 'user_subjek.session_id','sessions.SessionID')
             ->where('sessions.Status', 'ACTIVE')
             ->where('tblprogramme.progstatusid', 1)
@@ -154,7 +157,8 @@ class LecturerController extends Controller
 
         $data = auth()->user()->subjects()
             ->join('subjek', 'user_subjek.course_id','=','subjek.sub_id')
-            ->join('tblprogramme', 'subjek.prgid', 'tblprogramme.id')
+            ->join('subjek_structure', 'subjek.sub_id', 'subjek_structure.courseID')
+            ->join('tblprogramme', 'subjek_structure.program_id', 'tblprogramme.id')
             ->join('sessions', 'user_subjek.session_id','sessions.SessionID')
             ->where('sessions.Status', 'ACTIVE')
             ->where('tblprogramme.progstatusid', 1)
@@ -184,17 +188,23 @@ class LecturerController extends Controller
         }
 
         $course = DB::table('subjek')
-                  ->join('tblprogramme', 'subjek.prgid', 'tblprogramme.id')
+                  ->join('subjek_structure', 'subjek.sub_id', 'subjek_structure.courseID')
+                  ->join('tblprogramme', 'subjek_structure.program_id', 'tblprogramme.id')
                   ->where('subjek.id', request()->id)->first();
 
-        $program = DB::table('tblprogramme')->join('subjek', 'tblprogramme.id', 'subjek.prgid')->where('subjek.sub_id', $course->sub_id)->get();
+        $program = DB::table('tblprogramme')
+                   ->join('subjek_structure', 'tblprogramme.id', 'subjek_structure.program_id')
+                   ->where('subjek_structure.courseID', $course->sub_id)
+                   ->groupBy('tblprogramme.id')
+                   ->get();
 
         $collection = collect($program);
 
         $summary = DB::table('subjek')
-                ->join('tblprogramme', 'subjek.prgid', 'tblprogramme.id')
+                ->join('subjek_structure', 'subjek.sub_id', 'subjek_structure.courseID')
+                ->join('tblprogramme', 'subjek_structure.program_id', 'tblprogramme.id')
                 ->whereIn('subjek.sub_id', $collection->pluck('sub_id'))
-                ->whereIn('subjek.prgid', $collection->pluck('prgid'))->get();
+                ->whereIn('subjek_structure.program_id', $collection->pluck('program_id'))->get();
 
         //dd($summary);
 
