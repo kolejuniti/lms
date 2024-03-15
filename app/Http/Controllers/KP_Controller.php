@@ -856,7 +856,7 @@ $content .= '<tr>
                  ->join('tblprogramme', 'subjek_structure.program_id', 'tblprogramme.id')
                  ->whereIn('subjek_structure.program_id', $programs)
                  ->where('user_subjek.user_ic', $lecturer->ic)->groupBy('student_subjek.group_id')->groupBy('student_subjek.group_name')
-                 ->select('user_subjek.*','student_subjek.group_name','tblprogramme.progname','subjek.course_name','subjek.course_code','subjek.course_credit','subjek.semesterid')->get();
+                 ->select('user_subjek.*','student_subjek.group_name','tblprogramme.progname','subjek.course_name','subjek.course_code','subjek.course_credit','subjek_structure.semester_id')->get();
 
         //dd($group);
         
