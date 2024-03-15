@@ -30,7 +30,8 @@ class LecturerController extends Controller
         //this function will get authenticated user and use relational models to join table
         $data = auth()->user()->subjects()
             ->join('subjek', 'user_subjek.course_id','=','subjek.sub_id')
-            ->join('tblprogramme', 'subjek.prgid', 'tblprogramme.id')
+            ->join('subjek_structure', 'subjek.sub_id', 'subjek_structure.courseID')
+            ->join('tblprogramme', 'subjek_structure.program_id', 'tblprogramme.id')
             ->join('sessions', 'user_subjek.session_id','sessions.SessionID')
             ->where('sessions.Status', 'ACTIVE')
             ->where('tblprogramme.progstatusid', 1)
