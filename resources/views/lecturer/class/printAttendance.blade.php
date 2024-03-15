@@ -45,13 +45,6 @@
          font-size: 10px;
      }
 
-     .table-fit-content {
-    width: auto;         /* Fit to content, rather than stretching to full width */
-    max-width: 30%;     /* Ensure it doesn't overflow the parent container */
-    border-collapse: collapse;
-    margin: auto;        /* Center the table if smaller than the parent width */
-}
-
 
      /* Base table styles */
 table {
@@ -67,13 +60,13 @@ th {
     font-weight: bold;      /* Bold font for headers */
     text-align: left;       /* Left-align header text */
     padding: 5px;          /* Add padding */
-    border: 1px solid #ddd; /* Light gray border */
+    border: 1px solid black; /* Light gray border */
 }
 
 /* Cells */
 td {
     padding: 5px;          /* Add padding to cells */
-    border: 1px solid #ddd; /* Light gray border */
+    border: 1px solid black; /* Light gray border */
     vertical-align: top;    /* Align content to top */
 }
 
@@ -158,7 +151,7 @@ tr:hover {
                 <b>Senarai Kehadiran</b>
                 </div>
                 <div class="card-body p-0">
-                <table class="w-100 table table-bordered display margin-top-10 w-p100">
+                <table >
                     <thead>
                         <tr>
                             <th rowspan="4">
