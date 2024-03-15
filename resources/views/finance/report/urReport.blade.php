@@ -252,53 +252,10 @@
                   if(res.message == "Success"){
                       $('#complex_header').html(res.data);
 
-                      $('#complex_header').DataTable({
-                        dom: 'lBfrtip', // if you remove this line you will see the show entries dropdown
-                        paging: false,
-
-                        buttons: [
-                            {
-                              text: 'Excel',
-                              action: function () {
-                                // get the HTML table to export
-                                const table = document.getElementById("complex_header");
-                                
-                                // create a new Workbook object
-                                const wb = XLSX.utils.book_new();
-                                
-                                // add a new worksheet to the Workbook object
-                                const ws = XLSX.utils.table_to_sheet(table);
-                                XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
-                                
-                                // trigger the download of the Excel file
-                                XLSX.writeFile(wb, "exported-data.xlsx");
-                              }
-                            }
-                        ],
-
-                      });
-
-                      let db = document.getElementById("complex_header");
-                      let dbRows = db.rows;
-                      let lastValue = "";
-                      let lastCounter = 1;
-                      let lastRow = 0;
-                      for (let i = 0; i < dbRows.length; i++) {
-                        let thisValue = dbRows[i].cells[0].innerHTML;
-                        if (thisValue == lastValue) {
-                          lastCounter++;
-                          dbRows[lastRow].cells[0].rowSpan = lastCounter;
-                          dbRows[i].cells[0].style.display = "none";
-                        } else {
-                          dbRows[i].cells[0].style.display = "table-cell";
-                          lastValue = thisValue;
-                          lastCounter = 1;
-                          lastRow = i;
-                        }
-                      }
-
-                      // Remove the cells that are hidden
-                      $("#complex_header td:first-child:hidden").remove();
+                      $("#complex_header").DataTable({
+                        "responsive": true, "lengthChange": false, "autoWidth": false,
+                        "buttons": ["excel"]
+                      }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
                       
                   }else{
                       $('.error-field').html('');
