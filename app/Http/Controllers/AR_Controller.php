@@ -60,7 +60,10 @@ class AR_Controller extends Controller
             //$students = student::where('courseid', $request->subject)->get();
         //}
 
-        $course = DB::table('subjek')->join('tblprogramme', 'subjek.prgid', 'tblprogramme.id')->where('prgid', $request->program)->select('subjek.*', 'tblprogramme.progname')->get();
+        $course = DB::table('subjek')
+                  ->join('subjek_structure', 'subjek.sub_id', 'subjek_structure.courseID')
+                  ->join('tblprogramme', 'subjek_structure.program_id', 'tblprogramme.id')
+                  ->where('program_id', $request->program)->select('subjek.*', 'tblprogramme.progname')->get();
 
         $content = "";
         $content .= '<thead>
