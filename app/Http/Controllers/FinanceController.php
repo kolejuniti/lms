@@ -1252,12 +1252,10 @@ class FinanceController extends Controller
                     $subject = DB::table('subjek')
                     ->join('subjek_structure', function($join){
                         $join->on('subjek.sub_id', 'subjek_structure.courseID');
-                        $join->on('subjek.prgid', 'subjek_structure.program_id');
-                        $join->on('subjek.semesterid', 'subjek_structure.semester_id');
                     })
                     ->where([
-                        ['prgid','=', $student->program],
-                        ['semesterid','=', $student->semester],
+                        ['subjek_structure.program_id','=', $student->program],
+                        ['subjek_structure.semester_id','=', $student->semester],
                         ['subjek_structure.intake_id', $student->intake]
                     ])
                     ->select('subjek.*')->get();
