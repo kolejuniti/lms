@@ -194,6 +194,7 @@ class LecturerController extends Controller
 
         $program = DB::table('tblprogramme')
                    ->join('subjek_structure', 'tblprogramme.id', 'subjek_structure.program_id')
+                   ->join('subjek', 'subjek_structure.courseID', 'subjek.sub_id')
                    ->where('subjek_structure.courseID', $course->sub_id)
                    ->groupBy('tblprogramme.id')
                    ->get();
@@ -204,10 +205,7 @@ class LecturerController extends Controller
                 ->join('subjek_structure', 'subjek.sub_id', 'subjek_structure.courseID')
                 ->join('tblprogramme', 'subjek_structure.program_id', 'tblprogramme.id')
                 ->whereIn('subjek.sub_id', $collection->pluck('sub_id'))
-                ->whereIn('subjek_structure.program_id', $collection->pluck('program_id'))->get();
-
-        //dd($summary);
-
+                ->whereIn('subjek_structure.program_id', $collection->pluck('program_id'))->groupBy('tblprogramme.id')->get();
 
         return view('lecturer.coursesummary.coursesummary', compact('course','program','summary'))->with('course_id', request()->id);
     }
