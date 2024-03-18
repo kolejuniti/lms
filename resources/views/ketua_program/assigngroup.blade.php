@@ -87,6 +87,17 @@
                     </div>
                   </div>
                   <div class="row">
+                    <div class="col-md-6" id="semester-card">
+                      <div class="form-group">
+                        <label class="form-label" for="semester">Semester</label>
+                        <select class="form-select" id="semester" name="semester">
+                          <option value="-" selected disabled>-</option>
+                          @foreach ($semester as $sem)
+                          <option value="{{ $sem->id }}">{{ $sem->semester_name}}</option> 
+                          @endforeach
+                        </select>
+                      </div>
+                    </div>
                     <div class="col-md-6">
                       <div class="form-group">
                         <label class="form-label" for="group">Group</label>
@@ -172,7 +183,7 @@
     selected_course = $(e.target).val();
 
     await getLecturer(selected_course, selected_session);
-    await getStudent(selected_course, selected_session);
+    await getStudent(selected_course, selected_session, selected_semester);
   });
 
   $(document).on('change', '#session', async function(e){
@@ -181,7 +192,13 @@
     lecturer.hidden = false;
 
     await getLecturer(selected_course, selected_session);
-    await getStudent(selected_course, selected_session);
+    await getStudent(selected_course, selected_session, selected_semester);
+  });
+
+  $(document).on('change', '#semester', async function(e){
+    selected_semester = $(e.target).val();
+
+    await getStudent(selected_course, selected_session, selected_semester);
   });
 
   $(document).on('change', '#lecturer', function(e){
@@ -231,7 +248,7 @@
         });
   }
 
-  function getStudent(course,session)
+  function getStudent(course,session,semester)
   {
     program = $('#program').val();
 
@@ -239,7 +256,7 @@
             headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
             url      : "{{ url('KP/group/getStudentTable') }}",
             method   : 'POST',
-            data 	 : {course: course,session: session,program: program},
+            data 	 : {course: course,session: session,program: program,semester: semester},
             error:function(err){
                 
             },
