@@ -317,6 +317,8 @@ class KP_Controller extends Controller
 
         $programs = DB::table('user_program')->join('tblprogramme', 'user_program.program_id', 'tblprogramme.id')->where('user_ic', $users->ic)->get();
 
+        $semester = DB::table('semester')->get();
+
         //$course = DB::table('subjek')->where('prgid', $users->programid)->get();
         //dd($programs);
 
@@ -325,7 +327,7 @@ class KP_Controller extends Controller
 
         $session = DB::table('sessions')->where('Status', 'ACTIVE')->get();
 
-        return view('ketua_program.assigngroup', compact('programs', 'session'));
+        return view('ketua_program.assigngroup', compact('programs', 'session', 'semester'));
     }
 
     public function getStudentTable(Request $request)
@@ -335,25 +337,42 @@ class KP_Controller extends Controller
         {
             if(isset($request->course))
             {
-                $students = DB::table('student_subjek')
+                $student = DB::table('student_subjek')
                 ->select('student_subjek.*', 'students.name', 'students.semester','students.no_matric','sessions.SessionName AS intake')
                 ->join('students', 'student_subjek.student_ic', 'students.ic')
                 ->join('sessions', 'students.intake', 'sessions.SessionID')
                 ->where('student_subjek.courseid',$request->course)
                 ->where('student_subjek.sessionid',$request->session)
                 ->where('students.program', $request->program)
-                ->where('student_subjek.group_id', null)
-                ->orderBy('students.name')->get();
+                ->where('student_subjek.group_id', null);
+                
+                if(isset($request->semester))
+                {
+
+                    $students = $student->where('student_subjek.semesterid', $request->semester);
+
+                }
+
+                $students = $student->orderBy('students.name')->get();
             }else
             {
-                $students = DB::table('student_subjek')
+                $student = DB::table('student_subjek')
                 ->select('student_subjek.*', 'students.name', 'students.semester','students.no_matric','sessions.SessionName AS intake')
                 ->join('students', 'student_subjek.student_ic', 'students.ic')
                 ->join('sessions', 'students.intake', 'sessions.SessionID')
                 ->where('student_subjek.sessionid',$request->session)
                 ->where('students.program', $request->program)
-                ->where('student_subjek.group_id', null)
-                ->orderBy('students.name')->get();
+                ->where('student_subjek.group_id', null);
+
+                if(isset($request->semester))
+                {
+
+                    $students = $student->where('student_subjek.semesterid', $request->semester);
+
+                }
+
+
+                $students = $student->orderBy('students.name')->get();
             }
         }
         
