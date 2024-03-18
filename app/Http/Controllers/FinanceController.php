@@ -745,7 +745,7 @@ class FinanceController extends Controller
                 'ref_no' => $ref_no->code . $ref_no->ref_no + 1
             ]);
 
-            //check if newstudent & more than 250
+            //check if newstudent & more than 500
 
             $student = DB::table('students')->where('ic', $ref_no->student_ic)->first();
 
@@ -754,7 +754,7 @@ class FinanceController extends Controller
             if($student->no_matric == null)
             {
 
-                if(DB::table('tblpayment')->where('student_ic', $student->ic)->whereNotIn('process_status_id', [1, 3])->sum('amount') >= 250)
+                if(DB::table('tblpayment')->where('student_ic', $student->ic)->whereNotIn('process_status_id', [1, 3])->sum('amount') >= 500)
                 {
                     $intake = DB::table('sessions')->where('SessionID', $student->intake)->first();
                     
@@ -1912,7 +1912,7 @@ class FinanceController extends Controller
                         'ref_no' => $ref_no->code . $ref_no->ref_no + 1
                     ]);
 
-                    //check if newstudent & more than 250
+                    //check if newstudent & more than 500
 
                     $student = DB::table('students')->where('ic', $ref_no->student_ic)->first();
 
@@ -1921,7 +1921,7 @@ class FinanceController extends Controller
                     if($student->no_matric == null)
                     {
 
-                        if($sum = DB::table('tblpayment')->where('student_ic', $student->ic)->whereNotIn('process_status_id', [1, 3])->sum('amount') >= 250)
+                        if($sum = DB::table('tblpayment')->where('student_ic', $student->ic)->whereNotIn('process_status_id', [1, 3])->sum('amount') >= 500)
                         {
                             $intake = DB::table('sessions')->where('SessionID', $student->intake)->first();
                             
@@ -2450,7 +2450,7 @@ class FinanceController extends Controller
                         'ref_no' => $ref_no->code . $ref_no->ref_no + 1
                     ]);
 
-                    //check if newstudent & more than 250
+                    //check if newstudent & more than 500
 
                     $student = DB::table('students')
                                ->join('tblpayment', 'students.ic', 'tblpayment.student_ic')
@@ -2463,7 +2463,7 @@ class FinanceController extends Controller
                     if($student->no_matric == null)
                     {
 
-                        if($sum = DB::table('tblpayment')->where('student_ic', $student->ic)->whereNotIn('process_status_id', [1, 3])->sum('amount') >= 250)
+                        if($sum = DB::table('tblpayment')->where('student_ic', $student->ic)->whereNotIn('process_status_id', [1, 3])->sum('amount') >= 500)
                         {
                             $intake = DB::table('sessions')->where('SessionID', $student->intake)->first();
                             
@@ -6290,7 +6290,7 @@ class FinanceController extends Controller
                 'ref_no' => $ref_no->code . $ref_no->ref_no + 1
             ]);
 
-            //check if newstudent & more than 250
+            //check if newstudent & more than 500
 
             $student = DB::table('students')->where('ic', $ref_no->student_ic)->first();
 
@@ -6299,7 +6299,7 @@ class FinanceController extends Controller
             if($student->no_matric == null)
             {
 
-                if($sum = DB::table('tblpayment')->where('student_ic', $student->ic)->whereNotIn('process_status_id', [1, 3])->sum('amount') >= 250)
+                if($sum = DB::table('tblpayment')->where('student_ic', $student->ic)->whereNotIn('process_status_id', [1, 3])->sum('amount') >= 500)
                 {
                     $intake = DB::table('sessions')->where('SessionID', $student->intake)->first();
                     
