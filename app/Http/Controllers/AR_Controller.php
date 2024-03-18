@@ -289,7 +289,7 @@ class AR_Controller extends Controller
         $content .= "<option value='0' disabled>-</option>";
         foreach($course as $crs){
 
-            $content .= "<option value='". $crs->id ."'><strong>". $crs->course_name . "</strong> (" . $crs->course_code . ")</option>"; 
+            $content .= "<option value='". $crs->id ."'><strong>". $crs->course_code ." - ". $crs->course_name . "</strong></option>"; 
 
         }
         
