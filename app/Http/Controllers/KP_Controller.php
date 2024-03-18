@@ -349,7 +349,7 @@ class KP_Controller extends Controller
                 if(isset($request->semester))
                 {
 
-                    $students = $student->where('student_subjek.semesterid', $request->semester);
+                   $student->where('student_subjek.semesterid', $request->semester);
 
                 }
 
@@ -367,7 +367,7 @@ class KP_Controller extends Controller
                 if(isset($request->semester))
                 {
 
-                    $students = $student->where('student_subjek.semesterid', $request->semester);
+                    $student->where('student_subjek.semesterid', $request->semester);
 
                 }
 
