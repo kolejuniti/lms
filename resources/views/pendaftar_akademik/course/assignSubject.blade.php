@@ -260,13 +260,15 @@
 
   function getCourse(course,structure,intake)
   {
-    $('#myTable').DataTable().destroy();
+      $('#myTable').DataTable().destroy();
+
+      program = $('#program').val();
 
       return $.ajax({
             headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
             url      : "{{ url('AR/assignCourse/getCourse2') }}",
             method   : 'POST',
-            data 	 : {course: course,structure: structure,intake: intake},
+            data 	 : {course: course, structure: structure, intake: intake, program: program},
             beforeSend:function(xhr){
               $("#myTable").LoadingOverlay("show", {
                 image: `<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="24px" height="30px" viewBox="0 0 24 30" style="enable-background:new 0 0 50 50;" xml:space="preserve">
