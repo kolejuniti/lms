@@ -336,7 +336,7 @@ class KP_Controller extends Controller
             if(isset($request->course))
             {
                 $students = DB::table('student_subjek')
-                ->select('student_subjek.*', 'students.name','students.no_matric','sessions.SessionName AS intake')
+                ->select('student_subjek.*', 'students.name', 'students.semester','students.no_matric','sessions.SessionName AS intake')
                 ->join('students', 'student_subjek.student_ic', 'students.ic')
                 ->join('sessions', 'students.intake', 'sessions.SessionID')
                 ->where('student_subjek.courseid',$request->course)
@@ -347,7 +347,7 @@ class KP_Controller extends Controller
             }else
             {
                 $students = DB::table('student_subjek')
-                ->select('student_subjek.*', 'students.name','students.no_matric','sessions.SessionName AS intake')
+                ->select('student_subjek.*', 'students.name', 'students.semester','students.no_matric','sessions.SessionName AS intake')
                 ->join('students', 'student_subjek.student_ic', 'students.ic')
                 ->join('sessions', 'students.intake', 'sessions.SessionID')
                 ->where('student_subjek.sessionid',$request->session)
@@ -373,6 +373,7 @@ class KP_Controller extends Controller
             <th>Name</th>
             <th>Matric No</th>
             <th>Intake</th>
+            <th>Semester</th>
             <th>Group</th>
             <th>Status</th>
             <th></th>
@@ -418,6 +419,9 @@ $content .= '<tr>
                 </td>
                 <td >
                     <p class="text-bold text-fade">'.$student->intake.'</p>
+                </td>
+                <td >
+                    <p class="text-bold text-fade">'.$student->semester.'</p>
                 </td>
                 <td >
                     <p class="text-bold text-fade">'.$student->group_name.'</p>
