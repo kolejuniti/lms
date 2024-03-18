@@ -270,7 +270,7 @@
 					</ul>
 				</li>
 				<li class="treeview">
-					<a href="#"><i data-feather="gift"></i><span>Finance</span>
+					<a href="#"><i data-feather="dollar-sign"></i><span>Finance</span>
 						<span class="pull-right-container">
 							<i class="fa fa-angle-left pull-right"></i>
 						</span>
@@ -280,7 +280,7 @@
 					</ul>
 				</li>
 				<li class="treeview">
-					<a href="#"><i data-feather="gift"></i><span>Staff</span>
+					<a href="#"><i data-feather="users"></i><span>Staff</span>
 						<span class="pull-right-container">
 							<i class="fa fa-angle-left pull-right"></i>
 						</span>
