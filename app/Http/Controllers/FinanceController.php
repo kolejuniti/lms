@@ -1258,7 +1258,7 @@ class FinanceController extends Controller
                         ['subjek_structure.semester_id','=', $student->semester],
                         ['subjek_structure.intake_id', $student->intake]
                     ])
-                    ->select('subjek.*')->get();
+                    ->select('subjek.*', 'subjek_structure.semester_id')->get();
 
                     foreach($subject as $key)
                     {
