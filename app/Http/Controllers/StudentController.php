@@ -36,17 +36,18 @@ class StudentController extends Controller
         //dd($student);
 
         $subject = student::join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
-        ->join('tblprogramme', 'subjek.prgid', 'tblprogramme.id')
-        ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
-        ->where([
-                ['sessions.Status', 'ACTIVE'],
-                ['tblprogramme.progstatusid', 1],
-                ['student_subjek.student_ic', $student->ic],
-                ['subjek.prgid', $student->program]
-                ])
-        ->select('subjek.id','subjek.course_name','subjek.course_code','student_subjek.courseid','sessions.SessionName','sessions.SessionID')
-        ->groupBy('student_subjek.courseid')
-        ->get();
+                   ->join('subjek_structure', 'subjek.sub_id', 'subjek_structure.courseID')
+                   ->join('tblprogramme', 'subjek_structure.program_id', 'tblprogramme.id')
+                   ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
+                   ->where([
+                        ['sessions.Status', 'ACTIVE'],
+                        ['tblprogramme.progstatusid', 1],
+                        ['student_subjek.student_ic', $student->ic],
+                        ['subjek_structure.program_id', $student->program]
+                        ])
+                   ->select('subjek.id','subjek.course_name','subjek.course_code','student_subjek.courseid','sessions.SessionName','sessions.SessionID')
+                   ->groupBy('student_subjek.courseid')
+                   ->get();
 
         foreach($subject as $key => $sub)
         {
@@ -133,13 +134,14 @@ class StudentController extends Controller
         {
 
             $data = student::join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
-            ->join('tblprogramme', 'subjek.prgid', 'tblprogramme.id')
+            ->join('subjek_structure', 'subjek.sub_id', 'subjek_structure.courseID')
+            ->join('tblprogramme', 'subjek_structure.program_id', 'tblprogramme.id')
             ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
             ->where([
                     ['sessions.Status', 'ACTIVE'],
                     ['tblprogramme.progstatusid', 1],
                     ['student_subjek.student_ic', $student->ic],
-                    ['subjek.prgid', $student->program]
+                    ['subjek_structure.program_id', $student->program]
                     ])
             ->where('student_subjek.sessionid','LIKE','%'.$request->session.'%')
             ->where('subjek.course_name','LIKE','%'.$request->search."%")
@@ -165,13 +167,14 @@ class StudentController extends Controller
         {
 
             $data = student::join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
-            ->join('tblprogramme', 'subjek.prgid', 'tblprogramme.id')
+            ->join('subjek_structure', 'subjek.sub_id', 'subjek_structure.courseID')
+            ->join('tblprogramme', 'subjek_structure.program_id', 'tblprogramme.id')
             ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
             ->where([
                     ['sessions.Status', 'ACTIVE'],
                     ['tblprogramme.progstatusid', 1],
                     ['student_subjek.student_ic', $student->ic],
-                    ['subjek.prgid', $student->program]
+                    ['subjek_structure.program_id', $student->program]
                     ])
             ->where('subjek.course_name','LIKE','%'.$request->search."%")
             ->select('subjek.id','subjek.course_name','subjek.course_code','student_subjek.courseid','sessions.SessionName','sessions.SessionID')
@@ -197,13 +200,14 @@ class StudentController extends Controller
         {
 
             $data = student::join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
-            ->join('tblprogramme', 'subjek.prgid', 'tblprogramme.id')
+            ->join('subjek_structure', 'subjek.sub_id', 'subjek_structure.courseID')
+            ->join('tblprogramme', 'subjek_structure.program_id', 'tblprogramme.id')
             ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
             ->where([
                     ['sessions.Status', 'ACTIVE'],
                     ['tblprogramme.progstatusid', 1],
                     ['student_subjek.student_ic', $student->ic],
-                    ['subjek.prgid', $student->program]
+                    ['subjek_structure.program_id', $student->program]
                     ])
             ->where('student_subjek.sessionid','LIKE','%'.$request->session.'%')
             ->select('subjek.id','subjek.course_name','subjek.course_code','student_subjek.courseid','sessions.SessionName','sessions.SessionID')
@@ -227,13 +231,14 @@ class StudentController extends Controller
         }else{
 
             $data = student::join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
-            ->join('tblprogramme', 'subjek.prgid', 'tblprogramme.id')
+            ->join('subjek_structure', 'subjek.sub_id', 'subjek_structure.courseID')
+            ->join('tblprogramme', 'subjek_structure.program_id', 'tblprogramme.id')
             ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
             ->where([
                     ['sessions.Status', 'ACTIVE'],
                     ['tblprogramme.progstatusid', 1],
                     ['student_subjek.student_ic', $student->ic],
-                    ['subjek.prgid', $student->program]
+                    ['subjek_structure.program_id', $student->program]
                     ])
             ->select('subjek.id','subjek.course_name','subjek.course_code','student_subjek.courseid','sessions.SessionName','sessions.SessionID')
             ->groupBy('student_subjek.courseid')
@@ -270,7 +275,8 @@ class StudentController extends Controller
         }
 
         $course = DB::table('subjek')
-                  ->join('tblprogramme', 'subjek.prgid', 'tblprogramme.id')
+                  ->join('subjek_structure', 'subjek.sub_id', 'subjek_structure.courseID')
+                  ->join('tblprogramme', 'subjek_structure.program_id', 'tblprogramme.id')
                   ->where('subjek.id', request()->id)->first();
 
         return view('student.coursesummary.coursesummary', compact('course'));
