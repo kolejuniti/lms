@@ -170,6 +170,7 @@
   var selected_program = 0;
   var selected_course = 0;
   var selected_session = "";
+  var selected_semester = null;
   var lecturer = document.getElementById('lecturer-card');
 
   $(document).on('change', '#program', async function(e){
