@@ -46,6 +46,12 @@ use Carbon\Carbon;
             font-size: 10px;
             
         }
+        body {
+                background-image: url('{{ asset("assets/images/letter_head/letter_head.jpg") }}');
+                background-size: cover; /* Cover the entire page */
+                background-position: center; /* Center the background image */
+                background-repeat: no-repeat; /* Do not repeat the image */
+            }
         h2,h3,p {
             margin: 0;
             padding: 0;
@@ -71,8 +77,9 @@ use Carbon\Carbon;
             $formattedDate = $twoWeeksBefore->format('d/m/Y');
 
         @endphp
-
-        <p>UNITI/KUSB/2023/{{ $data['student']->ic }}</p>
+        <br>
+        <br>
+        <p>Ruj. Kami: UNITI/KUSB/2023/{{ $data['student']->ic }}</p>
         <br>
         <p>{{ $formattedDate }}</p>
         <br>
@@ -83,17 +90,23 @@ use Carbon\Carbon;
         <p>{{ $data['address']->postcode }}</p>
         <p>{{ strtoupper($data['address']->state) }}</p>
         <p>{{ strtoupper($data['address']->country) }}</p>
-        <h2 class="col-3 mt-2">MAKLUMAT PENDAFTARAN</h2>
-        <div class="col-3 mb-2 mt-2">
+        <h2 class="col-3 mt-2"><b>MAKLUMAT PENDAFTARAN</b></h2>
+        <div class="col-4 mb-2 mt-2">
             <div style="border: 1px solid black; padding: 10px;">
             <p>Tarikh : {{ Carbon::createFromFormat('Y-m-d', $data['student']->date_offer)->format('d/m/Y'); }}</p>
-            <p>Masa : 9.00 Pagi - 3.00 petang</p>
-            <p>Tempat : PEJABAT UNITI VILLAGE</p>
+            <p>Masa : 9.00 Pagi - 3.00 Petang</p>
+            <p>Tempat : PEJABAT PENTADBIRAN KOLEJ UNITI</p>
             </div>
         </div>
         <p>Saudara/Saudari,</p>
-        <p class="mt-2">TAWARAN KEMASUKAN KE PROGRAM AKADEMIK KOLEJ UNITI SESI <b>{{ $data['student']->intake }}</b></p>
-        <p class="mt-2"><b>TAHNIAH</b> dan <b>SUKACITA</b> di maklumkan, saudara/saudari di tawarkan untuk mengikuti pengajian program <b>{{ $data['student']->progname }}</b> di KOLEJ UNITI.</p>
+        <p class="mt-2"><b>TAWARAN KEMASUKAN KE KOLEJ UNITI (NEGERI SEMBILAN) BAGI SESI {{ $data['student']->intake }}</b></p>
+        <p class="mt-2"><b>TAHNIAH</b> dan <b>SUKACITA</b> di maklumkan, saudara/saudari di tawarkan untuk mengikuti program berikut :</p>
+        <div class="col-12 mb-1 mt-1">  
+            <div style="border: 1px solid white; padding: 10px;">
+            <p>Program &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>{{ $data['student']->progname }} (SEPENUH MASA)</b></p>
+            <p>Tempoh Pengajian &nbsp;&nbsp;: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>3 Tahun</b></p>   
+            </div> 
+        </div>
         <p class="mt-2">Untuk pengetahuan saudara/saudari, program yang diikuti adalah program akademik yang dikendalikan oleh <b>KOLEJ UNITI di PERSIARAN UNITI VILLAGE, TANJUNG AGAS, 71250 PORT DICKSON, NEGERI SEMBILAN DARUL KHUSUS.</b> Setelah memenuhi semua keperluan, saudara/saudari akan <b>DIANUGERAHKAN DIPLOMA OLEH KOLEJ UNITI ATAU UiTM DAN UTM.</b></p>
         <p class="mt-2">Tawaran ini adalah sah untuk tujuan di atas sahaja.</p>
         <ol class="mt-2">
@@ -102,28 +115,28 @@ use Carbon\Carbon;
         </ol>
         <p>Jika saudara/i menerima tawaran ini, sila :</p>
         <ol type="a">
-            <li>Kembalikan Borang Jawapan Penerimaan tawaran kemasukan ke KOLEJ UNITI kepada Penolong Pendaftar Kemasukan dan Rekod Pelajar.</li>
             <li>Hadir untuk mendaftarkan diri mengikuti maklumat di atas.</li>
         </ol>
-        <p>Semasa mendaftar saudara/i dikehendaki membawa dokumen asal dan salinan yang disahkan berikut :</p>
+        <p>Semasa mendaftar saudara/i dikehendaki membawa dokumen asal dan salinan yang <b>DISAHKAN</b> seperti berikut :</p>
         <div class="row">
             <div class="d-flex p-2">
                 <div class="col-md-6">
                     <div class="form-group">
                         <ul>
                             <li>Surat tawaran</li>
-                            <li>Kad Pengenalan pemohon dan ibubapa (1 salinan)</li>
+                            <li>Salinan kad Pengenalan pemohon dan ibubapa (1 salinan)</li>
                             <li>4 keping gambar ukuran pasport</li>
                             <li>Slip gaji penjaga/ibubapa terkini (1 salinan)</li>
+                            <li>Salinan kelahiran pemohon dan penjaga/ibubapa (1 salinan)</li>
                         </ul>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="form-group">
                         <ul>
-                            <li>Salinan kelahiran pemohon dan ibubapa (1 salinan)</li>
-                            <li>Slip peperiksaan yang berkenaan (1 salinan)</li>
-                            <li>Borang J (jika perlu)</li>
+                            <li>Salinan Slip peperiksaan yang berkenaan (1 salinan)</li>
+                            <li>Salinan Sijil Berhenti Sekolah (1 salinan)</li>
+                            <li>Salinan Sijil Kurikulum - 3 Terbaik (1 salinan)</li>
                             <li>Buku Pendaftaran Pelajar</li>
                         </ul>
                     </div>
