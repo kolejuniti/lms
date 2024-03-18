@@ -323,7 +323,8 @@ class AR_Controller extends Controller
                     })
                     ->leftjoin('structure', 'subjek_structure.structure', 'structure.id')
                     ->leftjoin('sessions', 'subjek_structure.intake_id', 'sessions.SessionID')
-                    ->leftjoin('tblprogramme', 'subjek_structure.program_id', 'tblprogramme.id');
+                    ->leftjoin('tblprogramme', 'subjek_structure.program_id', 'tblprogramme.id')
+                    ->where('subjek_structure.program_id', $request->program);
 
             if(isset($request->course))
             {
