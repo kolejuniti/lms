@@ -81,7 +81,7 @@
                     <div class="col-md-6">
                       <div class="form-group">
                         <label class="form-label" for="program">Program</label>
-                        <select class="form-select" id="program" name="program" style="height: 200px" multiple required>
+                        <select class="form-select" id="program" name="program" style="height: 200px" multiple>
                             <option value="" disabled>-</option>
                             @foreach($data['program'] as $prg)
                             <option value="{{ $prg->id }}">{{ $prg->progcode }} - {{ $prg->progname }}</option> 
