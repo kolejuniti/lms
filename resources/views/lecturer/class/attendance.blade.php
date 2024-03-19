@@ -76,7 +76,7 @@
                     <div class="col-md-6">
                       <div class="form-group">
                         <label class="form-label" for="program">Program</label>
-                        <select class="form-select" id="program" name="program" required>
+                        <select class="form-select" id="program" name="program" style="height: 200px" multiple required>
                             <option value="" disabled>-</option>
                            
                         </select>
@@ -221,8 +221,7 @@ function getProgram(group)
         success  : function(data){
             
           $('#program').html(data);
-          $('#program').selectpicker('refresh');
-
+          // $('#program').selectpicker('refresh');
                 
         }
     });
