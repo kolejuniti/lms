@@ -1261,6 +1261,35 @@ class LecturerController extends Controller
                             </div>
                         </td>';
 
+                    }else{
+
+                        $content .= '<td>
+                            <div class="pull-right" >
+                                <input type="checkbox" id="student_checkbox_'.$student->no_matric.'"
+                                    class="filled-in" name="student[]" value="'.$student->student_ic.'" 
+                                disabled>
+                                <label for="student_checkbox_'.$student->no_matric.'"></label>
+                            </div>
+                        </td>
+                        <td>
+                            <div>
+                                <input type="text" id="excuse_'.$student->no_matric.'"
+                                    class="form-control" name="excuse[]" onkeyup="getExcuse('.$student->no_matric.')" disabled>
+                                <input type="hidden" id="ic_'.$student->no_matric.'"
+                                class="form-control" name="ic[]" value="'.$student->student_ic.'" disabled>
+                                <label for="checkboxAll"> </label>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="pull-right" >
+                                <input type="checkbox" id="mc_'.$student->no_matric.'"
+                                    class="filled-in" name="mc[]" value="'.$student->student_ic.'" onclick="getMC('.$student->no_matric.')"
+                                disabled>
+                                <label for="mc_'.$student->no_matric.'"></label>
+                            </div>
+                        </td>';
+
+
                     }
 
                 }else{
