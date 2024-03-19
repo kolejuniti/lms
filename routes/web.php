@@ -25,7 +25,9 @@ Route::get('/loginAdmin', function () {
 
 Auth::routes();
 
-Route::get('/home', [HomeController::class, 'index'])->name('home');
+Route::get('/home', function(){
+    return view('auth.login');
+});
 
 Route::get('/SA', [App\Http\Controllers\SuperAdminController::class, 'index']);
 Route::post('/SA/import', [App\Http\Controllers\SuperAdminController::class, 'import']);
@@ -166,6 +168,9 @@ Route::get('/AR/semester/getStudentSemester', [App\Http\Controllers\AR_Controlle
 Route::post('/AR/semester/updatesemester', [App\Http\Controllers\AR_Controller::class, 'updateSemester']);
 Route::get('/AR/reportR', [App\Http\Controllers\AR_Controller::class, 'studentReportR'])->name('pendaftar_akademik.reportR');
 Route::get('/AR/reportR/getStudentReportR', [App\Http\Controllers\AR_Controller::class, 'getStudentReportR']);
+Route::get('/AR/student/warningLetter', [App\Http\Controllers\AR_Controller::class, 'warningLetter'])->name('pendaftar_akademik.warningLetter');
+Route::post('/AR/student/getWarningLetter', [App\Http\Controllers\AR_Controller::class, 'getWarningLetter']);
+Route::get('/AR/student/printWarningLetter', [App\Http\Controllers\AR_Controller::class, 'printWarningLetter']);
 
 Route::get('/lecturer/getSuratAmaran', [App\Http\Controllers\LecturerController::class, 'getSuratAmaran'])->name('lecturer.suratamaran');
 
