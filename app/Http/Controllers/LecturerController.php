@@ -1176,7 +1176,7 @@ class LecturerController extends Controller
             <th></th>
             <th>Excuse</th>
             <th>MC</th>
-            <th>Next Class/Last Class</th>
+            <th>NC/LC</th>
             </thead>
             <tbody>
         ';
