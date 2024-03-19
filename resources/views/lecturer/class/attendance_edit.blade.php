@@ -184,7 +184,7 @@
                                   <td >
                                       <p class="text-bold text-fade">{{ $student->status }}</p>
                                   </td>
-                                  @if(!empty($data['attendance'][$key]) && $data['attendance'][$key]->lc == null)
+                                  @if((!empty($data['attendance'][$key]) ? $data['attendance'][$key]->lc == null : true))
                                   <td >
                                       <div class="pull-right" >
                                           <input type="checkbox" id="student_checkbox_{{ $student->no_matric }}"
@@ -238,7 +238,7 @@
                                   <td>
                                     <div class="pull-right" >
                                         <input type="checkbox" id="lc_{{ $student->no_matric }}"
-                                            class="filled-in" name="lc[]" value="{{ $student->student_ic }}"  onclick="event.preventDefault();">
+                                            class="filled-in" name="lc[]" value="{{ $student->student_ic }}"  onclick="event.preventDefault();" checked>
                                         <label for="lc_{{ $student->no_matric }}"></label>
                                     </div>
                                 </td>
