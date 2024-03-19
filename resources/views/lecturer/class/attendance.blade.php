@@ -247,7 +247,6 @@ function getStudents(group,program)
             $('#attendance').removeAttr('hidden');
                 $('#attendance').html(data);
                 $('#table_registerstudent').DataTable();
-                $('#attendance').selectpicker('refresh');
 
                 document.querySelectorAll('input[name="lc[]"]').forEach(function(checkbox) {
                     checkbox.addEventListener('click', function(e) {
