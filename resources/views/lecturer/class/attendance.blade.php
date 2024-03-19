@@ -247,9 +247,7 @@ function getStudents(group,program)
             $('#attendance').removeAttr('hidden');
                 $('#attendance').html(data);
                 $('#table_registerstudent').DataTable();
-                $('#attendance').selectpicker('refresh');
 
-                
         }
     });
 }
