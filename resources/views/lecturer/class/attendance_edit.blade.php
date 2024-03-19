@@ -184,7 +184,7 @@
                                   <td >
                                       <p class="text-bold text-fade">{{ $student->status }}</p>
                                   </td>
-                                  @if($data['attendance'][$key]->lc == null)
+                                  @if(!empty($data['attendance'][$key]) && $data['attendance'][$key]->lc == null)
                                   <td >
                                       <div class="pull-right" >
                                           <input type="checkbox" id="student_checkbox_{{ $student->no_matric }}"
