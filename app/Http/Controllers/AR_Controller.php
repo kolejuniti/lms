@@ -568,6 +568,13 @@ class AR_Controller extends Controller
     {
         $data['student'] = UserStudent::where('ic', $request->student)->first();
 
+        $data['course'] = DB::table('subjek')
+                          ->join('subjek_structure', 'subjek.sub_id', 'subjek_structure.courseID')
+                          ->where('subjek_structure.program_id', $data['student']->program)
+                          ->groupBy('subjek.sub_id')
+                          ->select('subjek.*')
+                          ->get();
+
         for($i = 0; $i <= $data['student']->semester; $i++)
         {
             $loop[] = $i;
@@ -623,6 +630,13 @@ class AR_Controller extends Controller
     {
 
         $data['student'] = UserStudent::where('ic', $request->ic)->first();
+
+        $data['course'] = DB::table('subjek')
+                          ->join('subjek_structure', 'subjek.sub_id', 'subjek_structure.courseID')
+                          ->where('subjek_structure.program_id', $data['student']->program)
+                          ->groupBy('subjek.sub_id')
+                          ->select('subjek.*')
+                          ->get();
 
         $course = DB::table('subjek')->where('id', $request->id)->first();
 
@@ -737,6 +751,13 @@ class AR_Controller extends Controller
     public function unregisterCourse(Request $request)
     {
         $data['student'] = UserStudent::where('ic', $request->ic)->first();
+
+        $data['course'] = DB::table('subjek')
+                          ->join('subjek_structure', 'subjek.sub_id', 'subjek_structure.courseID')
+                          ->where('subjek_structure.program_id', $data['student']->program)
+                          ->groupBy('subjek.sub_id')
+                          ->select('subjek.*')
+                          ->get();
 
         DB::table('student_subjek')->where('id', $request->id)->delete();
 
@@ -1314,5 +1335,75 @@ class AR_Controller extends Controller
 
     }
 
-    
+    public function warningLetter()
+    {
+
+        return view('pendaftar_akademik.student.warning_letter.warningLetter');
+
+    }
+
+    public function getWarningLetter(Request $request)
+    {
+
+        $data['student'] = DB::table('students')
+                           ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
+                           ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+                           ->join('sessions AS t1', 'students.intake', 't1.SessionID')
+                           ->join('sessions AS t2', 'students.session', 't2.SessionID')
+                           ->select('students.*', 'tblstudent_status.name AS statusName', 'tblprogramme.progname AS program', 'students.program AS progid', 't1.SessionName AS intake_name', 't2.SessionName AS session_name')
+                           ->where('ic', $request->student)->first();
+
+        $data['warning'] = DB::table('tblstudent_warning')
+                           ->join('student_subjek', function($join){
+                                $join->on('tblstudent_warning.groupid', 'student_subjek.group_id');
+                                $join->on('tblstudent_warning.groupname', 'student_subjek.group_name');
+                           })
+                           ->join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
+                           ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
+                           ->where('tblstudent_warning.student_ic', $request->student)
+                           ->orderBy('subjek.course_name')
+                           ->groupBy('tblstudent_warning.id')
+                           ->select('tblstudent_warning.*', 'subjek.course_name', 'subjek.course_code', 'sessions.SessionName')
+                           ->get();
+
+        return view('pendaftar_akademik.student.warning_letter.getWarningLetter', compact('data'));
+
+    }
+
+    public function printWarningLetter(Request $request)
+    {
+
+        //dd($request->id);
+        $data['warning'] = DB::table('tblstudent_warning')
+                           ->join('student_subjek', function($join){
+                                $join->on('tblstudent_warning.groupid', 'student_subjek.group_id');
+                                $join->on('tblstudent_warning.groupname', 'student_subjek.group_name');
+                           })
+                           ->join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
+                           ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
+                           ->where('tblstudent_warning.id', $request->id)
+                           ->orderBy('subjek.course_name')
+                           ->groupBy('tblstudent_warning.id')
+                           ->select('tblstudent_warning.*', 'subjek.course_name', 'subjek.course_code', 'sessions.SessionName')
+                           ->first();
+
+        $data['student'] = DB::table('students')
+                            ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
+                            ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+                            ->join('sessions', 'students.intake', 'sessions.SessionID')
+                            ->select('students.*', 'tblstudent_status.name AS status', 'tblprogramme.progname', 'tblprogramme.progcode', 'sessions.SessionName AS intake')
+                            ->where('ic', $data['warning']->student_ic)->first();
+
+        $data['address'] = DB::table('tblstudent_address')
+                           ->leftJoin('tblstate', 'tblstudent_address.state_id', 'tblstate.id')
+                           ->leftJoin('tblcountry', 'tblstudent_address.country_id', 'tblcountry.id')
+                           ->select('tblstudent_address.*', 'tblstate.state_name AS state', 'tblcountry.name AS country')
+                           ->where('tblstudent_address.student_ic', $data['warning']->student_ic)->first();
+
+
+
+        return view('pendaftar_akademik.student.warning_letter.printWarningLetter', compact('data'));
+
+    }
+
 }
