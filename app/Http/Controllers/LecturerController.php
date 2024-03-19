@@ -1988,8 +1988,6 @@ $content .= '</tr>
             'lc' => [],
         ]);
 
-        dd($data['lc']);
-
         $group = explode('|', $data['group']);
 
         DB::table('tblclassattendance')->where([
