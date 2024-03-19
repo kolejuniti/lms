@@ -380,42 +380,12 @@ $(document).ready(function() {
 });
 
 
-
-
-$(document).on('change', '#group', async function(e){
-    selected_group = $(e.target).val();
-
-    await getStudents(selected_group);
-    await getProgram(selected_group);
-})
-
 $(document).on('change', '#program', async function(e){
+    selected_group = $('#group').val();
     selected_program = $(e.target).val();
 
     await getStudents(selected_group,selected_program);
 })
-
-function getProgram(group)
-{
-    return $.ajax({
-        headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
-        url      : "{{ url('lecturer/class/attendance/getStudentProgram') }}",
-        method   : 'POST',
-        data 	 : {group: group},
-        error:function(err){
-            alert("Error");
-            console.log(err);
-        },
-        success  : function(data){
-            
-          $('#program').html(data);
-          $('#program').selectpicker('refresh');
-
-                
-        }
-    });
-}
-
 
 function getStudents(group,program)
 {
