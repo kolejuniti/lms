@@ -1293,7 +1293,7 @@ class LecturerController extends Controller
                             <div class="pull-right" >
                                 <input type="checkbox" id="lc_'.$student->no_matric.'"
                                     class="filled-in" name="lc[]" value="'.$student->student_ic.'"
-                                checked>
+                                checked onclick="event.preventDefault();">
                                 <label for="lc_'.$student->no_matric.'"></label>
                             </div>
                         </td>';
