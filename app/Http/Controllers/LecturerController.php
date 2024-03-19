@@ -1159,7 +1159,7 @@ class LecturerController extends Controller
                         ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
                         ->where('group_id', $group[0])->where('group_name', $group[1])
                         ->where('student_subjek.sessionid', Session::get('SessionID'))
-                        ->whereNotIn('students.status', [4,5,6,7,16]);
+                        ->whereNotIn('students.status', [4,5,6,7,16])   ;
 
                         if(isset($request->program))
                         {
@@ -1200,6 +1200,9 @@ class LecturerController extends Controller
                 </td>
                 <td >
                     <label></label>
+                </td>
+                <td >
+                    <p class="text-bold text-fade"></p>
                 </td>
                 <td >
                     <p class="text-bold text-fade"></p>
@@ -1357,6 +1360,9 @@ $content .= '</tr>
                 </td>
                 <td >
                     <label></label>
+                </td>
+                <td >
+                    <p class="text-bold text-fade"></p>
                 </td>
                 <td >
                     <p class="text-bold text-fade"></p>
