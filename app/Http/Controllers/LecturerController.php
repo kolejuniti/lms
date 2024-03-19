@@ -1176,6 +1176,7 @@ class LecturerController extends Controller
             <th></th>
             <th>Excuse</th>
             <th>MC</th>
+            <th>Next Class/Last Class</th>
             </thead>
             <tbody>
         ';
@@ -1286,6 +1287,14 @@ class LecturerController extends Controller
                                     class="filled-in" name="mc[]" value="'.$student->student_ic.'" onclick="getMC('.$student->no_matric.')"
                                 disabled>
                                 <label for="mc_'.$student->no_matric.'"></label>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="pull-right" >
+                                <input type="checkbox" id="lc_'.$student->no_matric.'"
+                                    class="filled-in" name="lc[]" value="'.$student->student_ic.'"
+                                checked>
+                                <label for="lc_'.$student->no_matric.'"></label>
                             </div>
                         </td>';
 
