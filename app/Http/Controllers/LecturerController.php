@@ -1603,28 +1603,6 @@ $content .= '</tr>
                 }
             }
 
-            if(isset($data['mc']))
-            {
-
-                foreach($data['mc'] as $std)
-                {
-                    if(DB::table('tblclassattendance')->where([['student_ic', $std],['groupid', $group[0]],['groupname', $group[1]],['classdate', $data['date']]])->exists())
-                    {
-                        
-                    }else{
-                        DB::table('tblclassattendance')->insert([
-                            'student_ic' => $std,
-                            'groupid' => $group[0],
-                            'groupname' => $group[1],
-                            'mc' => TRUE,
-                            'classtype' => $data['class'],
-                            'classdate' => $data['date'],
-                            'classend' => $data['date2']
-                        ]);
-                    }
-                }
-            }
-
             if(isset($data['lc']))
             {
 
@@ -2007,7 +1985,10 @@ $content .= '</tr>
             'excuse' => [],
             'ic' => [],
             'mc' => [],
+            'lc' => [],
         ]);
+
+        dd($data['lc']);
 
         $group = explode('|', $data['group']);
 
@@ -2116,6 +2097,28 @@ $content .= '</tr>
                             'groupid' => $group[0],
                             'groupname' => $group[1],
                             'mc' => TRUE,
+                            'classtype' => $data['class'],
+                            'classdate' => $data['date'],
+                            'classend' => $data['date2']
+                        ]);
+                    }
+                }
+            }
+
+            if(isset($data['lc']))
+            {
+
+                foreach($data['lc'] as $std)
+                {
+                    if(DB::table('tblclassattendance')->where([['student_ic', $std],['groupid', $group[0]],['groupname', $group[1]],['classdate', $data['date']]])->exists())
+                    {
+                        
+                    }else{
+                        DB::table('tblclassattendance')->insert([
+                            'student_ic' => $std,
+                            'groupid' => $group[0],
+                            'groupname' => $group[1],
+                            'lc' => TRUE,
                             'classtype' => $data['class'],
                             'classdate' => $data['date'],
                             'classend' => $data['date2']
