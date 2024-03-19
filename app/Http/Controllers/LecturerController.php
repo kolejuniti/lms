@@ -1457,6 +1457,7 @@ $content .= '</tr>
             'excuse' => [],
             'ic' => [],
             'mc' => [],
+            'lc' => [],
         ]);
 
         // Parse the times
@@ -1520,7 +1521,7 @@ $content .= '</tr>
 
             }elseif(!empty(array_filter($data['excuse'], function($value) {
                 return $value !== null;
-            })) && isset($data['mc']))
+            })) && isset($data['mc']) && isset($data['lc']))
             {
 
 
@@ -1601,6 +1602,50 @@ $content .= '</tr>
                     }
                 }
             }
+
+            if(isset($data['mc']))
+            {
+
+                foreach($data['mc'] as $std)
+                {
+                    if(DB::table('tblclassattendance')->where([['student_ic', $std],['groupid', $group[0]],['groupname', $group[1]],['classdate', $data['date']]])->exists())
+                    {
+                        
+                    }else{
+                        DB::table('tblclassattendance')->insert([
+                            'student_ic' => $std,
+                            'groupid' => $group[0],
+                            'groupname' => $group[1],
+                            'mc' => TRUE,
+                            'classtype' => $data['class'],
+                            'classdate' => $data['date'],
+                            'classend' => $data['date2']
+                        ]);
+                    }
+                }
+            }
+
+            if(isset($data['lc']))
+            {
+
+                foreach($data['lc'] as $std)
+                {
+                    if(DB::table('tblclassattendance')->where([['student_ic', $std],['groupid', $group[0]],['groupname', $group[1]],['classdate', $data['date']]])->exists())
+                    {
+                        
+                    }else{
+                        DB::table('tblclassattendance')->insert([
+                            'student_ic' => $std,
+                            'groupid' => $group[0],
+                            'groupname' => $group[1],
+                            'lc' => TRUE,
+                            'classtype' => $data['class'],
+                            'classdate' => $data['date'],
+                            'classend' => $data['date2']
+                        ]);
+                    }
+                }
+            }
         }
 
         //check warning
@@ -1609,7 +1654,9 @@ $content .= '</tr>
 
         $MC = (isset($data['mc'])) ? $data['mc'] : [];
 
-        $exists = array_merge($IC,$MC);
+        $LC = (isset($data['lc'])) ? $data['lc'] : [];
+
+        $exists = array_merge($IC,$MC,$LC);
 
         $absent = DB::table('student_subjek')->where([
             ['group_id', $group[0]],
