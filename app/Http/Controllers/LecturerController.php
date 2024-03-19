@@ -3881,7 +3881,7 @@ $content .= '</tr>
                         if($atten->exists())
                         {
 
-                            if($attendance->excuse == null && $attendance->mc == null)
+                            if($attendance->excuse == null && $attendance->mc == null && $attendance->lc == null)
                             {
 
                                 $status[$ky][$key][$keys] = 'Present';
@@ -3893,6 +3893,10 @@ $content .= '</tr>
                             }elseif($attendance->mc != null){
 
                                 $status[$ky][$key][$keys] = 'MC';
+
+                            }elseif($attendance->lc != null){
+
+                                $status[$ky][$key][$keys] = 'NC/LC';
 
                             }
 
