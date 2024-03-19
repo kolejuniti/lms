@@ -125,7 +125,7 @@
                                       <a href="{{ Storage::disk('linode')->url($sts->content) }}"><i class="fa fa-file-pdf-o fa-3x"></i></a>
                                       @endif
                                     @endif
-                                </td>
+                                  </td>
                                   <td>
                                     @if (empty($sts))
                                     -
