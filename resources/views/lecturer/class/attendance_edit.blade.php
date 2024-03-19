@@ -78,6 +78,17 @@
                       </div>
                       </div>
                     </div>
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label class="form-label" for="program">Program</label>
+                        <select class="form-select" id="program" name="program" style="height: 200px" multiple required>
+                            <option value="" disabled>-</option>
+                            @foreach($data['program'] as $prg)
+                            <option value="{{ $prg->id }}">{{ $prg->progcode }} - {{ $prg->progname }}</option> 
+                            @endforeach
+                        </select>
+                      </div>
+                    </div> 
                     <div class="col-md-9 mt-3" id="payment-card">
                       <div class="form-group">
                           <label class="form-label" for="class">Class Type</label>
@@ -118,10 +129,12 @@
                                 <th>Name</th>
                                 <th>Matric No</th>
                                 <th>Session</th>
+                                <th>Program</th>
                                 <th>Status</th>
                                 <th></th>
                                 <th>Excuse</th>
                                 <th>MC</th>
+                                <th>NC/LC</th>
                               </thead>
                               <tbody>
                                 <tr>
@@ -166,8 +179,12 @@
                                       <p class="text-bold text-fade">{{ $student->SessionName }}</p>
                                   </td>
                                   <td >
+                                    <p class="text-bold text-fade">{{ $student->progcode }}</p>
+                                  </td>
+                                  <td >
                                       <p class="text-bold text-fade">{{ $student->status }}</p>
                                   </td>
+                                  @if($data['attendance'][$key]->lc == null)
                                   <td >
                                       <div class="pull-right" >
                                           <input type="checkbox" id="student_checkbox_{{ $student->no_matric }}"
@@ -193,6 +210,39 @@
                                           <label for="mc_{{ $student->no_matric }}"></label>
                                       </div>
                                   </td>
+                                  @else
+                                  <td>
+                                      <div class="pull-right" >
+                                          <input type="checkbox" id="student_checkbox_{{ $student->no_matric }}"
+                                              class="filled-in" name="student[]" value="{{ $student->student_ic }}" disabled
+                                          >
+                                          <label for="student_checkbox_{{ $student->no_matric }}"></label>
+                                      </div>
+                                  </td>
+                                  <td >
+                                      <div>
+                                          <input type="text" id="excuse_{{ $student->no_matric }}"
+                                              class="form-control" name="excuse[]" onkeyup="getExcuse({{ $student->no_matric }})" value="{{ !empty($data['attendance'][$key]->excuse) ? $data['attendance'][$key]->excuse : '' }}" disabled>
+                                          <input type="hidden" id="ic_{{ $student->no_matric }}"
+                                          class="form-control" name="ic[]" value="{{ $student->student_ic }}" disabled>
+                                          <label for="checkboxAll"> </label>
+                                      </div>
+                                  </td>
+                                  <td>
+                                      <div class="pull-right" >
+                                          <input type="checkbox" id="mc_{{ $student->no_matric }}"
+                                              class="filled-in" name="mc[]" value="{{ $student->student_ic }}" onclick="getMC({{ $student->no_matric }})" disabled>
+                                          <label for="mc_{{ $student->no_matric }}"></label>
+                                      </div>
+                                  </td>
+                                  <td>
+                                    <div class="pull-right" >
+                                        <input type="checkbox" id="lc_{{ $student->no_matric }}"
+                                            class="filled-in" name="lc[]" value="{{ $student->student_ic }}"  onclick="event.preventDefault();">
+                                        <label for="lc_{{ $student->no_matric }}"></label>
+                                    </div>
+                                </td>
+                                  @endif
                                 </tr>
                                 @endforeach
                                 <tr>
