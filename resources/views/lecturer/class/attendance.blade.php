@@ -249,6 +249,12 @@ function getStudents(group,program)
                 $('#table_registerstudent').DataTable();
                 $('#attendance').selectpicker('refresh');
 
+                document.querySelectorAll('input[name="lc[]"]').forEach(function(checkbox) {
+                    checkbox.addEventListener('click', function(e) {
+                        e.preventDefault();
+                    });
+                });
+
                 
         }
     });
@@ -315,12 +321,6 @@ function CheckAll(elem) {
       e.preventDefault();
       printReport();
     });
-  });
-
-  document.querySelectorAll('input[name="lc[]"]').forEach(function(checkbox) {
-      checkbox.addEventListener('click', function(e) {
-          e.preventDefault();
-      });
   });
 
 
