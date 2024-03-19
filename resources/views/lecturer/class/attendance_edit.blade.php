@@ -151,6 +151,9 @@
                                       <p class="text-bold text-fade"></p>
                                   </td>
                                   <td >
+                                    <p class="text-bold text-fade"></p>
+                                  </td>
+                                  <td >
                                       <div class="pull-right" >
                                           <input type="checkbox" id="checkboxAll"
                                               class="filled-in" name="checkall"
@@ -257,6 +260,9 @@
                                   </td>
                                   <td >
                                       <p class="text-bold text-fade"></p>
+                                  </td>
+                                  <td >
+                                    <p class="text-bold text-fade"></p>
                                   </td>
                                   <td >
                                       <div class="pull-right" >
