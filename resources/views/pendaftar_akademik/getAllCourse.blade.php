@@ -36,6 +36,45 @@
     </div>
 </div>
 
+@if(Auth::user()->usrtype == 'AR')
+<div class="card mb-3" id="stud_info">
+    <div class="card-header">
+    <b>Register Custom</b>
+    </div>
+    <div class="card-body">
+        <div class="col-12">
+              <table id="table_projectprogress_course" class="table table-striped projects display dataTable no-footer " style="width: 100%;">
+                <thead class="thead-themed">
+                    <tr>
+                        <th>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="form-label" for="course2">Course</label>
+                                    <select class="form-select" id="course2" name="course2">
+                                    <option value="" selected disabled>-</option>
+                                      @foreach ($data['course'] as $crs)
+                                      <option value="{{ $crs->id }}">{{ $crs->course_code }} - {{ $crs->course_name }}</option> 
+                                      @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        </th>
+                        <th>
+                            <div>
+                                <button class="btn btn-success btn-sm mr-2" onclick="register2('{{ $data['student']->ic }}')">
+                                    <i class="fa fa-user-plus">
+                                    </i>
+                                    Register
+                                </button>
+                            </div>
+                        </th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</div>
+@endif
 
 <div class="col-12">
     <div class="box">

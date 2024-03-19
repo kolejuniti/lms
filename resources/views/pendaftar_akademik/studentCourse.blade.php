@@ -95,7 +95,7 @@
                 </div>
                 <!-- /.card-body -->
 
-                <div class="box-body" id="course" hidden>
+                <div class="box-body" id="allcourse" hidden>
 
                 </div>
             </div>
@@ -184,7 +184,7 @@
   $(document).on('change', '#student', function(e){
     selected_student = $(e.target).val();
 
-    document.getElementById('course').hidden = false;
+    document.getElementById('allcourse').hidden = false;
 
     getCourse(selected_student);
   });
@@ -204,7 +204,7 @@
             },
             success  : function(data){
                 //$('#lecturer-selection-div').removeAttr('hidden');
-                $('#course').html(data);
+                $('#allcourse').html(data);
                 //$('#student').selectpicker('refresh');
             }
         });
@@ -224,10 +224,41 @@
             },
             success  : function(data){
                 //$('#lecturer-selection-div').removeAttr('hidden');
-                $('#course').html(data);
+                $('#allcourse').html(data);
                 //$('#student').selectpicker('refresh');
             }
         });
+
+  }
+
+  function register2(ic)
+  {
+    id = $('#course2').val();
+
+    if(id == null)
+    {
+
+      alert('Please select a course first from the list');
+
+    }else{
+
+      return $.ajax({
+              headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
+              url      : "{{ url('AR/student/register') }}",
+              method   : 'POST',
+              data 	 : {id: id,ic: ic},
+              error:function(err){
+                  alert("Error");
+                  console.log(err);
+              },
+              success  : function(data){
+                  //$('#lecturer-selection-div').removeAttr('hidden');
+                  $('#allcourse').html(data);
+                  //$('#student').selectpicker('refresh');
+              }
+          });
+
+    }
 
   }
 
@@ -248,7 +279,7 @@
             },
             success  : function(data){
                 //$('#lecturer-selection-div').removeAttr('hidden');
-                $('#course').html(data);
+                $('#allcourse').html(data);
                 //$('#student').selectpicker('refresh');
             }
         });
