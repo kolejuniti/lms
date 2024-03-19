@@ -317,6 +317,13 @@ function CheckAll(elem) {
     });
   });
 
+  document.querySelectorAll('input[name="lc[]"]').forEach(function(checkbox) {
+      checkbox.addEventListener('click', function(e) {
+          e.preventDefault();
+      });
+  });
+
+
   function printReport() {
     var group = $('#group').val();
     var program = $('#program').val();
