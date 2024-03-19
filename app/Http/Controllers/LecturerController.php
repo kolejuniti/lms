@@ -1154,13 +1154,21 @@ class LecturerController extends Controller
 
         // }else{
 
-            $students = student::join('students', 'student_subjek.student_ic', 'students.ic')
+            $student = student::join('students', 'student_subjek.student_ic', 'students.ic')
                         ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
                         ->where('group_id', $group[0])->where('group_name', $group[1])
                         ->where('student_subjek.sessionid', Session::get('SessionID'))
                         ->whereNotIn('students.status', [4,5,6,7,16])
-                        ->orderBy('students.name')
-                        ->get();
+                        ->orderBy('students.name');
+
+                        if(isset($request->program))
+                        {
+
+                            $student->orderBy('students.program');
+
+                        }
+
+                        $students = $student->get();
 
         // }
 
