@@ -1155,6 +1155,7 @@ class LecturerController extends Controller
         // }else{
 
             $student = student::join('students', 'student_subjek.student_ic', 'students.ic')
+                        ->join('tblprogramme', 'students.program', 'tblprogramme.id')
                         ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
                         ->where('group_id', $group[0])->where('group_name', $group[1])
                         ->where('student_subjek.sessionid', Session::get('SessionID'))
@@ -1180,6 +1181,7 @@ class LecturerController extends Controller
             <th>Name</th>
             <th>Matric No</th>
             <th>Session</th>
+            <th>Program</th>
             <th>Status</th>
             <th></th>
             <th>Excuse</th>
@@ -1233,6 +1235,9 @@ class LecturerController extends Controller
                 </td>
                 <td >
                     <p class="text-bold text-fade">'.$student->SessionName.'</p>
+                </td>
+                <td >
+                    <p class="text-bold text-fade">'.$student->progcode.'</p>
                 </td>
                 <td >
                     <p class="text-bold text-fade">'.$student->status.'</p>
