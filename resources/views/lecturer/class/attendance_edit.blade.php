@@ -361,6 +361,22 @@ $(document).ready(function() {
       }
 
     });
+
+    $('input[name="lc[]"]').each(function(){
+      
+      var matric = $(this).attr('id').replace('lc_', '');
+
+      if($('#lc_'+matric).prop("checked"))
+      {
+
+        $('#student_checkbox_'+matric).prop("disabled", true);
+        $('#ic_'+matric).attr("disabled", true);
+        $('#excuse_'+matric).attr("disabled", true);
+        $('#mc_' + matric).prop("disabled", true);
+
+      }
+      
+  });
 });
 
 
