@@ -1937,6 +1937,7 @@ $content .= '</tr>
     {
         
         $data['student'] = student::join('students', 'student_subjek.student_ic', 'students.ic')
+                        ->join('tblprogramme', 'students.program', 'tblprogramme.id')
                         ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
                         ->where('group_id', $request->group)->where('group_name', $request->name)
                         ->where('student_subjek.sessionid', Session::get('SessionID'))
@@ -1977,6 +1978,15 @@ $content .= '</tr>
         $data['group'] = $request->group;
 
         $data['name'] = $request->name;
+
+        $data['program'] = student::join('students', 'student_subjek.student_ic', 'students.ic')
+                    ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+                    ->where('student_subjek.group_id', $request->group)->where('student_subjek.group_name', $request->name)
+                    ->where('student_subjek.sessionid', Session::get('SessionID'))
+                    ->whereNotIn('students.status', [4,5,6,7,16])
+                    ->groupBy('tblprogramme.id')
+                    ->select('tblprogramme.*')
+                    ->get();
         
         return view('lecturer.class.attendance_edit', compact('data'));
 
