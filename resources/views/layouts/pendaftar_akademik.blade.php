@@ -303,8 +303,20 @@
 						<li><a href="{{ route('pendaftar.student.transcript') }}" class="{{ (route('pendaftar.student.transcript') == Request::url()) ? 'active' : ''}}">Student Transcript</a></li>
 						<li><a href="{{ route('pendaftar.student.result') }}" class="{{ (route('pendaftar.student.result') == Request::url()) ? 'active' : ''}}">Student Result</a></li>
 						<li><a href="{{ route('all.student.spm.report') }}" class="{{ (route('all.student.spm.report') == Request::url()) ? 'active' : ''}}">Student Report SPM</a></li>
+						<li><a href="{{ route('pendaftar_akademik.warningLetter') }}" class="{{ (route('pendaftar_akademik.warningLetter') == Request::url()) ? 'active' : ''}}">Student Warning Letter</a></li>
 					</ul>
 				</li>
+				<li class="treeview">
+					<a href="#"><i data-feather="user"></i><span>Assign</span>
+						<span class="pull-right-container">
+							<i class="fa fa-angle-left pull-right"></i>
+						</span>
+					</a>
+					<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
+						<li><a href="{{ route('kp.create') }}" class="{{ (route('kp.create') == Request::url()) ? 'active' : ''}}">Lecturer</a></li>
+						<li><a href="{{ route('kp.group') }}" class="{{ (route('kp.group') == Request::url()) ? 'active' : ''}}">Student</a></li>
+					</ul>
+				</li> 
 				<li class="treeview">
 					<a href="#"><i data-feather="user-check"></i><span>Student Information</span>
 						<span class="pull-right-container">
