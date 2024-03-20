@@ -78,8 +78,7 @@ use Carbon\Carbon;
 
         @endphp
         <br>
-        <br>
-        <p>Ruj. Kami: UNITI/KUSB/2023/{{ $data['student']->ic }}</p>
+        <p>Ruj. Kami: UNITI/KUSB/{{ date('Y') }}/{{ $data['student']->ic }}</p>
         <br>
         <p>{{ $formattedDate }}</p>
         <br>
@@ -91,9 +90,9 @@ use Carbon\Carbon;
         <p>{{ strtoupper($data['address']->state) }}</p>
         <p>{{ strtoupper($data['address']->country) }}</p>
         <h2 class="col-3 mt-2"><b>MAKLUMAT PENDAFTARAN</b></h2>
-        <div class="col-4 mb-2 mt-2">
+        <div class="col-5 mb-2 mt-2">
             <div style="border: 1px solid black; padding: 10px;">
-            <p>Tarikh : {{ Carbon::createFromFormat('Y-m-d', $data['student']->date_offer)->format('d/m/Y'); }}</p>
+            <p>Tarikh : {{ Carbon::createFromFormat('Y-m-d', $data['student']->date_offer)->format('d/m/Y') }}</p>
             <p>Masa : 9.00 Pagi - 3.00 Petang</p>
             <p>Tempat : PEJABAT PENTADBIRAN KOLEJ UNITI</p>
             </div>
@@ -109,12 +108,12 @@ use Carbon\Carbon;
         </div>
         <p class="mt-2">Untuk pengetahuan saudara/saudari, program yang diikuti adalah program akademik yang dikendalikan oleh <b>KOLEJ UNITI di PERSIARAN UNITI VILLAGE, TANJUNG AGAS, 71250 PORT DICKSON, NEGERI SEMBILAN DARUL KHUSUS.</b> Setelah memenuhi semua keperluan, saudara/saudari akan <b>DIANUGERAHKAN DIPLOMA OLEH KOLEJ UNITI ATAU UiTM DAN UTM.</b></p>
         <p class="mt-2">Tawaran ini adalah sah untuk tujuan di atas sahaja.</p>
-        <ol class="mt-2">
+        <ol class="mt-3">
             <li>Memenuhi syarat kemasukan ke program yang dipohon dan maklumat-maklumat yang diberikan adalah benar. Sekiranya terdapat pemalsuan maklumat dalam borang permohonan dan dokumen yang berkaitan, pihak Kolej UNITI berhak menarik balik tawaran ini atau saudara/i diberhentikan daripada pengajian pada bila-bila masa.</li>
             <li>Menjelaskan yuran seperti yang dilampirkan.</li>
         </ol>
         <p>Jika saudara/i menerima tawaran ini, sila :</p>
-        <ol type="a">
+        <ol class="mt-2" type="a">
             <li>Hadir untuk mendaftarkan diri mengikuti maklumat di atas.</li>
         </ol>
         <p>Semasa mendaftar saudara/i dikehendaki membawa dokumen asal dan salinan yang <b>DISAHKAN</b> seperti berikut :</p>
@@ -123,11 +122,11 @@ use Carbon\Carbon;
                 <div class="col-md-6">
                     <div class="form-group">
                         <ul>
-                            <li>Surat tawaran</li>
-                            <li>Salinan kad Pengenalan pemohon dan ibubapa (1 salinan)</li>
+                            <li>Surat Tawaran</li>
+                            <li>Salinan Kad Pengenalan pemohon dan penjaga/ibubapa (1 salinan)</li>
                             <li>4 keping gambar ukuran pasport</li>
                             <li>Slip gaji penjaga/ibubapa terkini (1 salinan)</li>
-                            <li>Salinan kelahiran pemohon dan penjaga/ibubapa (1 salinan)</li>
+                            <li>Salinan Sijil Kelahiran pemohon dan penjaga/ibubapa (1 salinan)</li>
                         </ul>
                     </div>
                 </div>
@@ -145,12 +144,12 @@ use Carbon\Carbon;
         </div>
         <p class="mt-1 mb-1">Sekian, terima kasih.</p>
         <p>Yang benar,</p>
-        <img src="{{ asset('storage/signature/signature1.png') }}" alt="Image" width="5%" height="5%">
+        <img src="{{ asset('storage/signature/signature1.png') }}" alt="Image" width="7%" height="7%">
 
         <p><b>AMIR HAMZAH BIN MD. ISA</b><br>
         KETUA EKSEKUTIF<br>
-        <b>KOLEJ UNITI</b></p><br>
-        <p>* Pihak Kolej berhak menarik balik tawaran ini di atas apa-apa jua alasan dari semasa ke semasa</p>
+        <b>KOLEJ UNITI</b></p>
+        <p class="mt-2">* Pihak Kolej berhak menarik balik tawaran ini di atas apa-apa jua alasan dari semasa ke semasa</p>
         <p>* Universiti Teknologi MARA (UiTM) tidak bertanggungjawab menyerap pelajar program usahasama sekiranya Kolej UNITI menghadapi masalah untuk mengendalikan program.</p>
         <p>* Kos perkhidmatan UiTM RM300.00 tidak akan dikembalikan setelah pelajar mendaftar di Kolej (program UiTM sahaja)</p>
         <p>* Tawaran ini terbatal serta-merta jika anda berstatus bukan Melayu/Bumiputra dan tidak memiliki kelayakan minima seperti yang telah ditetapkan oleh pihak UiTM</p>
