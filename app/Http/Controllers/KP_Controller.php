@@ -315,7 +315,16 @@ class KP_Controller extends Controller
     {
         $users = Auth::user();
 
-        $programs = DB::table('user_program')->join('tblprogramme', 'user_program.program_id', 'tblprogramme.id')->where('user_ic', $users->ic)->get();
+        if(Auth::user()->usrtype == 'AR')
+        {
+
+            $programs = DB::table('user_program')->get();
+
+        }else{
+
+            $programs = DB::table('user_program')->join('tblprogramme', 'user_program.program_id', 'tblprogramme.id')->where('user_ic', $users->ic)->get();
+
+        }
 
         $semester = DB::table('semester')->get();
 
@@ -415,6 +424,9 @@ $content .= '<tr>
                     
                 </td>
                 <td>
+                    
+                </td>
+                <td>
                     <div class="pull-right" >
                         <input type="checkbox" id="checkboxAll"
                             class="filled-in" name="checkall"
@@ -497,6 +509,9 @@ $content .= '<tr>
 $content .= '<tr>
                 <td>
                     <label class="text-dark"><strong>SELECT ALL</strong></label><br>
+                </td>
+                <td>
+                    
                 </td>
                 <td>
                     
