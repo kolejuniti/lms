@@ -79,10 +79,8 @@ use Carbon\Carbon;
         @endphp
         <br>
         <p>Ruj. Kami: UNITI/KUSB/{{ date('Y') }}/{{ $data['student']->ic }}</p>
-        <br>
-        <p>{{ $formattedDate }}</p>
-        <br>
-        <p>{{ strtoupper($data['student']->name) }}</p>
+        <p class="mt-2">{{ $formattedDate }}</p>
+        <p class="mt-2">{{ strtoupper($data['student']->name) }}</p>
         <p>{{ strtoupper($data['address']->address1) }}</p>
         <p>{{ strtoupper($data['address']->address2) }}</p>
         <p>{{ strtoupper($data['address']->address3) }}</p>
