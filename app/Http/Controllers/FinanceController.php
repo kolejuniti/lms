@@ -9003,7 +9003,7 @@ class FinanceController extends Controller
         $data = $request->validate([
             'date1' => ['required'],
             'date2' => ['required'],
-            'payment' => ['required']
+            'payment' => []
         ]);
 
         // Convert the array to a comma-separated string
