@@ -1392,6 +1392,8 @@ $content .= '</tr>
 
         $group = explode('|', $request->group);
 
+        dd($request->program);
+
         if(!empty($request->program))
         {
 
