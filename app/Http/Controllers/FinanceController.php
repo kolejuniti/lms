@@ -9116,12 +9116,12 @@ class FinanceController extends Controller
             foreach($data['record'][$key] as $keys => $req)
             {
 
-                if(array_intersect([2,3,4,5,11], (array) $req->process_type_id))
+                if(array_intersect([2,3,4,5,11], (array) $req->process_type_id) && $req->source == 'claim')
                 {
 
                     $data['total'][$key] += $req->amount;
                     
-                }elseif(array_intersect([1,5,6,7,8,9,10,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26], (array) $req->process_type_id))
+                }elseif(array_intersect([1,5,6,7,8,9,10,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26], (array) $req->process_type_id) && $req->source == 'payment')
                 {
 
                     $data['total'][$key] -= $req->amount;
