@@ -1399,7 +1399,7 @@ $content .= '</tr>
                         ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
                         ->where('group_id', $group[0])->where('group_name', $group[1])
                         ->where('student_subjek.sessionid', Session::get('SessionID'))
-                        ->where('students.program', $request->program)
+                        ->whereIn('students.program', $request->program)
                         ->whereNotIn('students.status', [4,5,6,7,16])
                         ->orderBy('students.name')
                         ->get();
