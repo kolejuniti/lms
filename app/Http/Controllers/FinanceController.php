@@ -9119,18 +9119,18 @@ class FinanceController extends Controller
                 if(array_intersect([2,3,4,5,11], (array) $req->process_type_id))
                 {
 
-                    $data['total'] += $req->amount;
+                    $data['total'][$keys] += $req->amount;
                     
                 }elseif(array_intersect([1,5,6,7,8,9,10,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26], (array) $req->process_type_id))
                 {
 
-                    $data['total'] -= $req->amount;
+                    $data['total'][$keys] -= $req->amount;
 
                 }
 
             }
 
-            $data['sum3'] = $data['total'];
+            $data['sum3'] = end($data['total']);
 
             //TUNGGAKAN KESELURUHAN
 
@@ -9234,18 +9234,18 @@ class FinanceController extends Controller
                 if(array_intersect([2,3,4,5,11], (array) $req->process_type_id))
                 {
 
-                    $data['total'][$keys] += $req->amount;
+                    $data['total'] += $req->amount;
                     
                 }elseif(array_intersect([1,5,6,7,8,9,10,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26], (array) $req->process_type_id))
                 {
 
-                    $data['total'][$keys] -= $req->amount;
+                    $data['total'] -= $req->amount;
 
                 }
 
             }
 
-            $data['sum3'] = 0;
+            $data['sum3'] = $data['total'];
 
             //TUNGGAKAN KESELURUHAN
 
