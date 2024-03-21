@@ -320,8 +320,6 @@ function CheckAll(elem) {
     var group = $('#group').val();
     var program = $('#program').val();
 
-    alert(program);
-
     return $.ajax({
       headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
       url: "{{ url('lecturer/class/attendance/print') }}",
