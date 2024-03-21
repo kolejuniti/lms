@@ -9245,7 +9245,7 @@ class FinanceController extends Controller
 
             }
 
-            $data['sum3'] = end($data['total']);
+            $data['sum3'] = 0;
 
             //TUNGGAKAN KESELURUHAN
 
