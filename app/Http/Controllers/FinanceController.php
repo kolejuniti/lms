@@ -9208,7 +9208,7 @@ class FinanceController extends Controller
                 ['tblstudentclaim.groupid', 1], 
                 ['tblpaymentdtl.amount', '!=', 0]
                 ])
-            ->select('tblprocess_type.name AS process', 'tblpayment.ref_no','tblpayment.date', 'tblstudentclaim.name', 'tblpaymentdtl.amount', 'tblpayment.process_type_id', 'tblprogramme.progcode AS program', DB::raw('NULL as remark'));
+            ->select(DB::raw("'payment' as source"), 'tblprocess_type.name AS process', 'tblpayment.ref_no','tblpayment.date', 'tblstudentclaim.name', 'tblpaymentdtl.amount', 'tblpayment.process_type_id', 'tblprogramme.progcode AS program', DB::raw('NULL as remark'));
 
             $data['record'] = DB::table('tblclaimdtl')
             ->leftJoin('tblclaim', 'tblclaimdtl.claim_id', 'tblclaim.id')
@@ -9222,7 +9222,7 @@ class FinanceController extends Controller
                 ['tblclaimdtl.amount', '!=', 0]
                 ])
             ->unionALL($record)
-            ->select('tblprocess_type.name AS process', 'tblclaim.ref_no','tblclaim.date', 'tblstudentclaim.name', 'tblclaimdtl.amount', 'tblclaim.process_type_id', 'tblprogramme.progcode AS program', 'tblclaim.remark')
+            ->select(DB::raw("'claim' as source"), 'tblprocess_type.name AS process', 'tblclaim.ref_no','tblclaim.date', 'tblstudentclaim.name', 'tblclaimdtl.amount', 'tblclaim.process_type_id', 'tblprogramme.progcode AS program', 'tblclaim.remark')
             ->orderBy('date')
             ->get();
 
@@ -9231,12 +9231,12 @@ class FinanceController extends Controller
             foreach($data['record'] as $keys => $req)
             {
 
-                if(array_intersect([2,3,4,5,11], (array) $req->process_type_id))
+                if(array_intersect([2,3,4,5,11], (array) $req->process_type_id) && $req->source == 'claim')
                 {
 
                     $data['total'] += $req->amount;
                     
-                }elseif(array_intersect([1,5,6,7,8,9,10,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26], (array) $req->process_type_id))
+                }elseif(array_intersect([1,5,6,7,8,9,10,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26], (array) $req->process_type_id) && $req->source == 'payment')
                 {
 
                     $data['total'] -= $req->amount;
@@ -9378,7 +9378,7 @@ class FinanceController extends Controller
                 ['tblstudentclaim.groupid', 1], 
                 ['tblpaymentdtl.amount', '!=', 0]
                 ])
-            ->select('tblprocess_type.name AS process', 'tblpayment.ref_no','tblpayment.date', 'tblstudentclaim.name', 'tblpaymentdtl.amount', 'tblpayment.process_type_id', 'tblprogramme.progcode AS program', DB::raw('NULL as remark'));
+            ->select(DB::raw("'payment' as source"), 'tblprocess_type.name AS process', 'tblpayment.ref_no','tblpayment.date', 'tblstudentclaim.name', 'tblpaymentdtl.amount', 'tblpayment.process_type_id', 'tblprogramme.progcode AS program', DB::raw('NULL as remark'));
 
             $data['record'] = DB::table('tblclaimdtl')
             ->leftJoin('tblclaim', 'tblclaimdtl.claim_id', 'tblclaim.id')
@@ -9392,7 +9392,7 @@ class FinanceController extends Controller
                 ['tblclaimdtl.amount', '!=', 0]
                 ])
             ->unionALL($record)
-            ->select('tblprocess_type.name AS process', 'tblclaim.ref_no','tblclaim.date', 'tblstudentclaim.name', 'tblclaimdtl.amount', 'tblclaim.process_type_id', 'tblprogramme.progcode AS program', 'tblclaim.remark')
+            ->select(DB::raw("'claim' as source"), 'tblprocess_type.name AS process', 'tblclaim.ref_no','tblclaim.date', 'tblstudentclaim.name', 'tblclaimdtl.amount', 'tblclaim.process_type_id', 'tblprogramme.progcode AS program', 'tblclaim.remark')
             ->orderBy('date')
             ->get();
 
@@ -9401,12 +9401,12 @@ class FinanceController extends Controller
             foreach($data['record'] as $keys => $req)
             {
 
-                if(array_intersect([2,3,4,5,11], (array) $req->process_type_id))
+                if(array_intersect([2,3,4,5,11], (array) $req->process_type_id) && $req->source == 'claim')
                 {
 
                     $data['total'] += $req->amount;
                     
-                }elseif(array_intersect([1,6,7,8,9,10,12,13,14,15,16,17,18,19], (array) $req->process_type_id))
+                }elseif(array_intersect([1,5,6,7,8,9,10,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26], (array) $req->process_type_id) && $req->source == 'payment')
                 {
 
                     $data['total'] -= $req->amount;
