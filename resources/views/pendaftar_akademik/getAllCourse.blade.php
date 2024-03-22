@@ -189,7 +189,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                        @foreach ($data['allCourse'] as $keys=>$crs)
+                        @foreach ($data['allCourse'] as $keys=>$crs )
                             <tr>
                                 <td>
                                 {{ $keys+1 }}
@@ -209,7 +209,7 @@
                                 <td>
                                 {{ $crs->SessionName }}
                                 </td>
-                                @if(Auth::user()->usrtype == 'AR')
+                                @if(Auth::user()->usrtype == 'AR' && $crs->semester == $data['students']->semester)
                                 <td style="text-align: center;">
                                     <div class="pull right">
                                         <button class="btn btn-danger btn-sm mr-2" onclick="unregister('{{ $crs->IDS }}','{{ $data['student']->ic }}')">
