@@ -78,13 +78,13 @@ use Carbon\Carbon;
 
         @endphp
         <br>
+        <br>
         <p>Ruj. Kami: UNITI/KUSB/{{ date('Y') }}/{{ $data['student']->ic }}</p>
         <p class="mt-2">{{ $formattedDate }}</p>
         <p class="mt-2">{{ strtoupper($data['student']->name) }}</p>
         <p>{{ strtoupper($data['address']->address1) }}</p>
         <p>{{ strtoupper($data['address']->address2) }}</p>
-        <p>{{ strtoupper($data['address']->address3) }}</p>
-        <p>{{ $data['address']->postcode }}</p>
+        <p>{{ strtoupper($data['address']->address3) }} {{ $data['address']->postcode }}</p>
         <p>{{ strtoupper($data['address']->state) }}</p>
         <p>{{ strtoupper($data['address']->country) }}</p>
         <h2 class="col-3 mt-2"><b>MAKLUMAT PENDAFTARAN</b></h2>
