@@ -45,7 +45,7 @@ class StudentController extends Controller
                         ['student_subjek.student_ic', $student->ic],
                         ['subjek_structure.program_id', $student->program]
                         ])
-                   ->select('subjek.id','subjek.group_id','subjek.course_name','subjek.course_code','student_subjek.courseid','sessions.SessionName','sessions.SessionID')
+                   ->select('subjek.id','subjek.course_name','subjek.course_code','student_subjek.group_id','student_subjek.courseid','sessions.SessionName','sessions.SessionID')
                    ->groupBy('student_subjek.courseid')
                    ->get();
 
