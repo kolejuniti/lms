@@ -45,7 +45,7 @@ class StudentController extends Controller
                         ['student_subjek.student_ic', $student->ic],
                         ['subjek_structure.program_id', $student->program]
                         ])
-                   ->select('subjek.id','subjek.course_name','subjek.course_code','student_subjek.courseid','sessions.SessionName','sessions.SessionID')
+                   ->select('subjek.id','subjek.group_id','subjek.course_name','subjek.course_code','student_subjek.courseid','sessions.SessionName','sessions.SessionID')
                    ->groupBy('student_subjek.courseid')
                    ->get();
 
@@ -56,7 +56,8 @@ class StudentController extends Controller
                     ->join('users', 'user_subjek.user_ic', 'users.ic')
                     ->where([
                         ['user_subjek.course_id', $sub->courseid],
-                        ['user_subjek.session_id', $sub->SessionID]
+                        ['user_subjek.session_id', $sub->SessionID],
+                        ['user_subjek.id', $sub->group_id]
                         ])
                     ->select('users.name')
                     ->first();
