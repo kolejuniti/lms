@@ -603,8 +603,7 @@ class AR_Controller extends Controller
                             ['subjek_structure.semester_id', '<=', $data['student']->semester]
                         ])
                       ->groupBy('student_subjek.courseid')
-                      ->groupBy('student_subjek.semesterid')
-                      ->orderBy('subjek_structure.semester_id');
+                      ->groupBy('student_subjek.semesterid');
 
         $data['allCourse'] = $getCourse->select('student_subjek.id as IDS', 'student_subjek.courseid', 'student_subjek.semesterid AS semester', 'sessions.SessionName', 'subjek.*')->orderBy('student_subjek.semesterid', 'ASC')->get();
 
@@ -722,8 +721,8 @@ class AR_Controller extends Controller
                             ['subjek_structure.intake_id', $data['student']->intake],
                             ['subjek_structure.semester_id', '<=', $data['student']->semester]
                         ])
-                      ->groupBy('subjek_structure.courseID')
-                      ->orderBy('subjek_structure.semester_id');
+                        ->groupBy('student_subjek.courseid')
+                        ->groupBy('student_subjek.semesterid');
 
         $data['allCourse'] = $getCourse->select('student_subjek.id as IDS', 'student_subjek.courseid', 'student_subjek.semesterid AS semester', 'sessions.SessionName', 'subjek.*')->orderBy('student_subjek.semesterid')->get();
 
@@ -788,8 +787,8 @@ class AR_Controller extends Controller
                             ['subjek_structure.intake_id', $data['student']->intake],
                             ['subjek_structure.semester_id', '<=', $data['student']->semester]
                         ])
-                      ->groupBy('subjek_structure.courseID')
-                      ->orderBy('subjek_structure.semester_id');
+                        ->groupBy('student_subjek.courseid')
+                        ->groupBy('student_subjek.semesterid');
 
         $data['allCourse'] = $getCourse->select('student_subjek.id as IDS', 'student_subjek.courseid', 'student_subjek.semesterid AS semester', 'sessions.SessionName', 'subjek.*')->orderBy('student_subjek.semesterid')->get();
 
