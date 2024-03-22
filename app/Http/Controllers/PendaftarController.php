@@ -1762,7 +1762,6 @@ class PendaftarController extends Controller
                                             ['students.semester', 1],
                                             ['students.status', 2],
                                             ['students.student_status', 1],
-                                            ['students.campus_id', 0],
                                             ['students.intake', $ses->SessionID]
                                            ])->get());
 
@@ -1771,7 +1770,6 @@ class PendaftarController extends Controller
                                             ['students.semester', 1],
                                             ['students.status', 2],
                                             ['students.student_status', 2],
-                                            ['students.campus_id', 0],
                                             ['students.intake', $ses->SessionID]
                                            ])->get());
 
