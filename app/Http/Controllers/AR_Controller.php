@@ -1384,8 +1384,88 @@ class AR_Controller extends Controller
                            ->where('tblstudent_warning.id', $request->id)
                            ->orderBy('subjek.course_name')
                            ->groupBy('tblstudent_warning.id')
-                           ->select('tblstudent_warning.*', 'subjek.course_name', 'subjek.course_code', 'sessions.SessionName')
+                           ->select('tblstudent_warning.*', 'subjek.course_name', 'subjek.course_code', 'subjek.id AS subID','sessions.SessionName')
                            ->first();
+
+        // Define a function to create the base query
+        $baseQuery = function () use ($data) {
+            return DB::table('tblclassattendance')
+            ->select('tblclassattendance.classdate')
+            ->where([
+                ['tblclassattendance.groupid', $data['warning']->groupid],
+                ['tblclassattendance.groupname', $data['warning']->groupname]
+            ])
+            ->where('tblclassattendance.student_ic', '!=', $data['warning']->student_ic)
+            ->orderBy('tblclassattendance.classdate')
+            ->groupBy('tblclassattendance.classdate')
+            ->select('tblclassattendance.*');
+        };
+
+        if($data['warning']->warning == 1)
+        {
+
+            $data['absent'] = ($baseQuery)()
+                ->take(2)
+                ->get();
+
+        }elseif($data['warning']->warning == 2)
+        {
+
+            $data['absent'] = ($baseQuery)()
+                ->take(4)
+                ->get();
+
+        }elseif($data['warning']->warning == 3)
+        {
+
+            $data['absent'] = ($baseQuery)()
+                ->take(6)
+                ->get();
+
+        }
+
+        // $data['date'] = $data['absent']->map(function ($item) {
+        //     // Extracting the date part from 'classdate'
+        //     return Carbon::parse($item->classdate)->format('Y-m-d');
+        // });
+
+        // $data['day'] = $data['absent']->map(function ($item) {
+        //     // Extracting the date and day name from 'classdate'
+        //     return Carbon::parse($item->classdate)->format('l');
+        // });
+
+        // $data['time1'] = $data['absent']->map(function ($item) {
+        //     // Extracting the time part from 'classdate' and converting it to 12-hour format
+        //     return Carbon::parse($item->classdate)->format('h:i A');
+
+        // });
+
+        // $data['time2'] = $data['absent']->map(function ($item) {
+        //     // Extracting the time part from 'classdate' and converting it to 12-hour format
+        //     return Carbon::parse($item->classend)->format('h:i A');
+
+        // });
+
+        //combine everything
+        $data['absent'] = $data['absent']->map(function ($item) {
+            // Parse 'classdate' once since it's used multiple times
+            $classdateParsed = Carbon::parse($item->classdate);
+            
+            return [
+                'date' => $classdateParsed->format('d-m-Y'),
+                'day' => $classdateParsed->format('l'),
+                'time1' => $classdateParsed->format('h:i A'),
+                'time2' => Carbon::parse($item->classend)->format('h:i A'),
+            ];
+        });
+
+        $data['courseCredit'] = DB::table('subjek')->where('id', $data['warning']->subID)
+                  ->select('course_credit', DB::raw('(course_credit * 14) as total'))->first();
+
+        // Now $data['time2'] is a collection containing the dates with their respective day names
+        // To see the result
+        //dd($data['absent']);
+
 
         $data['student'] = DB::table('students')
                             ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
