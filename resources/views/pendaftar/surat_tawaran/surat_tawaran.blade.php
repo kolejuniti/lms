@@ -84,7 +84,7 @@ use Carbon\Carbon;
         <p class="mt-2">{{ strtoupper($data['student']->name) }}</p>
         <p>{{ strtoupper($data['address']->address1) }}</p>
         <p>{{ strtoupper($data['address']->address2) }}</p>
-        <p>{{ strtoupper($data['address']->address3) }} {{ $data['address']->postcode }}</p>
+        <p>{{ strtoupper($data['address']->address3) }}, {{ $data['address']->postcode }}</p>
         <p>{{ strtoupper($data['address']->state) }}</p>
         <p>{{ strtoupper($data['address']->country) }}</p>
         <h2 class="col-3 mt-2"><b>MAKLUMAT PENDAFTARAN</b></h2>
