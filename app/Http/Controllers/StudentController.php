@@ -1002,7 +1002,7 @@ class StudentController extends Controller
         
             // If a otherlist record exists, add the current final_mark to the $markother variable
             if ($otherlist[$key]) {
-                $markother += $otherlist[$key]->final_mark;
+                $markother += $otherlist[$key]->total_mark;
             }
         }
 
@@ -1051,7 +1051,7 @@ class StudentController extends Controller
         
             // If a extralist record exists, add the current final_mark to the $markextra variable
             if ($extralist[$key]) {
-                $markextra += $extralist[$key]->final_mark;
+                $markextra += $extralist[$key]->total_mark;
             }
         }
 
