@@ -385,9 +385,6 @@
 													<td style="width: 1%">
 														
 													</td>
-													<td >
-														
-													</td>
 													<td>
 														Total Marks by Percentage
 													</td>
@@ -760,15 +757,12 @@
 												{{ $qz->total_mark }}
 												</td>
 												<td>
-												{{ $otherlist[$keys]->final_mark ?? '-' }}
+												{{ $otherlist[$keys]->total_mark ?? '-' }}
 												</td>
 											</tr>
 											@endforeach
 												<tr>
 													<td style="width: 1%">
-														
-													</td>
-													<td >
 														
 													</td>
 													<td>
@@ -852,7 +846,7 @@
 												{{ $qz->total_mark }}
 												</td>
 												<td>
-												{{ $extralist[$keys]->final_mark ?? '-' }}
+												{{ $extralist[$keys]->total_mark ?? '-' }}
 												</td>
 											</tr>
 											@endforeach
