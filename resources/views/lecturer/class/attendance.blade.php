@@ -46,6 +46,11 @@
             <div class="card card-primary">
               <div class="card-header">
                 <h3 class="card-title">Check Attendance</h3>
+                @if (session('error'))
+                    <script>
+                      alert("{{ session('error') }}");
+                    </script>
+                @endif
               </div>
               <!-- /.card-header -->
               <!-- form start -->
@@ -67,7 +72,7 @@
                         <div class="form-group">
                           <label class="form-label" for="date">Class Start</label>
                           <div class="input-group">
-                          <input id="date" name="date" value="" type="datetime-local" class="form-control" >
+                          <input id="date" name="date" value="" type="datetime-local" class="form-control" required>
                           <!--<input id="schedule" name="schedule" value="" type="text" class="form-control" hidden>-->
                           </div>
                         </div>
@@ -87,7 +92,7 @@
                       <div class="form-group">
                         <label class="form-label" for="date2">Class End</label>
                         <div class="input-group">
-                        <input id="date2" name="date2" value="" type="datetime-local" class="form-control" >
+                        <input id="date2" name="date2" value="" type="datetime-local" class="form-control" required>
                         <!--<input id="schedule" name="schedule" value="" type="text" class="form-control" hidden>-->
                         </div>
                       </div>
@@ -98,11 +103,11 @@
                           <label class="form-label" for="class">Class Type</label>
                           <fieldset>
                               <div class="form-check">
-                                  <input class="form-check-input" type="radio" name="class" id="class1" value="1">
+                                  <input class="form-check-input" type="radio" name="class" id="class1" value="1" required>
                                   <label for="class1">
                                       Class
                                   </label>
-                                  <input class="form-check-input" type="radio" name="class" id="class2" value="2">
+                                  <input class="form-check-input" type="radio" name="class" id="class2" value="2" required>
                                   <label for="class2">
                                       Replacement Class
                                   </label>
