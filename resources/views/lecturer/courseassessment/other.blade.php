@@ -72,6 +72,9 @@
                                 Chapters
                               </th>
                               <th>
+                                Attachment
+                              </th>
+                              <th>
                                 Full Mark
                               </th>
                               <th>
@@ -99,6 +102,11 @@
                                 @foreach ($chapter[$key] as $chp)
                                   Chapter {{ $chp->ChapterNo }} : {{ $chp->DrName }},
                                 @endforeach
+                              </td>
+                              <td class="align-items-center">
+                                @if($dt->content != null)
+                                <a href="{{ Storage::disk('linode')->url($dt->content) }}"><i class="fa fa-file-pdf-o fa-3x"></i></a>
+                                @endif
                               </td>
                               <!--<td class="align-items-center">
                                 <a href=""><i class="fa fa-file-pdf-o fa-3x"></i></a>
