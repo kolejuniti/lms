@@ -17,6 +17,7 @@ use League\Flysystem\AwsS3V3\PortableVisibilityConverter;
 use Mail;
 use PDF;
 use Twilio\Rest\Client;
+use Illuminate\Validation\ValidationException;
 
 class LecturerController extends Controller
 {
@@ -1446,19 +1447,25 @@ $content .= '</tr>
 
         //dd($request->student);
 
-        $data = $request->validate([
-            'group' => ['required'],
-            'date' => ['required'],
-            'date2' => ['required'],
-            'class' => ['required'],
-            //'schedule' => ['required'],
-            'student' => [],
-            'absentall' => [],
-            'excuse' => [],
-            'ic' => [],
-            'mc' => [],
-            'lc' => [],
-        ]);
+        try {
+
+            $data = $request->validate([
+                'group' => ['required'],
+                'date' => ['required'],
+                'date2' => ['required'],
+                'class' => ['required'],
+                //'schedule' => ['required'],
+                'student' => [],
+                'absentall' => [],
+                'excuse' => [],
+                'ic' => [],
+                'mc' => [],
+                'lc' => [],
+            ]);
+
+        } catch (ValidationException $e) {
+            return redirect()->back()->with('error', 'Failed! Please fill all the input form')->withInput();
+        }
 
         // Parse the times
         $start = Carbon::parse($data['date']);
