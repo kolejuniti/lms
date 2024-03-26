@@ -975,6 +975,7 @@ $content .= '<tr>
                   ->join('subjek_structure', 'subjek.sub_id', 'subjek_structure.courseID')
                   ->join('user_program', 'subjek_structure.program_id', 'user_program.program_id')
                   ->where('user_program.user_ic', $user->ic)
+                  ->groupBy('subjek_structure.courseID')
                   ->select('subjek.*')->get();
 
         //dd($course);
