@@ -1160,9 +1160,9 @@ class LecturerController extends Controller
                         ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
                         ->where('group_id', $group[0])->where('group_name', $group[1])
                         ->where('student_subjek.sessionid', Session::get('SessionID'))
-                        ->whereNotIn('students.status', [4,5,6,7,16])   ;
+                        ->whereNotIn('students.status', [4,5,6,7,16]);
 
-                        if(isset($request->program))
+                        if(isset($request->program) && count($request->program) > 1)
                         {
 
                             $student->orderBy('students.program');
