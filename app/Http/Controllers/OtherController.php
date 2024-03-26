@@ -31,15 +31,6 @@ class OtherController extends Controller
 
         $chapter = array();
 
-        //dd(Session::get('CourseIDS'));
-
-        $data = DB::table('tblclassother')
-                ->where([
-                    ['classid', Session::get('CourseIDS')],
-                    ['sessionid', Session::get('SessionIDS')],
-                    ['addby', $user->ic]
-                ])->get();
-
         $data = DB::table('tblclassother')
                 ->join('tblextra_title', 'tblclassother.title', 'tblextra_title.id')
                 ->join('users', 'tblclassother.addby', 'users.ic')
@@ -187,7 +178,15 @@ class OtherController extends Controller
         $chapter = $request->chapter;
         $marks = $request->marks;
 
+        $data = $request->validate([
+            'myPdf' => 'mimes:pdf'
+        ]);
+
         $user = Auth::user();
+
+        $dir = "classother/" .  $classid . "/" . $user->name . "/" . $title;
+        $classother  = Storage::disk('linode')->makeDirectory($dir);
+        $file = $request->file('myPdf') ?? null;
             
         $otherid = empty($request->other) ? '' : $request->other;
 
@@ -224,13 +223,46 @@ class OtherController extends Controller
       
                     $other = DB::table('tblclassother')->where('id', $otherid)->first();
 
+                    if($other->content != null)
+                    {
+                        Storage::disk('linode')->delete($other->content);
+                    }
+
                     DB::table('tblclassother_group')->where('otherid', $otherid)->delete();
 
                     DB::table('tblclassother_chapter')->where('otherid', $otherid)->delete();
 
+                    if($file != null)
+                    {
+
+                        $file_name = $file->getClientOriginalName();
+                        $file_ext = $file->getClientOriginalExtension();
+                        $fileInfo = pathinfo($file_name);
+                        $filename = $fileInfo['filename'];
+                        $newname = $filename . "." . $file_ext;
+                        $newpath = "classother/" .  $classid . "/" . $user->name . "/" . $title . "/" . $newname;
+
+                    }else{
+
+                        $newname = null;
+                        $newpath = null;
+
+                    }
+
+                    if($newname != null){
+                        Storage::disk('linode')->putFileAs(
+                            $dir,
+                            $file,
+                            $newname,
+                            'public'
+                        );
+
+                    }
+
                     $q = DB::table('tblclassother')->where('id', $otherid)->update([
                         "title" => $title,
                         "no" => $no,
+                        "content" => $newpath,
                         "total_mark" => $marks,
                         "addby" => $user->ic,
                         "status" => 2
@@ -277,11 +309,39 @@ class OtherController extends Controller
 
                     }else{
 
+                        if($file != null)
+                        {
+
+                            $file_name = $file->getClientOriginalName();
+                            $file_ext = $file->getClientOriginalExtension();
+                            $fileInfo = pathinfo($file_name);
+                            $filename = $fileInfo['filename'];
+                            $newname = $filename . "." . $file_ext;
+                            $newpath = "classother/" .  $classid . "/" . $user->name . "/" . $title . "/" . $newname;
+
+                        }else{
+
+                            $newname = null;
+                            $newpath = null;
+                            
+                        }
+
+                        if($newname != null){
+                            Storage::disk('linode')->putFileAs(
+                                $dir,
+                                $file,
+                                $newname,
+                                'public'
+                            );
+
+                        }
+
                         $q = DB::table('tblclassother')->insertGetId([
                             "classid" => $classid,
                             "sessionid" => $sessionid,
                             "title" => $title,
                             "no" => $no,
+                            "content" => $newpath,
                             "total_mark" => $marks,
                             "addby" => $user->ic,
                             "status" => 2
