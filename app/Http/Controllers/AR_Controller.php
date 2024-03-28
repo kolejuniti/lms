@@ -654,7 +654,7 @@ class AR_Controller extends Controller
             if($data['student']->student_status == 1 && $data['student']->student_status != 4)
             {
 
-                DB::table('students')->update([
+                DB::table('students')->where('ic', $data['student']->ic)->update([
                     'student_status' => 2
                 ]);
 
@@ -679,7 +679,7 @@ class AR_Controller extends Controller
                 if($data['student']->student_status == 1  && $data['student']->student_status != 4)
                 {
     
-                    DB::table('students')->update([
+                    DB::table('students')->where('ic', $data['student']->ic)->update([
                         'student_status' => 2
                     ]);
     
