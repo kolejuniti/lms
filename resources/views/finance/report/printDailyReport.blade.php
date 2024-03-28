@@ -651,6 +651,118 @@ tr:hover {
                 </div>
                 <!-- /.card-body -->
             </div>
+
+            <!-- fail student -->
+            <div class="card mb-3" id="stud_info">
+                <div class="card-header">
+                <b>Failed Student</b>
+                </div>
+                <div class="card-body p-0">
+                <table class="w-100 table table-bordered display margin-top-10 w-p100">
+                    <thead>
+                        <tr>
+                            <th style="width: 1%">
+                                No.
+                            </th>
+                            <th style="width: 15%">
+                                Name
+                            </th>
+                            <th style="width: 5%">
+                                No.Matric
+                            </th>
+                            <th style="width: 5%">
+                                Date
+                            </th>
+                            <th style="width: 5%">
+                                No. Resit
+                            </th>
+                            <th style="width: 5%">
+                                Method
+                            </th>
+                            <th style="width: 5%">
+                                Bank
+                            </th>
+                            <th style="width: 5%">
+                                No. Document
+                            </th>
+                            <th style="width: 5%">
+                                Amount
+                            </th>
+                            <th style="width: 5%">
+                                Total
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="table">
+                    @php
+                    $totalFailALL = 0;
+                    @endphp
+                    @foreach ($data['failStudent'] as $key => $rgs)
+                    <tr>
+                        <td>
+                        {{ $key+1 }}
+                        </td>
+                        <td>
+                        {{ $rgs->name }}
+                        </td>
+                        <td>
+                        {{ $rgs->no_matric }}
+                        </td>
+                        <td>
+                        {{ $rgs->date }}
+                        </td>
+                        <td>
+                        {{ $rgs->ref_no }}
+                        </td>
+                        <td>
+                        @foreach ($data['failStudMethod'][$key] as $mth)
+                        <div>{{ $mth->method }}</div>
+                        @endforeach
+                        </td>
+                        <td>
+                        @foreach ($data['failStudMethod'][$key] as $mth)
+                        <div>{{ $mth->bank }}</div>
+                        @endforeach
+                        </td>
+                        <td>
+                        @foreach ($data['failStudMethod'][$key] as $mth)
+                        <div>{{ $mth->no_document }}</div>
+                        @endforeach
+                        </td>
+                        <td>
+                        @php
+                            $totalFail = 0;
+                        @endphp
+                        @foreach ($data['failStudDetail'][$key] as $mth)
+                        <div>{{ $mth->amount }}</div>
+                        @php
+                            $totalFail += $mth->amount;
+                        @endphp
+                        @endforeach
+                        </td>
+                        <td>
+                        <div>{{  number_format($totalFail, 2) }}</div>
+                        @php
+                            $totalFailALL += $totalFail;
+                        @endphp
+                        </td>
+                    </tr>
+                    @endforeach
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="9" style="text-align: center">
+                                TOTAL
+                            </td>
+                            <td>
+                                {{  number_format($totalFailALL, 2) }}
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+                </div>
+                <!-- /.card-body -->
+            </div>
             
             <div class="row justify-content-center">
                 <!-- pecahan -->
@@ -889,6 +1001,53 @@ tr:hover {
                                                     </td>
                                                     <td>
                                                         {{ number_format(array_sum($data['graduateTotals']), 2) }}
+                                                    </td>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table class="table-fit-content">
+                                            <thead>
+                                                <tr>
+                                                    <th colspan="3" style="text-align: center">
+                                                        Fail
+                                                    </th>
+                                                </tr>
+                                                <tr>
+                                                    <th style="width: 1%">
+                                                        No.
+                                                    </th>
+                                                    <th style="width: 2%">
+                                                        PROGRAM
+                                                    </th>
+                                                    <th style="width: 2%">
+                                                        QUOTE
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="table">
+                                            @foreach ($data['program'] as $key => $prg)
+                                            <tr>
+                                                <td>
+                                                {{ $prg->program_ID }}
+                                                </td>
+                                                <td>
+                                                {{ $prg->progcode }}
+                                                </td>
+                                                <td>
+                                                {{ (!empty($data['failTotals'])) ? $data['failTotals'][$key] : 0}}
+                                                </td>
+                                            </tr>
+                                            @endforeach
+                                            </tbody>
+                                            <tfoot>
+                                                <tr>
+                                                    <td colspan="2" style="text-align: center">
+                                                        TOTAL
+                                                    </td>
+                                                    <td>
+                                                        {{ number_format(array_sum($data['failTotals']), 2) }}
                                                     </td>
                                                 </tr>
                                             </tfoot>
@@ -1374,7 +1533,7 @@ tr:hover {
 
             <div class="row justify-content-center">
                 <!-- pecahan -->
-                <div class="card col-md-2 mb-3" id="stud_info" style="margin-right: 2%">
+                <div class="card col-md-12 mb-3" id="stud_info" style="margin-right: 2%">
                     <div class="card-body p-0">
                         <table class="table-fit-content">
                             <tbody id="table">
@@ -1388,13 +1547,13 @@ tr:hover {
                                                     </th>
                                                 </tr>
                                                 <tr>
-                                                    <th style="width: 1%">
-                                                        No.
+                                                    <th style="width: 5%">
+                                                        Number.
                                                     </th>
-                                                    <th style="width: 2%">
+                                                    <th style="width: 5%">
                                                         PROGRAM
                                                     </th>
-                                                    <th style="width: 2%">
+                                                    <th style="width: 5%">
                                                         QUOTE
                                                     </th>
                                                 </tr>
@@ -1436,7 +1595,7 @@ tr:hover {
                                                 </tr>
                                                 <tr>
                                                     <th style="width: 1%">
-                                                        No.
+                                                        Number.
                                                     </th>
                                                     <th style="width: 2%">
                                                         PROGRAM
