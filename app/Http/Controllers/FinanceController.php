@@ -9300,7 +9300,7 @@ class FinanceController extends Controller
             $data['student'] = DB::table('students')
             ->join('sessions', 'students.session', 'sessions.SessionID')
             ->where('students.program', $request->program)
-            ->where('students.status', 8)
+            ->whereIn('students.status', [3,8])
             ->whereBetween('sessions.Year', [$request->from, $request->to])
             ->select('students.*', 'sessions.Year AS graduate')
             ->get();
@@ -9310,7 +9310,7 @@ class FinanceController extends Controller
 
             $data['student'] = DB::table('students')
             ->join('sessions', 'students.session', 'sessions.SessionID')
-            ->where('students.status', 8)
+            ->whereIn('students.status', [3,8])
             ->whereBetween('sessions.Year', [$request->from, $request->to])
             ->select('students.*', 'sessions.Year AS graduate')
             ->get();
@@ -10333,7 +10333,7 @@ class FinanceController extends Controller
                                     DB::raw('"" AS ref_no'), DB::raw('"" AS account_no'))
                            ->whereBetween('sessions.Year', [$request->from, $request->to])
                            ->whereIn('students.program', $data['program'])
-                           ->where('students.status', 8)
+                           ->whereIn('students.status', [3,8])
                            ->get();
                            
 
