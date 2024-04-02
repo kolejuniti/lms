@@ -591,17 +591,9 @@ class AR_Controller extends Controller
         $getCourse =  DB::table('student_subjek')
                       ->join('students', 'student_subjek.student_ic', 'students.ic')
                       ->join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
-                      ->join('subjek_structure', function($join){
-                            $join->on('subjek.sub_id', 'subjek_structure.courseID');
-                        })
                       ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
-                    //   ->where('student_subjek.sessionid', $data['student']->session)
+                      //->where('student_subjek.sessionid', $data['student']->session)
                       ->where('students.ic', $data['student']->ic)
-                      ->where([
-                            ['subjek_structure.program_id', $data['student']->program],
-                            ['subjek_structure.intake_id', $data['student']->intake],
-                            ['subjek_structure.semester_id', '<=', $data['student']->semester]
-                        ])
                       ->groupBy('student_subjek.courseid')
                       ->groupBy('student_subjek.semesterid');
 
@@ -707,22 +699,31 @@ class AR_Controller extends Controller
         ->select('students.*', 'tblstudent_status.name AS status', 'tblprogramme.progname AS program', 'a.SessionName AS intake', 'b.SessionName AS session')
         ->where('ic', $request->ic)->first();
 
-        $getCourse =  DB::table('student_subjek')
+        // $getCourse =  DB::table('student_subjek')
+        //               ->join('students', 'student_subjek.student_ic', 'students.ic')
+        //               ->join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
+        //               ->join('subjek_structure', function($join){
+        //                     $join->on('subjek.sub_id', 'subjek_structure.courseID');
+        //                 })
+        //               ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
+        //             //   ->where('student_subjek.sessionid', $data['student']->session)
+        //               ->where('students.ic', $data['student']->ic)
+        //               ->where([
+        //                     ['subjek_structure.program_id', $data['student']->program],
+        //                     ['subjek_structure.intake_id', $data['student']->intake],
+        //                     ['subjek_structure.semester_id', '<=', $data['student']->semester]
+        //                 ])
+        //                 ->groupBy('student_subjek.courseid')
+        //                 ->groupBy('student_subjek.semesterid');
+
+         $getCourse =  DB::table('student_subjek')
                       ->join('students', 'student_subjek.student_ic', 'students.ic')
                       ->join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
-                      ->join('subjek_structure', function($join){
-                            $join->on('subjek.sub_id', 'subjek_structure.courseID');
-                        })
                       ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
-                    //   ->where('student_subjek.sessionid', $data['student']->session)
+                      //->where('student_subjek.sessionid', $data['student']->session)
                       ->where('students.ic', $data['student']->ic)
-                      ->where([
-                            ['subjek_structure.program_id', $data['student']->program],
-                            ['subjek_structure.intake_id', $data['student']->intake],
-                            ['subjek_structure.semester_id', '<=', $data['student']->semester]
-                        ])
-                        ->groupBy('student_subjek.courseid')
-                        ->groupBy('student_subjek.semesterid');
+                      ->groupBy('student_subjek.courseid')
+                      ->groupBy('student_subjek.semesterid');
 
         $data['allCourse'] = $getCourse->select('student_subjek.id as IDS', 'student_subjek.courseid', 'student_subjek.semesterid AS semester', 'sessions.SessionName', 'subjek.*')->orderBy('student_subjek.semesterid')->get();
 
@@ -776,19 +777,11 @@ class AR_Controller extends Controller
         $getCourse =  DB::table('student_subjek')
                       ->join('students', 'student_subjek.student_ic', 'students.ic')
                       ->join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
-                      ->join('subjek_structure', function($join){
-                            $join->on('subjek.sub_id', 'subjek_structure.courseID');
-                        })
                       ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
-                    //   ->where('student_subjek.sessionid', $data['student']->session)
+                      //->where('student_subjek.sessionid', $data['student']->session)
                       ->where('students.ic', $data['student']->ic)
-                      ->where([
-                            ['subjek_structure.program_id', $data['student']->program],
-                            ['subjek_structure.intake_id', $data['student']->intake],
-                            ['subjek_structure.semester_id', '<=', $data['student']->semester]
-                        ])
-                        ->groupBy('student_subjek.courseid')
-                        ->groupBy('student_subjek.semesterid');
+                      ->groupBy('student_subjek.courseid')
+                      ->groupBy('student_subjek.semesterid');
 
         $data['allCourse'] = $getCourse->select('student_subjek.id as IDS', 'student_subjek.courseid', 'student_subjek.semesterid AS semester', 'sessions.SessionName', 'subjek.*')->orderBy('student_subjek.semesterid')->get();
 
