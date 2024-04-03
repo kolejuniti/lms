@@ -173,8 +173,13 @@
                         </div>
                         <div>
                           <div class="form-group">
-                            <label>Course Level ID</label>
-                            <input type="number" name="clid" id="clid" class="form-control">
+                              <label class="form-label" for="clid">Course Level ID</label>
+                              <select class="form-select" id="clid" name="clid">
+                                <option value="-" selected disabled>-</option>
+                                @foreach ($data['level'] as $clid)
+                                <option value="{{ $clid->id }}">{{ $clid->name}}</option> 
+                                @endforeach
+                              </select>
                           </div>
                         </div>
                         <div>
