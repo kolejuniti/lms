@@ -34,10 +34,12 @@ class AR_Controller extends Controller
             // 'course' => DB::table('subjek')->leftjoin('tblprogramme', 'subjek.prgid', 'tblprogramme.id')->select('subjek.*', 'tblprogramme.progname')->get(),
             'course' => DB::table('subjek')
             ->leftjoin('subjek AS b', 'subjek.prerequisite_id', 'b.sub_id')
-            ->select('subjek.*', 'b.course_name AS prerequisite')
+            ->leftjoin('tblcourse_level', 'subjek.course_level_id', 'tblcourse_level.id')
+            ->select('subjek.*', 'b.course_name AS prerequisite', 'tblcourse_level.name AS course_level_id')
             ->get(),
             'courselist' => DB::table('subjek')->groupBy('sub_id')->get(),
-            'program' => DB::table('tblprogramme')->get()
+            'program' => DB::table('tblprogramme')->get(),
+            'level' => DB::table('tblcourse_level')->get()
         ];
 
         return view('pendaftar_akademik', compact('data'));
