@@ -248,6 +248,7 @@ class AR_Controller extends Controller
             ->where('subjek.id', $request->id)
             ->first(),
             'courselist' => DB::table('subjek')->groupBy('sub_id')->get(),
+            'level' => DB::table('tblcourse_level')->get()
         ];
 
         return view('pendaftar_akademik.getCourse', compact('data'))->with('id', $request->id);
@@ -1441,6 +1442,9 @@ class AR_Controller extends Controller
 
         // });
 
+        // Set Carbon's locale to Malay
+        Carbon::setLocale('ms');
+
         //combine everything
         $data['absent'] = $data['absent']->map(function ($item) {
             // Parse 'classdate' once since it's used multiple times
@@ -1448,7 +1452,7 @@ class AR_Controller extends Controller
             
             return [
                 'date' => $classdateParsed->format('d-m-Y'),
-                'day' => $classdateParsed->format('l'),
+                'day' => $classdateParsed->translatedFormat('l'),
                 'time1' => $classdateParsed->format('h:i A'),
                 'time2' => Carbon::parse($item->classend)->format('h:i A'),
             ];
