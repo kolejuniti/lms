@@ -58,6 +58,9 @@
                         <th style="width: 5%">
                             Warning
                         </th>
+                        <th style="width: 10%">
+                            Lecturer
+                        </th>
                         <th style="width: 5%">
                         </th>
                     </tr>
@@ -85,6 +88,9 @@
                         </td>
                         <td>
                             {{ $wrn->warning }}
+                        </td>
+                        <td>
+                            {{ $wrn->lecturer }}
                         </td>
                         <td>
                             <a class="btn btn-info btn-sm btn-sm mr-2" href="/AR/student/printWarningLetter?id={{ $wrn->id }}" target="_blank">
