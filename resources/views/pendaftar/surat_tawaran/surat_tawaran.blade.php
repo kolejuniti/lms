@@ -121,10 +121,10 @@ use Carbon\Carbon;
                     <div class="form-group">
                         <ul>
                             <li>Surat Tawaran</li>
-                            <li>Salinan Kad Pengenalan pemohon dan penjaga/ibubapa (1 salinan)</li>
                             <li>4 keping gambar ukuran pasport</li>
-                            <li>Slip gaji penjaga/ibubapa terkini (1 salinan)</li>
+                            <li>Salinan Kad Pengenalan pemohon dan penjaga/ibubapa (1 salinan)</li>
                             <li>Salinan Sijil Kelahiran pemohon dan penjaga/ibubapa (1 salinan)</li>
+                            <li>Slip gaji penjaga/ibubapa terkini (1 salinan)</li>
                         </ul>
                     </div>
                 </div>
