@@ -1292,7 +1292,8 @@ class FinanceController extends Controller
                                         'sessionid' => $student->session,
                                         'semesterid' => $key->semester_id,
                                         'course_status_id' => 15,
-                                        'status' => 'ACTIVE'
+                                        'status' => 'ACTIVE',
+                                        'credit' => $key->course_credit
                                     ]);
                     
 
