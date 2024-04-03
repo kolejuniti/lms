@@ -1354,12 +1354,14 @@ class AR_Controller extends Controller
                                 $join->on('tblstudent_warning.groupid', 'student_subjek.group_id');
                                 $join->on('tblstudent_warning.groupname', 'student_subjek.group_name');
                            })
+                           ->join('user_subjek', 'student_subjek.group_id', 'user_subjek.id')
+                           ->join('users', 'user_subjek.user_ic', 'users.ic')
                            ->join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
                            ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
                            ->where('tblstudent_warning.student_ic', $request->student)
                            ->orderBy('subjek.course_name')
                            ->groupBy('tblstudent_warning.id')
-                           ->select('tblstudent_warning.*', 'subjek.course_name', 'subjek.course_code', 'sessions.SessionName')
+                           ->select('tblstudent_warning.*', 'subjek.course_name', 'subjek.course_code', 'sessions.SessionName', 'users.name AS lecturer')
                            ->get();
 
         return view('pendaftar_akademik.student.warning_letter.getWarningLetter', compact('data'));
