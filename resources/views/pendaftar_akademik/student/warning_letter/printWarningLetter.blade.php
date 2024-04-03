@@ -13,7 +13,7 @@ use Carbon\Carbon;
         <meta name="description" content="">
         <meta name="author" content="">
         <meta name="csrf-token" content="{{ csrf_token() }}">
-        <title>Tawaran Kemasukan ke Program Akademik Kolej UNITI</title>
+        <title>Surat Peringatan Pelajar Tidak Hadir Ke Kelas</title>
         <!-- Vendors Style-->
         <link rel="stylesheet" href="{{ asset('assets/src/css/vendors_css.css') }}">
     <!-- Style-->  
@@ -82,7 +82,7 @@ use Carbon\Carbon;
         </style>
     </head>
     <body>
-        @php
+        {{-- @php
 
             // Get the date two weeks before
             $twoWeeksBefore = Carbon::parse($data['student']->date_offer)->subWeeks(2);
@@ -90,13 +90,13 @@ use Carbon\Carbon;
             // Convert the date format
             $formattedDate = $twoWeeksBefore->format('d/m/Y');
 
-        @endphp
+        @endphp --}}
         <br>
         <br>
         <br>
         <br>
         <p>Ruj. Kami : KUSB/KU/HEA/{{ $data['student']->progcode }}/{{ str_replace(' ', '', $data['warning']->course_code)  }}/{{ $data['student']->no_matric }}/0{{ $data['warning']->warning }}</p>
-        <p>Tarikh &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : {{ $formattedDate }}</p>
+        <p>Tarikh &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : {{ date('d-m-Y') }}</p>
         <br>
         <p>Kepada:-</p>
         <div class="col-12 mb-1 mt-1">  
@@ -110,7 +110,8 @@ use Carbon\Carbon;
         </div>
         <p>Saudara/Saudari,</p>
         <p class="mt-2"><b>SURAT PERINGATAN {{ $data['warning']->warning }} : KETIDAKHADIRAN KE KULIAH/TUTORIAL BAGI KURSUS {{ str_replace(' ', '', $data['warning']->course_code)  }} – {{ $data['warning']->course_name  }}</b></p>
-        <p class="mt-2">Laporan telah dibuat bahawa pada 
+        <p class="mt-2">Laporan telah dibuat bahawa pada
+        <b> 
         @php
         $dates = $data['absent']->pluck('date')->toArray();
         $lastDate = array_pop($dates); // Remove the last date to handle it separately
@@ -119,6 +120,7 @@ use Carbon\Carbon;
         $datesString .= $lastDate;
         echo $datesString;
         @endphp 
+        </b>
         anda telah tidak hadir ke kuliah/tutorial di atas seperti yang telah tersenarai di bawah ini tanpa sebab:-</p>
         <div class="col-md-12 mt-2">
             <table class="custom-table">

@@ -40,6 +40,9 @@
                         <th style="width: 1%">
                             No.
                         </th>
+                        <th style="width: 5%">
+                            Code
+                        </th>
                         <th style="width: 10%">
                             Subject
                         </th>
@@ -64,6 +67,9 @@
                     <tr>
                         <td>
                             {{ $key+1 }}
+                        </td>
+                        <td>
+                            {{ $wrn->course_code }}
                         </td>
                         <td>
                             {{ $wrn->course_name }}
