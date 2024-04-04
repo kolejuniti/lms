@@ -1393,7 +1393,13 @@ class AR_Controller extends Controller
                 ['tblclassattendance.groupid', $data['warning']->groupid],
                 ['tblclassattendance.groupname', $data['warning']->groupname]
             ])
-            ->where('tblclassattendance.student_ic', '!=', $data['warning']->student_ic)
+            // Subquery to exclude specific student_ic
+            ->whereNotIn('tblclassattendance.student_ic', function($query) use ($data) {
+                $query->select('student_ic')
+                    ->from('tblclassattendance')
+                    ->where('student_ic', '=', $data['warning']->student_ic);
+            })
+            // ->where('tblclassattendance.student_ic', '!=', $data['warning']->student_ic)
             ->orderBy('tblclassattendance.classdate')
             ->groupBy('tblclassattendance.classdate')
             ->select('tblclassattendance.*');
