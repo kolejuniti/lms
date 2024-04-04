@@ -107,7 +107,7 @@ use Carbon\Carbon;
         </p>
         <br>
         <p><strong>Program Pengajian &amp; Kod &nbsp;:</strong> {{ $data['student']->progname }}</p>
-        <p><strong>Tarikh &amp; Masa Lapor Diri &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</strong> 01/SEP/2022 (9.00 Pagi - 3.00 petang)</p>
+        <p><strong>Tarikh &amp; Masa Lapor Diri &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</strong> 01/SEP/2022 (9.00 Pagi - 3.00 Petang)</p>
         <p><strong>Tempat &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</strong> PEJABAT PENTADBIRAN, KOLEJ UNITI</p>
         <br>
         <p>
