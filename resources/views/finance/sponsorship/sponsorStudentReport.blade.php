@@ -137,15 +137,37 @@
 </script>
 
 <script>
-  $(document).ready( function () {
-        $('#complex_headers').DataTable({
-          dom: 'lBfrtip', // if you remove this line you will see the show entries dropdown
-          
-          buttons: [
-              'copy', 'csv', 'excel', 'pdf', 'print'
-          ],
-        });
-    } );
-  </script>
+  $(document).ready(function() {
+    $('#complex_headers').DataTable({
+      dom: 'lBfrtip',
+      buttons: [
+        {
+          extend: 'copy',
+          title: "<h3>" + "Title :" + " {{ $data['info']->sponsor }}" + "</h3>",
+        },
+        {
+          extend: 'csv',
+          title: "<h3>" + "Title :" + " {{ $data['info']->sponsor }}" + "</h3>",
+        },
+        {
+          extend: 'excel',
+          title: "<h3>" + "Title :" + " {{ $data['info']->sponsor }}" + "</h3>",
+        },
+        {
+          extend: 'pdf',
+          title: "<h3>" + "Title :" + " {{ $data['info']->sponsor }}" + "</h3>",
+        },
+        {
+          extend: 'print',
+          title: "<h3>" + "Title :" + " {{ $data['info']->sponsor }}" + "</h3>",
+          customize: function (win) {
+            // Or, if you want it to appear right below the title, you could use:
+            $(win.document.body).find('h3').after("No. Voucher :" + " {{ $data['info']->no_document }}");
+          }
+        }
+      ],
+    });
+  });
+</script>
 
 @endsection
