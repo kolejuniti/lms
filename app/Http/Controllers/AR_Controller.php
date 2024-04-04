@@ -1386,47 +1386,69 @@ class AR_Controller extends Controller
                            ->first();
 
         // Define a function to create the base query
+        // $baseQuery = function () use ($data) {
+        //     return DB::table('tblclassattendance')
+        //     ->select('tblclassattendance.classdate')
+        //     ->where([
+        //         ['tblclassattendance.groupid', $data['warning']->groupid],
+        //         ['tblclassattendance.groupname', $data['warning']->groupname]
+        //     ])
+        //     ->where('tblclassattendance.student_ic', '!=', $data['warning']->student_ic)
+        //     ->orderBy('tblclassattendance.classdate')
+        //     ->groupBy('tblclassattendance.classdate')
+        //     ->select('tblclassattendance.*');
+        // };
+
+        
+        // if($data['warning']->warning == 1)
+        // {
+
+        //     $data['absent'] = ($baseQuery)()
+        //         ->get();
+
+        // }elseif($data['warning']->warning == 2)
+        // {
+
+        //     $data['absent'] = ($baseQuery)()
+        //         ->take(4)
+        //         ->get();
+
+        // }elseif($data['warning']->warning == 3)
+        // {
+
+        //     $data['absent'] = ($baseQuery)()
+        //         ->take(6)
+        //         ->get();
+
+        // }
+
         $baseQuery = function () use ($data) {
-            return DB::table('tblclassattendance')
-            ->select('tblclassattendance.classdate')
-            ->where([
-                ['tblclassattendance.groupid', $data['warning']->groupid],
-                ['tblclassattendance.groupname', $data['warning']->groupname]
-            ])
-            // Subquery to exclude specific student_ic
-            ->whereNotIn('tblclassattendance.student_ic', function($query) use ($data) {
-                $query->select('student_ic')
-                    ->from('tblclassattendance')
-                    ->where('student_ic', '=', $data['warning']->student_ic);
-            })
-            // ->where('tblclassattendance.student_ic', '!=', $data['warning']->student_ic)
-            ->orderBy('tblclassattendance.classdate')
-            ->groupBy('tblclassattendance.classdate')
-            ->select('tblclassattendance.*');
+            return DB::table('tblclassattendance as ca1')
+                ->select('ca1.*')
+                ->where([
+                    ['ca1.groupid', $data['warning']->groupid],
+                    ['ca1.groupname', $data['warning']->groupname]
+                ])
+                ->whereRaw('NOT EXISTS (
+                    SELECT 1 FROM tblclassattendance as ca2
+                    WHERE ca2.classdate = ca1.classdate
+                    AND ca2.groupid = ca1.groupid
+                    AND ca2.groupname = ca1.groupname
+                    AND ca2.student_ic = ?
+                )', [$data['warning']->student_ic])
+                ->groupBy('ca1.classdate')
+                ->orderBy('ca1.classdate');
         };
-
-        if($data['warning']->warning == 1)
-        {
-
-            $data['absent'] = ($baseQuery)()
-                ->take(2)
-                ->get();
-
-        }elseif($data['warning']->warning == 2)
-        {
-
-            $data['absent'] = ($baseQuery)()
-                ->take(4)
-                ->get();
-
-        }elseif($data['warning']->warning == 3)
-        {
-
-            $data['absent'] = ($baseQuery)()
-                ->take(6)
-                ->get();
-
+        
+        if ($data['warning']->warning == 1) {
+            $data['absent'] = $baseQuery()->take(2)->get();
+        } elseif ($data['warning']->warning == 2) {
+            $data['absent'] = $baseQuery()->take(4)->get();
+        } elseif ($data['warning']->warning == 3) {
+            $data['absent'] = $baseQuery()->take(6)->get();
         }
+
+        //dd($data['absent']);
 
         // $data['date'] = $data['absent']->map(function ($item) {
         //     // Extracting the date part from 'classdate'
