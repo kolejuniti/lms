@@ -662,6 +662,13 @@
                 text: 'Print',
                 orientation: 'landscape', // Set the orientation to landscape
                 customize: function(win) {
+                  var today = new Date();
+                  var dd = String(today.getDate()).padStart(2, '0');
+                  var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+                  var yyyy = today.getFullYear();
+
+                  today = dd + '/' + mm + '/' + yyyy;
+
                   var body = $(win.document.body);
 
                   // Clone the main table and ensure the footer is shown
@@ -676,7 +683,7 @@
                   body.html('');
 
                   // Append the cloned tables
-                  body.append('<h1>Student Report</h1>'); // Optional: Add a title or any additional content
+                  body.append(`<h1>LAPORAN BILANGAN PELAJAR SETAKAT ${today}</h1>`); // Optional: Add a title or any additional content
                   body.append(mainTable); // Append the main table
                   body.append('<h2>Pecahan Pelajar Semester 1</h2>'); // Optional: Add subtitles or descriptions
                   body.append(additionalTable); // Append the additional table
