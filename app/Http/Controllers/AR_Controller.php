@@ -1424,7 +1424,7 @@ class AR_Controller extends Controller
 
         $baseQuery = function () use ($data) {
             return DB::table('tblclassattendance as ca1')
-                ->select('ca1.*')
+                ->select('ca1.*', DB::raw('HOUR(TIMEDIFF(ca1.classend, ca1.classdate)) as total_hours'))
                 ->where([
                     ['ca1.groupid', $data['warning']->groupid],
                     ['ca1.groupname', $data['warning']->groupname]
@@ -1439,14 +1439,46 @@ class AR_Controller extends Controller
                 ->groupBy('ca1.classdate')
                 ->orderBy('ca1.classdate');
         };
-        
-        if ($data['warning']->warning == 1) {
-            $data['absent'] = $baseQuery()->take($data['warning']->course_credit)->get();
-        } elseif ($data['warning']->warning == 2) {
-            $data['absent'] = $baseQuery()->take($data['warning']->course_credit*2)->get();
-        } elseif ($data['warning']->warning == 3) {
-            $data['absent'] = $baseQuery()->take($data['warning']->course_credit*3)->get();
+
+        $data['absents'] = $baseQuery()->get();
+
+        $totalhours = 0;
+
+        foreach($data['absents'] as $abs)
+        {
+
+            $data['absent'][] = $abs;
+
+            $totalhours += $abs->total_hours;
+
+            if ($data['warning']->warning == 1) {
+                if($totalhours >= $data['warning']->course_credit)
+                {
+                    break;
+                }
+            } elseif ($data['warning']->warning == 2) {
+                if($totalhours >= $data['warning']->course_credit*2)
+                {
+                    break;
+                }
+            } elseif ($data['warning']->warning == 3) {
+                if($totalhours >= $data['warning']->course_credit*3)
+                {
+                    break;
+                }
+            }
+
         }
+
+        //dd(collect($data['absent']));
+        
+        // if ($data['warning']->warning == 1) {
+        //     $data['absent'] = $baseQuery()->take($data['warning']->course_credit)->get();
+        // } elseif ($data['warning']->warning == 2) {
+        //     $data['absent'] = $baseQuery()->take($data['warning']->course_credit*2)->get();
+        // } elseif ($data['warning']->warning == 3) {
+        //     $data['absent'] = $baseQuery()->take($data['warning']->course_credit*3)->get();
+        // }
 
         //dd($data['absent']);
 
@@ -1476,7 +1508,7 @@ class AR_Controller extends Controller
         Carbon::setLocale('ms');
 
         //combine everything
-        $data['absent'] = $data['absent']->map(function ($item) {
+        $data['absent'] = collect($data['absent'])->map(function ($item) {
             // Parse 'classdate' once since it's used multiple times
             $classdateParsed = Carbon::parse($item->classdate);
             
