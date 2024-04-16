@@ -1382,7 +1382,7 @@ class AR_Controller extends Controller
                            ->where('tblstudent_warning.id', $request->id)
                            ->orderBy('subjek.course_name')
                            ->groupBy('tblstudent_warning.id')
-                           ->select('tblstudent_warning.*', 'subjek.course_name', 'subjek.course_code', 'subjek.id AS subID','sessions.SessionName')
+                           ->select('tblstudent_warning.*', 'subjek.course_name', 'subjek.course_code', 'subjek.course_credit', 'subjek.id AS subID','sessions.SessionName')
                            ->first();
 
         // Define a function to create the base query
@@ -1441,11 +1441,11 @@ class AR_Controller extends Controller
         };
         
         if ($data['warning']->warning == 1) {
-            $data['absent'] = $baseQuery()->take(2)->get();
+            $data['absent'] = $baseQuery()->take($data['warning']->course_credit)->get();
         } elseif ($data['warning']->warning == 2) {
-            $data['absent'] = $baseQuery()->take(4)->get();
+            $data['absent'] = $baseQuery()->take($data['warning']->course_credit*2)->get();
         } elseif ($data['warning']->warning == 3) {
-            $data['absent'] = $baseQuery()->take(6)->get();
+            $data['absent'] = $baseQuery()->take($data['warning']->course_credit*3)->get();
         }
 
         //dd($data['absent']);
