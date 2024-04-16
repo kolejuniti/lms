@@ -151,17 +151,19 @@ use Carbon\Carbon;
             </table>
         </div>
         <p class="mt-2">Adalah diingatkan mengenai para 3.8.4 (c), Peraturan Akademik Kolej UNITI Pindaan 2021 seperti berikut: </p>
-        <p class="mt-3"><i>“Pelajar yang kehadirannya kurang daripada 80% dalam sesuatu kursus tanpa sebabsebab yang boleh diterima akan dikira gagal dalam kursus tersebut.”</i></p>
+        <p class="mt-3"><i>“Pelajar yang kehadirannya kurang daripada 80% dalam sesuatu kursus tanpa sebab-sebab yang boleh diterima akan dikira gagal dalam kursus tersebut.”</i></p>
         <p class="mt-3">Dengan ini anda diberi amaran bahawa sekiranya kehadiran yang tidak memuaskan
             ini berterusan, pihak Kolej berhak mengambil tindakan terhadap anda mengikut para
             3.8.4 (c) seperti di atas.</p>
         <p class="mt-1 mb-1">Sekian, terima kasih.</p>
-        <p>Yang benar,</p>
+        <br>
+        <p style="text-align: center;"><b>[THIS IS A COMPUTER GENERATED AND DOES NOT REQUIRE SIGNATURE]</b></p>
+        {{-- <p>Yang benar,</p>
         <img src="{{ asset('storage/signature/signature2.png') }}" alt="Image" width="10%" height="10%">
 
         <p><b>Azhar bin Zunaidak</b><br>
         Penolong Pendaftar Akademik<br>
-        <b>KOLEJ UNITI</b></p><br>
+        <b>KOLEJ UNITI</b></p><br> --}}
     </body>
 </html>
 
