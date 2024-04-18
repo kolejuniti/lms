@@ -563,6 +563,12 @@
                           </div>
                           <div class="col-md-6">
                             <div class="form-group">
+                              <label class="form-label" for="w_ic">Email <p style="color:red; display:inline-block;">*</p></label>
+                              <input type="text" class="form-control" id="w_email" placeholder="Enter Email" name="w_email[]">
+                            </div>
+                          </div>
+                          <div class="col-md-6">
+                            <div class="form-group">
                               <label class="form-label" for="w_notel_home">Home No. Tel</label>
                               <input type="text" class="form-control" id="w_notel_home" placeholder="Enter No. Tel Home" name="w_notel_home[]">
                             </div>
@@ -684,6 +690,7 @@ $(document).ready(function() {
   var firstWaris = {!! json_encode($data['waris']->shift()) !!};
   $('#w_name').val(firstWaris.name);
   $('#w_ic').val(firstWaris.ic);
+  $('#w_email').val(firstWaris.email);
   $('#w_notel_home').val(firstWaris.home_tel);
   $('#w_notel').val(firstWaris.phone_tel);
   $('#occupation').val(firstWaris.occupation);
@@ -700,6 +707,7 @@ $(document).ready(function() {
     newForm.attr('id', 'card-{{ $waris->id }}');
     newForm.find('input[name="w_name[]"]').val('{{ $waris->name }}');
     newForm.find('input[name="w_ic[]"]').val('{{ $waris->ic }}');
+    newForm.find('input[name="w_email[]"]').val('{{ $waris->email }}');
     newForm.find('input[name="w_notel_home[]"]').val('{{ $waris->home_tel }}');
     newForm.find('input[name="w_notel[]"]').val('{{ $waris->phone_tel }}');
     newForm.find('select[name="occupation[]"]').val('{{ $waris->occupation }}');
