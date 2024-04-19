@@ -19,7 +19,7 @@
                         <p>Intake &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ $data['student']->intake_name }}</p>
                     </div>
                     <div class="form-group">
-                        <p>Address &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ strtoupper($data['student']->address1) }} {{ strtoupper($data['student']->address2) }}, {{ strtoupper($data['student']->address3) }} {{ strtoupper($data['student']->postcode) }}, {{ strtoupper($data['student']->city) }}, {{ strtoupper($data['student']->state) }}, {{ strtoupper($data['student']->country) }}</p>
+                        <p>Address &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ strtoupper($data['student']->address1) }} {{ strtoupper($data['student']->address2) }}, {{ strtoupper($data['student']->address3) }} {{ strtoupper($data['student']->postcode) }}, {{ strtoupper($data['student']->city) }}, <br>{{ strtoupper($data['student']->state) }}, {{ strtoupper($data['student']->country) }}</p>
                     </div>
                 </div>
                 <div class="col-md-6">
