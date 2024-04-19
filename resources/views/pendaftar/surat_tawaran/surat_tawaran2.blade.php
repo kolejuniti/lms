@@ -90,7 +90,7 @@ use Carbon\Carbon;
           {{ strtoupper($data['address']->address2) }}<br>
           {{ strtoupper($data['address']->address3) }}<br> 
           {{ $data['address']->postcode }}<br>
-          {{ strtoupper($data['student']->city) }}, {{ strtoupper($data['address']->state) }}<br>
+          {{ strtoupper($data['address']->city) }}, {{ strtoupper($data['address']->state) }}<br>
           {{ strtoupper($data['address']->country) }}
         </p>
         <br>
