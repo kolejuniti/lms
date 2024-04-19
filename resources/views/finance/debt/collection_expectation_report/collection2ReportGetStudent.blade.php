@@ -86,10 +86,10 @@
                                     {{ $data['latest'][$key]->date_of_payment  ?? null}}
                                 </td>
                                 <td>
-                                    {{ number_format($data['latest'][$key]->amount, 2) }}
+                                    {{ number_format($data['latest'][$key]->amount ?? 0, 2) }}
                                 </td>
                                 <td>
-                                    {{ number_format($data['total_balance'][$key], 2) }}
+                                    {{ number_format($data['total_balance'][$key] ?? 0, 2) }}
                                 </td>
                                 @php
                                     $sum2 += $data['latest'][$key]->amount;
