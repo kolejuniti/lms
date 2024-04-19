@@ -9236,6 +9236,7 @@ class FinanceController extends Controller
                            ->join('students', 'tblpayment.student_ic', 'students.ic')
                            ->whereBetween('tblpayment.add_date', [$request->from, $request->to])
                            ->where('students.status', 8)
+                           ->where('tblpayment.process_type_id', 1)
                            ->select('students.name', 'students.ic', 'students.no_matric')
                            ->groupBy('students.ic')
                            ->get();
