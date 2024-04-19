@@ -11,12 +11,13 @@
                     </div>
                     <div class="form-group">
                         <p>
-                            {{ strtoupper($data['address']->address1) }}<br>
-                            {{ strtoupper($data['address']->address2) }}<br>
-                            {{ strtoupper($data['address']->address3) }}<br> 
-                            {{ $data['address']->postcode }}<br>
-                            {{ strtoupper($data['address']->city) }}, {{ strtoupper($data['address']->state) }}<br>
-                            {{ strtoupper($data['address']->country) }}
+                            {{ $data['student']->name }} <br>
+                            {{ strtoupper($data['student']->address1) }} <br>
+                            {{ strtoupper($data['student']->address2) }} <br>
+                            {{ strtoupper($data['student']->address3) }} <br>
+                            {{ strtoupper($data['student']->postcode) }} <br>
+                            {{ strtoupper($data['student']->city) }}, {{ strtoupper($data['student']->state) }} <br>
+                            {{ strtoupper($data['student']->country) }}
                         </p>
                     </div>
                     <div class="form-group">
