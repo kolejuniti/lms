@@ -7,7 +7,7 @@
             <div class="row mb-5">
                 <div class="col-md-6">
                     <div class="form-group">
-                        <p>Name/Address &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</p>
+                        <p>Name/Address &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</p>
                     </div>
                     <div class="form-group">
                         <p>{{ $data['student']->name }} <br>
