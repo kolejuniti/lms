@@ -80,10 +80,10 @@
                                     @endif
                                 </td>
                                 <td>
-                                    {{ $data['latest'][$key]->date_of_call }}
+                                    {{ $data['latest'][$key]->date_of_call ?? null}}
                                 </td>
                                 <td>
-                                    {{ $data['latest'][$key]->date_of_payment }}
+                                    {{ $data['latest'][$key]->date_of_payment  ?? null}}
                                 </td>
                                 <td>
                                     {{ number_format($data['latest'][$key]->amount, 2) }}
