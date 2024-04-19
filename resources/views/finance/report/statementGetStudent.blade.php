@@ -7,6 +7,9 @@
             <div class="row mb-5">
                 <div class="col-md-6">
                     <div class="form-group">
+                        <p>Name/Address &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</p>
+                    </div>
+                    <div class="form-group">
                         <p>{{ $data['student']->name }} <br>
                         {{ strtoupper($data['student']->address1) }} <br>
                         {{ strtoupper($data['student']->address2) }}, {{ strtoupper($data['student']->address3) }} <br>
