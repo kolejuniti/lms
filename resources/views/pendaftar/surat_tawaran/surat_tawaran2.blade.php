@@ -86,11 +86,11 @@ use Carbon\Carbon;
         <p>Tarikh : {{ $formattedDate }}</p>
         <br>
         <p>
-          {{ strtoupper($data['student']->name) }}<br>
           {{ strtoupper($data['address']->address1) }}<br>
           {{ strtoupper($data['address']->address2) }}<br>
-          {{ strtoupper($data['address']->address3) }}<br>
-          {{ $data['address']->postcode }} {{ strtoupper($data['address']->state) }}<br>
+          {{ strtoupper($data['address']->address3) }}<br> 
+          {{ $data['address']->postcode }}<br>
+          {{ strtoupper($data['student']->city) }}, {{ strtoupper($data['address']->state) }}<br>
           {{ strtoupper($data['address']->country) }}
         </p>
         <br>
