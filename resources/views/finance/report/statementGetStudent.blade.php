@@ -7,7 +7,12 @@
             <div class="row mb-5">
                 <div class="col-md-6">
                     <div class="form-group">
-                        <p>Student Name &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ $data['student']->name }}</p>
+                        <p>{{ $data['student']->name }} <br>
+                        {{ strtoupper($data['student']->address1) }} <br>
+                        {{ strtoupper($data['student']->address2) }}, {{ strtoupper($data['student']->address3) }} <br>
+                        {{ strtoupper($data['student']->postcode) }}, {{ strtoupper($data['student']->city) }} <br>
+                        {{ strtoupper($data['student']->state) }} <br>
+                        {{ strtoupper($data['student']->country) }}</p>
                     </div>
                     <div class="form-group">
                         <p>Status &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ $data['student']->status }}</p>
@@ -17,13 +22,6 @@
                     </div>
                     <div class="form-group">
                         <p>Intake &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ $data['student']->intake_name }}</p>
-                    </div>
-                    <div class="form-group">
-                        <p>{{ strtoupper($data['student']->address1) }} <br>
-                        {{ strtoupper($data['student']->address2) }}, {{ strtoupper($data['student']->address3) }} <br>
-                        {{ strtoupper($data['student']->postcode) }}, {{ strtoupper($data['student']->city) }} <br>
-                        {{ strtoupper($data['student']->state) }} <br>
-                        {{ strtoupper($data['student']->country) }}</p>
                     </div>
                 </div>
                 <div class="col-md-6">
