@@ -9225,9 +9225,16 @@ class FinanceController extends Controller
 
         //A
 
-        $data['student'] = DB::table('student_payment_log')
-                           ->join('students', 'student_payment_log.student_ic', 'students.ic')
-                           ->whereBetween('student_payment_log.date_of_payment', [$request->from, $request->to])
+        // $data['student'] = DB::table('student_payment_log')
+        //                    ->join('students', 'student_payment_log.student_ic', 'students.ic')
+        //                    ->whereBetween('student_payment_log.date_of_payment', [$request->from, $request->to])
+        //                    ->select('students.name', 'students.ic', 'students.no_matric')
+        //                    ->groupBy('students.ic')
+        //                    ->get();
+
+        $data['student'] = DB::table('tblpayment')
+                           ->join('students', 'tblpayment.student_ic', 'students.ic')
+                           ->whereBetween('tblpayment.add_date', [$request->from, $request->to])
                            ->select('students.name', 'students.ic', 'students.no_matric')
                            ->groupBy('students.ic')
                            ->get();
