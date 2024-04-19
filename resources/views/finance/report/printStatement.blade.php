@@ -106,9 +106,10 @@ tr:hover {
                             <br>
                             <div class="form-group">
                                 <p>{{ strtoupper($data['student']->address1) }}</p>
-                                <p>{{ strtoupper($data['student']->address2) }}, {{ strtoupper($data['student']->address3) }}</p>
-                                <p>{{ strtoupper($data['student']->postcode) }}, {{ strtoupper($data['student']->city) }}</p>
-                                <p>{{ strtoupper($data['student']->state) }}</p>
+                                <p>{{ strtoupper($data['student']->address2) }}</p>
+                                <p>{{ strtoupper($data['student']->address3) }}</p>
+                                <p>{{ strtoupper($data['student']->postcode) }}</p>
+                                <p>{{ strtoupper($data['student']->city) }}, {{ strtoupper($data['student']->state) }}</p>
                                 <p>{{ strtoupper($data['student']->country) }}</p>
                             </div>
                             <br>
