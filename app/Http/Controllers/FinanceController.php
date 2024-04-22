@@ -4035,6 +4035,20 @@ class FinanceController extends Controller
             $data['package'] = null;
 
         }
+
+        //GET SPONSOR
+
+        $data['sponsorStudent'] = DB::table('tblpayment')
+                                  ->join('tblsponsor_library', 'tblpayment.payment_sponsor_id', 'tblsponsor_library.id')
+                                  ->where([
+                                    ['tblpayment.process_type_id', 7],
+                                    ['tblpayment.process_status_id', 2],
+                                    ['tblpayment.student_ic', $request->student]
+                                    ])
+                                  ->whereIn('tblsponsor_library.id', [1,2,3])
+                                  ->orderBy('tblpayment.id', 'DESC')
+                                  ->select('tblsponsor_library.name')
+                                  ->first();
                                 
         //FINE
 
