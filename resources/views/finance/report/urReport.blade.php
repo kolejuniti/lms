@@ -76,6 +76,9 @@
                         Matric No.
                     </th>
                     <th>
+                        Student ID No.
+                    </th>
+                    <th>
                         Payment Method
                     </th>
                     <th>
