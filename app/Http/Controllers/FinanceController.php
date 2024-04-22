@@ -4412,8 +4412,6 @@ class FinanceController extends Controller
 
     public function getDailyReport(Request $request)
     {
-        $data['from'] = Carbon::createFromFormat('Y-m-d', $request->from)->translatedFormat('d F Y'); ;
-        $data['to'] = Carbon::createFromFormat('Y-m-d', $request->to)->translatedFormat('d F Y');;
 
         $data['preRegister'] = [];
         $data['preMethod'] = [];
@@ -5689,6 +5687,9 @@ class FinanceController extends Controller
         
         if(isset($request->print))
         {
+
+            $data['from'] = Carbon::createFromFormat('Y-m-d', $request->from)->translatedFormat('d F Y'); ;
+            $data['to'] = Carbon::createFromFormat('Y-m-d', $request->to)->translatedFormat('d F Y');
 
             return view('finance.report.printDailyReport', compact('data'));
 
