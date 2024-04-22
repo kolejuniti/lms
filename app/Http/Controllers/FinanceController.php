@@ -8282,7 +8282,7 @@ class FinanceController extends Controller
                                ->leftjoin('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
                                ->leftjoin('tbledu_advisor', 'tblstudent_personal.advisor_id', 'tbledu_advisor.id')
                                ->where('students.ic', $pym->student_ic)
-                               ->select('students.name', 'students.ic', 'students.no_matric', 'tbledu_advisor.name AS advisor')
+                               ->select('students.name', 'students.ic', 'students.no_matric', 'students.id', 'tbledu_advisor.name AS advisor')
                                ->first();
 
                     $method[$key] = DB::table('tblpaymentmethod')
@@ -8316,6 +8316,9 @@ class FinanceController extends Controller
                                     </th>
                                     <th>
                                         Matric No.
+                                    </th>
+                                    <th>
+                                        Student ID No.
                                     </th>
                                     <th>
                                         Payment Method
@@ -8365,6 +8368,9 @@ class FinanceController extends Controller
                         </td>
                         <td>
                         '. $student[$key]->no_matric .'
+                        </td>
+                        <td>
+                        '. $student[$key]->id .'
                         </td>';
 
                     $content .= '<td>';
