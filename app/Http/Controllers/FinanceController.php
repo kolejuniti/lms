@@ -4412,6 +4412,9 @@ class FinanceController extends Controller
 
     public function getDailyReport(Request $request)
     {
+        $data['from'] = Carbon::createFromFormat('Y-m-d', $request->from)->translatedFormat('d F Y'); ;
+        $data['to'] = Carbon::createFromFormat('Y-m-d', $request->to)->translatedFormat('d F Y');;
+
         $data['preRegister'] = [];
         $data['preMethod'] = [];
         $data['preDetail'] = [];
