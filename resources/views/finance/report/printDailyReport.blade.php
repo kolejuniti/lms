@@ -33,6 +33,15 @@
          font-size: 9px;
          padding: 1px;   
      }
+     h1 {
+         margin: 0;
+         padding: 0;
+         border: 0;
+         outline: 0;
+         vertical-align: baseline;
+         background: transparent;
+         font-size: 20px;
+     }
      h2,h3,p {
          margin: 0;
          padding: 0;
@@ -92,6 +101,9 @@ tr:hover {
     <div class="container">
         <!-- BEGIN INVOICE -->
         <div class="col-12">
+        <h1>Daily Report as of {{ $data['from'] }} until {{ $data['to'] }}</h1>
+        <br>
+        <br>
         <!--pre registration -->
             <div class="card mb-3" id="stud_info">
                 <div class="card-header">
