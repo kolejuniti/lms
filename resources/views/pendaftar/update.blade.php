@@ -1,4 +1,5 @@
-@extends('../layouts.pendaftar')
+@extends((Auth::user()->usrtype == "RGS") ? 'layouts.pendaftar' : (Auth::user()->usrtype == "FN" ? 'layouts.finance' : ''))
+
 
 @section('main')
 
