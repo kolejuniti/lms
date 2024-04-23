@@ -47,11 +47,19 @@ use Carbon\Carbon;
             
         }
         body {
-                background-image: url('{{ asset("assets/images/letter_head/letter_head.jpg") }}');
-                background-size: cover; /* Cover the entire page */
-                background-position: center; /* Center the background image */
-                background-repeat: no-repeat; /* Do not repeat the image */
-            }
+            /* Ensure the body takes up the full page */
+            margin: 0;
+            padding: 0;
+        }
+        .background-img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1; /* Ensure the image stays behind other content */
+            pointer-events: none; /* Make the image non-interactive */
+        }
         h2,h3,p {
             margin: 0;
             padding: 0;
@@ -82,6 +90,7 @@ use Carbon\Carbon;
         </style>
     </head>
     <body>
+        <img class="background-img" src="{{ asset('assets/images/letter_head/letter_head.jpg') }}" alt="Background Image">
         {{-- @php
 
             // Get the date two weeks before
@@ -150,13 +159,40 @@ use Carbon\Carbon;
                 </tbody>
             </table>
         </div>
-        <p class="mt-2">Adalah diingatkan mengenai para 3.8.4 (c), Peraturan Akademik Kolej UNITI Pindaan 2021 seperti berikut: </p>
-        <p class="mt-3"><i>“Pelajar yang kehadirannya kurang daripada 80% dalam sesuatu kursus tanpa sebab-sebab yang boleh diterima akan dikira gagal dalam kursus tersebut.”</i></p>
-        <p class="mt-3">Dengan ini anda diberi amaran bahawa sekiranya kehadiran yang tidak memuaskan
-            ini berterusan, pihak Kolej berhak mengambil tindakan terhadap anda mengikut para
-            3.8.4 (c) seperti di atas.</p>
-        <p class="mt-1 mb-1">Sekian, terima kasih.</p>
         <br>
+        <p class="mt-2">Peratusan kehadiran yang tidak memuaskan ini menjadi asas untuk tidak
+            membenarkan anda menduduki Peperiksaan Akhir / Projek Akhir bagi kursus DPE3013
+            – Pendidikan Nutrisi, Kesihatan dan Keselamatan Kanak-Kanak di bawah para 3.8.4
+            (c), Peraturan Akademik Kolej UNITI Pindaan 2021 yang menyatakan bahawa: </p>
+        <p class="mt-3"><i>“Pelajar yang kehadirannya kurang daripada 80% dalam sesuatu kursus tanpa sebab-sebab yang boleh diterima akan dikira gagal dalam kursus tersebut.”</i></p>
+
+        <div style="page-break-before: always;"></div>
+
+        <img class="background-img" src="{{ asset('assets/images/letter_head/letter_head.jpg') }}" alt="Background Image">
+
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        
+        <p class="mt-3">Dengan ini, anda adalah dikehendaki memberi surat tunjuk sebab mengapa tindakan
+            “tidak dibenarkan mengambil peperiksaan akhir kursus” mengikut Para 3.8.4 (c) tidak
+            boleh diambil ke atas anda bersama apa-apa dokumen, sijil atau affidavit bagi
+            menyokong penjelasan tunjuk sebab anda sebelum : </p>
+        <div class="col-12 mb-1 mt-1">  
+            <div style="border: 1px solid white; padding: 10px;">
+            <p>Tarikh &nbsp;&nbsp;: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>{{ collect($data['date'])->first() }}</b></p>
+            <p>Hari &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>{{ collect($data['date'])->skip(1)->first() }}</b></p>
+            <p>Pukul &nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>12:00 Tengahari</b></p>
+            </div> 
+        </div>
+        <p class="mt-3">Sekiranya anda gagal untuk memberi penjelasan mengenai ketidakhadiran anda itu,
+            anda tidak akan dibenarkan menduduki Peperiksaan Akhir bagi kursus <b>Peperiksaan
+            Akhir / Projek Akhir</b> bagi kursus <b>{{ str_replace(' ', '', $data['warning']->course_code)  }} – {{ $data['warning']->course_name  }}</b> di peperiksaan akan datang. Keputusan adalah muktamad.</p>
+        <p class="mt-1 mb-1">Sekian, Harap Maklum.</p>
+        <br>
+        <img class="background-img" src="{{ asset('assets/images/letter_head/letter_head.jpg') }}" alt="Background Image">
         <p style="text-align: center;"><b>[THIS IS A COMPUTER GENERATED AND DOES NOT REQUIRE SIGNATURE]</b></p>
         {{-- <p>Yang benar,</p>
         <img src="{{ asset('storage/signature/signature2.png') }}" alt="Image" width="10%" height="10%">
