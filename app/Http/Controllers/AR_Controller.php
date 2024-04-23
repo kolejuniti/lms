@@ -1541,9 +1541,28 @@ class AR_Controller extends Controller
                            ->select('tblstudent_address.*', 'tblstate.state_name AS state', 'tblcountry.name AS country')
                            ->where('tblstudent_address.student_ic', $data['warning']->student_ic)->first();
 
+ 
+        $date = Carbon::createFromFormat('Y-m-d H:i:s', $data['warning']->created_at)->toDateString();
 
+        // Add one week to the date
+        $dateOneWeekLater = Carbon::createFromFormat('Y-m-d', $date)->addWeek();
 
-        return view('pendaftar_akademik.student.warning_letter.printWarningLetter', compact('data'));
+        $data['date'] = [
+            'date' => $dateOneWeekLater->format('d F Y'),
+            'day' => $dateOneWeekLater->translatedFormat('l')
+        ];
+
+        //dd($data['date']);
+
+        if ($data['warning']->warning == 1 || $data['warning']->warning == 2) {
+
+            return view('pendaftar_akademik.student.warning_letter.printWarningLetter', compact('data'));
+
+        } elseif ($data['warning']->warning == 3) {
+
+            return view('pendaftar_akademik.student.warning_letter.printWarningLetter2', compact('data'));
+
+        }
 
     }
 
