@@ -435,14 +435,18 @@ class PendaftarController extends Controller
                                 View
                             </a>
                             ';
-                            if(Auth::user()->usrtype == "RGS")
+                            if(Auth::user()->usrtype == "RGS" || Auth::user()->usrtype == "FN")
                             {
                 $content .= '<a class="btn btn-info btn-sm btn-sm mr-2 mb-2" href="/pendaftar/edit/'. $student->ic .'">
                                 <i class="ti-pencil-alt">
                                 </i>
                                 Edit
                             </a>
-                            <a class="btn btn-primary btn-sm btn-sm mr-2 mb-2" href="/pendaftar/spm/'. $student->ic .'">
+                            ';
+                            }
+                            if(Auth::user()->usrtype == "RGS")
+                            {
+                $content .= '<a class="btn btn-primary btn-sm btn-sm mr-2 mb-2" href="/pendaftar/spm/'. $student->ic .'">
                                 <i class="ti-ruler-pencil">
                                 </i>
                                 SPM/SVM/SKM
