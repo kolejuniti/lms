@@ -451,6 +451,9 @@ class PaymentController extends Controller
         curl_exec($ch);
 
         $output = curl_exec($ch);
+        if(curl_errno($ch)) {
+            echo 'Curl error: ' . curl_error($ch);
+        }
 
         
 
