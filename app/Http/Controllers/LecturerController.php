@@ -1397,21 +1397,25 @@ $content .= '</tr>
         {
 
             $data['students'] = student::join('students', 'student_subjek.student_ic', 'students.ic')
+                        ->join('tblprogramme', 'students.program', 'tblprogramme.id')
                         ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
                         ->where('group_id', $group[0])->where('group_name', $group[1])
                         ->where('student_subjek.sessionid', Session::get('SessionID'))
                         ->whereIn('students.program', $request->program)
                         ->whereNotIn('students.status', [4,5,6,7,16])
+                        ->orderBy('students.program')
                         ->orderBy('students.name')
                         ->get();
 
         }else{
 
             $data['students'] = student::join('students', 'student_subjek.student_ic', 'students.ic')
+                        ->join('tblprogramme', 'students.program', 'tblprogramme.id')
                         ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
                         ->where('group_id', $group[0])->where('group_name', $group[1])
                         ->where('student_subjek.sessionid', Session::get('SessionID'))
                         ->whereNotIn('students.status', [4,5,6,7,16])
+                        ->orderBy('students.program')
                         ->orderBy('students.name')
                         ->get();
 
