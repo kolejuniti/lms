@@ -4240,7 +4240,7 @@ class FinanceController extends Controller
             if($stddetail->program == 7 || $stddetail->program == 8)
             {
 
-                if($package->payment_type_id == 3 || $package->payment_type_id == 11 || $package->payment_type_id == 14 || $package->payment_type_id == 25)
+                if($package->payment_type_id == 3 || $package->payment_type_id == 11 || $package->payment_type_id == 14 || $package->payment_type_id == 25 || ($package->package_id == 9 && $package->payment_type_id == 19))
                 {
 
                     if($data['current_balance'] == 0.00)
@@ -4259,7 +4259,7 @@ class FinanceController extends Controller
             }else
             {
 
-                if($package->payment_type_id == 3 || $package->payment_type_id == 11 || $package->payment_type_id == 14 || $package->payment_type_id == 25)
+                if($package->payment_type_id == 3 || $package->payment_type_id == 11 || $package->payment_type_id == 14 || $package->payment_type_id == 25 || ($package->package_id == 9 && $package->payment_type_id == 19))
                 {
 
                     if($data['current_balance'] == 0.00)
