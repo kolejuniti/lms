@@ -160,6 +160,9 @@ tr:hover {
                             <th rowspan="4">
                                 Name
                             </th>
+                            <th rowspan="4">
+                                Program
+                            </th>
                             <th>
                                 Tarikh
                             </th>
@@ -209,6 +212,9 @@ tr:hover {
                             </td>
                             <td>
                                 {{ $std->name }}
+                            </td>
+                            <td>
+                                {{ $std->progcode  }}
                             </td>
                             <td>
                                 {{ $std->no_matric }}
