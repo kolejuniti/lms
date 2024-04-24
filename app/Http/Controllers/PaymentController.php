@@ -361,12 +361,10 @@ class PaymentController extends Controller
 
        
         //Change with your token	
-        $uid = env('LINODE_ENDPOINT');
+        $uid = env('SECUREPAY_UID');
         $checksum_token = env('SECUREPAY_CHECKSUM_TOKEN');
         $auth_token = env('SECUREPAY_AUTH_TOKEN');
         $url = 'https://securepay.my/api/v1/payments';
-
-        dd($uid);
 
         #$request->order_number = '20200425132755';
         #$request->buyer_name = 'AHMAD AMSYAR MOHD ALI';
