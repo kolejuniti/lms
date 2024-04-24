@@ -367,7 +367,6 @@ class PaymentController extends Controller
         $url = 'https://securepay.my/api/v1/payments';
 
         dd($uid);
-        dd($checksum_token);
 
         #$request->order_number = '20200425132755';
         #$request->buyer_name = 'AHMAD AMSYAR MOHD ALI';
