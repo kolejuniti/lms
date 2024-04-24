@@ -33,7 +33,6 @@ use Carbon\Carbon;
     <style>
         @page {
         size: A4; /* reduced height for A5 size in landscape orientation */
-        margin: 1.5cm;
         }
         * {
             margin: 0;
@@ -51,6 +50,9 @@ use Carbon\Carbon;
                 background-size: cover; /* Cover the entire page */
                 background-position: center; /* Center the background image */
                 background-repeat: no-repeat; /* Do not repeat the image */
+                margin-bottom: 10cm;
+                margin-left: 1cm;
+                margin-right: 1cm;
             }
         h2,h3,p {
             margin: 0;
@@ -88,8 +90,8 @@ use Carbon\Carbon;
         <p>{{ $data['address']->postcode }}</p>
         <p>{{ strtoupper($data['address']->city) }}, {{ strtoupper($data['address']->state) }}</p>
         <p>{{ strtoupper($data['address']->country) }}</p>
-        <h2 class="col-3 mt-2"><b>MAKLUMAT PENDAFTARAN</b></h2>
-        <div class="col-5 mb-2 mt-2">
+        <h2 class="col-3 mt-1"><b>MAKLUMAT PENDAFTARAN</b></h2>
+        <div class="col-5 mb-1 mt-1">
             <div style="border: 1px solid black; padding: 10px;">
             <p>Tarikh : {{ Carbon::createFromFormat('Y-m-d', $data['student']->date_offer)->format('d/m/Y') }}</p>
             <p>Masa : 9.00 Pagi - 3.00 Petang</p>
@@ -97,17 +99,17 @@ use Carbon\Carbon;
             </div>
         </div>
         <p>Saudara/Saudari,</p>
-        <p class="mt-2"><b>TAWARAN KEMASUKAN KE KOLEJ UNITI (NEGERI SEMBILAN) BAGI SESI {{ $data['student']->intake }}</b></p>
-        <p class="mt-2"><b>TAHNIAH</b> dan <b>SUKACITA</b> di maklumkan, saudara/saudari di tawarkan untuk mengikuti program berikut :</p>
+        <p class="mt-1"><b>TAWARAN KEMASUKAN KE KOLEJ UNITI (NEGERI SEMBILAN) BAGI SESI {{ $data['student']->intake }}</b></p>
+        <p class="mt-1"><b>TAHNIAH</b> dan <b>SUKACITA</b> di maklumkan, saudara/saudari di tawarkan untuk mengikuti program berikut :</p>
         <div class="col-12 mb-1 mt-1">  
-            <div style="border: 1px solid white; padding: 10px;">
+            <div style="border: 0px solid white; padding: 5px;">
             <p>Program &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>{{ $data['student']->progname }} (SEPENUH MASA)</b></p>
             <p>Tempoh Pengajian &nbsp;&nbsp;: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>3 Tahun</b></p>   
             </div> 
         </div>
-        <p class="mt-2">Untuk pengetahuan saudara/saudari, program yang diikuti adalah program akademik yang dikendalikan oleh <b>KOLEJ UNITI di PERSIARAN UNITI VILLAGE, TANJUNG AGAS, 71250 PORT DICKSON, NEGERI SEMBILAN DARUL KHUSUS.</b> Setelah memenuhi semua keperluan, saudara/saudari akan <b>DIANUGERAHKAN DIPLOMA OLEH KOLEJ UNITI ATAU UiTM DAN UTM.</b></p>
-        <p class="mt-2">Tawaran ini adalah sah untuk tujuan di atas sahaja.</p>
-        <ol class="mt-3">
+        <p class="mt-1">Untuk pengetahuan saudara/saudari, program yang diikuti adalah program akademik yang dikendalikan oleh <b>KOLEJ UNITI di PERSIARAN UNITI VILLAGE, TANJUNG AGAS, 71250 PORT DICKSON, NEGERI SEMBILAN DARUL KHUSUS.</b> Setelah memenuhi semua keperluan, saudara/saudari akan <b>DIANUGERAHKAN DIPLOMA OLEH KOLEJ UNITI ATAU UiTM DAN UTM.</b></p>
+        <p class="mt-3">Tawaran ini adalah sah untuk tujuan di atas sahaja.</p>
+        <ol class="mt-2">
             <li>Memenuhi syarat kemasukan ke program yang dipohon dan maklumat-maklumat yang diberikan adalah benar. Sekiranya terdapat pemalsuan maklumat dalam borang permohonan dan dokumen yang berkaitan, pihak Kolej UNITI berhak menarik balik tawaran ini atau saudara/i diberhentikan daripada pengajian pada bila-bila masa.</li>
             <li>Menjelaskan yuran seperti yang dilampirkan.</li>
         </ol>
