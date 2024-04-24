@@ -366,6 +366,8 @@ class PaymentController extends Controller
         $auth_token = env('SECUREPAY_AUTH_TOKEN');
         $url = 'https://securepay.my/api/v1/payments';
 
+        dd($uid);
+
         #$request->order_number = '20200425132755';
         #$request->buyer_name = 'AHMAD AMSYAR MOHD ALI';
         #$request->buyer_email = 'amsyar@gmail.com';
