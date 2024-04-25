@@ -60,12 +60,26 @@
               </div>
             </div>
           </div>
-          <div class="row">
+          {{-- <div class="row">
             <div class="col-md-6">
               <div class="form-group">
               <label class="form-label" for="year">FROM</label>
               <input type="number" class="form-control" min="1900" max="2099" step="1" placeholder="year" id="year" name="year" />
               </div>
+            </div>
+          </div> --}}
+          <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                <label class="form-label" for="from">FROM</label>
+                <input type="date" class="form-control" id="from" name="from">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                <label class="form-label" for="name">TO</label>
+                <input type="date" class="form-control" id="to" name="to">
+                </div>
             </div>
           </div>
           <button type="submit" class="btn btn-primary pull-right mb-3" onclick="submit()">Find</button>
@@ -186,7 +200,9 @@
       var formData = new FormData();
 
       forminput = {
-        year: $('#year').val(),
+        // year: $('#year').val(),
+        from: $('#from').val(),
+        to: $('#to').val(),
         program: $('#program').val(),
         status: $('#status').val(),
       };
