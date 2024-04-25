@@ -1542,10 +1542,10 @@ class AR_Controller extends Controller
                            ->where('tblstudent_address.student_ic', $data['warning']->student_ic)->first();
 
  
-        $date = Carbon::createFromFormat('Y-m-d H:i:s', $data['warning']->created_at)->toDateString();
+        $data['originalDate'] = Carbon::createFromFormat('Y-m-d H:i:s', $data['warning']->created_at)->toDateString();
 
         // Add one week to the date
-        $dateOneWeekLater = Carbon::createFromFormat('Y-m-d', $date)->addWeek();
+        $dateOneWeekLater = Carbon::createFromFormat('Y-m-d', $data['originalDate'])->addWeek();
 
         $data['date'] = [
             'date' => $dateOneWeekLater->format('d F Y'),
