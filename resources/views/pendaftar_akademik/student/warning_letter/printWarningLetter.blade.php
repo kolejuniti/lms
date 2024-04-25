@@ -96,7 +96,7 @@ use Carbon\Carbon;
         <br>
         <br>
         <p>Ruj. Kami : KUSB/KU/HEA/{{ $data['student']->progcode }}/{{ str_replace(' ', '', $data['warning']->course_code)  }}/{{ $data['student']->no_matric }}/0{{ $data['warning']->warning }}</p>
-        <p>Tarikh &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : {{ date('d-m-Y') }}</p>
+        <p>Tarikh &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : {{ Carbon::createFromFormat('Y-m-d', $data['originalDate'])->format('d-m-y') }}</p>
         <br>
         <p>Kepada:-</p>
         <div class="col-12 mb-1 mt-1">  
