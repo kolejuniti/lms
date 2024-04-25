@@ -9796,7 +9796,7 @@ class FinanceController extends Controller
 
     public function getAgingReport(Request $request)
     {
-
+        $lastKnownBalance = 0; // Default to 0 initially
         $filtersData = $request->filtersData;
 
         $validator = Validator::make($request->all(), [
@@ -9827,11 +9827,15 @@ class FinanceController extends Controller
                 }
 
                 // Assuming $request->year has the value of 2019
-                $startYear = $filter->year; // Starting year
+                $startYear = date('Y', strtotime($filter->from)); // Starting year
+                $endYear = date('Y', strtotime($filter->to)); // Starting year
                 $currentYear = now()->year; // This gets the current year
 
                 // Create an array of years from start year to current year
                 $data['arrayYears'] = range($startYear, $currentYear);
+
+                // Create an array of years from and to
+                $data['rangeYears'] = range($startYear, $endYear);
 
                 $data['student'] = DB::table('students')
                                    ->leftjoin('sessions', 'students.session', 'sessions.SessionID')
@@ -9870,35 +9874,75 @@ class FinanceController extends Controller
                     foreach($data['arrayYears'] as $key2 => $year)
                     {
 
-                        // Define the first part of the union
-                        $query = DB::table('tblclaim')
-                        ->leftjoin('tblclaimdtl', 'tblclaim.id', '=', 'tblclaimdtl.claim_id')
-                        ->leftjoin('tblstudentclaim', 'tblclaimdtl.claim_package_id', '=', 'tblstudentclaim.id')
-                        ->where([
-                            ['tblclaim.process_status_id', '=', 2],
-                            ['tblstudentclaim.groupid', '=', 1],
-                            ['tblclaim.student_ic', '=', $std->ic]
-                        ])
-                        ->whereBetween(DB::raw('YEAR(tblclaim.add_date)'), [$filter->year, $year])
-                        ->select(DB::raw("IFNULL(SUM(tblclaimdtl.amount), 0) AS claim"), DB::raw('0 as payment'));
+                        if(in_array($year, $data['rangeYears']))
+                        {
 
-                        // Define the second part of the union
-                        $subQuery = DB::table('tblpayment')
-                        ->leftjoin('tblpaymentdtl', 'tblpayment.id', '=', 'tblpaymentdtl.payment_id')
-                        ->leftjoin('tblstudentclaim', 'tblpaymentdtl.claim_type_id', '=', 'tblstudentclaim.id')
-                        ->where([
-                            ['tblpayment.process_status_id', '=', 2],
-                            ['tblstudentclaim.groupid', '=', 1],
-                            ['tblpayment.student_ic', '=', $std->ic]
-                        ])
-                        ->whereBetween(DB::raw('YEAR(tblpayment.add_date)'), [$filter->year, $year])
-                        ->select(DB::raw('0 as claim'), DB::raw("IFNULL(SUM(tblpaymentdtl.amount), 0) AS payment"))
-                        ->unionAll($query); // Here, use the Query Builder instance directly
+                            // Create a date instance for the last day of the year using Carbon
+                            $lastDayOfYear = Carbon::createFromDate($year)->endOfYear()->toDateString();
+                            
+                            if($year == $endYear)
+                            {
 
-                        // Now, wrap the subquery and calculate the balance
-                        $data['balance'][$key][$key2] = DB::query()->fromSub($subQuery, 'sub')
-                        ->select(DB::raw('SUM(claim) - SUM(payment) AS balance'))
-                        ->get();
+                                $endYear2 = $filter->to;
+
+                            }else{
+
+                                $endYear2 = $lastDayOfYear;
+
+                            }
+
+                            // Define the first part of the union
+                            $query = DB::table('tblclaim')
+                            ->leftjoin('tblclaimdtl', 'tblclaim.id', '=', 'tblclaimdtl.claim_id')
+                            ->leftjoin('tblstudentclaim', 'tblclaimdtl.claim_package_id', '=', 'tblstudentclaim.id')
+                            ->where([
+                                ['tblclaim.process_status_id', '=', 2],
+                                ['tblstudentclaim.groupid', '=', 1],
+                                ['tblclaim.student_ic', '=', $std->ic]
+                            ])
+                            ->whereBetween('tblclaim.add_date', [$filter->from, $endYear2])
+                            ->select(DB::raw("IFNULL(SUM(tblclaimdtl.amount), 0) AS claim"), DB::raw('0 as payment'));
+
+                            // Define the second part of the union
+                            $subQuery = DB::table('tblpayment')
+                            ->leftjoin('tblpaymentdtl', 'tblpayment.id', '=', 'tblpaymentdtl.payment_id')
+                            ->leftjoin('tblstudentclaim', 'tblpaymentdtl.claim_type_id', '=', 'tblstudentclaim.id')
+                            ->where([
+                                ['tblpayment.process_status_id', '=', 2],
+                                ['tblstudentclaim.groupid', '=', 1],
+                                ['tblpayment.student_ic', '=', $std->ic]
+                            ])
+                            ->whereBetween('tblpayment.add_date', [$filter->from, $endYear2])
+                            ->select(DB::raw('0 as claim'), DB::raw("IFNULL(SUM(tblpaymentdtl.amount), 0) AS payment"))
+                            ->unionAll($query); // Here, use the Query Builder instance directly
+
+                            // // Now, wrap the subquery and calculate the balance
+                            // $data['balance'][$key][$key2] = DB::query()->fromSub($subQuery, 'sub')
+                            // ->select(DB::raw('SUM(claim) - SUM(payment) AS balance'))
+                            // ->get();
+
+                            $result = DB::query()->fromSub($subQuery, 'sub')
+                                ->select(DB::raw('SUM(claim) - SUM(payment) AS balance'))
+                                ->get();
+
+                            if ($result->isNotEmpty() && isset($result[0]->balance)) {
+                                // Update last known balance if the result is not empty
+                                $lastKnownBalance = $result[0]->balance;
+                                $data['balance'][$key][$key2] = $result;
+                            } else {
+                                // If result is empty, ensure last known balance is maintained
+                                $data['balance'][$key][$key2] = collect([(object) ['balance' => $lastKnownBalance]]);
+                            }
+
+                        }else{
+
+                            // // Set balance to a default object in a collection if the year is not in the array
+                            // $data['balance'][$key][$key2] = collect([ (object) ['balance' => 0] ]);
+
+                             // Set balance to the last known balance if the year is not in the array
+                            $data['balance'][$key][$key2] = collect([(object) ['balance' => $lastKnownBalance]]);
+
+                        }
 
                     }
 
@@ -10059,6 +10103,7 @@ class FinanceController extends Controller
     public function getProgramAgingReport(Request $request)
     {
 
+        $lastKnownBalance = 0; // Default to 0 initially
         $filtersData = $request->filtersData;
 
         $validator = Validator::make($request->all(), [
@@ -10089,11 +10134,15 @@ class FinanceController extends Controller
                 }
 
                 // Assuming $request->year has the value of 2019
-                $startYear = $filter->year; // Starting year
+                $startYear = date('Y', strtotime($filter->from)); // Starting year
+                $endYear = date('Y', strtotime($filter->to)); // Starting year
                 $currentYear = now()->year; // This gets the current year
 
                 // Create an array of years from start year to current year
                 $data['arrayYears'] = range($startYear, $currentYear);
+
+                // Create an array of years from and to
+                $data['rangeYears'] = range($startYear, $endYear);
 
                 foreach($data['program'] as $key => $prg)
                 {
@@ -10101,35 +10150,75 @@ class FinanceController extends Controller
                     foreach($data['arrayYears'] as $key2 => $year)
                     {
 
-                        // Define the first part of the union
-                        $query = DB::table('tblclaim')
-                        ->leftjoin('tblclaimdtl', 'tblclaim.id', '=', 'tblclaimdtl.claim_id')
-                        ->leftjoin('tblstudentclaim', 'tblclaimdtl.claim_package_id', '=', 'tblstudentclaim.id')
-                        ->where([
-                            ['tblclaim.process_status_id', '=', 2],
-                            ['tblstudentclaim.groupid', '=', 1]
-                        ])
-                        ->where('tblclaim.program_id', $prg)
-                        ->whereBetween(DB::raw('YEAR(tblclaim.add_date)'), [$filter->year, $year])
-                        ->select(DB::raw("IFNULL(SUM(tblclaimdtl.amount), 0) AS claim"), DB::raw('0 as payment'));
+                        if(in_array($year, $data['rangeYears']))
+                        {
 
-                        // Define the second part of the union
-                        $subQuery = DB::table('tblpayment')
-                        ->leftjoin('tblpaymentdtl', 'tblpayment.id', '=', 'tblpaymentdtl.payment_id')
-                        ->leftjoin('tblstudentclaim', 'tblpaymentdtl.claim_type_id', '=', 'tblstudentclaim.id')
-                        ->where([
-                            ['tblpayment.process_status_id', '=', 2],
-                            ['tblstudentclaim.groupid', '=', 1]
-                        ])
-                        ->where('tblpayment.program_id', $prg)
-                        ->whereBetween(DB::raw('YEAR(tblpayment.add_date)'), [$filter->year, $year])
-                        ->select(DB::raw('0 as claim'), DB::raw("IFNULL(SUM(tblpaymentdtl.amount), 0) AS payment"))
-                        ->unionAll($query); // Here, use the Query Builder instance directly
+                            // Create a date instance for the last day of the year using Carbon
+                            $lastDayOfYear = Carbon::createFromDate($year)->endOfYear()->toDateString();
+                            
+                            if($year == $endYear)
+                            {
 
-                        // Now, wrap the subquery and calculate the balance
-                        $data['balance'][$key][$key2] = DB::query()->fromSub($subQuery, 'sub')
-                        ->select(DB::raw('SUM(claim) - SUM(payment) AS balance'))
-                        ->get();
+                                $endYear2 = $filter->to;
+
+                            }else{
+
+                                $endYear2 = $lastDayOfYear;
+
+                            }
+
+                            // Define the first part of the union
+                            $query = DB::table('tblclaim')
+                            ->leftjoin('tblclaimdtl', 'tblclaim.id', '=', 'tblclaimdtl.claim_id')
+                            ->leftjoin('tblstudentclaim', 'tblclaimdtl.claim_package_id', '=', 'tblstudentclaim.id')
+                            ->where([
+                                ['tblclaim.process_status_id', '=', 2],
+                                ['tblstudentclaim.groupid', '=', 1]
+                            ])
+                            ->where('tblclaim.program_id', $prg)
+                            ->whereBetween('tblclaim.add_date', [$filter->from, $endYear2])
+                            ->select(DB::raw("IFNULL(SUM(tblclaimdtl.amount), 0) AS claim"), DB::raw('0 as payment'));
+
+                            // Define the second part of the union
+                            $subQuery = DB::table('tblpayment')
+                            ->leftjoin('tblpaymentdtl', 'tblpayment.id', '=', 'tblpaymentdtl.payment_id')
+                            ->leftjoin('tblstudentclaim', 'tblpaymentdtl.claim_type_id', '=', 'tblstudentclaim.id')
+                            ->where([
+                                ['tblpayment.process_status_id', '=', 2],
+                                ['tblstudentclaim.groupid', '=', 1]
+                            ])
+                            ->where('tblpayment.program_id', $prg)
+                            ->whereBetween('tblpayment.add_date', [$filter->from, $endYear2])
+                            ->select(DB::raw('0 as claim'), DB::raw("IFNULL(SUM(tblpaymentdtl.amount), 0) AS payment"))
+                            ->unionAll($query); // Here, use the Query Builder instance directly
+
+                            // // Now, wrap the subquery and calculate the balance
+                            // $data['balance'][$key][$key2] = DB::query()->fromSub($subQuery, 'sub')
+                            // ->select(DB::raw('SUM(claim) - SUM(payment) AS balance'))
+                            // ->get();
+
+                            $result = DB::query()->fromSub($subQuery, 'sub')
+                            ->select(DB::raw('SUM(claim) - SUM(payment) AS balance'))
+                            ->get();
+
+                            if ($result->isNotEmpty() && isset($result[0]->balance)) {
+                                // Update last known balance if the result is not empty
+                                $lastKnownBalance = $result[0]->balance;
+                                $data['balance'][$key][$key2] = $result;
+                            } else {
+                                // If result is empty, ensure last known balance is maintained
+                                $data['balance'][$key][$key2] = collect([(object) ['balance' => $lastKnownBalance]]);
+                            }
+
+                        }else{
+
+                            // // Set balance to a default object in a collection if the year is not in the array
+                            // $data['balance'][$key][$key2] = collect([ (object) ['balance' => 0] ]);
+
+                            // Set balance to the last known balance if the year is not in the array
+                            $data['balance'][$key][$key2] = collect([(object) ['balance' => $lastKnownBalance]]);
+
+                        }
 
                     }
 
@@ -10232,7 +10321,7 @@ class FinanceController extends Controller
 
     public function getStatusAgingReport(Request $request)
     {
-
+        $lastKnownBalance = 0; // Default to 0 initially
         $filtersData = $request->filtersData;
 
         $validator = Validator::make($request->all(), [
@@ -10263,11 +10352,15 @@ class FinanceController extends Controller
                 }
 
                 // Assuming $request->year has the value of 2019
-                $startYear = $filter->year; // Starting year
+                $startYear = date('Y', strtotime($filter->from)); // Starting year
+                $endYear = date('Y', strtotime($filter->to)); // Starting year
                 $currentYear = now()->year; // This gets the current year
 
                 // Create an array of years from start year to current year
                 $data['arrayYears'] = range($startYear, $currentYear);
+
+                // Create an array of years from and to
+                $data['rangeYears'] = range($startYear, $endYear);
 
                 foreach($data['status'] as $key => $sts)
                 {
@@ -10275,37 +10368,77 @@ class FinanceController extends Controller
                     foreach($data['arrayYears'] as $key2 => $year)
                     {
 
-                        // Define the first part of the union
-                        $query = DB::table('students')
-                        ->join('tblclaim', 'students.ic', 'tblclaim.student_ic')
-                        ->join('tblclaimdtl', 'tblclaim.id', '=', 'tblclaimdtl.claim_id')
-                        ->join('tblstudentclaim', 'tblclaimdtl.claim_package_id', '=', 'tblstudentclaim.id')
-                        ->where([
-                            ['tblclaim.process_status_id', '=', 2],
-                            ['tblstudentclaim.groupid', '=', 1]
-                        ])
-                        ->where('students.status', $sts)
-                        ->whereBetween(DB::raw('YEAR(tblclaim.add_date)'), [$filter->year, $year])
-                        ->select(DB::raw("IFNULL(SUM(tblclaimdtl.amount), 0) AS claim"), DB::raw('0 as payment'));
+                        if(in_array($year, $data['rangeYears']))
+                        {
 
-                        // Define the second part of the union
-                        $subQuery = DB::table('students')
-                        ->join('tblpayment', 'students.ic', 'tblpayment.student_ic')
-                        ->join('tblpaymentdtl', 'tblpayment.id', '=', 'tblpaymentdtl.payment_id')
-                        ->join('tblstudentclaim', 'tblpaymentdtl.claim_type_id', '=', 'tblstudentclaim.id')
-                        ->where([
-                            ['tblpayment.process_status_id', '=', 2],
-                            ['tblstudentclaim.groupid', '=', 1]
-                        ])
-                        ->where('students.status', $sts)
-                        ->whereBetween(DB::raw('YEAR(tblpayment.add_date)'), [$filter->year, $year])
-                        ->select(DB::raw('0 as claim'), DB::raw("IFNULL(SUM(tblpaymentdtl.amount), 0) AS payment"))
-                        ->unionAll($query); // Here, use the Query Builder instance directly
+                            // Create a date instance for the last day of the year using Carbon
+                            $lastDayOfYear = Carbon::createFromDate($year)->endOfYear()->toDateString();
+                            
+                            if($year == $endYear)
+                            {
 
-                        // Now, wrap the subquery and calculate the balance
-                        $data['balance'][$key][$key2] = DB::query()->fromSub($subQuery, 'sub')
-                        ->select(DB::raw('SUM(claim) - SUM(payment) AS balance'))
-                        ->get();
+                                $endYear2 = $filter->to;
+
+                            }else{
+
+                                $endYear2 = $lastDayOfYear;
+
+                            }
+
+                            // Define the first part of the union
+                            $query = DB::table('students')
+                            ->join('tblclaim', 'students.ic', 'tblclaim.student_ic')
+                            ->join('tblclaimdtl', 'tblclaim.id', '=', 'tblclaimdtl.claim_id')
+                            ->join('tblstudentclaim', 'tblclaimdtl.claim_package_id', '=', 'tblstudentclaim.id')
+                            ->where([
+                                ['tblclaim.process_status_id', '=', 2],
+                                ['tblstudentclaim.groupid', '=', 1]
+                            ])
+                            ->where('students.status', $sts)
+                            ->whereBetween('tblclaim.add_date', [$filter->from, $endYear2])
+                            ->select(DB::raw("IFNULL(SUM(tblclaimdtl.amount), 0) AS claim"), DB::raw('0 as payment'));
+
+                            // Define the second part of the union
+                            $subQuery = DB::table('students')
+                            ->join('tblpayment', 'students.ic', 'tblpayment.student_ic')
+                            ->join('tblpaymentdtl', 'tblpayment.id', '=', 'tblpaymentdtl.payment_id')
+                            ->join('tblstudentclaim', 'tblpaymentdtl.claim_type_id', '=', 'tblstudentclaim.id')
+                            ->where([
+                                ['tblpayment.process_status_id', '=', 2],
+                                ['tblstudentclaim.groupid', '=', 1]
+                            ])
+                            ->where('students.status', $sts)
+                            ->whereBetween('tblpayment.add_date', [$filter->from, $endYear2])
+                            ->select(DB::raw('0 as claim'), DB::raw("IFNULL(SUM(tblpaymentdtl.amount), 0) AS payment"))
+                            ->unionAll($query); // Here, use the Query Builder instance directly
+
+                            // // Now, wrap the subquery and calculate the balance
+                            // $data['balance'][$key][$key2] = DB::query()->fromSub($subQuery, 'sub')
+                            // ->select(DB::raw('SUM(claim) - SUM(payment) AS balance'))
+                            // ->get();
+
+                            $result = DB::query()->fromSub($subQuery, 'sub')
+                                ->select(DB::raw('SUM(claim) - SUM(payment) AS balance'))
+                                ->get();
+
+                            if ($result->isNotEmpty() && isset($result[0]->balance)) {
+                                // Update last known balance if the result is not empty
+                                $lastKnownBalance = $result[0]->balance;
+                                $data['balance'][$key][$key2] = $result;
+                            } else {
+                                // If result is empty, ensure last known balance is maintained
+                                $data['balance'][$key][$key2] = collect([(object) ['balance' => $lastKnownBalance]]);
+                            }
+
+                        }else{
+
+                            // // Set balance to a default object in a collection if the year is not in the array
+                            // $data['balance'][$key][$key2] = collect([ (object) ['balance' => 0] ]);
+
+                             // Set balance to the last known balance if the year is not in the array
+                            $data['balance'][$key][$key2] = collect([(object) ['balance' => $lastKnownBalance]]);
+
+                        }
 
                     }
 
