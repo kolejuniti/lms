@@ -9286,6 +9286,7 @@ class FinanceController extends Controller
                                       ->where('tblpayment.student_ic', $std->ic)
                                       ->whereBetween('tblpayment.add_date', [$request->from, $request->to])
                                       ->where('tblpayment.process_status_id', 2)
+                                      ->where('tblstudentclaim.groupid', 1)
                                       ->groupBy('tblpayment.student_ic')
                                       ->orderBy('tblpayment.add_date')
                                       ->select('tblpayment.add_date as payment_date', DB::raw('SUM(tblpaymentdtl.amount) as amount'))
