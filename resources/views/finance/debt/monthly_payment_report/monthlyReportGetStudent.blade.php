@@ -55,6 +55,7 @@
                     </thead>
                     <tbody id="table">
                         @foreach ($data['student'] as $key => $std)
+                            @if($data['total_balance'][$key] > 0)
                             <tr>
                                 <td>
                                     {{ $key+1 }}
@@ -107,6 +108,7 @@
                                     {{ number_format($data['total_balance'][$key], 2) }}
                                 </td>
                             </tr>
+                            @endif
                         @endforeach 
                     </tbody>
                 </table>
