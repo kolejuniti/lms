@@ -255,5 +255,24 @@
     });
       
   }
+
+  function getProgram(ic)
+  {
+    return $.ajax({
+            headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
+            url      : "{{ url('pendaftar/getProgram') }}",
+            method   : 'POST',
+            data 	 : {ic: ic},
+            error:function(err){
+                alert("Error");
+                console.log(err);
+            },
+            success  : function(data){
+                $('#getModal').html(data);
+                $('#uploadModal').modal('show');
+            }
+        });
+
+  }
   </script>
 @endsection
