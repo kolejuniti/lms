@@ -398,6 +398,7 @@ class KP_Controller extends Controller
         <div class="table-responsive" style="width:99.7%">
         <table id="table_registerstudent" class="w-100 table text-fade table-bordered table-hover display nowrap margin-top-10 w-p100">
             <thead class="thead-themed">
+            <th>No.</th>
             <th>Name</th>
             <th>Matric No</th>
             <th>Intake</th>
@@ -408,6 +409,9 @@ class KP_Controller extends Controller
             </thead>
             <tbody>';
 $content .= '<tr>
+                <td>
+                    
+                </td>
                 <td>
                     <label class="text-dark"><strong>SELECT ALL</strong></label><br>
                 </td>
@@ -437,10 +441,13 @@ $content .= '<tr>
                 </td>
             </tr>
         ';
-        foreach($students as $student){
+        foreach($students as $key => $student){
             //$registered = ($student->status == 'ACTIVE') ? 'checked' : '';
             $content .= '
             <tr>
+                <td>
+                    '. $key+1 .'
+                </td>
                 <td >
                     <label class="text-dark"><strong>'.$student->name.'</strong></label><br>
                     <label>IC: '.$student->student_ic.'</label>
@@ -497,6 +504,7 @@ $content .= '<tr>
         <div class="table-responsive" style="width:99.7%">
         <table id="table_registerstudent" class="w-100 table text-fade table-bordered table-hover display nowrap margin-top-10 w-p100">
             <thead class="thead-themed">
+            <th>No.</th>
             <th>Name</th>
             <th>Matric No</th>
             <th>Intake</th>
@@ -507,6 +515,9 @@ $content .= '<tr>
             </thead>
             <tbody>';
 $content .= '<tr>
+                <td>
+                    
+                </td>
                 <td>
                     <label class="text-dark"><strong>SELECT ALL</strong></label><br>
                 </td>
@@ -536,10 +547,13 @@ $content .= '<tr>
                 </td>
             </tr>
         ';
-        foreach($students as $student){
+        foreach($students as $key => $student){
             //$registered = ($student->status == 'ACTIVE') ? 'checked' : '';
             $content .= '
             <tr>
+                <td>
+                    '. $key+1 .'
+                </td>
                 <td >
                     <label class="text-dark"><strong>'.$student->name.'</strong></label><br>
                     <label>IC: '.$student->student_ic.'</label>
