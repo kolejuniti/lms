@@ -244,11 +244,18 @@
 				<li>
 					<a href="{{ route('admin.dashboard') }}"><i data-feather="home"></i><span>Dashboard</span></a>
 				</li>	
-				<li>
-				  <a href="{{ route('admin') }}"><i data-feather="users"></i><span>User List</span></a>
-				</li>
-				<li>
-					<a href="{{ route('admin.create') }}"><i data-feather="user"></i><span>User</span></a>
+
+				<li class="treeview">
+					<a href="#"><i data-feather="users"></i><span>User</span>
+						<span class="pull-right-container">
+							<i class="fa fa-angle-left pull-right"></i>
+						</span>
+					</a>
+					<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
+						<li><a href="{{ route('admin') }}" class="{{ (route('admin') == Request::url()) ? 'active' : ''}}">List</a></li>
+						<li><a href="{{ route('admin.create') }}" class="{{ (route('admin.create') == Request::url()) ? 'active' : ''}}">Create</a></li>
+						<li><a href="{{ route('admin.training') }}" class="{{ (route('admin.training') == Request::url()) ? 'active' : ''}}">Training</a></li>
+					</ul>
 				</li>
 
 				<li class="treeview">
