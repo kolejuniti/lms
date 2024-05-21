@@ -52,6 +52,11 @@ Route::get('/admin/report/assessment', [App\Http\Controllers\AdminController::cl
 Route::post('/admin/report/assessment/getAssessment', [App\Http\Controllers\AdminController::class, 'getAssessment']);
 Route::post('/admin/report/lecturer/getUserLog', [App\Http\Controllers\AdminController::class, 'getUserLog']);
 Route::get('/admin/report/student', [App\Http\Controllers\AdminController::class, 'assessmentreport'])->name('admin.report.student');
+Route::get('/admin/training', [App\Http\Controllers\AdminController::class, 'userTraining'])->name('admin.training');
+Route::post('/admin/training/getUserList', [App\Http\Controllers\AdminController::class, 'getUserList']);
+Route::post('/admin/training/getUserInfo', [App\Http\Controllers\AdminController::class, 'getUserInfo']);
+Route::post('/admin/training/storeUserTraining', [App\Http\Controllers\AdminController::class, 'storeUserTraining']);
+Route::post('/admin/training/deleteUserTraining', [App\Http\Controllers\AdminController::class, 'deleteUserTraining']);
 
 
 
@@ -151,11 +156,16 @@ Route::get('/AR/session', [App\Http\Controllers\AR_Controller::class, 'sessionLi
 Route::post('/AR/session/create', [App\Http\Controllers\AR_Controller::class, 'createSession']);
 Route::post('/AR/session/update', [App\Http\Controllers\AR_Controller::class, 'updateSession']);
 Route::delete('/AR/session/delete', [App\Http\Controllers\AR_Controller::class, 'deleteDelete'])->name('pendaftar_akademik.session.delete');
-Route::get('/AR/schedule', [App\Http\Controllers\AR_Controller::class, 'scheduleDrop'])->name('pendaftar_akademik.schedule');
-Route::get('/AR/schedule/fetch', [App\Http\Controllers\AR_Controller::class, 'fetchEvents']);
+Route::get('/AR/schedule', [App\Http\Controllers\AR_Controller::class, 'scheduleIndex'])->name('pendaftar_akademik.schedule');
+Route::post('/AR/schedule/getLectureRoom', [App\Http\Controllers\AR_Controller::class, 'getLectureRoom']);
+Route::post('/AR/schedule/createLectureRoom', [App\Http\Controllers\AR_Controller::class, 'createLectureRoom']);
+Route::get('/AR/schedule/scheduleTable/{id}', [App\Http\Controllers\AR_Controller::class, 'scheduleTable']);
+Route::get('/AR/schedule/scheduleTable/{id}/getSubjectSchedule', [App\Http\Controllers\AR_Controller::class, 'getSubjectSchedule']);
+Route::get('/AR/schedule/scheduleTable/{id}/getGroupSchedule', [App\Http\Controllers\AR_Controller::class, 'getGroupSchedule']);
+Route::get('/AR/schedule/fetch/{id}', [App\Http\Controllers\AR_Controller::class, 'fetchEvents']);
 // Route::get('/AR/schedule/index/old', [App\Http\Controllers\AR_Controller::class, 'scheduleIndex'])->name('pendaftar_akademik.schedule.old');
 // Route::post('/AR/schedule/store', [App\Http\Controllers\AR_Controller::class, 'dropzoneStore'])->name('pendaftar_akademik.schedule.store');
-Route::post('/AR/schedule/create', [App\Http\Controllers\AR_Controller::class, 'createEvent']);
+Route::post('/AR/schedule/create/{id}', [App\Http\Controllers\AR_Controller::class, 'createEvent']);
 Route::put('/AR/schedule/update/{id}', [App\Http\Controllers\AR_Controller::class, 'updateEvent']);
 Route::put('/AR/schedule/update2/{id}', [App\Http\Controllers\AR_Controller::class, 'updateEvent2']);
 Route::delete('/AR/schedule/delete/{id}', [App\Http\Controllers\AR_Controller::class, 'deleteEvent']);
@@ -171,6 +181,7 @@ Route::get('/AR/reportR/getStudentReportR', [App\Http\Controllers\AR_Controller:
 Route::get('/AR/student/warningLetter', [App\Http\Controllers\AR_Controller::class, 'warningLetter'])->name('pendaftar_akademik.warningLetter');
 Route::post('/AR/student/getWarningLetter', [App\Http\Controllers\AR_Controller::class, 'getWarningLetter']);
 Route::get('/AR/student/printWarningLetter', [App\Http\Controllers\AR_Controller::class, 'printWarningLetter']);
+// Route::get('/AR/student/groupTable', [App\Http\Controllers\AR_Controller::class, 'groupTable'])->name('pendaftar_akademik.groupTable');
 
 Route::get('/lecturer/getSuratAmaran', [App\Http\Controllers\LecturerController::class, 'getSuratAmaran'])->name('lecturer.suratamaran');
 
