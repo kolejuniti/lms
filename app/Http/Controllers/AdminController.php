@@ -1550,4 +1550,284 @@ class AdminController extends Controller
                                                                     ));
 
     }
+
+    public function userTraining()
+    {
+
+        return view('admin.staff.training');
+
+    }
+
+    public function getUserList(Request $request)
+    {
+        $students = DB::table('users')->where('name', 'LIKE', "%".$request->search."%")
+                                         ->orwhere('ic', 'LIKE', "%".$request->search."%")
+                                         ->orwhere('no_staf', 'LIKE', "%".$request->search."%")->get();
+
+        $content = "";
+
+        $content .= "<option value='0' selected disabled>-</option>";
+        foreach($students as $std){
+
+            $content .= "<option data-style=\"btn-inverse\"
+            data-content=\"<div class='row'>
+                <div class='col-md-2'>
+                <div class='d-flex justify-content-center'>
+                    <img src='' 
+                        height='auto' width='70%' class='bg-light ms-0 me-2 rounded-circle'>
+                        </div>
+                </div>
+                <div class='col-md-10 align-self-center lh-lg'>
+                    <span><strong>". $std->name ."</strong></span><br>
+                    <span>". $std->email ." | <strong class='text-fade'>". $std->ic ."</strong></span><br>
+                    <span class='text-fade'></span>
+                </div>
+            </div>\" value='". $std->ic ."' ></option>";
+
+        }
+        
+        return $content;
+
+    }
+
+    public function getUserInfo(Request $request)
+    {
+
+        $data['user'] = DB::table('users')->where('ic', $request->user)->first();
+
+        $data['training'] = DB::table('tbluser_training')
+                           ->where('user_ic', $request->user)
+                           ->get();
+
+        return view('admin.staff.trainingGetUser', compact('data'));
+
+    }
+
+    public function storeUserTraining(Request $request)
+    {
+
+        $userData = $request->userData;
+
+        $validator = Validator::make($request->all(), [
+            'userData' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return ["message"=>"Field Error", "error" => $validator->messages()->get('*')];
+        }
+
+        try{ 
+            DB::beginTransaction();
+            DB::connection()->enableQueryLog();
+
+            try{
+                $user = json_decode($userData);
+
+                DB::table('tbluser_training')->insert([
+                    'user_ic' => $user->ic,
+                    'training_name' => $user->name,
+                    'organizer' => $user->organizer,
+                    'training_type' => $user->type,
+                    'start_date' => $user->start_date,
+                    'end_date' => $user->end_date,
+                    'start_time' => $user->start_time,
+                    'end_time' => $user->end_time,
+                    'year' => $user->year,
+                ]);
+
+                $training = DB::table('tbluser_training')
+                           ->where('user_ic', $user->ic)
+                           ->get();
+
+                $content = "";
+                $content .= '<thead>
+                                <tr>
+                                    <th style="width: 1%">
+                                        No.
+                                    </th>
+                                    <th style="width: 15%">
+                                        Course Name
+                                    </th>
+                                    <th style="width: 15%">
+                                        Organizer
+                                    </th>
+                                    <th style="width: 10%">
+                                        Training Type
+                                    </th>
+                                    <th style="width: 10%">
+                                        Start Date
+                                    </th>
+                                    <th style="width: 10%">
+                                        End Date
+                                    </th>
+                                    <th style="width: 10%">
+                                        Start Time
+                                    </th>
+                                    <th style="width: 20%">
+                                        End Time
+                                    </th>
+                                    <th style="width: 10%">
+                                        Year
+                                    </th>
+                                    <th>
+                    
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="table">';
+                            
+                foreach($training as $key => $tr){
+                    //$registered = ($std->status == 'ACTIVE') ? 'checked' : '';
+                    $content .= '
+                    <tr>
+                        <td>
+                        '. $key+1 .'
+                        </td>
+                        <td>
+                        '. $tr->training_name .'
+                        </td>
+                        <td>
+                        '. $tr->organizer .'
+                        </td>
+                        <td>
+                        '. $tr->training_type .'
+                        </td>
+                        <td>
+                        '. $tr->start_date .'
+                        </td>
+                        <td>
+                        '. $tr->start_date .'
+                        </td>
+                        <td>
+                        '. $tr->start_time .'
+                        </td>
+                        <td>
+                        '. $tr->start_time .'
+                        </td>
+                        <td>
+                        '. $tr->year .'
+                        </td>
+                        <th>
+                        <a class="btn btn-danger btn-sm" href="#" onclick="deletedtl('. $tr->id .','. $user->ic .')">
+                            <i class="ti-trash">
+                            </i>
+                            Delete
+                        </a>
+                </td>
+                    </tr>
+                    ';
+                    }
+                $content .= '</tbody>';
+                
+            }catch(QueryException $ex){
+                DB::rollback();
+                if($ex->getCode() == 23000){
+                    return ["message"=>"Class code already existed inside the system"];
+                }else{
+                    \Log::debug($ex);
+                    return ["message"=>"DB Error"];
+                }
+            }
+
+            DB::commit();
+        }catch(Exception $ex){
+            return ["message"=>"Error"];
+        }
+
+        return ["message"=>"Success", "data" => $content];
+
+    }
+
+    public function deleteUserTraining(Request $request)
+    {
+
+        DB::table('tbluser_training')->where('id', $request->id)->delete();
+
+        $training = DB::table('tbluser_training')
+                           ->where('user_ic', $request->ic)
+                           ->get();
+
+        $content = "";
+        $content .= '<thead>
+                        <tr>
+                            <th style="width: 1%">
+                                No.
+                            </th>
+                            <th style="width: 15%">
+                                Course Name
+                            </th>
+                            <th style="width: 15%">
+                                Organizer
+                            </th>
+                            <th style="width: 10%">
+                                Training Type
+                            </th>
+                            <th style="width: 10%">
+                                Start Date
+                            </th>
+                            <th style="width: 10%">
+                                End Date
+                            </th>
+                            <th style="width: 10%">
+                                Start Time
+                            </th>
+                            <th style="width: 20%">
+                                End Time
+                            </th>
+                            <th style="width: 10%">
+                                Year
+                            </th>
+                            <th>
+            
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="table">';
+                    
+        foreach($training as $key => $tr){
+            //$registered = ($std->status == 'ACTIVE') ? 'checked' : '';
+            $content .= '
+            <tr>
+                <td>
+                '. $key+1 .'
+                </td>
+                <td>
+                '. $tr->training_name .'
+                </td>
+                <td>
+                '. $tr->organizer .'
+                </td>
+                <td>
+                '. $tr->training_type .'
+                </td>
+                <td>
+                '. $tr->start_date .'
+                </td>
+                <td>
+                '. $tr->start_date .'
+                </td>
+                <td>
+                '. $tr->start_time .'
+                </td>
+                <td>
+                '. $tr->start_time .'
+                </td>
+                <td>
+                '. $tr->year .'
+                </td>
+                <td>
+                    <a class="btn btn-danger btn-sm" href="#" onclick="deletedtl('. $tr->id .','. $request->ic .')">
+                        <i class="ti-trash">
+                        </i>
+                        Delete
+                    </a>
+                </td>
+            </tr>
+            ';
+            }
+        $content .= '</tbody>';
+
+        return $content;
+
+    }
 }
