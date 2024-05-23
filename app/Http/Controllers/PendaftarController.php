@@ -286,11 +286,8 @@ class PendaftarController extends Controller
             ->join('sessions AS a', 'students.intake', 'a.SessionID')
             ->join('sessions AS b', 'students.session', 'b.SessionID')
             ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
-            ->join('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
-            ->join('tblsex', 'tblstudent_personal.sex_id', 'tblsex.id')
             ->select('students.*', 'tblprogramme.progname', 'a.SessionName AS intake', 
-                     'b.SessionName AS session', 'tblstudent_status.name AS status',
-                     'tblstudent_personal.no_tel', 'tblsex.sex_name AS gender')
+                     'b.SessionName AS session', 'tblstudent_status.name AS status')
             ->where('students.name', 'LIKE', "%".$request->search."%")
             ->orwhere('students.ic', 'LIKE', "%".$request->search."%")
             ->orwhere('students.no_matric', 'LIKE', "%".$request->search."%")->get();
