@@ -2245,9 +2245,12 @@ class PendaftarController extends Controller
                 ->wherein('students.status', [2,4,6,16,17])
                 ->get();
 
+            $data['ref1'] = [];
 
             foreach($data['studentR1'] as $key => $student)
             {
+
+                $results = [];
 
                 $data['resultR1'][] = DB::table('tblpayment')
                                 ->leftjoin('tblpaymentdtl', 'tblpayment.id', 'tblpaymentdtl.payment_id')
@@ -2276,6 +2279,32 @@ class PendaftarController extends Controller
                     $data['R1F'] = $data['R1F'] + 1;
                     
                 }
+
+                if(DB::table('tblstudent_spm')->where('student_ic')->exists())
+                {
+
+                    $results[] = 'SPM';
+
+                }
+
+                
+                if(DB::table('tblstudent_spmv')->where('student_ic')->exists())
+                {
+
+                    $results[] = 'SPMV';
+
+                }
+
+                
+                if(DB::table('tblstudent_skm')->where('student_ic')->exists())
+                {
+
+                    $results[] = 'SKM';
+
+                }
+
+                // Combine the results with commas
+                $data['ref1'][$key] = implode(', ', $results);
 
             }
 
