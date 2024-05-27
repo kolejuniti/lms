@@ -2246,6 +2246,7 @@ class PendaftarController extends Controller
                 ->get();
 
             $data['ref1'] = [];
+            $data['ref2'] = [];
 
             foreach($data['studentR1'] as $key => $student)
             {
@@ -2280,7 +2281,7 @@ class PendaftarController extends Controller
                     
                 }
 
-                if(DB::table('tblstudent_spm')->where('student_ic')->exists())
+                if(DB::table('tblstudent_spm')->where('student_ic', $student->ic)->exists())
                 {
 
                     $results[] = 'SPM';
@@ -2288,7 +2289,7 @@ class PendaftarController extends Controller
                 }
 
                 
-                if(DB::table('tblstudent_spmv')->where('student_ic')->exists())
+                if(DB::table('tblstudent_spmv')->where('student_ic', $student->ic)->exists())
                 {
 
                     $results[] = 'SPMV';
@@ -2296,7 +2297,7 @@ class PendaftarController extends Controller
                 }
 
                 
-                if(DB::table('tblstudent_skm')->where('student_ic')->exists())
+                if(DB::table('tblstudent_skm')->where('student_ic', $student->ic)->exists())
                 {
 
                     $results[] = 'SKM';
@@ -2312,6 +2313,8 @@ class PendaftarController extends Controller
 
             foreach($data['studentR2'] as $key => $student)
             {
+
+                $results = [];
 
                 $data['resultR2'][] = DB::table('tblpayment')
                                     ->leftjoin('tblpaymentdtl', 'tblpayment.id', 'tblpaymentdtl.payment_id')
@@ -2340,6 +2343,32 @@ class PendaftarController extends Controller
                     $data['R2F'] = $data['R2F'] + 1;
                     
                 }
+
+                if(DB::table('tblstudent_spm')->where('student_ic', $student->ic)->exists())
+                {
+
+                    $results[] = 'SPM';
+
+                }
+
+                
+                if(DB::table('tblstudent_spmv')->where('student_ic', $student->ic)->exists())
+                {
+
+                    $results[] = 'SPMV';
+
+                }
+
+                
+                if(DB::table('tblstudent_skm')->where('student_ic', $student->ic)->exists())
+                {
+
+                    $results[] = 'SKM';
+
+                }
+
+                // Combine the results with commas
+                $data['ref2'][$key] = implode(', ', $results);
 
             }
 
