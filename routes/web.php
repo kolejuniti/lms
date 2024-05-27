@@ -152,6 +152,7 @@ Route::get('/AR/student/getStudent', [App\Http\Controllers\AR_Controller::class,
 Route::get('/AR/student/getCourse', [App\Http\Controllers\AR_Controller::class, 'getCourses']);
 Route::post('/AR/student/register', [App\Http\Controllers\AR_Controller::class, 'registerCourse']);
 Route::delete('/AR/student/unregister', [App\Http\Controllers\AR_Controller::class, 'unregisterCourse']);
+Route::get('/AR/student/getSlipExam', [App\Http\Controllers\AR_Controller::class, 'getSlipExam'])->name('pendaftar_akademik.student.slipExam');
 Route::get('/AR/session', [App\Http\Controllers\AR_Controller::class, 'sessionList'])->name('pendaftar_akademik.session');
 Route::post('/AR/session/create', [App\Http\Controllers\AR_Controller::class, 'createSession']);
 Route::post('/AR/session/update', [App\Http\Controllers\AR_Controller::class, 'updateSession']);
