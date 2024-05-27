@@ -809,6 +809,32 @@ class AR_Controller extends Controller
 
     }
 
+    public function getSlipExam(Request $request)
+    {
+
+        $data['student'] = DB::table('students')
+                           ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
+                           ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+                           ->join('sessions AS t1', 'students.intake', 't1.SessionID')
+                           ->join('sessions AS t2', 'students.session', 't2.SessionID')
+                           ->select('students.*', 'tblstudent_status.name AS status', 'tblprogramme.progname AS program', 'students.program AS progid', 't1.SessionName AS intake_name', 't2.SessionName AS session_name')
+                           ->where('ic', $request->student)->first();
+
+        $data['course'] = DB::table('student_subjek')
+                          ->join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
+                          ->join('tblcourse_level', 'subjek.course_level_id', 'tblcourse_level.id')
+                          ->where([
+                            ['student_subjek.student_ic', $request->student],
+                            ['student_subjek.semesterid', $data['student']->semester]
+                            ])
+                            ->groupBy('subjek.sub_id')
+                            ->select('subjek.*', 'tblcourse_level.name AS level')
+                            ->get();
+
+        return view('pendaftar_akademik.slipExam', compact('data'));
+
+    }
+
     public function sessionList()
     {
         $data = [
@@ -892,14 +918,128 @@ class AR_Controller extends Controller
 
     }
 
+    // public function scheduleIndex()
+    // {
+
+    //     $path = "classschedule/";
+
+    //     $files  = Storage::disk('linode')->allFiles($path);
+
+    //     return view('pendaftar_akademik.schedule.schedule', compact('files'));
+
+    // }
+
     public function scheduleIndex()
     {
 
-        $path = "classschedule/";
+        $data = [
+            'room' => DB::table('tbllecture_room')->get(),
+            'session' => DB::table('sessions')->where('Status', 'ACTIVE')->get()
+        ];
 
-        $files  = Storage::disk('linode')->allFiles($path);
+        return view('pendaftar_akademik.schedule.index', compact('data'));
 
-        return view('pendaftar_akademik.schedule.schedule', compact('files'));
+    }
+
+    public function getLectureRoom(Request $request)
+    {
+
+        if(isset($request->session))
+        {
+
+            $allRoom = DB::table('tbllecture')
+                       ->join('sessions', 'tbllecture.session_id', 'sessions.SessionID')
+                       ->join('tbllecture_room', 'tbllecture.room_id', 'tbllecture_room.id')
+                       ->select('tbllecture.*', 'sessions.SessionName', 'tbllecture_room.name AS roomName')
+                       ->where([
+                        ['tbllecture.session_id', $request->session]
+                       ])->get();
+
+            $content = "";
+            $content .= '<thead>
+                            <tr>
+                                <th style="width: 1%">
+                                    No.
+                                </th>
+                                <th>
+                                    Session
+                                </th>
+                                <th>
+                                    Room Name
+                                </th>
+                                <th>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="table">';
+                        
+            foreach($allRoom as $key => $ar){
+                //$registered = ($student->status == 'ACTIVE') ? 'checked' : '';
+                $content .= '
+                <tr>
+                    <td style="width: 1%">
+                    '. $key+1 .'
+                    </td>
+                    <td>
+                    '. $ar->SessionName .'
+                    </td>
+                    <td>
+                    '. $ar->roomName .'
+                    </td>
+                    <td class="project-actions text-right" >
+                        <a class="btn btn-info btn-sm" href="/AR/schedule/scheduleTable/'. $ar->id .'">
+                            <i class="ti-info-alt">
+                            </i>
+                            Table
+                        </a>
+                        <a class="btn btn-danger btn-sm" href="#" onclick="deleteMaterial('. $ar->id .')">
+                            <i class="ti-trash">
+                            </i>
+                            Delete
+                        </a>
+                    </td>';
+
+                }
+                $content .= '</tr></tbody>';
+    
+                return $content;
+
+        }
+
+    }
+
+    public function createLectureRoom(Request $request)
+    {
+
+        $data = json_decode($request->formData);
+
+        try{ 
+            DB::beginTransaction();
+            DB::connection()->enableQueryLog();
+
+            try{
+
+                DB::table('tbllecture')->insert([
+                    'room_id' => $data->room,
+                    'session_id' => $data->session
+                ]);
+
+            }catch(QueryException $ex){
+                DB::rollback();
+                if($ex->getCode() == 23000){
+                    return ["message"=>"Class code already existed inside the system"];
+                }else{
+                    \Log::debug($ex);
+                    return ["message"=>"DB Error"];
+                }
+            }
+
+            DB::commit();
+        }catch(Exception $ex){
+            return ["message"=>"Error"];
+        }
+
+        return response()->json(['message' => 'Success']);
 
     }
 
@@ -1183,24 +1323,76 @@ class AR_Controller extends Controller
 
     }
 
-    public function scheduleDrop()
+    public function scheduleTable()
     {
 
-        return view('pendaftar_akademik.schedule.schedule');
+        $data = [
+            'lecturer' => DB::table('users')
+                          ->whereIn('usrtype', ['LCT', 'PL', 'AO'])
+                          ->get(),
+        ];
+
+        return view('pendaftar_akademik.schedule.schedule', compact('data'));
+
+    }
+
+    public function getSubjectSchedule(Request $request)
+    {
+
+        $lecture = DB::table('tbllecture')->where('id', $request->id)->first();
+
+        $subject = DB::table('user_subjek')
+                   ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+                   ->where([
+                      ['user_subjek.user_ic', $request->lecturerId],
+                      ['user_subjek.session_id', $lecture->session_id]
+                   ])
+                   ->select('subjek.course_name AS name', 'user_subjek.id AS id')->get();
+
+        return response()->json($subject);
+
+    }
+
+    public function getGroupSchedule(Request $request)
+    {
+
+        $lecture = DB::table('tbllecture')->where('id', $request->id)->first();
+
+        $group = DB::table('student_subjek')
+                 ->where([
+                    ['student_subjek.group_id', $request->groupID]
+                 ])->groupBy('group_name')->get();
+
+        return response()->json($group);
 
     }
 
     public function fetchEvents()
     {
-        $events = Tblevent::all();
+        $events = Tblevent::join('user_subjek', 'tblevents.group_id', 'user_subjek.id')
+                  ->join('users', 'user_subjek.user_ic', 'users.ic')
+                  ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+                  ->where('tblevents.lecture_id', request()->id)
+                  ->groupBy('subjek.sub_id', 'tblevents.id')
+                  ->select('tblevents.*', 'subjek.course_name AS subject', 'users.name AS lecturer')->get();
 
         $formattedEvents = $events->map(function ($event) {
+
+            $count = DB::table('student_subjek')
+                             ->where([
+                                ['group_id', $event->group_id],
+                                ['group_name', $event->group_name]
+                                ])
+                             ->select(DB::raw('COUNT(student_ic) AS total_student'))
+                             ->get();
+
             return [
                 'id' => $event->id,
-                'title' => $event->title,
-                'startTime' => date('H:i:s', strtotime($event->start)),
-                'endTime' => date('H:i:s', strtotime($event->end)),
-                'duration' => gmdate('H:i:s', strtotime($event->end) - strtotime($event->start)),
+                'title' => $event->lecturer,
+                'description' => $event->subject . ' (' . $event->group_name .') ' . '|' . ' Total Student :' . ' ' .$count->value('total_student'),
+                'startTime' => date('H:i', strtotime($event->start)),
+                'endTime' => date('H:i', strtotime($event->end)),
+                'duration' => gmdate('H:i', strtotime($event->end) - strtotime($event->start)),
                 'daysOfWeek' => [date('N', strtotime($event->start))] // Recurring on the same day of the week
             ];
         });
@@ -1212,10 +1404,21 @@ class AR_Controller extends Controller
     public function createEvent(Request $request)
     {
         $event = new Tblevent;
-        $event->title = $request->title;
+        $event->lecture_id = $request->id;
+        $event->user_ic = $request->lecturer;
+        $event->group_id = $request->groupId;
+        $event->group_name = $request->groupName;
+        // $event->title = $request->title;
         $event->start = $request->start;
         $event->end = $request->end;
         $event->save();
+
+        $events = Tblevent::join('user_subjek', 'tblevents.group_id', 'user_subjek.id')
+                  ->join('users', 'user_subjek.user_ic', 'users.ic')
+                  ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+                  ->where('tblevents.id', $event->id)
+                  ->groupBy('subjek.sub_id', 'tblevents.id')
+                  ->select('tblevents.*', 'subjek.course_name AS subject', 'users.name AS lecturer')->first();
 
         // $id = DB::table('tblevents')->insertGetId([
         //     'title' => $request->title,
@@ -1227,10 +1430,11 @@ class AR_Controller extends Controller
 
         return response()->json([
             'event' => [
-                'id' => $event->id,
-                'title' => $event->title,
-                'start' => $event->start,
-                'end' => $event->end
+                'id' => $events->id,
+                'title' => $events->lecturer, 
+                'description' => $events->subject . ' (' . $event->group_name .')',
+                'start' => $events->start,
+                'end' => $events->end
             ]
         ]);
     }
@@ -1565,5 +1769,28 @@ class AR_Controller extends Controller
         }
 
     }
+
+    // public function groupTable()
+    // {
+
+    //     $data['group'] = DB::table('student_subjek')
+    //                      ->join('user_subjek', function($join){
+    //                         $join->on('student_subjek.group_id', 'user_subjek.id');
+    //                         $join->on('student_subjek.courseid', 'user_subjek.course_id');
+    //                         $join->on('student_subjek.sessionid', 'user_subjek.session_id');
+    //                      })
+    //                      ->join('users', 'user_subjek.user_ic', 'users.ic')
+    //                      ->join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
+    //                      ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
+    //                      ->groupBy('student_subjek.group_id')
+    //                      ->groupBy('student_subjek.group_name')
+    //                      ->where('student_subjek.sessionid', 92)
+    //                      ->select(DB::raw('COUNT(student_subjek.student_ic) AS student_number'), 'subjek.course_name AS subject', 'sessions.SessionName AS session', 'users.name AS lecturer')
+    //                      ->orderBy('users.name')
+    //                      ->get();
+
+    //     dd($data['group']);
+
+    // }
 
 }
