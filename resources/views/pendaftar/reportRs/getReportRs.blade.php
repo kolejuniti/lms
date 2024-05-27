@@ -196,6 +196,9 @@
                     Type
                 </th>
                 <th style="width: 5%">
+                    Reference
+                </th>
+                <th style="width: 5%">
                     Amount
                 </th>
             </tr>
@@ -238,6 +241,9 @@
             </td>
             <td>
             {{ $data['resultR2'][$key]->group_alias }}
+            </td>
+            <td>
+            {{ $data['ref2'][$key] }}
             </td>
             <td>
             {{ $data['resultR2'][$key]->amount }}
