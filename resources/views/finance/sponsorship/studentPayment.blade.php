@@ -8,7 +8,7 @@
   <div class="content-header">
     <div class="d-flex align-items-center">
       <div class="me-auto">
-        <h4 class="page-title">Tuition</h4>
+        <h4 class="page-title">Sponsorship Payment</h4>
         <div class="d-inline-block align-items-center">
           <nav>
             <ol class="breadcrumb">
@@ -243,6 +243,21 @@ function save(ic)
 
 
 }
+
+// Ensure the DOM is fully loaded
+document.addEventListener('DOMContentLoaded', function() {
+  // Check if the element exists and its value is not empty
+  var paymentElement = document.getElementById('idpayment');
+  if (paymentElement && paymentElement.value.trim() !== '') {
+    // Add event listener for the Enter key
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        confirm(); // Call your add() function or form submission logic
+      }
+    });
+  }
+});
 
 
 function confirm()
