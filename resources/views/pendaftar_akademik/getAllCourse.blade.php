@@ -33,6 +33,15 @@
                 </div>
             </div>
         </div>
+        <div class="row">
+            <div class="pull-right">
+                <a class="btn btn-info btn-sm" target="_blank" href="/AR/student/getSlipExam?student={{ $data['students']->ic }}">
+                    <i class="fa fa-info">
+                    </i>
+                    Slip Exam
+                </a>
+            </div>
+        </div>
     </div>
 </div>
 
