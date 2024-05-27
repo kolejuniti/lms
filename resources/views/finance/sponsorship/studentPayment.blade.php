@@ -256,6 +256,8 @@ document.addEventListener('DOMContentLoaded', function() {
         confirm(); // Call your add() function or form submission logic
       }
     });
+  }else{
+    alert('Please fill in the details first!');
   }
 });
 
