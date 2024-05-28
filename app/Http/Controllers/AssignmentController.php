@@ -354,6 +354,121 @@ class AssignmentController extends Controller
 
     }
 
+    public function assignGetGroup(Request $request)
+    {
+
+        $user = Auth::user();
+
+        $assign = DB::table('student_subjek')
+                ->join('tblclassassign_group', function($join){
+                    $join->on('student_subjek.group_id', 'tblclassassign_group.groupid');
+                    $join->on('student_subjek.group_name', 'tblclassassign_group.groupname');
+                })
+                ->join('tblclassassign', 'tblclassassign_group.assignid', 'tblclassassign.id')
+                ->join('students', 'student_subjek.student_ic', 'students.ic')
+                ->select('student_subjek.*', 'tblclassassign.id AS clssid', 'tblclassassign.total_mark', 'students.no_matric', 'students.name')
+                ->where([
+                    ['tblclassassign.classid', Session::get('CourseIDS')],
+                    ['tblclassassign.sessionid', Session::get('SessionIDS')],
+                    ['tblclassassign.id', request()->assign],
+                    ['tblclassassign.addby', $user->ic]
+                ])->whereNotIn('students.status', [4,5,6,7,16])->orderBy('students.name')->get();
+
+        foreach($assign as $qz)
+        {
+            $status[] = DB::table('tblclassstudentassign')
+            ->where([
+                ['assignid', $qz->clssid],
+                ['userid', $qz->student_ic]
+            ])->get();
+        }
+
+        $content = "";
+        $content .= '<thead>
+                        <tr>
+                            <th style="width: 1%">No.</th>
+                            <th style="width: 15%">Name</th>
+                            <th style="width: 5%">Matric No.</th>
+                            <th style="width: 20%">Submission Date</th>
+                            <th style="width: 15%">Attachment</th>
+                            <th style="width: 10%">Status Submission</th>
+                            <th style="width: 5%">Marks</th>
+                            <th style="width: 20%"></th>
+                        </tr>
+                    </thead>
+                    <tbody>';
+
+        foreach ($assign as $key => $qz) {
+            $alert = (count($status[$key]) > 0) ? 'badge bg-success' : 'badge bg-danger';
+
+            $content .= '
+                <tr>
+                    <td style="width: 1%">' . ($key + 1) . '</td>
+                    <td style="width: 15%">
+                        <span class="' . $alert . '">' . $qz->name . '</span>
+                    </td>
+                    <td style="width: 5%">
+                        <span>' . $qz->no_matric . '</span>
+                    </td>';
+            
+            if (count($status[$key]) > 0) {
+                foreach ($status[$key] as $keys => $sts) {
+                    $content .= '
+                        <td style="width: 20%">' . (empty($sts) ? '-' : $sts->subdate) . '</td>
+                        <td style="width: 5%">';
+                    if (empty($sts)) {
+                        $content .= '-';
+                    } else {
+                        if ($sts->content == null) {
+                            $content .= '-';
+                        } else {
+                            $content .= '<a href="' . Storage::disk('linode')->url($sts->content) . '"><i class="fa fa-file-pdf-o fa-3x"></i></a>';
+                        }
+                    }
+                    $content .= '</td>
+                        <td>';
+                    if (empty($sts)) {
+                        $content .= '-';
+                    } else {
+                        if ($sts->status_submission == 2) {
+                            $content .= '<span class="badge bg-danger">Late</span>';
+                        } else {
+                            $content .= '<span class="badge bg-success">Submit</span>';
+                        }
+                    }
+                    $content .= '</td>
+                        <td>' . (empty($sts) ? '-' : $sts->final_mark) . ' / ' . $qz->total_mark . '</td>
+                        <td class="project-actions text-center">
+                            <a class="btn btn-success btn-sm mr-2" href="/lecturer/assign/' . request()->assign . '/' . $sts->userid . '/result">
+                                <i class="ti-pencil-alt"></i> Answer
+                            </a>
+                            <a class="btn btn-danger btn-sm mr-2" onclick="deleteStdAssign(\'' . $sts->id . '\')">
+                                <i class="ti-trash"></i> Delete
+                            </a>
+                        </td>';
+                }
+            } else {
+                $content .= '
+                    <td style="width: 20%">-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td></td>
+                    <td></td>';
+            }
+
+            $content .= '
+                </tr>';
+        }
+
+        $content .= '</tbody>';
+
+
+
+        return response()->json(['message' => 'success', 'content' => $content]);
+
+
+    }
+
     public function deleteassignstatus(Request $request)
     {
         $data = DB::table('tblclassstudentassign')->where('id', $request->id)->first();
@@ -1000,6 +1115,112 @@ class AssignmentController extends Controller
         //dd($status);
 
         return view('lecturer.courseassessment.assignment2status', compact('assign', 'status', 'group'));
+
+    }
+
+    public function assign2GetGroup(Request $request)
+    {
+
+        $user = Auth::user();
+
+        $assign = DB::table('student_subjek')
+                ->join('tblclassassign_group', function($join){
+                    $join->on('student_subjek.group_id', 'tblclassassign_group.groupid');
+                    $join->on('student_subjek.group_name', 'tblclassassign_group.groupname');
+                })
+                ->join('tblclassassign', 'tblclassassign_group.assignid', 'tblclassassign.id')
+                ->join('students', 'student_subjek.student_ic', 'students.ic')
+                ->select('student_subjek.*', 'tblclassassign.id AS clssid', 'tblclassassign.total_mark', 'students.no_matric', 'students.name')
+                ->where([
+                    ['tblclassassign.classid', Session::get('CourseIDS')],
+                    ['tblclassassign.sessionid', Session::get('SessionIDS')],
+                    ['tblclassassign.id', request()->assign],
+                    ['tblclassassign.addby', $user->ic]
+                ])->whereNotIn('students.status', [4,5,6,7,16])->get();
+
+        foreach($assign as $qz)
+        {
+
+           if(!DB::table('tblclassstudentassign')->where([['assignid', $qz->clssid],['userid', $qz->student_ic]])->exists()){
+
+                DB::table('tblclassstudentassign')->insert([
+                    'assignid' => $qz->clssid,
+                    'userid' => $qz->student_ic
+                ]);
+
+           }
+
+            $status[] = DB::table('tblclassstudentassign')
+            ->where([
+                ['assignid', $qz->clssid],
+                ['userid', $qz->student_ic]
+            ])->first();
+        }
+
+        $content = "";
+        $content .= '<thead>
+                        <tr>
+                            <th style="width: 1%">
+                                No.
+                            </th>
+                            <th>
+                                Name
+                            </th>
+                            <th>
+                                Matric No.
+                            </th>
+                            <th>
+                                Submission Date
+                            </th>
+                            <th>
+                                Marks
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="table">';
+                            
+        foreach ($assign as $key => $qz) {
+            $alert = ($status[$key]->final_mark != 0) ? 'badge bg-success' : 'badge bg-danger';
+
+            $content .= '
+                <tr>
+                    <td style="width: 1%">
+                        ' . ($key + 1) . '
+                    </td>
+                    <td>
+                        <span class="' . $alert . '">' . $qz->name . '</span>
+                    </td>
+                    <td>
+                        <span>' . $qz->no_matric . '</span>
+                    </td>';
+            
+            if ($status[$key]->final_mark != 0) {
+                $content .= '
+                    <td>
+                        ' . $status[$key]->submittime . '
+                    </td>';
+            } else {
+                $content .= '
+                    <td>
+                        -
+                    </td>';
+            }
+            
+            $content .= '
+                    <td>
+                        <div class="form-inline col-md-6 d-flex">
+                            <input type="number" class="form-control" name="marks[]" max="' . $qz->total_mark . '" value="' . $status[$key]->final_mark . '">
+                            <input type="text" name="ic[]" value="' . $qz->student_ic . '" hidden>
+                            <span>' . $status[$key]->final_mark . ' / ' . $qz->total_mark . '</span>
+                        </div>
+                    </td>
+                </tr>';
+        }
+
+        $content .= '</tbody>';
+
+        return response()->json(['message' => 'success', 'content' => $content]);
+
 
     }
 
