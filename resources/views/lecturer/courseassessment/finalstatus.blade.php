@@ -188,6 +188,7 @@
                 
               if(data.message == 'success')
               {
+              $('#myTable').DataTable().destroy();
               $('#myTable').html(data.content);
               $('#myTable').DataTable();
               }
