@@ -565,7 +565,8 @@ class OtherController extends Controller
                     ['tblclassother.classid', Session::get('CourseIDS')],
                     ['tblclassother.sessionid', Session::get('SessionIDS')],
                     ['tblclassother.id', request()->other],
-                    ['tblclassother.addby', $user->ic]
+                    ['tblclassother.addby', $user->ic],
+                    ['student_subjek.group_id', $request->group]
                 ])->whereNotIn('students.status', [4,5,6,7,16])->orderBy('students.name')->get();
 
         foreach($other as $qz)

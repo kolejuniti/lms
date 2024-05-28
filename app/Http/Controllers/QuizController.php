@@ -547,7 +547,8 @@ class QuizController extends Controller
                     ['tblclassquiz.classid', Session::get('CourseIDS')],
                     ['tblclassquiz.sessionid', Session::get('SessionIDS')],
                     ['tblclassquiz.id', request()->quiz],
-                    ['tblclassquiz.addby', $user->ic]
+                    ['tblclassquiz.addby', $user->ic],
+                    ['student_subjek.group_id', $request->group]
                 ])->whereNotIn('students.status', [4,5,6,7,16])->orderBy('students.name')->get();
         
         foreach($quiz as $qz)
@@ -1594,7 +1595,8 @@ class QuizController extends Controller
                     ['tblclassquiz.classid', Session::get('CourseIDS')],
                     ['tblclassquiz.sessionid', Session::get('SessionIDS')],
                     ['tblclassquiz.id', request()->quiz],
-                    ['tblclassquiz.addby', $user->ic]
+                    ['tblclassquiz.addby', $user->ic],
+                    ['student_subjek.group_id', $request->group]
                 ])->whereNotIn('students.status', [4,5,6,7,16])->orderBy('students.name')->get();
 
         foreach($quiz as $qz)

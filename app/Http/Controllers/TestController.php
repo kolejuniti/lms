@@ -547,7 +547,8 @@ class TestController extends Controller
                     ['tblclasstest.classid', Session::get('CourseIDS')],
                     ['tblclasstest.sessionid', Session::get('SessionIDS')],
                     ['tblclasstest.id', request()->test],
-                    ['tblclasstest.addby', $user->ic]
+                    ['tblclasstest.addby', $user->ic],
+                    ['student_subjek.group_id', $request->group]
                 ])->whereNotIn('students.status', [4,5,6,7,16])->orderBy('students.name')->get();
         
         foreach($test as $qz)
@@ -1594,7 +1595,8 @@ class TestController extends Controller
                     ['tblclasstest.classid', Session::get('CourseIDS')],
                     ['tblclasstest.sessionid', Session::get('SessionIDS')],
                     ['tblclasstest.id', request()->test],
-                    ['tblclasstest.addby', $user->ic]
+                    ['tblclasstest.addby', $user->ic],
+                    ['student_subjek.group_id', $request->group]
                 ])->whereNotIn('students.status', [4,5,6,7,16])->orderBy('students.name')->get();
 
         foreach($test as $qz)

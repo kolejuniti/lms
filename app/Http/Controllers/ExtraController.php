@@ -316,7 +316,8 @@ class ExtraController extends Controller
                     ['tblclassextra.classid', Session::get('CourseIDS')],
                     ['tblclassextra.sessionid', Session::get('SessionIDS')],
                     ['tblclassextra.id', request()->extra],
-                    ['tblclassextra.addby', $user->ic]
+                    ['tblclassextra.addby', $user->ic],
+                    ['student_subjek.group_id', $request->group]
                 ])->whereNotIn('students.status', [4,5,6,7,16])->orderBy('students.name')->get();
 
         foreach($extra as $qz)
