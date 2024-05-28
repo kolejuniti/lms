@@ -282,6 +282,7 @@ Route::post('/lecturer/quiz/insert', [App\Http\Controllers\QuizController::class
 Route::post('/lecturer/quiz/getStatus', [App\Http\Controllers\QuizController::class, 'getStatus']);
 Route::post('/lecturer/quiz/updatequizresult', [App\Http\Controllers\QuizController::class, 'updatequizresult']);
 Route::get('/lecturer/quiz/{id}/{quiz}', [App\Http\Controllers\QuizController::class, 'lecturerquizstatus'])->name('lecturer.quiz.status');
+Route::post('/lecturer/quiz/{id}/{quiz}/getGroup', [App\Http\Controllers\QuizController::class, 'quizGetGroup']);
 Route::delete('/lecturer/quiz/status/delete', [App\Http\Controllers\QuizController::class, 'deletequizstatus']);
 Route::get('/lecturer/quiz/{quizid}/{userid}/result', [App\Http\Controllers\QuizController::class, 'quizresult']);
 Route::post('/lecturer/quiz/getChapters', [App\Http\Controllers\QuizController::class, 'getChapters']);
@@ -294,6 +295,7 @@ Route::post('/lecturer/quiz2/update', [App\Http\Controllers\QuizController::clas
 Route::post('/lecturer/quiz2/getStatus', [App\Http\Controllers\QuizController::class, 'getStatus']);
 Route::post('/lecturer/quiz2/updatequiz2result', [App\Http\Controllers\QuizController::class, 'updatequiz2result']);
 Route::get('/lecturer/quiz2/{id}/{quiz}', [App\Http\Controllers\QuizController::class, 'lecturerquiz2status'])->name('lecturer.quiz2.status');
+Route::post('/lecturer/quiz2/{id}/{quiz}/getGroup', [App\Http\Controllers\QuizController::class, 'quiz2GetGroup']);
 Route::get('/lecturer/quiz2/{quizid}/{userid}/result', [App\Http\Controllers\QuizController::class, 'quiz2result']);
 Route::post('/lecturer/quiz2/getChapters', [App\Http\Controllers\QuizController::class, 'getChapters']);
 
@@ -314,6 +316,7 @@ Route::post('/lecturer/test/insert', [App\Http\Controllers\TestController::class
 Route::post('/lecturer/test/getStatus', [App\Http\Controllers\TestController::class, 'getStatus']);
 Route::post('/lecturer/test/updatetestresult', [App\Http\Controllers\TestController::class, 'updatetestresult']);
 Route::get('/lecturer/test/{id}/{test}', [App\Http\Controllers\TestController::class, 'lecturerteststatus'])->name('lecturer.test.status');
+Route::post('/lecturer/test/{id}/{test}/getGroup', [App\Http\Controllers\TestController::class, 'testGetGroup']);
 Route::delete('/lecturer/test/status/delete', [App\Http\Controllers\TestController::class, 'deleteteststatus']);
 Route::get('/lecturer/test/{testid}/{userid}/result', [App\Http\Controllers\TestController::class, 'testresult']);
 Route::post('/lecturer/test/getChapters', [App\Http\Controllers\TestController::class, 'getChapters']);
@@ -326,6 +329,7 @@ Route::post('/lecturer/test2/update', [App\Http\Controllers\TestController::clas
 Route::post('/lecturer/test2/getStatus', [App\Http\Controllers\TestController::class, 'getStatus']);
 Route::post('/lecturer/test2/updatetest2result', [App\Http\Controllers\TestController::class, 'updatetest2result']);
 Route::get('/lecturer/test2/{id}/{test}', [App\Http\Controllers\TestController::class, 'lecturertest2status'])->name('lecturer.test2.status');
+Route::post('/lecturer/test2/{id}/{test}/getGroup', [App\Http\Controllers\TestController::class, 'test2GetGroup']);
 Route::get('/lecturer/test2/{testid}/{userid}/result', [App\Http\Controllers\TestController::class, 'test2result']);
 Route::post('/lecturer/test2/getChapters', [App\Http\Controllers\TestController::class, 'getChapters']);
 
@@ -336,12 +340,14 @@ Route::post('/lecturer/assign/insert', [App\Http\Controllers\AssignmentControlle
 Route::post('/lecturer/assign/getStatus', [App\Http\Controllers\AssignmentController::class, 'getStatus']);
 Route::post('/lecturer/assign/updateassignresult', [App\Http\Controllers\AssignmentController::class, 'updateassignresult']);
 Route::get('/lecturer/assign/{id}/{assign}', [App\Http\Controllers\AssignmentController::class, 'lecturerassignstatus'])->name('lecturer.assign.status');
+Route::post('/lecturer/assign/{id}/{assign}/getGroup', [App\Http\Controllers\AssignmentController::class, 'assignGetGroup']);
 Route::delete('/lecturer/assign/status/delete', [App\Http\Controllers\AssignmentController::class, 'deleteassignstatus']);
 Route::get('/lecturer/assign/{assignid}/{userid}/result', [App\Http\Controllers\AssignmentController::class, 'assignresult']);
 Route::post('/lecturer/assign/getChapters', [App\Http\Controllers\AssignmentController::class, 'getChapters']);
 Route::post('/lecturer/assign/deleteassign', [App\Http\Controllers\AssignmentController::class, 'deleteassign']);
 
 Route::get('/lecturer/assign2/{id}', [App\Http\Controllers\AssignmentController::class, 'assign2list'])->name('lecturer.assign2');
+Route::post('/lecturer/assign2/{id}/{assign}/getGroup', [App\Http\Controllers\AssignmentController::class, 'assign2GetGroup']);
 Route::get('/lecturer/assign2/{id}/create', [App\Http\Controllers\AssignmentController::class, 'assign2create'])->name('lecturer.assign2.create');
 Route::post('/lecturer/assign2/insert', [App\Http\Controllers\AssignmentController::class, 'insertassign2']);
 Route::post('/lecturer/assign2/update', [App\Http\Controllers\AssignmentController::class, 'updateassign2']);
@@ -381,6 +387,7 @@ Route::post('/lecturer/other/deleteother', [App\Http\Controllers\OtherController
 
 Route::post('/lecturer/other/updateotherresult', [App\Http\Controllers\OtherController::class, 'updateotherresult']);
 Route::get('/lecturer/other/{id}/{other}', [App\Http\Controllers\OtherController::class, 'lecturerotherstatus'])->name('lecturer.other.status');
+Route::post('/lecturer/other/{id}/{other}/getGroup', [App\Http\Controllers\OtherController::class, 'otherGetGroup']);
 Route::get('/lecturer/other/{otherid}/{userid}/result', [App\Http\Controllers\OtherController::class, 'otherresult']);
 Route::post('/lecturer/other/getChapters', [App\Http\Controllers\OtherController::class, 'getChapters']);
 
@@ -392,6 +399,7 @@ Route::post('/lecturer/midterm/update', [App\Http\Controllers\MidtermController:
 Route::post('/lecturer/midterm/deletemidterm', [App\Http\Controllers\MidtermController::class, 'deletemidterm']);
 
 Route::get('/lecturer/midterm/{id}/{midterm}', [App\Http\Controllers\MidtermController::class, 'lecturermidtermstatus'])->name('lecturer.midterm.status');
+Route::post('/lecturer/midterm/{id}/{midterm}/getGroup', [App\Http\Controllers\MidtermController::class, 'midtermGetGroup']);
 Route::post('/lecturer/midterm/getChapters', [App\Http\Controllers\MidtermController::class, 'getChapters']);
 
 
@@ -402,6 +410,7 @@ Route::post('/lecturer/final/update', [App\Http\Controllers\FinalController::cla
 Route::post('/lecturer/final/deletefinal', [App\Http\Controllers\FinalController::class, 'deletefinal']);
 
 Route::get('/lecturer/final/{id}/{final}', [App\Http\Controllers\FinalController::class, 'lecturerfinalstatus'])->name('lecturer.final.status');
+Route::post('/lecturer/final/{id}/{final}/getGroup', [App\Http\Controllers\FinalController::class, 'finalGetGroup']);
 Route::post('/lecturer/final/getChapters', [App\Http\Controllers\FinalController::class, 'getChapters']);
 
 
@@ -413,6 +422,7 @@ Route::post('/lecturer/extra/deleteextra', [App\Http\Controllers\ExtraController
 
 Route::post('/lecturer/extra/updateextraresult', [App\Http\Controllers\ExtraController::class, 'updateextraresult']);
 Route::get('/lecturer/extra/{id}/{extra}', [App\Http\Controllers\ExtraController::class, 'lecturerextrastatus'])->name('lecturer.extra.status');
+Route::post('/lecturer/extra/{id}/{extra}/getGroup', [App\Http\Controllers\ExtraController::class, 'extraGetGroup']);
 Route::get('/lecturer/extra/{extraid}/{userid}/result', [App\Http\Controllers\ExtraController::class, 'extraresult']);
 Route::post('/lecturer/extra/getChapters', [App\Http\Controllers\ExtraController::class, 'getChapters']);
 
