@@ -169,30 +169,36 @@
     $(document).on('change', '#group', function(e) {
         selected_group = $(e.target).val();
 
-        getGroup(selected_group,selected_extra);
+        getGroup(selected_group);
     });
 
-    function getGroup(group,extra)
+    function getGroup(group)
     {
 
       return $.ajax({
             headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
-            url      : "{{ url('lecturer/extra/getStatus') }}",
+            url      : "{{ url('lecturer/extra/' . request()->id . '/' . request()->extra . '/getGroup') }}",
             method   : 'POST',
-            data 	 : {group: group,extra: extra },
+            data 	 : {group: group},
             error:function(err){
                 alert("Error");
                 console.log(err);
             },
             success  : function(data){
                 
-                //$('#lecturer-selection-div').removeAttr('hidden');
-                //$('#lecturer').selectpicker('refresh');
-      
-                //$('#chapter').removeAttr('hidden');
-                    $('#status').html(data);
-                    $('#myTable').DataTable();
-                    //$('#group').selectpicker('refresh');
+              if(data.message == 'success')
+              {
+              $('#myTable').DataTable().destroy();
+              $('#myTable').html(data.content);
+              $('#myTable').DataTable({
+                dom: 'lBfrtip', // if you remove this line you will see the show entries dropdown
+                
+                buttons: [
+                    'copy', 'csv', 'excel', 'pdf', 'print'
+                ],
+              });
+              }
+
             }
         });
 
