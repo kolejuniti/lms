@@ -247,17 +247,20 @@ function save(ic)
 // Ensure the DOM is fully loaded
 document.addEventListener('DOMContentLoaded', function() {
   // Check if the element exists and its value is not empty
-  var paymentElement = document.getElementById('sum');
-  if (paymentElement && paymentElement.value.trim() !== '' && $('#sum').val() > 0 && $('#sum2').val() > 0) {
-    // Add event listener for the Enter key
-    document.addEventListener('keydown', function(event) {
-      if (event.key === 'Enter') {
-        event.preventDefault();
-        confirm(); // Call your add() function or form submission logic
-      }
-    });
-  }else{
-    alert('Please fill in the details first!');
+  var paymentElement = document.getElementById('idpayment');
+  if (paymentElement && paymentElement.value.trim() !== '') {
+    if($('#sum').val() > 0 && document.getElementById('sum2') > 0)
+    {
+      // Add event listener for the Enter key
+      document.addEventListener('keydown', function(event) {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          confirm(); // Call your add() function or form submission logic
+        }
+      });
+    }else{
+      alert('Please fill in the details first!');
+    }
   }
 });
 
