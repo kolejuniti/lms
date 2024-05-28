@@ -340,6 +340,113 @@ class MidtermController extends Controller
 
     }
 
+    public function midtermGetGroup(Request $request)
+    {
+
+        $user = Auth::user();
+
+        $midterm = DB::table('student_subjek')
+                ->join('tblclassmidterm_group', function($join){
+                    $join->on('student_subjek.group_id', 'tblclassmidterm_group.groupid');
+                    $join->on('student_subjek.group_name', 'tblclassmidterm_group.groupname');
+                })
+                ->join('tblclassmidterm', 'tblclassmidterm_group.midtermid', 'tblclassmidterm.id')
+                ->join('students', 'student_subjek.student_ic', 'students.ic')
+                ->select('student_subjek.*', 'tblclassmidterm.id AS clssid', 'tblclassmidterm.total_mark', 'students.no_matric', 'students.name')
+                ->where([
+                    ['tblclassmidterm.classid', Session::get('CourseIDS')],
+                    ['tblclassmidterm.sessionid', Session::get('SessionIDS')],
+                    ['tblclassmidterm.id', request()->midterm],
+                    ['tblclassmidterm.addby', $user->ic],
+                    ['student_subjek.group_id', $request->group]
+                ])->whereNotIn('students.status', [4,5,6,7,16])->get();
+        
+        foreach($midterm as $qz)
+        {
+
+           if(!DB::table('tblclassstudentmidterm')->where([['midtermid', $qz->clssid],['userid', $qz->student_ic]])->exists()){
+
+                DB::table('tblclassstudentmidterm')->insert([
+                    'midtermid' => $qz->clssid,
+                    'userid' => $qz->student_ic
+                ]);
+
+           }
+
+            $status[] = DB::table('tblclassstudentmidterm')
+            ->where([
+                ['midtermid', $qz->clssid],
+                ['userid', $qz->student_ic]
+            ])->first();
+        }
+
+        $content = "";
+        $content .= '<thead>
+                        <tr>
+                            <th style="width: 1%">
+                                No.
+                            </th>
+                            <th>
+                                Name
+                            </th>
+                            <th>
+                                Matric No.
+                            </th>
+                            <th>
+                                Submission Date
+                            </th>
+                            <th>
+                                Marks
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="table">';
+                            
+        foreach ($midterm as $key => $qz) {
+            $alert = ($status[$key]->final_mark != 0) ? 'badge bg-success' : 'badge bg-danger';
+
+            $content .= '
+                <tr>
+                    <td style="width: 1%">
+                        ' . ($key + 1) . '
+                    </td>
+                    <td>
+                        <span class="' . $alert . '">' . $qz->name . '</span>
+                    </td>
+                    <td>
+                        <span>' . $qz->no_matric . '</span>
+                    </td>';
+            
+            if ($status[$key]->final_mark != 0) {
+                $content .= '
+                    <td>
+                        ' . $status[$key]->submittime . '
+                    </td>';
+            } else {
+                $content .= '
+                    <td>
+                        -
+                    </td>';
+            }
+            
+            $content .= '
+                    <td>
+                        <div class="form-inline col-md-6 d-flex">
+                            <input type="number" class="form-control" name="marks[]" max="' . $qz->total_mark . '" value="' . $status[$key]->final_mark . '">
+                            <input type="text" name="ic[]" value="' . $qz->student_ic . '" hidden>
+                            <span>' . $status[$key]->final_mark . ' / ' . $qz->total_mark . '</span>
+                        </div>
+                    </td>
+                </tr>';
+        }
+
+        $content .= '</tbody>';
+
+        return response()->json(['message' => 'success', 'content' => $content]);
+
+
+    }
+
     public function updatemidterm(Request $request)
     {
         $user = Auth::user();
