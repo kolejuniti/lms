@@ -299,43 +299,143 @@ class ExtraController extends Controller
 
     }
 
-    public function updateextra(Request $request)
+    public function extraGetGroup(Request $request)
     {
+
         $user = Auth::user();
 
-        $marks = json_decode($request->marks);
+        $extra = DB::table('student_subjek')
+                ->join('tblclassextra_group', function($join){
+                    $join->on('student_subjek.group_id', 'tblclassextra_group.groupid');
+                    $join->on('student_subjek.group_name', 'tblclassextra_group.groupname');
+                })
+                ->join('tblclassextra', 'tblclassextra_group.extraid', 'tblclassextra.id')
+                ->join('students', 'student_subjek.student_ic', 'students.ic')
+                ->select('student_subjek.*', 'tblclassextra.id AS clssid', 'tblclassextra.total_mark', 'students.no_matric', 'students.name')
+                ->where([
+                    ['tblclassextra.classid', Session::get('CourseIDS')],
+                    ['tblclassextra.sessionid', Session::get('SessionIDS')],
+                    ['tblclassextra.id', request()->extra],
+                    ['tblclassextra.addby', $user->ic]
+                ])->whereNotIn('students.status', [4,5,6,7,16])->orderBy('students.name')->get();
 
-        $ics = json_decode($request->ics);
-
-        $extraid = json_decode($request->extraid);
-
-        $limitpercen = DB::table('tblclassextra')->where('id', $extraid)->first();
-
-        foreach($marks as $key => $mrk)
+        foreach($extra as $qz)
         {
 
-            if($mrk > $limitpercen->total_mark)
-            {
-                return ["message"=>"Field Error", "id" => $ics];
-            }
+           if(!DB::table('tblclassstudentextra')->where([['extraid', $qz->clssid],['userid', $qz->student_ic]])->exists()){
 
+                DB::table('tblclassstudentextra')->insert([
+                    'extraid' => $qz->clssid,
+                    'userid' => $qz->student_ic
+                ]);
+
+           }
+
+            $status[] = DB::table('tblclassstudentextra')
+            ->where([
+                ['extraid', $qz->clssid],
+                ['userid', $qz->student_ic]
+            ])->first();
         }
 
-       
+        $content = "";
+        $content .= '<thead>
+                        <tr>
+                            <th style="width: 1%">No.</th>
+                            <th>Name</th>
+                            <th>Matric No.</th>
+                            <th>Submission Date</th>
+                            <th>Marks</th>
+                        </tr>
+                    </thead>
+                    <tbody>';
+
+        foreach ($extra as $key => $qz) {
+            $alert = ($status[$key]->total_mark != 0) ? 'badge bg-success' : 'badge bg-danger';
+
+            $content .= '
+                <tr>
+                    <td style="width: 1%">' . ($key + 1) . '</td>
+                    <td>
+                        <span class="' . $alert . '">' . $qz->name . '</span>
+                    </td>
+                    <td>
+                        <span>' . $qz->no_matric . '</span>
+                    </td>';
+            
+            if ($status[$key]->total_mark != 0) {
+                $content .= '
+                    <td>' . $status[$key]->submittime . '</td>';
+            } else {
+                $content .= '
+                    <td>-</td>';
+            }
+            
+            $content .= '
+                    <td>
+                        <div class="form-inline col-md-6 d-flex">
+                            <input type="number" class="form-control" name="marks[]" max="' . $qz->total_mark . '" value="' . $status[$key]->total_mark . '">
+                            <input type="text" name="ic[]" value="' . $qz->student_ic . '" hidden>
+                            <span>' . $status[$key]->total_mark . ' / ' . $qz->total_mark . '</span>
+                        </div>
+                    </td>
+                </tr>';
+        }
+
+        $content .= '</tbody>';
+
+        return response()->json(['message' => 'success', 'content' => $content]);
+
+    }
+
+    // Define a public function named 'updateextra' which takes a Request object as a parameter.
+    public function updateextra(Request $request)
+    {
+        // Retrieve the currently authenticated user and store it in the variable '$user'.
+        $user = Auth::user();
+
+        // Decode the JSON string from the 'marks' request parameter and store the resulting object/array in the variable '$marks'.
+        $marks = json_decode($request->marks);
+
+        // Decode the JSON string from the 'ics' request parameter and store the resulting object/array in the variable '$ics'.
+        $ics = json_decode($request->ics);
+
+        // Decode the JSON string from the 'extraid' request parameter and store the resulting object/array in the variable '$extraid'.
+        $extraid = json_decode($request->extraid);
+
+        // Query the 'tblclassextra' database table for a row with an 'id' matching '$extraid', retrieve the first result, and store it in '$limitpercen'.
+        $limitpercen = DB::table('tblclassextra')->where('id', $extraid)->first();
+
+        // Iterate over the '$marks' array. For each mark, check if it exceeds the total_mark in '$limitpercen'.
+        foreach ($marks as $key => $mrk)
+        {
+            // If the current mark is greater than 'total_mark' from '$limitpercen', return an error response with a message and the 'ics' array.
+            if ($mrk > $limitpercen->total_mark)
+            {
+                return ["message" => "Field Error", "id" => $ics];
+            }
+        }
+
+        // Initialize an empty array '$upsert' to hold the data for bulk insertion/update.
         $upsert = [];
-        foreach($marks as $key => $mrk){
+        foreach ($marks as $key => $mrk)
+        {
+            // For each mark, create an associative array with user, extra, submission time, mark, and status information and add it to '$upsert'.
             array_push($upsert, [
-            'userid' => $ics[$key],
-            'extraid' => $extraid,
-            'submittime' => date("Y-m-d H:i:s"),
-            'total_mark' => $mrk,
-            'status' => 1
+                'userid' => $ics[$key],
+                'extraid' => $extraid,
+                'submittime' => date("Y-m-d H:i:s"),
+                'total_mark' => $mrk,
+                'status' => 1
             ]);
         }
 
+        // Perform a bulk insert/update operation on the 'tblclassstudentextra' table using the data in '$upsert'.
+        // The unique constraint is on both 'userid' and 'extraid' columns.
         DB::table('tblclassstudentextra')->upsert($upsert, ['userid', 'extraid']);
 
-        return ["message"=>"Success", "id" => $ics];
-
+        // Return a success response with the 'ics' array.
+        return ["message" => "Success", "id" => $ics];
     }
+
 }

@@ -548,6 +548,88 @@ class OtherController extends Controller
 
     }
 
+    public function otherGetGroup(Request $request)
+    {
+
+        $user = Auth::user();
+
+        $other = DB::table('student_subjek')
+                ->join('tblclassother_group', function($join){
+                    $join->on('student_subjek.group_id', 'tblclassother_group.groupid');
+                    $join->on('student_subjek.group_name', 'tblclassother_group.groupname');
+                })
+                ->join('tblclassother', 'tblclassother_group.otherid', 'tblclassother.id')
+                ->join('students', 'student_subjek.student_ic', 'students.ic')
+                ->select('student_subjek.*', 'tblclassother.id AS clssid', 'tblclassother.total_mark', 'students.no_matric', 'students.name')
+                ->where([
+                    ['tblclassother.classid', Session::get('CourseIDS')],
+                    ['tblclassother.sessionid', Session::get('SessionIDS')],
+                    ['tblclassother.id', request()->other],
+                    ['tblclassother.addby', $user->ic]
+                ])->whereNotIn('students.status', [4,5,6,7,16])->orderBy('students.name')->get();
+
+        foreach($other as $qz)
+        {
+
+           if(!DB::table('tblclassstudentother')->where([['otherid', $qz->clssid],['userid', $qz->student_ic]])->exists()){
+
+                DB::table('tblclassstudentother')->insert([
+                    'otherid' => $qz->clssid,
+                    'userid' => $qz->student_ic
+                ]);
+
+           }
+
+            $status[] = DB::table('tblclassstudentother')
+            ->where([
+                ['otherid', $qz->clssid],
+                ['userid', $qz->student_ic]
+            ])->first();
+        }
+
+        $content = "";
+        $content .= '<tbody>';
+
+        foreach ($other as $key => $qz) {
+            $alert = ($status[$key]->total_mark != 0) ? 'badge bg-success' : 'badge bg-danger';
+
+            $content .= '
+                <tr>
+                    <td style="width: 1%">' . ($key + 1) . '</td>
+                    <td>
+                        <span class="' . $alert . '">' . $qz->name . '</span>
+                    </td>
+                    <td>
+                        <span>' . $qz->no_matric . '</span>
+                    </td>';
+            
+            if ($status[$key]->total_mark != 0) {
+                $content .= '
+                    <td>' . $status[$key]->submittime . '</td>';
+            } else {
+                $content .= '
+                    <td>-</td>';
+            }
+            
+            $content .= '
+                    <td>
+                        <div class="form-inline col-md-6 d-flex">
+                            <input type="number" class="form-control" name="marks[]" max="' . $qz->total_mark . '" value="' . $status[$key]->total_mark . '">
+                            <input type="text" name="ic[]" value="' . $qz->student_ic . '" hidden>
+                            <span>' . $status[$key]->total_mark . ' / ' . $qz->total_mark . '</span>
+                        </div>
+                    </td>
+                </tr>';
+        }
+
+        $content .= '</tbody>';
+
+
+        return response()->json(['message' => 'success', 'content' => $content]);
+
+
+    }
+
     public function updateother(Request $request)
     {
         $user = Auth::user();

@@ -530,6 +530,101 @@ class TestController extends Controller
 
     }
 
+    public function testGetGroup(Request $request)
+    {
+
+        $user = Auth::user();
+
+        $test = DB::table('student_subjek')
+                ->join('tblclasstest_group', function($join){
+                    $join->on('student_subjek.group_id', 'tblclasstest_group.groupid');
+                    $join->on('student_subjek.group_name', 'tblclasstest_group.groupname');
+                })
+                ->join('tblclasstest', 'tblclasstest_group.testid', 'tblclasstest.id')
+                ->join('students', 'student_subjek.student_ic', 'students.ic')
+                ->select('student_subjek.*', 'tblclasstest.id AS clssid', 'tblclasstest.total_mark', 'tblclasstest.date_from', 'tblclasstest.date_to', 'students.no_matric', 'students.name')
+                ->where([
+                    ['tblclasstest.classid', Session::get('CourseIDS')],
+                    ['tblclasstest.sessionid', Session::get('SessionIDS')],
+                    ['tblclasstest.id', request()->test],
+                    ['tblclasstest.addby', $user->ic]
+                ])->whereNotIn('students.status', [4,5,6,7,16])->orderBy('students.name')->get();
+        
+        foreach($test as $qz)
+        {
+            $status[] = DB::table('tblclassstudenttest')
+            ->where([
+                ['testid', $qz->clssid],
+                ['userid', $qz->student_ic]
+            ])->get();
+        }
+
+        $content = "";
+        $content .= '<thead>
+                        <tr>
+                            <th style="width: 1%">No.</th>
+                            <th style="width: 15%">Name</th>
+                            <th style="width: 5%">Matric No.</th>
+                            <th style="width: 20%">Submission Date</th>
+                            <th style="width: 10%">Status</th>
+                            <th style="width: 5%">Marks</th>
+                            <th style="width: 20%"></th>
+                        </tr>
+                    </thead>
+                    <tbody>';
+
+        foreach ($test as $key => $qz) {
+            $alert = (count($status[$key]) > 0) ? 'badge bg-success' : 'badge bg-danger';
+
+            $content .= '
+                <tr>
+                    <td style="width: 1%">' . ($key + 1) . '</td>
+                    <td style="width: 15%">
+                        <span class="' . $alert . '">' . $qz->name . '</span>
+                    </td>
+                    <td style="width: 5%">
+                        <span>' . $qz->no_matric . '</span>
+                    </td>';
+            
+            if (count($status[$key]) > 0) {
+                foreach ($status[$key] as $keys => $sts) {
+                    $content .= '
+                        <td style="width: 20%">' . (empty($sts) ? '-' : $sts->submittime) . '</td>
+                        <td>' . (empty($sts) ? '-' : $sts->status) . '</td>
+                        <td>' . (empty($sts) ? '-' : $sts->final_mark) . ' / ' . $qz->total_mark . '</td>
+                        <td class="project-actions text-center">
+                            <a class="btn btn-success btn-sm mr-2" href="/lecturer/quiz/' . request()->quiz . '/' . $sts->userid . '/result">
+                                <i class="ti-pencil-alt"></i> Answer
+                            </a>';
+                    if (date('Y-m-d H:i:s') >= $qz->date_from && date('Y-m-d H:i:s') <= $qz->date_to) {
+                        $content .= '
+                            <a class="btn btn-danger btn-sm mr-2" onclick="deleteStdQuiz(\'' . $sts->id . '\')">
+                                <i class="ti-trash"></i> Delete
+                            </a>';
+                    }
+                    $content .= '
+                        </td>';
+                }
+            } else {
+                $content .= '
+                    <td style="width: 20%">-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td></td>';
+            }
+
+            $content .= '
+                </tr>';
+        }
+
+        $content .= '</tbody>';
+
+
+        return response()->json(['message' => 'success', 'content' => $content]);
+
+
+    }
+
     public function deleteteststatus(Request $request)
     {
 
@@ -1479,6 +1574,112 @@ class TestController extends Controller
         //dd($status);
 
         return view('lecturer.courseassessment.test2status', compact('test', 'status', 'group'));
+
+    }
+
+    public function test2GetGroup(Request $request)
+    {
+
+        $user = Auth::user();
+
+        $test = DB::table('student_subjek')
+                ->join('tblclasstest_group', function($join){
+                    $join->on('student_subjek.group_id', 'tblclasstest_group.groupid');
+                    $join->on('student_subjek.group_name', 'tblclasstest_group.groupname');
+                })
+                ->join('tblclasstest', 'tblclasstest_group.testid', 'tblclasstest.id')
+                ->join('students', 'student_subjek.student_ic', 'students.ic')
+                ->select('student_subjek.*', 'tblclasstest.id AS clssid', 'tblclasstest.total_mark', 'students.no_matric', 'students.name')
+                ->where([
+                    ['tblclasstest.classid', Session::get('CourseIDS')],
+                    ['tblclasstest.sessionid', Session::get('SessionIDS')],
+                    ['tblclasstest.id', request()->test],
+                    ['tblclasstest.addby', $user->ic]
+                ])->whereNotIn('students.status', [4,5,6,7,16])->orderBy('students.name')->get();
+
+        foreach($test as $qz)
+        {
+
+           if(!DB::table('tblclassstudenttest')->where([['testid', $qz->clssid],['userid', $qz->student_ic]])->exists()){
+
+                DB::table('tblclassstudenttest')->insert([
+                    'testid' => $qz->clssid,
+                    'userid' => $qz->student_ic
+                ]);
+
+           }
+
+            $status[] = DB::table('tblclassstudenttest')
+            ->where([
+                ['testid', $qz->clssid],
+                ['userid', $qz->student_ic]
+            ])->first();
+        }
+
+        $content = "";
+        $content .= '<thead>
+                        <tr>
+                            <th style="width: 1%">
+                                No.
+                            </th>
+                            <th>
+                                Name
+                            </th>
+                            <th>
+                                Matric No.
+                            </th>
+                            <th>
+                                Submission Date
+                            </th>
+                            <th>
+                                Marks
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="table">';
+                            
+        foreach ($test as $key => $qz) {
+            $alert = ($status[$key]->final_mark != 0) ? 'badge bg-success' : 'badge bg-danger';
+
+            $content .= '
+                <tr>
+                    <td style="width: 1%">
+                        ' . ($key + 1) . '
+                    </td>
+                    <td>
+                        <span class="' . $alert . '">' . $qz->name . '</span>
+                    </td>
+                    <td>
+                        <span>' . $qz->no_matric . '</span>
+                    </td>';
+            
+            if ($status[$key]->final_mark != 0) {
+                $content .= '
+                    <td>
+                        ' . $status[$key]->submittime . '
+                    </td>';
+            } else {
+                $content .= '
+                    <td>
+                        -
+                    </td>';
+            }
+            
+            $content .= '
+                    <td>
+                        <div class="form-inline col-md-6 d-flex">
+                            <input type="number" class="form-control" name="marks[]" max="' . $qz->total_mark . '" value="' . $status[$key]->final_mark . '">
+                            <input type="text" name="ic[]" value="' . $qz->student_ic . '" hidden>
+                            <span>' . $status[$key]->final_mark . ' / ' . $qz->total_mark . '</span>
+                        </div>
+                    </td>
+                </tr>';
+        }
+
+        $content .= '</tbody>';
+
+        return response()->json(['message' => 'success', 'content' => $content]);
+
 
     }
 
