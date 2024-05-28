@@ -340,6 +340,113 @@ class FinalController extends Controller
 
     }
 
+    public function finalGetGroup(Request $request)
+    {
+
+        $user = Auth::user();
+
+        $final = DB::table('student_subjek')
+                ->join('tblclassfinal_group', function($join){
+                    $join->on('student_subjek.group_id', 'tblclassfinal_group.groupid');
+                    $join->on('student_subjek.group_name', 'tblclassfinal_group.groupname');
+                })
+                ->join('tblclassfinal', 'tblclassfinal_group.finalid', 'tblclassfinal.id')
+                ->join('students', 'student_subjek.student_ic', 'students.ic')
+                ->select('student_subjek.*', 'tblclassfinal.id AS clssid', 'tblclassfinal.total_mark', 'students.no_matric', 'students.name')
+                ->where([
+                    ['tblclassfinal.classid', Session::get('CourseIDS')],
+                    ['tblclassfinal.sessionid', Session::get('SessionIDS')],
+                    ['tblclassfinal.id', request()->final],
+                    ['tblclassfinal.addby', $user->ic],
+                    ['student_subjek.group_id', $request->group]
+                ])->whereNotIn('students.status', [4,5,6,7,16])->get();
+        
+        foreach($final as $qz)
+        {
+
+           if(!DB::table('tblclassstudentfinal')->where([['finalid', $qz->clssid],['userid', $qz->student_ic]])->exists()){
+
+                DB::table('tblclassstudentfinal')->insert([
+                    'finalid' => $qz->clssid,
+                    'userid' => $qz->student_ic
+                ]);
+
+           }
+
+            $status[] = DB::table('tblclassstudentfinal')
+            ->where([
+                ['finalid', $qz->clssid],
+                ['userid', $qz->student_ic]
+            ])->first();
+        }
+
+        $content = "";
+        $content .= '<thead>
+                        <tr>
+                            <th style="width: 1%">
+                                No.
+                            </th>
+                            <th>
+                                Name
+                            </th>
+                            <th>
+                                Matric No.
+                            </th>
+                            <th>
+                                Submission Date
+                            </th>
+                            <th>
+                                Marks
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="table">';
+                            
+        foreach ($final as $key => $qz) {
+            $alert = ($status[$key]->final_mark != 0) ? 'badge bg-success' : 'badge bg-danger';
+
+            $content .= '
+                <tr>
+                    <td style="width: 1%">
+                        ' . ($key + 1) . '
+                    </td>
+                    <td>
+                        <span class="' . $alert . '">' . $qz->name . '</span>
+                    </td>
+                    <td>
+                        <span>' . $qz->no_matric . '</span>
+                    </td>';
+            
+            if ($status[$key]->final_mark != 0) {
+                $content .= '
+                    <td>
+                        ' . $status[$key]->submittime . '
+                    </td>';
+            } else {
+                $content .= '
+                    <td>
+                        -
+                    </td>';
+            }
+            
+            $content .= '
+                    <td>
+                        <div class="form-inline col-md-6 d-flex">
+                            <input type="number" class="form-control" name="marks[]" max="' . $qz->total_mark . '" value="' . $status[$key]->final_mark . '">
+                            <input type="text" name="ic[]" value="' . $qz->student_ic . '" hidden>
+                            <span>' . $status[$key]->final_mark . ' / ' . $qz->total_mark . '</span>
+                        </div>
+                    </td>
+                </tr>';
+        }
+
+        $content .= '</tbody>';
+
+        return response()->json(['message' => 'success', 'content' => $content]);
+
+
+    }
+
     public function updatefinal(Request $request)
     {
         $user = Auth::user();
