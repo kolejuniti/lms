@@ -535,6 +535,8 @@ class TestController extends Controller
 
         $user = Auth::user();
 
+        $gp = explode('|', $request->group);
+
         $test = DB::table('student_subjek')
                 ->join('tblclasstest_group', function($join){
                     $join->on('student_subjek.group_id', 'tblclasstest_group.groupid');
@@ -548,7 +550,8 @@ class TestController extends Controller
                     ['tblclasstest.sessionid', Session::get('SessionIDS')],
                     ['tblclasstest.id', request()->test],
                     ['tblclasstest.addby', $user->ic],
-                    ['student_subjek.group_id', $request->group]
+                    ['student_subjek.group_id', $gp[0]],
+                    ['student_subjek.group_name', $gp[1]]
                 ])->whereNotIn('students.status', [4,5,6,7,16])->orderBy('students.name')->get();
         
         foreach($test as $qz)
@@ -1583,6 +1586,8 @@ class TestController extends Controller
 
         $user = Auth::user();
 
+        $gp = explode('|', $request->group);
+
         $test = DB::table('student_subjek')
                 ->join('tblclasstest_group', function($join){
                     $join->on('student_subjek.group_id', 'tblclasstest_group.groupid');
@@ -1596,7 +1601,8 @@ class TestController extends Controller
                     ['tblclasstest.sessionid', Session::get('SessionIDS')],
                     ['tblclasstest.id', request()->test],
                     ['tblclasstest.addby', $user->ic],
-                    ['student_subjek.group_id', $request->group]
+                    ['student_subjek.group_id', $gp[0]],
+                    ['student_subjek.group_name', $gp[1]]
                 ])->whereNotIn('students.status', [4,5,6,7,16])->orderBy('students.name')->get();
 
         foreach($test as $qz)

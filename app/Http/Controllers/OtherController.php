@@ -553,6 +553,8 @@ class OtherController extends Controller
 
         $user = Auth::user();
 
+        $gp = explode('|', $request->group);
+
         $other = DB::table('student_subjek')
                 ->join('tblclassother_group', function($join){
                     $join->on('student_subjek.group_id', 'tblclassother_group.groupid');
@@ -566,7 +568,8 @@ class OtherController extends Controller
                     ['tblclassother.sessionid', Session::get('SessionIDS')],
                     ['tblclassother.id', request()->other],
                     ['tblclassother.addby', $user->ic],
-                    ['student_subjek.group_id', $request->group]
+                    ['student_subjek.group_id', $gp[0]],
+                    ['student_subjek.group_name', $gp[1]]
                 ])->whereNotIn('students.status', [4,5,6,7,16])->orderBy('students.name')->get();
 
         foreach($other as $qz)

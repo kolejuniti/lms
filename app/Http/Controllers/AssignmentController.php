@@ -359,6 +359,8 @@ class AssignmentController extends Controller
 
         $user = Auth::user();
 
+        $gp = explode('|', $request->group);
+
         $assign = DB::table('student_subjek')
                 ->join('tblclassassign_group', function($join){
                     $join->on('student_subjek.group_id', 'tblclassassign_group.groupid');
@@ -372,7 +374,8 @@ class AssignmentController extends Controller
                     ['tblclassassign.sessionid', Session::get('SessionIDS')],
                     ['tblclassassign.id', request()->assign],
                     ['tblclassassign.addby', $user->ic],
-                    ['student_subjek.group_id', $request->group]
+                    ['student_subjek.group_id', $gp[0]],
+                    ['student_subjek.group_name', $gp[1]]
                 ])->whereNotIn('students.status', [4,5,6,7,16])->orderBy('students.name')->get();
 
         foreach($assign as $qz)
@@ -1124,6 +1127,8 @@ class AssignmentController extends Controller
 
         $user = Auth::user();
 
+        $gp = explode('|', $request->group);
+
         $assign = DB::table('student_subjek')
                 ->join('tblclassassign_group', function($join){
                     $join->on('student_subjek.group_id', 'tblclassassign_group.groupid');
@@ -1137,7 +1142,8 @@ class AssignmentController extends Controller
                     ['tblclassassign.sessionid', Session::get('SessionIDS')],
                     ['tblclassassign.id', request()->assign],
                     ['tblclassassign.addby', $user->ic],
-                    ['student_subjek.group_id', $request->group]
+                    ['student_subjek.group_id', $gp[0]],
+                    ['student_subjek.group_name', $gp[1]]
                 ])->whereNotIn('students.status', [4,5,6,7,16])->get();
 
         foreach($assign as $qz)

@@ -345,6 +345,8 @@ class FinalController extends Controller
 
         $user = Auth::user();
 
+        $gp = explode('|', $request->group);
+
         $final = DB::table('student_subjek')
                 ->join('tblclassfinal_group', function($join){
                     $join->on('student_subjek.group_id', 'tblclassfinal_group.groupid');
@@ -358,7 +360,8 @@ class FinalController extends Controller
                     ['tblclassfinal.sessionid', Session::get('SessionIDS')],
                     ['tblclassfinal.id', request()->final],
                     ['tblclassfinal.addby', $user->ic],
-                    ['student_subjek.group_id', $request->group]
+                    ['student_subjek.group_id', $gp[0]],
+                    ['student_subjek.group_name', $gp[1]]
                 ])->whereNotIn('students.status', [4,5,6,7,16])->get();
         
         foreach($final as $qz)
