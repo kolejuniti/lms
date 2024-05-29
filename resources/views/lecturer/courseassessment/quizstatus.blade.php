@@ -49,7 +49,7 @@
                           <select class="form-select" id="group" name="group" required>
                               <option value="" selected disabled>-</option>
                               @foreach ($group as $grp)
-                                <option value="{{ $grp->groupid }}">Group {{ $grp->groupname }}</option>
+                                <option value="{{ $grp->groupid }}|{{ $grp->groupname }}">Group {{ $grp->groupname }}</option>
                               @endforeach
                           </select>
                           <span class="text-danger">@error('folder')
