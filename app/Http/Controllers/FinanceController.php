@@ -5673,7 +5673,7 @@ class FinanceController extends Controller
             {
                 $data['hostel'][] = $ot;
 
-            }elseif(array_intersect([8], (array) $ot->process_type_id) && array_intersect([5], (array) $ot->groupid) && $ot->amount != 0 && $ot->claim_type_id == 47)
+            }elseif(array_intersect([8,1], (array) $ot->process_type_id) && array_intersect([5], (array) $ot->groupid) && $ot->amount != 0 && $ot->claim_type_id == 47)
             {
                 $data['convo'][] = $ot;
 
