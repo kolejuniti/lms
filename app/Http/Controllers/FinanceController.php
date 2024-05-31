@@ -9298,6 +9298,10 @@ class FinanceController extends Controller
                                       ->join('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
                                       ->where('tblpayment.student_ic', $std->ic)
                                       ->whereBetween('tblpayment.add_date', [$request->from, $request->to])
+                                      ->where(function ($query){
+                                        $query->where('tblpayment.process_type_id', 1);
+                                        $query->orWhere('tblpayment.process_type_id', 8);
+                                      })
                                       ->where('tblpayment.process_status_id', 2)
                                       ->where('tblstudentclaim.groupid', 1)
                                       ->groupBy('tblpayment.student_ic')
