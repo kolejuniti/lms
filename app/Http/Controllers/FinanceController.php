@@ -9274,6 +9274,7 @@ class FinanceController extends Controller
                            ->where('students.semester', '!=', 1)
                            ->where('tblpayment.process_type_id', 1)
                            ->where('tblpayment.process_status_id', 2)
+                           ->where('tblpayment.sponsor_id', null)
                            ->select('students.name', 'students.ic', 'students.no_matric')
                            ->groupBy('students.ic')
                            ->get();
