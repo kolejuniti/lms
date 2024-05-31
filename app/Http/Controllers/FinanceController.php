@@ -1528,6 +1528,16 @@ class FinanceController extends Controller
 
             }else{
 
+                if(DB::connection('mysql2')->table('students')->where('ic', $student->ic)->exists())
+                {
+
+                    DB::connection('mysql2')->table('students')->where('ic', $student->ic)->update([
+                        'register_at' => now(),
+                        'commission' => 300
+                    ]);
+
+                }
+
                 DB::table('students')->where('ic', $student->ic)->update([
                     'date' => date('Y-m-d')
                 ]);
