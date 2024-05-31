@@ -8280,6 +8280,7 @@ class FinanceController extends Controller
                            ->where('tblpayment.add_date', '>=', $filter->from)
                            ->where('tblpayment.add_date', '<=', $filter->to)
                            ->where('tblpayment.process_status_id', 2)
+                           ->where('student_ic', '!=', null)
                            ->whereIn('tblpayment.process_type_id', [1,7])
                            ->select('tblpayment.*', 'tblprogramme.progcode')
                            ->get();
