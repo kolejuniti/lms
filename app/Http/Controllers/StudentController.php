@@ -1506,4 +1506,5 @@ class StudentController extends Controller
         return view('student.affair.result.studentResult', compact('data'));
 
     }
+
 }
