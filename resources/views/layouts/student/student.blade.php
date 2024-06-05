@@ -317,6 +317,9 @@
 		  <li>
 			<a href="/student/forum/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class=""><i data-feather="message-square"></i><span>Forum</span></a>
 		  </li>
+		  <li>
+			<a href="/student/warning/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class=""><i data-feather="alert-circle"></i><span>Warning Letter</span></a>
+		  </li>
           <!--<li class="treeview">
 				<a href="#"><i data-feather="users"></i><span>Group</span>
 					<span class="pull-right-container">
