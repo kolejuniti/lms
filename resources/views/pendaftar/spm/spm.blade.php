@@ -374,7 +374,7 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label class="form-label" for="sejarahspm">Sejrah SPM (Jika Perlu)</label>
+                                <label class="form-label" for="sejarahspm">Sejarah SPM (Jika Perlu)</label>
                                 <input type="text" class="form-control" id="sejarahspm" name="sejarahspm" value="{{ old('sejarahspm', isset($data['spmv']->sejarahspm) ? $data['spmv']->sejarahspm : '') }}">
                             </div>
                         </div>
