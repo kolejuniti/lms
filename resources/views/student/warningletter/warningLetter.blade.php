@@ -8,7 +8,7 @@
   <div class="content-header">
     <div class="d-flex align-items-center">
       <div class="me-auto">
-        <h4 class="page-title">Student Result</h4>
+        <h4 class="page-title">Student's Warning letter</h4>
         <div class="d-inline-block align-items-center">
           <nav>
             <ol class="breadcrumb">
@@ -30,7 +30,7 @@
             <!-- general form elements -->
             <div class="card card-primary">
               <div class="card-header">
-                <h3 class="card-title">Student Result</h3>
+                <h3 class="card-title">Student's Warning letter</h3>
               </div>
               <!-- /.card-header -->
               {{-- <div class="card mb-3">
