@@ -1597,6 +1597,7 @@ class FinanceController extends Controller
             ->join('tblpayment', 'tblpaymentdtl.payment_id', 'tblpayment.id')
             ->join('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
             ->where([
+                ['tblpaymentdtl.claimDtl_id', $tsy->id],
                 ['tblpayment.student_ic', $request->student],
                 ['tblpaymentdtl.claim_type_id', $tsy->claim_package_id],
                 ['tblpayment.program_id', $data['student']->progid],
