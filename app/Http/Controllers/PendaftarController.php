@@ -2501,6 +2501,10 @@ class PendaftarController extends Controller
 
         $sub1 = DB::table('tblstudent_log')
                ->leftjoin('sessions', 'tblstudent_log.session_id', 'sessions.SessionID')
+               ->join('students', function($join){
+                    $join->on('tblstudent_log.student_ic', 'students.ic');
+                    $join->on('tblstudent_log.session_id', 'students.intake');
+               })
                ->select('student_ic', DB::raw('MAX(id) as latest_id'))
                ->whereIn('tblstudent_log.student_ic', $ic)
                ->where('sessions.Year', $request->year)
