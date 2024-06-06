@@ -2499,58 +2499,21 @@ class PendaftarController extends Controller
         ->distinct()
         ->pluck('tblstudent_log.student_ic');
 
-        $subQuery = DB::table('tblstudent_log')
-                ->leftJoin('sessions', 'tblstudent_log.session_id', '=', 'sessions.SessionID')
-                ->select(
-                    'student_ic',
-                    DB::raw('MAX(tblstudent_log.date) as latest_date')
-                )
-                ->whereIn('tblstudent_log.student_ic', $ic)
-                ->where('sessions.Year', $request->year)
-                ->where('tblstudent_log.semester_id', 1)
-                ->groupBy('student_ic');
-
         $sub1 = DB::table('tblstudent_log')
-                ->joinSub($subQuery, 'latest_logs', function ($join) {
-                    $join->on('tblstudent_log.student_ic', '=', 'latest_logs.student_ic')
-                        ->on('tblstudent_log.date', '=', 'latest_logs.latest_date');
-                })
                ->leftjoin('sessions', 'tblstudent_log.session_id', 'sessions.SessionID')
-               ->select('tblstudent_log.student_ic', 'tblstudent_log.id as latest_id')
+               ->select('student_ic', DB::raw('MAX(id) as latest_id'))
+               ->whereIn('tblstudent_log.student_ic', $ic)
                ->where('sessions.Year', $request->year)
                ->where('tblstudent_log.semester_id', 1)
-               ->groupBy('tblstudent_log.student_ic');
+               ->groupBy('student_ic');
 
-        $subQuery2 = DB::table('tblstudent_log')
-               ->leftJoin('sessions', 'tblstudent_log.session_id', '=', 'sessions.SessionID')
-               ->select(
-                   'student_ic',
-                   DB::raw('MAX(tblstudent_log.date) as latest_date')
-               )
+        $sub2 = DB::table('tblstudent_log')
+               ->leftjoin('sessions', 'tblstudent_log.session_id', 'sessions.SessionID')
+               ->select('student_ic', DB::raw('MAX(id) as latest_id'))
                ->whereIn('tblstudent_log.student_ic', $ic)
                ->where('sessions.Year', $request->year)
                ->where('tblstudent_log.semester_id', '>', 1)
                ->groupBy('student_ic');
-
-        $sub2 = DB::table('tblstudent_log')
-               ->joinSub($subQuery2, 'latest_logs', function ($join) {
-                   $join->on('tblstudent_log.student_ic', '=', 'latest_logs.student_ic')
-                       ->on('tblstudent_log.date', '=', 'latest_logs.latest_date');
-               })
-              ->leftjoin('sessions', 'tblstudent_log.session_id', 'sessions.SessionID')
-              ->select('tblstudent_log.student_ic', DB::raw('MAX(tblstudent_log.id) as latest_id'))
-              ->whereIn('tblstudent_log.student_ic', $ic)
-              ->where('sessions.Year', $request->year)
-              ->where('tblstudent_log.semester_id', '>', 1)
-              ->groupBy('tblstudent_log.student_ic');
-
-        // $sub2 = DB::table('tblstudent_log')
-        //        ->leftjoin('sessions', 'tblstudent_log.session_id', 'sessions.SessionID')
-        //        ->select('student_ic', DB::raw('MAX(id) as latest_id'))
-        //        ->whereIn('tblstudent_log.student_ic', $ic)
-        //        ->where('sessions.Year', $request->year)
-        //        ->where('tblstudent_log.semester_id', '>', 1)
-        //        ->groupBy('student_ic');
 
         $baseQuery = function () use ($ic, $request) {
         return DB::table('students')
