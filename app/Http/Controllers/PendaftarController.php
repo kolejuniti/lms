@@ -2513,11 +2513,15 @@ class PendaftarController extends Controller
 
         $sub2 = DB::table('tblstudent_log')
                ->leftjoin('sessions', 'tblstudent_log.session_id', 'sessions.SessionID')
-               ->select('student_ic', DB::raw('MAX(id) as latest_id'))
+               ->join('students', function($join){
+                    $join->on('tblstudent_log.student_ic', 'students.ic');
+                    $join->on('tblstudent_log.session_id', 'students.intake');
+               })
+               ->select('tblstudent_log.student_ic', DB::raw('MAX(tblstudent_log.id) as latest_id'))
                ->whereIn('tblstudent_log.student_ic', $ic)
                ->where('sessions.Year', $request->year)
                ->where('tblstudent_log.semester_id', '>', 1)
-               ->groupBy('student_ic');
+               ->groupBy('tblstudent_log.student_ic');
 
         $baseQuery = function () use ($ic, $request) {
         return DB::table('students')
