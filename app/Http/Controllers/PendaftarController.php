@@ -2516,7 +2516,7 @@ class PendaftarController extends Controller
                         ->on('tblstudent_log.date', '=', 'latest_logs.latest_date');
                 })
                ->leftjoin('sessions', 'tblstudent_log.session_id', 'sessions.SessionID')
-               ->select('tblstudent_log.student_ic', DB::raw('MAX(tblstudent_log.id) as latest_id'))
+               ->select('tblstudent_log.student_ic', 'tblstudent_log.id as latest_id')
                ->whereIn('tblstudent_log.student_ic', $ic)
                ->where('sessions.Year', $request->year)
                ->where('tblstudent_log.semester_id', 1)
