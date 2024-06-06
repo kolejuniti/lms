@@ -2499,13 +2499,23 @@ class PendaftarController extends Controller
         ->distinct()
         ->pluck('tblstudent_log.student_ic');
 
-        $sub1 = DB::table('tblstudent_log')
-               ->leftjoin('sessions', 'tblstudent_log.session_id', 'sessions.SessionID')
-               ->select('student_ic', DB::raw('MAX(id) as latest_id'))
-               ->whereIn('tblstudent_log.student_ic', $ic)
+        // $sub1 = DB::table('tblstudent_log')
+        //        ->leftjoin('sessions', 'tblstudent_log.session_id', 'sessions.SessionID')
+        //        ->select('student_ic', DB::raw('MAX(id) as latest_id'))
+        //        ->whereIn('tblstudent_log.student_ic', $ic)
+        //        ->where('sessions.Year', $request->year)
+        //        ->where('tblstudent_log.semester_id', 1)
+        //        ->groupBy('student_ic');
+
+        $sub1 = DB::table('tblstudent_log as t1')
+               ->leftJoin('sessions', 't1.session_id', '=', 'sessions.SessionID')
+               ->select('t1.student_ic', 't1.id as latest_id')
+               ->whereIn('t1.student_ic', $ic)
                ->where('sessions.Year', $request->year)
-               ->where('tblstudent_log.semester_id', 1)
-               ->groupBy('student_ic');
+               ->where('t1.semester_id', 1)
+               ->whereRaw('t1.date = (SELECT MAX(t2.date) FROM tblstudent_log t2 WHERE t2.student_ic = t1.student_ic AND t2.semester_id = 1)')
+               ->groupBy('t1.student_ic', 't1.id');
+           
 
         $sub2 = DB::table('tblstudent_log')
                ->leftjoin('sessions', 'tblstudent_log.session_id', 'sessions.SessionID')
