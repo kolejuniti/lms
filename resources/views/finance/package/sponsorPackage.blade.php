@@ -175,7 +175,15 @@
                 console.log(err);
             },
             success  : function(data){
+
                 $('#add-student-div').html(data);
+                $('#table_projectprogress_course').DataTable({
+                  dom: 'lBfrtip', // if you remove this line you will see the show entries dropdown
+                  
+                  buttons: [
+                      'copy', 'csv', 'excel', 'pdf', 'print'
+                  ],
+                });
 
             }
         });
