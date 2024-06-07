@@ -9434,6 +9434,7 @@ class FinanceController extends Controller
 
             $data['student'] = DB::table('students')
             ->join('sessions', 'students.session', 'sessions.SessionID')
+            ->where('students.program', '!=', 30)
             ->whereIn('students.status', [8])
             ->whereBetween('sessions.Year', [$request->from, $request->to])
             ->select('students.*', 'sessions.Year AS graduate')
