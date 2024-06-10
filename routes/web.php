@@ -158,6 +158,10 @@ Route::post('/AR/session/create', [App\Http\Controllers\AR_Controller::class, 'c
 Route::post('/AR/session/update', [App\Http\Controllers\AR_Controller::class, 'updateSession']);
 Route::delete('/AR/session/delete', [App\Http\Controllers\AR_Controller::class, 'deleteDelete'])->name('pendaftar_akademik.session.delete');
 Route::get('/AR/schedule', [App\Http\Controllers\AR_Controller::class, 'scheduleIndex'])->name('pendaftar_akademik.schedule');
+Route::get('/AR/schedule/room', [App\Http\Controllers\AR_Controller::class, 'roomIndex'])->name('pendaftar_akademik.roomIndex');
+Route::post('/AR/schedule/room/create', [App\Http\Controllers\AR_Controller::class, 'createRoomIndex']);
+Route::post('/AR/schedule/room/update', [App\Http\Controllers\AR_Controller::class, 'updateRoomIndex']);
+Route::post('/AR/schedule/room/delete', [App\Http\Controllers\AR_Controller::class, 'deleteRoomIndex']);
 Route::post('/AR/schedule/getLectureRoom', [App\Http\Controllers\AR_Controller::class, 'getLectureRoom']);
 Route::post('/AR/schedule/createLectureRoom', [App\Http\Controllers\AR_Controller::class, 'createLectureRoom']);
 Route::get('/AR/schedule/scheduleTable/{id}', [App\Http\Controllers\AR_Controller::class, 'scheduleTable']);
