@@ -324,6 +324,7 @@
 						</span>
 					</a>
 					<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
+						<li><a href="{{ route('pendaftar') }}" class="{{ (route('pendaftar') == Request::url()) ? 'active' : ''}}">Student List</a></li>
 						<li><a href="{{ route('pendaftar.student.edit') }}" class="{{ (route('pendaftar.student.edit') == Request::url()) ? 'active' : ''}}">Student Info</a></li>
 					</ul>
 				</li>
@@ -334,7 +335,9 @@
 						</span>
 					</a>
 					<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
-						<li><a href="/AR/schedule" class="{{ (route('pendaftar_akademik.schedule') == Request::url()) ? 'active' : ''}}">Create</a></li>
+						<li><a href="/AR/schedule/room" class="{{ (route('pendaftar_akademik.roomIndex') == Request::url()) ? 'active' : ''}}">Room list</a></li>
+						<li><a href="/AR/schedule" class="{{ (route('pendaftar_akademik.schedule') == Request::url()) ? 'active' : ''}}">Schedule List</a></li>
+						{{-- <li><a href="/AR/schedule2" class="{{ (route('pendaftar_akademik.schedule2') == Request::url()) ? 'active' : ''}}">Create</a></li> --}}
 						<li><a href="{{ Storage::disk('linode')->url('classschedule/index.htm') }}" target="_blank" class="">View</a></li>
 						{{-- <li><a href="/AR/schedule/index" class="{{ (route('pendaftar_akademik.schedule.old') == Request::url()) ? 'active' : ''}}">Upload</a></li> --}}
 					</ul>
