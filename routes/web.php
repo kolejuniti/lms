@@ -117,6 +117,7 @@ Route::get('/pendaftar/student/status', [App\Http\Controllers\PendaftarControlle
 Route::post('/pendaftar/student/status/listStudent', [App\Http\Controllers\PendaftarController::class, 'getStudentList']);
 Route::post('/pendaftar/student/status/getStudent', [App\Http\Controllers\PendaftarController::class, 'getStudentInfo']);
 Route::post('/pendaftar/student/status/storeStudent', [App\Http\Controllers\PendaftarController::class, 'storeStudentInfo']);
+Route::post('/pendaftar/student/status/generateMatric', [App\Http\Controllers\PendaftarController::class, 'generateMatric']);
 Route::get('/pendaftar/student/viewStatus', [App\Http\Controllers\PendaftarController::class, 'viewStatus'])->name('pendaftar.student.viewstatus');
 Route::post('/pendaftar/student/status/getReportStd', [App\Http\Controllers\PendaftarController::class, 'getReportStd']);
 Route::get('/pendaftar/student/report', [App\Http\Controllers\PendaftarController::class, 'studentReport'])->name('pendaftar.student.studentreport');
