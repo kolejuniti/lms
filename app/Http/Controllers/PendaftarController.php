@@ -2320,7 +2320,7 @@ class PendaftarController extends Controller
                     
                 }
 
-                $data['quaR2'][$key] = DB::table('tblqualification_std')->where('id', $student->qualification)->value('qualification');
+                $data['quaR2'][$key] = DB::table('tblqualification_std')->where('id', $student->qualification)->value('name');
 
             }
 
