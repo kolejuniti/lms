@@ -1425,6 +1425,8 @@ class AR_Controller extends Controller
                           ->get(),
         ];
 
+        dd($data);
+
         return view('pendaftar_akademik.schedule.schedule', compact('data'));
 
     }
