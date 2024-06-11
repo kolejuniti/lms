@@ -1417,7 +1417,7 @@ class AR_Controller extends Controller
                              ->select('tbllecture_room.*', 'sessions.SessionName AS session')
                              ->where('tbllecture.id', request()->id)
                              ->first(),
-            'totalBooking' => DB::table('tblevents')->where('lecture_id', request()->id)
+            'totalBooking' => DB::table('tblevents')->where('lecture_id', 4)
                               ->select(DB::raw('COUNT(tblevents.id) AS total_booking'))
                               ->get(),
             'lecturer' => DB::table('users')
