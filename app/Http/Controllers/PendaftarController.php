@@ -1513,7 +1513,7 @@ class PendaftarController extends Controller
                     'final_no' => $newno
                 ]);
 
-                return ["message" => "Student's matric no. have successfully generated!"];
+                return ["success" => "Student's matric no. have successfully generated!"];
 
             }else{
 
