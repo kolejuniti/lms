@@ -2230,7 +2230,7 @@ class PendaftarController extends Controller
                     ->where('students.semester', 1)
                     ->whereBetween('students.date_offer', [$request->from, $request->to])
                     ->select(
-                        'students.*', 'tblstudent_personal.no_tel', 'sessions.SessionName',
+                        'students.*', 'tblstudent_personal.no_tel', 'tblstudent_personal.qualification', 'sessions.SessionName',
                         'tblprogramme.progcode', 'tbledu_advisor.name AS ea', 'tblsex.code AS sex',
                         'tblstudent_status.name AS status'
                     );
@@ -2281,31 +2281,7 @@ class PendaftarController extends Controller
                     
                 }
 
-                if(DB::table('tblstudent_spm')->where('student_ic', $student->ic)->exists())
-                {
-
-                    $results[] = 'SPM';
-
-                }
-
-                
-                if(DB::table('tblstudent_spmv')->where('student_ic', $student->ic)->exists())
-                {
-
-                    $results[] = 'SPMV';
-
-                }
-
-                
-                if(DB::table('tblstudent_skm')->where('student_ic', $student->ic)->exists())
-                {
-
-                    $results[] = 'SKM';
-
-                }
-
-                // Combine the results with commas
-                $data['ref1'][$key] = implode(', ', $results);
+                $data['quaR1'][$key] = DB::table('tblqualification_std')->where('id', $student->qualification)->value('qualification');
 
             }
 
@@ -2344,31 +2320,7 @@ class PendaftarController extends Controller
                     
                 }
 
-                if(DB::table('tblstudent_spm')->where('student_ic', $student->ic)->exists())
-                {
-
-                    $results[] = 'SPM';
-
-                }
-
-                
-                if(DB::table('tblstudent_spmv')->where('student_ic', $student->ic)->exists())
-                {
-
-                    $results[] = 'SPMV';
-
-                }
-
-                
-                if(DB::table('tblstudent_skm')->where('student_ic', $student->ic)->exists())
-                {
-
-                    $results[] = 'SKM';
-
-                }
-
-                // Combine the results with commas
-                $data['ref2'][$key] = implode(', ', $results);
+                $data['quaR2'][$key] = DB::table('tblqualification_std')->where('id', $student->qualification)->value('qualification');
 
             }
 
