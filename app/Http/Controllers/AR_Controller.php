@@ -1417,7 +1417,7 @@ class AR_Controller extends Controller
                              ->select('tbllecture_room.*', 'sessions.SessionName AS session')
                              ->where('tbllecture.id', request()->id)
                              ->first(),
-            'totalBooking' => DB::table('tblevents')->where('lecture_id', 4)
+            'totalBooking' => DB::table('tblevents')->where('lecture_id', request()->id)
                               ->select(DB::raw('COUNT(tblevents.id) AS total_booking'))
                               ->first(),
             'lecturer' => DB::table('users')
@@ -1479,7 +1479,7 @@ class AR_Controller extends Controller
                                 ['group_name', $event->group_name]
                                 ])
                                 ->select(DB::raw('COUNT(student_ic) AS total_student'))
-                                ->get();
+                                ->first();
 
             // Map day of the week from PHP (1 for Monday through 7 for Sunday) to FullCalendar (0 for Sunday through 6 for Saturday)
             $dayOfWeekMap = [
@@ -1498,7 +1498,7 @@ class AR_Controller extends Controller
             return [
                 'id' => $event->id,
                 'title' => $event->lecturer,
-                'description' => $event->code. ' - ' . $event->subject . ' (' . $event->group_name .') ' . '|' . ' Total Student :' . ' ' .$count->value('total_student'),
+                'description' => $event->code. ' - ' . $event->subject . ' (' . $event->group_name .') ' . '|' . ' Total Student :' . ' ' .$count->total_student,
                 'startTime' => date('H:i', strtotime($event->start)),
                 'endTime' => date('H:i', strtotime($event->end)),
                 'duration' => gmdate('H:i', strtotime($event->end) - strtotime($event->start)),
@@ -1608,12 +1608,12 @@ class AR_Controller extends Controller
                                 ['group_name', $request->groupName]
                             ])
                             ->select(DB::raw('COUNT(student_subjek.id) AS capacity'))
-                            ->get();
+                            ->first();
 
-                if($capacity->value('capacity') > $roomDetails->capacity)
+                if($capacity->capacity > $roomDetails->capacity)
                 {
 
-                    return response()->json(['error' => 'Total student is ' . $capacity->value('capacity') . '. Capacity cannot exceed ' .  $roomDetails->capacity . ', Please try with a different class!']);
+                    return response()->json(['error' => 'Total student is ' . $capacity->capacity . '. Capacity cannot exceed ' .  $roomDetails->capacity . ', Please try with a different class!']);
                     
                 }else{
 
@@ -1711,13 +1711,13 @@ class AR_Controller extends Controller
                                         ['group_name', $events->group_name]
                                         ])
                                         ->select(DB::raw('COUNT(student_ic) AS total_student'))
-                                        ->get();
+                                        ->first();
 
                                 return response()->json([
                                     'event' => [
                                         'id' => $events->id,
                                         'title' => $events->lecturer, 
-                                        'description' => $events->code . ' - ' . $events->subject . ' (' . $events->group_name .') ' . '|' . ' Total Student :' . ' ' .$count->value('total_student'),
+                                        'description' => $events->code . ' - ' . $events->subject . ' (' . $events->group_name .') ' . '|' . ' Total Student :' . ' ' .$count->total_student,
                                         'start' => $events->start,
                                         'end' => $events->end
                                     ]
