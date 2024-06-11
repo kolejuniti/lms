@@ -102,6 +102,7 @@
         </div>
         <!-- /.card-body -->
         <div class="card-footer">
+            <button type="submit" class="btn btn-info pull-left mb-3" onclick="generateMatric('{{ $data['student']->ic }}')">Generate Matric No.</button>
             <button type="submit" class="btn btn-primary pull-right mb-3" onclick="submitForm('{{ $data['student']->ic }}')">Submit</button>
         </div>
     </div>
