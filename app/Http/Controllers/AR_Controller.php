@@ -1419,7 +1419,7 @@ class AR_Controller extends Controller
                              ->first(),
             'totalBooking' => DB::table('tblevents')->where('lecture_id', 4)
                               ->select(DB::raw('COUNT(tblevents.id) AS total_booking'))
-                              ->get(),
+                              ->first(),
             'lecturer' => DB::table('users')
                           ->whereIn('usrtype', ['LCT', 'PL', 'AO'])
                           ->get(),
