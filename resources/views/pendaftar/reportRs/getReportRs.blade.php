@@ -90,7 +90,7 @@
           {{ $data['resultR1'][$key]->group_alias }}
           </td>
           <td>
-          {{ $data['ref1'][$key] }}
+          {{ $data['quaR1'][$key] }}
           </td>
           <td>
           {{ $data['resultR1'][$key]->amount }}
@@ -243,7 +243,7 @@
             {{ $data['resultR2'][$key]->group_alias }}
             </td>
             <td>
-            {{ $data['ref2'][$key] }}
+            {{ $data['quaR2'][$key] }}
             </td>
             <td>
             {{ $data['resultR2'][$key]->amount }}
