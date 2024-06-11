@@ -21,12 +21,12 @@ class UserStudent extends Authenticatable
         'name',
         'ic',
         'no_matric',
+        'email',
         'intake',
         'program',
         'password',
         'status',
         'image',
-        'email',
     ];
 
     /**
