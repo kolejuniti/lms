@@ -1465,6 +1465,67 @@ class PendaftarController extends Controller
 
     }
 
+    public function generateMatric(Request $request)
+    {
+
+        if($request->ic)
+        {
+
+            $student = DB::table('students')
+                     ->where('ic', $request->ic)->first();
+
+            if($student->no_matric == '' || $student->no_matric == null)
+            {
+
+                $intake = DB::table('sessions')->where('SessionID', $student->intake)->first();
+                    
+                $year = substr($intake->SessionName, 6, 2) . substr($intake->SessionName, 11, 2);
+
+                if(DB::table('tblmatric_no')->where('session', $year)->exists())
+                {
+
+                    $lastno = DB::table('tblmatric_no')->where('session', $year)->first();
+
+                    $newno = sprintf("%04s", $lastno->final_no + 1);
+
+                }else{
+
+                    DB::table('tblmatric_no')->insert([
+                        'session' => $year,
+                        'final_no' => 0001
+                    ]);
+
+                    $lastno = DB::table('tblmatric_no')->where('session', $year)->first();
+
+                    $newno = sprintf("%04s", $lastno->final_no);
+
+                }
+
+                $newno = sprintf("%04s", $lastno->final_no + 1);
+
+                $no_matric = $year . $newno;
+
+                DB::table('students')->where('ic', $student->ic)->update([
+                    'no_matric' => $no_matric
+                ]);
+
+                DB::table('tblmatric_no')->where('session', $year)->update([
+                    'final_no' => $newno
+                ]);
+
+                return ["message" => "Student's matric no. have successfully generated!"];
+
+            }else{
+
+                return ["error" => "Student's matric no. already exists! Please try again with another student."];
+
+            }
+
+
+        }
+        
+    }
+
     public function viewStatus()
     {
 
