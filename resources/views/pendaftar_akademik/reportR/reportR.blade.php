@@ -115,22 +115,22 @@
     var to = '';
     var session = '';
 
-    $(document).on('change', '#from', async function(e){
+    $(document).on('change', '#from', function(e){
       from = $(e.target).val();
 
-      await getStudent(from,to,session);
+       getStudent(from,to,session);
     });
 
-    $(document).on('change', '#to', async function(e){
+    $(document).on('change', '#to', function(e){
       to = $(e.target).val();
 
-      await getStudent(from,to,session);
+       getStudent(from,to,session);
     });
 
-    $(document).on('change', '#session', async function(e){
+    $(document).on('change', '#session', function(e){
       session = $(e.target).val();
 
-      await getStudent(from,to,session);
+       getStudent(from,to,session);
     });
 
   function getStudent(from,to,session)
