@@ -2066,7 +2066,7 @@ class AR_Controller extends Controller
     public function getStudentReportR(Request $request)
     {
 
-        if($request->from && $request->to && $request->session)
+        if($request->from && $request->to)
         {
 
             $data['student'] = DB::table('students')
@@ -2076,30 +2076,32 @@ class AR_Controller extends Controller
                                ->leftjoin('tbledu_advisor', 'tblstudent_personal.advisor_id', 'tbledu_advisor.id')
                                ->where('students.status', 1)
                                ->where('students.semester', 1)
-                               ->where('students.intake', $request->session)
                                ->whereBetween('students.date_add', [$request->from, $request->to])
+                               ->when($request->session != '', function ($query) use ($request){
+                                    return $query->where('students.intake', $request->session);
+                               })
                                ->select('students.*', 'tblstudent_personal.no_tel', 'sessions.SessionName', 'tblprogramme.progcode', 'tbledu_advisor.name AS ea')
                                ->get();
 
             foreach($data['student'] as $key => $student)
             {
 
-            $data['result'][] = DB::table('tblpayment')
-                              ->leftjoin('tblpaymentdtl', 'tblpayment.id', 'tblpaymentdtl.payment_id')
-                              ->leftjoin('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
-                              ->where('tblpayment.student_ic', $student->ic)
-                              ->where('tblpayment.process_status_id', 2)
-                              ->whereNotIn('tblpayment.process_type_id', [8])
-                              ->whereNotIn('tblstudentclaim.groupid', [4,5])
-                              ->select(
+                $data['result'][] = DB::table('tblpayment')
+                                ->leftjoin('tblpaymentdtl', 'tblpayment.id', 'tblpaymentdtl.payment_id')
+                                ->leftjoin('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
+                                ->where('tblpayment.student_ic', $student->ic)
+                                ->where('tblpayment.process_status_id', 2)
+                                ->whereNotIn('tblpayment.process_type_id', [8])
+                                ->whereNotIn('tblstudentclaim.groupid', [4,5])
+                                ->select(
+                                    DB::raw('CASE
+                                                WHEN IFNULL(SUM(tblpaymentdtl.amount), 0) < 250 THEN "R"
+                                                WHEN IFNULL(SUM(tblpaymentdtl.amount), 0) >= 250 THEN "R1"
+                                            END AS group_alias'),
+                                    DB::raw('IFNULL(SUM(tblpaymentdtl.amount), 0) AS amount')
+                                )->first();
 
-                                DB::raw('CASE
-                                            WHEN IFNULL(SUM(tblpaymentdtl.amount), 0) < 250 THEN "R"
-                                            WHEN IFNULL(SUM(tblpaymentdtl.amount), 0) >= 250 THEN "R1"
-                                         END AS group_alias'),
-                                DB::raw('IFNULL(SUM(tblpaymentdtl.amount), 0) AS amount')
-
-                              )->first();
+                $data['qua'][$key] = DB::table('tblqualification_std')->where('id', $student->qualification)->value('name');
 
             }
 
