@@ -2077,9 +2077,6 @@ class AR_Controller extends Controller
                                ->where('students.status', 1)
                                ->where('students.semester', 1)
                                ->whereBetween('students.date_add', [$request->from, $request->to])
-                               ->when($request->session != '', function ($query) use ($request){
-                                    return $query->where('students.intake', $request->session);
-                               })
                                ->select('students.*', 'tblstudent_personal.no_tel', 'sessions.SessionName', 'tblprogramme.progcode', 'tbledu_advisor.name AS ea')
                                ->get();
 
