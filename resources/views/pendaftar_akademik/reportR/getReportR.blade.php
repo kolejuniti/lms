@@ -31,6 +31,9 @@
                   Program
               </th>
               <th style="width: 5%">
+                  Qualification
+                </th>
+              <th style="width: 5%">
                   EA
               </th>
               <th style="width: 5%">
@@ -67,6 +70,9 @@
           </td>
           <td>
           {{ $rgs->progcode }}
+          </td>
+          <td>
+          {{ $data['qua'][$key] }}
           </td>
           <td>
           {{ $rgs->ea }}
