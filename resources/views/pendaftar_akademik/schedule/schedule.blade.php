@@ -158,25 +158,46 @@
                         </div>
                         <div class="box-footer">
                             <div id='event-creator'>
-                                {{-- <input type='text' id='event-title' placeholder='Event title'> --}}
-                                <input type="datetime-local" id="event-start" name="start">
-                                <br>
-                                <br>
-                                <select id="lect" name="lect">
-                                    <option value="-" selected disabled>Lecturer</option>
-                                    @foreach($data['lecturer'] as $lct)
-                                    <option value="{{ $lct->ic }}">{{ $lct->name }}</option>
-                                    @endforeach
-                                </select>
-                                <select id="subject" name="subject">
-                                    <option value="-" selected disabled>Subject</option>
-                                </select>
-                                <select id="group" name="group">
-                                    <option value="-" selected disabled>Group</option>
-                                </select>
-                                <br>
-                                <br>
-                                <button id='add-event'>Add Event</button>
+                                <div class="row mt-3">
+                                    <div class="col-md-4 mr-3">
+                                        <div class="form-group">
+                                          <label>Start Time</label>
+                                          <input type="datetime-local" name="start" id="event-start" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-md-4 mr-3">
+                                        <div class="form-group">
+                                          <label class="form-label" for="lect">Lecturer</label>
+                                          <select class="form-select" id="lect" name="lect">
+                                            <option value="-" selected>-</option>
+                                            @foreach($data['lecturer'] as $lct)
+                                            <option value="{{ $lct->ic }}">{{ $lct->name }}</option>
+                                            @endforeach
+                                          </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mr-3">
+                                        <div class="form-group">
+                                          <label class="form-label" for="subject">Subject</label>
+                                          <select class="form-select" id="subject" name="subject">
+                                            <option value="-" selected>-</option>
+                                          </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mr-3">
+                                        <div class="form-group">
+                                          <label class="form-label" for="group">Group</label>
+                                          <select class="form-select" id="group" name="group">
+                                            <option value="-" selected>-</option>
+                                          </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group pull-right">
+                                    <input type="submit" id="add-event" class="form-controlwaves-effect waves-light btn btn-primary btn-sm pull-right" value="Add Event">
+                                </div>
                             </div>
                             <div id='calendar' style="width: 100%;"></div>
                         </div>
