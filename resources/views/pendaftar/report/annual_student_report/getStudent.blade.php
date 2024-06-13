@@ -120,7 +120,7 @@
                 </th>
                 <th style="width: 5%">
                     No. Matric
-                </th>=
+                </th>
                 <th style="width: 5%">
                     Session
                 </th>
