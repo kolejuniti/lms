@@ -45,10 +45,20 @@
                                   {{ $fcl->facultyname }}
                               </td>
                           </tr>
+                          {{-- <tr id="date-{{ $fcl->id }}">
+                          </tr>
+                          <tr id="demo2-{{ $fcl->id }}" class="collapse cell-1 row-child" data-toggle="collapse">
+                            <td>
+                              <div style="margin-left: 40px;">
+                                  <i class="ti-user" style="margin-right: 5px;"></i>
+                                  Try2
+                              </div>
+                            </td>
+                          </tr> --}}
                           @foreach ($lecturer[$key] as $key2 => $lct)
-                          <tr id="demo-{{ $fcl->id }}" class="collapse cell-1 row-child" data-toggle="collapse" data-target="#demo-{{ $lct->ic }}">
-                              <td>
-                                  <div style="margin-left: 20px;">
+                          <tr id="demo-{{ $fcl->id }}" class="collapse cell-1 row-child" data-toggle="collapse" data-target="#demo2-{{ $lct }}">
+                              <td id="data-{{ $lct }}">
+                                  {{-- <div style="margin-left: 20px;">
                                       <i class="ti-user" style="margin-right: 5px;"></i>
                                       {{ $lct->name }}
                                       @if($lct->lastLogin != null)
@@ -56,16 +66,18 @@
                                       @else
                                       <a class="btn btn-danger pull-right btn-sm pr-2" data-toggle="modal" data-target="#userLog">Not Logged</a>
                                       @endif
-                                  </div>
+                                  </div> --}}
                               </td>
                           </tr>
                           @foreach ($course[$key][$key2] as $key3 => $crs)
-                          <tr id="demo-{{ $lct->ic }}" class="collapse cell-1 row-child" data-toggle="collapse" data-target="#demo-{{ $crs->id }}" onclick="tryerr0('{{ $crs->id }}','{{ $lct->ic }}','{{ $crs->SessionID }}')">
-                              <td>
+                          <tr id="demo2-{{ $lct }}" class="collapse cell-1 row-child" data-toggle="collapse" onclick="tryerr0('{{ $crs->subject_id }}','{{ $lct }}','{{ $crs->SessionID }}')">
+                            <td id="data2-{{ $crs->ids }}">
+                              {{-- <td>
                                   <div style="margin-left: 40px;">
                                       <i class="ti-folder" style="margin-right: 5px;"></i>
                                       {{ $crs->course_name }} ({{ $crs->course_code }} / {{ $crs->SessionName }})
                                   </div>
+                              </td> --}}
                               </td>
                           </tr>
                           @endforeach
@@ -195,6 +207,119 @@ $(document).ready( function () {
           ],
         });
     } );
+
+
+// Object to track fetched sections
+const fetchedSections = {};
+
+// Event listener for the specific collapse elements
+$(document).on('show.bs.collapse', '[id^="demo-"]', function () {
+    const id = $(this).attr('id').split('-')[1]; // Extract id from element's id (e.g., demo-123 -> 123)
+
+    // Check if data for this section has already been fetched
+    if (!fetchedSections[id]) {
+        getLecturer(id);
+        fetchedSections[id] = true; // Mark this section as fetched
+    }
+});
+
+$(document).on('hide.bs.collapse', '[id^="demo-"]', function () {
+    const id = $(this).attr('id');
+    $('#' + id + ' td[id^="data-"]').empty(); // Clear content of all matching elements
+    fetchedSections[id.split('-')[1]] = false; // Reset the fetched flag for this section
+});
+
+function getLecturer(id)
+{
+
+  return $.ajax({
+        headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
+        url      : "{{ url('admin/report/lecturer/getLecturer') }}",
+        method   : 'POST',
+        data 	 : {id: id},
+        error:function(err){
+            alert("Error");
+            console.log(err);
+        },
+        success  : function(data){
+          // Assuming 'data' is the array of subjects
+          let lecturer = data;
+
+          lecturer.forEach(function(lect){
+            let htmlContent = '';
+            htmlContent +=  `<div style="display: flex; justify-content: space-between; align-items: center; margin-left: 20px;">
+                              <div>
+                                <i class="ti-user" style="margin-right: 5px;"></i>
+                                ${lect.name}
+                              </div>`;
+                              if(lect.lastLogin != null)
+                              {
+                                  htmlContent += `<a class="btn btn-success btn-sm pr-2" style="float: right;" onclick="getUser('${lect.ic}')" data-toggle="modal" data-target="#userLog">Last Logged : ${lect.lastLogin}</a>`  
+                              }else{
+                                  htmlContent += `<a class="btn btn-danger btn-sm pr-2" style="float: right;" data-toggle="modal" data-target="#userLog">Not Logged</a>`  
+                              }
+                htmlContent += `</div>
+                            </td>`;
+
+              $('#data-' + lect.ic).append(htmlContent);
+          });
+
+          
+        }
+    });
+
+}
+
+// Event listener for the specific collapse elements
+$(document).on('show.bs.collapse', '[id^="demo2-"]', function () {
+    const id = $(this).attr('id').split('-')[1]; // Extract id from element's id (e.g., demo-123 -> 123)
+
+    // Check if data for this section has already been fetched
+    if (!fetchedSections[id]) {
+      getSubject(id);
+        fetchedSections[id] = true; // Mark this section as fetched
+    }
+});
+
+$(document).on('hide.bs.collapse', '[id^="demo2-"]', function () {
+    const id = $(this).attr('id');
+    $('#' + id + ' td[id^="data2-"]').empty(); // Clear content of all matching elements
+    fetchedSections[id.split('-')[1]] = false; // Reset the fetched flag for this section
+});
+
+function getSubject(ic)
+{
+
+  return $.ajax({
+        headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
+        url      : "{{ url('admin/report/lecturer/getSubject') }}",
+        method   : 'POST',
+        data 	 : {ic: ic},
+        error:function(err){
+            alert("Error");
+            console.log(err);
+        },
+        success  : function(data){
+          // Assuming 'data' is the array of subjects
+          let course = data;
+
+          course.forEach(function(crs){
+            let htmlContent = '';
+            htmlContent +=  ` <td>
+                                <div style="margin-left: 40px;">
+                                    <i class="ti-folder" style="margin-right: 5px;"></i>
+                                ${crs.course_name} (${crs.course_code}) / ${crs.SessionName}
+                                </div>
+                              </td>`;
+
+              $('#data2-' + crs.ids).append(htmlContent);
+          });
+
+          
+        }
+    });
+
+}
 
 function tryerr0(id,ic,ses)
 {
