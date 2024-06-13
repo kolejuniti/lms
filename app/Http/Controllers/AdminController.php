@@ -323,8 +323,6 @@ class AdminController extends Controller
             $content .= '</tbody></table>';
 
             return $content;
-
-        return view('admin.getprogram', compact('program', 'id'));
     }
 
     
@@ -335,17 +333,17 @@ class AdminController extends Controller
 
         foreach($faculty as $key => $fcl)
         {
-            $lecturer[] = DB::table('users')->where('status', 'ACTIVE')->where('faculty', $fcl->id)->whereIn('usrtype', ['LCT','PL'])->get();
+            $lecturer[] = DB::table('users')->where('status', 'ACTIVE')->where('faculty', $fcl->id)->whereIn('usrtype', ['LCT','PL'])->pluck('ic');
 
-            //dd($lecturer);
+        //     //dd($lecturer);
 
             foreach($lecturer[$key] as $key1 => $lct)
             {
                 $course[$key][$key1] = DB::table('user_subjek')
                     ->join('subjek', 'user_subjek.course_id','=','subjek.sub_id')
                     ->join('sessions', 'user_subjek.session_id','sessions.SessionID')
-                    ->where('user_subjek.user_ic', $lct->ic)
-                    ->select('subjek.*','user_subjek.course_id','sessions.SessionName','sessions.SessionID')
+                    ->where('user_subjek.user_ic', $lct)
+                    ->select('user_subjek.id AS ids', 'subjek.id AS subject_id','sessions.SessionID')
                     ->groupBy('subjek.sub_id', 'user_subjek.session_id')
                     ->get();
 
@@ -354,7 +352,35 @@ class AdminController extends Controller
 
         //dd($course);
 
-        return view('admin.lecturerReport', compact('faculty','lecturer','course'));
+        return view('admin.lecturerReport', compact('faculty', 'lecturer', 'course'));
+
+    }
+
+    public function getReportLecturerList()
+    {
+
+        $lecturer = DB::table('users')
+                    ->where('status', 'ACTIVE')
+                    ->where('faculty', request()->id)
+                    ->whereIn('usrtype', ['LCT','PL'])
+                    ->get();
+
+        return response()->json($lecturer);
+
+    }
+
+    public function getReportSubjectList()
+    {
+
+        $course = DB::table('user_subjek')
+                    ->join('subjek', 'user_subjek.course_id','=','subjek.sub_id')
+                    ->join('sessions', 'user_subjek.session_id','sessions.SessionID')
+                    ->where('user_subjek.user_ic', request()->ic)
+                    ->select('user_subjek.id AS ids', 'subjek.*','sessions.SessionID','sessions.SessionName')
+                    ->groupBy('subjek.sub_id', 'user_subjek.session_id')
+                    ->get();
+
+        return response()->json($course);
 
     }
 
