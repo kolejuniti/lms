@@ -23,6 +23,7 @@
     background-color: #fff; /* Adjust the background color to match your background */
     padding: 0 10px;
   }
+
 </style>
 
 <!-- Content Header (Page header) -->
@@ -113,65 +114,54 @@
 <script type="text/javascript">
 
 
-function submit()
-{
-
+function submit() {
   var program = $('#program').val();
   var from = $('#from').val();
   var to = $('#to').val();
 
+  // Show the spinner
+  $('#loading-spinner').css('display', 'block');
+
   return $.ajax({
-            headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
-            url      : "{{ url('finance/debt/monthlyPayment/getMonthlyPayment') }}",
-            method   : 'POST',
-            data 	 : {program: program, from: from, to: to},
-            error:function(err){
-                alert("Error");
-                console.log(err);
-            },
-            success  : function(data){
-              // var d = new Date();
+    headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
+    url: "{{ url('finance/debt/monthlyPayment/getMonthlyPayment') }}",
+    method: 'POST',
+    data: {program: program, from: from, to: to},
+    error: function(err){
+      alert("Error");
+      console.log(err);
+      // Hide the spinner on error
+      $('#loading-spinner').css('display', 'none');
+    },
+    success: function(data){
+      // Hide the spinner on success
+      $('#loading-spinner').css('display', 'none');
 
-              // var month = d.getMonth()+1;
-              // var day = d.getDate();
-
-              // var output = d.getFullYear() + '/' +
-              //     (month<10 ? '0' : '') + month + '/' +
-              //     (day<10 ? '0' : '') + day;
-
-                $('#form-student').html(data);
-                $('#voucher_table').DataTable({
-                        dom: 'lBfrtip', // if you remove this line you will see the show entries dropdown
-                        paging: false,
-
-                        buttons: [
-                            {
-                              text: 'Excel',
-                              action: function () {
-                                // get the HTML table to export
-                                const table = document.getElementById("voucher_table");
-                                
-                                // create a new Workbook object
-                                const wb = XLSX.utils.book_new();
-                                
-                                // add a new worksheet to the Workbook object
-                                const ws = XLSX.utils.table_to_sheet(table);
-                                XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
-                                
-                                // trigger the download of the Excel file
-                                XLSX.writeFile(wb, "exported-data.xlsx");
-                              }
-                            }
-                        ],
-
-                      });
-                      
+      $('#form-student').html(data);
+      $('#voucher_table').DataTable({
+        dom: 'lBfrtip',
+        paging: false,
+        buttons: [
+          {
+            text: 'Excel',
+            action: function () {
+              // get the HTML table to export
+              const table = document.getElementById("voucher_table");
+              // create a new Workbook object
+              const wb = XLSX.utils.book_new();
+              // add a new worksheet to the Workbook object
+              const ws = XLSX.utils.table_to_sheet(table);
+              XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
+              // trigger the download of the Excel file
+              XLSX.writeFile(wb, "exported-data.xlsx");
             }
-        });
-
-
-
+          }
+        ],
+      });
+    }
+  });
 }
+
 
 
 </script>
