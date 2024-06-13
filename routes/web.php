@@ -42,6 +42,8 @@ Route::delete('/admin/delete', [App\Http\Controllers\AdminController::class, 'de
 Route::post('/admin/getProgramoptions', [App\Http\Controllers\AdminController::class, 'getProgramoptions']);
 Route::post('/admin/getProgramoptions2', [App\Http\Controllers\AdminController::class, 'getProgramoptions2']);
 Route::get('/admin/report/lecturer', [App\Http\Controllers\AdminController::class, 'getReportLecturer'])->name('admin.report.lecturer');
+Route::post('/admin/report/lecturer/getLecturer', [App\Http\Controllers\AdminController::class, 'getReportLecturerList']);
+Route::post('/admin/report/lecturer/getSubject', [App\Http\Controllers\AdminController::class, 'getReportSubjectList']);
 Route::post('/admin/report/lecturer/getFolder', [App\Http\Controllers\AdminController::class, 'getFolder']);
 Route::post('/admin/report/lecturer/getSubfolder', [App\Http\Controllers\AdminController::class, 'getSubFolder']);
 Route::post('/admin/report/lecturer/getSubfolder/getSubfolder2', [App\Http\Controllers\AdminController::class, 'getSubFolder2']);
