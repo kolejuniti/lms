@@ -2071,6 +2071,7 @@ class AR_Controller extends Controller
 
             $data['student'] = DB::table('students')
                                ->leftjoin('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
+                               ->leftjoin('tblsex', 'tblstudent_personal.sex_id', '=', 'tblsex.id')
                                ->leftjoin('sessions', 'students.intake', 'sessions.SessionID')
                                ->leftjoin('tblprogramme', 'students.program', 'tblprogramme.id')
                                ->leftjoin('tbledu_advisor', 'tblstudent_personal.advisor_id', 'tbledu_advisor.id')
@@ -2080,7 +2081,7 @@ class AR_Controller extends Controller
                                ->when($request->session != '', function ($query) use ($request){
                                     return $query->where('students.intake', $request->session);
                                })
-                               ->select('students.*', 'tblstudent_personal.no_tel','tblstudent_personal.qualification', 'sessions.SessionName', 'tblprogramme.progcode', 'tbledu_advisor.name AS ea')
+                               ->select('students.*', 'tblstudent_personal.no_tel','tblstudent_personal.qualification', 'tblsex.code AS sex', 'sessions.SessionName', 'tblprogramme.progcode', 'tbledu_advisor.name AS ea')
                                ->get();
 
             foreach($data['student'] as $key => $student)
