@@ -106,6 +106,9 @@ function submit()
   var from = $('#from').val();
   var to = $('#to').val();
 
+  // Show the spinner
+  $('#loading-spinner').css('display', 'block');
+
   return $.ajax({
             headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
             url      : "{{ url('finance/debt/collectionReport/getCollectionReport') }}",
@@ -114,16 +117,13 @@ function submit()
             error:function(err){
                 alert("Error");
                 console.log(err);
+
+                // Hide the spinner on error
+                $('#loading-spinner').css('display', 'none');
             },
             success  : function(data){
-              // var d = new Date();
-
-              // var month = d.getMonth()+1;
-              // var day = d.getDate();
-
-              // var output = d.getFullYear() + '/' +
-              //     (month<10 ? '0' : '') + month + '/' +
-              //     (day<10 ? '0' : '') + day;
+                // Hide the spinner on success
+                $('#loading-spinner').css('display', 'none');
 
                 $('#form-student').html(data);
                 $('#voucher_table').DataTable({
