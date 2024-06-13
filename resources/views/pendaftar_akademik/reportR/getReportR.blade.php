@@ -32,7 +32,10 @@
               </th>
               <th style="width: 5%">
                   Qualification
-                </th>
+              </th>
+              <th style="width: 5%">
+                  Gender
+              </th>
               <th style="width: 5%">
                   EA
               </th>
@@ -73,6 +76,9 @@
           </td>
           <td>
           {{ $data['qua'][$key] }}
+          </td>
+          <td>
+          {{ $rgs->sex }}
           </td>
           <td>
           {{ $rgs->ea }}
