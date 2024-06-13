@@ -2516,7 +2516,6 @@ class PendaftarController extends Controller
                ->leftjoin('sessions', 'tblstudent_log.session_id', 'sessions.SessionID')
                ->join('students', function($join){
                     $join->on('tblstudent_log.student_ic', 'students.ic');
-                    $join->on('tblstudent_log.session_id', 'students.session');
                })
                ->select('tblstudent_log.student_ic', DB::raw('MAX(tblstudent_log.id) as latest_id'))
                ->whereIn('tblstudent_log.student_ic', $ic)
@@ -2528,7 +2527,6 @@ class PendaftarController extends Controller
                ->leftjoin('sessions', 'tblstudent_log.session_id', 'sessions.SessionID')
                ->join('students', function($join){
                     $join->on('tblstudent_log.student_ic', 'students.ic');
-                    $join->on('tblstudent_log.session_id', 'students.session');
                })
                ->select('tblstudent_log.student_ic', DB::raw('MAX(tblstudent_log.id) as latest_id'))
                ->whereIn('tblstudent_log.student_ic', $ic)
