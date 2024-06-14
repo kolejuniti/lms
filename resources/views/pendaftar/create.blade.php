@@ -8,7 +8,6 @@
     border: 1px solid black;
     padding: 5px;
 }
-
 </style>
 <!-- Content Header (Page header) -->
 <div class="content-wrapper" style="min-height: 695.8px;">
@@ -70,7 +69,7 @@
                         <div class="col-md-6">
                           <div class="form-group">
                             <label class="form-label" for="ic">IC <p style="color:red; display:inline-block;">*</p></label>
-                            <input type="text" class="form-control" id="ic" name="ic" placeholder="Enter ic" required>
+                            <input type="text" class="form-control" id="ic" name="ic" placeholder="Enter ic" minlength="12" maxlength="12" required>
                           </div>
                         </div>
                         <div class="col-md-6">
@@ -251,28 +250,42 @@
                         </div>
                       </div>
                       <div class="row">
+                        <div class="col-md-6 mt-4">
+                          <div class="form-group">
+                              <input type="checkbox" id="oku" class="filled-in" name="oku" value="1">
+                              <label for="oku">OKU</label>
+                          </div>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                          <div class="form-group">
+                            <label class="form-label" for="jkm">No. KAD</label>
+                            <input type="text" class="form-control" id="jkm" name="jkm">
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row">
                         <div class="col-md-6">
                           <div class="form-group">
                             <label for="bank_name" class="form-label">Choose a bank:</label>
                             <input class="form-control" list="banks" id="bank_name" name="bank_name" placeholder="Type to search...">
                             <datalist id="banks">
-                                <option value="Affin Bank">
-                                <option value="Alliance Bank">
-                                <option value="AmBank">
-                                <option value="Bank Islam Malaysia">
-                                <option value="Bank Muamalat Malaysia">
-                                <option value="Bank Rakyat">
-                                <option value="Bank Simpanan Nasional">
-                                <option value="CIMB Bank">
-                                <option value="Citibank">
-                                <option value="Hong Leong Bank">
-                                <option value="HSBC Bank Malaysia">
-                                <option value="Maybank">
-                                <option value="OCBC Bank">
-                                <option value="Public Bank">
-                                <option value="RHB Bank">
-                                <option value="Standard Chartered Bank Malaysia">
-                                <option value="UOB Bank">
+                                <option value="AFFIN BANK">
+                                <option value="ALLIANCE BANK">
+                                <option value="AMBANK">
+                                <option value="BANK ISLAM MALAYSIA">
+                                <option value="BANK MUAMALAT MALAYSIA">
+                                <option value="BANK RAKYAT">
+                                <option value="BANK SIMPANAN NASIONAL">
+                                <option value="CIMB BANK">
+                                <option value="CITIBANK">
+                                <option value="HONG LEONG BANK">
+                                <option value="HSBC BANK MALAYSIA">
+                                <option value="MAYBANK">
+                                <option value="OCBC BANK">
+                                <option value="PUBLIC BANK">
+                                <option value="RHB BANK">
+                                <option value="STANDARD CHARTERED BANK MALAYSIA">
+                                <option value="UOB BANK">
                             </datalist>
                           </div>
                         </div>
@@ -294,20 +307,6 @@
                           <div class="form-group">
                             <label class="form-label" for="dt">Date/Time</label>
                             <input type="datetime-local" class="form-control" id="dt" placeholder="Enter Bank Name" name="dt">
-                          </div>
-                        </div>
-                        <div class="col-md-6 mb-2">
-                          <div class="form-group">
-                            <label class="form-label" for="jkm">JKM</label>
-                            <input type="text" class="form-control" id="jkm" name="jkm">
-                          </div>
-                        </div>
-                      </div>
-                      <div class="row">
-                        <div class="col-md-6">
-                          <div class="form-group">
-                              <input type="checkbox" id="oku" class="filled-in" name="oku" value="1">
-                              <label for="oku">OKU</label>
                           </div>
                         </div>
                       </div>
