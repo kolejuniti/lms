@@ -681,6 +681,10 @@ Route::get('/finance/debt/monthlyPayment', [App\Http\Controllers\FinanceControll
 Route::post('/finance/debt/monthlyPayment/getMonthlyPayment', [App\Http\Controllers\FinanceController::class,'getMonthlyPayment']);
 Route::get('/finance/debt/ctosReport', [App\Http\Controllers\FinanceController::class,'ctosReport'])->name('finance.ctosReport');
 Route::post('/finance/debt/ctosReport/getCtosReport', [App\Http\Controllers\FinanceController::class,'getCtosReport']);
+Route::get('/finance/debt/arrearNotice', function(){
+    return view('finance.debt.arrear_notice.index');
+})->name('finance.arrearNotice');
+Route::post('/finance/debt/arrearNotice/printArrearNotice', [App\Http\Controllers\FinanceController::class,'printArrearNotice'])->name('finance.arrearNotice.store');
 
 
 Route::get('/treasurer_dashboard', [App\Http\Controllers\TreasurerController::class, 'dashboard'])->name('treasurer.dashboard');
