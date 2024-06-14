@@ -62,7 +62,7 @@
                         <div class="col-md-6">
                           <div class="form-group">
                             <label class="form-label" for="ic">IC <p style="color:red; display:inline-block;">*</p></label>
-                            <input type="text" class="form-control" id="ic" name="ic" placeholder="Enter ic" value="{{ (strlen($student->ic) == 12) ? $student->ic : '' }}" readonly>
+                            <input type="text" class="form-control" id="ic" name="ic" placeholder="Enter ic" minlength="12" maxlength="12" value="{{ (strlen($student->ic) == 12) ? $student->ic : '' }}" readonly>
                           </div>
                         </div>
                         <div class="col-md-6">
@@ -238,8 +238,8 @@
                         </div> 
                         <div class="col-md-6">
                           <div class="form-group">
-                            <label class="form-label" for="EA">Education Advisor</label>
-                            <select class="form-select" id="EA" name="EA">
+                            <label class="form-label" for="EA">Education Advisor <p style="color:red; display:inline-block;"></label>
+                            <select class="form-select" id="EA" name="EA" required>
                               <option value="-" selected disabled>-</option>
                               @foreach ($data['EA'] as $ea)
                                 <option value="{{ $ea->id }}" {{ ($student->advisor_id == $ea->id) ? 'selected' : '' }}>{{ $ea->name}}</option> 
