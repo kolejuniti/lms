@@ -428,6 +428,7 @@
 					<li><a href="{{ route('finance.collectionExpectReport') }}" class="{{ (route('finance.collectionExpectReport') == Request::url()) ? 'active' : ''}}">Collection VS Expectation Payment Report</a></li>
 					<li><a href="{{ route('finance.monthlyPayment') }}" class="{{ (route('finance.monthlyPayment') == Request::url()) ? 'active' : ''}}">Student Monthly Payment Report</a></li>
 					<li><a href="{{ route('finance.ctosReport') }}" class="{{ (route('finance.ctosReport') == Request::url()) ? 'active' : ''}}">CTOS Report</a></li>
+					<li><a href="{{ route('finance.arrearNotice') }}" class="{{ (route('finance.arrearNotice') == Request::url()) ? 'active' : ''}}">Arrear Notice</a></li>
 				</ul>
 			  </li>
 			  <li>
