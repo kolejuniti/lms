@@ -9453,8 +9453,35 @@ class FinanceController extends Controller
                                ->leftjoin('tblpackage', 'tblpackage_sponsorship.package_id', 'tblpackage.id')
                                ->leftjoin('tblpayment_type', 'tblpackage_sponsorship.payment_type_id', 'tblpayment_type.id')
                                ->where('tblpackage_sponsorship.student_ic', $std->ic)
-                               ->select('tblpackage.name AS package_name', 'tblpayment_type.name AS payment_type_name', 'tblpackage_sponsorship.amount')
+                               ->select('tblpackage.id AS package_id','tblpackage.name AS package_name', 'tblpayment_type.name AS payment_type_name', 'tblpackage_sponsorship.amount')
                                ->first();
+
+            if($data['sponsor'][$key])
+            {
+
+                if(in_array($data['sponsor'][$key]->package_id, [1,4,6,7,8]))
+                {
+
+                    $data['type'][$key] = 'B40';
+
+                }elseif(in_array($data['sponsor'][$key]->package_id, [2]))
+                {
+
+                    $data['type'][$key] = 'M40';
+
+                }elseif(in_array($data['sponsor'][$key]->package_id, [3,5]))
+                {
+
+                    $data['type'][$key] = 'T20';
+
+                }
+
+            }else{
+
+
+                $data['type'][$key] = null;
+
+            }
 
             //C
 
@@ -9547,6 +9574,15 @@ class FinanceController extends Controller
             $data['total_balance'][$key] = $data['sum3'];
 
             // $data['amount'] = DB::
+
+            //F
+
+            $data['address'] = DB::table('tblstudent_address')
+                               ->leftjoin('tblstate', 'tblstudent_address.state_id', 'tblstate.id')
+                               ->leftjoin('tblcountry', 'tblstudent_address.country_id', 'tblcountry.id')
+                               ->select('tblstudent_address.*', 'tblstate.state_name AS state', 'tblcountry.name AS country')
+                               ->where('tblstudent_address.student_ic', $std->ic)
+                               ->first();
 
         }
 
@@ -10576,23 +10612,44 @@ class FinanceController extends Controller
         }
 
         $data['student'] = DB::table('students')
-                           ->leftjoin('tblstudent_address', 'students.ic', 'tblstudent_address.student_ic')
-                           ->leftjoin('tblstate', 'tblstudent_address.state_id', 'tblstate.id')
-                           ->leftjoin('tblcountry', 'tblstudent_address.country_id', 'tblcountry.id')
-                           ->leftjoin('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
-                           ->leftjoin('sessions', 'students.session', 'sessions.SessionID')
-                           ->leftjoin('tblcountry AS b', 'tblstudent_personal.nationality_id', 'b.id')
-                           ->select(DB::raw('"" AS CM'), DB::raw('"" AS etr'), 'students.name', DB::raw('"" AS old_ic'), 'students.ic',
-                                    DB::raw('"" AS passport'), DB::raw('CASE WHEN tblstudent_personal.sex_id = 1 THEN "Mr" ELSE "Mrs" END AS salution'),
-                                    'tblstudent_personal.sex_id', DB::raw('"1" AS marital_status'), DB::raw('"3" AS house_status'),
-                                    DB::raw("CONCAT(tblstudent_address.address1, ',', tblstudent_address.address2, ',', tblstudent_address.address3) AS address"),
-                                    'tblstudent_address.city', 'tblstate.state_name', 'tblstudent_address.postcode', 'tblcountry.name AS country_name',
-                                    'tblstudent_personal.date_birth', 'b.name AS nationality_name', 'students.email', 'tblstudent_personal.no_tel',
-                                    DB::raw('"" AS ref_no'), DB::raw('"" AS account_no'))
-                           ->whereBetween('sessions.Year', [$request->from, $request->to])
-                           ->whereIn('students.program', $data['program'])
-                           ->whereIn('students.status', [3,8])
-                           ->get();
+        ->leftJoin('tblstudent_address', 'students.ic', '=', 'tblstudent_address.student_ic')
+        ->leftJoin('tblstate', 'tblstudent_address.state_id', '=', 'tblstate.id')
+        ->leftJoin('tblcountry', 'tblstudent_address.country_id', '=', 'tblcountry.id')
+        ->leftJoin('tblstudent_personal', 'students.ic', '=', 'tblstudent_personal.student_ic')
+        ->leftJoin('sessions', 'students.session', '=', 'sessions.SessionID')
+        ->leftJoin('tblcountry AS b', 'tblstudent_personal.nationality_id', '=', 'b.id')
+        ->select(
+            DB::raw('"" AS CM'),
+            DB::raw('"" AS etr'),
+            'students.name',
+            DB::raw('"" AS old_ic'),
+            'students.ic',
+            DB::raw('"" AS passport'),
+            DB::raw('CASE WHEN tblstudent_personal.sex_id = 1 THEN "Mr" ELSE "Mrs" END AS salution'),
+            'tblstudent_personal.sex_id',
+            DB::raw('"1" AS marital_status'),
+            DB::raw('"3" AS house_status'),
+            DB::raw("CONCAT(IFNULL(tblstudent_address.address1, ''), 
+                        IF(tblstudent_address.address1 IS NOT NULL AND tblstudent_address.address2 IS NOT NULL, ',', ''), 
+                        IFNULL(tblstudent_address.address2, ''), 
+                        IF((tblstudent_address.address1 IS NOT NULL OR tblstudent_address.address2 IS NOT NULL) AND tblstudent_address.address3 IS NOT NULL, ',', ''), 
+                        IFNULL(tblstudent_address.address3, '')) AS address"),
+            'tblstudent_address.city',
+            'tblstate.state_name',
+            'tblstudent_address.postcode',
+            'tblcountry.name AS country_name',
+            'tblstudent_personal.date_birth',
+            'b.name AS nationality_name',
+            'students.email',
+            'tblstudent_personal.no_tel',
+            DB::raw('"" AS ref_no'),
+            DB::raw('"" AS account_no')
+        )
+        ->whereBetween('sessions.Year', [$request->from, $request->to])
+        ->whereIn('students.program', $data['program'])
+        ->whereIn('students.status', [3, 8])
+        ->get();
+
                            
 
         
