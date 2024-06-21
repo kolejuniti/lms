@@ -91,16 +91,16 @@
                                     {{ $std->no_matric }}
                                 </td>
                                 <td>
-                                    {{ $data['sponsor'][$key] ? $data['sponsor'][$key]->package_name : 'null' }}
+                                    {{ $data['sponsor'][$key] ? $data['sponsor'][$key]->package_name : ' ' }}
                                 </td>
                                 <td>
-                                    {{ $data['sponsor'][$key] ? $data['sponsor'][$key]->payment_type_name : 'null' }}
+                                    {{ $data['sponsor'][$key] ? $data['sponsor'][$key]->payment_type_name : ' ' }}
                                 </td>
                                 <td>
-                                    {{ $data['type'][$key] ? $data['type'][$key] : 'null' }}
+                                    {{ $data['type'][$key] ? $data['type'][$key] : ' ' }}
                                 </td>
                                 <td>
-                                    {{ $data['sponsor'][$key] ? $data['sponsor'][$key]->amount : 'null' }}
+                                    {{ $data['sponsor'][$key] ? $data['sponsor'][$key]->amount : ' ' }}
                                 </td>
                                 <td>
                                     {{ $data['address'][$key]->address }}
