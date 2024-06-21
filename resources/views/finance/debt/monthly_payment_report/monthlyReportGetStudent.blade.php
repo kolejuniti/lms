@@ -29,7 +29,25 @@
                                 Package
                             </th>
                             <th>
+                                Type
+                            </th>
+                            <th>
                                 Amount
+                            </th>
+                            <th>
+                                Address
+                            </th>
+                            <th>
+                                Home Name
+                            </th>
+                            <th>
+                                Home State
+                            </th>
+                            <th>
+                                Home Zip Code
+                            </th>
+                            <th>
+                                Home Country
                             </th>
                             <th>
                                 Date End
@@ -79,7 +97,25 @@
                                     {{ $data['sponsor'][$key] ? $data['sponsor'][$key]->payment_type_name : 'null' }}
                                 </td>
                                 <td>
+                                    {{ $data['type'][$key] ? $data['type'][$key] : 'null' }}
+                                </td>
+                                <td>
                                     {{ $data['sponsor'][$key] ? $data['sponsor'][$key]->amount : 'null' }}
+                                </td>
+                                <td>
+                                    {{ $data['address'][$key]->address }}
+                                </td>
+                                <td>
+                                    {{ $data['address'][$key]->city }}
+                                </td>
+                                <td>
+                                    {{ $data['address'][$key]->state_name }}
+                                </td>
+                                <td>
+                                    {{ $data['address'][$key]->postcode }}
+                                </td>
+                                <td>
+                                    {{ $data['address'][$key]->country_name }}
                                 </td>
                                 <td>
                                     {{ $std->graduate }}
