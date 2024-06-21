@@ -1088,6 +1088,21 @@ class TestController extends Controller
         $data = $request->data;
         $id = $request->id;
 
+        // Decode the JSON data
+        $decodedData = json_decode($data, true);
+
+        // Iterate over formData and update checkbox groups
+        foreach ($decodedData['formData'] as &$item) {
+            if ($item['type'] == 'checkbox-group') {
+                if (empty($item['userData']) || !isset($item['userData'])) {
+                    $item['userData'] = [" "];
+                }
+            }
+        }
+
+        // Encode the data back to JSON
+        $data = json_encode($decodedData);
+
         $test = DB::table('tblclasstest')
             ->leftjoin('tblclassstudenttest', function($join) 
             {
