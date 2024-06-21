@@ -9479,7 +9479,7 @@ class FinanceController extends Controller
             }else{
 
 
-                $data['type'][$key] = null;
+                $data['type'][$key] = ' ';
 
             }
 
