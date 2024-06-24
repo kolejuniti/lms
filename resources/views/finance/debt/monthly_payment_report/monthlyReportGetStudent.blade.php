@@ -100,7 +100,7 @@
                                     {{ $std->no_matric }}
                                 </td>
                                 <td>
-                                    {{ $data['sponsorStudent'][$key] ? $data['sponsorStudent'][$key]->name : 'TIADA PENAJA/SENDIRI' }}
+                                    
                                 </td>
                                 <td>
                                     {{ $data['sponsor'][$key] ? $data['sponsor'][$key]->package_name : ' ' }}
