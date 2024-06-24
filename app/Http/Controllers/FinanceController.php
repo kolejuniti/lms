@@ -10639,7 +10639,7 @@ class FinanceController extends Controller
         ->leftJoin('tblcountry', 'tblstudent_address.country_id', '=', 'tblcountry.id')
         ->leftJoin('tblstudent_personal', 'students.ic', '=', 'tblstudent_personal.student_ic')
         ->leftJoin('sessions', 'students.session', '=', 'sessions.SessionID')
-        ->leftJoin('tblcountry AS b', 'tblstudent_personal.nationality_id', '=', 'b.id')
+        ->leftJoin('tblnationality AS b', 'tblstudent_personal.nationality_id', '=', 'b.id')
         ->select(
             DB::raw('"" AS CM'),
             DB::raw('"" AS etr'),
@@ -10661,7 +10661,7 @@ class FinanceController extends Controller
             'tblstudent_address.postcode',
             'tblcountry.name AS country_name',
             'tblstudent_personal.date_birth',
-            'b.name AS nationality_name',
+            'b.nationality_name AS nationality_name',
             'students.email',
             'tblstudent_personal.no_tel',
             DB::raw('"" AS ref_no'),
