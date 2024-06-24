@@ -9447,7 +9447,18 @@ class FinanceController extends Controller
         foreach($data['student'] as $key => $std)
         {
 
-          
+            $data['sponsorStudent'][$key] = DB::table('tblpayment')
+                                  ->join('tblsponsor_library', 'tblpayment.payment_sponsor_id', 'tblsponsor_library.id')
+                                  ->where([
+                                    ['tblpayment.process_type_id', 7],
+                                    ['tblpayment.process_status_id', 2],
+                                    ['tblpayment.student_ic', $std->ic]
+                                    ])
+                                  ->whereIn('tblsponsor_library.id', [1,2,3])
+                                  ->orderBy('tblpayment.id', 'DESC')
+                                  ->select('tblsponsor_library.code AS name')
+                                  ->first();
+
             //B
 
             $data['sponsor'][$key] = DB::table('tblpackage_sponsorship')
@@ -9577,23 +9588,7 @@ class FinanceController extends Controller
             // $data['amount'] = DB::
 
             //F
-            
-            $data['address'][$key] = DB::table('tblstudent_address')
-                                    ->leftJoin('tblstate', 'tblstudent_address.state_id', '=', 'tblstate.id')
-                                    ->leftJoin('tblcountry', 'tblstudent_address.country_id', '=', 'tblcountry.id')
-                                    ->select(
-                                        DB::raw("CONCAT(IFNULL(tblstudent_address.address1, ''), 
-                                                    IF(tblstudent_address.address1 IS NOT NULL AND tblstudent_address.address2 IS NOT NULL, ',', ''), 
-                                                    IFNULL(tblstudent_address.address2, ''), 
-                                                    IF((tblstudent_address.address1 IS NOT NULL OR tblstudent_address.address2 IS NOT NULL) AND tblstudent_address.address3 IS NOT NULL, ',', ''), 
-                                                    IFNULL(tblstudent_address.address3, '')) AS address"),
-                                        'tblstudent_address.city',
-                                        'tblstate.state_name',
-                                        'tblstudent_address.postcode',
-                                        'tblcountry.name AS country_name'
-                                    )
-                                    ->where('tblstudent_address.student_ic', $std->ic)
-                                    ->first();
+      
 
         }
 
