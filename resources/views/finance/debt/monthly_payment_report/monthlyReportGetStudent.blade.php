@@ -17,6 +17,9 @@
                                 IC / Passport No.
                             </th>
                             <th>
+                                Email
+                            </th>
+                            <th>
                                 Date Register
                             </th>
                             <th>
@@ -83,6 +86,9 @@
                                 </td>
                                 <td>
                                     {{ $std->ic }}
+                                </td>
+                                <td>
+                                    {{ $std->email }}
                                 </td>
                                 <td>
                                     {{ $std->date }}
