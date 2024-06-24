@@ -100,7 +100,7 @@
                                     {{ $std->no_matric }}
                                 </td>
                                 <td>
-                                    
+                                    {{ $data['sponsorStudent'][$key] ? $data['sponsorStudent'][$key]->name : 'TIADA PENAJA/SENDIRI' }}
                                 </td>
                                 <td>
                                     {{ $data['sponsor'][$key] ? $data['sponsor'][$key]->package_name : ' ' }}
@@ -114,21 +114,7 @@
                                 <td>
                                     {{ $data['sponsor'][$key] ? $data['sponsor'][$key]->amount : ' ' }}
                                 </td>
-                                <td>
-                                    {{ $data['address'][$key]->address }}
-                                </td>
-                                <td>
-                                    {{ $data['address'][$key]->city }}
-                                </td>
-                                <td>
-                                    {{ $data['address'][$key]->state_name }}
-                                </td>
-                                <td>
-                                    {{ $data['address'][$key]->postcode }}
-                                </td>
-                                <td>
-                                    {{ $data['address'][$key]->country_name }}
-                                </td>
+                            
                                 <td>
                                     {{ $std->graduate }}
                                 </td>
