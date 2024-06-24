@@ -9447,18 +9447,7 @@ class FinanceController extends Controller
         foreach($data['student'] as $key => $std)
         {
 
-            $data['sponsorStudent'][$key] = DB::table('tblpayment')
-                                  ->join('tblsponsor_library', 'tblpayment.payment_sponsor_id', 'tblsponsor_library.id')
-                                  ->where([
-                                    ['tblpayment.process_type_id', 7],
-                                    ['tblpayment.process_status_id', 2],
-                                    ['tblpayment.student_ic', $std->ic]
-                                    ])
-                                  ->whereIn('tblsponsor_library.id', [1,2,3])
-                                  ->orderBy('tblpayment.id', 'DESC')
-                                  ->select('tblsponsor_library.code AS name')
-                                  ->first();
-
+          
             //B
 
             $data['sponsor'][$key] = DB::table('tblpackage_sponsorship')
