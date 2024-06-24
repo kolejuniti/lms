@@ -114,7 +114,21 @@
                                 <td>
                                     {{ $data['sponsor'][$key] ? $data['sponsor'][$key]->amount : ' ' }}
                                 </td>
-                            
+                                <td>
+                                    {{ $data['address'][$key] ? $data['address'][$key]->address : ' ' }}
+                                </td>
+                                <td>
+                                    {{ $data['address'][$key] ? $data['address'][$key]->city : ' ' }}
+                                </td>
+                                <td>
+                                    {{ $data['address'][$key] ? $data['address'][$key]->state_name : ' ' }}
+                                </td>
+                                <td>
+                                    {{ $data['address'][$key] ? $data['address'][$key]->postcode : ' ' }}
+                                </td>
+                                <td>
+                                    {{ $data['address'][$key] ? $data['address'][$key]->country_name : ' ' }}
+                                </td>
                                 <td>
                                     {{ $std->graduate }}
                                 </td>
