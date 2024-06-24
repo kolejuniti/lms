@@ -9588,7 +9588,23 @@ class FinanceController extends Controller
             // $data['amount'] = DB::
 
             //F
-      
+            
+            $data['address'][$key] = DB::table('tblstudent_address')
+                                    ->leftJoin('tblstate', 'tblstudent_address.state_id', '=', 'tblstate.id')
+                                    ->leftJoin('tblcountry', 'tblstudent_address.country_id', '=', 'tblcountry.id')
+                                    ->select(
+                                        DB::raw("CONCAT(IFNULL(tblstudent_address.address1, ''), 
+                                                    IF(tblstudent_address.address1 IS NOT NULL AND tblstudent_address.address2 IS NOT NULL, ',', ''), 
+                                                    IFNULL(tblstudent_address.address2, ''), 
+                                                    IF((tblstudent_address.address1 IS NOT NULL OR tblstudent_address.address2 IS NOT NULL) AND tblstudent_address.address3 IS NOT NULL, ',', ''), 
+                                                    IFNULL(tblstudent_address.address3, '')) AS address"),
+                                        'tblstudent_address.city',
+                                        'tblstate.state_name',
+                                        'tblstudent_address.postcode',
+                                        'tblcountry.name AS country_name'
+                                    )
+                                    ->where('tblstudent_address.student_ic', $std->ic)
+                                    ->first();
 
         }
 
