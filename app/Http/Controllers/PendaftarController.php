@@ -898,30 +898,33 @@ class PendaftarController extends Controller
             'date_offer' => $request->dol
         ]);
 
-        DB::table('tblstudent_personal')->where('student_ic', $data['id'])->update([
-            'student_ic' => $data['id'],
-            'date_birth' => $request->birth_date,
-            'advisor_id' => $request->EA,
-            'bank_name' => $request->bank_name,
-            'bank_no' => $request->bank_number,
-            'ptptn_no' => $request->PN,
-            'datetime' => $request->dt,
-            'religion_id' => $request->religion,
-            'nationality_id' => $request->race,
-            'sex_id' => $request->gender,
-            'state_id' => $request->birth_place,
-            'marriage_id' => $request->mstatus,
-            'statelevel_id' => $request->CL,
-            'citizenship_id' => $request->citizen,
-            'no_tel' => $request->np1,
-            'no_tel2' => $request->np2,
-            'no_telhome' => $request->np3,
-            'dun' => $request->dun,
-            'parlimen' => $request->parlimen,
-            'qualification' => $request->qualification,
-            'oku' => $request->oku,
-            'no_jkm' => $request->jkm
-        ]);
+        DB::table('tblstudent_personal')->updateOrInsert(
+            ['student_ic' => $data['id']], // Condition to find the row
+            [
+                'date_birth' => $request->birth_date,
+                'advisor_id' => $request->EA,
+                'bank_name' => $request->bank_name,
+                'bank_no' => $request->bank_number,
+                'ptptn_no' => $request->PN,
+                'datetime' => $request->dt,
+                'religion_id' => $request->religion,
+                'nationality_id' => $request->race,
+                'sex_id' => $request->gender,
+                'state_id' => $request->birth_place,
+                'marriage_id' => $request->mstatus,
+                'statelevel_id' => $request->CL,
+                'citizenship_id' => $request->citizen,
+                'no_tel' => $request->np1,
+                'no_tel2' => $request->np2,
+                'no_telhome' => $request->np3,
+                'dun' => $request->dun,
+                'parlimen' => $request->parlimen,
+                'qualification' => $request->qualification,
+                'oku' => $request->oku,
+                'no_jkm' => $request->jkm
+            ]
+        );
+        
 
         DB::table('tblstudent_pass')->updateOrInsert(
             ['student_ic' => $data['id']], // "where" condition
