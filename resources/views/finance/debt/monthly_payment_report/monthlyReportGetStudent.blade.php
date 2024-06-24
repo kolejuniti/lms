@@ -26,6 +26,9 @@
                                 No. Matric
                             </th>
                             <th>
+                                Sponsorship Type
+                            </th>
+                            <th>
                                 Sponsorship
                             </th>
                             <th>
@@ -95,6 +98,9 @@
                                 </td>
                                 <td>
                                     {{ $std->no_matric }}
+                                </td>
+                                <td>
+                                    {{ $data['sponsor'][$key] ? 'PTPTN' : 'SENDIRI' }}
                                 </td>
                                 <td>
                                     {{ $data['sponsor'][$key] ? $data['sponsor'][$key]->package_name : ' ' }}
