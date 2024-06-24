@@ -9456,7 +9456,7 @@ class FinanceController extends Controller
                                     ])
                                   ->whereIn('tblsponsor_library.id', [1,2,3])
                                   ->orderBy('tblpayment.id', 'DESC')
-                                  ->select('tblsponsor_library.name')
+                                  ->select('tblsponsor_library.code AS name')
                                   ->first();
 
             //B
