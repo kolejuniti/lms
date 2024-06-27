@@ -134,7 +134,7 @@
                                           {{ $ltr->warning }}
                                       </td>
                                       <td>
-                                          <a class="btn btn-info btn-sm btn-sm mr-2" href="/student/warning/{{ Session::get('CourseID') }}/getWarningLetter?id={{ $ltr->id }}" target="_blank">
+                                          <a class="btn btn-info btn-sm btn-sm mr-2" href="/AR/student/printWarningLetter?id={{ $ltr->id }}" target="_blank">
                                               <i class="ti-pencil-alt">
                                               </i>
                                               Print
