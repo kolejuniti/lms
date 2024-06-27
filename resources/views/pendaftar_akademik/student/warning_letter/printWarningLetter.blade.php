@@ -74,7 +74,7 @@ use Carbon\Carbon;
         }
 
         </style>
-        @if(!isset(Session::get('StudInfo')))
+        @if(Session::get('StudInfo'))
         <style>
             body {
                 background-image: url('{{ asset("assets/images/letter_head/letter_head.jpg") }}');
