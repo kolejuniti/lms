@@ -1113,7 +1113,7 @@ class StudentController extends Controller
                            ->join('sessions AS t1', 'students.intake', 't1.SessionID')
                            ->join('sessions AS t2', 'students.session', 't2.SessionID')
                            ->select('students.*', 'tblstudent_status.name AS statusName', 'tblprogramme.progname AS program', 'students.program AS progid', 't1.SessionName AS intake_name', 't2.SessionName AS session_name')
-                           ->where('ic',  Session::get('StudInfo')->ic)->first();
+                           ->where('ic',  $data['student']->ic)->first();
 
         $data['attendance'] = DB::table('tblclassattendance')
                               ->where([
