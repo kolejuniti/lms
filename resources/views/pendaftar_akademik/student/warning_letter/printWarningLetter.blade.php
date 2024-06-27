@@ -46,12 +46,6 @@ use Carbon\Carbon;
             font-size: 14px;
             
         }
-        body {
-                background-image: url('{{ asset("assets/images/letter_head/letter_head.jpg") }}');
-                background-size: cover; /* Cover the entire page */
-                background-position: center; /* Center the background image */
-                background-repeat: no-repeat; /* Do not repeat the image */
-            }
         h2,h3,p {
             margin: 0;
             padding: 0;
@@ -80,6 +74,16 @@ use Carbon\Carbon;
         }
 
         </style>
+        @if(!isset(Session::get('StudInfo')))
+        <style>
+            body {
+                background-image: url('{{ asset("assets/images/letter_head/letter_head.jpg") }}');
+                background-size: cover; /* Cover the entire page */
+                background-position: center; /* Center the background image */
+                background-repeat: no-repeat; /* Do not repeat the image */
+            }
+        </style>
+        @endif
     </head>
     <body>
         {{-- @php
