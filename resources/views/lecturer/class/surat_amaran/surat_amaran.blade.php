@@ -13,7 +13,7 @@ use Carbon\Carbon;
         <meta name="description" content="">
         <meta name="author" content="">
         <meta name="csrf-token" content="{{ csrf_token() }}">
-        <title>Tawaran Kemasukan ke Program Akademik Kolej UNITI</title>
+        <title>Surat Peringatan Pelajar Tidak Hadir Ke Kelas</title>
         <!-- Vendors Style-->
         <link rel="stylesheet" href="{{ asset('assets/src/css/vendors_css.css') }}">
     <!-- Style-->  
@@ -33,7 +33,7 @@ use Carbon\Carbon;
     <style>
         @page {
         size: A4; /* reduced height for A5 size in landscape orientation */
-        margin: 1cm;
+        margin: 2cm;
         }
         * {
             margin: 0;
@@ -43,7 +43,7 @@ use Carbon\Carbon;
             font-size: 100%;
             vertical-align: baseline;
             background: transparent;
-            font-size: 13px;
+            font-size: 14px;
             
         }
         h2,h3,p {
@@ -54,92 +54,110 @@ use Carbon\Carbon;
             font-size: 100%;
             vertical-align: baseline;
             background: transparent;
-            font-size: 13px;
+            font-size: 14px;
         }
         .form-group {
             page-break-inside: avoid;
         }
+
+        .custom-table, .custom-table th, .custom-table td {
+            border: 1px solid black; /* Adds black grid lines */
+        }
+
+        .custom-table {
+            width: 100%; /* Ensures the table stretches to the container width */
+            border-collapse: collapse; /* Removes double borders */
+        }
+
+        .text-center {
+            text-align: center; /* Centers text */
+        }
+
         </style>
     </head>
     <body>
-        @php
+        {{-- @php
 
-            // // Get the date two weeks before
-            // $twoWeeksBefore = Carbon::parse($data['student']->date_offer)->subWeeks(2);
+            // Get the date two weeks before
+            $twoWeeksBefore = Carbon::parse($data['student']->date_offer)->subWeeks(2);
 
-            // // Convert the date format
-            // $formattedDate = $twoWeeksBefore->format('d/m/Y');
+            // Convert the date format
+            $formattedDate = $twoWeeksBefore->format('d/m/Y');
 
-        @endphp
-
-        <p class="mt-2">Surat Kami :KUSB/KU/HEA/DPK/DPU2013/nomatric/01</p>
-        <p>Tarikh : 30 Mei 2023</p>
+        @endphp --}}
+        <br>
+        <br>
+        <br>
+        <br>
+        <p>Ruj. Kami : KUSB/KU/HEA/{{ $data['student']->progcode }}/{{ str_replace(' ', '', $data['warning']->course_code)  }}/{{ $data['student']->no_matric }}/0{{ $data['warning']->warning }}</p>
+        <p>Tarikh &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : {{ Carbon::createFromFormat('Y-m-d', $data['originalDate'])->format('d-m-y') }}</p>
         <br>
         <p>Kepada:-</p>
-        <br>
-        <p>Name Pelajar &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&thinsp;&thinsp;: Noor Syafina binti Syahdi</p>
-        <p>No. Matric Pelajar : 22230669</p>
-        <p>Semester &thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;: 2</p>
-        <p>Name Program &thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;: Diploma Psikologi Kaunseling (DPK)</p>
-        <p>Semester/Sesi &thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&nbsp;&thinsp;: Kedua 2022/2023</p>
-        <br>
-        <p>Saudara/Saudari,</p>
-        <h2 class="mt-2"><b>SURAT PERINGATAN 1 : KETIDAKHADIRAN KE KULIAH/TUTORIAL BAGI KURSUS DPU2013 – ASAS KEUSAHAWANAN</b></h2>
-        <p class="mt-2">Laporan telah dibuat bahawa pada <b>13/4/2023</b> dan <b>18/4/2023</b> anda telah tidak hadir
-            ke kuliah/tutorial di atas seperti yang telah tersenarai di bawah ini tanpa sebab:-</p>
-        <br>
-        <div class="table-responsive">
-            <div id="complex_header_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap4 no-footer">
-                <div class="row">
-                    <div id="status">
-                        <div class="col-sm-12">
-                            <table id="myTable" class="w-100 table display margin-top-10 w-p100 table-layout: fixed;" style="width: 100%; border: 1px solid black !important; border-collapse: collapse;" role="grid" aria-describedby="complex_header_info">
-                                <thead>
-                                    <tr>
-                                        <th style="text-align: center; border: 1px solid black !important;" rowspan="2">Bil</th>
-                                        <th style="text-align: center; border: 1px solid black !important;" colspan="3">Tidak Hadir Kuliah/Tutorial</th>
-                                        <th style="text-align: center; border: 1px solid black !important;" rowspan="2">Peratus Keseluruhan Kehadiran</th>
-                                    </tr>
-                                    <tr>
-                                        <th style="text-align: center; border: 1px solid black !important;">Tarikh</th>
-                                        <th style="text-align: center; border: 1px solid black !important;">Hari</th>
-                                        <th style="text-align: center; border: 1px solid black !important;">Masa</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td style="text-align: center; border: 1px solid black !important;">1</td>
-                                        <td style="text-align: center; border: 1px solid black !important;">13/4/2023</td>
-                                        <td style="text-align: center; border: 1px solid black !important;">Khamis</td>
-                                        <td style="text-align: center; border: 1px solid black !important;">2:00 petang – 4:00 petang</td>
-                                        <td style="text-align: center; border: 1px solid black !important;">39/42 92.86%</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div class="col-12 mb-1 mt-1">  
+            <div style="border: 1px solid white; padding: 10px;">
+            <p>Nama Pelajar     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ $data['student']->name }}</p>
+            <p>No. Matrik Pelajar &nbsp;&nbsp;: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ $data['student']->no_matric }}</p>
+            <p>Semester &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ $data['student']->semester }}</p>
+            <p>Nama Program &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ $data['student']->progname }}</p>
+            <p>Sesi &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ $data['warning']->SessionName }}</p>   
+            </div> 
         </div>
-        
-        <p class="mt-2">Adalah diingatkan mengenai para 3.8.4 (c), Peraturan Akademik Kolej UNITI Pindaan
-            2021 seperti berikut:</p>
-        <p class="mt-2">“Pelajar yang kehadirannya kurang daripada 80% dalam sesuatu kursus tanpa sebabsebab yang boleh diterima akan dikira gagal dalam kursus tersebut.”</p>
-        <p>Dengan ini anda diberi amaran bahawa sekiranya kehadiran yang tidak memuaskan
+        <p>Saudara/Saudari,</p>
+        <p class="mt-2"><b>SURAT PERINGATAN {{ $data['warning']->warning }} : KETIDAKHADIRAN KE KULIAH/TUTORIAL BAGI KURSUS {{ str_replace(' ', '', $data['warning']->course_code)  }} – {{ $data['warning']->course_name  }}</b></p>
+        <p class="mt-2">Laporan telah dibuat bahawa pada
+        <b> 
+        @php
+        $dates = $data['absent']->pluck('date')->toArray();
+        $lastDate = array_pop($dates); // Remove the last date to handle it separately
+        $datesString = $dates ? implode(', ', $dates) : '';
+        $datesString .= count($dates) ? ' dan ' : '';
+        $datesString .= $lastDate;
+        echo $datesString;
+        @endphp 
+        </b>
+        anda telah tidak hadir ke kuliah/tutorial di atas seperti yang telah tersenarai di bawah ini tanpa sebab:-</p>
+        <div class="col-md-12 mt-2">
+            <table class="custom-table">
+                <thead>
+                    <tr class="line">
+                        <th class="text-center" rowspan="2">Bil</th>
+                        <th class="text-center" colspan="3"><p class="mb-2">Tidak Hadir Kuliah/Tutorial</p></th>
+                        <th class="text-center" rowspan="2"><p class="mt-2 mb-4"><br>Peratus Keseluruhan Kehadiran</p></th>
+                    </tr>
+                    <tr class="line">
+                        <th class="text-center">Tarikh</th>
+                        <th class="text-center">Hari</th>
+                        <th class="text-center">Masa</th>
+                </thead>
+                <tbody>
+                    @foreach($data['absent'] as $key => $abs)
+                    <tr>
+                        <td class="text-center">{{ $key+1 }}</td>
+                        <td class="text-center">{{ $abs['date'] }}</td>
+                        <td class="text-center">{{ $abs['day'] }}</td>
+                        <td class="text-center">{{ $abs['time1'] }} – {{ $abs['time2'] }}</td>
+                        @if($key+1 == 1)
+                        <td rowspan="{{ count($data['absent']) }}" class="text-center">{{ $data['warning']->balance_attendance }}/{{ $data['courseCredit']->total }} <br>{{ $data['warning']->percentage_attendance }}% </td>
+                        @endif
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+        <p class="mt-2">Adalah diingatkan mengenai para 3.8.4 (c), Peraturan Akademik Kolej UNITI Pindaan 2021 seperti berikut: </p>
+        <p class="mt-3"><i>“Pelajar yang kehadirannya kurang daripada 80% dalam sesuatu kursus tanpa sebab-sebab yang boleh diterima akan dikira gagal dalam kursus tersebut.”</i></p>
+        <p class="mt-3">Dengan ini anda diberi amaran bahawa sekiranya kehadiran yang tidak memuaskan
             ini berterusan, pihak Kolej berhak mengambil tindakan terhadap anda mengikut para
             3.8.4 (c) seperti di atas.</p>
+        <p class="mt-1 mb-1">Sekian, terima kasih.</p>
         <br>
-        <p>Sekian, terima kasih.</p>
-        <br>
-        <p>Yang benar,</p>
-        <img src="{{ asset('storage/signature/signature1.png') }}" alt="Image" width="5%" height="5%">
+        <p style="text-align: center;"><b>[THIS IS A COMPUTER GENERATED AND DOES NOT REQUIRE SIGNATURE]</b></p>
+        {{-- <p>Yang benar,</p>
+        <img src="{{ asset('storage/signature/signature2.png') }}" alt="Image" width="10%" height="10%">
+
         <p><b>Azhar bin Zunaidak</b><br>
         Penolong Pendaftar Akademik<br>
-        <b>KOLEJ UNITI</b></p><br>
-        {{-- <p>* Pihak Kolej berhak menarik balik tawaran ini di atas apa-apa jua alasan dari semasa ke semasa</p>
-        <p>* Universiti Teknologi MARA (UiTM) tidak bertanggungjawab menyerap pelajar program usahasama sekiranya Kolej UNITI menghadapi masalah untuk mengendalikan program.</p>
-        <p>* Kos perkhidmatan UiTM RM300.00 tidak akan dikembalikan setelah pelajar mendaftar di Kolej (program UiTM sahaja)</p> --}}
-        <p style="text-align: center"><b>[ Ini adalah dokumen yang dihasilkan oleh komputer. Tiada tandatangan diperlukan. ]</b></p>
+        <b>KOLEJ UNITI</b></p><br> --}}
     </body>
 </html>
 
