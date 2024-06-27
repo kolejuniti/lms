@@ -1125,7 +1125,7 @@ class StudentController extends Controller
                               ->where('tblclassattendance.classdate', '<=', $data['warning']->created_at)
                               ->get();      
                               
-        dd($data['student']);
+        //dd($data['student']);
 
         return view('lecturer.class.surat_amaran.surat_amaran', compact('data'));
 
