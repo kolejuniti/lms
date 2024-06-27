@@ -1107,6 +1107,8 @@ class StudentController extends Controller
     {
         $data['warning'] = DB::table('tblstudent_warning')->where('id', $request->id)->first();
 
+        dd($data['warning']);
+
         $data['student'] = DB::table('students')
                            ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
                            ->join('tblprogramme', 'students.program', 'tblprogramme.id')
