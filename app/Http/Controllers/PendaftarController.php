@@ -2438,7 +2438,7 @@ class PendaftarController extends Controller
                                      ->where([
                                         ['tblpayment.process_status_id', 2],
                                         ['tblpayment.process_type_id', 1], 
-                                        ['tblpayment.semester_id']
+                                        ['tblpayment.semester_id', 1]
                                      ])
                                      ->whereBetween('tblpayment.add_date', [$startDate, $endDate])
                                      ->select(DB::raw('COUNT(tblpayment.id) as total_week'))
@@ -2453,7 +2453,7 @@ class PendaftarController extends Controller
                                      ->where([
                                         ['tblpayment.process_status_id', 2],
                                         ['tblpayment.process_type_id', 1], 
-                                        ['tblpayment.semester_id']
+                                        ['tblpayment.semester_id', 1]
                                      ])
                                      ->where('tblpayment.add_date', $day)
                                      ->select(DB::raw('COUNT(tblpayment.id) as total_day'))
