@@ -13,6 +13,7 @@ use App\Models\User;
 use App\Models\UserStudent;
 use App\Models\subject;
 use Input;
+use Carbon\Carbon;
 
 class PendaftarController extends Controller
 {
@@ -898,33 +899,30 @@ class PendaftarController extends Controller
             'date_offer' => $request->dol
         ]);
 
-        DB::table('tblstudent_personal')->updateOrInsert(
-            ['student_ic' => $data['id']], // Condition to find the row
-            [
-                'date_birth' => $request->birth_date,
-                'advisor_id' => $request->EA,
-                'bank_name' => $request->bank_name,
-                'bank_no' => $request->bank_number,
-                'ptptn_no' => $request->PN,
-                'datetime' => $request->dt,
-                'religion_id' => $request->religion,
-                'nationality_id' => $request->race,
-                'sex_id' => $request->gender,
-                'state_id' => $request->birth_place,
-                'marriage_id' => $request->mstatus,
-                'statelevel_id' => $request->CL,
-                'citizenship_id' => $request->citizen,
-                'no_tel' => $request->np1,
-                'no_tel2' => $request->np2,
-                'no_telhome' => $request->np3,
-                'dun' => $request->dun,
-                'parlimen' => $request->parlimen,
-                'qualification' => $request->qualification,
-                'oku' => $request->oku,
-                'no_jkm' => $request->jkm
-            ]
-        );
-        
+        DB::table('tblstudent_personal')->where('student_ic', $data['id'])->update([
+            'student_ic' => $data['id'],
+            'date_birth' => $request->birth_date,
+            'advisor_id' => $request->EA,
+            'bank_name' => $request->bank_name,
+            'bank_no' => $request->bank_number,
+            'ptptn_no' => $request->PN,
+            'datetime' => $request->dt,
+            'religion_id' => $request->religion,
+            'nationality_id' => $request->race,
+            'sex_id' => $request->gender,
+            'state_id' => $request->birth_place,
+            'marriage_id' => $request->mstatus,
+            'statelevel_id' => $request->CL,
+            'citizenship_id' => $request->citizen,
+            'no_tel' => $request->np1,
+            'no_tel2' => $request->np2,
+            'no_telhome' => $request->np3,
+            'dun' => $request->dun,
+            'parlimen' => $request->parlimen,
+            'qualification' => $request->qualification,
+            'oku' => $request->oku,
+            'no_jkm' => $request->jkm
+        ]);
 
         DB::table('tblstudent_pass')->updateOrInsert(
             ['student_ic' => $data['id']], // "where" condition
@@ -2389,6 +2387,83 @@ class PendaftarController extends Controller
             }
 
             return view('pendaftar.reportRs.getReportRs', compact('data'));
+
+        }
+
+    }
+
+    public function studentReportR2()
+    {
+
+        return view('pendaftar.reportR2.reportR2');
+
+    }
+
+    public function getStudentReportR2(Request $request)
+    {
+
+        if($request->from && $request->to)
+        {
+
+            $fromDate = '15-06-2024'; // Example from date
+            $toDate = '15-07-2024';   // Example to date
+    
+            $start = Carbon::parse($request->from);
+            $end = Carbon::parse($request->to);
+    
+            $data['dateRange'] = [];
+            $currentWeek = [];
+    
+            while ($start <= $end) {
+                $currentWeek[] = $start->format('Y-m-d');
+                if ($start->dayOfWeek == Carbon::SATURDAY || $start == $end) {
+                    $data['dateRange'][] = $currentWeek;
+                    $currentWeek = [];
+                }
+                $start->addDay();
+            }
+    
+            // If the last week isn't already added (for cases where $end doesn't fall on a Saturday)
+            if (!empty($currentWeek)) {
+                $data['dateRange'][] = $currentWeek;
+            }
+    
+            foreach($data['dateRange'] AS $key => $week)
+            {
+    
+                $startDate = reset($week); // Get the first date of the week
+                $endDate = end($week);     // Get the last date of the week
+    
+                $data['totalWeek'][$key] = DB::table('tblpayment')
+                                     ->where([
+                                        ['tblpayment.process_status_id', 2],
+                                        ['tblpayment.process_type_id', 1], 
+                                        ['tblpayment.semester_id']
+                                     ])
+                                     ->whereBetween('tblpayment.add_date', [$startDate, $endDate])
+                                     ->select(DB::raw('COUNT(tblpayment.id) as total_week'))
+                                     ->first();
+                
+                $data['week'][$key] = $week;
+    
+                foreach($data['week'][$key] AS $key2 => $day)
+                {
+    
+                    $data['totalDay'][$key][$key2] = DB::table('tblpayment')
+                                     ->where([
+                                        ['tblpayment.process_status_id', 2],
+                                        ['tblpayment.process_type_id', 1], 
+                                        ['tblpayment.semester_id']
+                                     ])
+                                     ->where('tblpayment.add_date', $day)
+                                     ->select(DB::raw('COUNT(tblpayment.id) as total_day'))
+                                     ->first();
+    
+                }
+    
+            }
+
+            return view('pendaftar.reportR2.getReportR2', compact('data'));
 
         }
 
