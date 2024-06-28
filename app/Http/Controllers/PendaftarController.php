@@ -2504,7 +2504,7 @@ class PendaftarController extends Controller
                                 ->whereBetween('tblpayment.add_date', [$start, $end])
                                 ->select(DB::raw('COUNT(tblpayment.student_ic) as total_student'))
                                 ->groupBy('tblpayment.student_ic')
-                                ->first();
+                                ->get();
 
             $totalStudentCount = $data['totalAll'] ? $data['totalAll']->total_student : 0;
             $data['totalAll'] = (object) ['total_student' => $totalStudentCount];
