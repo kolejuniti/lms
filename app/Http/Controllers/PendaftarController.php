@@ -2394,6 +2394,90 @@ class PendaftarController extends Controller
 
     public function studentReportR2()
     {
+        $fromDate = '15-06-2024'; // Example from date
+        $toDate = '15-07-2024';   // Example to date
+
+        $start = Carbon::createFromFormat('d-m-Y', $fromDate);
+        $end = Carbon::createFromFormat('d-m-Y', $toDate);
+
+        $data['dateRange'] = [];
+        $currentWeek = [];
+        $currentMonth = $start->month;
+        $currentMonthStart = $start->copy()->startOfMonth();
+        $currentWeekNumber = $start->diffInWeeks($currentMonthStart) + 1;
+
+        while ($start <= $end) {
+            // Check if the current date is in a new month
+            if ($start->month != $currentMonth) {
+                // If there are days collected for the previous month, add them to the dateRange
+                if (!empty($currentWeek)) {
+                    $data['dateRange'][] = [
+                        'week' => $currentWeekNumber,
+                        'days' => $currentWeek
+                    ];
+                }
+                // Reset for the new month
+                $currentWeek = [];
+                $currentMonth = $start->month;
+                $currentMonthStart = $start->copy()->startOfMonth();
+                $currentWeekNumber = $start->diffInWeeks($currentMonthStart) + 1;
+            }
+
+            $currentWeek[] = $start->format('Y-m-d');
+
+            // Check if the end of the week or the end of the range is reached
+            if ($start->dayOfWeek == Carbon::SATURDAY || $start == $end) {
+                $data['dateRange'][] = [
+                    'week' => $currentWeekNumber,
+                    'days' => $currentWeek
+                ];
+                $currentWeek = [];
+                $currentWeekNumber++;
+            }
+
+            $start->addDay();
+        }
+
+        // If the last week isn't already added (for cases where $end doesn't fall on a Saturday)
+        if (!empty($currentWeek)) {
+            $data['dateRange'][] = [
+                'week' => $currentWeekNumber,
+                'days' => $currentWeek
+            ];
+        }
+
+        foreach($data['dateRange'] as $key => $week) {
+            $startDate = reset($week['days']); // Get the first date of the week
+            $endDate = end($week['days']);     // Get the last date of the week
+        
+            $data['totalWeek'][$key] = DB::table('tblpayment')
+                                    ->where([
+                                        ['tblpayment.process_status_id', 2],
+                                        ['tblpayment.process_type_id', 1], 
+                                        ['tblpayment.semester_id', 1]
+                                    ])
+                                    ->whereBetween('tblpayment.add_date', [$startDate, $endDate])
+                                    ->select(DB::raw('COUNT(tblpayment.id) as total_week'))
+                                    ->first();
+            
+            $data['week'][$key] = $week['days'];
+
+            foreach($data['week'][$key] AS $key2 => $day)
+            {
+
+                $data['totalDay'][$key][$key2] = DB::table('tblpayment')
+                                    ->where([
+                                    ['tblpayment.process_status_id', 2],
+                                    ['tblpayment.process_type_id', 1], 
+                                    ['tblpayment.semester_id', 1]
+                                    ])
+                                    ->where('tblpayment.add_date', $day)
+                                    ->select(DB::raw('COUNT(tblpayment.id) as total_day'))
+                                    ->first();
+
+            }
+        }
+
 
         return view('pendaftar.reportR2.reportR2');
 
@@ -2410,57 +2494,109 @@ class PendaftarController extends Controller
     
             $start = Carbon::parse($request->from);
             $end = Carbon::parse($request->to);
+
+            $data['totalAll'] = DB::table('tblpayment')
+                                ->where([
+                                    ['tblpayment.process_status_id', 2],
+                                    ['tblpayment.process_type_id', 1], 
+                                    ['tblpayment.semester_id', 1]
+                                ])
+                                ->whereBetween('tblpayment.add_date', [$start, $end])
+                                ->select(DB::raw('COUNT(tblpayment.id) as total_student'))
+                                ->groupBy('tblpayment.student_ic')
+                                ->first();
+
+            $totalStudentCount = $data['totalAll'] ? $data['totalAll']->total_student : 0;
+            $data['totalAll'] = (object) ['total_student' => $totalStudentCount];
+
     
             $data['dateRange'] = [];
             $currentWeek = [];
-    
+            $currentMonth = $start->month;
+            $currentMonthStart = $start->copy()->startOfMonth();
+            $currentWeekNumber = $start->diffInWeeks($currentMonthStart) + 1;
+
             while ($start <= $end) {
-                $currentWeek[] = $start->format('Y-m-d');
-                if ($start->dayOfWeek == Carbon::SATURDAY || $start == $end) {
-                    $data['dateRange'][] = $currentWeek;
+                // Check if the current date is in a new month
+                if ($start->month != $currentMonth) {
+                    // If there are days collected for the previous month, add them to the dateRange
+                    if (!empty($currentWeek)) {
+                        $data['dateRange'][] = [
+                            'week' => $currentWeekNumber,
+                            'month' => $currentMonth,
+                            'days' => $currentWeek
+                        ];
+                    }
+                    // Reset for the new month
                     $currentWeek = [];
+                    $currentMonth = $start->month;
+                    $currentMonthStart = $start->copy()->startOfMonth();
+                    $currentWeekNumber = $start->diffInWeeks($currentMonthStart) + 1;
                 }
+
+                $currentWeek[] = $start->format('Y-m-d');
+
+                // Check if the end of the week or the end of the range is reached
+                if ($start->dayOfWeek == Carbon::SATURDAY || $start == $end) {
+                    $data['dateRange'][] = [
+                        'week' => $currentWeekNumber,
+                        'month' => $currentMonth,
+                        'days' => $currentWeek
+                    ];
+                    $currentWeek = [];
+                    $currentWeekNumber++;
+                }
+
                 $start->addDay();
             }
-    
+
             // If the last week isn't already added (for cases where $end doesn't fall on a Saturday)
             if (!empty($currentWeek)) {
-                $data['dateRange'][] = $currentWeek;
+                $data['dateRange'][] = [
+                    'week' => $currentWeekNumber,
+                    'month' => $currentMonth,
+                    'days' => $currentWeek
+                ];
             }
-    
-            foreach($data['dateRange'] AS $key => $week)
-            {
-    
-                $startDate = reset($week); // Get the first date of the week
-                $endDate = end($week);     // Get the last date of the week
-    
+
+            foreach($data['dateRange'] as $key => $week) {
+                $startDate = reset($week['days']); // Get the first date of the week
+                $endDate = end($week['days']);     // Get the last date of the week
+            
                 $data['totalWeek'][$key] = DB::table('tblpayment')
-                                     ->where([
-                                        ['tblpayment.process_status_id', 2],
-                                        ['tblpayment.process_type_id', 1], 
-                                        ['tblpayment.semester_id', 1]
-                                     ])
-                                     ->whereBetween('tblpayment.add_date', [$startDate, $endDate])
-                                     ->select(DB::raw('COUNT(tblpayment.id) as total_week'))
-                                     ->first();
+                                        ->where([
+                                            ['tblpayment.process_status_id', 2],
+                                            ['tblpayment.process_type_id', 1], 
+                                            ['tblpayment.semester_id', 1]
+                                        ])
+                                        ->whereBetween('tblpayment.add_date', [$startDate, $endDate])
+                                        ->select(DB::raw('COUNT(tblpayment.student_ic) as total_week'))
+                                        ->groupBy('tblpayment.student_ic')
+                                        ->first();
+
+                $totalStudentCount2 = $data['totalWeek'][$key] ? $data['totalWeek'][$key]->total_week : 0;
+                $data['totalWeek'][$key] = (object) ['total_week' => $totalStudentCount2];
                 
-                $data['week'][$key] = $week;
-    
+                $data['week'][$key] = $week['days'];
+
                 foreach($data['week'][$key] AS $key2 => $day)
                 {
-    
+
                     $data['totalDay'][$key][$key2] = DB::table('tblpayment')
-                                     ->where([
+                                        ->where([
                                         ['tblpayment.process_status_id', 2],
                                         ['tblpayment.process_type_id', 1], 
                                         ['tblpayment.semester_id', 1]
-                                     ])
-                                     ->where('tblpayment.add_date', $day)
-                                     ->select(DB::raw('COUNT(tblpayment.id) as total_day'))
-                                     ->first();
-    
+                                        ])
+                                        ->where('tblpayment.add_date', $day)
+                                        ->select(DB::raw('COUNT(tblpayment.student_ic) as total_day'))
+                                        ->groupBy('tblpayment.student_ic')
+                                        ->first();
+
+                    $totalStudentCount2 = $data['totalDay'][$key][$key2] ? $data['totalDay'][$key][$key2]->total_day : 0;
+                    $data['totalDay'][$key][$key2] = (object) ['total_day' => $totalStudentCount2];
+
                 }
-    
             }
 
             return view('pendaftar.reportR2.getReportR2', compact('data'));
