@@ -132,7 +132,7 @@
 
                 $('#myTable').DataTable({
                   dom: 'lBfrtip', // if you remove this line you will see the show entries dropdown
-                  
+                  ordering: false, // Disable ordering
                   buttons: [
                       'copy', 'csv', 'excel', 'pdf', 'print'
                   ],

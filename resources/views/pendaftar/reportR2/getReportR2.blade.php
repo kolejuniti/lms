@@ -1,6 +1,22 @@
 <div class="card mb-3" id="stud_info">
     <div class="card-header">
-    <b>Students Report R1</b>
+    <b>Report Information</b>
+    </div>
+    <div class="card-body">
+        <div class="row mb-5">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <p>Total Student By Month &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ $data['totalAll']->total_student }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /.card-body -->
+</div>
+
+<div class="card mb-3" id="stud_info">
+    <div class="card-header">
+    <b>Total Payment By Weeks</b>
     </div>
     <div class="card-body p-0">
       <table id="myTable" class="table table-striped projects display dataTable">
@@ -8,6 +24,9 @@
             <tr>
                 <th style="width: 15%">
                     Week
+                </th>
+                <th style="width: 15%">
+                    Month
                 </th>
                 <th style="width: 15%">
                     Total
@@ -18,7 +37,10 @@
         @foreach ($data['dateRange'] as $key => $week)
           <tr>
             <td>
-            {{ $key+1 }}
+            {{ $week['week'] }}
+            </td>
+            <td>
+            {{ $week['month'] }}
             </td>
             <td>
             {{ $data['totalWeek'][$key]->total_week }}
@@ -39,11 +61,11 @@
       </table>
     </div>
     <!-- /.card-body -->
-  </div>
+</div>
 
-  <div class="card mb-3" id="stud_info">
+<div class="card mb-3" id="stud_info">
     <div class="card-header">
-    <b>Students Report R1</b>
+    <b>Total Payment By Days</b>
     </div>
     <div class="card-body p-0">
       <table id="myTable2" class="table table-striped projects display dataTable">
@@ -84,4 +106,4 @@
       </table>
     </div>
     <!-- /.card-body -->
-  </div>
+</div>
