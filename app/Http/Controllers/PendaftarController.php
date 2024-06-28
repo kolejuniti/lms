@@ -2502,7 +2502,7 @@ class PendaftarController extends Controller
                                     ['tblpayment.semester_id', 1]
                                 ])
                                 ->whereBetween('tblpayment.add_date', [$start, $end])
-                                ->select(DB::raw('COUNT(tblpayment.id) as total_student'))
+                                ->select(DB::raw('COUNT(tblpayment.student_ic) as total_student'))
                                 ->groupBy('tblpayment.student_ic')
                                 ->first();
 
