@@ -128,6 +128,13 @@
                 console.log(err);
             },
             success  : function(data){
+            if(data.error)
+            {
+
+              alert(data.error);
+
+            }else{
+
                 $('#form-student').html(data);
 
                 $('#myTable').DataTable({
@@ -145,6 +152,8 @@
                       'copy', 'csv', 'excel', 'pdf', 'print'
                   ],
                 });
+                
+              }
             }
         });
 

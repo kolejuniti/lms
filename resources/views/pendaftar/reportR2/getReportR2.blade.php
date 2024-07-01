@@ -34,6 +34,9 @@
             </tr>
         </thead>
         <tbody id="table">
+        @php
+        $total_allW = 0;
+        @endphp
         @foreach ($data['dateRange'] as $key => $week)
           <tr>
             <td>
@@ -46,17 +49,20 @@
             {{ $data['totalWeek'][$key]->total_week }}
             </td>
           </tr>
+          @php
+          $total_allW += $data['totalWeek'][$key]->total_week;
+          @endphp
         @endforeach
         </tbody>
         <tfoot>
-            {{-- <tr>
-                <td colspan="9" style="text-align: center">
+            <tr>
+                <td colspan="2" style="text-align: center">
                     TOTAL
                 </td>
                 <td>
-                    {{  number_format($totalPreALL, 2) }}
+                    {{  number_format($total_allW, 2) }}
                 </td>
-              </tr> --}}
+              </tr>
         </tfoot>
       </table>
     </div>
@@ -80,6 +86,9 @@
             </tr>
         </thead>
         <tbody id="table">
+        @php
+        $total_allD = 0;
+        @endphp
         @foreach ($data['dateRange'] as $key => $week)
         @foreach ($data['week'][$key] as $key2 => $day)
         <tr>
@@ -90,18 +99,21 @@
             {{ $data['totalDay'][$key][$key2]->total_day }}
           </td>
         </tr>
+        @php
+          $total_allD += $data['totalDay'][$key][$key2]->total_day;
+        @endphp
         @endforeach
         @endforeach
         </tbody>
         <tfoot>
-            {{-- <tr>
-                <td colspan="9" style="text-align: center">
+            <tr>
+                <td colspan="1" style="text-align: center">
                     TOTAL
                 </td>
                 <td>
-                    {{  number_format($totalPreALL, 2) }}
+                    {{  number_format($total_allD, 2) }}
                 </td>
-              </tr> --}}
+              </tr>
         </tfoot>
       </table>
     </div>
