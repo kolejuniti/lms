@@ -4633,7 +4633,7 @@ class FinanceController extends Controller
                 }
 
             }
-            elseif($pym->sponsor_id == null)
+            elseif($pym->status == 1 && $pym->status == 14 &&$pym->sponsor_id == null)
             {
 
                 if(DB::table('tblpaymentdtl')
