@@ -2497,146 +2497,158 @@ class PendaftarController extends Controller
     
             $start = Carbon::parse($request->from);
             $end = Carbon::parse($request->to);
+            $end2 = $start->copy()->endOfMonth();
 
-            $data['totalAll'] = count(DB::table('tblpayment')
-                                ->where([
-                                    ['tblpayment.process_status_id', 2],
-                                    ['tblpayment.process_type_id', 1], 
-                                    ['tblpayment.semester_id', 1]
-                                ])
-                                ->whereBetween('tblpayment.date', [$start, $end])
-                                ->select('tblpayment.id')
-                                ->groupBy('tblpayment.student_ic')
-                                ->get());
+            if($end <= $end2)
+            {
 
-            $totalStudentCount = $data['totalAll'] ? $data['totalAll'] : 0;
-            $data['totalAll'] = (object) ['total_student' => $totalStudentCount];
-
-    
-            $data['dateRange'] = [];
-            $currentWeek = [];
-            $currentMonth = $start->month;
-            $currentMonthStart = $start->copy()->startOfMonth();
-            $currentWeekNumber = $start->diffInWeeks($currentMonthStart) + 1;
-            $alreadyCountedStudents = [];
-            $alreadyCountedStudents2 = [];
-
-            while ($start <= $end) {
-                // Check if the current date is in a new month
-                if ($start->month != $currentMonth) {
-                    // If there are days collected for the previous month, add them to the dateRange
-                    if (!empty($currentWeek)) {
-                        $data['dateRange'][] = [
-                            'week' => $currentWeekNumber,
-                            'month' => $currentMonth,
-                            'days' => $currentWeek
-                        ];
-                    }
-                    // Reset for the new month
-                    $currentWeek = [];
-                    $currentMonth = $start->month;
-                    $currentMonthStart = $start->copy()->startOfMonth();
-                    $currentWeekNumber = $start->diffInWeeks($currentMonthStart) + 1;
-                }
-
-                $currentWeek[] = $start->format('Y-m-d');
-
-                // Check if the end of the week or the end of the range is reached
-                if ($start->dayOfWeek == Carbon::SATURDAY || $start == $end) {
-                    $data['dateRange'][] = [
-                        'week' => $currentWeekNumber,
-                        'month' => $currentMonth,
-                        'days' => $currentWeek
-                    ];
-                    $currentWeek = [];
-                    $currentWeekNumber++;
-                }
-
-                $start->addDay();
-            }
-
-            // If the last week isn't already added (for cases where $end doesn't fall on a Saturday)
-            if (!empty($currentWeek)) {
-                $data['dateRange'][] = [
-                    'week' => $currentWeekNumber,
-                    'month' => $currentMonth,
-                    'days' => $currentWeek
-                ];
-            }
-
-            foreach($data['dateRange'] as $key => $week) {
-                $startDate = reset($week['days']); // Get the first date of the week
-                $endDate = end($week['days']);     // Get the last date of the week
-            
-                // Fetch the student_ic values for the current week, excluding already counted ones
-                $currentWeekStudents = DB::table('tblpayment')
-                                        ->where([
-                                            ['tblpayment.process_status_id', 2],
-                                            ['tblpayment.process_type_id', 1], 
-                                            ['tblpayment.semester_id', 1]
-                                        ])
-                                        ->whereBetween('tblpayment.add_date', [$startDate, $endDate])
-                                        ->whereNotIn('tblpayment.student_ic', $alreadyCountedStudents)
-                                        ->pluck('tblpayment.student_ic')
-                                        ->unique()
-                                        ->toArray();
-
-                // Count the number of unique student_ic values for the current week
-                $totalWeekCount = count($currentWeekStudents);
-
-                 // Update the already counted students set
-                $alreadyCountedStudents = array_merge($alreadyCountedStudents, $currentWeekStudents);
-
-                $data['totalWeek'][$key] = (object) ['total_week' => $totalWeekCount];
-                $data['week'][$key] = $week['days'];
-
-                // $totalStudentCount2 = $data['totalWeek'][$key] ? $data['totalWeek'][$key] : 0;
-                // $data['totalWeek'][$key] = (object) ['total_week' => $totalStudentCount2];
-                
-                $data['week'][$key] = $week['days'];
-
-                foreach($data['week'][$key] AS $key2 => $day)
-                {
-
-                    $data['totalDay'][$key][$key2] = count(DB::table('tblpayment')
-                                                     ->where([
-                                                        ['tblpayment.process_status_id', 2],
-                                                        ['tblpayment.process_type_id', 1], 
-                                                        ['tblpayment.semester_id', 1]
-                                                     ])
-                                                     ->where('tblpayment.date', $day)
-                                                     ->select('tblpayment.id')
-                                                     ->groupBy('tblpayment.student_ic')
-                                                     ->get());
-
-                    // Fetch the student_ic values for the current week, excluding already counted ones
-                    $currentWeekStudents2 = DB::table('tblpayment')
+                $data['totalAll'] = count(DB::table('tblpayment')
                                     ->where([
                                         ['tblpayment.process_status_id', 2],
                                         ['tblpayment.process_type_id', 1], 
                                         ['tblpayment.semester_id', 1]
                                     ])
-                                    ->where('tblpayment.date', $day)
-                                    ->whereNotIn('tblpayment.student_ic', $alreadyCountedStudents2)
-                                    ->pluck('tblpayment.student_ic')
-                                    ->unique()
-                                    ->toArray();
+                                    ->whereBetween('tblpayment.date', [$start, $end2])
+                                    ->select('tblpayment.id')
+                                    ->groupBy('tblpayment.student_ic')
+                                    ->get());
+
+                $totalStudentCount = $data['totalAll'] ? $data['totalAll'] : 0;
+                $data['totalAll'] = (object) ['total_student' => $totalStudentCount];
+
+        
+                $data['dateRange'] = [];
+                $currentWeek = [];
+                $currentMonth = $start->month;
+                $currentMonthStart = $start->copy()->startOfMonth();
+                $currentWeekNumber = $start->diffInWeeks($currentMonthStart) + 1;
+                $alreadyCountedStudents = [];
+                $alreadyCountedStudents2 = [];
+
+                while ($start <= $end) {
+                    // Check if the current date is in a new month
+                    if ($start->month != $currentMonth) {
+                        // If there are days collected for the previous month, add them to the dateRange
+                        if (!empty($currentWeek)) {
+                            $data['dateRange'][] = [
+                                'week' => $currentWeekNumber,
+                                'month' => $currentMonth,
+                                'days' => $currentWeek
+                            ];
+                        }
+                        // Reset for the new month
+                        $currentWeek = [];
+                        $currentMonth = $start->month;
+                        $currentMonthStart = $start->copy()->startOfMonth();
+                        $currentWeekNumber = $start->diffInWeeks($currentMonthStart) + 1;
+                    }
+
+                    $currentWeek[] = $start->format('Y-m-d');
+
+                    // Check if the end of the week or the end of the range is reached
+                    if ($start->dayOfWeek == Carbon::SATURDAY || $start == $end) {
+                        $data['dateRange'][] = [
+                            'week' => $currentWeekNumber,
+                            'month' => $currentMonth,
+                            'days' => $currentWeek
+                        ];
+                        $currentWeek = [];
+                        $currentWeekNumber++;
+                    }
+
+                    $start->addDay();
+                }
+
+                // If the last week isn't already added (for cases where $end doesn't fall on a Saturday)
+                if (!empty($currentWeek)) {
+                    $data['dateRange'][] = [
+                        'week' => $currentWeekNumber,
+                        'month' => $currentMonth,
+                        'days' => $currentWeek
+                    ];
+                }
+
+                foreach($data['dateRange'] as $key => $week) {
+                    $startDate = reset($week['days']); // Get the first date of the week
+                    $endDate = end($week['days']);     // Get the last date of the week
+                
+                    // Fetch the student_ic values for the current week, excluding already counted ones
+                    $currentWeekStudents = DB::table('tblpayment')
+                                            ->where([
+                                                ['tblpayment.process_status_id', 2],
+                                                ['tblpayment.process_type_id', 1], 
+                                                ['tblpayment.semester_id', 1]
+                                            ])
+                                            ->whereBetween('tblpayment.add_date', [$startDate, $endDate])
+                                            ->whereNotIn('tblpayment.student_ic', $alreadyCountedStudents)
+                                            ->pluck('tblpayment.student_ic')
+                                            ->unique()
+                                            ->toArray();
 
                     // Count the number of unique student_ic values for the current week
-                    $totalDaysCount = count($currentWeekStudents2);
+                    $totalWeekCount = count($currentWeekStudents);
 
                     // Update the already counted students set
-                    $alreadyCountedStudents2 = array_merge($alreadyCountedStudents2, $currentWeekStudents2);
+                    $alreadyCountedStudents = array_merge($alreadyCountedStudents, $currentWeekStudents);
 
-                    $data['totalDay'][$key][$key2] = (object) ['total_day' => $totalDaysCount];                        
+                    $data['totalWeek'][$key] = (object) ['total_week' => $totalWeekCount];
+                    $data['week'][$key] = $week['days'];
 
-                    // $totalStudentCount3 = $data['totalDay'][$key][$key2] ? $data['totalDay'][$key][$key2] : 0;
-                    // $data['totalDay'][$key][$key2] = (object) ['total_day' => $totalStudentCount3];
+                    // $totalStudentCount2 = $data['totalWeek'][$key] ? $data['totalWeek'][$key] : 0;
+                    // $data['totalWeek'][$key] = (object) ['total_week' => $totalStudentCount2];
+                    
+                    $data['week'][$key] = $week['days'];
 
+                    foreach($data['week'][$key] AS $key2 => $day)
+                    {
+
+                        $data['totalDay'][$key][$key2] = count(DB::table('tblpayment')
+                                                        ->where([
+                                                            ['tblpayment.process_status_id', 2],
+                                                            ['tblpayment.process_type_id', 1], 
+                                                            ['tblpayment.semester_id', 1]
+                                                        ])
+                                                        ->where('tblpayment.date', $day)
+                                                        ->select('tblpayment.id')
+                                                        ->groupBy('tblpayment.student_ic')
+                                                        ->get());
+
+                        // Fetch the student_ic values for the current week, excluding already counted ones
+                        $currentWeekStudents2 = DB::table('tblpayment')
+                                        ->where([
+                                            ['tblpayment.process_status_id', 2],
+                                            ['tblpayment.process_type_id', 1], 
+                                            ['tblpayment.semester_id', 1]
+                                        ])
+                                        ->where('tblpayment.date', $day)
+                                        ->whereNotIn('tblpayment.student_ic', $alreadyCountedStudents2)
+                                        ->pluck('tblpayment.student_ic')
+                                        ->unique()
+                                        ->toArray();
+
+                        // Count the number of unique student_ic values for the current week
+                        $totalDaysCount = count($currentWeekStudents2);
+
+                        // Update the already counted students set
+                        $alreadyCountedStudents2 = array_merge($alreadyCountedStudents2, $currentWeekStudents2);
+
+                        $data['totalDay'][$key][$key2] = (object) ['total_day' => $totalDaysCount];                        
+
+                        // $totalStudentCount3 = $data['totalDay'][$key][$key2] ? $data['totalDay'][$key][$key2] : 0;
+                        // $data['totalDay'][$key][$key2] = (object) ['total_day' => $totalStudentCount3];
+
+                    }
                 }
-            }
 
-            return view('pendaftar.reportR2.getReportR2', compact('data'));
+                return view('pendaftar.reportR2.getReportR2', compact('data'));
+
+            }else{
+
+                return response()->json([
+                    'error' => 'The end date cannot exceed the from date\'s month'
+                ]);
+
+            }
 
         }
 
