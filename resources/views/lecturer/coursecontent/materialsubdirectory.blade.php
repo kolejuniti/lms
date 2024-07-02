@@ -38,6 +38,12 @@
         </div>
     </div>
 
+    @if(session('alert'))
+    <script>
+      alert('{{ session('alert') }}');
+    </script>
+    @endif
+
     <!-- Main content -->
     <section class="content">
         <div class="row">
