@@ -29,6 +29,9 @@
       <div class="card mb-3" id="stud_info">
         <div class="card-header">
         <b>Sponsor Info</b>
+        <button id="printButton" class="waves-effect waves-light btn btn-primary btn-sm">
+          <i class="ti-printer"></i>&nbsp Print
+        </button>
         </div>
         <div class="card-body">
             <div class="row mb-5">
@@ -100,6 +103,59 @@
         </div>
         <!-- /.card-body -->
       </div>
+
+      <div class="row justify-content-center">
+        <!-- pecahan -->
+        <div class="card col-md-2 mb-3" id="stud_info" style="margin-right: 2%">
+          <div class="card-header mx-auto">
+          <b>Sponsor Total By Program
+            </b>
+          </div>
+          <div class="card-body p-0">
+            <table id="myTable" class="table table-striped projects display dataTable">
+              <thead>
+                  <tr>
+                      <th style="width: 1%">
+                          No.
+                      </th>
+                      <th style="width: 5%">
+                          PROGRAM
+                      </th>
+                      <th style="width: 5%">
+                          QUOTE
+                      </th>
+                  </tr>
+              </thead>
+              <tbody id="table">
+                @foreach ($data['program'] as $key => $prg)
+                <tr>
+                  <td>
+                    {{ $prg->program_ID }}
+                  </td>
+                  <td>
+                    {{ $prg->progcode }}
+                  </td>
+                  <td>
+                    {{ (!empty($data['totalPayment'])) ? number_format($data['totalPayment'][$key], 2) : 0.00}}
+                  </td>
+                </tr>
+                @endforeach
+              </tbody>
+              <tfoot>
+                <tr>
+                    <td colspan="2" style="text-align: center">
+                        TOTAL
+                    </td>
+                    <td>
+                        {{ number_format(array_sum($data['totalPayment']), 2) }}
+                    </td>
+                  </tr>
+              </tfoot>
+            </table>
+          </div>
+          <!-- /.card-body -->
+        </div>
+      </div>
       <!-- /.card -->
     </section>
     <!-- /.content -->
@@ -168,6 +224,33 @@
       ],
     });
   });
+
+  $(document).ready(function() {
+    $('#printButton').on('click', function(e) {
+      e.preventDefault();
+      printReport();
+    });
+  });
+
+  function printReport() {
+    var id = '{{ request()->id }}';
+
+    return $.ajax({
+      headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+      url: "{{ url('finance/sponsorship/payment/report/showReportStudent?print=true') }}",
+      method: 'GET',
+      data: { id: id},
+      error: function(err) {
+        alert("Error");
+        console.log(err);
+      },
+      success: function(data) {
+        var newWindow = window.open();
+        newWindow.document.write(data);
+        newWindow.document.close();
+      }
+    });
+  }
 </script>
 
 @endsection
