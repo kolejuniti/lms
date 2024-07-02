@@ -1,16 +1,4 @@
-<div class="row">
-    <div class="col-md-6" id="ptptn-card">
-      <div class="form-group">
-        <label class="form-label" for="intake">Intake</label>
-        <select class="form-select" id="intake" name="intake">
-          <option value="" selected disabled>-</option>
-          @foreach ($data['session'] as $ses)
-            <option value="{{ $ses->SessionID }}">{{ $ses->SessionName }}</option>
-          @endforeach
-        </select>
-      </div>
-    </div>
-</div>
+
 <div class="form-group">
     <label class="form-label"><b>Program List</b></label>
     <table class="w-100 table table-bordered display margin-top-10 w-p100">
