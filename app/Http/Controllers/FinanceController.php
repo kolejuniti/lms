@@ -6783,6 +6783,8 @@ class FinanceController extends Controller
 
         $data['type'] = DB::table('tblpayment_type')->get();
 
+        $data['session'] = DB::table('sessions')->get();
+
         return view('finance.package.payment', compact('data'));
 
     }
@@ -6840,8 +6842,6 @@ class FinanceController extends Controller
                               ->get();
 
         $data['unregistered'] = DB::table('tblprogramme')->get();
-
-        $data['session'] = DB::table('sessions')->get();
 
         $data['id'] = $request->id;
 
