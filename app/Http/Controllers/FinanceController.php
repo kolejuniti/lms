@@ -8595,9 +8595,43 @@ class FinanceController extends Controller
                             ->orderBy('students.name')
                             ->get();
 
-        // dd($data['students']);
+        $data['totalPayment'] = [];
 
-        return view('finance.sponsorship.sponsorStudentReport', compact('data'));
+        $data['program'] = DB::table('tblprogramme')->get();
+
+    
+
+        foreach($data['program'] as $key2 => $prg)
+        {
+            
+            $data['students2'] = DB::table('students')
+                            ->join('tblpayment','students.ic','tblpayment.student_ic')
+                            ->join('tblprogramme','students.program','tblprogramme.id')
+                            ->where([
+                                ['tblpayment.process_status_id', 2],
+                                ['tblpayment.sponsor_id', $request->id],
+                                ['students.program', $prg->id]
+                            ])
+                            ->select('students.*','tblprogramme.progcode','tblpayment.amount')
+                            ->orderBy('students.name')
+                            ->get();
+
+            $data['totalPayment'][$key2] = collect($data['students2'])->sum('amount');
+
+        }
+
+        //dd($data['totalPayment']);
+
+        if(isset($request->print))
+        {
+
+            return view('finance.sponsorship.printSponsorStudentReport', compact('data'));
+
+        }else{
+
+            return view('finance.sponsorship.sponsorStudentReport', compact('data'));
+
+        }
 
     }
 
