@@ -2502,16 +2502,20 @@ class PendaftarController extends Controller
             if($end <= $end2)
             {
 
-                $data['totalAll'] = count(DB::table('tblpayment')
+                $data['totalAll'] = DB::table('tblpayment')
+                                    ->join('students', 'tblpayment.student_ic', '=', 'students.ic')
                                     ->where([
-                                        ['tblpayment.process_status_id', 2],
-                                        ['tblpayment.process_type_id', 1], 
-                                        ['tblpayment.semester_id', 1]
+                                        ['tblpayment.process_status_id', '=', 2],
+                                        ['tblpayment.process_type_id', '=', 1],
+                                        ['tblpayment.semester_id', '=', 1]
                                     ])
+                                    ->whereColumn('tblpayment.date', '=', 'students.date_add')  // Use whereColumn for comparing two columns
                                     ->whereBetween('tblpayment.date', [$start, $end2])
                                     ->select('tblpayment.id')
                                     ->groupBy('tblpayment.student_ic')
-                                    ->get());
+                                    ->get()
+                                    ->count();  // Use count() to get the count directly
+
 
                 $totalStudentCount = $data['totalAll'] ? $data['totalAll'] : 0;
                 $data['totalAll'] = (object) ['total_student' => $totalStudentCount];
@@ -2574,11 +2578,13 @@ class PendaftarController extends Controller
                 
                     // Fetch the student_ic values for the current week, excluding already counted ones
                     $currentWeekStudents = DB::table('tblpayment')
+                                            ->join('students', 'tblpayment.student_ic', '=', 'students.ic')
                                             ->where([
                                                 ['tblpayment.process_status_id', 2],
                                                 ['tblpayment.process_type_id', 1], 
                                                 ['tblpayment.semester_id', 1]
                                             ])
+                                            ->whereColumn('tblpayment.date', '=', 'students.date_add')  // Use whereColumn for comparing two columns
                                             ->whereBetween('tblpayment.add_date', [$startDate, $endDate])
                                             ->whereNotIn('tblpayment.student_ic', $alreadyCountedStudents)
                                             ->pluck('tblpayment.student_ic')
@@ -2603,11 +2609,13 @@ class PendaftarController extends Controller
                     {
 
                         $data['totalDay'][$key][$key2] = count(DB::table('tblpayment')
+                                                        ->join('students', 'tblpayment.student_ic', '=', 'students.ic')
                                                         ->where([
                                                             ['tblpayment.process_status_id', 2],
                                                             ['tblpayment.process_type_id', 1], 
                                                             ['tblpayment.semester_id', 1]
                                                         ])
+                                                        ->whereColumn('tblpayment.date', '=', 'students.date_add')  // Use whereColumn for comparing two columns
                                                         ->where('tblpayment.date', $day)
                                                         ->select('tblpayment.id')
                                                         ->groupBy('tblpayment.student_ic')
@@ -2615,11 +2623,13 @@ class PendaftarController extends Controller
 
                         // Fetch the student_ic values for the current week, excluding already counted ones
                         $currentWeekStudents2 = DB::table('tblpayment')
+                                        ->join('students', 'tblpayment.student_ic', '=', 'students.ic')
                                         ->where([
                                             ['tblpayment.process_status_id', 2],
                                             ['tblpayment.process_type_id', 1], 
                                             ['tblpayment.semester_id', 1]
                                         ])
+                                        ->whereColumn('tblpayment.date', '=', 'students.date_add')  // Use whereColumn for comparing two columns
                                         ->where('tblpayment.date', $day)
                                         ->whereNotIn('tblpayment.student_ic', $alreadyCountedStudents2)
                                         ->pluck('tblpayment.student_ic')
