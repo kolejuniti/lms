@@ -706,13 +706,31 @@ class LecturerController extends Controller
             $filename = $fileInfo['filename'];
             $newname = $filename . "." . $file_ext;
 
+            // List of common video MIME types
+            $videoMIMETypes = [
+                'video/mp4',
+                'video/quicktime',
+                'video/x-msvideo',
+                'video/x-ms-wmv',
+                'video/x-flv',
+                'video/webm',
+                'video/3gpp',
+                'video/3gpp2',
+                'video/ogg'
+            ];
+
+            $fileMimeType = $file->getMimeType();
+
+            if (in_array($fileMimeType, $videoMIMETypes)) {
+                
+                return back()->with('alert', 'The uploaded file must not be a video');
+            }            
+
             //dd($file_name);
 
             $classmaterial = "classmaterial/" . Session::get('CourseID') . "/" . $directory->A . "/" . $directory->B;
 
             $dirpath = "classmaterial/" . Session::get('CourseID') . "/" . $directory->A . "/" . $directory->B . "/" .$newname;
-
-
 
             if (! file_exists($newname)) {
                 Storage::disk('linode')->putFileAs(
@@ -844,6 +862,26 @@ class LecturerController extends Controller
             $fileInfo = pathinfo($file_name);
             $filename = $fileInfo['filename'];
             $newname = $filename . "." . $file_ext;
+
+            // List of common video MIME types
+            $videoMIMETypes = [
+                'video/mp4',
+                'video/quicktime',
+                'video/x-msvideo',
+                'video/x-ms-wmv',
+                'video/x-flv',
+                'video/webm',
+                'video/3gpp',
+                'video/3gpp2',
+                'video/ogg'
+            ];
+
+            $fileMimeType = $file->getMimeType();
+
+            if (in_array($fileMimeType, $videoMIMETypes)) {
+                
+                return back()->with('alert', 'The uploaded file must not be a video');
+            }   
 
             //dd($file_name);
 
