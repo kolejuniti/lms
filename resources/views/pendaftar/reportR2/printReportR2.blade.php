@@ -101,19 +101,19 @@ tr:hover {
     <div class="container">
         <!-- BEGIN INVOICE -->
         <div class="col-12">
-        <h1 class="" style="text-align: center; font-size: 16px;">Daily Report as of {{ $data['from'] }} until {{ $data['to'] }}</h1>
+        <h1 class="" style="text-align: center; font-size: 16px;">JADUAL REPORT PENCAPAIAN R BAGI TEMPOH {{ $data['from'] }} HINGGA {{ $data['to'] }}</h1>
         <br>
         <br>
             <!--pre registration -->
             <div class="card mb-3" id="stud_info">
                 <div class="card-header">
-                <b>Report Information</b>
+                <b>Report Informasi</b>
                 </div>
                 <div class="card-body">
                     <div class="row mb-5">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <p>Total Student By Month &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ $data['totalAll']->total_student }}</p>
+                                <p>Jumlah Pelajar Per Bulan &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ $data['totalAll']->total_student }}</p>
                             </div>
                         </div>
                     </div>
@@ -124,20 +124,20 @@ tr:hover {
             <!-- Students -->
             <div class="card mb-3" id="stud_info">
                 <div class="card-header">
-                <b>Total Payment By Weeks</b>
+                <b>Jumlah Bayaran Per Bulan</b>
                 </div>
                 <div class="card-body p-0">
                 <table class="w-100 table table-bordered display margin-top-10 w-p100">
                     <thead>
                         <tr>
                             <th style="width: 15%">
-                                Week
+                                Minggu
                             </th>
                             <th style="width: 15%">
-                                Month
+                                Bulan
                             </th>
                             <th style="width: 15%">
-                                Total
+                                Jumlah
                             </th>
                         </tr>
                     </thead>
@@ -165,7 +165,7 @@ tr:hover {
                     <tfoot>
                         <tr>
                             <td colspan="2" style="text-align: center">
-                                TOTAL
+                                JUMLAH SEMUA
                             </td>
                             <td>
                                 {{  number_format($total_allW, 2) }}
@@ -180,17 +180,17 @@ tr:hover {
             <!-- Students -->
             <div class="card mb-3" id="stud_info">
                 <div class="card-header">
-                <b>Total Payment By Days</b>
+                <b>Jumlah Bayaran Per Hari</b>
                 </div>
                 <div class="card-body p-0">
                 <table class="w-100 table table-bordered display margin-top-10 w-p100">
                     <thead>
                         <tr>
                             <th style="width: 15%">
-                                Date
+                                Tarikh
                             </th>
                             <th style="width: 15%">
-                                Total
+                                Jumlah
                             </th>
                         </tr>
                     </thead>
@@ -217,7 +217,7 @@ tr:hover {
                     <tfoot>
                         <tr>
                             <td colspan="1" style="text-align: center">
-                                TOTAL
+                                JUMLAH SEMUA
                             </td>
                             <td>
                                 {{  number_format($total_allD, 2) }}
