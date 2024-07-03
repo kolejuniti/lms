@@ -286,7 +286,7 @@
 						{{-- <li><a href="{{ route('pendaftar.student.viewstatus') }}" class="{{ (route('pendaftar.student.viewstatus') == Request::url()) ? 'active' : ''}}">Status Report</a></li> --}}
 						<li><a href="{{ route('pendaftar.student.studentreport') }}" class="{{ (route('pendaftar.student.studentreport') == Request::url()) ? 'active' : ''}}">Student Report</a></li>
 						<li><a href="{{ route('pendaftar_akademik.reportR') }}" class="{{ (route('pendaftar_akademik.reportR') == Request::url()) ? 'active' : ''}}">Student Report R</a></li>
-						<li><a href="{{ route('pendaftar.student.reportR2') }}" class="{{ (route('pendaftar.student.reportR2') == Request::url()) ? 'active' : ''}}">Student Report R (Type 2)</a></li>
+						<li><a href="{{ route('pendaftar.student.reportR2') }}" class="{{ (route('pendaftar.student.reportR2') == Request::url()) ? 'active' : ''}}">Statistik Pencapaian R</a></li>
 						<li><a href="{{ route('pendaftar.student.reportR') }}" class="{{ (route('pendaftar.student.reportR') == Request::url()) ? 'active' : ''}}">Student Report R/R1/R2</a></li>
 						<li><a href="{{ route('all.student.spm.report') }}" class="{{ (route('all.student.spm.report') == Request::url()) ? 'active' : ''}}">Student Report SPM</a></li>
 						<li><a href="{{ route('pendaftar.student.incomeReport') }}" class="{{ (route('pendaftar.student.incomeReport') == Request::url()) ? 'active' : ''}}">Student Family Income Report</a></li>
@@ -296,6 +296,17 @@
 						<li><a href="{{ route('pendaftar_akademik.semester') }}" class="{{ (route('pendaftar_akademik.semester') == Request::url()) ? 'active' : ''}}">Student Semester</a></li>
 						<li><a href="{{ route('pendaftar.student.result') }}" class="{{ (route('pendaftar.student.result') == Request::url()) ? 'active' : ''}}">Student Result</a></li>
 						<li><a href="{{ route('finance.statement') }}" class="{{ (route('finance.statement') == Request::url()) ? 'active' : ''}}">Student Account Statement</a></li>
+					</ul>
+				</li>
+
+				<li class="treeview">
+					<a href="#"><i data-feather="users"></i><span>Statistic Report</span>
+						<span class="pull-right-container">
+							<i class="fa fa-angle-left pull-right"></i>
+						</span>
+					</a>
+					<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
+						<li><a href="{{ route('pendaftar.student.reportR2') }}" class="{{ (route('pendaftar.student.reportR2') == Request::url()) ? 'active' : ''}}">Statistik Pencapaian R</a></li>
 					</ul>
 				</li>
 
