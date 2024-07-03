@@ -35,12 +35,12 @@
     <section class="content">
       <!-- /.card-header -->
       <div class="card card-primary">
-        {{-- <div class="card-header">
+        <div class="card-header">
           <b>Search Student</b>
           <button id="printButton" class="waves-effect waves-light btn btn-primary btn-sm">
             <i class="ti-printer"></i>&nbsp Print
           </button>
-        </div> --}}
+        </div>
         <div class="card-body">
           <div class="row">
               <div class="col-md-6">
@@ -157,6 +157,34 @@
             }
         });
 
+  }
+
+  $(document).ready(function() {
+    $('#printButton').on('click', function(e) {
+      e.preventDefault();
+      printReport();
+    });
+  });
+
+  function printReport() {
+    var from = $('#from').val();
+    var to = $('#to').val();
+
+    return $.ajax({
+      headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+      url: "{{ url('pendaftar/student/reportR2/getStudentReportR2?print=true') }}",
+      method: 'GET',
+      data: { from: from, to: to },
+      error: function(err) {
+        alert("Error");
+        console.log(err);
+      },
+      success: function(data) {
+        var newWindow = window.open();
+        newWindow.document.write(data);
+        newWindow.document.close();
+      }
+    });
   }
   </script>
 @endsection
