@@ -300,7 +300,7 @@
 				</li>
 
 				<li class="treeview">
-					<a href="#"><i data-feather="users"></i><span>Statistic Report</span>
+					<a href="#"><i data-feather="monitor"></i><span>Statistic Report</span>
 						<span class="pull-right-container">
 							<i class="fa fa-angle-left pull-right"></i>
 						</span>
