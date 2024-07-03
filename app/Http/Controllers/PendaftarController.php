@@ -2650,7 +2650,20 @@ class PendaftarController extends Controller
                     }
                 }
 
-                return view('pendaftar.reportR2.getReportR2', compact('data'));
+
+                if(isset($request->print))
+                {
+                    
+                    $data['from'] = Carbon::createFromFormat('Y-m-d', $request->from)->translatedFormat('d F Y'); ;
+                    $data['to'] = Carbon::createFromFormat('Y-m-d', $request->to)->translatedFormat('d F Y');
+
+                    return view('pendaftar.reportR2.printReportR2', compact('data'));
+
+                }else{
+
+                    return view('pendaftar.reportR2.getReportR2', compact('data'));
+
+                }
 
             }else{
 
