@@ -14,6 +14,8 @@ use App\Models\UserStudent;
 use App\Models\subject;
 use Input;
 use Carbon\Carbon;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class PendaftarController extends Controller
 {
@@ -2659,10 +2661,14 @@ class PendaftarController extends Controller
 
                     return view('pendaftar.reportR2.printReportR2', compact('data'));
 
+                } elseif (isset($request->excel)) {
+
+                    return $this->exportToExcel($data);
+
                 }else{
 
                     return view('pendaftar.reportR2.getReportR2', compact('data'));
-
+                    
                 }
 
             }else{
@@ -2676,6 +2682,57 @@ class PendaftarController extends Controller
         }
 
     }
+
+    private function exportToExcel($data)
+{
+    $spreadsheet = new Spreadsheet();
+    $sheet = $spreadsheet->getActiveSheet();
+
+    // Add Total Payment By Weeks data
+    $sheet->setCellValue('A1', 'Week');
+    $sheet->setCellValue('B1', 'Month');
+    $sheet->setCellValue('C1', 'Total');
+
+    $row = 2;
+    $total_allW = 0;
+    foreach ($data['dateRange'] as $key => $week) {
+        $sheet->setCellValue('A' . $row, $week['week']);
+        $sheet->setCellValue('B' . $row, $week['month']);
+        $sheet->setCellValue('C' . $row, $data['totalWeek'][$key]->total_week);
+        $total_allW += $data['totalWeek'][$key]->total_week;
+        $row++;
+    }
+
+    $sheet->setCellValue('A' . $row, 'TOTAL');
+    $sheet->setCellValue('C' . $row, number_format($total_allW, 2));
+
+    // Add Total Payment By Days data
+    $row += 2; // Add some space between tables
+    $sheet->setCellValue('A' . $row, 'Date');
+    $sheet->setCellValue('B' . $row, 'Total');
+
+    $row++;
+    $total_allD = 0;
+    foreach ($data['dateRange'] as $key => $week) {
+        foreach ($data['week'][$key] as $key2 => $day) {
+            $sheet->setCellValue('A' . $row, $day);
+            $sheet->setCellValue('B' . $row, $data['totalDay'][$key][$key2]->total_day);
+            $total_allD += $data['totalDay'][$key][$key2]->total_day;
+            $row++;
+        }
+    }
+
+    $sheet->setCellValue('A' . $row, 'TOTAL');
+    $sheet->setCellValue('B' . $row, number_format($total_allD, 2));
+
+    $writer = new Xlsx($spreadsheet);
+    $fileName = 'report.xlsx';
+    $filePath = storage_path('app/public/' . $fileName);
+    $writer->save($filePath);
+
+    return response()->download($filePath, $fileName)->deleteFileAfterSend(true);
+}
+
 
     public function incomeReport()
     {
