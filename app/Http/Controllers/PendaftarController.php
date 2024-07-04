@@ -16,6 +16,7 @@ use Input;
 use Carbon\Carbon;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Illuminate\Support\Facades\Log;
 
 class PendaftarController extends Controller
 {
@@ -2685,6 +2686,8 @@ class PendaftarController extends Controller
 
     private function exportToExcel($data)
     {
+        Log::info('exportToExcel function called');
+
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 
@@ -2725,7 +2728,6 @@ class PendaftarController extends Controller
         $sheet->setCellValue('A' . $row, 'TOTAL');
         $sheet->setCellValue('B' . $row, number_format($total_allD, 2));
 
-        // Save the file
         $writer = new Xlsx($spreadsheet);
         $fileName = 'report.xlsx';
         $filePath = storage_path('app/public/' . $fileName);
@@ -2733,11 +2735,14 @@ class PendaftarController extends Controller
         ob_end_clean(); // Clean (erase) the output buffer and turn off output buffering
         $writer->save($filePath);
 
-        // Check if file exists
+        Log::info('File saved at: ' . $filePath);
+
         if (file_exists($filePath)) {
+            Log::info('File exists, preparing to download');
             return response()->download($filePath, $fileName)->deleteFileAfterSend(true);
         } else {
-            dd('File not created');
+            Log::error('File not created');
+            abort(500, 'File not created');
         }
     }
 
