@@ -2733,10 +2733,14 @@ class PendaftarController extends Controller
         $fileName = 'report.xlsx';
         $filePath = 'reports/' . $fileName;
 
+        //dd($filePath);
+
         // Save the file to Linode disk
         ob_start();
         $writer->save('php://output');
         $fileContents = ob_get_clean();
+
+        dd($fileContents);
         Storage::disk('linode')->put($filePath, $fileContents);
 
         Log::info('File saved to Linode storage at: ' . $filePath);
