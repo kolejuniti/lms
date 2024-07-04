@@ -2725,19 +2725,22 @@ class PendaftarController extends Controller
         $sheet->setCellValue('A' . $row, 'TOTAL');
         $sheet->setCellValue('B' . $row, number_format($total_allD, 2));
 
+        // Save the file
         $writer = new Xlsx($spreadsheet);
         $fileName = 'report.xlsx';
         $filePath = storage_path('app/public/' . $fileName);
+
+        ob_end_clean(); // Clean (erase) the output buffer and turn off output buffering
         $writer->save($filePath);
 
         // Check if file exists
         if (file_exists($filePath)) {
-            return response()->download($filePath, $fileName);
+            return response()->download($filePath, $fileName)->deleteFileAfterSend(true);
         } else {
             dd('File not created');
         }
-
     }
+
 
 
     public function incomeReport()
