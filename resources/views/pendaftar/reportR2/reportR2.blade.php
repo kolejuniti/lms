@@ -37,9 +37,7 @@
       <div class="card card-primary">
         <div class="card-header">
           <b>Search Student</b>
-          <button id="printButton" class="waves-effect waves-light btn btn-primary btn-sm">
-            <i class="ti-printer"></i>&nbsp Print
-          </button>
+          <button id="printButton" class="btn btn-primary">Print / PDF</button>
         </div>
         <div class="card-body">
           <div class="row">

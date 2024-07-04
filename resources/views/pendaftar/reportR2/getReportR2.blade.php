@@ -1,3 +1,11 @@
+<div class="row mt-3 d-flex">
+  <div class="col-md-12 mb-3">
+    <div class="pull-right">
+      <button id="exportBtn" class="btn btn-success">Export to Excel</button>
+    </div>
+  </div>
+</div>
+
 <div class="card mb-3" id="stud_info">
     <div class="card-header">
     <b>Report Information</b>
@@ -119,3 +127,21 @@
     </div>
     <!-- /.card-body -->
 </div>
+
+<script>
+
+  $(document).ready(function() {
+    $('#exportBtn').on('click', function(e) {
+      e.preventDefault();
+      printReport2();
+    });
+  });
+
+  function printReport2() {
+    var from = $('#from').val();
+    var to = $('#to').val();
+    var url = "{{ url('pendaftar/student/reportR2/getStudentReportR2?excel=true') }}";
+
+    window.location.href = `${url}&from=${from}&to=${to}`;
+  }
+  </script>
