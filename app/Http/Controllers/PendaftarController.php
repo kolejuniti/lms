@@ -2730,9 +2730,13 @@ class PendaftarController extends Controller
         $filePath = storage_path('app/public/' . $fileName);
         $writer->save($filePath);
 
-        //dd('try2');
+        // Check if file exists
+        if (file_exists($filePath)) {
+            return response()->download($filePath, $fileName);
+        } else {
+            dd('File not created');
+        }
 
-        return response()->download($filePath, $fileName);
     }
 
 
