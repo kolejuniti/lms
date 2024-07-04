@@ -2746,12 +2746,6 @@ class PendaftarController extends Controller
             // Generate a temporary URL valid for 1 hour
             $url = Storage::disk('linode')->temporaryUrl($filePath, now()->addHour());
     
-            // Dispatch a job to delete the file after a delay
-            dispatch(function () use ($filePath) {
-                Storage::disk('linode')->delete($filePath);
-                Log::info('File deleted from Linode storage: ' . $filePath);
-            });
-    
             return redirect($url);
         } else {
             Log::error('File not created on Linode storage');
