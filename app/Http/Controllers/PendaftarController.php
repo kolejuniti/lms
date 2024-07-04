@@ -17,6 +17,7 @@ use Carbon\Carbon;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class PendaftarController extends Controller
 {
@@ -2728,10 +2729,26 @@ class PendaftarController extends Controller
         $sheet->setCellValue('A' . $row, 'TOTAL');
         $sheet->setCellValue('B' . $row, number_format($total_allD, 2));
 
-       
+        $writer = new Xlsx($spreadsheet);
+        $fileName = 'report.xlsx';
+        $filePath = 'reports/' . $fileName;
+
+        // Save the file to Linode disk
+        ob_start();
+        $writer->save('php://output');
+        $fileContents = ob_get_clean();
+        Storage::disk('linode')->put($filePath, $fileContents);
+
+        Log::info('File saved to Linode storage at: ' . $filePath);
+
+        if (Storage::disk('linode')->exists($filePath)) {
+            Log::info('File exists on Linode storage, preparing to download');
+            return Storage::disk('linode')->download($filePath);
+        } else {
+            Log::error('File not created on Linode storage');
+            abort(500, 'File not created');
+        }
     }
-
-
 
     public function incomeReport()
     {
