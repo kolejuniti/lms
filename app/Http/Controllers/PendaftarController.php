@@ -2730,9 +2730,9 @@ class PendaftarController extends Controller
         $filePath = storage_path('app/public/' . $fileName);
         $writer->save($filePath);
 
-        dd('try2');
+        //dd('try2');
 
-        return response()->download($filePath, $fileName)->deleteFileAfterSend(true);
+        return response()->download($filePath, $fileName);
     }
 
 
