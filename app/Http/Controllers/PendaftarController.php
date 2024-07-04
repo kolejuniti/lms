@@ -2510,7 +2510,7 @@ class PendaftarController extends Controller
                                         ['tblpayment.semester_id', '=', 1]
                                     ])
                                     ->whereColumn('tblpayment.date', '=', 'students.date_add')  // Use whereColumn for comparing two columns
-                                    ->whereBetween('tblpayment.date', [$start, $end2])
+                                    ->whereBetween('tblpayment.date', [$start, $end])
                                     ->select('tblpayment.id')
                                     ->groupBy('tblpayment.student_ic')
                                     ->get()
