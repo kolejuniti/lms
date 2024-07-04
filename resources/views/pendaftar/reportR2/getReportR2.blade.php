@@ -60,7 +60,7 @@
                     TOTAL
                 </td>
                 <td>
-                    {{  number_format($total_allW, 2) }}
+                    {{  $total_allW }}
                 </td>
               </tr>
         </tfoot>
@@ -111,7 +111,7 @@
                     TOTAL
                 </td>
                 <td>
-                    {{  number_format($total_allD, 2) }}
+                    {{  $total_allD }}
                 </td>
               </tr>
         </tfoot>
