@@ -2686,73 +2686,73 @@ class PendaftarController extends Controller
     }
 
     private function exportToExcel($data)
-    {
-        Log::info('exportToExcel function called');
+{
+    Log::info('exportToExcel function called');
 
-        $spreadsheet = new Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet();
+    $spreadsheet = new Spreadsheet();
+    $sheet = $spreadsheet->getActiveSheet();
 
-        // Add Total Payment By Weeks data
-        $sheet->setCellValue('A1', 'Week');
-        $sheet->setCellValue('B1', 'Month');
-        $sheet->setCellValue('C1', 'Total');
+    // Add Total Payment By Weeks data
+    $sheet->setCellValue('A1', 'Week');
+    $sheet->setCellValue('B1', 'Month');
+    $sheet->setCellValue('C1', 'Total');
 
-        $row = 2;
-        $total_allW = 0;
-        foreach ($data['dateRange'] as $key => $week) {
-            $sheet->setCellValue('A' . $row, $week['week']);
-            $sheet->setCellValue('B' . $row, $week['month']);
-            $sheet->setCellValue('C' . $row, $data['totalWeek'][$key]->total_week);
-            $total_allW += $data['totalWeek'][$key]->total_week;
+    $row = 2;
+    $total_allW = 0;
+    foreach ($data['dateRange'] as $key => $week) {
+        $sheet->setCellValue('A' . $row, $week['week']);
+        $sheet->setCellValue('B' . $row, $week['month']);
+        $sheet->setCellValue('C' . $row, $data['totalWeek'][$key]->total_week);
+        $total_allW += $data['totalWeek'][$key]->total_week;
+        $row++;
+    }
+
+    $sheet->setCellValue('A' . $row, 'TOTAL');
+    $sheet->setCellValue('C' . $row, number_format($total_allW, 2));
+
+    // Add Total Payment By Days data
+    $row += 2; // Add some space between tables
+    $sheet->setCellValue('A' . $row, 'Date');
+    $sheet->setCellValue('B' . $row, 'Total');
+
+    $row++;
+    $total_allD = 0;
+    foreach ($data['dateRange'] as $key => $week) {
+        foreach ($data['week'][$key] as $key2 => $day) {
+            $sheet->setCellValue('A' . $row, $day);
+            $sheet->setCellValue('B' . $row, $data['totalDay'][$key][$key2]->total_day);
+            $total_allD += $data['totalDay'][$key][$key2]->total_day;
             $row++;
         }
-
-        $sheet->setCellValue('A' . $row, 'TOTAL');
-        $sheet->setCellValue('C' . $row, number_format($total_allW, 2));
-
-        // Add Total Payment By Days data
-        $row += 2; // Add some space between tables
-        $sheet->setCellValue('A' . $row, 'Date');
-        $sheet->setCellValue('B' . $row, 'Total');
-
-        $row++;
-        $total_allD = 0;
-        foreach ($data['dateRange'] as $key => $week) {
-            foreach ($data['week'][$key] as $key2 => $day) {
-                $sheet->setCellValue('A' . $row, $day);
-                $sheet->setCellValue('B' . $row, $data['totalDay'][$key][$key2]->total_day);
-                $total_allD += $data['totalDay'][$key][$key2]->total_day;
-                $row++;
-            }
-        }
-
-        $sheet->setCellValue('A' . $row, 'TOTAL');
-        $sheet->setCellValue('B' . $row, number_format($total_allD, 2));
-
-        $writer = new Xlsx($spreadsheet);
-        $fileName = 'report.xlsx';
-        $filePath = 'reports/' . $fileName;
-
-        //dd($filePath);
-
-        // Save the file to Linode disk
-        ob_start();
-        $writer->save('php://output');
-        $fileContents = ob_get_clean();
-
-        //dd($fileContents);
-        Storage::disk('linode')->put($filePath, $fileContents);
-
-        Log::info('File saved to Linode storage at: ' . $filePath);
-
-        if (Storage::disk('linode')->exists($filePath)) {
-            Log::info('File exists on Linode storage, preparing to download');
-            return Storage::disk('linode')->download($filePath);
-        } else {
-            Log::error('File not created on Linode storage');
-            abort(500, 'File not created');
-        }
     }
+
+    $sheet->setCellValue('A' . $row, 'TOTAL');
+    $sheet->setCellValue('B' . $row, number_format($total_allD, 2));
+
+    $writer = new Xlsx($spreadsheet);
+    $fileName = 'report.xlsx';
+    $filePath = 'reports/' . $fileName;
+
+    ob_start();
+    $writer->save('php://output');
+    $fileContents = ob_get_clean();
+    Storage::disk('linode')->put($filePath, $fileContents);
+
+    Log::info('File saved to Linode storage at: ' . $filePath);
+
+    if (Storage::disk('linode')->exists($filePath)) {
+        Log::info('File exists on Linode storage, preparing to generate URL');
+
+        // Generate a temporary URL valid for 1 hour
+        $url = Storage::disk('linode')->temporaryUrl($filePath, now()->addHour());
+
+        return redirect($url);
+    } else {
+        Log::error('File not created on Linode storage');
+        abort(500, 'File not created');
+    }
+}
+
 
     public function incomeReport()
     {
