@@ -2748,7 +2748,6 @@ class PendaftarController extends Controller
     
             // Dispatch a job to delete the file after a delay
             dispatch(function () use ($filePath) {
-                sleep(3600); // Wait for 1 hour before deleting the file
                 Storage::disk('linode')->delete($filePath);
                 Log::info('File deleted from Linode storage: ' . $filePath);
             });
