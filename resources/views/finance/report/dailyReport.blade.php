@@ -55,6 +55,7 @@
                   </div>
               </div>
           </div>
+          <button type="submit" class="btn btn-primary pull-right mb-3" onclick="submit()">Find</button>
           <div id="form-student">
             
   
@@ -100,35 +101,66 @@
     var from = '';
     var to = '';
 
-    $(document).on('change', '#from', async function(e){
-        from = $(e.target).val();
+    // $(document).on('change', '#from', async function(e){
+    //     from = $(e.target).val();
 
-        await getStudent(from,to);
-      });
+    //     await getStudent(from,to);
+    //   });
 
-      $(document).on('change', '#to', async function(e){
-        to = $(e.target).val();
+    //   $(document).on('change', '#to', async function(e){
+    //     to = $(e.target).val();
 
-        await getStudent(from,to);
-      });
+    //     await getStudent(from,to);
+    //   });
 
 
-  function getStudent(from,to)
+  // function getStudent(from,to)
+  // {
+  //   return $.ajax({
+  //           headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
+  //           url      : "{{ url('finance/report/dailyreport/getDailyReport') }}",
+  //           method   : 'GET',
+  //           data 	 : {from: from, to: to},
+  //           error:function(err){
+  //               alert("Error");
+  //               console.log(err);
+  //           },
+  //           success  : function(data){
+  //               $('#form-student').html(data);
+  //           }
+  //       });
+
+  // }
+
+  function submit()
   {
-    return $.ajax({
-            headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
-            url      : "{{ url('finance/report/dailyreport/getDailyReport') }}",
-            method   : 'GET',
-            data 	 : {from: from, to: to},
-            error:function(err){
-                alert("Error");
-                console.log(err);
-            },
-            success  : function(data){
-                $('#form-student').html(data);
-            }
-        });
 
+    var from = $('#from').val();
+    var to = $('#to').val();
+
+    // Show the spinner
+    $('#loading-spinner').css('display', 'block');
+
+    return $.ajax({
+              headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
+              url      : "{{ url('finance/report/dailyreport/getDailyReport') }}",
+              method   : 'POST',
+              data 	 : {from: from, to: to},
+              error:function(err){
+                  alert("Error");
+                  console.log(err);
+
+                  // Hide the spinner on error
+                  $('#loading-spinner').css('display', 'none');
+              },
+              success  : function(data){
+                  // Hide the spinner on success
+                  $('#loading-spinner').css('display', 'none');
+
+                  $('#form-student').html(data);
+                        
+              }
+          });
   }
   
   $(document).ready(function() {
