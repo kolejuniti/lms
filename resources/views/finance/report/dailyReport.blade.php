@@ -144,7 +144,7 @@
     return $.ajax({
               headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
               url      : "{{ url('finance/report/dailyreport/getDailyReport') }}",
-              method   : 'POST',
+              method   : 'GET',
               data 	 : {from: from, to: to},
               error:function(err){
                   alert("Error");
