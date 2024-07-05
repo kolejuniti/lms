@@ -4511,7 +4511,7 @@ class FinanceController extends Controller
 
         $payment = DB::table('tblpayment')
                    ->join('students', 'tblpayment.student_ic', 'students.ic')
-                   ->select('tblpayment.*', 'students.name', 'students.no_matric', 'students.status', 'students.program', 'students.semester')
+                   ->select('tblpayment.*', 'students.name', 'students.ic', 'students.no_matric', 'students.status', 'students.program', 'students.semester')
                    ->whereBetween('tblpayment.add_date', [$request->from, $request->to])
                    ->where('tblpayment.process_status_id', 2)
                    ->whereNotNull('tblpayment.ref_no')
@@ -4520,7 +4520,7 @@ class FinanceController extends Controller
 
         $sponsor = DB::table('tblpayment')
                    ->join('students', 'tblpayment.student_ic', 'students.ic')
-                   ->select('tblpayment.*', 'students.name', 'students.no_matric', 'students.status', 'students.program', 'students.semester')
+                   ->select('tblpayment.*', 'students.name', 'students.ic', 'students.no_matric', 'students.status', 'students.program', 'students.semester')
                    ->whereBetween('tblpayment.add_date', [$request->from, $request->to])
                    ->where('tblpayment.process_status_id', 2)
                    ->whereNotNull('tblpayment.student_ic')
@@ -4532,6 +4532,14 @@ class FinanceController extends Controller
 
         foreach($payment as $pym)
         {
+
+            $status = DB::table('tblstudent_log')
+                    ->join('tblstudent_status', 'tblstudent_log.status_id', '=', 'tblstudent_status.id')
+                    ->where('tblstudent_log.student_ic', $pym->ic)
+                    ->where('tblstudent_log.date', '<', $request->to)
+                    ->orderBy('tblstudent_log.date', 'desc')
+                    ->select('tblstudent_status.id')
+                    ->first();
 
             if($pym->process_type_id == 6 && $pym->process_status_id == 2)
             {
@@ -4633,7 +4641,7 @@ class FinanceController extends Controller
                 }
 
             }
-            elseif(($pym->status == 1 || $pym->status == 14) && $pym->sponsor_id == null)
+            elseif(($status->id == 1 || $status->id == 14) && $pym->sponsor_id == null)
             {
 
                 if(DB::table('tblpaymentdtl')
@@ -4687,7 +4695,7 @@ class FinanceController extends Controller
                     }
                 }
 
-            }elseif($pym->status == 2 && $pym->sponsor_id == null && $pym->semester == 1)
+            }elseif($status->id == 2 && $pym->sponsor_id == null && $pym->semester == 1)
             {
 
                 //newstudent
@@ -5015,7 +5023,7 @@ class FinanceController extends Controller
                     }
                 }
 
-            }elseif($pym->status == 2 && $pym->sponsor_id == null && $pym->semester != 1)
+            }elseif($status->id == 2 && $pym->sponsor_id == null && $pym->semester != 1)
             {
 
                 if($pym->process_type_id == 1)
@@ -5348,7 +5356,7 @@ class FinanceController extends Controller
                     }
                 }
 
-            }elseif($pym->status == 4 && $pym->sponsor_id == null)
+            }elseif($status->id == 4 && $pym->sponsor_id == null)
             {
 
                 //withdraw
@@ -5395,7 +5403,7 @@ class FinanceController extends Controller
 
                 }
 
-            }elseif($pym->status == 8 && $pym->sponsor_id == null && $pym->semester != 1)
+            }elseif($status->id == 8 && $pym->sponsor_id == null && $pym->semester != 1)
             {
 
                 if(($pym->process_type_id == 1 || $pym->process_type_id == 8) && $pym->process_status_id == 2)
@@ -5489,7 +5497,7 @@ class FinanceController extends Controller
 
                 }
 
-            }elseif($pym->status == 3 && $pym->sponsor_id == null && $pym->semester != 1)
+            }elseif($status->id == 3 && $pym->sponsor_id == null && $pym->semester != 1)
             {
 
                 if(($pym->process_type_id == 1 || $pym->process_type_id == 8) && $pym->process_status_id == 2)
