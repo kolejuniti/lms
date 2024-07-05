@@ -9312,7 +9312,6 @@ class FinanceController extends Controller
         $data['student'] = DB::table('tblpayment')
                            ->join('students', 'tblpayment.student_ic', 'students.ic')
                            ->whereBetween('tblpayment.add_date', [$request->from, $request->to])
-                           ->where('students.status', 8)
                            ->where('students.semester', '!=', 1)
                            ->where('tblpayment.process_type_id', 1)
                            ->where('tblpayment.process_status_id', 2)
@@ -9326,96 +9325,100 @@ class FinanceController extends Controller
         foreach($data['student'] as $key => $std)
         {
 
-            // //D
+            $status = DB::table('tblstudent_log')
+                    ->join('tblstudent_status', 'tblstudent_log.status_id', '=', 'tblstudent_status.id')
+                    ->where('tblstudent_log.student_ic', $std->ic)
+                    ->where('tblstudent_log.date', '<=', $request->to)
+                    ->orderBy('tblstudent_log.date', 'desc')
+                    ->select('tblstudent_status.id')
+                    ->first();
 
-            // $data['latest'][$key] = DB::table('student_payment_log')
-            //                   ->orderBy('date_of_payment', 'DESC')
-            //                   ->where('student_payment_log.student_ic', $std->ic)
-            //                   ->first();
-
-            //B
-
-            $data['payments'][] = DB::table('tblpayment')
-                                      ->join('tblpaymentdtl', 'tblpayment.id', 'tblpaymentdtl.payment_id')
-                                      ->join('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
-                                      ->where('tblpayment.student_ic', $std->ic)
-                                      ->whereBetween('tblpayment.add_date', [$request->from, $request->to])
-                                      ->where(function ($query){
-                                        $query->where('tblpayment.process_type_id', 1);
-                                        $query->orWhere('tblpayment.process_type_id', 8);
-                                      })
-                                      ->where('tblpayment.process_status_id', 2)
-                                      ->where('tblstudentclaim.groupid', 1)
-                                      ->groupBy('tblpayment.student_ic')
-                                      ->orderBy('tblpayment.add_date')
-                                      ->select('tblpayment.add_date as payment_date', DB::raw('SUM(tblpaymentdtl.amount) as amount'))
-                                      ->get();
-
-            //B2
-
-            $data['latest'][$key] = DB::table('student_payment_log')
-                                       ->where('student_payment_log.student_ic', $std->ic)
-                                       ->whereBetween('student_payment_log.date_of_payment', [$request->from, $request->to])
-                                       ->orderBy('date_of_payment', 'DESC')
-                                       ->first();
-
-            //D
-
-            $data['total_balance'][$key] = 0.00;
-
-            $record = DB::table('tblpaymentdtl')
-            ->leftJoin('tblpayment', 'tblpaymentdtl.payment_id', 'tblpayment.id')
-            ->leftJoin('tblprocess_type', 'tblpayment.process_type_id', 'tblprocess_type.id')
-            ->leftJoin('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
-            ->leftjoin('tblprogramme', 'tblpayment.program_id', 'tblprogramme.id')
-            ->where([
-                ['tblpayment.student_ic', $std->ic],
-                ['tblpayment.process_status_id', 2], 
-                ['tblstudentclaim.groupid', 1], 
-                ['tblpaymentdtl.amount', '!=', 0]
-                ])
-            ->select(DB::raw("'payment' as source"), 'tblprocess_type.name AS process', 'tblpayment.ref_no','tblpayment.date', 'tblstudentclaim.name', 'tblpaymentdtl.amount', 'tblpayment.process_type_id', 'tblprogramme.progcode AS program', DB::raw('NULL as remark'));
-
-            $data['record'] = DB::table('tblclaimdtl')
-            ->leftJoin('tblclaim', 'tblclaimdtl.claim_id', 'tblclaim.id')
-            ->leftJoin('tblprocess_type', 'tblclaim.process_type_id', 'tblprocess_type.id')
-            ->leftJoin('tblstudentclaim', 'tblclaimdtl.claim_package_id', 'tblstudentclaim.id')
-            ->leftjoin('tblprogramme', 'tblclaim.program_id', 'tblprogramme.id')
-            ->where([
-                ['tblclaim.student_ic', $std->ic],
-                ['tblclaim.process_status_id', 2],  
-                ['tblstudentclaim.groupid', 1],
-                ['tblclaimdtl.amount', '!=', 0]
-                ])
-            ->unionALL($record)
-            ->select(DB::raw("'claim' as source"), 'tblprocess_type.name AS process', 'tblclaim.ref_no','tblclaim.date', 'tblstudentclaim.name', 'tblclaimdtl.amount', 'tblclaim.process_type_id', 'tblprogramme.progcode AS program', 'tblclaim.remark')
-            ->orderBy('date')
-            ->get();
-
-            $data['total'] = 0;
-
-            foreach($data['record'] as $keys => $req)
+            if($status->id == 8)
             {
 
-                if(array_intersect([2,3,4,5,11], (array) $req->process_type_id) && $req->source == 'claim')
+                $data['payments'][] = DB::table('tblpayment')
+                                        ->join('tblpaymentdtl', 'tblpayment.id', 'tblpaymentdtl.payment_id')
+                                        ->join('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
+                                        ->where('tblpayment.student_ic', $std->ic)
+                                        ->whereBetween('tblpayment.add_date', [$request->from, $request->to])
+                                        ->where(function ($query){
+                                            $query->where('tblpayment.process_type_id', 1);
+                                            $query->orWhere('tblpayment.process_type_id', 8);
+                                        })
+                                        ->where('tblpayment.process_status_id', 2)
+                                        ->where('tblstudentclaim.groupid', 1)
+                                        ->groupBy('tblpayment.student_ic')
+                                        ->orderBy('tblpayment.add_date')
+                                        ->select('tblpayment.add_date as payment_date', DB::raw('SUM(tblpaymentdtl.amount) as amount'))
+                                        ->get();
+
+                //B2
+
+                $data['latest'][$key] = DB::table('student_payment_log')
+                                        ->where('student_payment_log.student_ic', $std->ic)
+                                        ->whereBetween('student_payment_log.date_of_payment', [$request->from, $request->to])
+                                        ->orderBy('date_of_payment', 'DESC')
+                                        ->first();
+
+                //D
+
+                $data['total_balance'][$key] = 0.00;
+
+                $record = DB::table('tblpaymentdtl')
+                ->leftJoin('tblpayment', 'tblpaymentdtl.payment_id', 'tblpayment.id')
+                ->leftJoin('tblprocess_type', 'tblpayment.process_type_id', 'tblprocess_type.id')
+                ->leftJoin('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
+                ->leftjoin('tblprogramme', 'tblpayment.program_id', 'tblprogramme.id')
+                ->where([
+                    ['tblpayment.student_ic', $std->ic],
+                    ['tblpayment.process_status_id', 2], 
+                    ['tblstudentclaim.groupid', 1], 
+                    ['tblpaymentdtl.amount', '!=', 0]
+                    ])
+                ->select(DB::raw("'payment' as source"), 'tblprocess_type.name AS process', 'tblpayment.ref_no','tblpayment.date', 'tblstudentclaim.name', 'tblpaymentdtl.amount', 'tblpayment.process_type_id', 'tblprogramme.progcode AS program', DB::raw('NULL as remark'));
+
+                $data['record'] = DB::table('tblclaimdtl')
+                ->leftJoin('tblclaim', 'tblclaimdtl.claim_id', 'tblclaim.id')
+                ->leftJoin('tblprocess_type', 'tblclaim.process_type_id', 'tblprocess_type.id')
+                ->leftJoin('tblstudentclaim', 'tblclaimdtl.claim_package_id', 'tblstudentclaim.id')
+                ->leftjoin('tblprogramme', 'tblclaim.program_id', 'tblprogramme.id')
+                ->where([
+                    ['tblclaim.student_ic', $std->ic],
+                    ['tblclaim.process_status_id', 2],  
+                    ['tblstudentclaim.groupid', 1],
+                    ['tblclaimdtl.amount', '!=', 0]
+                    ])
+                ->unionALL($record)
+                ->select(DB::raw("'claim' as source"), 'tblprocess_type.name AS process', 'tblclaim.ref_no','tblclaim.date', 'tblstudentclaim.name', 'tblclaimdtl.amount', 'tblclaim.process_type_id', 'tblprogramme.progcode AS program', 'tblclaim.remark')
+                ->orderBy('date')
+                ->get();
+
+                $data['total'] = 0;
+
+                foreach($data['record'] as $keys => $req)
                 {
 
-                    $data['total'] += $req->amount;
-                    
-                }elseif(array_intersect([1,5,6,7,8,9,10,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26], (array) $req->process_type_id) && $req->source == 'payment')
-                {
+                    if(array_intersect([2,3,4,5,11], (array) $req->process_type_id) && $req->source == 'claim')
+                    {
 
-                    $data['total'] -= $req->amount;
+                        $data['total'] += $req->amount;
+                        
+                    }elseif(array_intersect([1,5,6,7,8,9,10,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26], (array) $req->process_type_id) && $req->source == 'payment')
+                    {
+
+                        $data['total'] -= $req->amount;
+
+                    }
 
                 }
 
+                $data['sum3'] = $data['total'];
+
+                //TUNGGAKAN KESELURUHAN
+
+                $data['total_balance'][$key] = $data['sum3'];
+
             }
-
-            $data['sum3'] = $data['total'];
-
-            //TUNGGAKAN KESELURUHAN
-
-            $data['total_balance'][$key] = $data['sum3'];
 
         }
 
