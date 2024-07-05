@@ -9309,7 +9309,7 @@ class FinanceController extends Controller
         //                    ->groupBy('students.ic')
         //                    ->get();
 
-        $data['student'] = DB::table('tblpayment')
+        $students = DB::table('tblpayment')
                            ->join('students', 'tblpayment.student_ic', 'students.ic')
                            ->whereBetween('tblpayment.add_date', [$request->from, $request->to])
                            ->where('students.semester', '!=', 1)
@@ -9319,22 +9319,29 @@ class FinanceController extends Controller
                            ->select('students.name', 'students.ic', 'students.no_matric')
                            ->groupBy('students.ic')
                            ->get();
+
+        $filteredStudents = [];
+
+        foreach ($students as $student) {
+            $status = DB::table('tblstudent_log')
+                        ->join('tblstudent_status', 'tblstudent_log.status_id', '=', 'tblstudent_status.id')
+                        ->where('tblstudent_log.student_ic', $student->ic)
+                        ->where('tblstudent_log.date', '<=', $request->to)
+                        ->orderBy('tblstudent_log.date', 'desc')
+                        ->select('tblstudent_status.id')
+                        ->first();
+            
+            if ($status && $status->id == 8) {
+                $filteredStudents[] = $student;
+            }
+        }
+        
+        $data['student'] = collect($filteredStudents);
                         
         
 
         foreach($data['student'] as $key => $std)
         {
-
-            $status = DB::table('tblstudent_log')
-                    ->join('tblstudent_status', 'tblstudent_log.status_id', '=', 'tblstudent_status.id')
-                    ->where('tblstudent_log.student_ic', $std->ic)
-                    ->where('tblstudent_log.date', '<=', $request->to)
-                    ->orderBy('tblstudent_log.date', 'desc')
-                    ->select('tblstudent_status.id')
-                    ->first();
-
-            if($status->id == 8)
-            {
 
                 $data['payments'][] = DB::table('tblpayment')
                                         ->join('tblpaymentdtl', 'tblpayment.id', 'tblpaymentdtl.payment_id')
@@ -9417,8 +9424,6 @@ class FinanceController extends Controller
                 //TUNGGAKAN KESELURUHAN
 
                 $data['total_balance'][$key] = $data['sum3'];
-
-            }
 
         }
 
