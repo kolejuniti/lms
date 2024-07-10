@@ -43,7 +43,7 @@
                         $total = 0; 
                         @endphp
                         @foreach ($data['student'] as $key => $std)
-                        @if($data['payments'][$key] != '')
+                        @if($data['payments'][$key][0]->payment_date != null)
                             <tr>
                                 <td>
                                     {{ $key+1 }}
