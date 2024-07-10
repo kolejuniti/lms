@@ -43,6 +43,7 @@
                         $total = 0; 
                         @endphp
                         @foreach ($data['student'] as $key => $std)
+                        @if($data['payments'][$key] != '')
                             <tr>
                                 <td>
                                     {{ $key+1 }}
@@ -97,6 +98,7 @@
                                     $total += $data['total_balance'][$key];
                                 @endphp
                             </tr>
+                        @endif
                         @endforeach 
                     </tbody>
                     <tfoot>
