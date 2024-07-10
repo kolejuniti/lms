@@ -4537,7 +4537,7 @@ class FinanceController extends Controller
                     ->join('tblstudent_status', 'tblstudent_log.status_id', '=', 'tblstudent_status.id')
                     ->where('tblstudent_log.student_ic', $pym->ic)
                     ->where('tblstudent_log.date', '<=', $pym->add_date)
-                    ->orderBy('tblstudent_log.date', 'desc')
+                    ->orderBy('tblstudent_log.id', 'desc')
                     ->select('tblstudent_status.id')
                     ->first();
 
@@ -9326,7 +9326,7 @@ class FinanceController extends Controller
                         ->join('tblstudent_status', 'tblstudent_log.status_id', '=', 'tblstudent_status.id')
                         ->where('tblstudent_log.student_ic', $student->ic)
                         ->where('tblstudent_log.date', '<=', $student->add_date)
-                        ->orderBy('tblstudent_log.date', 'desc')
+                        ->orderBy('tblstudent_log.id', 'desc')
                         ->select('tblstudent_status.id')
                         ->first();
             
