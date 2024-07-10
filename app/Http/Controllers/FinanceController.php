@@ -4511,7 +4511,7 @@ class FinanceController extends Controller
 
         $payment = DB::table('tblpayment')
                    ->join('students', 'tblpayment.student_ic', 'students.ic')
-                   ->select('tblpayment.*', 'students.name', 'students.ic', 'students.no_matric', 'students.status', 'students.program', 'students.semester')
+                   ->select('tblpayment.*', 'students.name', 'students.ic', 'students.no_matric', 'students.status', 'students.program', 'students.semester', 'tblpayment.add_date')
                    ->whereBetween('tblpayment.add_date', [$request->from, $request->to])
                    ->where('tblpayment.process_status_id', 2)
                    ->whereNotNull('tblpayment.ref_no')
@@ -4520,7 +4520,7 @@ class FinanceController extends Controller
 
         $sponsor = DB::table('tblpayment')
                    ->join('students', 'tblpayment.student_ic', 'students.ic')
-                   ->select('tblpayment.*', 'students.name', 'students.ic', 'students.no_matric', 'students.status', 'students.program', 'students.semester')
+                   ->select('tblpayment.*', 'students.name', 'students.ic', 'students.no_matric', 'students.status', 'students.program', 'students.semester', 'tblpayment.add_date')
                    ->whereBetween('tblpayment.add_date', [$request->from, $request->to])
                    ->where('tblpayment.process_status_id', 2)
                    ->whereNotNull('tblpayment.student_ic')
@@ -4536,7 +4536,7 @@ class FinanceController extends Controller
             $status = DB::table('tblstudent_log')
                     ->join('tblstudent_status', 'tblstudent_log.status_id', '=', 'tblstudent_status.id')
                     ->where('tblstudent_log.student_ic', $pym->ic)
-                    ->where('tblstudent_log.date', '<=', $request->to)
+                    ->where('tblstudent_log.date', '<=', $pym->add_date)
                     ->orderBy('tblstudent_log.date', 'desc')
                     ->select('tblstudent_status.id')
                     ->first();
