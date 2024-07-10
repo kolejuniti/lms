@@ -9316,8 +9316,7 @@ class FinanceController extends Controller
                            ->where('tblpayment.process_type_id', 1)
                            ->where('tblpayment.process_status_id', 2)
                            ->where('tblpayment.sponsor_id', null)
-                           ->select('students.name', 'students.ic', 'students.no_matric')
-                           ->groupBy('students.ic')
+                           ->select('students.name', 'students.ic', 'students.no_matric', 'tblpayment.id AS pym_id')
                            ->get();
 
         $filteredStudents = [];
@@ -9347,6 +9346,7 @@ class FinanceController extends Controller
                                         ->join('tblpaymentdtl', 'tblpayment.id', 'tblpaymentdtl.payment_id')
                                         ->join('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
                                         ->where('tblpayment.student_ic', $std->ic)
+                                        ->where('tblpayment.id', $std->pym_id)
                                         ->whereBetween('tblpayment.add_date', [$request->from, $request->to])
                                         ->where(function ($query){
                                             $query->where('tblpayment.process_type_id', 1);
@@ -9354,7 +9354,6 @@ class FinanceController extends Controller
                                         })
                                         ->where('tblpayment.process_status_id', 2)
                                         ->where('tblstudentclaim.groupid', 1)
-                                        ->groupBy('tblpayment.student_ic')
                                         ->orderBy('tblpayment.add_date')
                                         ->select('tblpayment.add_date as payment_date', DB::raw('SUM(tblpaymentdtl.amount) as amount'))
                                         ->get();
