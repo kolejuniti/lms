@@ -9316,7 +9316,7 @@ class FinanceController extends Controller
                            ->where('tblpayment.process_type_id', 1)
                            ->where('tblpayment.process_status_id', 2)
                            ->where('tblpayment.sponsor_id', null)
-                           ->select('students.name', 'students.ic', 'students.no_matric', 'tblpayment.id AS pym_id')
+                           ->select('students.name', 'students.ic', 'students.no_matric', 'tblpayment.id AS pym_id', 'tblpayment.add_date')
                            ->get();
 
         $filteredStudents = [];
@@ -9325,7 +9325,7 @@ class FinanceController extends Controller
             $status = DB::table('tblstudent_log')
                         ->join('tblstudent_status', 'tblstudent_log.status_id', '=', 'tblstudent_status.id')
                         ->where('tblstudent_log.student_ic', $student->ic)
-                        ->where('tblstudent_log.date', '<=', $request->to)
+                        ->where('tblstudent_log.date', '<=', $student->add_date)
                         ->orderBy('tblstudent_log.date', 'desc')
                         ->select('tblstudent_status.id')
                         ->first();
