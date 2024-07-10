@@ -40,66 +40,69 @@
                         @php
                         $sum = 0;
                         $sum2 = 0;  
-                        $total = 0; 
+                        $total = 0;
+                        $displayedCount = 0; 
                         @endphp
                         @foreach ($data['student'] as $key => $std)
-                        @if($data['payments'][$key][0]->payment_date != null)
-                            <tr>
-                                <td>
-                                    {{ $key+1 }}
-                                </td>
-                                <td>
-                                    {{ $std->name }}
-                                </td>
-                                <td>
-                                    {{ $std->ic }}
-                                </td>
-                                <td>
-                                    @if($data['payments'][$key] != '')
-                                        @foreach($data['payments'][$key] as $pym)
-                                            @if($pym->payment_date != null)
-                                                {{ $pym->payment_date }}
-                                            @else
-                                                -
-                                            @endif
-                                        @endforeach
-                                    @else
-                                        -
-                                    @endif
-                                </td>
-                                <td>
-                                    @if($data['payments'][$key] != '')
-                                        @foreach($data['payments'][$key] as $pym)
-                                        {{ number_format($pym->amount, 2) }}
-
-                                        @php
-                                            $sum += $pym->amount;
-                                        @endphp
-                                        @endforeach
-                                    @else
-                                        0.00
-                                    @endif
-                                </td>
-                                <td>
-                                    {{ $data['latest'][$key]->date_of_call ?? null}}
-                                </td>
-                                <td>
-                                    {{ $data['latest'][$key]->date_of_payment ?? null}}
-                                </td>
-                                <td>
-                                    {{ number_format($data['latest'][$key]->amount ?? 0, 2) }}
-                                </td>
-                                <td>
-                                    {{ number_format($data['total_balance'][$key] ?? 0, 2) }}
-                                </td>
+                            @if(isset($data['payments'][$key][0]) && $data['payments'][$key][0]->payment_date != null)
                                 @php
-                                    $sum2 += $data['latest'][$key]->amount ?? 0;
-
-                                    $total += $data['total_balance'][$key];
+                                    $displayedCount++;
                                 @endphp
-                            </tr>
-                        @endif
-                        @endforeach 
+                                <tr>
+                                    <td>
+                                        {{ $displayedCount }}
+                                    </td>
+                                    <td>
+                                        {{ $std->name }}
+                                    </td>
+                                    <td>
+                                        {{ $std->ic }}
+                                    </td>
+                                    <td>
+                                        @if(!empty($data['payments'][$key]))
+                                            @foreach($data['payments'][$key] as $pym)
+                                                @if($pym->payment_date != null)
+                                                    {{ $pym->payment_date }}
+                                                @else
+                                                    -
+                                                @endif
+                                            @endforeach
+                                        @else
+                                            -
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if(!empty($data['payments'][$key]))
+                                            @foreach($data['payments'][$key] as $pym)
+                                                {{ number_format($pym->amount, 2) }}
+                        
+                                                @php
+                                                    $sum += $pym->amount;
+                                                @endphp
+                                            @endforeach
+                                        @else
+                                            0.00
+                                        @endif
+                                    </td>
+                                    <td>
+                                        {{ $data['latest'][$key]->date_of_call ?? null }}
+                                    </td>
+                                    <td>
+                                        {{ $data['latest'][$key]->date_of_payment ?? null }}
+                                    </td>
+                                    <td>
+                                        {{ number_format($data['latest'][$key]->amount ?? 0, 2) }}
+                                    </td>
+                                    <td>
+                                        {{ number_format($data['total_balance'][$key] ?? 0, 2) }}
+                                    </td>
+                                    @php
+                                        $sum2 += $data['latest'][$key]->amount ?? 0;
+                                        $total += $data['total_balance'][$key];
+                                    @endphp
+                                </tr>
+                            @endif
+                        @endforeach
                     </tbody>
                     <tfoot>
                         <tr>
