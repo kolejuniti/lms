@@ -8312,9 +8312,8 @@ class FinanceController extends Controller
 
                     $student[$key] = DB::table('students')
                                ->leftjoin('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
-                               ->leftjoin('tbledu_advisor', 'tblstudent_personal.advisor_id', 'tbledu_advisor.id')
                                ->where('students.ic', $pym->student_ic)
-                               ->select('students.name', 'students.ic', 'students.no_matric', 'students.id', 'tbledu_advisor.name AS advisor')
+                               ->select('students.name', 'students.ic', 'students.no_matric', 'students.id')
                                ->first();
 
                     $method[$key] = DB::table('tblpaymentmethod')
