@@ -104,7 +104,7 @@
         <div class="card-footer">
             <button type="submit" class="btn btn-info pull-left mb-3" onclick="generateMatric('{{ $data['student']->ic }}')">Generate Matric No.</button> &nbsp;
             <div class="pull-left">
-                <a class="btn btn-info btn-sm" target="_blank" href="/AR/student/getSlipExam?student={{ $data['students']->ic }}">
+                <a class="btn btn-info btn-sm" target="_blank" href="/AR/student/getSlipExam?student={{ $data['student']->ic }}">
                     <i class="fa fa-info">
                     </i>
                     Slip Exam
