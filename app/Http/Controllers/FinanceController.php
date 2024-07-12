@@ -8312,8 +8312,9 @@ class FinanceController extends Controller
 
                     $student[$key] = DB::table('students')
                                ->leftjoin('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
+                               ->leftjoin('tbledu_advisor', 'tblstudent_personal.advisor_id', 'tbledu_advisor.id')
                                ->where('students.ic', $pym->student_ic)
-                               ->select('students.name', 'students.ic', 'students.no_matric', 'students.id')
+                               ->select('students.name', 'students.ic', 'students.no_matric', 'students.id', 'tbledu_advisor.name AS advisor')
                                ->first();
 
                     $method[$key] = DB::table('tblpaymentmethod')
@@ -8392,16 +8393,16 @@ class FinanceController extends Controller
                         '. $pym->date .'
                         </td>
                         <td>
-                        '. $student[$key]->name .'
+                        '. ($student[$key]->name ?? '') .'
                         </td>
                         <td>
-                        '. $student[$key]->ic .'
+                        '. ($student[$key]->ic ?? '') .'
                         </td>
                         <td>
-                        '. $student[$key]->no_matric .'
+                        '. ($student[$key]->no_matric ?? '') .'
                         </td>
                         <td>
-                        '. $student[$key]->id .'
+                        '. ($student[$key]->id ?? '') .'
                         </td>';
 
                     $content .= '<td>';
@@ -8435,6 +8436,9 @@ class FinanceController extends Controller
                         </td>
                         <td>
                         '. $pym->progcode .'
+                        </td>
+                        <td>
+                        '. ($student[$key]->advisor ?? '') .'
                         </td>
                     </tr>
                     ';
