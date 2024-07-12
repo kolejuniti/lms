@@ -8310,7 +8310,12 @@ class FinanceController extends Controller
                 foreach($payment as $key => $pym)
                 {
 
-                   
+                    $student[$key] = DB::table('students')
+                               ->leftjoin('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
+                               ->leftjoin('tbledu_advisor', 'tblstudent_personal.advisor_id', 'tbledu_advisor.id')
+                               ->where('students.ic', $pym->student_ic)
+                               ->select('students.name', 'students.ic', 'students.no_matric', 'students.id', 'tbledu_advisor.name AS advisor')
+                               ->first();
 
                     $method[$key] = DB::table('tblpaymentmethod')
                               ->leftjoin('tblpayment_method', 'tblpaymentmethod.claim_method_id', 'tblpayment_method.id')
@@ -8386,6 +8391,18 @@ class FinanceController extends Controller
                         </td>
                         <td>
                         '. $pym->date .'
+                        </td>
+                        <td>
+                        '. $student[$key]->name .'
+                        </td>
+                        <td>
+                        '. $student[$key]->ic .'
+                        </td>
+                        <td>
+                        '. $student[$key]->no_matric .'
+                        </td>
+                        <td>
+                        '. $student[$key]->id .'
                         </td>';
 
                     $content .= '<td>';
