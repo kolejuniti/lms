@@ -4536,7 +4536,7 @@ class FinanceController extends Controller
             $status = 0;
 
             $status = DB::table('tblstudent_log')
-                    ->join('tblstudent_status', 'tblstudent_log.status_id', '=', 'tblstudent_status.id')
+                    ->leftJoin('tblstudent_status', 'tblstudent_log.status_id', '=', 'tblstudent_status.id')
                     ->where('tblstudent_log.student_ic', $pym->ic)
                     ->where('tblstudent_log.date', '<=', $pym->add_date)
                     ->orderBy('tblstudent_log.id', 'desc')
