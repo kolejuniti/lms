@@ -148,7 +148,21 @@
               data 	 : {from: from, to: to},
               error:function(err){
                   alert("Error");
-                  console.log(err);
+                  console.log("Error details:", err);
+
+                  // If you want to log specific details from the error object
+                  if (err.responseJSON) {
+                      console.log("Response JSON:", err.responseJSON);
+                  }
+                  if (err.status) {
+                      console.log("Status code:", err.status);
+                  }
+                  if (err.statusText) {
+                      console.log("Status text:", err.statusText);
+                  }
+                  if (err.responseText) {
+                      console.log("Response text:", err.responseText);
+                  }
 
                   // Hide the spinner on error
                   $('#loading-spinner').css('display', 'none');
