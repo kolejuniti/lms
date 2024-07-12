@@ -4541,6 +4541,13 @@ class FinanceController extends Controller
                     ->select('tblstudent_status.id')
                     ->first();
 
+            if(!$status)
+            {
+
+                return response()->json(['error' => 'error on id ' + $pym->id]);
+
+            }
+
             if($pym->process_type_id == 6 && $pym->process_status_id == 2)
             {
 
