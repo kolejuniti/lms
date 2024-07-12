@@ -111,9 +111,9 @@ use Carbon\Carbon;
           SYABAS DAN TAHNIAH kerana saudara/i telah ditawarkan untuk melanjutkan pengajian di Kolej UNITI dengan kerjasama penuh Universiti Teknologi MARA bagi mengikuti program berikut:
         </p>
         <br>
-        <p><strong>Program Pengajian &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</strong> {{ $data['student']->progname }} - SEPENUH MASA</p>
+        <p><strong>Program Pengajian &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</strong> {{ $data['student']->progname }} - SEPENUH MASA</p>
         <p><strong>Tarikh &amp; Masa Lapor Diri &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</strong> {{ $formattedDate2 }} (9.00 Pagi - 3.00 Petang)</p>
-        <p><strong>Tempoh Pengajian &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</strong> 2 Tahun 6 Bulan</p>   
+        <p><strong>Tempoh Pengajian &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</strong> 2 Tahun 6 Bulan</p>   
         <p><strong>Tempat &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</strong> PEJABAT PENTADBIRAN, KOLEJ UNITI</p>
         <br>
         <p>
