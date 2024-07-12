@@ -4533,6 +4533,9 @@ class FinanceController extends Controller
         foreach($payment as $pym)
         {
 
+            // Log payment details
+    \Log::info('Processing payment:', (array) $pym);
+
             $status = 0;
 
             $status = DB::table('tblstudent_log')
@@ -4543,12 +4546,13 @@ class FinanceController extends Controller
                     ->select('tblstudent_status.id')
                     ->first();
 
-            if($status == 0)
-            {
+                    // Log status query result
+    \Log::info('Status query result:', (array) $status);
 
-                return response()->json(['error' => 'error on id' + $pym->id]);
-
-            }
+    if (is_null($status)) {
+        \Log::warning('No status found for student IC:', ['student_ic' => $pym->ic, 'add_date' => $pym->add_date]);
+      
+    }
 
             if($pym->process_type_id == 6 && $pym->process_status_id == 2)
             {
@@ -8306,12 +8310,7 @@ class FinanceController extends Controller
                 foreach($payment as $key => $pym)
                 {
 
-                    $student[$key] = DB::table('students')
-                               ->leftjoin('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
-                               ->leftjoin('tbledu_advisor', 'tblstudent_personal.advisor_id', 'tbledu_advisor.id')
-                               ->where('students.ic', $pym->student_ic)
-                               ->select('students.name', 'students.ic', 'students.no_matric', 'students.id', 'tbledu_advisor.name AS advisor')
-                               ->first();
+                   
 
                     $method[$key] = DB::table('tblpaymentmethod')
                               ->leftjoin('tblpayment_method', 'tblpaymentmethod.claim_method_id', 'tblpayment_method.id')
@@ -8387,18 +8386,6 @@ class FinanceController extends Controller
                         </td>
                         <td>
                         '. $pym->date .'
-                        </td>
-                        <td>
-                        '. $student[$key]->name .'
-                        </td>
-                        <td>
-                        '. $student[$key]->ic .'
-                        </td>
-                        <td>
-                        '. $student[$key]->no_matric .'
-                        </td>
-                        <td>
-                        '. $student[$key]->id .'
                         </td>';
 
                     $content .= '<td>';
@@ -8432,9 +8419,6 @@ class FinanceController extends Controller
                         </td>
                         <td>
                         '. $pym->progcode .'
-                        </td>
-                        <td>
-                        '. $student[$key]->advisor .'
                         </td>
                     </tr>
                     ';
