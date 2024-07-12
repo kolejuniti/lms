@@ -463,6 +463,11 @@ class PendaftarController extends Controller
                                 </i>
                                 Program History
                             </a>
+                            <a class="btn btn-warning btn-sm btn-sm mr-2 mb-2" target="_blank" href="/AR/student/getSlipExam?student='. $student->ic .'">
+                                <i class="fa fa-info">
+                                </i>
+                                Slip Exam
+                            </a>
                             <!-- <a class="btn btn-danger btn-sm" href="#" onclick="deleteMaterial(\''. $student->ic .'\')">
                                 <i class="ti-trash">
                                 </i>
