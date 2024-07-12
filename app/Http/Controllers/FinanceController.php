@@ -4533,21 +4533,7 @@ class FinanceController extends Controller
         foreach($payment as $pym)
         {
 
-            $status = DB::table('tblstudent_log')
-                    ->join('tblstudent_status', 'tblstudent_log.status_id', '=', 'tblstudent_status.id')
-                    ->where('tblstudent_log.student_ic', $pym->ic)
-                    ->where('tblstudent_log.date', '<=', $pym->add_date)
-                    ->orderBy('tblstudent_log.id', 'desc')
-                    ->select('tblstudent_status.id')
-                    ->first();
-
-            if(!$status)
-            {
-
-                return response()->json(['error' => 'error on id ' + $pym->id]);
-
-            }
-
+          
             if($pym->process_type_id == 6 && $pym->process_status_id == 2)
             {
 
@@ -4648,7 +4634,7 @@ class FinanceController extends Controller
                 }
 
             }
-            elseif(($status->id == 1 || $status->id == 14) && $pym->sponsor_id == null)
+            elseif(($pym->id == 1 || $pym->id == 14) && $pym->sponsor_id == null)
             {
 
                 if(DB::table('tblpaymentdtl')
@@ -4702,7 +4688,7 @@ class FinanceController extends Controller
                     }
                 }
 
-            }elseif($status->id == 2 && $pym->sponsor_id == null && $pym->semester == 1)
+            }elseif($pym->id == 2 && $pym->sponsor_id == null && $pym->semester == 1)
             {
 
                 //newstudent
@@ -5030,7 +5016,7 @@ class FinanceController extends Controller
                     }
                 }
 
-            }elseif($status->id == 2 && $pym->sponsor_id == null && $pym->semester != 1)
+            }elseif($pym->id == 2 && $pym->sponsor_id == null && $pym->semester != 1)
             {
 
                 if($pym->process_type_id == 1)
@@ -5363,7 +5349,7 @@ class FinanceController extends Controller
                     }
                 }
 
-            }elseif($status->id == 4 && $pym->sponsor_id == null)
+            }elseif($pym->id == 4 && $pym->sponsor_id == null)
             {
 
                 //withdraw
@@ -5410,7 +5396,7 @@ class FinanceController extends Controller
 
                 }
 
-            }elseif($status->id == 8 && $pym->sponsor_id == null && $pym->semester != 1)
+            }elseif($pym->id == 8 && $pym->sponsor_id == null && $pym->semester != 1)
             {
 
                 if(($pym->process_type_id == 1 || $pym->process_type_id == 8) && $pym->process_status_id == 2)
@@ -5504,7 +5490,7 @@ class FinanceController extends Controller
 
                 }
 
-            }elseif($status->id == 3 && $pym->sponsor_id == null && $pym->semester != 1)
+            }elseif($pym->id == 3 && $pym->sponsor_id == null && $pym->semester != 1)
             {
 
                 if(($pym->process_type_id == 1 || $pym->process_type_id == 8) && $pym->process_status_id == 2)
@@ -9337,7 +9323,7 @@ class FinanceController extends Controller
                         ->select('tblstudent_status.id')
                         ->first();
             
-            if ($status && $status->id == 8) {
+            if ($status && $pym->id == 8) {
                 $filteredStudents[] = $student;
             }
         }
@@ -10613,7 +10599,7 @@ class FinanceController extends Controller
                     $content .= '
                     <tr>
                         <td>
-                        '. $status->name .'
+                        '. $pym->name .'
                         </td>';
                         foreach($data['arrayYears'] as $key2 => $year)
                         {
