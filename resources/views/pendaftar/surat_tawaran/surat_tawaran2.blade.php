@@ -70,13 +70,18 @@ use Carbon\Carbon;
             // Convert the date format
             $formattedDate = $twoWeeksBefore->format('d/m/Y');
 
+            $formattedDate2 = Carbon::createFromFormat('d/m/Y', $data['student']->date_offer)->format('d/F/Y');
+
+            // Convert the month to uppercase
+            $formattedDate2 = strtoupper($formattedDate2);
+
         @endphp
 
         <div style="text-align: center;">
             <img src="{{ asset('assets/images/logo/Kolej-UNITI.png')}}" alt="Logo" width="15%" height="15%">
             <h1>KOLEJ UNITI</h1>
             <p>Kompleks UNITI, 71250 Pasir Panjang<br>Port Dickson, Negeri Sembilan</p>
-            <p>No. Telefon : 06-661 0518 / 9211 / 0517 / 06-6468 444<br>No. Faks : 06-661 0509 / 9022</p>
+            <p>No. Telefon : 06-6490 350<br>No. Faks : 06-661 0509</p>
             <p><a href="http://www.uniti.edu.my">www.uniti.edu.my</a></p>
         </div>
         <br>
@@ -106,20 +111,46 @@ use Carbon\Carbon;
           SYABAS DAN TAHNIAH kerana saudara/i telah ditawarkan untuk melanjutkan pengajian di Kolej UNITI dengan kerjasama penuh Universiti Teknologi MARA bagi mengikuti program berikut:
         </p>
         <br>
-        <p><strong>Program Pengajian &amp; Kod &nbsp;:</strong> {{ $data['student']->progname }}</p>
-        <p><strong>Tarikh &amp; Masa Lapor Diri &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</strong> 01/SEP/2022 (9.00 Pagi - 3.00 Petang)</p>
+        <p><strong>Program Pengajian &amp; Kod &nbsp;:</strong> {{ $data['student']->progname }} - SEPENUH MASA</p>
+        <p><strong>Tarikh &amp; Masa Lapor Diri &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</strong> {{ $formattedDate2 }} (9.00 Pagi - 3.00 Petang)</p>
+        <p><strong>Tempoh Pengajian &nbsp;&nbsp;:</strong> 2 Tahun 6 Bulan</p>   
         <p><strong>Tempat &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</strong> PEJABAT PENTADBIRAN, KOLEJ UNITI</p>
         <br>
         <p>
           Semasa mendaftar, sila sertakan salinan dokumen seperti berikut yang telah disahkan terlebih dahulu:
         </p>
-        <ol>
+        {{-- <ol>
           <li>1 salinan keputusan SPM</li>
           <li>1 salinan Kad Pengenalan pelajar, ibu dan bapa</li>
           <li>1 salinan Sijil Kelahiran pelajar, ibu dan bapa</li>
           <li>1 salinan Sijil Tamat Persekolahan di peringkat menengah</li>
           <li>4 keping gambar berukuran paspot</li>
-        </ol>
+        </ol> --}}
+        <div class="row">
+            <div class="d-flex p-2">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <ul>
+                            <li>Surat Tawaran</li>
+                            <li>4 keping gambar ukuran pasport</li>
+                            <li>Salinan Kad Pengenalan pemohon dan penjaga/ibubapa (1 salinan)</li>
+                            <li>Salinan Sijil Kelahiran pemohon dan penjaga/ibubapa (1 salinan)</li>
+                            <li>Slip gaji penjaga/ibubapa terkini (1 salinan)</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <ul>
+                            <li>Salinan Slip peperiksaan yang berkenaan (1 salinan)</li>
+                            <li>Salinan Sijil Berhenti Sekolah (1 salinan)</li>
+                            <li>Salinan Sijil Kurikulum - 3 Terbaik (1 salinan)</li>
+                            <li>Buku Pendaftaran Pelajar</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
         <p>
           Saudara/i juga dikehendaki membawa salinan asal dokumen di atas untuk tujuan penyemakan. Surat tawaran ini akan terbatal sekiranya saudara/i telah mendaftar untuk mengikuti program UiTM di mana-mana Kolej Bersekutu lain.
         </p>
