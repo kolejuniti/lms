@@ -70,7 +70,7 @@ use Carbon\Carbon;
             // Convert the date format
             $formattedDate = $twoWeeksBefore->format('d/m/Y');
 
-            $formattedDate2 = Carbon::createFromFormat('d/m/Y', $data['student']->date_offer)->format('d/F/Y');
+            $formattedDate2 = Carbon::parse($data['student']->date_offer)->format('d/F/Y');
 
             // Convert the month to uppercase
             $formattedDate2 = strtoupper($formattedDate2);
