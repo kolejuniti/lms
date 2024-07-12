@@ -83,7 +83,7 @@ class FinanceController extends Controller
     public function claimPackage()
     {
 
-        $data['program'] = DB::table('tblprogramme')->get();
+        $data['program'] = DB::table('tblprogramme')->orderBy('program_ID')->get();
 
         $data['session'] = DB::table('sessions')->get();
 
@@ -330,7 +330,7 @@ class FinanceController extends Controller
 
         $data['package'] = DB::table('tblstudentclaimpackage')->where('id', request()->id)->first();
 
-        $data['program'] = DB::table('tblprogramme')->get();
+        $data['program'] = DB::table('tblprogramme')->orderBy('program_ID')->get();
 
         $data['session'] = DB::table('sessions')->get();
 
@@ -4528,7 +4528,7 @@ class FinanceController extends Controller
                    ->orderBy('tblpayment.ref_no', 'asc')
                    ->get();
 
-        $data['program'] = DB::table('tblprogramme')->get();
+        $data['program'] = DB::table('tblprogramme')->orderBy('program_ID')->get();
 
         foreach($payment as $pym)
         {
@@ -5781,7 +5781,7 @@ class FinanceController extends Controller
 
         
 
-        $data['program'] = DB::table('tblprogramme')->get();
+        $data['program'] = DB::table('tblprogramme')->orderBy('program_ID')->get();
 
         $data['otherCharge'] = DB::table('tblstudentclaim')->where('groupid', 5)->get();
 
@@ -7599,7 +7599,7 @@ class FinanceController extends Controller
     public function arrearsReport()
     {
 
-        $data['program'] = DB::table('tblprogramme')->get();
+        $data['program'] = DB::table('tblprogramme')->orderBy('program_ID')->get();
 
         $data['status'] = DB::table('tblstudent_status')->get();
 
@@ -7631,7 +7631,7 @@ class FinanceController extends Controller
                 if($filter->program == 'all')
                 {
 
-                    $data['program'] = DB::table('tblprogramme')->get();
+                    $data['program'] = DB::table('tblprogramme')->orderBy('program_ID')->get();
 
                 }else{
 
@@ -8605,7 +8605,7 @@ class FinanceController extends Controller
 
         $data['totalPayment'] = [];
 
-        $data['program'] = DB::table('tblprogramme')->get();
+        $data['program'] = DB::table('tblprogramme')->orderBy('program_ID')->get();
 
     
 
@@ -8646,7 +8646,7 @@ class FinanceController extends Controller
     public function claimLog()
     {
 
-        $data['program'] = DB::table('tblprogramme')->get();
+        $data['program'] = DB::table('tblprogramme')->orderBy('program_ID')->get();
 
         $data['status'] = DB::table('tblstudent_status')->get();
 
@@ -9433,7 +9433,7 @@ class FinanceController extends Controller
     public function monthlyPayment()
     {
 
-        $data['program'] = DB::table('tblprogramme')->get();
+        $data['program'] = DB::table('tblprogramme')->orderBy('program_ID')->get();
 
         return view('finance.debt.monthly_payment_report.monthlyReport', compact('data'));
 
@@ -9913,7 +9913,7 @@ class FinanceController extends Controller
     public function agingReport()
     {
 
-        $data['program'] = DB::table('tblprogramme')->get();
+        $data['program'] = DB::table('tblprogramme')->orderBy('program_ID')->get();
 
         $data['status'] = DB::table('tblstudent_status')->get();
 
@@ -10221,7 +10221,7 @@ class FinanceController extends Controller
     public function programAgingReport()
     {
 
-        $data['program'] = DB::table('tblprogramme')->get();
+        $data['program'] = DB::table('tblprogramme')->orderBy('program_ID')->get();
 
         return view('finance.report.programAgingReport', compact('data'));
 
@@ -10660,7 +10660,7 @@ class FinanceController extends Controller
     public function ctosReport()
     {
 
-        $data['program'] = DB::table('tblprogramme')->get();
+        $data['program'] = DB::table('tblprogramme')->orderBy('program_ID')->get();
 
         return view('finance.debt.ctos_report.ctosReport', compact('data'));
 
@@ -10912,7 +10912,7 @@ class FinanceController extends Controller
     public function studentArrearsReport()
     {
 
-        $data['program'] = DB::table('tblprogramme')->get();
+        $data['program'] = DB::table('tblprogramme')->orderBy('program_ID')->get();
 
         $data['session'] = DB::table('sessions')->get();
 
