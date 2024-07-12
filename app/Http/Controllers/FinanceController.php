@@ -4533,6 +4533,8 @@ class FinanceController extends Controller
         foreach($payment as $pym)
         {
 
+            $status = 0;
+
             $status = DB::table('tblstudent_log')
                     ->join('tblstudent_status', 'tblstudent_log.status_id', '=', 'tblstudent_status.id')
                     ->where('tblstudent_log.student_ic', $pym->ic)
@@ -4541,7 +4543,7 @@ class FinanceController extends Controller
                     ->select('tblstudent_status.id')
                     ->first();
 
-            if(!$status)
+            if($status == 0)
             {
 
                 return response()->json(['error' => 'error on id' + $pym->id]);
