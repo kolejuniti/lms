@@ -154,10 +154,17 @@
                   $('#loading-spinner').css('display', 'none');
               },
               success  : function(data){
-                  // Hide the spinner on success
-                  $('#loading-spinner').css('display', 'none');
 
-                  $('#form-student').html(data);
+                if(data.error)
+                {
+                  alert(data.error);
+
+                }
+
+                // Hide the spinner on success
+                $('#loading-spinner').css('display', 'none');
+
+                $('#form-student').html(data);
                         
               }
           });
