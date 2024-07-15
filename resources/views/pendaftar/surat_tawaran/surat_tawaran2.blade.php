@@ -109,7 +109,7 @@ use Carbon\Carbon;
         </p>
         <br>
         <p>
-          <b>SYABAS DAN TAHNIAH</b> kerana saudara/i telah ditawarkan untuk melanjutkan pengajian di Kolej UNITI dengan kerjasama penuh Universiti Teknologi MARA bagi mengikuti program berikut:
+          <b>SYABAS DAN TAHNIAH</b> kerana saudara/saudari telah ditawarkan untuk melanjutkan pengajian di Kolej UNITI dengan kerjasama penuh Universiti Teknologi MARA bagi mengikuti program berikut:
         </p>
         <br>
         <p><strong>Program Pengajian &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</strong> {{ $data['student']->progname }} - SEPENUH MASA</p>
@@ -153,39 +153,41 @@ use Carbon\Carbon;
             </div>
         </div>
         <p>
-          Saudara/i juga dikehendaki membawa salinan asal dokumen di atas untuk tujuan penyemakan. Surat tawaran ini akan terbatal sekiranya saudara/i telah mendaftar untuk mengikuti program UiTM di mana-mana Kolej Bersekutu lain.
+          Saudara/saudari juga dikehendaki membawa salinan asal dokumen di atas untuk tujuan penyemakan. Surat tawaran ini akan terbatal sekiranya saudara/saudari telah mendaftar untuk mengikuti program UiTM di mana-mana Kolej Bersekutu lain.
         </p>
         <br>
         <div class="row">
             <div class="d-flex">
                 <div class="col-md-6">
-                <div class="form-group">
-                    <p>Sekian, dimaklumkan.</p>
-                    <br>
-                    <p>Yang benar,</p>
-                    <br>
-                    <img src="{{ asset('storage/signature/signature1.png') }}" alt="Image" width="40%" height="40%">
-                </div>
-                </div>
-                <div class="col-md-6">
-                <div style="border: 1px solid black; padding: 10px;">
                     <div class="form-group">
-                    <p>Nota Penting:</p>
-                    <ol>
-                        <li>Tawaran untuk mengikuti program Diploma Pengajian Sukan / Diploma Seni Lukis &amp; Seni Reka / Diploma Kejuruteraan Elektrik / Diploma Komunikasi &amp; Media adalah tertakluk kepada ujian khas atau temuduga yang akan diadakan terlebih dahulu.</li>
-                        <li>Hanya pemohon yang memenuhi syarat minima kemasukan UiTM sahaja yang layak mendaftar.</li>
-                        <li>Tawaran kemasukan ini akan dibatalkan oleh UiTM sekiranya calon mengemukakan maklumat palsu atau tidak benar.</li>
-                    </ol>
+                        <p>Sekian, dimaklumkan.</p>
                     </div>
                 </div>
+                <div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                </div>
+                <div class="col-md-6">
+                    <div style="border: 1px solid black; padding: 10px;">
+                        <div class="form-group">
+                        <p>Nota Penting:</p>
+                        <ol>
+                            <li>Tawaran untuk mengikuti program Diploma Pengajian Sukan / Diploma Seni Lukis &amp; Seni Reka / Diploma Kejuruteraan Elektrik / Diploma Komunikasi &amp; Media adalah tertakluk kepada ujian khas atau temuduga yang akan diadakan terlebih dahulu.</li>
+                            <li>Hanya pemohon yang memenuhi syarat minima kemasukan UiTM sahaja yang layak mendaftar.</li>
+                            <li>Tawaran kemasukan ini akan dibatalkan oleh UiTM sekiranya calon mengemukakan maklumat palsu atau tidak benar.</li>
+                        </ol>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
         <br>
+        <p>Yang benar,</p>
+        <br>
+        <img src="{{ asset('storage/signature/signature1.png') }}" alt="Image" width="10%" height="10%">
         <p>
-        AMIR HAMZAH BIN MD. ISA<br>
+        <b>AMIR HAMZAH BIN MD. ISA</b><br>
         KETUA EKSEKUTIF<br>
-        KOLEJ UNITI.
+        <b>KOLEJ UNITI.</b>
         </p>
     </body>
 </html>
