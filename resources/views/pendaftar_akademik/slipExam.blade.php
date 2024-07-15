@@ -150,7 +150,7 @@
                   <table>
                      <thead>
                         <tr class="line">
-                           <th style="width: 51%" class="text-center"><strong>KOD</strong></th>
+                           <th style="width: 5%" class="text-center"><strong>KOD</strong></th>
                            <th style="width: 10%" class="text-center"><strong>NAMA SUBJEK</strong></th>
                            <th style="width: 5%" class="text-center"><strong>KREDIT</strong></th>
                            <th style="width: 5%" class="text-center"><strong>TARAF</strong></th>
