@@ -33,7 +33,6 @@ use Carbon\Carbon;
     <style>
         @page {
         size: A4; /* reduced height for A5 size in landscape orientation */
-        margin: 2cm;
         }
         * {
             margin: 0;
