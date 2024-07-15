@@ -46,6 +46,15 @@ use Carbon\Carbon;
             font-size: 10px;
             
         }
+        body {
+            background-image: url('{{ asset("assets/images/letter_head/letter_head.jpg") }}');
+            background-size: cover; /* Cover the entire page */
+            background-position: center; /* Center the background image */
+            background-repeat: no-repeat; /* Do not repeat the image */
+            margin-bottom: 10cm;
+            margin-left: 1cm;
+            margin-right: 1cm;
+        }
         h2,h3,p {
             margin: 0;
             padding: 0;
