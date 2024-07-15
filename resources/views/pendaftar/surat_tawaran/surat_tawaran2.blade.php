@@ -86,6 +86,8 @@ use Carbon\Carbon;
 
         @endphp
 
+        <br>
+        <br>
         <p>Surat Kami : UNITI/KUSB/2023/040616070397</p>
         <p>Tarikh : {{ $formattedDate }}</p>
         <br>
