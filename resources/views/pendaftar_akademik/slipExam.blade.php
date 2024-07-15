@@ -162,8 +162,8 @@
                         @endphp
                         @foreach ($data['course'] as $key => $crs)
                         <tr>
-                           <td class="text-center">{{ $crs->course_code }}</td>
-                           <td class="text-center">{{ $crs->course_name }}</td>
+                           <td>{{ $crs->course_code }}</td>
+                           <td>{{ $crs->course_name }}</td>
                            <td class="text-center">{{ $crs->course_credit }}</td>
                            <td class="text-center">{{ $crs->level }}</td>
                         </tr>
