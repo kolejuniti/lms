@@ -77,20 +77,11 @@ use Carbon\Carbon;
 
         @endphp
 
-        <div style="text-align: center;">
-            <img src="{{ asset('assets/images/logo/Kolej-UNITI.png')}}" alt="Logo" width="15%" height="15%">
-            <h1>KOLEJ UNITI</h1>
-            <p>Kompleks UNITI, 71250 Pasir Panjang<br>Port Dickson, Negeri Sembilan</p>
-            <p>No. Telefon : 06-6490 350<br>No. Faks : 06-661 0509</p>
-            <p><a href="http://www.uniti.edu.my">www.uniti.edu.my</a></p>
-        </div>
-        <br>
-        <div style="border-top: 1px solid black;"></div>
-        <br>
         <p>Surat Kami : UNITI/KUSB/2023/040616070397</p>
         <p>Tarikh : {{ $formattedDate }}</p>
         <br>
         <p>
+          {{ strtoupper($data['student']->name) }}<br>
           {{ strtoupper($data['address']->address1) }}<br>
           {{ strtoupper($data['address']->address2) }}<br>
           {{ strtoupper($data['address']->address3) }}<br> 
@@ -104,11 +95,11 @@ use Carbon\Carbon;
         </p>
         <br>
         <p>
-          TAWARAN MENGIKUTI PROGRAM UiTM DI KOLEJ UNITI, PORT DICKSON
+          <b>TAWARAN MENGIKUTI PROGRAM UiTM DI KOLEJ UNITI, PORT DICKSON</b>
         </p>
         <br>
         <p>
-          SYABAS DAN TAHNIAH kerana saudara/i telah ditawarkan untuk melanjutkan pengajian di Kolej UNITI dengan kerjasama penuh Universiti Teknologi MARA bagi mengikuti program berikut:
+          <b>SYABAS DAN TAHNIAH</b> kerana saudara/i telah ditawarkan untuk melanjutkan pengajian di Kolej UNITI dengan kerjasama penuh Universiti Teknologi MARA bagi mengikuti program berikut:
         </p>
         <br>
         <p><strong>Program Pengajian &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</strong> {{ $data['student']->progname }} - SEPENUH MASA</p>
