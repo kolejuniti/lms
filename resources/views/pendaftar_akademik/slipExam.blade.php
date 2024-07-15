@@ -150,10 +150,10 @@
                   <table>
                      <thead>
                         <tr class="line">
-                           <th class="text-center"><strong>KOD</strong></th>
-                           <th class="text-center"><strong>NAMA SUBJEK</strong></th>
-                           <th class="text-center"><strong>KREDIT</strong></th>
-                           <th class="text-center"><strong>TARAF</strong></th>
+                           <th style="width: 1%" class="text-center"><strong>KOD</strong></th>
+                           <th style="width: 10%" class="text-center"><strong>NAMA SUBJEK</strong></th>
+                           <th style="width: 5%" class="text-center"><strong>KREDIT</strong></th>
+                           <th style="width: 10%" class="text-center"><strong>TARAF</strong></th>
                         </tr>
                      </thead>
                      <tbody>
@@ -162,8 +162,8 @@
                         @endphp
                         @foreach ($data['course'] as $key => $crs)
                         <tr>
-                           <td>{{ $crs->course_code }}</td>
-                           <td>{{ $crs->course_name }}</td>
+                           <td class="text-center">{{ $crs->course_code }}</td>
+                           <td class="text-center">{{ $crs->course_name }}</td>
                            <td class="text-center">{{ $crs->course_credit }}</td>
                            <td class="text-center">{{ $crs->level }}</td>
                         </tr>
