@@ -108,8 +108,8 @@
                         <strong>KOLEJ UNITI</strong><br>
                         PERSIARAN UNITI VILLAGE, TANJUNG AGAS<br>
                         71250, PORT DICKSON, NEGERI SEMBILAN.<br>
-                        <abbr title="Phone">Tel:</abbr> 06-649 0350 | <abbr title="Phone">Fax:</abbr> 06-661 0509<br>
-                        http://www.uniti.edu.my | <abbr title="Email">Email:</abbr> info@uniti.edu.my
+                        Tel: 06-649 0350 | Fax: 06-661 0509<br>
+                        http://www.uniti.edu.my | Email: info@uniti.edu.my
                      </address>
                   </div>
                </div>
@@ -122,10 +122,8 @@
             </div>
             <hr>
             <div class="row">
-               <div class="col-md-12 text-center" style="font-size: 20px;">
-                  <h1>
-                     <b>SLIP MENDUDUKI PEPERIKSAAN</b>
-                  </h1>
+               <div class="col-md-12 text-center" >
+                  <b style="font-size: 15px;">SLIP MENDUDUKI PEPERIKSAAN</b>
                </div>
                <div class="col-md-12 d-flex p-2">
                   <div class="col-md-6" style="margin-right: 10px">
