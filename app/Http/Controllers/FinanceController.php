@@ -8383,7 +8383,7 @@ class FinanceController extends Controller
 
                     $currentLength = strlen($student[$key]->id);
                     $newLength = $currentLength + 1;
-                    $student[$key]->id = str_pad($student[$key]->id, $newLength, '0', STR_PAD_LEFT);
+                    $studentID = str_pad($student[$key]->id, $newLength, '0', STR_PAD_LEFT);
 
                     $content .= '
                     <tr>
@@ -8406,7 +8406,7 @@ class FinanceController extends Controller
                         '. ($student[$key]->no_matric ?? '') .'
                         </td>
                         <td>
-                        '. ($student[$key]->id ?? '') .'
+                        '. ($studentID ?? '') .'
                         </td>';
 
                     $content .= '<td>';
