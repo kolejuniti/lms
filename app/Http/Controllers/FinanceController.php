@@ -8381,6 +8381,10 @@ class FinanceController extends Controller
                 foreach($payment as $key => $pym){
                     //$registered = ($std->status == 'ACTIVE') ? 'checked' : '';
 
+                    $currentLength = strlen($student[$key]->id);
+                    $newLength = $currentLength + 1;
+                    $student[$key]->id = str_pad($student[$key]->id, $newLength, '0', STR_PAD_LEFT);
+
                     $content .= '
                     <tr>
                         <td>
