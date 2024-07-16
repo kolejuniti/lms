@@ -8381,16 +8381,16 @@ class FinanceController extends Controller
                 foreach($payment as $key => $pym){
                     //$registered = ($std->status == 'ACTIVE') ? 'checked' : '';
 
-                    // $studentID = '';
+                    $studentID = '';
 
-                    // if($student[$key]->id)
-                    // {
+                    if($student[$key]->id)
+                    {
 
-                    //     $currentLength = strlen($student[$key]->id);
-                    //     $newLength = $currentLength + 1;
-                    //     $studentID = str_pad($student[$key]->id, $newLength, '1', STR_PAD_LEFT);
+                        $currentLength = strlen($student[$key]->id);
+                        $newLength = $currentLength + 1;
+                        $studentID = str_pad($student[$key]->id, $newLength, '1', STR_PAD_LEFT);
 
-                    // }
+                    }
 
                     $content .= '
                     <tr>
@@ -8413,7 +8413,7 @@ class FinanceController extends Controller
                         '. ($student[$key]->no_matric ?? '') .'
                         </td>
                         <td>
-                        '. ($student[$key]->id ?? '') .'
+                        '. $studentID .'
                         </td>';
 
                     $content .= '<td>';
