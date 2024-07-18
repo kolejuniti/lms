@@ -240,7 +240,7 @@
                           <div class="form-group">
                             <label class="form-label" for="EA">Education Advisor <p style="color:red; display:inline-block;"></label>
                             <select class="form-select" id="EA" name="EA" required>
-                              <option value="-" selected disabled>-</option>
+                              <option value="-" selected>-</option>
                               @foreach ($data['EA'] as $ea)
                                 <option value="{{ $ea->id }}" {{ ($student->advisor_id == $ea->id) ? 'selected' : '' }}>{{ $ea->name}}</option> 
                               @endforeach
