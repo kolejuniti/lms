@@ -844,7 +844,7 @@ class PendaftarController extends Controller
 
         $data['mstatus'] = DB::table('tblmarriage')->get();
 
-        $data['EA'] = DB::table('tbledu_advisor')->get();
+        $data['EA'] = DB::table('tbledu_advisor')->orderBy('name')->get();
 
         $data['pass'] = DB::table('tblpass_type')->get();
 
