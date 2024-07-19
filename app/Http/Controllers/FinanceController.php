@@ -10894,7 +10894,8 @@ class FinanceController extends Controller
         $data['student'] = DB::table('students')
                            ->leftjoin('tblstudent_address', 'students.ic', 'tblstudent_address.student_ic')
                            ->leftjoin('tblstate', 'tblstudent_address.state_id', 'tblstate.id')
-                           ->select('students.*', 'tblstudent_address.*', 'tblstate.state_name AS state')
+                           ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+                           ->select('students.*', 'tblstudent_address.*', 'tblstate.state_name AS state', 'tblprogramme.progcode AS code', 'tblprogramme.progname AS program')
                            ->where('students.ic', $request->student)->first();
         
         $data['originalDate'] = strtoupper(Carbon::createFromFormat('Y-m-d H:i:s', now())->format('d F Y'));
