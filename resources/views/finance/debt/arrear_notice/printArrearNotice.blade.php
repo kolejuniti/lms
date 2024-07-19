@@ -33,7 +33,7 @@ use Carbon\Carbon;
     <style>
         @page {
             size: A4;
-            margin: 1cm;
+            margin: 1.5cm;
         }
         * {
             margin: 0;
@@ -103,6 +103,8 @@ use Carbon\Carbon;
         <br>
         <br>
         <br>
+        <br>
+        <br>
         <p>Ruj. Kami : KUSB/UPTP/TAMATPENGAJIAN/2024/{{ $data['student']->no_matric }}</p>
         <p>Tarikh &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : {{ $data['originalDate'] }}</p>
         <div class="col-12 mb-1 mt-1">  
@@ -121,8 +123,8 @@ use Carbon\Carbon;
         <p class="mt-2"><i>Assalamualaikum WRT. WBT.</i></p>
         <p class="mt-2"><b>NOTIS TUNGGAKAN YURAN PENGAJIAN PELAJAR {{ strtoupper($data['student']->name) }} - {{ $data['student']->ic }}</b></p>
         <p class="mt-2">Dengan segala hormatnya, perkara di atas adalah dirujuk.</p>
-        <p class="mt-2">2. Mengikut rekod Kolej Uniti Sdn Bhd sehingga <b>{{ $data['originalDate'] }}</b>, jumlah tunggakan pembiayaan pelajaran tuan/puan dengan pihak Kolej Uniti Sdn Bhd adalah berjumah <b>{{ $data['balance']->balance }}</b></p>
-        <p class="mt-2">3. Seperti persetujuan dalam pakej kewangan pelajar yang telah dipersetujui pihak tuan/puan, dikehendaki membayar tunggakan tersebut secara ansuran selepas 6 bulan menamatkan tempoh pengajian seperti berikut:</p>
+        <p class="mt-2">2. &nbsp;&nbsp;&nbsp;&nbsp;Mengikut rekod Kolej Uniti Sdn Bhd sehingga <b>{{ $data['originalDate'] }}</b>, jumlah tunggakan pembiayaan pelajaran tuan/puan dengan pihak Kolej Uniti Sdn Bhd adalah berjumah <b>{{ $data['balance']->balance }}</b></p>
+        <p class="mt-2">3. &nbsp;&nbsp;&nbsp;&nbsp;Seperti persetujuan dalam pakej kewangan pelajar yang telah dipersetujui pihak tuan/puan, dikehendaki membayar tunggakan tersebut secara ansuran selepas 6 bulan menamatkan tempoh pengajian seperti berikut:</p>
         <div class="col-md-12 mt-2">
             <table class="custom-table">
                 <thead>
@@ -145,8 +147,8 @@ use Carbon\Carbon;
                 </tbody>
             </table>
         </div>
-        <p class="mt-2">4. Jika terdapat sebarang pertanyaan, masalah atau perlukan sebarang rayuan ansuran, tuan/puan boleh menghubungi Puan Emi Marlida Binti Jabar (Unit Penstrukturan Tunggakan Pelajar) di talian 06-6490350.</p>
-        <p class="mt-2">5. Bersama ini disertakan penyata kewangan dan salinan pakej kewangan untuk rujukan pihak tuan/puan. Pelajar juga boleh membuat semakan tunggakan di <b>Portal Pelajar Kolej Uniti</b> dan membuat bayaran menerusi pindahan bank ke akaun kolej (<b>KOLEJ UNITI SDN BHD : Bank Muamalat - 1402 0000 9187 15</b>). Bukti bayaran perlu di whatsapp ke nombor <b>016-9631663</b>. Sila lampirkan nama, nombor matrik dan nombor kad pengenalan pelajar sebagai rujukan pihak kolej.</p>
+        <p class="mt-2">4. &nbsp;&nbsp;&nbsp;&nbsp;Jika terdapat sebarang pertanyaan, masalah atau perlukan sebarang rayuan ansuran, tuan/puan boleh menghubungi Puan Emi Marlida Binti Jabar (Unit Penstrukturan Tunggakan Pelajar) di talian 06-6490350.</p>
+        <p class="mt-2">5. &nbsp;&nbsp;&nbsp;&nbsp;Bersama ini disertakan penyata kewangan dan salinan pakej kewangan untuk rujukan pihak tuan/puan. Pelajar juga boleh membuat semakan tunggakan di <b>Portal Pelajar Kolej Uniti</b> dan membuat bayaran menerusi pindahan bank ke akaun kolej (<b>KOLEJ UNITI SDN BHD : Bank Muamalat - 1402 0000 9187 15</b>). Bukti bayaran perlu di whatsapp ke nombor <b>016-9631663</b>. Sila lampirkan nama, nombor matrik dan nombor kad pengenalan pelajar sebagai rujukan pihak kolej.</p>
         <p class="mt-3">Sila sahkan penerimaan notis dan persetujuan ansuran ini. Kegagalan mengesahkan menerima notis ini akan menyebabkan pihak kami tiada pilihan selain menggunakan saluran yang dibenarkan perundangan.</p>
         <p class="mt-3">Segala kerjasama daripada pihak tuan/puan mengesahkan baki tersebut amatlah dihargai</p>
         <p class="mt-1 mb-1">Sekian, terima kasih.</p>
@@ -189,7 +191,7 @@ use Carbon\Carbon;
         <p><b>(Rujukan Tuan/Puan : <span style="background-color: black; color: white; padding: 2px;">KUSB/UPTP/TAMATPENGAJIAN/2024/{{ $data['student']->no_matric }}</span>)</b></p>
         <hr>
         <p class="mt-2">Dengan segala hormatnya, saya merujuk kepada perkara di atas.</p>
-        <p class="mt-2">2. Saya sedia maklum akan tunggakan yuran di Kolej Uniti seperti berikut :-</p>
+        <p class="mt-2">2. &nbsp;&nbsp;&nbsp;&nbsp;Saya sedia maklum akan tunggakan yuran di Kolej Uniti seperti berikut :-</p>
         <div class="col-12 mb-1 mt-1">  
             <div style="border: 1px solid white; padding: 10px;">
                 <table>
@@ -221,7 +223,7 @@ use Carbon\Carbon;
             </div> 
         </div>
 
-        <p class="mt-2">3. Dengan ini, sata bersetuju untuk membuat bayaran seperti yang termaktub di dalam perjanjian iaitu sebanyak <b>RM {{ $data['details']['money'] }} sebulan selama {{ $data['details']['period'] }} bulan</b> bermula <b>{{ $data['startDate'] }}</b>.</p>
+        <p class="mt-2">3. &nbsp;&nbsp;&nbsp;&nbsp;Dengan ini, saya bersetuju untuk membuat bayaran seperti yang termaktub di dalam perjanjian iaitu sebanyak <b>RM {{ $data['details']['money'] }} sebulan selama {{ $data['details']['period'] }} bulan</b> bermula <b>{{ $data['startDate'] }}</b>.</p>
         <p class="mt-1 mb-1">Sekian, terima kasih.</p>
         <br>
         <br>
