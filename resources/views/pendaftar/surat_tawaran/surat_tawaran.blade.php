@@ -84,8 +84,9 @@ use Carbon\Carbon;
         <p>Ruj. Kami: UNITI/KUSB/{{ date('Y') }}/{{ $data['student']->ic }}</p>
         <p class="mt-2">{{ $formattedDate }}</p>
         <p class="mt-2">{{ strtoupper($data['student']->name) }}</p>
-        <p>{{ strtoupper($data['address']->address1) }}</p>
-        <p>{{ strtoupper($data['address']->address2) }}, {{ strtoupper($data['address']->address3) }}</p>
+        @if($data['address']->address1 != null)<p>{{ strtoupper($data['address']->address1) }}</p>@endif
+        @if($data['address']->address2 != null)<p>{{ strtoupper($data['address']->address2) }}</p>@endif
+        @if($data['address']->address3 != null)<p>{{ strtoupper($data['address']->address3) }}</p>@endif
         <p>{{ $data['address']->postcode }}</p>
         <p>{{ strtoupper($data['address']->city) }}, {{ strtoupper($data['address']->state) }}</p>
         <p>{{ strtoupper($data['address']->country) }}</p>

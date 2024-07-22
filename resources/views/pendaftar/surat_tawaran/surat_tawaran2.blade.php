@@ -92,8 +92,9 @@ use Carbon\Carbon;
         <br>
         <p>
           {{ strtoupper($data['student']->name) }}<br>
-          {{ strtoupper($data['address']->address1) }}<br>
-          {{ strtoupper($data['address']->address2) }}, {{ strtoupper($data['address']->address3) }}<br>
+          @if($data['address']->address1 != null){{ strtoupper($data['address']->address1) }}<br>@endif
+          @if($data['address']->address2 != null){{ strtoupper($data['address']->address2) }}<br>@endif
+          @if($data['address']->address3 != null){{ strtoupper($data['address']->address3) }}<br>@endif
           {{ $data['address']->postcode }}<br>
           {{ strtoupper($data['address']->city) }}, {{ strtoupper($data['address']->state) }}<br>
           {{ strtoupper($data['address']->country) }}
