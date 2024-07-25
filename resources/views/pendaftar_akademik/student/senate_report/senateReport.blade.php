@@ -211,7 +211,9 @@
                 // Log the received data to the console
                 console.log(data.data);
 
-                renderSenateReport(data.data)
+                // renderSenateReport(data.data)
+
+                window.renderSenateReport(data.data)
 
                 // $('#form-student').html(data);
                         
