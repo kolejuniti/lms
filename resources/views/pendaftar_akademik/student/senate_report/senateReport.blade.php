@@ -210,10 +210,8 @@
 
                 // Log the received data to the console
                 console.log(data.data);
-
-                // renderSenateReport(data.data)
-
-                window.renderSenateReport(data.data)
+                console.log('renderSenateReport is defined:', typeof window.renderSenateReport);
+                renderSenateReport(data.data)
 
                 // $('#form-student').html(data);
                         
