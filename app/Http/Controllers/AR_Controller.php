@@ -2347,6 +2347,102 @@ class AR_Controller extends Controller
 
     }
 
+    public function senateReport()
+    {
+
+        $data = [
+            'program' => DB::table('tblprogramme')->orderBy('program_ID')->get(),
+            'session' => DB::table('sessions')->get(),
+            'semester' => DB::table('semester')->get()
+        ];
+
+        return view('pendaftar_akademik.student.senate_report.senateReport', compact('data'));
+
+    }
+
+    public function getSenateReport(Request $request)
+    {
+
+        $datas = json_decode($request->submitData);
+
+        if($datas->program != '' && $datas->session != '' && $datas->semester != '')
+        {
+
+            if(isset($request->print))
+            {
+
+                $data['student'] = DB::table('student_transcript')
+                        ->join('students', 'student_transcript.student_ic', 'students.ic')
+                        ->join('transcript_status', 'student_transcript.transcript_status_id', 'transcript_status.id')
+                        ->where([
+                            ['students.program', $datas->program],
+                            ['student_transcript.session_id', $datas->session],
+                            ['student_transcript.semester', $datas->semester]
+                        ])
+                        ->select('student_transcript.*', 'students.name', 'students.ic','students.no_matric', 'transcript_status.status_name AS status')
+                        ->get();
+
+                $data['course'] = DB::table('student_subjek')
+                                  ->join('students', 'student_subjek.student_ic', 'students.ic')
+                                  ->join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
+                                  ->where([
+                                    ['students.program', $datas->program],
+                                    ['student_subjek.sessionid', $datas->session],
+                                    ['student_subjek.semesterid', $datas->semester]
+                                  ])
+                                  ->groupBy('subjek.sub_id')
+                                  ->get();
+
+                foreach($data['student'] as $key => $std)
+                {
+
+                    foreach($data['course'] as $key2 => $crs)
+                    {
+
+                        $data['dtl'][$key][$key2] = DB::table('student_subjek')
+                                       ->join('students', 'student_subjek.student_ic', 'students.ic')
+                                       ->where([
+                                         ['students.ic', $std->ic],
+                                         ['student_subjek.sessionid', $datas->session],
+                                         ['student_subjek.semesterid', $datas->semester],
+                                         ['student_subjek.courseid', $crs->sub_id]
+                                       ])->select('student_subjek.pointer', 'student_subjek.grade')->first();
+
+                    }
+
+                }
+
+
+                return view('pendaftar_akademik.student.senate_report.printSenateReport', compact('data'));
+
+            
+            }else{
+
+                
+
+                    $data = DB::table('student_transcript')
+                                    ->join('students', 'student_transcript.student_ic', 'students.ic')
+                                    ->join('transcript_status', 'student_transcript.transcript_status_id', 'transcript_status.id')
+                                    ->where([
+                                        ['students.program', $datas->program],
+                                        ['student_transcript.session_id', $datas->session],
+                                        ['student_transcript.semester', $datas->semester]
+                                    ])
+                                    ->select('student_transcript.*', 'students.name', 'transcript_status.status_name AS status')
+                                    ->get();
+
+                    return response()->json(['data' => $data]);
+
+            }
+
+        }else{
+
+            return response()->json(['error' => 'Please fill in all input!']);
+
+        }
+
+    }
+
     // public function groupTable()
     // {
 
