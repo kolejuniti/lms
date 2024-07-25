@@ -1,4 +1,4 @@
-@extends('layouts.finance')
+@extends('layouts.pendaftar_akademik')
 
 @section('main')
 
