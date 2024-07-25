@@ -39,5 +39,8 @@ window.getMessage = function(ic) {
 
 app.mount('#app');
 
+// Import React setup
+require('./react-app');
+
 
 
