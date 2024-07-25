@@ -305,6 +305,7 @@
 						<li><a href="{{ route('pendaftar.student.result') }}" class="{{ (route('pendaftar.student.result') == Request::url()) ? 'active' : ''}}">Student Result</a></li>
 						<li><a href="{{ route('all.student.spm.report') }}" class="{{ (route('all.student.spm.report') == Request::url()) ? 'active' : ''}}">Student Report SPM</a></li>
 						<li><a href="{{ route('pendaftar_akademik.warningLetter') }}" class="{{ (route('pendaftar_akademik.warningLetter') == Request::url()) ? 'active' : ''}}">Student Warning Letter</a></li>
+						<li><a href="{{ route('pendaftar_akademik.senateReport') }}" class="{{ (route('pendaftar_akademik.senateReport') == Request::url()) ? 'active' : ''}}">Senate Report</a></li>
 					</ul>
 				</li>
 				<li class="treeview">
