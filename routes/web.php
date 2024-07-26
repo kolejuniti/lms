@@ -90,6 +90,9 @@ Route::get('/KP/marks', [App\Http\Controllers\KP_Controller::class, 'courseMark'
 Route::get('/KP/report/file', [App\Http\Controllers\KP_Controller::class, 'lecturerReportFile'])->name('kp.report.file');
 Route::get('/KP/report/assessment2', [App\Http\Controllers\KP_Controller::class, 'assessment2'])->name('kp.report.assessment2');
 Route::post('/KP/report/assessment/getAssessment', [App\Http\Controllers\KP_Controller::class, 'getAssessment']);
+Route::get('/KP/assign/meetingHour', [App\Http\Controllers\KP_Controller::class, 'meetingHour'])->name('kp.assign.meetingHour');
+Route::post('/KP/assign/getMeetingHour', [App\Http\Controllers\KP_Controller::class, 'getMeetingHour']);
+Route::post('/KP/assign/submitMeetingHour', [App\Http\Controllers\KP_Controller::class, 'submitMeetingHour']);
 
 Route::get('/AO', [App\Http\Controllers\AO_Controller::class, 'index'])->name('pegawai_takbir');
 
