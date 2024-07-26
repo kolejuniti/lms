@@ -289,6 +289,7 @@
 							</ul>
 						</li>
 						<li><a href="{{ route('kp.coursemark') }}" class="{{ (route('kp.coursemark') == Request::url()) ? 'active' : ''}}">Marks</a></li>
+						<li><a href="{{ route('kp.assign.meetingHour') }}" class="{{ (route('kp.assign.meetingHour') == Request::url()) ? 'active' : ''}}">Meeting Hour</a></li>
 						@endif
 					</ul>
 				</li>  	
