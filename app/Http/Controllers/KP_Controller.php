@@ -1091,4 +1091,45 @@ $content .= '<tr>
         return view('ketua_program.report.getAssessment', compact('data'));
 
     }
+
+    public function meetingHour()
+    {
+
+        $data['program'] = DB::table('tblprogramme')->orderBy('program_ID')->get();
+
+        return view('ketua_program.assign.subject.meetingHour', compact('data'));
+
+    }
+
+    public function getMeetingHour(Request $request)
+    {
+
+        $data['subject'] = DB::table('subjek_structure')
+                           ->join('subjek', 'subjek_structure.courseID', 'subjek.sub_id')
+                           ->where('subjek_structure.program_id', $request->id)
+                           ->groupBy('courseID')
+                           ->select('subjek_structure.courseID', 'subjek_structure.meeting_hour', 'subjek.course_name', 'subjek.course_code')
+                           ->get();
+
+        return view('ketua_program.assign.subject.getMeetingHour', compact('data'));
+
+    }
+
+    public function submitMeetingHour(Request $request)
+    {
+
+        $m_ids = $request->input('m_id');
+        $m_hours = $request->input('m_hour');
+
+        if (is_array($m_ids) && is_array($m_hours)) {
+            foreach ($m_ids as $index => $id) {
+                DB::table('subjek_structure')
+                ->where('courseID', $id)
+                ->update(['meeting_hour' => $m_hours[$index]]);
+            }
+        }
+
+        return response()->json(['success' => true, 'message' => 'Successfully updated subject\'s meeting hour!']);
+
+    }
 }
