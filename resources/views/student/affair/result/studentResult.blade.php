@@ -1,6 +1,7 @@
 @extends('layouts.student')
 
 @section('main')
+
 <!-- Content Header (Page header) -->
 <div class="content-wrapper" style="min-height: 695.8px;">
   <div class="container-full">
@@ -21,6 +22,15 @@
       </div>
     </div>
   </div>
+  
+  @if(isset($data['error']))
+  <script type="text/javascript">
+    $(document).ready(function(){
+      alert('{{ $data["error"] }}');
+    });
+    
+  </script>
+  @endif
 
     <section class="content">
       <div class="container-fluid">
