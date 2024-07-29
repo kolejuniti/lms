@@ -1338,7 +1338,8 @@ class PendaftarController extends Controller
                     'session' => $student->session,
                     'semester' => $student->semester,
                     'status' => $student->status,
-                    'student_status' => $student->kuliah
+                    'student_status' => $student->kuliah,
+                    'block_status' => $student->block
                 ]);
 
                 DB::table('tblstudent_log')->insert([
@@ -1347,15 +1348,18 @@ class PendaftarController extends Controller
                     'semester_id' => $student->semester,
                     'status_id' => $student->status,
                     'kuliah_id' => $stds,
+                    'block_id' => $student->block,
                     'date' => date("Y-m-d H:i:s"),
                     'remark' => $student->comment,
                     'add_staffID' => Auth::user()->ic
                 ]);
 
                 $std_log = DB::table('tblstudent_log')
+                           ->join('users', 'tblstudent_log.add_staffID', 'users.ic')
                            ->join('sessions', 'tblstudent_log.session_id', 'sessions.SessionID')
                            ->join('tblstudent_status', 'tblstudent_log.status_id', 'tblstudent_status.id')
                            ->where('student_ic', $student->ic)
+                           ->select('tblstudent_log.*', 'sessions.SessionName', 'tblstudent_status.name', 'users.name AS staff')
                            ->get();
 
                 foreach($std_log as $key => $log)
@@ -1422,10 +1426,16 @@ class PendaftarController extends Controller
                                         Lectures Status
                                     </th>
                                     <th style="width: 10%">
+                                        Block Status
+                                    </th>
+                                    <th style="width: 10%">
                                         Date
                                     </th>
                                     <th style="width: 20%">
                                         Remark
+                                    </th>
+                                    <th style="width: 10%">
+                                        Staff
                                     </th>
                                 </tr>
                             </thead>
@@ -1454,10 +1464,16 @@ class PendaftarController extends Controller
                         '. $kuliah[$key] .'
                         </td>
                         <td>
+                        '. ($std->block_id == 1 ? 'Blocked' : 'Not Blocked') .'
+                        </td>
+                        <td>
                         '. $std->date .'
                         </td>
                         <td>
                         '. $std->remark .'
+                        </td>
+                        <td>
+                        '. $std->staff .'
                         </td>
                     </tr>
                     ';
