@@ -181,6 +181,7 @@ function submitForm(ic)
         status: $('#status').val(),
         kuliah: $('#kuliah').val(),
         comment: $('#comment').val(),
+        block: $('#block').val(),
         // comment: editor.getData(),
       };
 
@@ -253,7 +254,9 @@ function generateMatric(ic)
                 alert(data.success);
 
               }else{
+
                 alert(data.error);
+                
               }
             }
         });

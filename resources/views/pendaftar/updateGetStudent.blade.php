@@ -92,6 +92,17 @@
                       </select>
                     </div>
                 </div>
+                @php $status = (Auth::user()->usrtype == 'FN') ? '' : 'display: none;' @endphp
+                <div class="col-md-6 mr-3" id="block-card" style="{{ $status }}">
+                    <div class="form-group">
+                      <label class="form-label" for="block">Block Status</label>
+                      <select class="form-select" id="block" name="block">
+                        <option value="-" selected disabled>-</option>
+                        <option value="0" {{ ($data['student']->block_status == 0) ? 'selected' : '' }}>No</option>
+                        <option value="1" {{ ($data['student']->block_status == 1) ? 'selected' : '' }}>Yes</option>
+                      </select>
+                    </div>
+                </div>
                 <div class="col-md-12 mt-3">
                     <div class="form-group">
                         <label class="form-label">Comment</label>
@@ -140,6 +151,9 @@
                         Lectures Status
                     </th>
                     <th style="width: 10%">
+                        Block Status
+                    </th>
+                    <th style="width: 10%">
                         Date
                     </th>
                     <th style="width: 20%">
@@ -170,6 +184,9 @@
                     </td>
                     <td>
                         {{ $kuliah[$key] }}
+                    </td>
+                    <td>
+                        {{ $hs->block_id == 1 ? 'Blocked' : 'Not Blocked' }}
                     </td>
                     <td>
                         {{ $hs->date }}
