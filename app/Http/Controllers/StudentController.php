@@ -1112,20 +1112,18 @@ class StudentController extends Controller
                            ->join('tblprogramme', 'students.program', 'tblprogramme.id')
                            ->join('sessions AS t1', 'students.intake', 't1.SessionID')
                            ->join('sessions AS t2', 'students.session', 't2.SessionID')
-                           ->where('students.ic',  $data['warning']->student_ic)
                            ->select('students.*', 'tblstudent_status.name AS statusName', 'tblprogramme.progname AS program', 'students.program AS progid', 't1.SessionName AS intake_name', 't2.SessionName AS session_name')
-                           ->first();
+                           ->where('ic',  Session::get('StudInfo')->ic)->first();
 
         $data['attendance'] = DB::table('tblclassattendance')
                               ->where([
-                                ['student_ic', $data['warning']->student_ic],
+                                ['student_ic', $data['student']->ic],
                                 ['groupid', $data['warning']->groupid],
                                 ['groupname', $data['warning']->groupname],
                               ])
                               ->where('tblclassattendance.classdate', '<=', $data['warning']->created_at)
-                              ->get();      
-                              
-        //dd($data['student']);
+                              ->get();                              
+
 
         return view('lecturer.class.surat_amaran.surat_amaran', compact('data'));
 
@@ -1488,6 +1486,20 @@ class StudentController extends Controller
     {
         $student = Session::get('StudInfo');
 
+        $firstSem = $student->semester;
+
+        if($firstSem != 1)
+        {
+            $secondSem = $firstSem - 1;
+
+        }else{
+
+            $secondSem = 0; 
+
+        }
+
+        $semesterArray = [$firstSem, $secondSem];
+
         $data['student'] = DB::table('students')
                            ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
                            ->join('tblprogramme', 'students.program', 'tblprogramme.id')
@@ -1496,14 +1508,27 @@ class StudentController extends Controller
                            ->select('students.*', 'tblstudent_status.name AS statusName', 'tblprogramme.progname AS program', 'students.program AS progid', 't1.SessionName AS intake_name', 't2.SessionName AS session_name')
                            ->where('ic',  $student->ic)->first();
 
+        if($student->block_status == 0)
+        {
+
         $data['result'] = DB::table('student_transcript')
                 ->leftjoin('students', 'student_transcript.student_ic', 'students.ic')
                 ->leftjoin('sessions', 'student_transcript.session_id', 'sessions.SessionID')
                 ->leftjoin('transcript_status', 'student_transcript.transcript_status_id', 'transcript_status.id')
                 ->where([
                     ['student_transcript.student_ic',  $student->ic],
-                ])->select('student_transcript.*', 'students.name', 'students.no_matric', 'sessions.SessionName','transcript_status.status_name AS transcript_status_id')
+                ])
+                ->whereIn('student_transcript.semester', $semesterArray)
+                ->select('student_transcript.*', 'students.name', 'students.no_matric', 'sessions.SessionName','transcript_status.status_name AS transcript_status_id')
                 ->get();
+
+        }else{
+
+            $data['result'] = [];
+
+            $data['error'] = 'You are blocked from viewing results, please consult the finance department for any inquiries.';
+
+        }
 
         return view('student.affair.result.studentResult', compact('data'));
 
