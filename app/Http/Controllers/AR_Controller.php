@@ -1354,7 +1354,7 @@ class AR_Controller extends Controller
                             ['program_id', $student->program],
                             ['intake_id', $student->intake],
                             ['semester_id', $student->semester]
-                            ])->get();
+                            ])->join('tblstudentclaim', 'tblstudentclaimpackage.claim_id', 'tblstudentclaim.id')->get();
 
         DB::table('tblclaim')->where([
             ['student_ic', $student->ic],
