@@ -165,13 +165,13 @@
                @endif
 
                <div class="col-md-12">
-                  <h3>BAYARAN</h3>
+                  <h3>TUNTUTAN</h3>
                   {{-- class="table table-striped" --}}
                   <table>
                      <thead>
                         <tr class="line">
                            <td style="width: 10px;"><strong>#</strong></td>
-                           <td class="text-center; width: 50px;"><strong>MAKLUMAT BAYARAN</strong></td>
+                           <td class="text-center; width: 50px;"><strong>MAKLUMAT TUNTUTAN</strong></td>
                            <td class="text-center; width: 50px;"><strong>SEMESTER</strong></td>
                            <td class="text-center; width: 50px;"><strong>AMAUN</strong></td>
                         </tr>
