@@ -3394,7 +3394,9 @@ $content .= '</tr>
                         $finalcollection = collect($overallfinal[$ky]);
                     }
 
-                    $overallall[$ky][$keys] = $overallquiz[$ky][$keys] + $overalltest[$ky][$keys] + $overallassign[$ky][$keys] + $overallextra[$ky][$keys] + $overallother[$ky][$keys] + $overallmidterm[$ky][$keys] + $overallfinal[$ky][$keys];
+                    $overallalls[$ky][$keys] = $overallquiz[$ky][$keys] + $overalltest[$ky][$keys] + $overallassign[$ky][$keys] + $overallextra[$ky][$keys] + $overallother[$ky][$keys] + $overallmidterm[$ky][$keys] + $overallfinal[$ky][$keys];
+
+                    $overallall[$ky][$keys] = number_format((float)$overallalls[$ky][$keys], 2, '.', '');
 
                     $collectionall = collect($overallall[$ky]);
 
