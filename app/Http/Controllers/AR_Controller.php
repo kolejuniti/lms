@@ -1285,34 +1285,43 @@ class AR_Controller extends Controller
 
         if($request->session != '' && $request->session != $student->session)
         {
-            if($student->status != 6)
+            if($student->block_status != 1)
             {
 
-                $newsem = $student->semester + 1;
+                if($student->status != 6)
+                {
+
+                    $newsem = $student->semester + 1;
+
+                }else{
+
+                    $newsem = $student->semester;
+
+                }
+
+                DB::table('students')->where('no_matric', $request->no_matric)->update([
+                    'session' => $request->session,
+                    'semester' => $newsem
+                ]);
+
+                $userUpt = UserStudent::where('no_matric', $request->no_matric)->first();
+
+                DB::table('tblstudent_log')->insert([
+                    'student_ic' => $userUpt->ic,
+                    'session_id' => $userUpt->session,
+                    'semester_id' => $userUpt->semester,
+                    'status_id' => $userUpt->status,
+                    'kuliah_id' => $userUpt->campus_id,
+                    'date' => date("Y-m-d H:i:s"),
+                    'remark' => null,
+                    'add_staffID' => Auth::user()->ic
+                ]);
 
             }else{
 
-                $newsem = $student->semester;
+                return ['message' => 'This student is blocked! Please consult the finance department for inquiries.'];
 
             }
-
-            DB::table('students')->where('no_matric', $request->no_matric)->update([
-                'session' => $request->session,
-                'semester' => $newsem
-            ]);
-
-            $userUpt = UserStudent::where('no_matric', $request->no_matric)->first();
-
-            DB::table('tblstudent_log')->insert([
-                'student_ic' => $userUpt->ic,
-                'session_id' => $userUpt->session,
-                'semester_id' => $userUpt->semester,
-                'status_id' => $userUpt->status,
-                'kuliah_id' => $userUpt->campus_id,
-                'date' => date("Y-m-d H:i:s"),
-                'remark' => null,
-                'add_staffID' => Auth::user()->ic
-            ]);
 
         }else{
 
@@ -2052,6 +2061,71 @@ class AR_Controller extends Controller
         } else {
             return response()->json(['status' => 'error'], 404);
         }
+    }
+
+    public function scheduleReport()
+    {
+        $session = DB::table('sessions')->where('Status', 'ACTIVE')->pluck('SessionID')->toArray();
+
+        $data['lecturer'] = DB::table('users')
+                            ->join('user_subjek', 'users.ic', 'user_subjek.user_ic')
+                            ->where([['users.usrtype', 'LCT'], ['users.status', 'ACTIVE']])
+                            ->whereIn('user_subjek.session_id', $session)
+                            ->groupBy('users.ic')
+                            ->get();
+
+        foreach($data['lecturer'] as $key => $lct)
+        {
+
+            $data['subject'][$key] = DB::table('user_subjek')
+                               ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+                               ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
+                               ->join('subjek_structure', function($join){
+                                 $join->on('subjek.sub_id', 'subjek_structure.courseID');
+                               })
+                               ->where('user_subjek.user_ic', $lct->ic)
+                               ->whereIn('user_subjek.session_id', $session)
+                               ->groupBy('user_subjek.course_id')
+                               ->select('user_subjek.id AS ids', 'subjek.*', 'sessions.SessionName AS session', 'subjek_structure.meeting_hour')
+                               ->get();
+
+            foreach($data['subject'][$key] as $key2 => $sbj)
+            {
+
+                $data['group'][$key][$key2] = DB::table('student_subjek')
+                                 ->where([
+                                    ['group_id', $sbj->ids]
+                                 ])
+                                 ->groupBy('group_name')
+                                 ->select('group_name')
+                                 ->get();
+
+
+                foreach($data['group'][$key][$key2] as $key3 => $grp)
+                {
+
+                    $data['detail'][$key][$key2][$key3] = DB::table('tblevents')
+                                      ->where([
+                                        ['user_ic', $lct->ic],
+                                        ['group_id', $sbj->ids],
+                                        ['group_name', $grp->group_name]
+                                      ])
+                                      ->select(DB::raw('SUM(TIMESTAMPDIFF(HOUR, `start`, `end`)) as total_hours'))
+                                      ->first();
+
+                    $data['hour_left'][$key][$key2][$key3] = $sbj->meeting_hour - $data['detail'][$key][$key2][$key3]->total_hours;
+                                      
+                }
+
+            }
+
+
+        }
+
+        //dd($data['hour_left']);
+
+        return view('pendaftar_akademik.schedule.report_schedule.reportSchedule', compact('data'));
+
     }
 
     public function studentReportR()
