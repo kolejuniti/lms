@@ -26,6 +26,9 @@
                                 No. Matric
                             </th>
                             <th>
+                                Session
+                            </th>
+                            <th>
                                 Sponsorship Type
                             </th>
                             <th>
@@ -98,6 +101,9 @@
                                 </td>
                                 <td>
                                     {{ $std->no_matric }}
+                                </td>
+                                <td>
+                                    {{ $std->session }}
                                 </td>
                                 <td>
                                     {{ $data['sponsorStudent'][$key] ? $data['sponsorStudent'][$key]->name : 'TIADA PENAJA/SENDIRI' }}
