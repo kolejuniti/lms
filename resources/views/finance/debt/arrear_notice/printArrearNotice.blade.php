@@ -123,7 +123,7 @@ use Carbon\Carbon;
         <p class="mt-2"><i>Assalamualaikum WRT. WBT.</i></p>
         <p class="mt-2"><b>NOTIS TUNGGAKAN YURAN PENGAJIAN PELAJAR {{ strtoupper($data['student']->name) }} - {{ $data['student']->ic }}</b></p>
         <p class="mt-2">Dengan segala hormatnya, perkara di atas adalah dirujuk.</p>
-        <p class="mt-2">2. &nbsp;&nbsp;&nbsp;&nbsp;Mengikut rekod Kolej Uniti Sdn Bhd sehingga <b>{{ $data['originalDate'] }}</b>, jumlah tunggakan pembiayaan pelajaran tuan/puan dengan pihak Kolej Uniti Sdn Bhd adalah berjumah <b>{{ $data['balance']->balance }}</b></p>
+        <p class="mt-2">2. &nbsp;&nbsp;&nbsp;&nbsp;Mengikut rekod Kolej Uniti Sdn Bhd sehingga <b>{{ $data['originalDate'] }}</b>, jumlah tunggakan pembiayaan pelajaran tuan/puan dengan pihak Kolej Uniti Sdn Bhd adalah berjumlah <b>{{ $data['balance']->balance }}</b></p>
         <p class="mt-2">3. &nbsp;&nbsp;&nbsp;&nbsp;Seperti persetujuan dalam pakej kewangan pelajar yang telah dipersetujui pihak tuan/puan, dikehendaki membayar tunggakan tersebut secara ansuran selepas 6 bulan menamatkan tempoh pengajian seperti berikut:</p>
         <div class="col-md-12 mt-2">
             <table class="custom-table">
