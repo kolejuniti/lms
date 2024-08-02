@@ -142,13 +142,13 @@ function submit()
                 $('#form-student').html(data);
 
                 $('#voucher_table').DataTable({
-                        dom: 'lBfrtip', // if you remove this line you will see the show entries dropdown
-                        paging: false,
+                    dom: 'lBfrtip', // if you remove this line you will see the show entries dropdown
+                    paging: false,
 
-                        buttons: [
-                            {
-                              text: 'Excel',
-                              action: function () {
+                    buttons: [
+                        {
+                            text: 'Excel',
+                            action: function () {
                                 // get the HTML table to export
                                 const table = document.getElementById("voucher_table");
                                 
@@ -157,15 +157,27 @@ function submit()
                                 
                                 // add a new worksheet to the Workbook object
                                 const ws = XLSX.utils.table_to_sheet(table);
+                                
+                                // format cells with leading zeros as text
+                                const range = XLSX.utils.decode_range(ws['!ref']);
+                                for (let row = range.s.r; row <= range.e.r; ++row) {
+                                    for (let col = range.s.c; col <= range.e.c; ++col) {
+                                        const cell = ws[XLSX.utils.encode_cell({r: row, c: col})];
+                                        if (cell && typeof cell.v === 'string' && cell.v.match(/^0\d+$/)) {
+                                            cell.t = 's';
+                                        }
+                                    }
+                                }
+                                
                                 XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
                                 
                                 // trigger the download of the Excel file
                                 XLSX.writeFile(wb, "exported-data.xlsx");
-                              }
                             }
-                        ],
+                        }
+                    ],
+                });
 
-                      });
 
                       
             }
