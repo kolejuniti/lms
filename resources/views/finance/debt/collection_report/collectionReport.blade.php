@@ -127,30 +127,12 @@ function submit()
 
                 $('#form-student').html(data);
                 $('#voucher_table').DataTable({
-                        dom: 'lBfrtip', // if you remove this line you will see the show entries dropdown
-                        paging: false,
-
-                        buttons: [
-                            {
-                              text: 'Excel',
-                              action: function () {
-                                // get the HTML table to export
-                                const table = document.getElementById("voucher_table");
-                                
-                                // create a new Workbook object
-                                const wb = XLSX.utils.book_new();
-                                
-                                // add a new worksheet to the Workbook object
-                                const ws = XLSX.utils.table_to_sheet(table);
-                                XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
-                                
-                                // trigger the download of the Excel file
-                                XLSX.writeFile(wb, "exported-data.xlsx");
-                              }
-                            }
-                        ],
-
-                      });
+                  dom: 'lBfrtip', // if you remove this line you will see the show entries dropdown
+                  
+                  buttons: [
+                      'copy', 'csv', 'excel', 'pdf', 'print'
+                  ],
+                });
                       
             }
         });
