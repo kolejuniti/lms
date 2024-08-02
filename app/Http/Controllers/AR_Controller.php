@@ -1934,11 +1934,12 @@ class AR_Controller extends Controller
 
         $courseDetails = DB::table('student_subjek')
                          ->join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
+                         ->join('subjek_structure', 'subjek.sub_id', 'subjek_structure.courseID')
                          ->where([
                             ['group_id', $request->groupId],
                             ['group_name', $request->groupName]
                          ])
-                         ->select('subjek.*')
+                         ->select('subjek_structure.meeting_hour AS course_credit')
                          ->first();
  
         if(DB::table('tblevents')
@@ -1956,9 +1957,23 @@ class AR_Controller extends Controller
                       ->whereRaw('? != TIME(end)', [$endTimeOnly]);
             })
             ->orWhere(function ($query) use ($startTimeOnly, $endTimeOnly) {
-                $query->whereRaw('? <= TIME(start)', [$startTimeOnly])
-                      ->whereRaw('? >= TIME(end)', [$endTimeOnly]);
+                $query->whereRaw('? < TIME(start)', [$startTimeOnly])
+                      ->whereRaw('? > TIME(end)', [$endTimeOnly]);
             });
+            // $query->where(function ($query) use ($startTimeOnly) {
+            //     $query->whereRaw('? BETWEEN TIME(start) AND TIME(end)', [$startTimeOnly])
+            //           ->whereRaw('? != TIME(start)', [$startTimeOnly])
+            //           ->whereRaw('? != TIME(end)', [$startTimeOnly]);
+            // })
+            // ->orWhere(function ($query) use ($endTimeOnly) {
+            //     $query->whereRaw('? BETWEEN TIME(start) AND TIME(end)', [$endTimeOnly])
+            //           ->whereRaw('? != TIME(start)', [$endTimeOnly])
+            //           ->whereRaw('? != TIME(end)', [$endTimeOnly]);
+            // })
+            // ->orWhere(function ($query) use ($startTimeOnly, $endTimeOnly) {
+            //     $query->whereRaw('? <= TIME(start)', [$startTimeOnly])
+            //           ->whereRaw('? >= TIME(end)', [$endTimeOnly]);
+            // });
         })
         ->exists() || ($startTimeOnly <= $rehat1 && $endTimeOnly >= $rehat2) ||
         ($startTimeOnly >= $rehat1 && $endTimeOnly <= $rehat2) ||
@@ -2041,7 +2056,7 @@ class AR_Controller extends Controller
                     if(($totalCredit + $newTotalHours) > $courseDetails->course_credit)
                     {
 
-                        return response()->json(['error' => 'Total course credit is already at ' . $totalCredit . ' for this subject. Trying to add ' .  $newTotalHours . ' more will exceed ' .  $courseDetails->course_credit . '!']);
+                        return response()->json(['error' => 'Total meeting hour is already at ' . $totalCredit . ' for this subject. Trying to add ' .  $newTotalHours . ' more will exceed ' .  $courseDetails->course_credit . '!']);
 
                     }else{
 
@@ -2161,13 +2176,14 @@ class AR_Controller extends Controller
                        ->first();
 
         $courseDetails = DB::table('student_subjek')
-                         ->join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
-                         ->where([
-                            ['group_id', $event->group_id],
-                            ['group_name', $event->group_name]
-                         ])
-                         ->select('subjek.*')
-                         ->first();
+                       ->join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
+                       ->join('subjek_structure', 'subjek.sub_id', 'subjek_structure.courseID')
+                       ->where([
+                          ['group_id', $request->groupId],
+                          ['group_name', $request->groupName]
+                       ])
+                       ->select('subjek_structure.meeting_hour AS course_credit')
+                       ->first();
 
         if(DB::table('tblevents')
         ->where('lecture_id', $event->lecture_id)
@@ -2185,9 +2201,23 @@ class AR_Controller extends Controller
                       ->whereRaw('? != TIME(end)', [$endTimeOnly]);
             })
             ->orWhere(function ($query) use ($startTimeOnly, $endTimeOnly) {
-                $query->whereRaw('? <= TIME(start)', [$startTimeOnly])
-                      ->whereRaw('? >= TIME(end)', [$endTimeOnly]);
+                $query->whereRaw('? < TIME(start)', [$startTimeOnly])
+                      ->whereRaw('? > TIME(end)', [$endTimeOnly]);
             });
+            // $query->where(function ($query) use ($startTimeOnly) {
+            //     $query->whereRaw('? BETWEEN TIME(start) AND TIME(end)', [$startTimeOnly])
+            //           ->whereRaw('? != TIME(start)', [$startTimeOnly])
+            //           ->whereRaw('? != TIME(end)', [$startTimeOnly]);
+            // })
+            // ->orWhere(function ($query) use ($endTimeOnly) {
+            //     $query->whereRaw('? BETWEEN TIME(start) AND TIME(end)', [$endTimeOnly])
+            //           ->whereRaw('? != TIME(start)', [$endTimeOnly])
+            //           ->whereRaw('? != TIME(end)', [$endTimeOnly]);
+            // })
+            // ->orWhere(function ($query) use ($startTimeOnly, $endTimeOnly) {
+            //     $query->whereRaw('? <= TIME(start)', [$startTimeOnly])
+            //           ->whereRaw('? >= TIME(end)', [$endTimeOnly]);
+            // });
         })
         ->exists() || ($startTimeOnly <= $rehat1 && $endTimeOnly >= $rehat2) ||
         ($startTimeOnly >= $rehat1 && $endTimeOnly <= $rehat2) ||
@@ -2229,7 +2259,7 @@ class AR_Controller extends Controller
             if(($totalCredit + $newTotalHours) > $courseDetails->course_credit)
             {
 
-                return response()->json(['error' => 'Total course credit is already at ' . $totalCredit . ' for this subject. Trying to add ' .  $newTotalHours . ' more will exceed ' .  $courseDetails->course_credit . '!']);
+                return response()->json(['error' => 'Total meeting hour is already at ' . $totalCredit . ' for this subject. Trying to add ' .  $newTotalHours . ' more will exceed ' .  $courseDetails->course_credit . '!']);
 
             }else{
 
@@ -2314,13 +2344,14 @@ class AR_Controller extends Controller
                        ->first();
 
         $courseDetails = DB::table('student_subjek')
-                         ->join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
-                         ->where([
-                            ['group_id', $event->group_id],
-                            ['group_name', $event->group_name]
-                         ])
-                         ->select('subjek.*')
-                         ->first();
+                       ->join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
+                       ->join('subjek_structure', 'subjek.sub_id', 'subjek_structure.courseID')
+                       ->where([
+                          ['group_id', $request->groupId],
+                          ['group_name', $request->groupName]
+                       ])
+                       ->select('subjek_structure.meeting_hour AS course_credit')
+                       ->first();
 
         if(DB::table('tblevents')
         ->where('lecture_id', $event->lecture_id)
@@ -2338,9 +2369,23 @@ class AR_Controller extends Controller
                       ->whereRaw('? != TIME(end)', [$endTimeOnly]);
             })
             ->orWhere(function ($query) use ($startTimeOnly, $endTimeOnly) {
-                $query->whereRaw('? <= TIME(start)', [$startTimeOnly])
-                      ->whereRaw('? >= TIME(end)', [$endTimeOnly]);
+                $query->whereRaw('? < TIME(start)', [$startTimeOnly])
+                      ->whereRaw('? > TIME(end)', [$endTimeOnly]);
             });
+            // $query->where(function ($query) use ($startTimeOnly) {
+            //     $query->whereRaw('? BETWEEN TIME(start) AND TIME(end)', [$startTimeOnly])
+            //           ->whereRaw('? != TIME(start)', [$startTimeOnly])
+            //           ->whereRaw('? != TIME(end)', [$startTimeOnly]);
+            // })
+            // ->orWhere(function ($query) use ($endTimeOnly) {
+            //     $query->whereRaw('? BETWEEN TIME(start) AND TIME(end)', [$endTimeOnly])
+            //           ->whereRaw('? != TIME(start)', [$endTimeOnly])
+            //           ->whereRaw('? != TIME(end)', [$endTimeOnly]);
+            // })
+            // ->orWhere(function ($query) use ($startTimeOnly, $endTimeOnly) {
+            //     $query->whereRaw('? <= TIME(start)', [$startTimeOnly])
+            //           ->whereRaw('? >= TIME(end)', [$endTimeOnly]);
+            // });
         })
         ->exists() || ($startTimeOnly <= $rehat1 && $endTimeOnly >= $rehat2) ||
         ($startTimeOnly >= $rehat1 && $endTimeOnly <= $rehat2) ||
@@ -2382,7 +2427,7 @@ class AR_Controller extends Controller
             if(($totalCredit + $newTotalHours) > $courseDetails->course_credit)
             {
 
-                return response()->json(['error' => 'Total course credit is already at ' . $totalCredit . ' for this subject. Trying to add ' .  $newTotalHours . ' more will exceed ' .  $courseDetails->course_credit . '!']);
+                return response()->json(['error' => 'Total meeting hour is already at ' . $totalCredit . ' for this subject. Trying to add ' .  $newTotalHours . ' more will exceed ' .  $courseDetails->course_credit . '!']);
 
             }else{
 
