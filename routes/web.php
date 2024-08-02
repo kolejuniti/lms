@@ -197,6 +197,12 @@ Route::post('/AR/student/getWarningLetter', [App\Http\Controllers\AR_Controller:
 Route::get('/AR/student/printWarningLetter', [App\Http\Controllers\AR_Controller::class, 'printWarningLetter']);
 Route::get('/AR/student/senateReport', [App\Http\Controllers\AR_Controller::class, 'senateReport'])->name('pendaftar_akademik.senateReport');
 Route::post('/AR/student/getSenateReport', [App\Http\Controllers\AR_Controller::class, 'getSenateReport']);
+Route::get('/AR/student/studentAssessment', [App\Http\Controllers\AR_Controller::class, 'studentAssessment'])->name('pendaftar_akademik.student.studentAssessment');
+Route::get('/AR/student/studentAssessment/getStudentAssessment', [App\Http\Controllers\AR_Controller::class, 'getStudentAssessment']);
+Route::get('/AR/student/studentAssessment/assessmentStatus/{id}/{type}', [App\Http\Controllers\AR_Controller::class, 'assessmentStatus']);
+Route::post('/AR/student/studentAssessment/assessmentStatus/{id}/{type}/update', [App\Http\Controllers\AR_Controller::class, 'updateAssessmentStatus']);
+Route::get('/AR/student/studentAssessment/getSubjectLecturer', [App\Http\Controllers\AR_Controller::class, 'getSubjectLecturer']);
+Route::get('/AR/student/studentAssessment/getGroupLecturer', [App\Http\Controllers\AR_Controller::class, 'getGroupLecturer']);
 // Route::get('/AR/student/groupTable', [App\Http\Controllers\AR_Controller::class, 'groupTable'])->name('pendaftar_akademik.groupTable');
 
 Route::get('/lecturer/getSuratAmaran', [App\Http\Controllers\LecturerController::class, 'getSuratAmaran'])->name('lecturer.suratamaran');
