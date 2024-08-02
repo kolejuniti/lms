@@ -1044,35 +1044,35 @@ class AR_Controller extends Controller
 
     }
 
-    public function dropzoneStore(Request $request)
-    {
+    // public function dropzoneStore(Request $request)
+    // {
 
-        $file = $request->file('file');
+    //     $file = $request->file('file');
 
-        $file_name = $file->getClientOriginalName();
-        $file_ext = $file->getClientOriginalExtension();
-        $fileInfo = pathinfo($file_name);
-        $filename = $fileInfo['filename'];
-        $newname = $filename . "." . $file_ext;
+    //     $file_name = $file->getClientOriginalName();
+    //     $file_ext = $file->getClientOriginalExtension();
+    //     $fileInfo = pathinfo($file_name);
+    //     $filename = $fileInfo['filename'];
+    //     $newname = $filename . "." . $file_ext;
 
-        //dd($file_name);
+    //     //dd($file_name);
 
-        $classmaterial = "classschedule/";
+    //     $classmaterial = "classschedule/";
         
 
-        if(! file_exists($newname)){
-            Storage::disk('linode')->putFileAs(
-                $classmaterial,
-                $file,
-                $newname,
-                'public'
-              );
+    //     if(! file_exists($newname)){
+    //         Storage::disk('linode')->putFileAs(
+    //             $classmaterial,
+    //             $file,
+    //             $newname,
+    //             'public'
+    //           );
 
-              return response()->json(['success' => $imageName]);
-        }
+    //           return response()->json(['success' => $imageName]);
+    //     }
 
 
-    }
+    // }
 
     public function studentLeave()
     {
@@ -2906,6 +2906,750 @@ class AR_Controller extends Controller
             return response()->json(['error' => 'Please fill in all input!']);
 
         }
+
+    }
+
+    public function studentAssessment()
+    {
+
+        $data = [
+            'lecturer' => DB::table('users')
+                          ->whereIn('usrtype', ['LCT', 'PL', 'AO'])
+                          ->get(),
+        ];
+
+        return view('pendaftar_akademik.student.assessment.studentAssessment', compact('data'));
+
+    }
+
+    public function getStudentAssessment(Request $request)
+    {
+
+        if($request->lecturer != '' && $request->subject != '' && $request->group != '' && $request->assessment != '')
+        {
+            $subject = DB::table('user_subjek')
+                       ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+                       ->join('student_subjek', 'user_subjek.id', 'student_subjek.group_id')
+                       ->where([
+                        ['user_subjek.user_ic', $request->lecturer],
+                        ['user_subjek.id', $request->subject],
+                        ['student_subjek.group_name', $request->group],
+                        ['user_subjek.session_id', '=', DB::raw('student_subjek.sessionid')],
+                       ])
+                       ->select('user_subjek.*', 'subjek.id AS id')
+                       ->first();
+
+            $data['type'] = $request->assessment;
+
+            //return response()->json($subject);
+
+            if($request->assessment == 'quiz')
+            {
+
+                $data['assessment'] = DB::table('tblclassquiz')
+                ->join('users', 'tblclassquiz.addby', 'users.ic')
+                ->join('tblclassquizstatus', 'tblclassquiz.status', 'tblclassquizstatus.id')
+                ->where([
+                    ['tblclassquiz.classid', $subject->id],
+                    ['tblclassquiz.sessionid', $subject->session_id],
+                    ['tblclassquiz.addby', $subject->user_ic],
+                    ['tblclassquiz.status', '!=', 3]
+                ])
+                ->select('tblclassquiz.*', 'users.name AS addby', 'tblclassquizstatus.statusname')->get();
+
+                foreach($data['assessment'] as $dt)
+                {
+                    $data['group'][] = DB::table('tblclassquiz_group')
+                            ->join('user_subjek', 'tblclassquiz_group.groupid', 'user_subjek.id')
+                            ->where('tblclassquiz_group.quizid', $dt->id)->get();
+
+                    $data['chapter'][] = DB::table('tblclassquiz_chapter')
+                            ->join('material_dir', 'tblclassquiz_chapter.chapterid', 'material_dir.DrID')
+                            ->where('tblclassquiz_chapter.quizid', $dt->id)->get();
+                }
+                
+            }
+
+            if($request->assessment == 'test')
+            {
+
+                $data['assessment'] = DB::table('tblclasstest')
+                ->join('users', 'tblclasstest.addby', 'users.ic')
+                ->join('tblclassteststatus', 'tblclasstest.status', 'tblclassteststatus.id')
+                ->where([
+                    ['tblclasstest.classid', $subject->id],
+                    ['tblclasstest.sessionid', $subject->session_id],
+                    ['tblclasstest.addby', $subject->user_ic],
+                    ['tblclasstest.status', '!=', 3]
+                ])
+                ->select('tblclasstest.*', 'users.name AS addby', 'tblclassteststatus.statusname')->get();
+
+                foreach($data['assessment'] as $dt)
+                {
+                    $data['group'][] = DB::table('tblclasstest_group')
+                            ->join('user_subjek', 'tblclasstest_group.groupid', 'user_subjek.id')
+                            ->where('tblclasstest_group.testid', $dt->id)->get();
+
+                    $data['chapter'][] = DB::table('tblclasstest_chapter')
+                            ->join('material_dir', 'tblclasstest_chapter.chapterid', 'material_dir.DrID')
+                            ->where('tblclasstest_chapter.testid', $dt->id)->get();
+                }
+                
+            }
+
+            if($request->assessment == 'assignment')
+            {
+
+                $data['assessment'] = DB::table('tblclassassign')
+                ->join('users', 'tblclassassign.addby', 'users.ic')
+                ->join('tblclassassignstatus', 'tblclassassign.status', 'tblclassassignstatus.id')
+                ->where([
+                    ['tblclassassign.classid', $subject->id],
+                    ['tblclassassign.sessionid', $subject->session_id],
+                    ['tblclassassign.addby', $subject->user_ic],
+                    ['tblclassassign.status', '!=', 3]
+                ])
+                ->select('tblclassassign.*', 'users.name AS addby', 'tblclassassignstatus.statusname')->get();
+
+                foreach($data['assessment'] as $dt)
+                {
+                    $data['group'][] = DB::table('tblclassassign_group')
+                            ->join('user_subjek', 'tblclassassign_group.groupid', 'user_subjek.id')
+                            ->where('tblclassassign_group.assignid', $dt->id)->get();
+
+                    $data['chapter'][] = DB::table('tblclassassign_chapter')
+                            ->join('material_dir', 'tblclassassign_chapter.chapterid', 'material_dir.DrID')
+                            ->where('tblclassassign_chapter.assignid', $dt->id)->get();
+                }
+                
+            }
+
+            if($request->assessment == 'midterm')
+            {
+
+                $data['assessment'] = DB::table('tblclassmidterm')
+                ->join('users', 'tblclassmidterm.addby', 'users.ic')
+                ->join('tblclassmidtermstatus', 'tblclassmidterm.status', 'tblclassmidtermstatus.id')
+                ->where([
+                    ['tblclassmidterm.classid', $subject->id],
+                    ['tblclassmidterm.sessionid', $subject->session_id],
+                    ['tblclassmidterm.addby', $subject->user_ic],
+                    ['tblclassmidterm.status', '!=', 3]
+                ])
+                ->select('tblclassmidterm.*', 'users.name AS addby', 'tblclassmidtermstatus.statusname')->get();
+
+                foreach($data['assessment'] as $dt)
+                {
+                    $data['group'][] = DB::table('tblclassmidterm_group')
+                            ->join('user_subjek', 'tblclassmidterm_group.groupid', 'user_subjek.id')
+                            ->where('tblclassmidterm_group.midtermid', $dt->id)->get();
+
+                    $data['chapter'][] = DB::table('tblclassmidterm_chapter')
+                            ->join('material_dir', 'tblclassmidterm_chapter.chapterid', 'material_dir.DrID')
+                            ->where('tblclassmidterm_chapter.midtermid', $dt->id)->get();
+                }
+                
+            }
+
+            if($request->assessment == 'other')
+            {
+
+                $data['assessment'] = DB::table('tblclassother')
+                ->join('users', 'tblclassother.addby', 'users.ic')
+                ->join('tblclassotherstatus', 'tblclassother.status', 'tblclassotherstatus.id')
+                ->where([
+                    ['tblclassother.classid', $subject->id],
+                    ['tblclassother.sessionid', $subject->session_id],
+                    ['tblclassother.addby', $subject->user_ic],
+                    ['tblclassother.status', '!=', 3]
+                ])
+                ->select('tblclassother.*', 'users.name AS addby', 'tblclassotherstatus.statusname')->get();
+
+                foreach($data['assessment'] as $dt)
+                {
+                    $data['group'][] = DB::table('tblclassother_group')
+                            ->join('user_subjek', 'tblclassother_group.groupid', 'user_subjek.id')
+                            ->where('tblclassother_group.otherid', $dt->id)->get();
+
+                    $data['chapter'][] = DB::table('tblclassother_chapter')
+                            ->join('material_dir', 'tblclassother_chapter.chapterid', 'material_dir.DrID')
+                            ->where('tblclassother_chapter.otherid', $dt->id)->get();
+                }
+                
+            }
+
+            if($request->assessment == 'extra')
+            {
+
+                $data['assessment'] = DB::table('tblclassextra')
+                ->join('users', 'tblclassextra.addby', 'users.ic')
+                ->join('tblclassextrastatus', 'tblclassextra.status', 'tblclassextrastatus.id')
+                ->where([
+                    ['tblclassextra.classid', $subject->id],
+                    ['tblclassextra.sessionid', $subject->session_id],
+                    ['tblclassextra.addby', $subject->user_ic],
+                    ['tblclassextra.status', '!=', 3]
+                ])
+                ->select('tblclassextra.*', 'users.name AS addby', 'tblclassextrastatus.statusname')->get();
+
+                foreach($data['assessment'] as $dt)
+                {
+                    $data['group'][] = DB::table('tblclassextra_group')
+                            ->join('user_subjek', 'tblclassextra_group.groupid', 'user_subjek.id')
+                            ->where('tblclassextra_group.extraid', $dt->id)->get();
+
+                    $data['chapter'][] = DB::table('tblclassextra_chapter')
+                            ->join('material_dir', 'tblclassextra_chapter.chapterid', 'material_dir.DrID')
+                            ->where('tblclassextra_chapter.extraid', $dt->id)->get();
+                }
+                
+            }
+
+            return view('pendaftar_akademik.student.assessment.getStudentAssessment', compact('data'));
+
+        }else{
+
+            return response()->json(['error' => 'Please make sure that all input fields are filled!']);
+
+        }
+
+    }
+
+    public function assessmentStatus()
+    {
+
+        $data['type'] = request()->type;
+
+        $data['id'] = request()->id;
+
+        if(request()->type == 'quiz')
+        {
+
+            $data['group'] = DB::table('user_subjek')
+                    ->join('tblclassquiz_group', 'user_subjek.id', 'tblclassquiz_group.groupid')
+                    ->join('tblclassquiz', 'tblclassquiz_group.quizid', 'tblclassquiz.id')
+                    ->where([
+                        ['tblclassquiz.id', request()->id]
+                    ])->get();
+
+            $data['assessment'] = DB::table('student_subjek')
+                    ->join('tblclassquiz_group', function($join){
+                        $join->on('student_subjek.group_id', 'tblclassquiz_group.groupid');
+                        $join->on('student_subjek.group_name', 'tblclassquiz_group.groupname');
+                    })
+                    ->join('tblclassquiz', 'tblclassquiz_group.quizid', 'tblclassquiz.id')
+                    ->join('students', 'student_subjek.student_ic', 'students.ic')
+                    ->select('student_subjek.*', 'tblclassquiz.id AS clssid', 'tblclassquiz.total_mark', 'students.no_matric', 'students.name')
+                    ->where([
+                        ['tblclassquiz.id', request()->id]
+                    ])->whereNotIn('students.status', [4,5,6,7,16])->orderBy('students.name')->get();
+
+            foreach($data['assessment'] as $qz)
+            {
+
+                if(!DB::table('tblclassstudentquiz')->where([['quizid', $qz->clssid],['userid', $qz->student_ic]])->exists()){
+
+                    DB::table('tblclassstudentquiz')->insert([
+                        'quizid' => $qz->clssid,
+                        'userid' => $qz->student_ic
+                    ]);
+    
+                }
+
+                $data['status'][] = DB::table('tblclassstudentquiz')
+                ->where([
+                    ['quizid', $qz->clssid],
+                    ['userid', $qz->student_ic]
+                ])->first();
+            }
+
+            return view('pendaftar_akademik.student.assessment.assessmentStatus', compact('data'));
+
+        }
+
+        if(request()->type == 'test')
+        {
+
+            $data['group'] = DB::table('user_subjek')
+                    ->join('tblclasstest_group', 'user_subjek.id', 'tblclasstest_group.groupid')
+                    ->join('tblclasstest', 'tblclasstest_group.testid', 'tblclasstest.id')
+                    ->where([
+                        ['tblclasstest.id', request()->id]
+                    ])->get();
+
+            $data['assessment'] = DB::table('student_subjek')
+                    ->join('tblclasstest_group', function($join){
+                        $join->on('student_subjek.group_id', 'tblclasstest_group.groupid');
+                        $join->on('student_subjek.group_name', 'tblclasstest_group.groupname');
+                    })
+                    ->join('tblclasstest', 'tblclasstest_group.testid', 'tblclasstest.id')
+                    ->join('students', 'student_subjek.student_ic', 'students.ic')
+                    ->select('student_subjek.*', 'tblclasstest.id AS clssid', 'tblclasstest.total_mark', 'students.no_matric', 'students.name')
+                    ->where([
+                        ['tblclasstest.id', request()->id]
+                    ])->whereNotIn('students.status', [4,5,6,7,16])->orderBy('students.name')->get();
+
+            foreach($data['assessment'] as $qz)
+            {
+
+                if(!DB::table('tblclassstudenttest')->where([['testid', $qz->clssid],['userid', $qz->student_ic]])->exists()){
+
+                    DB::table('tblclassstudenttest')->insert([
+                        'testid' => $qz->clssid,
+                        'userid' => $qz->student_ic
+                    ]);
+    
+                }
+
+                $data['status'][] = DB::table('tblclassstudenttest')
+                ->where([
+                    ['testid', $qz->clssid],
+                    ['userid', $qz->student_ic]
+                ])->first();
+            }
+
+            return view('pendaftar_akademik.student.assessment.assessmentStatus', compact('data'));
+
+        }
+
+        if(request()->type == 'assignment')
+        {
+
+            $data['group'] = DB::table('user_subjek')
+                    ->join('tblclassassign_group', 'user_subjek.id', 'tblclassassign_group.groupid')
+                    ->join('tblclassassign', 'tblclassassign_group.assignid', 'tblclassassign.id')
+                    ->where([
+                        ['tblclassassign.id', request()->id]
+                    ])->get();
+
+            $data['assessment'] = DB::table('student_subjek')
+                    ->join('tblclassassign_group', function($join){
+                        $join->on('student_subjek.group_id', 'tblclassassign_group.groupid');
+                        $join->on('student_subjek.group_name', 'tblclassassign_group.groupname');
+                    })
+                    ->join('tblclassassign', 'tblclassassign_group.assignid', 'tblclassassign.id')
+                    ->join('students', 'student_subjek.student_ic', 'students.ic')
+                    ->select('student_subjek.*', 'tblclassassign.id AS clssid', 'tblclassassign.total_mark', 'students.no_matric', 'students.name')
+                    ->where([
+                        ['tblclassassign.id', request()->id]
+                    ])->whereNotIn('students.status', [4,5,6,7,16])->orderBy('students.name')->get();
+
+            foreach($data['assessment'] as $qz)
+            {
+
+                if(!DB::table('tblclassstudentassign')->where([['assignid', $qz->clssid],['userid', $qz->student_ic]])->exists()){
+
+                    DB::table('tblclassstudentassign')->insert([
+                        'assignid' => $qz->clssid,
+                        'userid' => $qz->student_ic
+                    ]);
+    
+                }
+
+                $data['status'][] = DB::table('tblclassstudentassign')
+                ->where([
+                    ['assignid', $qz->clssid],
+                    ['userid', $qz->student_ic]
+                ])->first();
+            }
+
+            return view('pendaftar_akademik.student.assessment.assessmentStatus', compact('data'));
+
+        }
+
+        if(request()->type == 'midterm')
+        {
+
+            $data['group'] = DB::table('user_subjek')
+                    ->join('tblclassmidterm_group', 'user_subjek.id', 'tblclassmidterm_group.groupid')
+                    ->join('tblclassmidterm', 'tblclassmidterm_group.midtermid', 'tblclassmidterm.id')
+                    ->where([
+                        ['tblclassmidterm.id', request()->id]
+                    ])->get();
+
+            $data['assessment'] = DB::table('student_subjek')
+                    ->join('tblclassmidterm_group', function($join){
+                        $join->on('student_subjek.group_id', 'tblclassmidterm_group.groupid');
+                        $join->on('student_subjek.group_name', 'tblclassmidterm_group.groupname');
+                    })
+                    ->join('tblclassmidterm', 'tblclassmidterm_group.midtermid', 'tblclassmidterm.id')
+                    ->join('students', 'student_subjek.student_ic', 'students.ic')
+                    ->select('student_subjek.*', 'tblclassmidterm.id AS clssid', 'tblclassmidterm.total_mark', 'students.no_matric', 'students.name')
+                    ->where([
+                        ['tblclassmidterm.id', request()->id]
+                    ])->whereNotIn('students.status', [4,5,6,7,16])->orderBy('students.name')->get();
+
+            foreach($data['assessment'] as $qz)
+            {
+
+                if(!DB::table('tblclassstudentmidterm')->where([['midtermid', $qz->clssid],['userid', $qz->student_ic]])->exists()){
+
+                    DB::table('tblclassstudentmidterm')->insert([
+                        'midtermid' => $qz->clssid,
+                        'userid' => $qz->student_ic
+                    ]);
+    
+                }
+
+                $data['status'][] = DB::table('tblclassstudentmidterm')
+                ->where([
+                    ['midtermid', $qz->clssid],
+                    ['userid', $qz->student_ic]
+                ])->first();
+            }
+
+            return view('pendaftar_akademik.student.assessment.assessmentStatus', compact('data'));
+
+        }
+
+        if(request()->type == 'other')
+        {
+
+            $data['group'] = DB::table('user_subjek')
+                    ->join('tblclassother_group', 'user_subjek.id', 'tblclassother_group.groupid')
+                    ->join('tblclassother', 'tblclassother_group.otherid', 'tblclassother.id')
+                    ->where([
+                        ['tblclassother.id', request()->id]
+                    ])->get();
+
+            $data['assessment'] = DB::table('student_subjek')
+                    ->join('tblclassother_group', function($join){
+                        $join->on('student_subjek.group_id', 'tblclassother_group.groupid');
+                        $join->on('student_subjek.group_name', 'tblclassother_group.groupname');
+                    })
+                    ->join('tblclassother', 'tblclassother_group.otherid', 'tblclassother.id')
+                    ->join('students', 'student_subjek.student_ic', 'students.ic')
+                    ->select('student_subjek.*', 'tblclassother.id AS clssid', 'tblclassother.total_mark', 'students.no_matric', 'students.name')
+                    ->where([
+                        ['tblclassother.id', request()->id]
+                    ])->whereNotIn('students.status', [4,5,6,7,16])->orderBy('students.name')->get();
+
+            foreach($data['assessment'] as $qz)
+            {
+
+                if(!DB::table('tblclassstudentother')->where([['otherid', $qz->clssid],['userid', $qz->student_ic]])->exists()){
+
+                    DB::table('tblclassstudentother')->insert([
+                        'otherid' => $qz->clssid,
+                        'userid' => $qz->student_ic
+                    ]);
+    
+                }
+
+                $data['status'][] = DB::table('tblclassstudentother')
+                ->where([
+                    ['otherid', $qz->clssid],
+                    ['userid', $qz->student_ic]
+                ])->first();
+            }
+
+            return view('pendaftar_akademik.student.assessment.assessmentStatus', compact('data'));
+
+        }
+
+        if(request()->type == 'extra')
+        {
+
+            $data['group'] = DB::table('user_subjek')
+                    ->join('tblclassextra_group', 'user_subjek.id', 'tblclassextra_group.groupid')
+                    ->join('tblclassextra', 'tblclassextra_group.extraid', 'tblclassextra.id')
+                    ->where([
+                        ['tblclassextra.id', request()->id]
+                    ])->get();
+
+            $data['assessment'] = DB::table('student_subjek')
+                    ->join('tblclassextra_group', function($join){
+                        $join->on('student_subjek.group_id', 'tblclassextra_group.groupid');
+                        $join->on('student_subjek.group_name', 'tblclassextra_group.groupname');
+                    })
+                    ->join('tblclassextra', 'tblclassextra_group.extraid', 'tblclassextra.id')
+                    ->join('students', 'student_subjek.student_ic', 'students.ic')
+                    ->select('student_subjek.*', 'tblclassextra.id AS clssid', 'tblclassextra.total_mark', 'students.no_matric', 'students.name')
+                    ->where([
+                        ['tblclassextra.id', request()->id]
+                    ])->whereNotIn('students.status', [4,5,6,7,16])->orderBy('students.name')->get();
+
+            foreach($data['assessment'] as $qz)
+            {
+
+                if(!DB::table('tblclassstudentextra')->where([['extraid', $qz->clssid],['userid', $qz->student_ic]])->exists()){
+
+                    DB::table('tblclassstudentextra')->insert([
+                        'extraid' => $qz->clssid,
+                        'userid' => $qz->student_ic
+                    ]);
+    
+                }
+
+                $data['status'][] = DB::table('tblclassstudentextra')
+                ->where([
+                    ['extraid', $qz->clssid],
+                    ['userid', $qz->student_ic]
+                ])->first();
+            }
+
+            return view('pendaftar_akademik.student.assessment.assessmentStatus', compact('data'));
+
+        }
+
+    }
+
+    public function updateAssessmentStatus(Request $request)
+    {
+        if($request->type == 'quiz')
+        {
+
+            $marks = json_decode($request->marks);
+
+            $ics = json_decode($request->ics);
+
+            $assessmentid = json_decode($request->assessmentid);
+
+            $limitpercen = DB::table('tblclassquiz')->where('id', $assessmentid)->first();
+
+            foreach($marks as $key => $mrk)
+            {
+
+                if($mrk > $limitpercen->total_mark)
+                {
+                    return ["message"=>"Field Error", "id" => $ics];
+                }
+
+            }
+
+        
+            $upsert = [];
+            foreach($marks as $key => $mrk){
+                array_push($upsert, [
+                'userid' => $ics[$key],
+                'quizid' => $assessmentid,
+                'submittime' => date("Y-m-d H:i:s"),
+                'final_mark' => $mrk,
+                'status' => 1
+                ]);
+            }
+
+            DB::table('tblclassstudentquiz')->upsert($upsert, ['userid', 'quizid']);
+
+        }
+
+        if($request->type == 'test')
+        {
+
+            $marks = json_decode($request->marks);
+
+            $ics = json_decode($request->ics);
+
+            $assessmentid = json_decode($request->assessmentid);
+
+            $limitpercen = DB::table('tblclasstest')->where('id', $assessmentid)->first();
+
+            foreach($marks as $key => $mrk)
+            {
+
+                if($mrk > $limitpercen->total_mark)
+                {
+                    return ["message"=>"Field Error", "id" => $ics];
+                }
+
+            }
+
+        
+            $upsert = [];
+            foreach($marks as $key => $mrk){
+                array_push($upsert, [
+                'userid' => $ics[$key],
+                'testid' => $assessmentid,
+                'submittime' => date("Y-m-d H:i:s"),
+                'final_mark' => $mrk,
+                'status' => 1
+                ]);
+            }
+
+            DB::table('tblclassstudenttest')->upsert($upsert, ['userid', 'testid']);
+
+        }
+
+        if($request->type == 'assignment')
+        {
+
+            $marks = json_decode($request->marks);
+
+            $ics = json_decode($request->ics);
+
+            $assessmentid = json_decode($request->assessmentid);
+
+            $limitpercen = DB::table('tblclassassign')->where('id', $assessmentid)->first();
+
+            foreach($marks as $key => $mrk)
+            {
+
+                if($mrk > $limitpercen->total_mark)
+                {
+                    return ["message"=>"Field Error", "id" => $ics];
+                }
+
+            }
+
+        
+            $upsert = [];
+            foreach($marks as $key => $mrk){
+                array_push($upsert, [
+                'userid' => $ics[$key],
+                'assignid' => $assessmentid,
+                'submittime' => date("Y-m-d H:i:s"),
+                'final_mark' => $mrk,
+                'status' => 1
+                ]);
+            }
+
+            DB::table('tblclassstudentassign')->upsert($upsert, ['userid', 'assignid']);
+
+        }
+
+        if($request->type == 'midterm')
+        {
+
+            $marks = json_decode($request->marks);
+
+            $ics = json_decode($request->ics);
+
+            $assessmentid = json_decode($request->assessmentid);
+
+            $limitpercen = DB::table('tblclassmidterm')->where('id', $assessmentid)->first();
+
+            foreach($marks as $key => $mrk)
+            {
+
+                if($mrk > $limitpercen->total_mark)
+                {
+                    return ["message"=>"Field Error", "id" => $ics];
+                }
+
+            }
+
+        
+            $upsert = [];
+            foreach($marks as $key => $mrk){
+                array_push($upsert, [
+                'userid' => $ics[$key],
+                'midtermid' => $assessmentid,
+                'submittime' => date("Y-m-d H:i:s"),
+                'final_mark' => $mrk,
+                'status' => 1
+                ]);
+            }
+
+            DB::table('tblclassstudentmidterm')->upsert($upsert, ['userid', 'midtermid']);
+
+        }
+
+        if($request->type == 'other')
+        {
+
+            $marks = json_decode($request->marks);
+
+            $ics = json_decode($request->ics);
+
+            $assessmentid = json_decode($request->assessmentid);
+
+            $limitpercen = DB::table('tblclassother')->where('id', $assessmentid)->first();
+
+            foreach($marks as $key => $mrk)
+            {
+
+                if($mrk > $limitpercen->total_mark)
+                {
+                    return ["message"=>"Field Error", "id" => $ics];
+                }
+
+            }
+
+        
+            $upsert = [];
+            foreach($marks as $key => $mrk){
+                array_push($upsert, [
+                'userid' => $ics[$key],
+                'otherid' => $assessmentid,
+                'submittime' => date("Y-m-d H:i:s"),
+                'final_mark' => $mrk,
+                'status' => 1
+                ]);
+            }
+
+            DB::table('tblclassstudentother')->upsert($upsert, ['userid', 'otherid']);
+
+        }
+
+        if($request->type == 'extra')
+        {
+
+            $marks = json_decode($request->marks);
+
+            $ics = json_decode($request->ics);
+
+            $assessmentid = json_decode($request->assessmentid);
+
+            $limitpercen = DB::table('tblclassextra')->where('id', $assessmentid)->first();
+
+            foreach($marks as $key => $mrk)
+            {
+
+                if($mrk > $limitpercen->total_mark)
+                {
+                    return ["message"=>"Field Error", "id" => $ics];
+                }
+
+            }
+
+        
+            $upsert = [];
+            foreach($marks as $key => $mrk){
+                array_push($upsert, [
+                'userid' => $ics[$key],
+                'extraid' => $assessmentid,
+                'submittime' => date("Y-m-d H:i:s"),
+                'final_mark' => $mrk,
+                'status' => 1
+                ]);
+            }
+
+            DB::table('tblclassstudentextra')->upsert($upsert, ['userid', 'extraid']);
+
+        }
+
+        return ["message"=>"Success", "id" => $ics];
+
+    }
+
+    public function getSubjectLecturer(Request $request)
+    {
+
+        $session = DB::table('sessions')->where('status', 'ACTIVE')->pluck('SessionID')->toArray();
+
+        $subject = DB::table('user_subjek')
+                   ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
+                   ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+                   ->where([
+                      ['user_subjek.user_ic', $request->lecturerId]
+                   ])
+                   ->whereIn('session_id', $session)
+                   ->select('subjek.course_name AS name','subjek.course_code AS code','sessions.SessionName AS session', 'user_subjek.id AS id')->get();
+
+        return response()->json($subject);
+
+    }
+
+    public function getGroupLecturer(Request $request)
+    {
+
+        $group = DB::table('student_subjek')
+                 ->where([
+                    ['student_subjek.group_id', $request->groupID]
+                 ])
+                 ->groupBy('group_name')->get();
+
+        return response()->json($group);
 
     }
 
