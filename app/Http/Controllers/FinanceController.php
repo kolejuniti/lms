@@ -9510,7 +9510,7 @@ class FinanceController extends Controller
             ->where('students.program', '!=', 30)
             ->whereIn('students.status', [8])
             ->whereBetween('sessions.Year', [$request->from, $request->to])
-            ->select('students.*', 'sessions.Year AS graduate')
+            ->select('students.*', 'sessions.Year AS graduate', 'sessions.SessionName AS session')
             ->get();
 
         }
