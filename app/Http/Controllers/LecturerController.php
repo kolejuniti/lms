@@ -4827,11 +4827,12 @@ $content .= '</tr>
 
         $events = Tblevent::join('user_subjek', 'tblevents.group_id', 'user_subjek.id')
                   ->join('tbllecture', 'tblevents.lecture_id', 'tbllecture.id')
+                  ->join('sessions', 'tbllecture.session_id', 'sessions.SessionID')
                   ->join('tbllecture_room', 'tbllecture.room_id', 'tbllecture_room.id')
                   ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
                   ->where('tblevents.user_ic', $user->ic)
                   ->groupBy('subjek.sub_id', 'tblevents.id')
-                  ->select('tblevents.*', 'subjek.course_code AS code' , 'subjek.course_name AS subject', 'tbllecture_room.name AS room')->get();
+                  ->select('tblevents.*', 'subjek.course_code AS code' , 'subjek.course_name AS subject', 'tbllecture_room.name AS room', 'sessions.SessionName AS session')->get();
 
         $formattedEvents = $events->map(function ($event) {
 
@@ -4859,7 +4860,7 @@ $content .= '</tr>
 
             return [
                 'id' => $event->id,
-                'title' => strtoupper($event->room),
+                'title' => strtoupper($event->room) . ' (' . $event->session . ')',
                 'description' => $event->code. ' - ' . $event->subject . ' (' . $event->group_name .') ' . '|' . ' Total Student :' . ' ' .$count->total_student,
                 'startTime' => date('H:i', strtotime($event->start)),
                 'endTime' => date('H:i', strtotime($event->end)),
