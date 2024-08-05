@@ -129,6 +129,37 @@
 		overflow-y: auto; /* Enables vertical scrolling */
 		overflow-x: hidden; /* Hides horizontal scrollbar */
 	}
+
+	.spinner-overlay {
+  display: none; /* Hidden by default */
+  position: fixed; /* Sit on top of the page content */
+  width: 100%; /* Full width (cover the whole page) */
+  height: 100%; /* Full height (cover the whole page) */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0,0,0,0.5); /* Black background with opacity */
+  z-index: 2; /* Specify a stack order in case you're using a different order for other elements */
+  cursor: pointer; /* Add a pointer on hover */
+}
+
+.spinner {
+  margin: auto;
+  position: absolute;
+  top: 0; bottom: 0; left: 0; right: 0;
+  border: 16px solid #f3f3f3; /* Light grey */
+  border-top: 16px solid #3498db; /* Blue */
+  border-radius: 50%;
+  width: 120px;
+  height: 120px;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
 </style>
 
 
@@ -301,11 +332,12 @@
 						<li><a href="{{ route('pendaftar.student.studentreport') }}" class="{{ (route('pendaftar.student.studentreport') == Request::url()) ? 'active' : ''}}">Student Report</a></li>
 						<li><a href="{{ route('pendaftar_akademik.leave') }}" class="{{ (route('pendaftar_akademik.leave') == Request::url()) ? 'active' : ''}}">Student Leave</a></li>
 						<li><a href="{{ route('pendaftar_akademik.semester') }}" class="{{ (route('pendaftar_akademik.semester') == Request::url()) ? 'active' : ''}}">Student Semester</a></li>
-						<li><a href="{{ route('pendaftar.student.transcript') }}" class="{{ (route('pendaftar.student.transcript') == Request::url()) ? 'active' : ''}}">Student Transcript</a></li>
+						<li><a href="{{ route('pendaftar.student.transcript') }}" class="{{ (route('pendaftar.student.transcript') == Request::url()) ? 'active' : ''}}">Generate Result Student</a></li>
 						<li><a href="{{ route('pendaftar.student.result') }}" class="{{ (route('pendaftar.student.result') == Request::url()) ? 'active' : ''}}">Student Result</a></li>
 						<li><a href="{{ route('all.student.spm.report') }}" class="{{ (route('all.student.spm.report') == Request::url()) ? 'active' : ''}}">Student Report SPM</a></li>
 						<li><a href="{{ route('pendaftar_akademik.warningLetter') }}" class="{{ (route('pendaftar_akademik.warningLetter') == Request::url()) ? 'active' : ''}}">Student Warning Letter</a></li>
 						<li><a href="{{ route('pendaftar_akademik.senateReport') }}" class="{{ (route('pendaftar_akademik.senateReport') == Request::url()) ? 'active' : ''}}">Senate Report</a></li>
+						<li><a href="{{ route('pendaftar_akademik.resultReport') }}" class="{{ (route('pendaftar_akademik.resultReport') == Request::url()) ? 'active' : ''}}">Result Report</a></li>
 						<li><a href="{{ route('pendaftar_akademik.student.studentAssessment') }}" class="{{ (route('pendaftar_akademik.student.studentAssessment') == Request::url()) ? 'active' : ''}}">Student Assessment</a></li>
 					</ul>
 				</li>
