@@ -3397,7 +3397,7 @@ $content .= '</tr>
 
                     $overallalls[$ky][$keys] = $overallquiz[$ky][$keys] + $overalltest[$ky][$keys] + $overallassign[$ky][$keys] + $overallextra[$ky][$keys] + $overallother[$ky][$keys] + $overallmidterm[$ky][$keys] + $overallfinal[$ky][$keys];
 
-                    $overallall[$ky][$keys] = $overallalls[$ky][$keys];
+                    $overallall[$ky][$keys] = round($overallalls[$ky][$keys]);
 
                     $collectionall = collect($overallall[$ky]);
 
