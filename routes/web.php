@@ -242,7 +242,7 @@ Route::get('/lecturer/content/material/sub/content/prev/{dir}', [App\Http\Contro
 Route::post('/lecturer/content/material/sub/content/upload/{id}', [App\Http\Controllers\LecturerController::class, 'uploadMaterial']);
 Route::post('/lecturer/content/material/sub/content/password/{dir}', [App\Http\Controllers\LecturerController::class, 'passwordContent']);
 Route::get('/lecturer/{id}', [App\Http\Controllers\LecturerController::class, 'courseSummary'])->name('lecturer.summary');
-Route::get('/lecturer/class/schedule', [App\Http\Controllers\LecturerController::class, 'classSchedule'])->name('lecturer.class.schedule');
+// Route::get('/lecturer/class/schedule', [App\Http\Controllers\LecturerController::class, 'classSchedule'])->name('lecturer.class.schedule');
 Route::get('/lecturer/class/schedule/getGroup', [App\Http\Controllers\LecturerController::class, 'scheduleGetGroup']);
 Route::post('/lecturer/class/schedule/getschedule', [App\Http\Controllers\LecturerController::class, 'getSchedule']);
 Route::post('/lecturer/class/schedule/insertschedule', [App\Http\Controllers\LecturerController::class, 'scheduleInsertGroup']);
@@ -291,6 +291,8 @@ Route::patch('/lecturer/class/announcement/list/update/{id}', [App\Http\Controll
 
 Route::get('/lecturer/report/{id}', [App\Http\Controllers\LecturerController::class, 'assessmentreport'])->name('lecturer.report');
 Route::get('/lecturer/report/{id}/{student}', [App\Http\Controllers\LecturerController::class, 'studentreport'])->name('lecturer.report.student');
+Route::get('/lecturer/class/schedule', [App\Http\Controllers\LecturerController::class, 'classSchedule'])->name('lecturer.class.schedule');
+Route::get('/lecturer/class/schedule/fetch', [App\Http\Controllers\LecturerController::class, 'fetchEvents']);
 
 
 Route::post('/update-data', [App\Http\Controllers\LecturerController::class, 'autoudateData']);
