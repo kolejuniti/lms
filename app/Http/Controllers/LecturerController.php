@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\subject;
 use App\Models\student;
+use App\Models\Tblevent;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -969,13 +970,6 @@ class LecturerController extends Controller
             return redirect()->back() ->with('alert', 'Wrong Password! Please try again.');
 
         }
-    }
-
-    public function classSchedule()
-    {
-
-        return view('lecturer.class.schedule');
-
     }
 
     public function scheduleGetGroup()
@@ -2778,7 +2772,8 @@ $content .= '</tr>
                             ['tblclassquiz.classid', request()->id],
                             ['tblclassquiz.sessionid', Session::get('SessionID')],
                             ['tblclassquiz_group.groupname', $grp->group_name],
-                            ['tblclassquiz.status', '!=', 3]
+                            ['tblclassquiz.status', '!=', 3],
+                            ['tblclassquiz.addby', $user->ic]
                         ]);
 
                 $quiz[] = $quizs->get();
@@ -2812,7 +2807,8 @@ $content .= '</tr>
                             ['tblclasstest.classid', request()->id],
                             ['tblclasstest.sessionid', Session::get('SessionID')],
                             ['tblclasstest_group.groupname', $grp->group_name],
-                            ['tblclasstest.status', '!=', 3]
+                            ['tblclasstest.status', '!=', 3],
+                            ['tblclasstest.addby', $user->ic]
                         ]);
 
                 $test[] = $tests->get();
@@ -2845,7 +2841,8 @@ $content .= '</tr>
                             ['tblclassassign.classid', request()->id],
                             ['tblclassassign.sessionid', Session::get('SessionID')],
                             ['tblclassassign_group.groupname', $grp->group_name],
-                            ['tblclassassign.status', '!=', 3]
+                            ['tblclassassign.status', '!=', 3],
+                            ['tblclassassign.addby', $user->ic]
                         ]);
 
                 $assign[] = $assigns->get();
@@ -2878,7 +2875,8 @@ $content .= '</tr>
                             ['tblclassextra.classid', request()->id],
                             ['tblclassextra.sessionid', Session::get('SessionID')],
                             ['tblclassextra_group.groupname', $grp->group_name],
-                            ['tblclassextra.status', '!=', 3]
+                            ['tblclassextra.status', '!=', 3],
+                            ['tblclassextra.addby', $user->ic]
                         ]);
 
                 $extra[] = $extras->get();
@@ -2911,7 +2909,8 @@ $content .= '</tr>
                             ['tblclassother.classid', request()->id],
                             ['tblclassother.sessionid', Session::get('SessionID')],
                             ['tblclassother_group.groupname', $grp->group_name],
-                            ['tblclassother.status', '!=', 3]
+                            ['tblclassother.status', '!=', 3],
+                            ['tblclassother.addby', $user->ic]
                         ]);
 
                 $other[] = $others->get();
@@ -2944,7 +2943,8 @@ $content .= '</tr>
                             ['tblclassmidterm.classid', request()->id],
                             ['tblclassmidterm.sessionid', Session::get('SessionID')],
                             ['tblclassmidterm_group.groupname', $grp->group_name],
-                            ['tblclassmidterm.status', '!=', 3]
+                            ['tblclassmidterm.status', '!=', 3],
+                            ['tblclassmidterm.addby', $user->ic]
                         ]);
 
                 $midterm[] = $midterms->get();
@@ -2977,7 +2977,8 @@ $content .= '</tr>
                             ['tblclassfinal.classid', request()->id],
                             ['tblclassfinal.sessionid', Session::get('SessionID')],
                             ['tblclassfinal_group.groupname', $grp->group_name],
-                            ['tblclassfinal.status', '!=', 3]
+                            ['tblclassfinal.status', '!=', 3],
+                            ['tblclassfinal.addby', $user->ic]
                         ]);
 
                 $final[] = $finals->get();
@@ -4812,6 +4813,64 @@ $content .= '</tr>
         return view('lecturer.class.surat_amaran.surat_amaran');
 
     }
+
+    public function classSchedule()
+    {
+
+        return view('lecturer.schedule.schedule');
+
+    }
+
+    public function fetchEvents()
+    {
+        $user = Auth::user();
+
+        $events = Tblevent::join('user_subjek', 'tblevents.group_id', 'user_subjek.id')
+                  ->join('tbllecture', 'tblevents.lecture_id', 'tbllecture.id')
+                  ->join('tbllecture_room', 'tbllecture.room_id', 'tbllecture_room.id')
+                  ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+                  ->where('tblevents.user_ic', $user->ic)
+                  ->groupBy('subjek.sub_id', 'tblevents.id')
+                  ->select('tblevents.*', 'subjek.course_code AS code' , 'subjek.course_name AS subject', 'tbllecture_room.name AS room')->get();
+
+        $formattedEvents = $events->map(function ($event) {
+
+            $count = DB::table('student_subjek')
+                                ->where([
+                                ['group_id', $event->group_id],
+                                ['group_name', $event->group_name]
+                                ])
+                                ->select(DB::raw('COUNT(student_ic) AS total_student'))
+                                ->first();
+
+            // Map day of the week from PHP (1 for Monday through 7 for Sunday) to FullCalendar (0 for Sunday through 6 for Saturday)
+            $dayOfWeekMap = [
+                1 => 1, // Monday
+                2 => 2, // Tuesday
+                3 => 3, // Wednesday
+                4 => 4, // Thursday
+                5 => 5, // Friday
+                6 => 6, // Saturday
+                7 => 0  // Sunday
+            ];
+
+            $dayOfWeek = date('N', strtotime($event->start));
+            $fullCalendarDayOfWeek = $dayOfWeekMap[$dayOfWeek];
+
+            return [
+                'id' => $event->id,
+                'title' => strtoupper($event->room),
+                'description' => $event->code. ' - ' . $event->subject . ' (' . $event->group_name .') ' . '|' . ' Total Student :' . ' ' .$count->total_student,
+                'startTime' => date('H:i', strtotime($event->start)),
+                'endTime' => date('H:i', strtotime($event->end)),
+                'duration' => gmdate('H:i', strtotime($event->end) - strtotime($event->start)),
+                'daysOfWeek' => [$fullCalendarDayOfWeek] // Recurring on the same day of the week
+            ];
+        });
+
+        return response()->json($formattedEvents);
+    }
+
   
 }
 
