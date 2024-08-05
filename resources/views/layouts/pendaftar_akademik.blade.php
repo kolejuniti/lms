@@ -162,7 +162,9 @@
 }
 </style>
 
-
+<div id="loading-spinner" class="spinner-overlay">
+    <div class="spinner"></div>
+  </div>
 
 <div class='custom-progress'>
 	<div class='custom-progress-bar' id='custom-progress-bar1'></div>
