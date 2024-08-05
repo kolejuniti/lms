@@ -446,6 +446,9 @@
       
       formData.append('addTranscript', JSON.stringify(getInput));
 
+      // Show the spinner
+      $('#loading-spinner').css('display', 'block');
+
       $.ajax({
           headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
           url: "{{ url('pendaftar/student/transcript/addTranscript') }}",
@@ -456,10 +459,16 @@
           contentType: false,
           error:function(err){
               console.log(err);
+
+              // Hide the spinner on error
+              $('#loading-spinner').css('display', 'none');
           },
           success:function(res){
               try{
                   if(res.message == "Success"){
+                    // Hide the spinner on error
+                    $('#loading-spinner').css('display', 'none');
+
                       alert("Success! Student's Result has been generated!");
                       
                       // Start with an empty table structure
