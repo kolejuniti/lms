@@ -1909,8 +1909,6 @@ class AR_Controller extends Controller
 
         return response()->json($formattedEvents);
     }
-
-
     public function createEvent(Request $request)
     {   
         // Parse the start and end times from the request
@@ -2949,6 +2947,47 @@ class AR_Controller extends Controller
         }else{
 
             return response()->json(['error' => 'Please fill in all input!']);
+
+        }
+
+    }
+
+    public function resultReport()
+    {
+
+        $data = [
+            'session' => DB::table('sessions')->get()
+        ];
+
+        return view('pendaftar_akademik.student.result_report.resultReport', compact('data'));
+
+    }
+
+    public function getResultReport(Request $request)
+    {
+
+        $datas = json_decode($request->submitData);
+
+        if($datas->session !=  '' && $datas->start != '' && $datas->end != '')
+        {
+
+            $data = DB::table('students')
+                    ->join('student_transcript', 'students.ic', 'student_transcript.student_ic')
+                    ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+                    ->join('transcript_status', 'student_transcript.transcript_status_id', 'transcript_status.id')
+                    ->select('student_transcript.*', 'students.name', 'students.ic', 
+                             'students.no_matric', 'tblprogramme.progcode', 'transcript_status.status_name')
+                    ->whereNotIn('students.status', [4,9])
+                    ->where('student_transcript.session_id', $datas->session)
+                    ->whereBetween('student_transcript.gpa', [$datas->start, $datas->end])
+                    ->orderBy('students.name')
+                    ->get();
+
+            return response()->json(['data' => $data]);
+
+        }else{
+
+            return response()->json(['error' => 'Please fill in all the input fields!']);
 
         }
 
