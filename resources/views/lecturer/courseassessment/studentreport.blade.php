@@ -47,6 +47,20 @@
     <section class="content">
         <div class="row">
           <div class="col-12">
+            <div class="box bg-success">
+              <div class="box-body d-flex p-0">
+                  <div class="flex-grow-1 p-30 flex-grow-1 bg-img bg-none-md" style="background-position: right bottom; background-size: auto 100%; background-image: url(images/svg-icon/color-svg/custom-30.svg)">
+                      <div class="row">
+                          <div class="col-12 col-xl-12">
+                              <h1 class="mb-0 fw-600">{{ Auth::user()->name }}</h1>
+                              <p class="my-10 fs-16"><strong>Subject : {{ $data['lectInfo']->course_name }}</strong> </p>
+                              <p class="my-10 fs-16"><strong>Code : {{ $data['lectInfo']->course_code }}</strong> </p>
+                              <p class="my-10 fs-16"><strong>Session : {{ $data['lectInfo']->session }}</strong> </p>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+            </div>
             @if(count($groups) > 0)
               @foreach ($groups as $ky => $grp)
               <div class="box">
@@ -1424,15 +1438,17 @@
 
                     // });
 
-                    $(document).ready( function () {
-                        $('#myTable{{$grp->group_name}}').DataTable({
-                          dom: 'lBfrtip', // if you remove this line you will see the show entries dropdown
-                          
-                          buttons: [
-                              'copy', 'csv', 'excel', 'pdf', 'print'
-                          ],
-                        });
-                    } );
+                    $('#myTable{{ $grp->group_name }}').DataTable({
+                        dom: 'lBfrtip',
+                        buttons: [
+                            {
+                                extend: 'excelHtml5',
+                                title: function () {
+                                    return `{{ Auth::user()->name }} - {{ $data['lectInfo']->course_name }} - {{ $data['lectInfo']->course_code }} - {{ $data['lectInfo']->session }}`;
+                                }
+                            }
+                        ]
+                    });
                 } );
               </script>
               <script>
