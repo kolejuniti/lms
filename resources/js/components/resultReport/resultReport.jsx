@@ -1,6 +1,6 @@
 import React from 'react';
 
-class SenateReport extends React.Component {
+class ResultReport extends React.Component {
   componentDidMount() {
     // Initialize the DataTable
     const table = $(this.el).DataTable({
@@ -28,18 +28,19 @@ class SenateReport extends React.Component {
     $(this.el).DataTable().destroy(true);
   }
 
+
   renderTableData() {
     return this.props.data.map((item, index) => (
       <tr key={index}>
+        <td>{index+1}</td>
         <td>{item.name}</td>
-        <td>{item.student_ic}</td>
-        <td>{item.total_credit_s}</td>
-        <td>{item.grade_pointer_s}</td>
+        <td>{item.ic}</td>
+        <td>{item.progcode}</td>
+        <td>{item.no_matric}</td>
+        <td>{item.semester}</td>
         <td>{item.gpa}</td>
-        <td>{item.total_credit_c}</td>
-        <td>{item.grade_pointer_c}</td>
         <td>{item.cgpa}</td>
-        <td>{item.status}</td>
+        <td>{item.status_name}</td>
         {/* Add more fields as needed */}
       </tr>
     ));
@@ -51,13 +52,13 @@ class SenateReport extends React.Component {
         <table id="senate_report" className="table table-bordered" ref={el => this.el = el}>
           <thead>
             <tr>
-              <th>Nama Pelajar</th>
-              <th>No. KP</th>
-              <th>Credit Semester</th>
-              <th>Grade Value Semester</th>
+              <th>No</th>
+              <th>Name</th>
+              <th>IC No.</th>
+              <th>Program</th>
+              <th>Matric No.</th>
+              <th>Semester</th>
               <th>GPA</th>
-              <th>Total Credit</th>
-              <th>Total Grade Value</th>
               <th>CGPA</th>
               <th>Result</th>
               {/* Add more headers as needed */}
@@ -72,4 +73,4 @@ class SenateReport extends React.Component {
   }
 }
 
-export default SenateReport;
+export default ResultReport;
