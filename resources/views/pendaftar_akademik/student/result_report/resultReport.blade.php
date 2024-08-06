@@ -12,13 +12,13 @@
     <div class="content-header">
       <div class="d-flex align-items-center">
         <div class="me-auto">
-          <h4 class="page-title">Daily Report</h4>
+          <h4 class="page-title">Result Report</h4>
           <div class="d-inline-block align-items-center">
             <nav>
               <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="#"><i class="mdi mdi-home-outline"></i></a></li>
                 <li class="breadcrumb-item" aria-current="page">Dashboard</li>
-                <li class="breadcrumb-item active" aria-current="page">Daily Report</li>
+                <li class="breadcrumb-item active" aria-current="page">Student Result Report</li>
               </ol>
             </nav>
           </div>
@@ -47,19 +47,6 @@
           <div class="row">
             <div class="col-md-4">
               <div class="form-group">
-                  <label class="form-label" for="program">Program</label>
-                  <select class="form-select" id="program" name="program">
-                  <option value="" selected disabled>-</option>
-                    @foreach ($data['program'] as $prg)
-                    <option value="{{ $prg->id }}">{{ $prg->progcode }} - {{ $prg->progname }}</option> 
-                    @endforeach
-                  </select>
-              </div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-4">
-              <div class="form-group">
                   <label class="form-label" for="session">Session</label>
                   <select class="form-select" id="session" name="session">
                   <option value="" selected disabled>-</option>
@@ -70,17 +57,32 @@
               </div>
             </div>
           </div>
-          <div class="row">
+          <div class="row d-flex">
             <div class="col-md-4">
               <div class="form-group">
-                  <label class="form-label" for="semester">Semester</label>
-                  <select class="form-select" id="semester" name="semester">
+                  <label class="form-label" for="start">Start Point</label>
+                  <select class="form-select" id="start" name="start">
                   <option value="" selected disabled>-</option>
-                    @foreach ($data['semester'] as $sem)
-                    <option value="{{ $sem->id }}">{{ $sem->semester_name }}</option> 
-                    @endforeach
+                  <option value="0">0</option>
+                  <option value="0.5">0.5</option>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="3.67">3.67</option>
                   </select>
               </div>
+              <div class="form-group">
+                <label class="form-label" for="end">End Point</label>
+                <select class="form-select" id="end" name="end">
+                <option value="" selected disabled>-</option>
+                <option value="0.49">0.49</option>
+                <option value="0.99">0.99</option>
+                <option value="1.99">1.99</option>
+                <option value="2.99">2.99</option>
+                <option value="3.66">3.66</option>
+                <option value="4">4</option>
+                </select>
+            </div>
             </div>
           </div>
           <button type="submit" class="btn btn-primary pull-right mb-3" onclick="submit()">Find</button>
@@ -173,9 +175,9 @@
     var formData = new FormData();
 
     getInput = {
-      program : $('#program').val(),
       session : $('#session').val(),
-      semester : $('#semester').val()
+      start : $('#start').val(),
+      end : $('#end').val()
     };
 
     formData.append('submitData', JSON.stringify(getInput))
@@ -185,7 +187,7 @@
 
     return $.ajax({
               headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
-              url      : "{{ url('AR/student/senateReport/getSenateReport') }}",
+              url      : "{{ url('AR/student/resultReport/getResultReport') }}",
               method   : 'POST',
               cache : false,
               processData: false,
@@ -201,6 +203,7 @@
 
                 if(data.error)
                 {
+                  
                   alert(data.error);
 
                 }
@@ -210,8 +213,8 @@
 
                 // Log the received data to the console
                 console.log(data.data);
-                console.log('renderSenateReport is defined:', typeof window.renderSenateReport);
-                renderSenateReport(data.data)
+                console.log('renderResultReport is defined:', typeof window.renderResultReport);
+                renderResultReport(data.data)
 
                 // $('#form-student').html(data);
                         
