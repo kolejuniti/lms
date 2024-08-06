@@ -307,8 +307,11 @@
 				<li>
 					<a href="{{ route('pendaftar_akademik.dashboard') }}"><i data-feather="home"></i><span>Dashboard</span></a>
 				</li>
+				<li>
+					<a href="{{ route('pendaftar_akademik.session') }}" class="{{ (route('pendaftar_akademik.session') == Request::url()) ? 'active' : ''}}"><i data-feather="trello"></i><span>Session List</span></a>
+				</li>
 				<li class="treeview">
-					<a href="#"><i data-feather="clipboard"></i><span>Subject</span>
+					<a href="#"><i data-feather="book-open"></i><span>Academic</span>
 						<span class="pull-right-container">
 							<i class="fa fa-angle-left pull-right"></i>
 						</span>
@@ -316,13 +319,12 @@
 					<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
 						<li><a href="{{ route('pendaftar_akademik') }}" class="{{ (route('pendaftar_akademik') == Request::url()) ? 'active' : ''}}">Subject List</a></li>
 						<li><a href="{{ route('pendaftar_akademik.assignCourse') }}" class="{{ (route('pendaftar_akademik.assignCourse') == Request::url()) ? 'active' : ''}}">Structure List</a></li>
+						<li><a href="{{ route('pendaftar_akademik.student') }}" class="{{ (route('pendaftar_akademik.student') == Request::url()) ? 'active' : ''}}">Assign Subject</a></li>
+						<li><a href="{{ route('pendaftar.student.studentreport') }}" class="{{ (route('pendaftar.student.studentreport') == Request::url()) ? 'active' : ''}}">Student Report</a></li>
+						<li><a href="{{ route('pendaftar_akademik.leave') }}" class="{{ (route('pendaftar_akademik.leave') == Request::url()) ? 'active' : ''}}">Student Leave</a></li>
+						<li><a href="{{ route('all.student.spm.report') }}" class="{{ (route('all.student.spm.report') == Request::url()) ? 'active' : ''}}">Student Report SPM</a></li>
+						<li><a href="{{ route('pendaftar_akademik.student.studentAssessment') }}" class="{{ (route('pendaftar_akademik.student.studentAssessment') == Request::url()) ? 'active' : ''}}">Student Assessment</a></li>
 					</ul>
-				</li>	
-				<li>
-				  <a href="{{ route('pendaftar_akademik.student') }}" class="{{ (route('pendaftar_akademik.student') == Request::url()) ? 'active' : ''}}"><i data-feather="airplay"></i><span>Assign Subject</span></a>
-				</li>
-				<li>
-					<a href="{{ route('pendaftar_akademik.session') }}" class="{{ (route('pendaftar_akademik.session') == Request::url()) ? 'active' : ''}}"><i data-feather="trello"></i><span>Session List</span></a>
 				</li>
 				<li class="treeview">
 					<a href="#"><i data-feather="users"></i><span>Student</span>
@@ -331,16 +333,23 @@
 						</span>
 					</a>
 					<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
-						<li><a href="{{ route('pendaftar.student.studentreport') }}" class="{{ (route('pendaftar.student.studentreport') == Request::url()) ? 'active' : ''}}">Student Report</a></li>
-						<li><a href="{{ route('pendaftar_akademik.leave') }}" class="{{ (route('pendaftar_akademik.leave') == Request::url()) ? 'active' : ''}}">Student Leave</a></li>
+						<li><a href="{{ route('pendaftar') }}" class="{{ (route('pendaftar') == Request::url()) ? 'active' : ''}}">Student List</a></li>
+						<li><a href="{{ route('pendaftar.student.edit') }}" class="{{ (route('pendaftar.student.edit') == Request::url()) ? 'active' : ''}}">Student Info</a></li>
 						<li><a href="{{ route('pendaftar_akademik.semester') }}" class="{{ (route('pendaftar_akademik.semester') == Request::url()) ? 'active' : ''}}">Student Semester</a></li>
-						<li><a href="{{ route('pendaftar.student.transcript') }}" class="{{ (route('pendaftar.student.transcript') == Request::url()) ? 'active' : ''}}">Generate Result Student</a></li>
 						<li><a href="{{ route('pendaftar.student.result') }}" class="{{ (route('pendaftar.student.result') == Request::url()) ? 'active' : ''}}">Student Result</a></li>
-						<li><a href="{{ route('all.student.spm.report') }}" class="{{ (route('all.student.spm.report') == Request::url()) ? 'active' : ''}}">Student Report SPM</a></li>
 						<li><a href="{{ route('pendaftar_akademik.warningLetter') }}" class="{{ (route('pendaftar_akademik.warningLetter') == Request::url()) ? 'active' : ''}}">Student Warning Letter</a></li>
+					</ul>
+				</li>
+				<li class="treeview">
+					<a href="#"><i data-feather="archive"></i><span>Examination</span>
+						<span class="pull-right-container">
+							<i class="fa fa-angle-left pull-right"></i>
+						</span>
+					</a>
+					<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
+						<li><a href="{{ route('pendaftar.student.transcript') }}" class="{{ (route('pendaftar.student.transcript') == Request::url()) ? 'active' : ''}}">Generate Result Student</a></li>
 						<li><a href="{{ route('pendaftar_akademik.senateReport') }}" class="{{ (route('pendaftar_akademik.senateReport') == Request::url()) ? 'active' : ''}}">Senate Report</a></li>
 						<li><a href="{{ route('pendaftar_akademik.resultReport') }}" class="{{ (route('pendaftar_akademik.resultReport') == Request::url()) ? 'active' : ''}}">Result Report</a></li>
-						<li><a href="{{ route('pendaftar_akademik.student.studentAssessment') }}" class="{{ (route('pendaftar_akademik.student.studentAssessment') == Request::url()) ? 'active' : ''}}">Student Assessment</a></li>
 					</ul>
 				</li>
 				<li class="treeview">
@@ -352,17 +361,6 @@
 					<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
 						<li><a href="{{ route('kp.create') }}" class="{{ (route('kp.create') == Request::url()) ? 'active' : ''}}">Lecturer</a></li>
 						<li><a href="{{ route('kp.group') }}" class="{{ (route('kp.group') == Request::url()) ? 'active' : ''}}">Student</a></li>
-					</ul>
-				</li> 
-				<li class="treeview">
-					<a href="#"><i data-feather="user-check"></i><span>Student Information</span>
-						<span class="pull-right-container">
-							<i class="fa fa-angle-left pull-right"></i>
-						</span>
-					</a>
-					<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
-						<li><a href="{{ route('pendaftar') }}" class="{{ (route('pendaftar') == Request::url()) ? 'active' : ''}}">Student List</a></li>
-						<li><a href="{{ route('pendaftar.student.edit') }}" class="{{ (route('pendaftar.student.edit') == Request::url()) ? 'active' : ''}}">Student Info</a></li>
 					</ul>
 				</li>
 				<li class="treeview">
