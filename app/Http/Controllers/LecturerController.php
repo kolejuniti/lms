@@ -3467,7 +3467,7 @@ $content .= '</tr>
                                                                        'other', 'otheranswer', 'overallother', 'otheravg', 'othermax', 'othermin', 'othercollection','otheravgoverall',
                                                                        'midterm', 'midtermanswer', 'overallmidterm', 'midtermavg', 'midtermmax', 'midtermmin', 'midtermcollection','midtermavgoverall',
                                                                        'final', 'finalanswer', 'overallfinal', 'finalavg', 'finalmax', 'finalmin', 'finalcollection','finalavgoverall',
-                                                                       'overallall', 'avgoverall', 'valGrade'
+                                                                       'overallall', 'overallall2', 'avgoverall', 'valGrade'
                                                                     ));
 
     }
