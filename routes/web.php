@@ -196,9 +196,9 @@ Route::get('/AR/student/warningLetter', [App\Http\Controllers\AR_Controller::cla
 Route::post('/AR/student/getWarningLetter', [App\Http\Controllers\AR_Controller::class, 'getWarningLetter']);
 Route::get('/AR/student/printWarningLetter', [App\Http\Controllers\AR_Controller::class, 'printWarningLetter']);
 Route::get('/AR/student/senateReport', [App\Http\Controllers\AR_Controller::class, 'senateReport'])->name('pendaftar_akademik.senateReport');
-Route::post('/AR/student/getSenateReport', [App\Http\Controllers\AR_Controller::class, 'getSenateReport']);
+Route::post('/AR/student/senateReport/getSenateReport', [App\Http\Controllers\AR_Controller::class, 'getSenateReport']);
 Route::get('/AR/student/resultReport', [App\Http\Controllers\AR_Controller::class, 'resultReport'])->name('pendaftar_akademik.resultReport');
-Route::post('/AR/student/getResultReport', [App\Http\Controllers\AR_Controller::class, 'getResultReport']);
+Route::post('/AR/student/resultReport/getResultReport', [App\Http\Controllers\AR_Controller::class, 'getResultReport']);
 Route::get('/AR/student/studentAssessment', [App\Http\Controllers\AR_Controller::class, 'studentAssessment'])->name('pendaftar_akademik.student.studentAssessment');
 Route::get('/AR/student/studentAssessment/getStudentAssessment', [App\Http\Controllers\AR_Controller::class, 'getStudentAssessment']);
 Route::get('/AR/student/studentAssessment/assessmentStatus/{id}/{type}', [App\Http\Controllers\AR_Controller::class, 'assessmentStatus']);
