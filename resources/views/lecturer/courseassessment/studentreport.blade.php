@@ -1410,19 +1410,29 @@
               
               <script>
                 $(document).ready( function () {
-                    $('#myTable{{$grp->group_name}}').DataTable({
-                      dom: 'lBfrtip', // if you remove this line you will see the show entries dropdown
+                    // $('#myTable{{$grp->group_name}}').DataTable({
+                    //   dom: 'lBfrtip', // if you remove this line you will see the show entries dropdown
                       
-                      buttons: [
-                          {
-                            text: 'Excel',
-                            action: function () {
-                              getExcel('{{$grp->group_name}}');
-                            }
-                          }
-                      ]
+                    //   buttons: [
+                    //       {
+                    //         text: 'Excel',
+                    //         action: function () {
+                    //           getExcel('{{$grp->group_name}}');
+                    //         }
+                    //       }
+                    //   ]
 
-                    });
+                    // });
+
+                    $(document).ready( function () {
+                        $('#myTable{{$grp->group_name}}').DataTable({
+                          dom: 'lBfrtip', // if you remove this line you will see the show entries dropdown
+                          
+                          buttons: [
+                              'copy', 'csv', 'excel', 'pdf', 'print'
+                          ],
+                        });
+                    } );
                 } );
               </script>
               <script>
