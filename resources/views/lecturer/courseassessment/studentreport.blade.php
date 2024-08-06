@@ -645,7 +645,7 @@
                                   @endif
                                   
                                   <td >
-                                    <span >{{ $overallall[$ky][$key] }}%</span>
+                                    <span >{{ $overallall2[$ky][$key] }}%</span>
                                   </td> 
                                   <td>
                                     <span >{{ $valGrade[$ky][$key] }}</span>
