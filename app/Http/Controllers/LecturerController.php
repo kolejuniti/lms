@@ -2736,6 +2736,17 @@ $content .= '</tr>
 
         $id = request()->id;
 
+        $data['lectInfo'] = DB::table('user_subjek')
+                            ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+                            ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
+                            ->where([
+                                ['user_subjek.user_ic', $user->ic],
+                                ['user_subjek.session_id', Session::get('SessionID')],
+                                ['subjek.id', request()->id]
+                             ])
+                            ->select('subjek.*', 'sessions.SessionName AS session')
+                            ->first();
+
         $groups = DB::table('user_subjek')
                   ->join('student_subjek', 'user_subjek.id', 'student_subjek.group_id')
                   ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
@@ -2750,7 +2761,7 @@ $content .= '</tr>
         {
 
 
-                $students[] = $data = DB::table('user_subjek')
+                $students[] = DB::table('user_subjek')
                 ->join('student_subjek', 'user_subjek.id', 'student_subjek.group_id')
                 ->join('students', 'student_subjek.student_ic', 'students.ic')
                 ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
@@ -3467,7 +3478,7 @@ $content .= '</tr>
                                                                        'other', 'otheranswer', 'overallother', 'otheravg', 'othermax', 'othermin', 'othercollection','otheravgoverall',
                                                                        'midterm', 'midtermanswer', 'overallmidterm', 'midtermavg', 'midtermmax', 'midtermmin', 'midtermcollection','midtermavgoverall',
                                                                        'final', 'finalanswer', 'overallfinal', 'finalavg', 'finalmax', 'finalmin', 'finalcollection','finalavgoverall',
-                                                                       'overallall', 'overallall2', 'avgoverall', 'valGrade'
+                                                                       'overallall', 'overallall2', 'avgoverall', 'valGrade', 'data'
                                                                     ));
 
     }
