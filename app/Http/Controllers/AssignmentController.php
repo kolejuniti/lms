@@ -329,13 +329,14 @@ class AssignmentController extends Controller
                 })
                 ->join('tblclassassign', 'tblclassassign_group.assignid', 'tblclassassign.id')
                 ->join('students', 'student_subjek.student_ic', 'students.ic')
-                ->select('student_subjek.*', 'tblclassassign.id AS clssid', 'tblclassassign.total_mark', 'students.no_matric', 'students.name')
+                ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+                ->select('tblprogramme.progcode', 'student_subjek.*', 'tblclassassign.id AS clssid', 'tblclassassign.total_mark', 'students.no_matric', 'students.name')
                 ->where([
                     ['tblclassassign.classid', Session::get('CourseIDS')],
                     ['tblclassassign.sessionid', Session::get('SessionIDS')],
                     ['tblclassassign.id', request()->assign],
                     ['tblclassassign.addby', $user->ic]
-                ])->whereNotIn('students.status', [4,5,6,7,16])->orderBy('students.name')->get();
+                ])->whereNotIn('students.status', [4,5,6,7,16])->orderBy('students.program')->get();
         
         //dd($assign);
 
@@ -368,7 +369,8 @@ class AssignmentController extends Controller
                 })
                 ->join('tblclassassign', 'tblclassassign_group.assignid', 'tblclassassign.id')
                 ->join('students', 'student_subjek.student_ic', 'students.ic')
-                ->select('student_subjek.*', 'tblclassassign.id AS clssid', 'tblclassassign.total_mark', 'students.no_matric', 'students.name')
+                ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+                ->select('tblprogramme.progcode', 'student_subjek.*', 'tblclassassign.id AS clssid', 'tblclassassign.total_mark', 'students.no_matric', 'students.name')
                 ->where([
                     ['tblclassassign.classid', Session::get('CourseIDS')],
                     ['tblclassassign.sessionid', Session::get('SessionIDS')],
@@ -376,7 +378,7 @@ class AssignmentController extends Controller
                     ['tblclassassign.addby', $user->ic],
                     ['student_subjek.group_id', $gp[0]],
                     ['student_subjek.group_name', $gp[1]]
-                ])->whereNotIn('students.status', [4,5,6,7,16])->orderBy('students.name')->get();
+                ])->whereNotIn('students.status', [4,5,6,7,16])->orderBy('students.program')->get();
 
         foreach($assign as $qz)
         {
@@ -393,6 +395,7 @@ class AssignmentController extends Controller
                             <th style="width: 1%">No.</th>
                             <th style="width: 15%">Name</th>
                             <th style="width: 5%">Matric No.</th>
+                            <th style="width: 5%">Program</th>
                             <th style="width: 20%">Submission Date</th>
                             <th style="width: 15%">Attachment</th>
                             <th style="width: 10%">Status Submission</th>
@@ -413,6 +416,9 @@ class AssignmentController extends Controller
                     </td>
                     <td style="width: 5%">
                         <span>' . $qz->no_matric . '</span>
+                    </td>
+                    <td style="width: 5%">
+                        <span>' . $qz->progcode . '</span>
                     </td>';
             
             if (count($status[$key]) > 0) {
@@ -1080,13 +1086,14 @@ class AssignmentController extends Controller
                 })
                 ->join('tblclassassign', 'tblclassassign_group.assignid', 'tblclassassign.id')
                 ->join('students', 'student_subjek.student_ic', 'students.ic')
-                ->select('student_subjek.*', 'tblclassassign.id AS clssid', 'tblclassassign.total_mark', 'students.no_matric', 'students.name')
+                ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+                ->select('tblprogramme.progcode', 'student_subjek.*', 'tblclassassign.id AS clssid', 'tblclassassign.total_mark', 'students.no_matric', 'students.name')
                 ->where([
                     ['tblclassassign.classid', Session::get('CourseIDS')],
                     ['tblclassassign.sessionid', Session::get('SessionIDS')],
                     ['tblclassassign.id', request()->assign],
                     ['tblclassassign.addby', $user->ic]
-                ])->whereNotIn('students.status', [4,5,6,7,16])->get();
+                ])->whereNotIn('students.status', [4,5,6,7,16])->orderBy('students.program')->get();
         
         
         
@@ -1136,7 +1143,8 @@ class AssignmentController extends Controller
                 })
                 ->join('tblclassassign', 'tblclassassign_group.assignid', 'tblclassassign.id')
                 ->join('students', 'student_subjek.student_ic', 'students.ic')
-                ->select('student_subjek.*', 'tblclassassign.id AS clssid', 'tblclassassign.total_mark', 'students.no_matric', 'students.name')
+                ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+                ->select('tblprogramme.progcode', 'student_subjek.*', 'tblclassassign.id AS clssid', 'tblclassassign.total_mark', 'students.no_matric', 'students.name')
                 ->where([
                     ['tblclassassign.classid', Session::get('CourseIDS')],
                     ['tblclassassign.sessionid', Session::get('SessionIDS')],
@@ -1144,7 +1152,7 @@ class AssignmentController extends Controller
                     ['tblclassassign.addby', $user->ic],
                     ['student_subjek.group_id', $gp[0]],
                     ['student_subjek.group_name', $gp[1]]
-                ])->whereNotIn('students.status', [4,5,6,7,16])->get();
+                ])->whereNotIn('students.status', [4,5,6,7,16])->orderBy('students.program')->get();
 
         foreach($assign as $qz)
         {
@@ -1178,6 +1186,9 @@ class AssignmentController extends Controller
                                 Matric No.
                             </th>
                             <th>
+                                Program
+                            </th>
+                            <th>
                                 Submission Date
                             </th>
                             <th>
@@ -1200,6 +1211,9 @@ class AssignmentController extends Controller
                     </td>
                     <td>
                         <span>' . $qz->no_matric . '</span>
+                    </td>
+                    <td>
+                        <span>' . $qz->progcode . '</span>
                     </td>';
             
             if ($status[$key]->final_mark != 0) {

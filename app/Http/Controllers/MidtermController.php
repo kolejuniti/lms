@@ -298,13 +298,14 @@ class MidtermController extends Controller
                 })
                 ->join('tblclassmidterm', 'tblclassmidterm_group.midtermid', 'tblclassmidterm.id')
                 ->join('students', 'student_subjek.student_ic', 'students.ic')
-                ->select('student_subjek.*', 'tblclassmidterm.id AS clssid', 'tblclassmidterm.total_mark', 'students.no_matric', 'students.name')
+                ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+                ->select('tblprogramme.progcode', 'student_subjek.*', 'tblclassmidterm.id AS clssid', 'tblclassmidterm.total_mark', 'students.no_matric', 'students.name')
                 ->where([
                     ['tblclassmidterm.classid', Session::get('CourseIDS')],
                     ['tblclassmidterm.sessionid', Session::get('SessionIDS')],
                     ['tblclassmidterm.id', request()->midterm],
                     ['tblclassmidterm.addby', $user->ic]
-                ])->whereNotIn('students.status', [4,5,6,7,16])->get();
+                ])->whereNotIn('students.status', [4,5,6,7,16])->orderBy('students.program')->get();
         
         
         
@@ -354,7 +355,8 @@ class MidtermController extends Controller
                 })
                 ->join('tblclassmidterm', 'tblclassmidterm_group.midtermid', 'tblclassmidterm.id')
                 ->join('students', 'student_subjek.student_ic', 'students.ic')
-                ->select('student_subjek.*', 'tblclassmidterm.id AS clssid', 'tblclassmidterm.total_mark', 'students.no_matric', 'students.name')
+                ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+                ->select('tblprogramme.progcode', 'student_subjek.*', 'tblclassmidterm.id AS clssid', 'tblclassmidterm.total_mark', 'students.no_matric', 'students.name')
                 ->where([
                     ['tblclassmidterm.classid', Session::get('CourseIDS')],
                     ['tblclassmidterm.sessionid', Session::get('SessionIDS')],
@@ -362,7 +364,7 @@ class MidtermController extends Controller
                     ['tblclassmidterm.addby', $user->ic],
                     ['student_subjek.group_id', $gp[0]],
                     ['student_subjek.group_name', $gp[1]]
-                ])->whereNotIn('students.status', [4,5,6,7,16])->get();
+                ])->whereNotIn('students.status', [4,5,6,7,16])->orderBy('students.program')->get();
         
         foreach($midterm as $qz)
         {
@@ -396,6 +398,9 @@ class MidtermController extends Controller
                                 Matric No.
                             </th>
                             <th>
+                                Program
+                            </th>
+                            <th>
                                 Submission Date
                             </th>
                             <th>
@@ -418,6 +423,9 @@ class MidtermController extends Controller
                     </td>
                     <td>
                         <span>' . $qz->no_matric . '</span>
+                    </td>
+                    <td>
+                        <span>' . $qz->progcode . '</span>
                     </td>';
             
             if ($status[$key]->final_mark != 0) {

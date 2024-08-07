@@ -503,13 +503,14 @@ class TestController extends Controller
                 })
                 ->join('tblclasstest', 'tblclasstest_group.testid', 'tblclasstest.id')
                 ->join('students', 'student_subjek.student_ic', 'students.ic')
-                ->select('student_subjek.*', 'tblclasstest.id AS clssid', 'tblclasstest.total_mark', 'tblclasstest.date_from', 'tblclasstest.date_to', 'students.no_matric', 'students.name')
+                ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+                ->select('tblprogramme.progcode', 'student_subjek.*', 'tblclasstest.id AS clssid', 'tblclasstest.total_mark', 'tblclasstest.date_from', 'tblclasstest.date_to', 'students.no_matric', 'students.name')
                 ->where([
                     ['tblclasstest.classid', Session::get('CourseIDS')],
                     ['tblclasstest.sessionid', Session::get('SessionIDS')],
                     ['tblclasstest.id', request()->test],
                     ['tblclasstest.addby', $user->ic]
-                ])->whereNotIn('students.status', [4,5,6,7,16])->orderBy('students.name')->get();
+                ])->whereNotIn('students.status', [4,5,6,7,16])->orderBy('students.program')->get();
         
         
         
@@ -544,7 +545,8 @@ class TestController extends Controller
                 })
                 ->join('tblclasstest', 'tblclasstest_group.testid', 'tblclasstest.id')
                 ->join('students', 'student_subjek.student_ic', 'students.ic')
-                ->select('student_subjek.*', 'tblclasstest.id AS clssid', 'tblclasstest.total_mark', 'tblclasstest.date_from', 'tblclasstest.date_to', 'students.no_matric', 'students.name')
+                ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+                ->select('tblprogramme.progcode', 'student_subjek.*', 'tblclasstest.id AS clssid', 'tblclasstest.total_mark', 'tblclasstest.date_from', 'tblclasstest.date_to', 'students.no_matric', 'students.name')
                 ->where([
                     ['tblclasstest.classid', Session::get('CourseIDS')],
                     ['tblclasstest.sessionid', Session::get('SessionIDS')],
@@ -552,7 +554,7 @@ class TestController extends Controller
                     ['tblclasstest.addby', $user->ic],
                     ['student_subjek.group_id', $gp[0]],
                     ['student_subjek.group_name', $gp[1]]
-                ])->whereNotIn('students.status', [4,5,6,7,16])->orderBy('students.name')->get();
+                ])->whereNotIn('students.status', [4,5,6,7,16])->orderBy('students.program')->get();
         
         foreach($test as $qz)
         {
@@ -569,6 +571,7 @@ class TestController extends Controller
                             <th style="width: 1%">No.</th>
                             <th style="width: 15%">Name</th>
                             <th style="width: 5%">Matric No.</th>
+                            <th style="width: 5%">Program</th>
                             <th style="width: 20%">Submission Date</th>
                             <th style="width: 10%">Status</th>
                             <th style="width: 5%">Marks</th>
@@ -588,6 +591,9 @@ class TestController extends Controller
                     </td>
                     <td style="width: 5%">
                         <span>' . $qz->no_matric . '</span>
+                    </td>
+                    <td style="width: 5%">
+                        <span>' . $qz->progcode . '</span>
                     </td>';
             
             if (count($status[$key]) > 0) {
@@ -1554,13 +1560,14 @@ class TestController extends Controller
                 })
                 ->join('tblclasstest', 'tblclasstest_group.testid', 'tblclasstest.id')
                 ->join('students', 'student_subjek.student_ic', 'students.ic')
-                ->select('student_subjek.*', 'tblclasstest.id AS clssid', 'tblclasstest.total_mark', 'students.no_matric', 'students.name')
+                ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+                ->select('tblprogramme.progcode', 'student_subjek.*', 'tblclasstest.id AS clssid', 'tblclasstest.total_mark', 'students.no_matric', 'students.name')
                 ->where([
                     ['tblclasstest.classid', Session::get('CourseIDS')],
                     ['tblclasstest.sessionid', Session::get('SessionIDS')],
                     ['tblclasstest.id', request()->test],
                     ['tblclasstest.addby', $user->ic]
-                ])->whereNotIn('students.status', [4,5,6,7,16])->orderBy('students.name')->get();
+                ])->whereNotIn('students.status', [4,5,6,7,16])->orderBy('students.program')->get();
         
         
         
@@ -1610,7 +1617,8 @@ class TestController extends Controller
                 })
                 ->join('tblclasstest', 'tblclasstest_group.testid', 'tblclasstest.id')
                 ->join('students', 'student_subjek.student_ic', 'students.ic')
-                ->select('student_subjek.*', 'tblclasstest.id AS clssid', 'tblclasstest.total_mark', 'students.no_matric', 'students.name')
+                ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+                ->select('tblprogramme.progcode', 'student_subjek.*', 'tblclasstest.id AS clssid', 'tblclasstest.total_mark', 'students.no_matric', 'students.name')
                 ->where([
                     ['tblclasstest.classid', Session::get('CourseIDS')],
                     ['tblclasstest.sessionid', Session::get('SessionIDS')],
@@ -1618,7 +1626,7 @@ class TestController extends Controller
                     ['tblclasstest.addby', $user->ic],
                     ['student_subjek.group_id', $gp[0]],
                     ['student_subjek.group_name', $gp[1]]
-                ])->whereNotIn('students.status', [4,5,6,7,16])->orderBy('students.name')->get();
+                ])->whereNotIn('students.status', [4,5,6,7,16])->orderBy('students.program')->get();
 
         foreach($test as $qz)
         {
@@ -1652,6 +1660,9 @@ class TestController extends Controller
                                 Matric No.
                             </th>
                             <th>
+                                Program
+                            </th>
+                            <th>
                                 Submission Date
                             </th>
                             <th>
@@ -1674,6 +1685,9 @@ class TestController extends Controller
                     </td>
                     <td>
                         <span>' . $qz->no_matric . '</span>
+                    </td>
+                    <td>
+                        <span>' . $qz->progcode . '</span>
                     </td>';
             
             if ($status[$key]->final_mark != 0) {

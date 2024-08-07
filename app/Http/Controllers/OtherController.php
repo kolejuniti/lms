@@ -506,13 +506,14 @@ class OtherController extends Controller
                 })
                 ->join('tblclassother', 'tblclassother_group.otherid', 'tblclassother.id')
                 ->join('students', 'student_subjek.student_ic', 'students.ic')
-                ->select('student_subjek.*', 'tblclassother.id AS clssid', 'tblclassother.total_mark', 'students.no_matric', 'students.name')
+                ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+                ->select('tblprogramme.progcode', 'student_subjek.*', 'tblclassother.id AS clssid', 'tblclassother.total_mark', 'students.no_matric', 'students.name')
                 ->where([
                     ['tblclassother.classid', Session::get('CourseIDS')],
                     ['tblclassother.sessionid', Session::get('SessionIDS')],
                     ['tblclassother.id', request()->other],
                     ['tblclassother.addby', $user->ic]
-                ])->whereNotIn('students.status', [4,5,6,7,16])->orderBy('students.name')->get();
+                ])->whereNotIn('students.status', [4,5,6,7,16])->orderBy('students.program')->get();
         
         
         
@@ -562,7 +563,8 @@ class OtherController extends Controller
                 })
                 ->join('tblclassother', 'tblclassother_group.otherid', 'tblclassother.id')
                 ->join('students', 'student_subjek.student_ic', 'students.ic')
-                ->select('student_subjek.*', 'tblclassother.id AS clssid', 'tblclassother.total_mark', 'students.no_matric', 'students.name')
+                ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+                ->select('tblprogramme.progcode', 'student_subjek.*', 'tblclassother.id AS clssid', 'tblclassother.total_mark', 'students.no_matric', 'students.name')
                 ->where([
                     ['tblclassother.classid', Session::get('CourseIDS')],
                     ['tblclassother.sessionid', Session::get('SessionIDS')],
@@ -570,7 +572,7 @@ class OtherController extends Controller
                     ['tblclassother.addby', $user->ic],
                     ['student_subjek.group_id', $gp[0]],
                     ['student_subjek.group_name', $gp[1]]
-                ])->whereNotIn('students.status', [4,5,6,7,16])->orderBy('students.name')->get();
+                ])->whereNotIn('students.status', [4,5,6,7,16])->orderBy('students.program')->get();
 
         foreach($other as $qz)
         {
@@ -592,7 +594,29 @@ class OtherController extends Controller
         }
 
         $content = "";
-        $content .= '<tbody>';
+        $content .= '<thead>
+                        <tr>
+                            <th style="width: 1%">
+                                No.
+                            </th>
+                            <th>
+                                Name
+                            </th>
+                            <th>
+                                Matric No.
+                            </th>
+                            <th>
+                                Program
+                            </th>
+                            <th>
+                                Submission Date
+                            </th>
+                            <th>
+                                Marks
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="table">';
 
         foreach ($other as $key => $qz) {
             $alert = ($status[$key]->total_mark != 0) ? 'badge bg-success' : 'badge bg-danger';
@@ -605,6 +629,9 @@ class OtherController extends Controller
                     </td>
                     <td>
                         <span>' . $qz->no_matric . '</span>
+                    </td>
+                    <td>
+                        <span>' . $qz->progcode . '</span>
                     </td>';
             
             if ($status[$key]->total_mark != 0) {

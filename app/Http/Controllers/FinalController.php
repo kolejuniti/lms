@@ -298,13 +298,14 @@ class FinalController extends Controller
                 })
                 ->join('tblclassfinal', 'tblclassfinal_group.finalid', 'tblclassfinal.id')
                 ->join('students', 'student_subjek.student_ic', 'students.ic')
-                ->select('student_subjek.*', 'tblclassfinal.id AS clssid', 'tblclassfinal.total_mark', 'students.no_matric', 'students.name')
+                ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+                ->select('tblprogramme.progcode', 'student_subjek.*', 'tblclassfinal.id AS clssid', 'tblclassfinal.total_mark', 'students.no_matric', 'students.name')
                 ->where([
                     ['tblclassfinal.classid', Session::get('CourseIDS')],
                     ['tblclassfinal.sessionid', Session::get('SessionIDS')],
                     ['tblclassfinal.id', request()->final],
                     ['tblclassfinal.addby', $user->ic]
-                ])->whereNotIn('students.status', [4,5,6,7,16])->get();
+                ])->whereNotIn('students.status', [4,5,6,7,16])->orderBy('students.program')->get();
         
         
         
@@ -354,7 +355,8 @@ class FinalController extends Controller
                 })
                 ->join('tblclassfinal', 'tblclassfinal_group.finalid', 'tblclassfinal.id')
                 ->join('students', 'student_subjek.student_ic', 'students.ic')
-                ->select('student_subjek.*', 'tblclassfinal.id AS clssid', 'tblclassfinal.total_mark', 'students.no_matric', 'students.name')
+                ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+                ->select('tblprogramme.progcode', 'student_subjek.*', 'tblclassfinal.id AS clssid', 'tblclassfinal.total_mark', 'students.no_matric', 'students.name')
                 ->where([
                     ['tblclassfinal.classid', Session::get('CourseIDS')],
                     ['tblclassfinal.sessionid', Session::get('SessionIDS')],
@@ -362,7 +364,7 @@ class FinalController extends Controller
                     ['tblclassfinal.addby', $user->ic],
                     ['student_subjek.group_id', $gp[0]],
                     ['student_subjek.group_name', $gp[1]]
-                ])->whereNotIn('students.status', [4,5,6,7,16])->get();
+                ])->whereNotIn('students.status', [4,5,6,7,16])->orderBy('students.program')->get();
         
         foreach($final as $qz)
         {
@@ -396,6 +398,9 @@ class FinalController extends Controller
                                 Matric No.
                             </th>
                             <th>
+                                Program
+                            </th>
+                            <th>
                                 Submission Date
                             </th>
                             <th>
@@ -418,6 +423,9 @@ class FinalController extends Controller
                     </td>
                     <td>
                         <span>' . $qz->no_matric . '</span>
+                    </td>
+                    <td>
+                        <span>' . $qz->progcode . '</span>
                     </td>';
             
             if ($status[$key]->final_mark != 0) {

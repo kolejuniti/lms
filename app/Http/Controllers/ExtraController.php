@@ -257,13 +257,14 @@ class ExtraController extends Controller
                 })
                 ->join('tblclassextra', 'tblclassextra_group.extraid', 'tblclassextra.id')
                 ->join('students', 'student_subjek.student_ic', 'students.ic')
-                ->select('student_subjek.*', 'tblclassextra.id AS clssid', 'tblclassextra.total_mark', 'students.no_matric', 'students.name')
+                ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+                ->select('tblprogramme.progcode', 'student_subjek.*', 'tblclassextra.id AS clssid', 'tblclassextra.total_mark', 'students.no_matric', 'students.name')
                 ->where([
                     ['tblclassextra.classid', Session::get('CourseIDS')],
                     ['tblclassextra.sessionid', Session::get('SessionIDS')],
                     ['tblclassextra.id', request()->extra],
                     ['tblclassextra.addby', $user->ic]
-                ])->whereNotIn('students.status', [4,5,6,7,16])->orderBy('students.name')->get();
+                ])->whereNotIn('students.status', [4,5,6,7,16])->orderBy('students.program')->get();
         
         
         
@@ -313,7 +314,8 @@ class ExtraController extends Controller
                 })
                 ->join('tblclassextra', 'tblclassextra_group.extraid', 'tblclassextra.id')
                 ->join('students', 'student_subjek.student_ic', 'students.ic')
-                ->select('student_subjek.*', 'tblclassextra.id AS clssid', 'tblclassextra.total_mark', 'students.no_matric', 'students.name')
+                ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+                ->select('tblprogramme.progcode', 'student_subjek.*', 'tblclassextra.id AS clssid', 'tblclassextra.total_mark', 'students.no_matric', 'students.name')
                 ->where([
                     ['tblclassextra.classid', Session::get('CourseIDS')],
                     ['tblclassextra.sessionid', Session::get('SessionIDS')],
@@ -321,7 +323,7 @@ class ExtraController extends Controller
                     ['tblclassextra.addby', $user->ic],
                     ['student_subjek.group_id', $gp[0]],
                     ['student_subjek.group_name', $gp[1]]
-                ])->whereNotIn('students.status', [4,5,6,7,16])->orderBy('students.name')->get();
+                ])->whereNotIn('students.status', [4,5,6,7,16])->orderBy('students.program')->get();
 
         foreach($extra as $qz)
         {
@@ -348,6 +350,7 @@ class ExtraController extends Controller
                             <th style="width: 1%">No.</th>
                             <th>Name</th>
                             <th>Matric No.</th>
+                            <th>Program</th>
                             <th>Submission Date</th>
                             <th>Marks</th>
                         </tr>
@@ -365,6 +368,9 @@ class ExtraController extends Controller
                     </td>
                     <td>
                         <span>' . $qz->no_matric . '</span>
+                    </td>
+                    <td>
+                        <span>' . $qz->progcode . '</span>
                     </td>';
             
             if ($status[$key]->total_mark != 0) {
