@@ -857,9 +857,12 @@ class AR_Controller extends Controller
         ]);
 
         $start = $this->getYear($data['start']);
+
+        $inc = $start + 1;
+        
         $end = $this->getYear($data['end']);
 
-        $name = $data['month'] . ' ' . $start . '/' . $end;
+        $name = $data['month'] . ' ' . $start . '/' . $inc;
 
         //dd($name);
 
