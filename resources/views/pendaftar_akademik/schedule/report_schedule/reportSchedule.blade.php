@@ -87,8 +87,7 @@
                                     $subjectRowSpan = $subjectGroupCount > 0 ? $subjectGroupCount : 1;
                                 @endphp
                                 @foreach ($data['group'][$key][$subKey] as $groupKey => $group)
-                                    <tr>
-                                        @if (!$lecturerPrinted)
+                                      <tr class="<?= ($data['hour_left'][$key][$subKey][$groupKey] > 0) ? 'bg-success' : 'bg-danger'; ?>">                                  @if (!$lecturerPrinted)
                                             <td style="text-align: center; border: 1px solid black;" rowspan="{{ $lecturerRowSpan }}">
                                                 {{ $lct->name }}
                                             </td>
