@@ -851,20 +851,18 @@ class AR_Controller extends Controller
     {
         $data = $request->validate([
             'year' => ['required'],
+            'year1' => ['required'],
+            'year2' => ['required'],
             'month' => ['required'],
             'start' => ['required'],
             'end' => ['required']
         ]);
 
-        $start = $this->getYear($data['start']);
-
-        $inc = $start + 1;
+        // $start = $this->getYear($data['start']);
         
-        $end = $this->getYear($data['end']);
+        // $end = $this->getYear($data['end']);
 
-        $name = $data['month'] . ' ' . $start . '/' . $inc;
-
-        //dd($name);
+        $name = $data['month'] . ' ' . $data['year1'] . '/' . $data['year2'];
 
         if(isset($request->idS))
         {
@@ -908,6 +906,14 @@ class AR_Controller extends Controller
             'course' => DB::table('sessions')->where('SessionID', $request->id)->first(),
             'year' => DB::table('tblyear')->get()
         ];
+
+        $remainingString = substr($data['course']->SessionName, 4);
+
+        $years = explode('/', $remainingString);
+
+        $data['year1'] = $years[0];
+
+        $data['year2'] = $years[1];
 
         return view('pendaftar_akademik.getSession', compact('data'))->with('id', $request->id);
 
