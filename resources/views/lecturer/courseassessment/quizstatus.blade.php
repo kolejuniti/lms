@@ -71,6 +71,9 @@
                                 <th style="width: 5%">
                                   Matric No.
                                 </th>
+                                <th style="width: 5%">
+                                  Program
+                                </th>
                                 <th style="width: 20%">
                                   Submission Date
                                 </th>
@@ -106,6 +109,9 @@
                                 </td>
                                 <td style="width: 5%">
                                   <span class="">{{ $qz->no_matric }}</span>
+                                </td>
+                                <td style="width: 5%">
+                                  <span class="">{{ $qz->progcode }}</span>
                                 </td>
                                 @if (count($status[$key]) > 0)
                                   @foreach ($status[$key] as $keys => $sts)

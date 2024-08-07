@@ -86,7 +86,7 @@ div.form-actions.btn-group > button{
                                     <div class="col-md-2 mb-4">
                                         <label for="quiz-title" class="form-label "><strong>Quiz Title</strong></label>
                                         <input type="text" oninput="this.value = this.value.toUpperCase()"  id="quiz-title" class="form-control"
-                                            value="{{ empty($data['quiz']->title) ? "" : $data['quiz']->title }}" required>
+                                            value="{{ empty($data['quiz']->title) ? "" : $data['quiz']->title }}"  required>
                                     </div>
                                     <div class="col-md-2 mb-4">
                                         <label for="from" class="form-label "><strong>Quiz Duration (From)</strong></label>

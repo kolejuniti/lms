@@ -77,6 +77,9 @@
                                   Matric No.
                                 </th>
                                 <th>
+                                  Program
+                                </th>
+                                <th>
                                   Submission Date
                                 </th>
                                 <th>
@@ -106,6 +109,9 @@
                                 </td>
                                 <td>
                                   <span class="">{{ $qz->no_matric }}</span>
+                                </td>
+                                <td>
+                                  <span class="">{{ $qz->progcode }}</span>
                                 </td>
                                 @if ($status[$key]->total_mark != 0)
                                   
