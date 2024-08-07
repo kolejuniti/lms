@@ -36,6 +36,35 @@
             </select>
         </div>
       </div>
+      <div class="row align-items-center">
+        <div class="col-md-5">
+          <div class="form-group">
+            <label class="form-label" for="year1">Year</label>
+            <select class="form-select" id="year1" name="year1">
+              <option value="-" selected disabled>-</option>
+              @foreach($data['year'] as $yr)
+                <option value="{{ $yr->year }}" {{ ($data['year1'] == $yr->year ? 'selected' : '') }}>{{ $yr->year }}</option>
+              @endforeach
+            </select>
+          </div>
+        </div>
+        <div class="col-md-2 text-center">
+          <div class="form-group">
+            <span style="font-size: 45px;">\</span>
+          </div>
+        </div>
+        <div class="col-md-5">
+          <div class="form-group">
+            <label class="form-label" for="year2">Year</label>
+            <select class="form-select" id="year2" name="year2">
+              <option value="-" selected disabled>-</option>
+              @foreach($data['year'] as $yr)
+                <option value="{{ $yr->year }}" {{ ($data['year2'] == $yr->year ? 'selected' : '') }}>{{ $yr->year }}</option>
+              @endforeach
+            </select>
+          </div>
+        </div>
+      </div>
       <div>
         <div class="form-group">
           <label>Start</label>

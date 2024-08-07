@@ -152,6 +152,35 @@
                               </select>
                           </div>
                         </div>
+                        <div class="row align-items-center">
+                          <div class="col-md-5">
+                            <div class="form-group">
+                              <label class="form-label" for="year1">Year</label>
+                              <select class="form-select" id="year1" name="year1">
+                                <option value="-" selected disabled>-</option>
+                                @foreach($data['year'] as $yr)
+                                  <option value="{{ $yr->year }}">{{ $yr->year }}</option>
+                                @endforeach
+                              </select>
+                            </div>
+                          </div>
+                          <div class="col-md-2 text-center">
+                            <div class="form-group">
+                              <span style="font-size: 45px;">\</span>
+                            </div>
+                          </div>
+                          <div class="col-md-5">
+                            <div class="form-group">
+                              <label class="form-label" for="year2">Year</label>
+                              <select class="form-select" id="year2" name="year2">
+                                <option value="-" selected disabled>-</option>
+                                @foreach($data['year'] as $yr)
+                                  <option value="{{ $yr->year }}">{{ $yr->year }}</option>
+                                @endforeach
+                              </select>
+                            </div>
+                          </div>
+                        </div>
                         <div>
                           <div class="form-group">
                             <label>Start</label>
@@ -172,6 +201,14 @@
                         </div>
                     </div>
                   </form>
+              </div>
+          </div>
+        </div>
+
+        <div id="uploadModal2" class="modal" class="modal fade" role="dialog">
+          <div class="modal-dialog">
+              <!-- modal content-->
+              <div class="modal-content" id="getModal2">
               </div>
           </div>
         </div>
@@ -256,8 +293,8 @@
                 console.log(err);
             },
             success  : function(data){
-                $('#getModal').html(data);
-                $('#uploadModal').modal('show');
+                $('#getModal2').html(data);
+                $('#uploadModal2').modal('show');
             }
         });
 
