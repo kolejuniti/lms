@@ -3165,7 +3165,7 @@ $content .= '</tr>
                                 ['classid', request()->id],
                                 ['sessionid', Session::get('SessionID')]
                             ])->exists()){
-                                dd($totalassign);
+                                dd($percentassign->mark_percentage);
                                 $overallassign[$ky][$keys] = number_format((float)$sumassign[$ky][$keys] / $totalassign * $percentassign->mark_percentage, 2, '.', '');
 
                                 $assigncollection = collect($overallassign[$ky]);
