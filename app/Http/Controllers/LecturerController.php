@@ -3168,7 +3168,9 @@ $content .= '</tr>
                                 //dd($totalassign);
                                 if($totalassign == 0)
                                 {
-                                    dd('error detectedsssss');
+                                    // dd('error detectedsssss');
+
+                                    $overallassign[$ky][$keys] = null; // or any default value or handling logic
                                 }
                                 else{
                                     $overallassign[$ky][$keys] = number_format((float)$sumassign[$ky][$keys] / $totalassign * $percentassign->mark_percentage, 2, '.', '');
