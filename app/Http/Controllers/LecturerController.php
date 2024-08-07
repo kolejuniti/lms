@@ -3166,9 +3166,9 @@ $content .= '</tr>
                                 ['sessionid', Session::get('SessionID')]
                             ])->exists()){
                                 //dd($totalassign);
-                                if($percentassign->mark_percentage == 0)
+                                if($totalassign == 0)
                                 {
-                                    dd('error detectedsss');
+                                    dd('error detectedsssss');
                                 }
                                 else{
                                     $overallassign[$ky][$keys] = number_format((float)$sumassign[$ky][$keys] / $totalassign * $percentassign->mark_percentage, 2, '.', '');
