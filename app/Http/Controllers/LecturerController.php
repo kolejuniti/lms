@@ -3165,8 +3165,14 @@ $content .= '</tr>
                                 ['classid', request()->id],
                                 ['sessionid', Session::get('SessionID')]
                             ])->exists()){
-                                dd($sumassign[$ky][$keys]);
-                                $overallassign[$ky][$keys] = number_format((float)$sumassign[$ky][$keys] / $totalassign * $percentassign->mark_percentage, 2, '.', '');
+                                //dd($totalassign);
+                                if($totalassign == 0 || $percentassign->mark_percentage == 0)
+                                {
+                                    dd('error detected');
+                                }
+                                else{
+                                    $overallassign[$ky][$keys] = number_format((float)$sumassign[$ky][$keys] / $totalassign * $percentassign->mark_percentage, 2, '.', '');
+                                }
 
                                 $assigncollection = collect($overallassign[$ky]);
                             }else{
