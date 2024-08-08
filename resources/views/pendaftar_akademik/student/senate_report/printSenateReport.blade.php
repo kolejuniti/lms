@@ -184,10 +184,10 @@ tr:hover {
                         </td>
                         @foreach($data['course'] as $key2 => $crs)
                         <td>
-                            {{ $data['dtl'][$key][$key2]->pointer ?? null }}
+                            {{ $data['dtl'][$key][$key2]->grade ?? null }}
                         </td>
                         <td>
-                            {{ $data['dtl'][$key][$key2]->grade ?? null }}
+                            {{ $data['dtl'][$key][$key2]->pointer ?? null }}
                         </td>
                         @endforeach
                         <td>
