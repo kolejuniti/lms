@@ -239,7 +239,7 @@
 
     return $.ajax({
       headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
-      url: "{{ url('AR/student/getSenateReport?print=true') }}",
+      url: "{{ url('AR/student/senateReport/getSenateReport?print=true') }}",
       method: 'POST',
       cache : false,
       processData: false,
