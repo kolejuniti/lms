@@ -127,7 +127,7 @@ tr:hover {
                             </th>
                             @foreach($data['course'] as $key => $crs)
                             <th colspan="2">
-                                {{ $crs->course_name }} 
+                                {{ $crs->course_code }} 
                                 {{-- - {{  $crs->sub_id }} --}}
                             </th>
                             @endforeach
