@@ -237,6 +237,9 @@
 
     formData.append('submitData', JSON.stringify(getInput))
 
+    // Show the spinner
+    $('#loading-spinner').css('display', 'block');
+
     return $.ajax({
       headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
       url: "{{ url('AR/student/senateReport/getSenateReport?print=true') }}",
@@ -248,6 +251,9 @@
       error: function(err) {
         alert("Error");
         console.log(err);
+
+        // Hide the spinner on success
+        $('#loading-spinner').css('display', 'none');
       },
       success: function(data) {
         if(data.error)
@@ -255,6 +261,9 @@
           alert(data.error);
 
         }
+
+        // Hide the spinner on success
+        $('#loading-spinner').css('display', 'none');
 
         var newWindow = window.open();
         newWindow.document.write(data);

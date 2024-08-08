@@ -20,7 +20,7 @@
    <style>
     @page {
        size: A4 potrait; /* reduced height for A5 size in landscape orientation */
-       margin: 0cm;
+       margin: 0.5cm;
      }
  
      * {
@@ -92,6 +92,11 @@ tr:nth-child(even) {
 tr:hover {
     background-color: #e6e6e6; /* Highlight row on hover */
 }
+
+.half-page {
+        width: 50%;
+        float: left;
+    }
      </style>
   </head>
   
@@ -101,10 +106,10 @@ tr:hover {
     <div class="container">
         <!-- BEGIN INVOICE -->
         <div class="col-12">
-        <h1>Senate Report as of {{ now() }}</h1>
-        <br>
-        <br>
-        <!--pre registration -->
+            <h1>Senate Report as of {{ now() }}</h1>
+            <br>
+            <br>
+            <!--pre registration -->
             <div class="card mb-3" id="stud_info">
                 <div class="card-header">
                 <b>Pre Registration</b>
@@ -218,6 +223,41 @@ tr:hover {
                        
                     </tfoot>
                 </table>
+                </div>
+                <!-- /.card-body -->
+            </div>
+        </div>
+
+        <div class="col-md-6 half-page">
+            {{-- <h1>Second table</h1>
+            <br>
+            <br> --}}
+            <!--second table -->
+            <div class="card mb-3" id="stud_info">
+                <div class="card-header">
+                    {{-- <b>Second Table</b> --}}
+                </div>
+                <div class="card-body p-0">
+                    <table class="">
+                        <thead>
+                            <tr>
+                                <th>KEPUTUSAN</th>
+                                <th>Bil</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table">
+                            @foreach($data['status'] as $key => $sts)
+                            <tr>
+                                <td>
+                                    {{ $sts->status_name }}
+                                </td>
+                                <td>
+                                    {{ $data['total'][$key] }}
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
                 </div>
                 <!-- /.card-body -->
             </div>
