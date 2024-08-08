@@ -2911,8 +2911,20 @@ class AR_Controller extends Controller
                                   ->groupBy('subjek.sub_id')
                                   ->get();
 
+                $data['status'] = DB::table('transcript_status')->get();
+
+                // Initializing total counts array
+                $data['total'] = array_fill(0, count($data['status']), 0);
+
+
                 foreach($data['student'] as $key => $std)
                 {
+
+                    foreach ($data['status'] as $key2 => $sts) {
+                        if ($sts->status_name == $std->status) {
+                            $data['total'][$key2]++;
+                        }
+                    }
 
                     foreach($data['course'] as $key2 => $crs)
                     {
