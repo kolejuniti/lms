@@ -2021,7 +2021,9 @@ class PendaftarController extends Controller
                     $total_credit_c = DB::table('student_subjek')->where([
                         ['student_ic', $std]
                     ])->where('semesterid', '<=', $data->semester)
-                    ->whereIn('course_status_id', [1,2,12,15])->sum('credit');
+                    ->whereIn('course_status_id', [1,2,12,15])
+                    ->groupBy('student_subjek.courseid')
+                    ->sum('credit');
 
                     $passed_credit_c = DB::table('student_subjek')->where([
                         ['student_ic', $std]
