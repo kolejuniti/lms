@@ -2029,14 +2029,24 @@ class PendaftarController extends Controller
                     ])->where('semesterid', '<=', $data->semester)
                     ->whereIn('course_status_id', [1])->sum('credit');
 
-                    $count_credit_c = DB::table('student_subjek')
-                        ->selectRaw('SUM(credit) as total')
-                        ->where('student_ic', $std)
-                        ->where('semesterid', '<=', $data->semester)
-                        ->whereIn('course_status_id', [1,2,12,15])
-                        ->distinct('courseid')
-                        ->value('total');
+                    $distinct_courses = DB::table('student_subjek')
+                    ->where('student_ic', $std)
+                    ->where('semesterid', '<=', $data->semester)
+                    ->whereIn('course_status_id', [1, 2, 12, 15])
+                    ->distinct()
+                    ->select('courseid', 'credit');
 
+                    $count_credit_c = DB::table(DB::raw("({$distinct_courses->toSql()}) as sub"))
+                    ->mergeBindings($distinct_courses) // Needed to pass the bindings from the subquery
+                    ->sum('credit');
+                    
+                    // $count_credit_c = DB::table('student_subjek')->where([
+                    //     ['student_ic', $std]
+                    // ])->where('semesterid', '<=', $data->semester)
+                    // ->whereIn('course_status_id', [1,2,12,15])
+                    // ->distinct('courseid')
+                    // ->selectRaw('SUM(credit) as total')
+                    // ->value('total');
 
                     $grade_pointer = DB::table('student_subjek')
                         ->selectRaw('MAX(id) as max_id')
