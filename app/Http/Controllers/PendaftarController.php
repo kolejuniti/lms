@@ -2029,13 +2029,12 @@ class PendaftarController extends Controller
                     ])->where('semesterid', '<=', $data->semester)
                     ->whereIn('course_status_id', [1])->sum('credit');
 
-                    $count_credit_c = DB::table('student_subjek')->where([
-                        ['student_ic', $std]
-                    ])->where('semesterid', '<=', $data->semester)
+                    $count_credit_c = DB::table('student_subjek')
+                    ->where('student_ic', $std)
+                    ->where('semesterid', '<=', $data->semester)
                     ->whereIn('course_status_id', [1,2,12,15])
                     ->groupBy('courseid')
-                    ->selectRaw('SUM(credit) as total')
-                    ->value('total');
+                    ->sum('credit');
 
                     $grade_pointer = DB::table('student_subjek')
                         ->selectRaw('MAX(id) as max_id')
