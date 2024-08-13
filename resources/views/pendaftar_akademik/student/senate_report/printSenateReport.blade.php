@@ -205,7 +205,7 @@ tr:hover {
                             {{ $std->gpa }}
                         </td>
                         <td>
-                            {{ $std->total_credit_c }}
+                            {{ $std->total_credit_c }} / {{ $std->passed_credit_c }}
                         </td>
                         <td>
                             {{ $std->grade_pointer_c }}
