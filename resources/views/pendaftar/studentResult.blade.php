@@ -35,6 +35,28 @@
               <!-- /.card-header -->
               <div class="card mb-3">
                 <div class="card-header">
+                  <b>Student view result period</b>
+                </div>
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                        <label class="form-label" for="from">FROM</label>
+                        <input type="date" class="form-control" id="from" name="from" value="{{ ($data['range']->Start) ?? '' }}">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                        <label class="form-label" for="name">TO</label>
+                        <input type="date" class="form-control" id="to" name="to" value="{{ ($data['range']->End) ?? '' }}">
+                        </div>
+                    </div>
+                  </div>
+                  <button type="submit" class="btn btn-primary pull-right mb-3" onclick="submit()">Submit</button>
+                </div>
+              </div>
+              <div class="card mb-3">
+                <div class="card-header">
                   <b>Search Student</b>
                 </div>
                 <div class="card-body">
@@ -167,70 +189,37 @@ function getStudInfo(student)
         });
 }
 
-function submitForm(ic)
+function submit()
 {
-    var forminput = [];
-    var formData = new FormData();
+   
+  var from = $('#from').val();
+  var to = $('#to').val();
 
-    forminput = {
-        ic: ic,
-        intake: $('#intake').val(),
-        batch: $('#batch').val(),
-        session: $('#session').val(),
-        semester: $('#semester').val(),
-        status: $('#status').val(),
-        kuliah: $('#kuliah').val(),
-        comment: editor.getData(),
-      };
+  if(from != '' && to != '')
+  {
 
-    if(forminput.status == '' || forminput.comment == '')
-    {
+    return $.ajax({
+            headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
+            url      : "{{ url('pendaftar/student/result/storeResultPeriod') }}",
+            method   : 'POST',
+            data 	 : {from: from, to: to},
+            error:function(err){
+                alert("Error");
+                console.log(err);
+            },
+            success  : function(data){
+                if(data.success)
+                {
+                  alert(data.success)
+                }
+            }
+        });
 
-      alert('Please fill in Student Status & Comment before submit!')
+  }else{
 
-    }else{
+    alert('Please fill in the range period!');
 
-      formData.append('studentData', JSON.stringify(forminput));
-
-      $.ajax({
-          headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
-          url: '{{ url('/pendaftar/student/status/storeStudent') }}',
-          type: 'POST',
-          data: formData,
-          cache : false,
-          processData: false,
-          contentType: false,
-          error:function(err){
-              console.log(err);
-          },
-          success:function(res){
-              try{
-                  if(res.message == "Success"){
-                      alert("Success! Status & Student info has been updated!")
-                      $('#complex_header').html(res.data);
-                      
-                  }else{
-                      $('.error-field').html('');
-                      if(res.message == "Field Error"){
-                          for (f in res.error) {
-                              $('#'+f+'_error').html(res.error[f]);
-                          }
-                      }
-                      else if(res.message == "Group code already existed inside the system"){
-                          $('#classcode_error').html(res.message);
-                      }
-                      else{
-                          alert(res.message);
-                      }
-                      $("html, body").animate({ scrollTop: 0 }, "fast");
-                  }
-              }catch(err){
-                  alert("Ops sorry, there is an error");
-              }
-          }
-      });
-
-    }
+  }
 
 }
 </script>

@@ -132,6 +132,7 @@ Route::post('/pendaftar/student/transcript/getTranscript', [App\Http\Controllers
 Route::post('/pendaftar/student/transcript/addTranscript', [App\Http\Controllers\PendaftarController::class, 'addTranscript']);
 Route::get('/pendaftar/student/result', [App\Http\Controllers\PendaftarController::class, 'studentResult'])->name('pendaftar.student.result');
 Route::post('/pendaftar/student/result/getStudentResult', [App\Http\Controllers\PendaftarController::class, 'getStudentResult']);
+Route::post('/pendaftar/student/result/storeResultPeriod', [App\Http\Controllers\PendaftarController::class, 'storeResultPeriod']);
 Route::get('/pendaftar/student/result/overallResult', [App\Http\Controllers\PendaftarController::class, 'overallResult']);
 Route::get('/pendaftar/student/reportRs', [App\Http\Controllers\PendaftarController::class, 'studentReportRs'])->name('pendaftar.student.reportR');
 Route::get('/pendaftar/student/reportRs/getStudentReportR', [App\Http\Controllers\PendaftarController::class, 'getStudentReportRs']);
@@ -477,7 +478,7 @@ Route::get('/student/class/onlineclass/list', [App\Http\Controllers\StudentContr
 Route::get('/student/class/onlineclass/list/{id}', [App\Http\Controllers\StudentController::class, 'OnlineClassListView'])->name('student.onlineclass.list.view');
 Route::get('/student/class/announcement/list', [App\Http\Controllers\StudentController::class, 'AnnouncementList'])->name('student.announcement.list');
 Route::get('/student/affair/statement', [App\Http\Controllers\StudentController::class, 'studentStatement'])->name('student.affair.statement');
-// Route::get('/student/affair/result', [App\Http\Controllers\StudentController::class, 'studentResult'])->name('student.affair.result');
+Route::get('/student/affair/result', [App\Http\Controllers\StudentController::class, 'studentResult'])->name('student.affair.result');
 
 
 Route::get('/student/report/{id}', [App\Http\Controllers\StudentController::class, 'studentreport'])->name('student.report.student');

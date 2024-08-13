@@ -2229,7 +2229,9 @@ class PendaftarController extends Controller
     public function studentResult()
     {
 
-        return view('pendaftar.studentResult');
+        $data['range'] = DB::table('tblresult_period')->first();
+
+        return view('pendaftar.studentResult', compact('data'));
 
     }
 
@@ -2253,6 +2255,19 @@ class PendaftarController extends Controller
                 ->get();
 
         return view('pendaftar.getStudentResult', compact('data'));
+
+    }
+
+    public function storeResultPeriod(Request $request)
+    {
+
+        DB::table('tblresult_period')->upsert([
+            'id' => 1,
+            'Start' => $request->from,
+            'END' =>$request->to
+        ],['id']);
+
+        return response()->json(['success' => 'Successfully updated result period!']);
 
     }
 
