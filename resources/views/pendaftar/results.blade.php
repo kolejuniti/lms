@@ -186,7 +186,7 @@
                               KUMULATIF
                            </td>
                            <td class="text-center">
-                              {{ $data['transcript']->total_credit_c }}
+                              {{ $data['transcript']->count_credit_c }}
                            </td>
                            <td class="text-center">
                               {{ $data['transcript']->grade_pointer_c }}

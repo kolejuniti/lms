@@ -36,7 +36,7 @@ class SenateReport extends React.Component {
         <td>{item.total_credit_s}</td>
         <td>{item.grade_pointer_s}</td>
         <td>{item.gpa}</td>
-        <td>{item.total_credit_c}</td>
+        <td>{item.count_credit_c}</td>
         <td>{item.grade_pointer_c}</td>
         <td>{item.cgpa}</td>
         <td>{item.status}</td>
