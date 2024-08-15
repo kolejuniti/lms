@@ -218,7 +218,7 @@
                                 <td>
                                 {{ $crs->SessionName }}
                                 </td>
-                                @if(Auth::user()->usrtype == 'AR' && $crs->semester == $data['students']->semester)
+                                @if(Auth::user()->usrtype == 'AR')
                                 <td style="text-align: center;">
                                     <div class="pull right">
                                         <button class="btn btn-danger btn-sm mr-2" onclick="unregister('{{ $crs->IDS }}','{{ $data['student']->ic }}')">
