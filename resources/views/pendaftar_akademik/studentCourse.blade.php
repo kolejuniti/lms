@@ -266,9 +266,16 @@
   function unregister(id,ic)
   {
 
-    //alert(id);
+    Swal.fire({
+    title: "Are you sure?",
+    text: "This will be permanent",
+    showCancelButton: true,
+    confirmButtonText: "Yes, delete it!"
+  }).then(function(res){
+    
+    if (res.isConfirmed){
 
-    return $.ajax({
+        $.ajax({
             headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
             url      : "{{ url('AR/student/unregister') }}",
             method   : 'DELETE',
@@ -284,6 +291,9 @@
             }
         });
 
+      }
+      });
+      
   }
 
 </script>
