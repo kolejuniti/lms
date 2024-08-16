@@ -34,7 +34,7 @@
             </button>
           </div>
         </div>
-        <div class="card-body">
+        {{-- <div class="card-body">
           <div class="row mt-3 ">
             <div class="col-md-6 mr-3" id="room-card">
               <div class="form-group">
@@ -66,61 +66,50 @@
               </div>
             </div>
           </div>
-        </div>
-        <div class="card-body p-0">
+        </div> --}}
+        <div class="card-body">
           <table id="complex_header" class="table table-striped projects display dataTable">
             <thead>
                 <tr>
-                    <th style="width: 1%">
+                    <th>
                         No.
                     </th>
-                    <th style="width: 15%">
-                        Session
+                    <th>
+                        Name
                     </th>
-                    <th style="width: 15%">
-                        Room Name
+                    <th>
+                        Ic
                     </th>
-                    <th style="width: 20%">
+                    <th>
                     </th>
                 </tr>
             </thead>
             <tbody id="table">
-            {{-- @foreach ($student as $key=> $stud)
+            @foreach ($data['lecturer'] as $key=> $lct)
               <tr>
-                <td style="width: 1%">
+                <td>
                   {{ $key+1 }}
                 </td>
-                <td style="width: 15%">
-                  {{ $stud->name }}
-                </td>
-                <td style="width: 15%">
-                  {{ $stud->ic }}
-                </td>
-                <td style="width: 10%">
-                  {{ $stud->no_matric }}
+                <td>
+                  {{ $lct->name }}
                 </td>
                 <td>
-                  {{ $stud->program }}
+                  {{ $lct->ic }}
                 </td>
                 <td class="project-actions text-right" >
-                  <a class="btn btn-info btn-sm btn-sm mr-2" href="/pendaftar/edit/{{ $stud->ic }}">
-                      <i class="ti-pencil-alt">
+                  <a class="btn btn-info btn-sm" href="/AR/schedule/scheduleTable/{{ $lct->ic }}">
+                      <i class="ti-info-alt">
                       </i>
-                      Edit
+                      Table
                   </a>
-                  <a class="btn btn-info btn-sm btn-sm mr-2" href="#" onclick="getProgram('{{ $stud->ic }}')">
-                    <i class="ti-pencil-alt">
-                    </i>
-                    Program History
-                  </a>
-                  <a class="btn btn-danger btn-sm" href="#" onclick="deleteMaterial('{{ $stud->ic }}')">
+                  <a class="btn btn-danger btn-sm" href="#" onclick="deleteMaterial('{{ $lct->ic }}')">
                       <i class="ti-trash">
                       </i>
                       Delete
                   </a>
                 </td>
               </tr>
-            @endforeach --}}
+            @endforeach
             </tbody>
           </table>
         </div>

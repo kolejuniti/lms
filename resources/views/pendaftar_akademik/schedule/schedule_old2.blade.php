@@ -83,10 +83,9 @@
                                     <div class="flex-grow-1 p-30 flex-grow-1 bg-img bg-none-md" style="background-position: right bottom; background-size: auto 100%; background-image: url(images/svg-icon/color-svg/custom-30.svg)">
                                         <div class="row">
                                             <div class="col-12 col-xl-12">
-                                                <h1 class="mb-0 fw-600">{{ $data['lecturerInfo']->name }}</h1>
-                                                <p class="my-10 fs-16"><strong>Ic : {{ $data['lecturerInfo']->ic }}</strong> </p>
-                                                <p class="my-10 fs-16"><strong>Staff No. : {{ $data['lecturerInfo']->no_staf }}</strong> </p>
-                                                <p class="my-10 fs-16"><strong>Staff No. : {{ $data['lecturerInfo']->email }}</strong> </p>
+                                                <h1 class="mb-0 fw-600">{{ $data['lectureInfo']->name }}</h1>
+                                                <p class="my-10 fs-16"><strong>Session : {{ $data['lectureInfo']->session }}</strong> </p>
+                                                <p class="my-10 fs-16"><strong>Description : {{ $data['lectureInfo']->description }}</strong> </p>
                                                 {{-- <p class="my-10 fs-16"><strong>Staff No. :</strong> </p>
                                                 <p class="my-10 fs-16"><strong>Email :</strong> </p> --}}
                                                 {{-- <div id="collapsee">
@@ -94,7 +93,7 @@
                                                  
                                                 </div>
                                                 <button type="button" id="myButton" class="btn btn-info">More Info</button> --}}
-                                                {{-- <div class="col-12 mt-45 d-md-flex align-items-center">
+                                                <div class="col-12 mt-45 d-md-flex align-items-center">
                                                     <div class="col-mx-4 me-30 mb-30 mb-md-0">
                                                         <div class="d-flex align-items-center">
                                                             <div class="me-15 text-center fs-24 w-50 h-50 l-h-50 bg-danger b-1 border-white rounded-circle">
@@ -150,7 +149,7 @@
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </div> --}}
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -170,11 +169,11 @@
                                 <div class="row mt-3">
                                     <div class="col-md-4 mr-3">
                                         <div class="form-group">
-                                          <label class="form-label" for="ses">Session</label>
-                                          <select class="form-select" id="ses" name="ses">
+                                          <label class="form-label" for="lect">Lecturer</label>
+                                          <select class="form-select" id="lect" name="lect">
                                             <option value="-" selected>-</option>
-                                            @foreach($data['session'] as $ses)
-                                            <option value="{{ $ses->SessionID }}">{{ $ses->SessionName }}</option>
+                                            @foreach($data['lecturer'] as $lct)
+                                            <option value="{{ $lct->ic }}">{{ $lct->name }}</option>
                                             @endforeach
                                           </select>
                                         </div>
@@ -192,19 +191,6 @@
                                           <label class="form-label" for="group">Group</label>
                                           <select class="form-select" id="group" name="group">
                                             <option value="-" selected>-</option>
-                                          </select>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row mt-3">
-                                    <div class="col-md-4 mr-3">
-                                        <div class="form-group">
-                                          <label class="form-label" for="room">Room</label>
-                                          <select class="form-select" id="room" name="room">
-                                            <option value="-" selected>-</option>
-                                            @foreach($data['lecture_room'] as $rm)
-                                            <option value="{{ $rm->id }}">{{ $rm->name }}</option>
-                                            @endforeach
                                           </select>
                                         </div>
                                     </div>
@@ -301,14 +287,14 @@
 	});
 </script>
 <script>
-        $('#ses').change(function() {
-            var sessionID = $(this).val();
-            if (sessionID) {
+        $('#lect').change(function() {
+            var lecturerId = $(this).val();
+            if (lecturerId) {
                 $.ajax({
                     url: '/AR/schedule/scheduleTable/{{ request()->id }}/getSubjectSchedule',
                     type: "GET",  // You could use POST here if you prefer
                     dataType: "json",
-                    data: { sessionID: sessionID },  // Sending the sessionID as data
+                    data: { lecturerId: lecturerId },  // Sending the lecturerId as data
                     success: function(data) {
                         // alert(data);
                         $('#subject').empty();
@@ -355,7 +341,11 @@
 
         // Define the hiddenDays variable based on the condition
         var hiddenDays;
-        hiddenDays = [];
+        if ('{{ $data["lectureInfo"]->weekend }}' == 0) {
+            hiddenDays = [0, 6]; // Hide Sunday (0) and Saturday (6)
+        } else {
+            hiddenDays = []; // Show all days
+        }
 
         //alert(hiddenDays);
 
@@ -370,8 +360,8 @@
                     right: 'timeGridWeek,timeGridDay'
                 },
                 hiddenDays: hiddenDays, // Hide Sunday (0) and Saturday (6)
-                slotMinTime: '07:00:00', // Set the minimum visible time to 8 AM
-                slotMaxTime: '18:00:00', // Set the maximum visible time to 5 PM (17:00)
+                slotMinTime: '{{ $data["lectureInfo"]->start }}', // Set the minimum visible time to 8 AM
+                slotMaxTime: '{{ $data["lectureInfo"]->end }}', // Set the maximum visible time to 5 PM (17:00)
                 slotDuration: '00:30:00', // Sets the duration of each time slot, e.g., '00:30:00' for 30 minutes
                 slotLabelInterval: '00:30:00', // Sets the interval at which time labels are displayed, e.g., '00:30:00' for every 30 minutes
                 height: 'auto', // You can set this to 'auto' or a specific pixel value like '800px'
@@ -501,14 +491,13 @@
             // Add event button click listener
             document.getElementById('add-event').addEventListener('click', async function () {
                 // var eventTitle = document.getElementById('event-title').value.trim();
-                var session = document.getElementById('ses').value;
+                var lecturer = document.getElementById('lect').value;
                 var groupId = document.getElementById('subject').value;
                 var groupName = document.getElementById('group').value;
-                var roomId = document.getElementById('room').value;
                 var eventStart = convertToPhpMyAdminDatetime(new Date(document.getElementById('event-start').value));
 
-                const slotMinTime = '07:00:00';
-                const slotMaxTime = '18:00:00';
+                const slotMinTime = '{{ $data["lectureInfo"]->start }}';
+                const slotMaxTime = '{{ $data["lectureInfo"]->end }}';
 
                 const startHour = parseInt(eventStart.slice(11, 13));
 
@@ -517,7 +506,7 @@
                     return;
                 }
 
-                if (session) {
+                if (lecturer) {
                     var currentDate = convertToPhpMyAdminDatetime(calendar.getDate());
 
                     if(document.getElementById('event-start').value)
@@ -529,10 +518,9 @@
 
                     var eventData = {
                         // title: eventTitle,
-                        session: session,
+                        lecturer: lecturer,
                         groupId: groupId,
                         groupName: groupName,
-                        roomId: roomId,
                         start: (document.getElementById('event-start').value) ? eventStart : currentDate,
                         end: futureDate,
                         allDay: true
@@ -559,10 +547,9 @@
                             }else{
                                 calendar.addEvent(data.event);
                                 // document.getElementById('event-title').value = ''; // Clear the input field
-                                document.getElementById('ses').value = ''; // Clear the input field
+                                document.getElementById('lect').value = ''; // Clear the input field
                                 document.getElementById('subject').value = ''; // Clear the input field
                                 document.getElementById('group').value = ''; // Clear the input field
-                                document.getElementById('room').value = ''; // Clear the input field
                                 document.getElementById('event-start').value = ''; // Clear the input field
                                 document.getElementById('event-end').value = ''; // Clear the input field
                                 alert('Event added successfully.'); // Inform the user that the event was added    
@@ -666,8 +653,8 @@
                 const newStart = document.getElementById('edit-start').value;
                 const newEnd = document.getElementById('edit-end').value;
 
-                const slotMinTime = '07:00:00';
-                const slotMaxTime = '18:00:00';
+                const slotMinTime = '{{ $data["lectureInfo"]->start }}';
+                const slotMaxTime = '{{ $data["lectureInfo"]->end }}';
 
                 const startHour = parseInt(newStart.slice(11, 13));
                 const endHour = parseInt(newEnd.slice(11, 13));

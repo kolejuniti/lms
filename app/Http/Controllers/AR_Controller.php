@@ -944,7 +944,8 @@ class AR_Controller extends Controller
 
         $data = [
             'room' => DB::table('tbllecture_room')->get(),
-            'session' => DB::table('sessions')->where('Status', 'ACTIVE')->get()
+            'session' => DB::table('sessions')->where('Status', 'ACTIVE')->get(),
+            'lecturer' => DB::table('users')->whereIn('usrtype', ['LCT', 'KP', 'AO'])->get()
         ];
 
         return view('pendaftar_akademik.schedule.index', compact('data'));
@@ -1817,22 +1818,715 @@ class AR_Controller extends Controller
 
     }
 
+    // public function scheduleTable()
+    // {
+
+    //     $data = [
+    //         'lectureInfo' => DB::table('tbllecture')
+    //                          ->join('tbllecture_room', 'tbllecture.room_id', 'tbllecture_room.id')
+    //                          ->join('sessions', 'tbllecture.session_id', 'sessions.SessionID')
+    //                          ->select('tbllecture_room.*', 'sessions.SessionName AS session')
+    //                          ->where('tbllecture.id', request()->id)
+    //                          ->first(),
+    //         'totalBooking' => DB::table('tblevents')->where('lecture_id', request()->id)
+    //                           ->select(DB::raw('COUNT(tblevents.id) AS total_booking'))
+    //                           ->first(),
+    //         'lecturer' => DB::table('users')
+    //                       ->whereIn('usrtype', ['LCT', 'PL', 'AO'])
+    //                       ->get(),
+    //     ];
+
+    //     //dd($data);
+
+    //     return view('pendaftar_akademik.schedule.schedule', compact('data'));
+
+    // }
+
+    // public function getSubjectSchedule(Request $request)
+    // {
+
+    //     $lecture = DB::table('tbllecture')->where('id', $request->id)->first();
+
+    //     $subject = DB::table('user_subjek')
+    //                ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+    //                ->where([
+    //                   ['user_subjek.user_ic', $request->lecturerId],
+    //                   ['user_subjek.session_id', $lecture->session_id]
+    //                ])
+    //                ->select('subjek.course_name AS name', 'user_subjek.id AS id')->get();
+
+    //     return response()->json($subject);
+
+    // }
+
+    // public function getGroupSchedule(Request $request)
+    // {
+
+    //     $lecture = DB::table('tbllecture')->where('id', $request->id)->first();
+
+    //     $group = DB::table('student_subjek')
+    //              ->where([
+    //                 ['student_subjek.group_id', $request->groupID]
+    //              ])->groupBy('group_name')->get();
+
+    //     return response()->json($group);
+
+    // }
+
+    // public function fetchEvents()
+    // {
+    //     $events = Tblevent::join('user_subjek', 'tblevents.group_id', 'user_subjek.id')
+    //               ->join('users', 'user_subjek.user_ic', 'users.ic')
+    //               ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+    //               ->where('tblevents.lecture_id', request()->id)
+    //               ->groupBy('subjek.sub_id', 'tblevents.id')
+    //               ->select('tblevents.*', 'subjek.course_code AS code' , 'subjek.course_name AS subject', 'users.name AS lecturer')->get();
+
+    //     $formattedEvents = $events->map(function ($event) {
+
+    //         $count = DB::table('student_subjek')
+    //                             ->where([
+    //                             ['group_id', $event->group_id],
+    //                             ['group_name', $event->group_name]
+    //                             ])
+    //                             ->select(DB::raw('COUNT(student_ic) AS total_student'))
+    //                             ->first();
+
+    //         // Map day of the week from PHP (1 for Monday through 7 for Sunday) to FullCalendar (0 for Sunday through 6 for Saturday)
+    //         $dayOfWeekMap = [
+    //             1 => 1, // Monday
+    //             2 => 2, // Tuesday
+    //             3 => 3, // Wednesday
+    //             4 => 4, // Thursday
+    //             5 => 5, // Friday
+    //             6 => 6, // Saturday
+    //             7 => 0  // Sunday
+    //         ];
+
+    //         $dayOfWeek = date('N', strtotime($event->start));
+    //         $fullCalendarDayOfWeek = $dayOfWeekMap[$dayOfWeek];
+
+    //         return [
+    //             'id' => $event->id,
+    //             'title' => $event->lecturer,
+    //             'description' => $event->code. ' - ' . $event->subject . ' (' . $event->group_name .') ' . '|' . ' Total Student :' . ' ' .$count->total_student,
+    //             'startTime' => date('H:i', strtotime($event->start)),
+    //             'endTime' => date('H:i', strtotime($event->end)),
+    //             'duration' => gmdate('H:i', strtotime($event->end) - strtotime($event->start)),
+    //             'daysOfWeek' => [$fullCalendarDayOfWeek] // Recurring on the same day of the week
+    //         ];
+    //     });
+
+    //     return response()->json($formattedEvents);
+    // }
+    // public function createEvent(Request $request)
+    // {   
+    //     // Parse the start and end times from the request
+    //     $startTime = Carbon::parse($request->start);
+    //     $endTime = Carbon::parse($request->end);
+    //     $rehat1 = '13:00:00';
+    //     $rehat2 = '14:00:00';
+
+    //     // Get the day of the week (e.g., Thursday)
+    //     $dayOfWeek = $startTime->format('l');
+
+    //     // Convert startTime and endTime to only time format
+    //     $startTimeOnly = $startTime->format('H:i');
+    //     $endTimeOnly = $endTime->format('H:i');
+
+    //     $roomDetails = DB::table('tbllecture')
+    //                    ->join('tbllecture_room', 'tbllecture.room_id', 'tbllecture_room.id')
+    //                    ->where('tbllecture.id', $request->id)
+    //                    ->select('tbllecture_room.*', 'tbllecture.session_id AS session')
+    //                    ->first();
+
+    //     $courseDetails = DB::table('student_subjek')
+    //                      ->join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
+    //                      ->join('subjek_structure', 'subjek.sub_id', 'subjek_structure.courseID')
+    //                      ->where([
+    //                         ['group_id', $request->groupId],
+    //                         ['group_name', $request->groupName]
+    //                      ])
+    //                      ->select('subjek_structure.meeting_hour AS course_credit')
+    //                      ->first();
+ 
+    //     if(DB::table('tblevents')
+    //     ->where('lecture_id', $request->id)
+    //     ->whereRaw('DAYNAME(start) = ?', [$dayOfWeek])
+    //     ->where(function ($query) use ($startTimeOnly, $endTimeOnly) {
+    //         $query->where(function ($query) use ($startTimeOnly) {
+    //             $query->whereRaw('? BETWEEN TIME(start) AND TIME(end)', [$startTimeOnly])
+    //                   ->whereRaw('? != TIME(start)', [$startTimeOnly])
+    //                   ->whereRaw('? != TIME(end)', [$startTimeOnly]);
+    //         })
+    //         ->orWhere(function ($query) use ($endTimeOnly) {
+    //             $query->whereRaw('? BETWEEN TIME(start) AND TIME(end)', [$endTimeOnly])
+    //                   ->whereRaw('? != TIME(start)', [$endTimeOnly])
+    //                   ->whereRaw('? != TIME(end)', [$endTimeOnly]);
+    //         })
+    //         ->orWhere(function ($query) use ($startTimeOnly, $endTimeOnly) {
+    //             $query->whereRaw('? < TIME(start)', [$startTimeOnly])
+    //                   ->whereRaw('? > TIME(end)', [$endTimeOnly]);
+    //         });
+    //         // $query->where(function ($query) use ($startTimeOnly) {
+    //         //     $query->whereRaw('? BETWEEN TIME(start) AND TIME(end)', [$startTimeOnly])
+    //         //           ->whereRaw('? != TIME(start)', [$startTimeOnly])
+    //         //           ->whereRaw('? != TIME(end)', [$startTimeOnly]);
+    //         // })
+    //         // ->orWhere(function ($query) use ($endTimeOnly) {
+    //         //     $query->whereRaw('? BETWEEN TIME(start) AND TIME(end)', [$endTimeOnly])
+    //         //           ->whereRaw('? != TIME(start)', [$endTimeOnly])
+    //         //           ->whereRaw('? != TIME(end)', [$endTimeOnly]);
+    //         // })
+    //         // ->orWhere(function ($query) use ($startTimeOnly, $endTimeOnly) {
+    //         //     $query->whereRaw('? <= TIME(start)', [$startTimeOnly])
+    //         //           ->whereRaw('? >= TIME(end)', [$endTimeOnly]);
+    //         // });
+    //     })
+    //     ->exists() || ($startTimeOnly <= $rehat1 && $endTimeOnly >= $rehat2) ||
+    //     ($startTimeOnly >= $rehat1 && $endTimeOnly <= $rehat2) ||
+    //     ($startTimeOnly <= $rehat1 && $endTimeOnly <= $rehat2 && $endTimeOnly > $rehat1) ||
+    //     ($startTimeOnly >= $rehat1 && $endTimeOnly >= $rehat2 && $startTimeOnly < $rehat2))
+    //     {
+
+    //         Log::info('Overlap detected for event on:', [
+    //             'dayOfWeek' => $dayOfWeek,
+    //             'startTime' => $startTime->toDateTimeString(),
+    //             'endTime' => $endTime->toDateTimeString(),
+    //         ]);
+
+    //         return response()->json(['error' => 'Time selected is already occupied, please select another time!']);
+
+    //     }else{
+
+    //         $events = DB::table('tblevents')
+    //         ->whereRaw('DAYNAME(start) = ?', [$dayOfWeek])
+    //         ->where('lecture_id', $request->id)
+    //         ->select('start', 'end')
+    //         ->get();
+
+    //         $totalHours = 0;
+
+    //         foreach ($events as $event) {
+    //             $start = Carbon::parse($event->start);
+    //             $end = Carbon::parse($event->end);
+    //             $hours = $end->diffInHours($start);
+    //             $totalHours += $hours;
+    //         }
+
+    //         $start2 = Carbon::parse($request->start);
+    //         $end2 = Carbon::parse($request->end);
+    //         $hours2 = $end2->diffInHours($start2);
+
+    //         $newTotalHours = $hours2;
+
+    //         if(($totalHours + $newTotalHours) > $roomDetails->total_hour)
+    //         {
+
+    //             return response()->json(['error' => 'Total Hour for ' . $dayOfWeek . ' already exceed ' .  $roomDetails->total_hour . '. Please clear any event and try again!']);
+
+    //         }else{
+
+    //             $capacity = DB::table('student_subjek')->where([
+    //                             ['group_id', $request->groupId],
+    //                             ['group_name', $request->groupName]
+    //                         ])
+    //                         ->select(DB::raw('COUNT(student_subjek.id) AS capacity'))
+    //                         ->first();
+
+    //             if($capacity->capacity > $roomDetails->capacity)
+    //             {
+
+    //                 return response()->json(['error' => 'Total student is ' . $capacity->capacity . '. Capacity cannot exceed ' .  $roomDetails->capacity . ', Please try with a different class!']);
+                    
+    //             }else{
+
+    //                 $credit_hour = DB::table('tblevents')
+    //                                 ->join('tbllecture', 'tblevents.lecture_id', 'tbllecture.id')
+    //                                 ->where([
+    //                                     ['tblevents.group_id', $request->groupId],
+    //                                     ['tblevents.group_name', $request->groupName],
+    //                                     ['tbllecture.session_id', $roomDetails->session]
+    //                                 ])->get();
+
+    //                 $totalCredit = 0;
+
+    //                 foreach($credit_hour as $cr)
+    //                 {
+
+    //                     $start3 = Carbon::parse($cr->start);
+    //                     $end3 = Carbon::parse($cr->end);
+    //                     $hours3 = $end3->diffInHours($start3);
+    //                     $totalCredit += $hours3;
+
+    //                 }
+
+    //                 if(($totalCredit + $newTotalHours) > $courseDetails->course_credit)
+    //                 {
+
+    //                     return response()->json(['error' => 'Total meeting hour is already at ' . $totalCredit . ' for this subject. Trying to add ' .  $newTotalHours . ' more will exceed ' .  $courseDetails->course_credit . '!']);
+
+    //                 }else{
+
+    //                     $students = DB::table('student_subjek')
+    //                                 ->where([
+    //                                     ['group_id', $request->groupId],
+    //                                     ['group_name', $request->groupName]
+    //                                 ])->pluck('student_ic'); 
+
+    //                     if(DB::table('tblevents')
+    //                     ->join('tbllecture', 'tblevents.lecture_id', 'tbllecture.id')
+    //                     ->join('student_subjek', function($join){
+    //                         $join->on('tblevents.group_id', 'student_subjek.group_id');
+    //                         $join->on('tblevents.group_name', 'student_subjek.group_name');
+    //                     })
+    //                     ->whereIn('student_subjek.student_ic', $students)
+    //                     ->where('tbllecture.session_id', $roomDetails->session)
+    //                     ->whereRaw('DAYNAME(start) = ?', [$dayOfWeek])
+    //                     ->where(function ($query) use ($startTimeOnly, $endTimeOnly) {
+    //                         $query->where(function ($query) use ($startTimeOnly) {
+    //                             $query->whereRaw('? BETWEEN TIME(start) AND TIME(end)', [$startTimeOnly])
+    //                                   ->whereRaw('? != TIME(start)', [$startTimeOnly])
+    //                                   ->whereRaw('? != TIME(end)', [$startTimeOnly]);
+    //                         })
+    //                         ->orWhere(function ($query) use ($endTimeOnly) {
+    //                             $query->whereRaw('? BETWEEN TIME(start) AND TIME(end)', [$endTimeOnly])
+    //                                   ->whereRaw('? != TIME(start)', [$endTimeOnly])
+    //                                   ->whereRaw('? != TIME(end)', [$endTimeOnly]);
+    //                         })
+    //                         ->orWhere(function ($query) use ($startTimeOnly, $endTimeOnly) {
+    //                             $query->whereRaw('? <= TIME(start)', [$startTimeOnly])
+    //                                   ->whereRaw('? >= TIME(end)', [$endTimeOnly]);
+    //                         });
+    //                     })
+    //                     ->exists()){
+
+    //                         return response()->json(['error' => 'Students in this class is already booked with the same period in another room/class!']);
+
+    //                     }else{
+
+    //                         if($startTimeOnly < $roomDetails->start || $endTimeOnly < $roomDetails->start || $startTimeOnly > $roomDetails->end || $endTimeOnly > $roomDetails->end)
+    //                         {
+
+    //                             return response()->json(['error' => 'Event must be created inside the room time range of ' . date('h:i A', (strtotime($roomDetails->start))) . ' - ' . date('h:i A', (strtotime($roomDetails->end)))]);
+
+    //                         }else{
+
+    //                             $event = new Tblevent;
+    //                             $event->lecture_id = $request->id;
+    //                             $event->user_ic = $request->lecturer;
+    //                             $event->group_id = $request->groupId;
+    //                             $event->group_name = $request->groupName;
+    //                             // $event->title = $request->title;
+    //                             $event->start = $request->start;
+    //                             $event->end = $request->end;
+    //                             $event->save();
+
+    //                             $events = Tblevent::join('user_subjek', 'tblevents.group_id', 'user_subjek.id')
+    //                                     ->join('users', 'user_subjek.user_ic', 'users.ic')
+    //                                     ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+    //                                     ->where('tblevents.id', $event->id)
+    //                                     ->groupBy('subjek.sub_id', 'tblevents.id')
+    //                                     ->select('tblevents.*', 'subjek.course_code AS code' , 'subjek.course_name AS subject', 'users.name AS lecturer')->first();
+
+    //                             $count = DB::table('student_subjek')
+    //                                     ->where([
+    //                                     ['group_id', $events->group_id],
+    //                                     ['group_name', $events->group_name]
+    //                                     ])
+    //                                     ->select(DB::raw('COUNT(student_ic) AS total_student'))
+    //                                     ->first();
+
+    //                             return response()->json([
+    //                                 'event' => [
+    //                                     'id' => $events->id,
+    //                                     'title' => $events->lecturer, 
+    //                                     'description' => $events->code . ' - ' . $events->subject . ' (' . $events->group_name .') ' . '|' . ' Total Student :' . ' ' .$count->total_student,
+    //                                     'start' => $events->start,
+    //                                     'end' => $events->end
+    //                                 ]
+    //                             ]);
+                                
+    //                         }
+
+    //                     }
+
+    //                 }
+
+    //             }
+
+    //         }
+
+    //     }
+    // }
+
+    // public function updateEvent(Request $request, $id)
+    // {
+    //     $event = DB::table('tblevents')->where('id', $id)->first();
+
+    //     // Parse the start and end times from the request
+    //     $startTime = Carbon::parse($request->start);
+    //     $endTime = Carbon::parse($request->end);
+    //     $rehat1 = '13:00:00';
+    //     $rehat2 = '14:00:00';
+
+    //     // Get the day of the week (e.g., Thursday)
+    //     $dayOfWeek = $startTime->format('l');
+
+    //     // Convert startTime and endTime to only time format
+    //     $startTimeOnly = $startTime->format('H:i:s');
+    //     $endTimeOnly = $endTime->format('H:i:s');
+
+    //     $roomDetails = DB::table('tbllecture')
+    //                    ->join('tbllecture_room', 'tbllecture.room_id', 'tbllecture_room.id')
+    //                    ->where('tbllecture.id', $event->lecture_id)
+    //                    ->select('tbllecture_room.*', 'tbllecture.session_id AS session')
+    //                    ->first();
+
+    //     $courseDetails = DB::table('student_subjek')
+    //                    ->join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
+    //                    ->join('subjek_structure', 'subjek.sub_id', 'subjek_structure.courseID')
+    //                    ->where([
+    //                       ['group_id', $request->groupId],
+    //                       ['group_name', $request->groupName]
+    //                    ])
+    //                    ->select('subjek_structure.meeting_hour AS course_credit')
+    //                    ->first();
+
+    //     if(DB::table('tblevents')
+    //     ->where('lecture_id', $event->lecture_id)
+    //     ->where('id', '!=', $id)
+    //     ->whereRaw('DAYNAME(start) = ?', [$dayOfWeek])
+    //     ->where(function ($query) use ($startTimeOnly, $endTimeOnly) {
+    //         $query->where(function ($query) use ($startTimeOnly) {
+    //             $query->whereRaw('? BETWEEN TIME(start) AND TIME(end)', [$startTimeOnly])
+    //                   ->whereRaw('? != TIME(start)', [$startTimeOnly])
+    //                   ->whereRaw('? != TIME(end)', [$startTimeOnly]);
+    //         })
+    //         ->orWhere(function ($query) use ($endTimeOnly) {
+    //             $query->whereRaw('? BETWEEN TIME(start) AND TIME(end)', [$endTimeOnly])
+    //                   ->whereRaw('? != TIME(start)', [$endTimeOnly])
+    //                   ->whereRaw('? != TIME(end)', [$endTimeOnly]);
+    //         })
+    //         ->orWhere(function ($query) use ($startTimeOnly, $endTimeOnly) {
+    //             $query->whereRaw('? < TIME(start)', [$startTimeOnly])
+    //                   ->whereRaw('? > TIME(end)', [$endTimeOnly]);
+    //         });
+    //         // $query->where(function ($query) use ($startTimeOnly) {
+    //         //     $query->whereRaw('? BETWEEN TIME(start) AND TIME(end)', [$startTimeOnly])
+    //         //           ->whereRaw('? != TIME(start)', [$startTimeOnly])
+    //         //           ->whereRaw('? != TIME(end)', [$startTimeOnly]);
+    //         // })
+    //         // ->orWhere(function ($query) use ($endTimeOnly) {
+    //         //     $query->whereRaw('? BETWEEN TIME(start) AND TIME(end)', [$endTimeOnly])
+    //         //           ->whereRaw('? != TIME(start)', [$endTimeOnly])
+    //         //           ->whereRaw('? != TIME(end)', [$endTimeOnly]);
+    //         // })
+    //         // ->orWhere(function ($query) use ($startTimeOnly, $endTimeOnly) {
+    //         //     $query->whereRaw('? <= TIME(start)', [$startTimeOnly])
+    //         //           ->whereRaw('? >= TIME(end)', [$endTimeOnly]);
+    //         // });
+    //     })
+    //     ->exists() || ($startTimeOnly <= $rehat1 && $endTimeOnly >= $rehat2) ||
+    //     ($startTimeOnly >= $rehat1 && $endTimeOnly <= $rehat2) ||
+    //     ($startTimeOnly <= $rehat1 && $endTimeOnly <= $rehat2 && $endTimeOnly > $rehat1) ||
+    //     ($startTimeOnly >= $rehat1 && $endTimeOnly >= $rehat2 && $startTimeOnly < $rehat2))
+    //     {
+
+    //         return response()->json(['error' => 'Time selected is already occupied, please select another time!']);
+
+    //     }else{
+
+    //         $credit_hour = DB::table('tblevents')
+    //                                 ->join('tbllecture', 'tblevents.lecture_id', 'tbllecture.id')
+    //                                 ->where([
+    //                                     ['tblevents.group_id', $event->group_id],
+    //                                     ['tblevents.group_name', $event->group_name],
+    //                                     ['tbllecture.session_id', $roomDetails->session],
+    //                                     ['tblevents.id', '!=', $id]
+    //                                 ])->get();
+
+    //         $totalCredit = 0;
+
+    //         foreach($credit_hour as $cr)
+    //         {
+
+    //             $start3 = Carbon::parse($cr->start);
+    //             $end3 = Carbon::parse($cr->end);
+    //             $hours3 = $end3->diffInHours($start3);
+    //             $totalCredit += $hours3;
+
+    //         }
+
+    //         $start2 = Carbon::parse($request->start);
+    //         $end2 = Carbon::parse($request->end);
+    //         $hours2 = $end2->diffInHours($start2);
+
+    //         $newTotalHours = $hours2;
+
+    //         if(($totalCredit + $newTotalHours) > $courseDetails->course_credit)
+    //         {
+
+    //             return response()->json(['error' => 'Total meeting hour is already at ' . $totalCredit . ' for this subject. Trying to add ' .  $newTotalHours . ' more will exceed ' .  $courseDetails->course_credit . '!']);
+
+    //         }else{
+
+    //             $students = DB::table('student_subjek')
+    //                         ->where([
+    //                             ['group_id', $event->group_id],
+    //                             ['group_name', $event->group_name]
+    //                         ])->pluck('student_ic');
+
+    //             if(DB::table('tblevents')
+    //             ->join('tbllecture', 'tblevents.lecture_id', 'tbllecture.id')
+    //             ->join('student_subjek', function($join){
+    //                 $join->on('tblevents.group_id', 'student_subjek.group_id')
+    //                      ->on('tblevents.group_name', 'student_subjek.group_name');
+    //             })
+    //             ->where('tblevents.id', '!=', $id)
+    //             ->whereIn('student_subjek.student_ic', $students)
+    //             ->where('tbllecture.session_id', $roomDetails->session)
+    //             ->whereRaw('DAYNAME(start) = ?', [$dayOfWeek])
+    //             ->where(function ($query) use ($startTimeOnly, $endTimeOnly) {
+    //                 $query->where(function ($query) use ($startTimeOnly) {
+    //                     $query->whereRaw('? BETWEEN TIME(start) AND TIME(end)', [$startTimeOnly])
+    //                             ->whereRaw('? != TIME(start)', [$startTimeOnly])
+    //                             ->whereRaw('? != TIME(end)', [$startTimeOnly]);
+    //                 })
+    //                 ->orWhere(function ($query) use ($endTimeOnly) {
+    //                     $query->whereRaw('? BETWEEN TIME(start) AND TIME(end)', [$endTimeOnly])
+    //                             ->whereRaw('? != TIME(start)', [$endTimeOnly])
+    //                             ->whereRaw('? != TIME(end)', [$endTimeOnly]);
+    //                 })
+    //                 ->orWhere(function ($query) use ($startTimeOnly, $endTimeOnly) {
+    //                     $query->whereRaw('? <= TIME(start)', [$startTimeOnly])
+    //                             ->whereRaw('? >= TIME(end)', [$endTimeOnly]);
+    //                 });
+    //             })
+    //             ->exists()){
+
+    //                 return response()->json(['error' => 'Students in this class is already booked with the same period in another room/class!']);
+
+    //             }else{
+            
+    //                 $event = Tblevent::find($id);
+
+    //                 if ($event) {
+    //                     $event->start = $request->start;
+    //                     $event->end = $request->end;
+    //                     $event->save();
+
+    //                     return response()->json(['message' => 'Event updated successfully']);
+    //                 } else {
+    //                     return response()->json(['message' => 'Event not found'], 404);
+    //                 }
+
+    //             }
+
+    //         }
+
+    //     }
+    // }
+
+    // public function updateEvent2(Request $request, $id)
+    // {
+    //     $event = DB::table('tblevents')->where('id', $id)->first();
+
+    //     // Parse the start and end times from the request
+    //     $startTime = Carbon::parse($request->start);
+    //     $endTime = Carbon::parse($request->end);
+    //     $rehat1 = '13:00:00';
+    //     $rehat2 = '14:00:00';
+
+    //     // Get the day of the week (e.g., Thursday)
+    //     $dayOfWeek = $startTime->format('l');
+
+    //     // Convert startTime and endTime to only time format
+    //     $startTimeOnly = $startTime->format('H:i:s');
+    //     $endTimeOnly = $endTime->format('H:i:s');
+
+    //     $roomDetails = DB::table('tbllecture')
+    //                    ->join('tbllecture_room', 'tbllecture.room_id', 'tbllecture_room.id')
+    //                    ->where('tbllecture.id', $event->lecture_id)
+    //                    ->select('tbllecture_room.*', 'tbllecture.session_id AS session')
+    //                    ->first();
+
+    //     $courseDetails = DB::table('student_subjek')
+    //                    ->join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
+    //                    ->join('subjek_structure', 'subjek.sub_id', 'subjek_structure.courseID')
+    //                    ->where([
+    //                       ['group_id', $request->groupId],
+    //                       ['group_name', $request->groupName]
+    //                    ])
+    //                    ->select('subjek_structure.meeting_hour AS course_credit')
+    //                    ->first();
+
+    //     if(DB::table('tblevents')
+    //     ->where('lecture_id', $event->lecture_id)
+    //     ->where('id', '!=', $id)
+    //     ->whereRaw('DAYNAME(start) = ?', [$dayOfWeek])
+    //     ->where(function ($query) use ($startTimeOnly, $endTimeOnly) {
+    //         $query->where(function ($query) use ($startTimeOnly) {
+    //             $query->whereRaw('? BETWEEN TIME(start) AND TIME(end)', [$startTimeOnly])
+    //                   ->whereRaw('? != TIME(start)', [$startTimeOnly])
+    //                   ->whereRaw('? != TIME(end)', [$startTimeOnly]);
+    //         })
+    //         ->orWhere(function ($query) use ($endTimeOnly) {
+    //             $query->whereRaw('? BETWEEN TIME(start) AND TIME(end)', [$endTimeOnly])
+    //                   ->whereRaw('? != TIME(start)', [$endTimeOnly])
+    //                   ->whereRaw('? != TIME(end)', [$endTimeOnly]);
+    //         })
+    //         ->orWhere(function ($query) use ($startTimeOnly, $endTimeOnly) {
+    //             $query->whereRaw('? < TIME(start)', [$startTimeOnly])
+    //                   ->whereRaw('? > TIME(end)', [$endTimeOnly]);
+    //         });
+    //         // $query->where(function ($query) use ($startTimeOnly) {
+    //         //     $query->whereRaw('? BETWEEN TIME(start) AND TIME(end)', [$startTimeOnly])
+    //         //           ->whereRaw('? != TIME(start)', [$startTimeOnly])
+    //         //           ->whereRaw('? != TIME(end)', [$startTimeOnly]);
+    //         // })
+    //         // ->orWhere(function ($query) use ($endTimeOnly) {
+    //         //     $query->whereRaw('? BETWEEN TIME(start) AND TIME(end)', [$endTimeOnly])
+    //         //           ->whereRaw('? != TIME(start)', [$endTimeOnly])
+    //         //           ->whereRaw('? != TIME(end)', [$endTimeOnly]);
+    //         // })
+    //         // ->orWhere(function ($query) use ($startTimeOnly, $endTimeOnly) {
+    //         //     $query->whereRaw('? <= TIME(start)', [$startTimeOnly])
+    //         //           ->whereRaw('? >= TIME(end)', [$endTimeOnly]);
+    //         // });
+    //     })
+    //     ->exists() || ($startTimeOnly <= $rehat1 && $endTimeOnly >= $rehat2) ||
+    //     ($startTimeOnly >= $rehat1 && $endTimeOnly <= $rehat2) ||
+    //     ($startTimeOnly <= $rehat1 && $endTimeOnly <= $rehat2 && $endTimeOnly > $rehat1) ||
+    //     ($startTimeOnly >= $rehat1 && $endTimeOnly >= $rehat2 && $startTimeOnly < $rehat2))
+    //     {
+
+    //         return response()->json(['error' => 'Time selected is already occupied, please select another time!']);
+
+    //     }else{
+
+    //         $credit_hour = DB::table('tblevents')
+    //                                 ->join('tbllecture', 'tblevents.lecture_id', 'tbllecture.id')
+    //                                 ->where([
+    //                                     ['tblevents.group_id', $event->group_id],
+    //                                     ['tblevents.group_name', $event->group_name],
+    //                                     ['tbllecture.session_id', $roomDetails->session],
+    //                                     ['tblevents.id', '!=', $id]
+    //                                 ])->get();
+
+    //         $totalCredit = 0;
+
+    //         foreach($credit_hour as $cr)
+    //         {
+
+    //             $start3 = Carbon::parse($cr->start);
+    //             $end3 = Carbon::parse($cr->end);
+    //             $hours3 = $end3->diffInHours($start3);
+    //             $totalCredit += $hours3;
+
+    //         }
+
+    //         $start2 = Carbon::parse($request->start);
+    //         $end2 = Carbon::parse($request->end);
+    //         $hours2 = $end2->diffInHours($start2);
+
+    //         $newTotalHours = $hours2;
+
+    //         if(($totalCredit + $newTotalHours) > $courseDetails->course_credit)
+    //         {
+
+    //             return response()->json(['error' => 'Total meeting hour is already at ' . $totalCredit . ' for this subject. Trying to add ' .  $newTotalHours . ' more will exceed ' .  $courseDetails->course_credit . '!']);
+
+    //         }else{
+
+    //             $students = DB::table('student_subjek')
+    //                         ->where([
+    //                             ['group_id', $event->group_id],
+    //                             ['group_name', $event->group_name]
+    //                         ])->pluck('student_ic'); 
+
+    //             if(DB::table('tblevents')
+    //             ->join('tbllecture', 'tblevents.lecture_id', 'tbllecture.id')
+    //             ->join('student_subjek', function($join){
+    //                 $join->on('tblevents.group_id', 'student_subjek.group_id')
+    //                      ->on('tblevents.group_name', 'student_subjek.group_name');
+    //             })
+    //             ->where('tblevents.id', '!=', $id)
+    //             ->whereIn('student_subjek.student_ic', $students)
+    //             ->where('tbllecture.session_id', $roomDetails->session)
+    //             ->whereRaw('DAYNAME(start) = ?', [$dayOfWeek])
+    //             ->where(function ($query) use ($startTimeOnly, $endTimeOnly) {
+    //                 $query->where(function ($query) use ($startTimeOnly) {
+    //                     $query->whereRaw('? BETWEEN TIME(start) AND TIME(end)', [$startTimeOnly])
+    //                             ->whereRaw('? != TIME(start)', [$startTimeOnly])
+    //                             ->whereRaw('? != TIME(end)', [$startTimeOnly]);
+    //                 })
+    //                 ->orWhere(function ($query) use ($endTimeOnly) {
+    //                     $query->whereRaw('? BETWEEN TIME(start) AND TIME(end)', [$endTimeOnly])
+    //                             ->whereRaw('? != TIME(start)', [$endTimeOnly])
+    //                             ->whereRaw('? != TIME(end)', [$endTimeOnly]);
+    //                 })
+    //                 ->orWhere(function ($query) use ($startTimeOnly, $endTimeOnly) {
+    //                     $query->whereRaw('? <= TIME(start)', [$startTimeOnly])
+    //                             ->whereRaw('? >= TIME(end)', [$endTimeOnly]);
+    //                 });
+    //             })
+    //             ->exists()){
+
+    //                 return response()->json(['error' => 'Students in this class is already booked with the same period in another room/class!']);
+
+    //             }else{
+
+    //                 $event = Tblevent::find($id);
+
+    //                 if ($event) {
+    //                     $event->title = $request->input('title');
+    //                     $event->start = $request->start;
+    //                     $event->end = $request->end;
+    //                     $event->save();
+    //                     return response()->json(['status' => 'success']);
+    //                 } else {
+    //                     return response()->json(['status' => 'error'], 404);
+    //                 }
+
+    //             }
+                
+    //         }
+            
+    //     }
+    // }
+
+    // public function deleteEvent($id)
+    // {
+    //     $event = Tblevent::find($id);
+
+    //     if ($event) {
+    //         $event->delete();
+    //         return response()->json(['status' => 'success']);
+    //     } else {
+    //         return response()->json(['status' => 'error'], 404);
+    //     }
+    // }
+
     public function scheduleTable()
     {
 
         $data = [
-            'lectureInfo' => DB::table('tbllecture')
-                             ->join('tbllecture_room', 'tbllecture.room_id', 'tbllecture_room.id')
-                             ->join('sessions', 'tbllecture.session_id', 'sessions.SessionID')
-                             ->select('tbllecture_room.*', 'sessions.SessionName AS session')
-                             ->where('tbllecture.id', request()->id)
-                             ->first(),
-            'totalBooking' => DB::table('tblevents')->where('lecture_id', request()->id)
-                              ->select(DB::raw('COUNT(tblevents.id) AS total_booking'))
-                              ->first(),
-            'lecturer' => DB::table('users')
-                          ->whereIn('usrtype', ['LCT', 'PL', 'AO'])
-                          ->get(),
+            // 'lectureInfo' => DB::table('tbllecture')
+            //                  ->join('tbllecture_room', 'tbllecture.room_id', 'tbllecture_room.id')
+            //                  ->join('sessions', 'tbllecture.session_id', 'sessions.SessionID')
+            //                  ->select('tbllecture_room.*', 'sessions.SessionName AS session')
+            //                  ->where('tbllecture.id', request()->id)
+            //                  ->first(),
+            // 'totalBooking' => DB::table('tblevents')->where('lecture_id', request()->id)
+            //                   ->select(DB::raw('COUNT(tblevents.id) AS total_booking'))
+            //                   ->first(),
+            // 'lecturer' => DB::table('users')
+            //               ->whereIn('usrtype', ['LCT', 'PL', 'AO'])
+            //               ->get(),
+            'lecturerInfo' => DB::table('users')->where('ic', request()->id)->first(),
+            'session' => DB::table('sessions')->where('Status', 'ACTIVE')->get(),
+            'lecture_room' => DB::table('tbllecture_room')->get()
         ];
 
         //dd($data);
@@ -1844,13 +2538,11 @@ class AR_Controller extends Controller
     public function getSubjectSchedule(Request $request)
     {
 
-        $lecture = DB::table('tbllecture')->where('id', $request->id)->first();
-
         $subject = DB::table('user_subjek')
                    ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
                    ->where([
-                      ['user_subjek.user_ic', $request->lecturerId],
-                      ['user_subjek.session_id', $lecture->session_id]
+                      ['user_subjek.user_ic', $request->id],
+                      ['user_subjek.session_id', $request->sessionID]
                    ])
                    ->select('subjek.course_name AS name', 'user_subjek.id AS id')->get();
 
@@ -1875,11 +2567,12 @@ class AR_Controller extends Controller
     public function fetchEvents()
     {
         $events = Tblevent::join('user_subjek', 'tblevents.group_id', 'user_subjek.id')
-                  ->join('users', 'user_subjek.user_ic', 'users.ic')
+                  ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
+                  ->join('tbllecture_room', 'tblevents.lecture_id', 'tbllecture_room.id')
                   ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
-                  ->where('tblevents.lecture_id', request()->id)
+                  ->where('tblevents.user_ic', request()->id)
                   ->groupBy('subjek.sub_id', 'tblevents.id')
-                  ->select('tblevents.*', 'subjek.course_code AS code' , 'subjek.course_name AS subject', 'users.name AS lecturer')->get();
+                  ->select('tblevents.*', 'subjek.course_code AS code' , 'subjek.course_name AS subject', 'tbllecture_room.name AS room', 'sessions.SessionName AS session')->get();
 
         $formattedEvents = $events->map(function ($event) {
 
@@ -1907,7 +2600,7 @@ class AR_Controller extends Controller
 
             return [
                 'id' => $event->id,
-                'title' => $event->lecturer,
+                'title' => strtoupper($event->room) . ' (' . $event->session . ')',
                 'description' => $event->code. ' - ' . $event->subject . ' (' . $event->group_name .') ' . '|' . ' Total Student :' . ' ' .$count->total_student,
                 'startTime' => date('H:i', strtotime($event->start)),
                 'endTime' => date('H:i', strtotime($event->end)),
@@ -1933,10 +2626,9 @@ class AR_Controller extends Controller
         $startTimeOnly = $startTime->format('H:i');
         $endTimeOnly = $endTime->format('H:i');
 
-        $roomDetails = DB::table('tbllecture')
-                       ->join('tbllecture_room', 'tbllecture.room_id', 'tbllecture_room.id')
-                       ->where('tbllecture.id', $request->id)
-                       ->select('tbllecture_room.*', 'tbllecture.session_id AS session')
+        $roomDetails = DB::table('tbllecture_room')
+                       ->where('tbllecture_room.id', $request->roomId)
+                       ->select('tbllecture_room.*')
                        ->first();
 
         $courseDetails = DB::table('student_subjek')
@@ -2000,7 +2692,7 @@ class AR_Controller extends Controller
 
             $events = DB::table('tblevents')
             ->whereRaw('DAYNAME(start) = ?', [$dayOfWeek])
-            ->where('lecture_id', $request->id)
+            ->where('lecture_id', $request->roomId)
             ->select('start', 'end')
             ->get();
 
@@ -2045,7 +2737,7 @@ class AR_Controller extends Controller
                                     ->where([
                                         ['tblevents.group_id', $request->groupId],
                                         ['tblevents.group_name', $request->groupName],
-                                        ['tbllecture.session_id', $roomDetails->session]
+                                        ['tblevents.session_id', $request->session]
                                     ])->get();
 
                     $totalCredit = 0;
@@ -2080,7 +2772,7 @@ class AR_Controller extends Controller
                             $join->on('tblevents.group_name', 'student_subjek.group_name');
                         })
                         ->whereIn('student_subjek.student_ic', $students)
-                        ->where('tbllecture.session_id', $roomDetails->session)
+                        ->where('tbllecture.session_id', $request->session)
                         ->whereRaw('DAYNAME(start) = ?', [$dayOfWeek])
                         ->where(function ($query) use ($startTimeOnly, $endTimeOnly) {
                             $query->where(function ($query) use ($startTimeOnly) {
@@ -2112,21 +2804,31 @@ class AR_Controller extends Controller
                             }else{
 
                                 $event = new Tblevent;
-                                $event->lecture_id = $request->id;
-                                $event->user_ic = $request->lecturer;
+                                $event->lecture_id = $request->roomId;
+                                $event->user_ic = $request->id;
                                 $event->group_id = $request->groupId;
                                 $event->group_name = $request->groupName;
+                                $event->session_id = $request->session;
                                 // $event->title = $request->title;
                                 $event->start = $request->start;
                                 $event->end = $request->end;
                                 $event->save();
 
+                                // $events = Tblevent::join('user_subjek', 'tblevents.group_id', 'user_subjek.id')
+                                //         ->join('users', 'user_subjek.user_ic', 'users.ic')
+                                //         ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+                                //         ->where('tblevents.id', $event->id)
+                                //         ->groupBy('subjek.sub_id', 'tblevents.id')
+                                //         ->select('tblevents.*', 'subjek.course_code AS code' , 'subjek.course_name AS subject', 'users.name AS lecturer')->first();
+
                                 $events = Tblevent::join('user_subjek', 'tblevents.group_id', 'user_subjek.id')
-                                        ->join('users', 'user_subjek.user_ic', 'users.ic')
+                                        ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
+                                        ->join('tbllecture_room', 'tblevents.lecture_id', 'tbllecture_room.id')
                                         ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
                                         ->where('tblevents.id', $event->id)
                                         ->groupBy('subjek.sub_id', 'tblevents.id')
-                                        ->select('tblevents.*', 'subjek.course_code AS code' , 'subjek.course_name AS subject', 'users.name AS lecturer')->first();
+                                        ->select('tblevents.*', 'subjek.course_code AS code' , 'subjek.course_name AS subject', 'tbllecture_room.name AS room', 'sessions.SessionName AS session')->first();
+        
 
                                 $count = DB::table('student_subjek')
                                         ->where([
@@ -2137,13 +2839,15 @@ class AR_Controller extends Controller
                                         ->first();
 
                                 return response()->json([
+
                                     'event' => [
                                         'id' => $events->id,
-                                        'title' => $events->lecturer, 
+                                        'title' => strtoupper($events->room) . ' (' . $events->session . ')', 
                                         'description' => $events->code . ' - ' . $events->subject . ' (' . $events->group_name .') ' . '|' . ' Total Student :' . ' ' .$count->total_student,
                                         'start' => $events->start,
                                         'end' => $events->end
                                     ]
+
                                 ]);
                                 
                             }
@@ -2176,10 +2880,9 @@ class AR_Controller extends Controller
         $startTimeOnly = $startTime->format('H:i:s');
         $endTimeOnly = $endTime->format('H:i:s');
 
-        $roomDetails = DB::table('tbllecture')
-                       ->join('tbllecture_room', 'tbllecture.room_id', 'tbllecture_room.id')
-                       ->where('tbllecture.id', $event->lecture_id)
-                       ->select('tbllecture_room.*', 'tbllecture.session_id AS session')
+        $roomDetails = DB::table('tbllecture_room')
+                       ->where('tbllecture_room.id', $event->lecture_id)
+                       ->select('tbllecture_room.*')
                        ->first();
 
         $courseDetails = DB::table('student_subjek')
@@ -2193,7 +2896,7 @@ class AR_Controller extends Controller
                        ->first();
 
         if(DB::table('tblevents')
-        ->where('lecture_id', $event->lecture_id)
+        ->where('user_ic', $event->user_ic)
         ->where('id', '!=', $id)
         ->whereRaw('DAYNAME(start) = ?', [$dayOfWeek])
         ->where(function ($query) use ($startTimeOnly, $endTimeOnly) {
@@ -2237,11 +2940,10 @@ class AR_Controller extends Controller
         }else{
 
             $credit_hour = DB::table('tblevents')
-                                    ->join('tbllecture', 'tblevents.lecture_id', 'tbllecture.id')
                                     ->where([
                                         ['tblevents.group_id', $event->group_id],
                                         ['tblevents.group_name', $event->group_name],
-                                        ['tbllecture.session_id', $roomDetails->session],
+                                        ['tblevents.session_id', $event->session_id],
                                         ['tblevents.id', '!=', $id]
                                     ])->get();
 
@@ -2277,14 +2979,12 @@ class AR_Controller extends Controller
                             ])->pluck('student_ic');
 
                 if(DB::table('tblevents')
-                ->join('tbllecture', 'tblevents.lecture_id', 'tbllecture.id')
                 ->join('student_subjek', function($join){
                     $join->on('tblevents.group_id', 'student_subjek.group_id')
                          ->on('tblevents.group_name', 'student_subjek.group_name');
                 })
                 ->where('tblevents.id', '!=', $id)
                 ->whereIn('student_subjek.student_ic', $students)
-                ->where('tbllecture.session_id', $roomDetails->session)
                 ->whereRaw('DAYNAME(start) = ?', [$dayOfWeek])
                 ->where(function ($query) use ($startTimeOnly, $endTimeOnly) {
                     $query->where(function ($query) use ($startTimeOnly) {
