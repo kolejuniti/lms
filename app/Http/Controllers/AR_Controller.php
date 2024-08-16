@@ -3758,6 +3758,128 @@ class AR_Controller extends Controller
 
     }
 
+    public function transcript()
+    {
+
+        return view('pendaftar_akademik.student.transcript.transcript');
+
+    }
+
+    public function getStudentTranscript(Request $request)
+    {
+        $students = DB::table('students')
+            ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+            ->join('sessions AS a', 'students.intake', 'a.SessionID')
+            ->join('sessions AS b', 'students.session', 'b.SessionID')
+            ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
+            ->select('students.*', 'tblprogramme.progname', 'a.SessionName AS intake', 
+                     'b.SessionName AS session', 'tblstudent_status.name AS status')
+            ->where('students.name', 'LIKE', "%".$request->search."%")
+            ->orwhere('students.ic', 'LIKE', "%".$request->search."%")
+            ->orwhere('students.no_matric', 'LIKE', "%".$request->search."%")->get();
+
+        $content = "";
+        $content .= '<thead>
+                        <tr>
+                            <th style="width: 1%">
+                                No.
+                            </th>
+                            <th>
+                                Name
+                            </th>
+                            <th>
+                                No. IC
+                            </th>
+                            <th>
+                                No. Matric
+                            </th>
+                            <th>
+                                Date
+                            </th>
+                            <th>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="table">';
+                    
+        foreach($students as $key => $student){
+            //$registered = ($student->status == 'ACTIVE') ? 'checked' : '';
+            $content .= '
+            <tr>
+                <td style="width: 1%">
+                '. $key+1 .'
+                </td>
+                <td>
+                '. $student->name .'
+                </td>
+                <td>
+                '. $student->ic .'
+                </td>
+                <td>
+                '. $student->no_matric .'
+                </td>
+                <td>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <input type="date" class="form-control" id="date-'. $student->ic .'">
+                    </div>
+                  </div>
+                </td>
+                <td>';
+                
+                $content .= '<a class="btn btn-primary btn-sm btn-sm mr-2 mb-2" onClick="print(\''. $student->ic .'\')">
+                                <i class="ti-ruler-pencil">
+                                </i>
+                                Print
+                            </a>';
+
+                $content .= '</td></tr>';
+
+            }
+
+            $content .= '</tbody>';
+
+            return $content;
+
+    }
+
+    public function printStudentTranscript(Request $request)
+    {
+
+        $data['student'] = DB::table('students')
+                           ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+                           ->select('students.*', 'tblprogramme.progname AS program', 'tblprogramme.mqa_code AS mqa')
+                           ->where('students.ic', $request->ic)
+                           ->first();
+
+        $data['semesters'] = DB::table('student_subjek')
+                             ->groupBy('semesterid')
+                             ->where('student_ic', $request->ic)
+                             ->pluck('semesterid');
+
+        foreach($data['semesters'] as $key => $sm)
+        {
+
+            $data['course'][$key] = DB::table('student_subjek')
+                                    ->join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
+                                    ->select('subjek.course_name', 'subjek.course_code', 'student_subjek.credit', 'student_subjek.grade')
+                                    ->where([
+                                        ['student_subjek.student_ic', $request->ic],
+                                        ['student_subjek.semesterid', $sm]
+                                    ])
+                                    ->get();
+
+            $data['detail'][$key] = DB::table('student_transcript')
+                                    ->where([
+                                        ['student_ic', $request->ic],
+                                        ['semester', $sm]
+                                    ])
+                                    ->first();
+
+        }
+
+    }
+
     // public function groupTable()
     // {
 
