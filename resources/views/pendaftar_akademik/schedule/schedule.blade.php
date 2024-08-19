@@ -43,9 +43,6 @@
         align-items: start; /* This aligns the child elements (text) to the start (top) of the flex container */
     }
 
-
-
-    
 </style>
 
 <!-- Content Wrapper. Contains page content -->
@@ -357,8 +354,6 @@
         var hiddenDays;
         hiddenDays = [];
 
-        //alert(hiddenDays);
-
         document.addEventListener('DOMContentLoaded', function () {
             var options = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
             var calendarEl = document.getElementById('calendar');
@@ -494,6 +489,39 @@
                         info.revert();
                     }
                 },
+
+                eventDrop: async function(info) {
+                    var event = info.event;
+
+                    // Update event data
+                    var eventData = {
+                        start: convertToPhpMyAdminDatetime(event.start),
+                        end: event.end ? convertToPhpMyAdminDatetime(event.end) : null
+                    };
+
+                    // Send data to the backend
+                    const response = await fetch(`/AR/schedule/update/${event.id}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                        },
+                        body: JSON.stringify(eventData)
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        if(data.error) {
+                            info.revert();
+                            alert(data.error);
+                        } else {
+                            alert('Event updated successfully');
+                        }
+                    } else {
+                        alert('Failed to update event');
+                        info.revert();
+                    }
+                },
             });
 
             calendar.render();
@@ -583,39 +611,39 @@
             });
 
             // Event drop callback for updating event time
-            calendar.setOption('eventDrop', async function (info) {
-                var event = info.event;
+            // calendar.setOption('eventDrop', async function (info) {
+            //     var event = info.event;
 
-                // Update event data
-                var eventData = {
-                    start: convertToPhpMyAdminDatetime(event.start),
-                    end: event.end ? convertToPhpMyAdminDatetime(event.end) : null
-                };
+            //     // Update event data
+            //     var eventData = {
+            //         start: convertToPhpMyAdminDatetime(event.start),
+            //         end: event.end ? convertToPhpMyAdminDatetime(event.end) : null
+            //     };
 
-                // Send data to the backend
-                const response = await fetch(`/AR/schedule/update/${event.id}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                    },
-                    body: JSON.stringify(eventData)
-                });
+            //     // Send data to the backend
+            //     const response = await fetch(`/AR/schedule/update/${event.id}`, {
+            //         method: 'PUT',
+            //         headers: {
+            //             'Content-Type': 'application/json',
+            //             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            //         },
+            //         body: JSON.stringify(eventData)
+            //     });
 
-                if (response.ok) {
-                    const data = await response.json();
-                    if(data.error)
-                    {
-                        info.revert();
-                        alert(data.error);
-                    }else{
-                        alert('Event updated successfully');
-                    }
-                } else {
-                    alert('Failed to update event');
-                    info.revert();
-                }
-            });
+            //     if (response.ok) {
+            //         const data = await response.json();
+            //         if(data.error)
+            //         {
+            //             info.revert();
+            //             alert(data.error);
+            //         }else{
+            //             alert('Event updated successfully');
+            //         }
+            //     } else {
+            //         alert('Failed to update event');
+            //         info.revert();
+            //     }
+            // });
 
             async function handleEventDelete(event, calendar) {
                 const response = await fetch('/AR/schedule/delete/' + event.id, {

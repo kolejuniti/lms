@@ -2614,8 +2614,8 @@ class AR_Controller extends Controller
     public function createEvent(Request $request)
     {   
         // Parse the start and end times from the request
-        $startTime = Carbon::parse($request->start);
-        $endTime = Carbon::parse($request->end);
+        $startTime = Carbon::parse($request->start)->setMinute(0)->setSecond(0);
+        $endTime = Carbon::parse($request->end)->setMinute(0)->setSecond(0);
         $rehat1 = '13:00:00';
         $rehat2 = '14:00:00';
 
@@ -2674,16 +2674,23 @@ class AR_Controller extends Controller
             //           ->whereRaw('? >= TIME(end)', [$endTimeOnly]);
             // });
         })
+        // ->exists() || ($startTimeOnly <= $rehat1 && $endTimeOnly >= $rehat2) ||
+        // ($startTimeOnly >= $rehat1 && $endTimeOnly <= $rehat2) ||
+        // ($startTimeOnly > $rehat1 && $startTimeOnly < $rehat2) ||
+        // ($endTimeOnly > $rehat1 && $endTimeOnly < $rehat2))
+        // {
+
         ->exists() || ($startTimeOnly <= $rehat1 && $endTimeOnly >= $rehat2) ||
         ($startTimeOnly >= $rehat1 && $endTimeOnly <= $rehat2) ||
-        ($startTimeOnly <= $rehat1 && $endTimeOnly <= $rehat2 && $endTimeOnly > $rehat1) ||
-        ($startTimeOnly >= $rehat1 && $endTimeOnly >= $rehat2 && $startTimeOnly < $rehat2))
+        ($startTimeOnly <= $rehat1 && $endTimeOnly <= $rehat2 && $endTimeOnly > $rehat1))
         {
 
             Log::info('Overlap detected for event on:', [
                 'dayOfWeek' => $dayOfWeek,
                 'startTime' => $startTime->toDateTimeString(),
                 'endTime' => $endTime->toDateTimeString(),
+                'overlapStart' => $rehat1,
+                'overlapEnd' => $rehat2,
             ]);
 
             return response()->json(['error' => 'Time selected is already occupied, please select another time!']);
@@ -2810,8 +2817,8 @@ class AR_Controller extends Controller
                                 $event->group_name = $request->groupName;
                                 $event->session_id = $request->session;
                                 // $event->title = $request->title;
-                                $event->start = $request->start;
-                                $event->end = $request->end;
+                                $event->start = $startTime->format('Y-m-d H:i:s');
+                                $event->end = $endTime->format('Y-m-d H:i:s');
                                 $event->save();
 
                                 // $events = Tblevent::join('user_subjek', 'tblevents.group_id', 'user_subjek.id')
@@ -2909,6 +2916,14 @@ class AR_Controller extends Controller
                 $query->whereRaw('? BETWEEN TIME(start) AND TIME(end)', [$endTimeOnly])
                       ->whereRaw('? != TIME(start)', [$endTimeOnly])
                       ->whereRaw('? != TIME(end)', [$endTimeOnly]);
+            })
+            ->orWhere(function ($query) use ($startTimeOnly, $endTimeOnly) {
+                $query->whereRaw('? < TIME(start)', [$startTimeOnly])
+                      ->whereRaw('? = TIME(end)', [$endTimeOnly]);
+            })
+            ->orWhere(function ($query) use ($startTimeOnly, $endTimeOnly) {
+                $query->whereRaw('? = TIME(start)', [$startTimeOnly])
+                      ->whereRaw('? > TIME(end)', [$endTimeOnly]);
             })
             ->orWhere(function ($query) use ($startTimeOnly, $endTimeOnly) {
                 $query->whereRaw('? < TIME(start)', [$startTimeOnly])
