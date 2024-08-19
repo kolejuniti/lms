@@ -1740,6 +1740,7 @@ class AR_Controller extends Controller
 
             $alert = ['message' => 'Success'];
 
+            return $alert;
 
         }
 
