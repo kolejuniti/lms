@@ -2657,6 +2657,14 @@ class AR_Controller extends Controller
             })
             ->orWhere(function ($query) use ($startTimeOnly, $endTimeOnly) {
                 $query->whereRaw('? < TIME(start)', [$startTimeOnly])
+                      ->whereRaw('? = TIME(end)', [$endTimeOnly]);
+            })
+            ->orWhere(function ($query) use ($startTimeOnly, $endTimeOnly) {
+                $query->whereRaw('? = TIME(start)', [$startTimeOnly])
+                      ->whereRaw('? > TIME(end)', [$endTimeOnly]);
+            })
+            ->orWhere(function ($query) use ($startTimeOnly, $endTimeOnly) {
+                $query->whereRaw('? < TIME(start)', [$startTimeOnly])
                       ->whereRaw('? > TIME(end)', [$endTimeOnly]);
             });
             // $query->where(function ($query) use ($startTimeOnly) {
@@ -3089,6 +3097,14 @@ class AR_Controller extends Controller
                 $query->whereRaw('? BETWEEN TIME(start) AND TIME(end)', [$endTimeOnly])
                       ->whereRaw('? != TIME(start)', [$endTimeOnly])
                       ->whereRaw('? != TIME(end)', [$endTimeOnly]);
+            })
+            ->orWhere(function ($query) use ($startTimeOnly, $endTimeOnly) {
+                $query->whereRaw('? < TIME(start)', [$startTimeOnly])
+                      ->whereRaw('? = TIME(end)', [$endTimeOnly]);
+            })
+            ->orWhere(function ($query) use ($startTimeOnly, $endTimeOnly) {
+                $query->whereRaw('? = TIME(start)', [$startTimeOnly])
+                      ->whereRaw('? > TIME(end)', [$endTimeOnly]);
             })
             ->orWhere(function ($query) use ($startTimeOnly, $endTimeOnly) {
                 $query->whereRaw('? < TIME(start)', [$startTimeOnly])
