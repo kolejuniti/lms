@@ -1359,130 +1359,116 @@ class AR_Controller extends Controller
 
         $student = DB::table('students')->where('ic', $ic)->first();
 
-        $claim = DB::table('tblstudentclaimpackage')
-                         ->where([
-                            ['program_id', $student->program],
-                            ['intake_id', $student->intake],
-                            ['semester_id', $student->semester]
-                            ])->join('tblstudentclaim', 'tblstudentclaimpackage.claim_id', 'tblstudentclaim.id')->get();
-
-        DB::table('tblclaim')->where([
-            ['student_ic', $student->ic],
-            ['session_id', $student->session],
-            ['semester_id', $student->semester],
-            ['program_id', $student->program]
-        ])->delete();
-
-        $id = DB::table('tblclaim')->insertGetId([
-            'student_ic' => $student->ic,
-            'date' => date('Y-m-d'),
-            'ref_no' => null,
-            'program_id' => $student->program,
-            'session_id' => $student->session,
-            'semester_id' => $student->semester,
-            'process_status_id' => 1,
-            'process_type_id' => 2,
-            'add_staffID' => Auth::user()->ic,
-            'add_date' => date('Y-m-d'),
-            'mod_staffID' => Auth::user()->ic,
-            'mod_date' => date('Y-m-d')
-        ]);
-
-        foreach($claim as $clm)
+        if(!in_array($student->semester, [7, 8]))
         {
 
-            DB::table('tblclaimdtl')->insert([
-                'claim_id' => $id,
-                'claim_package_id' => $clm->id,
-                'price' => $clm->pricePerUnit,
-                'unit' => 1,
-                'amount' => $clm->pricePerUnit * 1,
+            $claim = DB::table('tblstudentclaimpackage')
+                            ->where([
+                                ['program_id', $student->program],
+                                ['intake_id', $student->intake],
+                                ['semester_id', $student->semester]
+                                ])->join('tblstudentclaim', 'tblstudentclaimpackage.claim_id', 'tblstudentclaim.id')->get();
+
+            DB::table('tblclaim')->where([
+                ['student_ic', $student->ic],
+                ['session_id', $student->session],
+                ['semester_id', $student->semester],
+                ['program_id', $student->program]
+            ])->delete();
+
+            $id = DB::table('tblclaim')->insertGetId([
+                'student_ic' => $student->ic,
+                'date' => date('Y-m-d'),
+                'ref_no' => null,
+                'program_id' => $student->program,
+                'session_id' => $student->session,
+                'semester_id' => $student->semester,
+                'process_status_id' => 1,
+                'process_type_id' => 2,
                 'add_staffID' => Auth::user()->ic,
                 'add_date' => date('Y-m-d'),
                 'mod_staffID' => Auth::user()->ic,
                 'mod_date' => date('Y-m-d')
             ]);
 
-        }
-
-        if(count(DB::table('tblclaimdtl')->where('claim_id', $id)->get()) > 0)
-        {
-            $ref_no = DB::table('tblref_no')
-                    ->join('tblclaim', 'tblref_no.process_type_id', 'tblclaim.process_type_id')
-                    ->where('tblclaim.id', $id)
-                    ->select('tblref_no.*', 'tblclaim.student_ic')->first();
-
-            DB::table('tblref_no')->where('id', $ref_no->id)->update([
-                'ref_no' => $ref_no->ref_no + 1
-            ]);
-
-            DB::table('tblclaim')->where('id', $id)->update([
-                'process_status_id' => 2,
-                'ref_no' => $ref_no->code . $ref_no->ref_no + 1
-            ]);
-
-            $student = DB::table('students')->where('ic', $ref_no->student_ic)->first();
-
-            DB::table('students')->where('ic', $student->ic)->update([
-                'status' => 2,
-                'campus_id' => 1
-            ]);
-
-            DB::table('tblstudent_log')->insert([
-                'student_ic' => $student->ic,
-                'session_id' => $student->session,
-                'semester_id' => $student->semester,
-                'status_id' => 2,
-                'kuliah_id' => 1,
-                'date' => date("Y-m-d H:i:s"),
-                'remark' => null,
-                'add_staffID' => Auth::user()->ic
-            ]);
-
-            $student_info = DB::table('tblstudent_personal')->where('student_ic', $ref_no->student_ic)->value('statelevel_id');
-
-            //check if subject exists
-            if(DB::table('student_subjek')->where([['student_ic', $student->ic],['sessionid', $student->session],['semesterid', $student->semester]])->exists())
+            foreach($claim as $clm)
             {
-                $alert =  ['message' => 'Success! Subject for student has already registered for this semester!'];
 
-            }else{
+                DB::table('tblclaimdtl')->insert([
+                    'claim_id' => $id,
+                    'claim_package_id' => $clm->id,
+                    'price' => $clm->pricePerUnit,
+                    'unit' => 1,
+                    'amount' => $clm->pricePerUnit * 1,
+                    'add_staffID' => Auth::user()->ic,
+                    'add_date' => date('Y-m-d'),
+                    'mod_staffID' => Auth::user()->ic,
+                    'mod_date' => date('Y-m-d')
+                ]);
 
-                $subject = DB::table('subjek')
-                ->join('subjek_structure', function($join){
-                    $join->on('subjek.sub_id', 'subjek_structure.courseID');
-                })
-                ->where([
-                    ['subjek_structure.program_id','=', $student->program],
-                    ['subjek_structure.semester_id','=', $student->semester],
-                    ['subjek_structure.intake_id', $student->intake]
-                ])
-                ->select('subjek.*', 'subjek_structure.semester_id')->get();
+            }
 
-                foreach($subject as $key)
+            if(count(DB::table('tblclaimdtl')->where('claim_id', $id)->get()) > 0)
+            {
+                $ref_no = DB::table('tblref_no')
+                        ->join('tblclaim', 'tblref_no.process_type_id', 'tblclaim.process_type_id')
+                        ->where('tblclaim.id', $id)
+                        ->select('tblref_no.*', 'tblclaim.student_ic')->first();
+
+                DB::table('tblref_no')->where('id', $ref_no->id)->update([
+                    'ref_no' => $ref_no->ref_no + 1
+                ]);
+
+                DB::table('tblclaim')->where('id', $id)->update([
+                    'process_status_id' => 2,
+                    'ref_no' => $ref_no->code . $ref_no->ref_no + 1
+                ]);
+
+                $student = DB::table('students')->where('ic', $ref_no->student_ic)->first();
+
+                DB::table('students')->where('ic', $student->ic)->update([
+                    'status' => 2,
+                    'campus_id' => 1
+                ]);
+
+                DB::table('tblstudent_log')->insert([
+                    'student_ic' => $student->ic,
+                    'session_id' => $student->session,
+                    'semester_id' => $student->semester,
+                    'status_id' => 2,
+                    'kuliah_id' => 1,
+                    'date' => date("Y-m-d H:i:s"),
+                    'remark' => null,
+                    'add_staffID' => Auth::user()->ic
+                ]);
+
+                $student_info = DB::table('tblstudent_personal')->where('student_ic', $ref_no->student_ic)->value('statelevel_id');
+
+                //check if subject exists
+                if(DB::table('student_subjek')->where([['student_ic', $student->ic],['sessionid', $student->session],['semesterid', $student->semester]])->exists())
                 {
+                    $alert =  ['message' => 'Success! Subject for student has already registered for this semester!'];
 
-                    if($key->offer == 1)
+                }else{
+
+                    $subject = DB::table('subjek')
+                    ->join('subjek_structure', function($join){
+                        $join->on('subjek.sub_id', 'subjek_structure.courseID');
+                    })
+                    ->where([
+                        ['subjek_structure.program_id','=', $student->program],
+                        ['subjek_structure.semester_id','=', $student->semester],
+                        ['subjek_structure.intake_id', $student->intake]
+                    ])
+                    ->select('subjek.*', 'subjek_structure.semester_id')->get();
+
+                    foreach($subject as $key)
                     {
 
-                        if($key->prerequisite_id == 881)
+                        if($key->offer == 1)
                         {
 
-                            student::create([
-                                'student_ic' => $student->ic,
-                                'courseid' => $key->sub_id,
-                                'sessionid' => $student->session,
-                                'semesterid' => $key->semester_id,
-                                'course_status_id' => 15,
-                                'status' => 'ACTIVE',
-                                'credit' => $key->course_credit
-                            ]);
-
-                        }else{
-
-                            $check = DB::table('student_subjek')->where('courseid', $key->prerequisite_id)->value('course_status_id');
-
-                            if(isset($check) && $check != 2)
+                            if($key->prerequisite_id == 881)
                             {
 
                                 student::create([
@@ -1494,187 +1480,64 @@ class AR_Controller extends Controller
                                     'status' => 'ACTIVE',
                                     'credit' => $key->course_credit
                                 ]);
-                
 
-                            }
+                            }else{
 
-                        }
-                    }
-                    
-                }
+                                $check = DB::table('student_subjek')->where('courseid', $key->prerequisite_id)->value('course_status_id');
 
-                $alert = ['message' => 'Success'];
-
-            }
-
-            if($student_info == 1)
-            {
-
-                //PENAJA
-
-                $claim = DB::table('tblclaim')
-                ->join('tblclaimdtl', 'tblclaim.id', 'tblclaimdtl.claim_id')
-                ->where([
-                ['tblclaimdtl.claim_package_id', 9],
-                ['tblclaim.session_id', $student->session],
-                ['tblclaim.semester_id', $student->semester],
-                ['tblclaim.program_id', $student->program],
-                ['tblclaim.student_ic', $student->ic]
-                ])
-                ->select('tblclaim.*')->first();
-
-                $incentive = DB::table('tblincentive')
-                                ->join('tblincentive_program', 'tblincentive.id', 'tblincentive_program.incentive_id')
-                                ->where('tblincentive_program.program_id', $student->program)
-                                ->select('tblincentive.*')
-                                ->get();
-
-                foreach($incentive as $key => $icv)
-                {
-
-                    if(($student->intake >= $icv->session_from && $student->intake <= $icv->session_to) || ($student->intake >= $icv->session_from && $icv->session_to == null))
-                    {
-
-                        $ref_no = DB::table('tblref_no')->where('id', 8)->first();
-
-                        DB::table('tblref_no')->where('id', $ref_no->id)->update([
-                            'ref_no' => $ref_no->ref_no + 1
-                        ]);
-
-                        $id = DB::table('tblpayment')->insertGetId([
-                            'student_ic' => $student->ic,
-                            'date' => date('Y-m-d'),
-                            'ref_no' => $ref_no->code . $ref_no->ref_no + 1,
-                            'session_id' => $student->session,
-                            'semester_id' => $student->semester,
-                            'program_id' => $student->program,
-                            'amount' => $icv->amount,
-                            'process_status_id' => 2,
-                            'process_type_id' => 9,
-                            'add_staffID' => Auth::user()->ic,
-                            'add_date' => date('Y-m-d'),
-                            'mod_staffID' => Auth::user()->ic,
-                            'mod_date' => date('Y-m-d')
-                        ]);
-
-                        DB::table('tblpaymentmethod')->insert([
-                            'payment_id' => $id,
-                            'claim_method_id' => 10,
-                            'bank_id' => 11,
-                            'no_document' => 'INS-' . $id,
-                            'amount' => $icv->amount,
-                            'add_staffID' => Auth::user()->ic,
-                            'add_date' => date('Y-m-d'),
-                            'mod_staffID' => Auth::user()->ic,
-                            'mod_date' => date('Y-m-d')
-                        ]);
-
-                        DB::table('tblpaymentdtl')->insert([
-                            'payment_id' => $id,
-                            'claimDtl_id' => $icv->id,
-                            'claim_type_id' => 9,
-                            'amount' => $icv->amount,
-                            'add_staffID' => Auth::user()->ic,
-                            'add_date' => date('Y-m-d'),
-                            'mod_staffID' => Auth::user()->ic,
-                            'mod_date' => date('Y-m-d')
-                        ]);
-
-                    }
-
-                }
-
-                //TABUNGKHAS
-
-                $sponsors = DB::table('tblpackage_sponsorship')->where('student_ic', $student->ic);
-
-                if($sponsors->exists())
-                {
-                    $sponsor = $sponsors->get();
-
-                    foreach($sponsor as $spn)
-                    {
-                        $tabungs = DB::table('tbltabungkhas')
-                                ->join('tblprocess_type', 'tbltabungkhas.process_type_id', 'tblprocess_type.id')
-                                ->where([
-                                    ['tbltabungkhas.package_id', $spn->package_id],
-                                    ['tbltabungkhas.intake_id', $student->intake]
-                                ])->select('tbltabungkhas.*', 'tblprocess_type.code');
-
-                        if($tabungs->exists())
-                        {
-                            $tabung = $tabungs->get();
-
-                            foreach($tabung as $key => $tbg)
-                            {
-                                if(DB::table('tbltabungkhas_program')->where([['tabungkhas_id', $tbg->id],['program_id', $student->program]])->exists())
+                                if(isset($check) && $check != 2)
                                 {
-                                    $ref_no = DB::table('tblref_no')->where('id', 8)->first();
 
-                                    DB::table('tblref_no')->where('id', $ref_no->id)->update([
-                                        'ref_no' => $ref_no->ref_no + 1
-                                    ]);
-
-                                    $id = DB::table('tblpayment')->insertGetId([
+                                    student::create([
                                         'student_ic' => $student->ic,
-                                        'date' => date('Y-m-d'),
-                                        'ref_no' => $ref_no->code . $ref_no->ref_no + 1,
-                                        'session_id' => $student->session,
-                                        'semester_id' => $student->semester,
-                                        'program_id' => $student->program,
-                                        'amount' => $tbg->amount,
-                                        'process_status_id' => 2,
-                                        'process_type_id' => $tbg->process_type_id,
-                                        'add_staffID' => Auth::user()->ic,
-                                        'add_date' => date('Y-m-d'),
-                                        'mod_staffID' => Auth::user()->ic,
-                                        'mod_date' => date('Y-m-d')
+                                        'courseid' => $key->sub_id,
+                                        'sessionid' => $student->session,
+                                        'semesterid' => $key->semester_id,
+                                        'course_status_id' => 15,
+                                        'status' => 'ACTIVE',
+                                        'credit' => $key->course_credit
                                     ]);
+                    
 
-                                    DB::table('tblpaymentmethod')->insert([
-                                        'payment_id' => $id,
-                                        'claim_method_id' => 10,
-                                        'bank_id' => 11,
-                                        'no_document' => $tbg->code . $id,
-                                        'amount' => $tbg->amount,
-                                        'add_staffID' => Auth::user()->ic,
-                                        'add_date' => date('Y-m-d'),
-                                        'mod_staffID' => Auth::user()->ic,
-                                        'mod_date' => date('Y-m-d')
-                                    ]);
-
-                                    DB::table('tblpaymentdtl')->insert([
-                                        'payment_id' => $id,
-                                        'claimDtl_id' => $tbg->id,
-                                        'claim_type_id' => 9,
-                                        'amount' => $tbg->amount,
-                                        'add_staffID' => Auth::user()->ic,
-                                        'add_date' => date('Y-m-d'),
-                                        'mod_staffID' => Auth::user()->ic,
-                                        'mod_date' => date('Y-m-d')
-                                    ]);
                                 }
+
                             }
                         }
+                        
                     }
+
+                    $alert = ['message' => 'Success'];
+
                 }
 
-                //INSENTIFKHAS
-
-                $insentif = DB::table('tblinsentifkhas')
-                                ->join('tblprocess_type', 'tblinsentifkhas.process_type_id', 'tblprocess_type.id')
-                                ->where([
-                                    ['tblinsentifkhas.intake_id', $student->intake]
-                                ])->select('tblinsentifkhas.*', 'tblprocess_type.code');
-
-                if($insentif->exists())
+                if($student_info == 1)
                 {
-                    $insentifs = $insentif->get();
 
-                    foreach($insentifs as $key => $icv)
+                    //PENAJA
+
+                    $claim = DB::table('tblclaim')
+                    ->join('tblclaimdtl', 'tblclaim.id', 'tblclaimdtl.claim_id')
+                    ->where([
+                    ['tblclaimdtl.claim_package_id', 9],
+                    ['tblclaim.session_id', $student->session],
+                    ['tblclaim.semester_id', $student->semester],
+                    ['tblclaim.program_id', $student->program],
+                    ['tblclaim.student_ic', $student->ic]
+                    ])
+                    ->select('tblclaim.*')->first();
+
+                    $incentive = DB::table('tblincentive')
+                                    ->join('tblincentive_program', 'tblincentive.id', 'tblincentive_program.incentive_id')
+                                    ->where('tblincentive_program.program_id', $student->program)
+                                    ->select('tblincentive.*')
+                                    ->get();
+
+                    foreach($incentive as $key => $icv)
                     {
-                        if(DB::table('tblinsentifkhas_program')->where([['insentifkhas_id', $icv->id],['program_id', $student->program]])->exists())
+
+                        if(($student->intake >= $icv->session_from && $student->intake <= $icv->session_to) || ($student->intake >= $icv->session_from && $icv->session_to == null))
                         {
+
                             $ref_no = DB::table('tblref_no')->where('id', 8)->first();
 
                             DB::table('tblref_no')->where('id', $ref_no->id)->update([
@@ -1690,7 +1553,7 @@ class AR_Controller extends Controller
                                 'program_id' => $student->program,
                                 'amount' => $icv->amount,
                                 'process_status_id' => 2,
-                                'process_type_id' => $icv->process_type_id,
+                                'process_type_id' => 9,
                                 'add_staffID' => Auth::user()->ic,
                                 'add_date' => date('Y-m-d'),
                                 'mod_staffID' => Auth::user()->ic,
@@ -1701,7 +1564,7 @@ class AR_Controller extends Controller
                                 'payment_id' => $id,
                                 'claim_method_id' => 10,
                                 'bank_id' => 11,
-                                'no_document' => $icv->code . $id,
+                                'no_document' => 'INS-' . $id,
                                 'amount' => $icv->amount,
                                 'add_staffID' => Auth::user()->ic,
                                 'add_date' => date('Y-m-d'),
@@ -1719,17 +1582,164 @@ class AR_Controller extends Controller
                                 'mod_staffID' => Auth::user()->ic,
                                 'mod_date' => date('Y-m-d')
                             ]);
+
+                        }
+
+                    }
+
+                    //TABUNGKHAS
+
+                    $sponsors = DB::table('tblpackage_sponsorship')->where('student_ic', $student->ic);
+
+                    if($sponsors->exists())
+                    {
+                        $sponsor = $sponsors->get();
+
+                        foreach($sponsor as $spn)
+                        {
+                            $tabungs = DB::table('tbltabungkhas')
+                                    ->join('tblprocess_type', 'tbltabungkhas.process_type_id', 'tblprocess_type.id')
+                                    ->where([
+                                        ['tbltabungkhas.package_id', $spn->package_id],
+                                        ['tbltabungkhas.intake_id', $student->intake]
+                                    ])->select('tbltabungkhas.*', 'tblprocess_type.code');
+
+                            if($tabungs->exists())
+                            {
+                                $tabung = $tabungs->get();
+
+                                foreach($tabung as $key => $tbg)
+                                {
+                                    if(DB::table('tbltabungkhas_program')->where([['tabungkhas_id', $tbg->id],['program_id', $student->program]])->exists())
+                                    {
+                                        $ref_no = DB::table('tblref_no')->where('id', 8)->first();
+
+                                        DB::table('tblref_no')->where('id', $ref_no->id)->update([
+                                            'ref_no' => $ref_no->ref_no + 1
+                                        ]);
+
+                                        $id = DB::table('tblpayment')->insertGetId([
+                                            'student_ic' => $student->ic,
+                                            'date' => date('Y-m-d'),
+                                            'ref_no' => $ref_no->code . $ref_no->ref_no + 1,
+                                            'session_id' => $student->session,
+                                            'semester_id' => $student->semester,
+                                            'program_id' => $student->program,
+                                            'amount' => $tbg->amount,
+                                            'process_status_id' => 2,
+                                            'process_type_id' => $tbg->process_type_id,
+                                            'add_staffID' => Auth::user()->ic,
+                                            'add_date' => date('Y-m-d'),
+                                            'mod_staffID' => Auth::user()->ic,
+                                            'mod_date' => date('Y-m-d')
+                                        ]);
+
+                                        DB::table('tblpaymentmethod')->insert([
+                                            'payment_id' => $id,
+                                            'claim_method_id' => 10,
+                                            'bank_id' => 11,
+                                            'no_document' => $tbg->code . $id,
+                                            'amount' => $tbg->amount,
+                                            'add_staffID' => Auth::user()->ic,
+                                            'add_date' => date('Y-m-d'),
+                                            'mod_staffID' => Auth::user()->ic,
+                                            'mod_date' => date('Y-m-d')
+                                        ]);
+
+                                        DB::table('tblpaymentdtl')->insert([
+                                            'payment_id' => $id,
+                                            'claimDtl_id' => $tbg->id,
+                                            'claim_type_id' => 9,
+                                            'amount' => $tbg->amount,
+                                            'add_staffID' => Auth::user()->ic,
+                                            'add_date' => date('Y-m-d'),
+                                            'mod_staffID' => Auth::user()->ic,
+                                            'mod_date' => date('Y-m-d')
+                                        ]);
+                                    }
+                                }
+                            }
                         }
                     }
+
+                    //INSENTIFKHAS
+
+                    $insentif = DB::table('tblinsentifkhas')
+                                    ->join('tblprocess_type', 'tblinsentifkhas.process_type_id', 'tblprocess_type.id')
+                                    ->where([
+                                        ['tblinsentifkhas.intake_id', $student->intake]
+                                    ])->select('tblinsentifkhas.*', 'tblprocess_type.code');
+
+                    if($insentif->exists())
+                    {
+                        $insentifs = $insentif->get();
+
+                        foreach($insentifs as $key => $icv)
+                        {
+                            if(DB::table('tblinsentifkhas_program')->where([['insentifkhas_id', $icv->id],['program_id', $student->program]])->exists())
+                            {
+                                $ref_no = DB::table('tblref_no')->where('id', 8)->first();
+
+                                DB::table('tblref_no')->where('id', $ref_no->id)->update([
+                                    'ref_no' => $ref_no->ref_no + 1
+                                ]);
+
+                                $id = DB::table('tblpayment')->insertGetId([
+                                    'student_ic' => $student->ic,
+                                    'date' => date('Y-m-d'),
+                                    'ref_no' => $ref_no->code . $ref_no->ref_no + 1,
+                                    'session_id' => $student->session,
+                                    'semester_id' => $student->semester,
+                                    'program_id' => $student->program,
+                                    'amount' => $icv->amount,
+                                    'process_status_id' => 2,
+                                    'process_type_id' => $icv->process_type_id,
+                                    'add_staffID' => Auth::user()->ic,
+                                    'add_date' => date('Y-m-d'),
+                                    'mod_staffID' => Auth::user()->ic,
+                                    'mod_date' => date('Y-m-d')
+                                ]);
+
+                                DB::table('tblpaymentmethod')->insert([
+                                    'payment_id' => $id,
+                                    'claim_method_id' => 10,
+                                    'bank_id' => 11,
+                                    'no_document' => $icv->code . $id,
+                                    'amount' => $icv->amount,
+                                    'add_staffID' => Auth::user()->ic,
+                                    'add_date' => date('Y-m-d'),
+                                    'mod_staffID' => Auth::user()->ic,
+                                    'mod_date' => date('Y-m-d')
+                                ]);
+
+                                DB::table('tblpaymentdtl')->insert([
+                                    'payment_id' => $id,
+                                    'claimDtl_id' => $icv->id,
+                                    'claim_type_id' => 9,
+                                    'amount' => $icv->amount,
+                                    'add_staffID' => Auth::user()->ic,
+                                    'add_date' => date('Y-m-d'),
+                                    'mod_staffID' => Auth::user()->ic,
+                                    'mod_date' => date('Y-m-d')
+                                ]);
+                            }
+                        }
+                    }
+
                 }
+
+                return $alert;
+
+            }else{
+
+                return ['message' => 'Please add payment charge details first!'];
 
             }
 
-            return $alert;
-
         }else{
 
-            return ['message' => 'Please add payment charge details first!'];
+            $alert = ['message' => 'Success'];
+
 
         }
 
@@ -2611,6 +2621,56 @@ class AR_Controller extends Controller
 
         return response()->json($formattedEvents);
     }
+
+    public function fetchExistEvent(Request $request, $id)
+    {
+        $event = DB::table('tblevents')->where('id', $id)->first();
+
+        $students = DB::table('student_subjek')
+                            ->where([
+                                ['group_id', $event->group_id],
+                                ['group_name', $event->group_name]
+                            ])->pluck('student_ic');
+
+        $events = DB::table('tblevents')
+                ->join('student_subjek', function($join){
+                    $join->on('tblevents.group_id', 'student_subjek.group_id')
+                         ->on('tblevents.group_name', 'student_subjek.group_name');
+                })
+                ->where('tblevents.id', '!=', $id)
+                ->whereIn('student_subjek.student_ic', $students)
+                ->groupBy('tblevents.id')
+                ->select('tblevents.*')
+                ->get();
+
+        $formattedEvents = $events->map(function ($event) {
+
+            // Map day of the week from PHP (1 for Monday through 7 for Sunday) to FullCalendar (0 for Sunday through 6 for Saturday)
+            $dayOfWeekMap = [
+                1 => 1, // Monday
+                2 => 2, // Tuesday
+                3 => 3, // Wednesday
+                4 => 4, // Thursday
+                5 => 5, // Friday
+                6 => 6, // Saturday
+                7 => 0  // Sunday
+            ];
+
+            $dayOfWeek = date('N', strtotime($event->start));
+            $fullCalendarDayOfWeek = $dayOfWeekMap[$dayOfWeek];
+
+            return [
+                'id' => $event->id,
+                'startTime' => date('H:i', strtotime($event->start)),
+                'endTime' => date('H:i', strtotime($event->end)),
+                'duration' => gmdate('H:i', strtotime($event->end) - strtotime($event->start)),
+                'daysOfWeek' => [$fullCalendarDayOfWeek] // Recurring on the same day of the week
+            ];
+        });
+
+        return response()->json($formattedEvents);
+    }
+
     public function createEvent(Request $request)
     {   
         // Parse the start and end times from the request

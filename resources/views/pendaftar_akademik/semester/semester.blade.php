@@ -158,7 +158,7 @@ function confirm()
 
                       var student = $('#student').val();
 
-                      alert("Success! Payment Details has been added!");
+                      alert("Success! Student's session has been updated!");
 
                       getStudInfo(student);
 
