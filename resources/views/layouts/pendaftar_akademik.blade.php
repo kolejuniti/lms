@@ -350,6 +350,7 @@
 						<li><a href="{{ route('pendaftar.student.transcript') }}" class="{{ (route('pendaftar.student.transcript') == Request::url()) ? 'active' : ''}}">Generate Result Student</a></li>
 						<li><a href="{{ route('pendaftar_akademik.senateReport') }}" class="{{ (route('pendaftar_akademik.senateReport') == Request::url()) ? 'active' : ''}}">Senate Report</a></li>
 						<li><a href="{{ route('pendaftar_akademik.resultReport') }}" class="{{ (route('pendaftar_akademik.resultReport') == Request::url()) ? 'active' : ''}}">Result Report</a></li>
+						<li><a href="{{ route('pendaftar_akademik.transcript') }}" class="{{ (route('pendaftar_akademik.transcript') == Request::url()) ? 'active' : ''}}">Transcript</a></li>
 					</ul>
 				</li>
 				<li class="treeview">

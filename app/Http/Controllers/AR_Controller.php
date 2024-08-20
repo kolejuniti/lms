@@ -4637,6 +4637,12 @@ class AR_Controller extends Controller
 
     public function printStudentTranscript(Request $request)
     {
+        // Set Carbon's locale to Malay
+        Carbon::setLocale('ms');
+
+        $classdateParsed = Carbon::parse($request->date);
+
+        $data['date'] = $classdateParsed->format('d F Y');
 
         $data['student'] = DB::table('students')
                            ->join('tblprogramme', 'students.program', 'tblprogramme.id')
@@ -4653,22 +4659,30 @@ class AR_Controller extends Controller
         {
 
             $data['course'][$key] = DB::table('student_subjek')
-                                    ->join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
-                                    ->select('subjek.course_name', 'subjek.course_code', 'student_subjek.credit', 'student_subjek.grade')
+                                    ->leftJoin('subjek', 'student_subjek.courseid', 'subjek.sub_id')
                                     ->where([
                                         ['student_subjek.student_ic', $request->ic],
                                         ['student_subjek.semesterid', $sm]
                                     ])
+                                    ->groupBy('student_subjek.id')
+                                    ->select('student_subjek.*','subjek.course_name', 'subjek.course_code')
                                     ->get();
 
             $data['detail'][$key] = DB::table('student_transcript')
+                                    ->join('sessions', 'sessions.SessionID', 'student_transcript.session_id')
                                     ->where([
                                         ['student_ic', $request->ic],
                                         ['semester', $sm]
                                     ])
+                                    ->select('student_transcript.*', 'sessions.SessionName AS session')
                                     ->first();
 
         }
+
+        $lastDetail = end($data['detail']); // Get the last element of the $data['detail'] array
+        $data['lastCGPA'] = $lastDetail->cgpa ?? null; // Access the `cgpa` value
+
+        return view('pendaftar_akademik.student.transcript.printTranscript', compact('data'));
 
     }
 

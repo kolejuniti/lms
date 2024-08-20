@@ -1,9 +1,3 @@
-@php
-
-use Carbon\Carbon;
-
-@endphp
-
 <!DOCTYPE html>
 <html>
     <head>
@@ -13,66 +7,74 @@ use Carbon\Carbon;
         <meta name="description" content="">
         <meta name="author" content="">
         <meta name="csrf-token" content="{{ csrf_token() }}">
-        <title>Surat Peringatan Pelajar Tidak Hadir Ke Kelas</title>
-        <!-- Vendors Style-->
+        <title>Transcript Pelajar</title>
         <link rel="stylesheet" href="{{ asset('assets/src/css/vendors_css.css') }}">
-    <!-- Style-->  
-    <link rel="stylesheet" href="{{ asset('assets/src/css/style.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/src/css/skin_color.css') }}">
-    {{-- <link rel="stylesheet" media="screen, print" href="{{ asset('assets/src/css/datagrid/datatables/datatables.bundle.css') }}"> --}}
-    {{-- <link rel="stylesheet" href="{{ asset('assets/assets/vendor_components/datatable/datatables.css') }}"> --}}
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    
-    {{-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/css-skeletons@1.0.3/css/css-skeletons.min.css"/> --}}
-    <link rel="stylesheet" href="https://unpkg.com/css-skeletons@1.0.3/css/css-skeletons.min.css" />
-    
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.8.2/dist/alpine.min.js" defer></script>
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
-    <style>
-        @page {
-        size: A4; /* reduced height for A5 size in landscape orientation */
-        margin: 2cm;
-        }
-        * {
-            margin: 0;
-            padding: 0;
-            border: 0;
-            outline: 0;
-            font-size: 100%;
-            vertical-align: baseline;
-            background: transparent;
-            font-size: 14px;
+        <link rel="stylesheet" href="{{ asset('assets/src/css/style.css') }}">
+        <link rel="stylesheet" href="{{ asset('assets/src/css/skin_color.css') }}">
+        <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+        <link rel="stylesheet" href="https://unpkg.com/css-skeletons@1.0.3/css/css-skeletons.min.css" />
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.8.2/dist/alpine.min.js" defer></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
+        <style>
+            @page {
+                size: A4;
+                margin: 1cm;
+            }
+            * {
+                margin: 0;
+                padding: 0;
+                border: 0;
+                outline: 0;
+                font-size: 100%;
+                vertical-align: baseline;
+                background: transparent;
+                font-size: 10px;
+            }
+            h2, h3, p {
+                margin: 0;
+                padding: 0;
+                border: 0;
+                outline: 0;
+                font-size: 100%;
+                vertical-align: baseline;
+                background: transparent;
+                font-size: 10px;
+            }
+            .form-group {
+                page-break-inside: avoid;
+            }
+            .custom-table, .custom-table th, .custom-table td {
+                border: 1px solid white;
+            }
             
-        }
-        h2,h3,p {
-            margin: 0;
-            padding: 0;
-            border: 0;
-            outline: 0;
-            font-size: 100%;
-            vertical-align: baseline;
-            background: transparent;
-            font-size: 14px;
-        }
-        .form-group {
-            page-break-inside: avoid;
-        }
+            .custom-table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+            .text-center {
+                text-align: center;
+            }
 
-        .custom-table, .custom-table th, .custom-table td {
-            border: 1px solid black; /* Adds black grid lines */
-        }
+            /* Ensure the columns stay side-by-side in print */
+            @media print {
+                .flex-container {
+                    display: flex;
+                }
+                .col-md-6 {
+                    width: 48%;
+                    margin-right: 2%;
+                }
+            }
 
-        .custom-table {
-            width: 100%; /* Ensures the table stretches to the container width */
-            border-collapse: collapse; /* Removes double borders */
-        }
-
-        .text-center {
-            text-align: center; /* Centers text */
-        }
-
+            /* Use border instead of background */
+            .border-line {
+                width: 100%;
+                border-top: 1px solid black; /* Border as the line */
+                margin: 15px 0; /* Space around the line */
+            }
         </style>
         @if(Session::get('StudInfo'))
         
@@ -80,103 +82,136 @@ use Carbon\Carbon;
         <style>
             body {
                 background-image: url('{{ asset("assets/images/letter_head/letter_head.jpg") }}');
-                background-size: cover; /* Cover the entire page */
-                background-position: center; /* Center the background image */
-                background-repeat: no-repeat; /* Do not repeat the image */
+                background-size: cover;
+                background-position: center;
+                background-repeat: no-repeat;
             }
         </style>
         @endif
     </head>
     <body>
-        {{-- @php
-
-            // Get the date two weeks before
-            $twoWeeksBefore = Carbon::parse($data['student']->date_offer)->subWeeks(2);
-
-            // Convert the date format
-            $formattedDate = $twoWeeksBefore->format('d/m/Y');
-
-        @endphp --}}
-        <br>
-        <br>
-        <br>
-        <br>
-        <p>Ruj. Kami : KUSB/KU/HEA/{{ $data['student']->progcode }}/{{ str_replace(' ', '', $data['warning']->course_code)  }}/{{ $data['student']->no_matric }}/0{{ $data['warning']->warning }}</p>
-        <p>Tarikh &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : {{ Carbon::createFromFormat('Y-m-d', $data['originalDate'])->format('d-m-y') }}</p>
-        <br>
-        <p>Kepada:-</p>
         <div class="col-12 mb-1 mt-1">  
             <div style="border: 1px solid white; padding: 10px;">
-            <p>Nama Pelajar     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ $data['student']->name }}</p>
-            <p>No. Matrik Pelajar &nbsp;&nbsp;: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ $data['student']->no_matric }}</p>
-            <p>Semester &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ $data['student']->semester }}</p>
-            <p>Nama Program &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ $data['student']->progname }}</p>
-            <p>Sesi &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ $data['warning']->SessionName }}</p>   
+                <table>
+                    <tr>
+                        <td style="padding-right: 10px;">PROGRAM</td>
+                        <td>:</td>
+                        <td style="padding-left: 10px;">{{ $data['student']->program }}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding-right: 10px;">NO. RUJUKAN MQA</td>
+                        <td>:</td>
+                        <td style="padding-left: 10px;">{{ $data['student']->mqa }}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding-right: 10px;">NAMA</td>
+                        <td>:</td>
+                        <td style="padding-left: 10px;">{{ $data['student']->name }}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding-right: 10px;">NO. MATRIKS</td>
+                        <td>:</td>
+                        <td style="padding-left: 10px;">{{ $data['student']->no_matric }}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding-right: 10px;">NO. K.P. / NO. PASSPORT</td>
+                        <td>:</td>
+                        <td style="padding-left: 10px;">{{ $data['student']->ic }}</td>
+                    </tr>
+                </table>
             </div> 
         </div>
-        <p>Saudara/Saudari,</p>
-        <p class="mt-2"><b>SURAT PERINGATAN {{ $data['warning']->warning }} : KETIDAKHADIRAN KE KULIAH/TUTORIAL BAGI KURSUS {{ str_replace(' ', '', $data['warning']->course_code)  }} – {{ $data['warning']->course_name  }}</b></p>
-        <p class="mt-2">Laporan telah dibuat bahawa pada
-        <b> 
-        @php
-        $dates = $data['absent']->pluck('date')->toArray();
-        $lastDate = array_pop($dates); // Remove the last date to handle it separately
-        $datesString = $dates ? implode(', ', $dates) : '';
-        $datesString .= count($dates) ? ' dan ' : '';
-        $datesString .= $lastDate;
-        echo $datesString;
-        @endphp 
-        </b>
-        anda telah tidak hadir ke kuliah/tutorial di atas seperti yang telah tersenarai di bawah ini tanpa sebab:-</p>
-        <div class="col-md-12 mt-2">
-            <table class="custom-table">
-                <thead>
-                    <tr class="line">
-                        <th class="text-center" rowspan="2">Bil</th>
-                        <th class="text-center" colspan="3"><p class="mb-2">Tidak Hadir Kuliah/Tutorial</p></th>
-                        <th class="text-center" rowspan="2"><p class="mt-2 mb-4"><br>Peratus Keseluruhan Kehadiran</p></th>
-                    </tr>
-                    <tr class="line">
-                        <th class="text-center">Tarikh</th>
-                        <th class="text-center">Hari</th>
-                        <th class="text-center">Masa</th>
-                </thead>
-                <tbody>
-                    @foreach($data['absent'] as $key => $abs)
-                    <tr>
-                        <td class="text-center">{{ $key+1 }}</td>
-                        <td class="text-center">{{ $abs['date'] }}</td>
-                        <td class="text-center">{{ $abs['day'] }}</td>
-                        <td class="text-center">{{ $abs['time1'] }} – {{ $abs['time2'] }}</td>
-                        @if($key+1 == 1)
-                        <td rowspan="{{ count($data['absent']) }}" class="text-center">{{ $data['warning']->balance_attendance }}/{{ $data['courseCredit']->total }} <br>{{ $data['warning']->percentage_attendance }}% </td>
-                        @endif
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
-        <p class="mt-2">Adalah diingatkan mengenai para 3.8.4 (c), Peraturan Akademik Kolej UNITI Pindaan 2021 seperti berikut: </p>
-        <p class="mt-3"><i>“Pelajar yang kehadirannya kurang daripada 80% dalam sesuatu kursus tanpa sebab-sebab yang boleh diterima akan dikira gagal dalam kursus tersebut.”</i></p>
-        <p class="mt-3">Dengan ini anda diberi amaran bahawa sekiranya kehadiran yang tidak memuaskan
-            ini berterusan, pihak Kolej berhak mengambil tindakan terhadap anda mengikut para
-            3.8.4 (c) seperti di atas.</p>
-        <p class="mt-1 mb-1">Sekian, terima kasih.</p>
-        <br>
-        <p style="text-align: center;"><b>[THIS IS A COMPUTER GENERATED AND DOES NOT REQUIRE SIGNATURE]</b></p>
-        {{-- <p>Yang benar,</p>
-        <img src="{{ asset('storage/signature/signature2.png') }}" alt="Image" width="10%" height="10%">
 
-        <p><b>Azhar bin Zunaidak</b><br>
-        Penolong Pendaftar Akademik<br>
-        <b>KOLEJ UNITI</b></p><br> --}}
+        <!-- Black Line Divider using Border -->
+        <div class="border-line"></div>
+  
+        <div class="flex-container col-md-12 mt-2">
+            <div class="col-md-6">
+                <table class="custom-table">
+                    <thead>
+                        <tr class="line">
+                            <th class="text-center" style="width: 2%">KOD</th>
+                            <th style="width: 10%">KURSUS</th>
+                            <th class="text-center" style="width: 1%">KR</th>
+                            <th class="text-center" style="width: 1%">GR</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+            <div class="col-md-6">
+                <table class="custom-table">
+                    <thead>
+                        <tr class="line">
+                            <th class="text-center" style="width: 2%">KOD</th>
+                            <th style="width: 10%">KURSUS</th>
+                            <th class="text-center" style="width: 1%">KR</th>
+                            <th class="text-center" style="width: 1%">GR</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+
+        <!-- Another Black Line Divider if needed -->
+        <div class="border-line"></div>
+        <br>
+        <div class="row col-md-12 mt-2">
+            @php
+            $total_credit = 0;
+            @endphp
+            @foreach($data['semesters'] as $key => $sm)
+            <div class="col-md-6 mt-3">
+                <div class="text-center"><b><u>SESI {{ $data['detail'][$key]->session }} SEMESTER {{ $sm }}</u></b></div>
+                <table class="custom-table">
+                    <tbody>
+                        @foreach($data['course'][$key] as $key2 => $crs)
+                        <tr class="line">
+                            <td style="width: 5%">{{ $crs->course_code }}</td>
+                            <td style="width: 25%">{{ $crs->course_name }}</td>
+                            <td class="text-center" style="width: 1%">{{ $crs->credit }}</td>
+                            <td style="width: 1%">{{ $crs->grade }}</td>
+                        </tr>
+                        @php
+                        $total_credit += $crs->credit;
+                        @endphp
+                        @endforeach
+                    </tbody>
+                    <tfoot>
+                        <tr class="line">
+                            <td colspan="2"></td>
+                            <td>PNGS :</td>
+                            <td>{{ $data['detail'][$key]->gpa }}</td>
+                        </tr>
+                        <tr class="line">
+                            <td colspan="2"></td>
+                            <td>PNGK :</td>
+                            <td>{{ $data['detail'][$key]->cgpa }}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            @endforeach  
+        </div>
+
+        <div class="col-12 mb-1 mt-1">  
+            <div style="border: 1px solid white; padding: 10px;">
+                <p>PURATA TUMBUNAN MATA NILAIAN &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ $data['lastCGPA'] }}</p>
+                <p>JUMLAH KREDIT KESELURUHAN &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ $total_credit }}</p>
+            </div> 
+        </div>
+        <img src="{{ asset('storage/signature/signature2.png') }}" alt="Image" width="10%" height="10%">
+        <p><b>AZHAR BIN ZUNAIDAK<br>
+        PENOLONG PENDAFTAR<br>
+        HAL EHWAL AKADEMIK<br>
+        BP: KETUA EKSEKUTIF</b></p><br>
+
+        <p>TARIKH: {{ $data['date'] }}<br>
+        
     </body>
 </html>
 
 <script type="text/javascript">
-
-$(document).ready(function () {
-    window.print();
-});
-
+    $(document).ready(function () {
+        window.print();
+    });
 </script>
