@@ -49,6 +49,7 @@
          background: transparent;
          font-size: 10px; /* reduce font-size */
       }
+
       .container {
          transform: scale(1.0); /* scale down everything */
       }
@@ -62,6 +63,18 @@
       .container table + table {
     margin-top: 5px; /* Adjust this value to reduce the gap */
 }
+   
+      .form-group {
+            page-break-inside: avoid;
+      }
+      .custom-table, .custom-table th, .custom-table td {
+            border: 1px solid black;
+      }
+
+      .custom-table {
+            width: 100%;
+            border-collapse: collapse;
+      }
    </style>
 
  </head>
@@ -69,7 +82,6 @@
  
  
 <body>
-<div class="container">
       <!-- BEGIN INVOICE -->
    <div class="col-12">
       <div class="grid invoice">
@@ -98,7 +110,7 @@
                </div> --}}
             </div>
             <div class="row">
-               <div class="col-md-12 d-flex p-2">
+               {{-- <div class="col-md-12 d-flex p-2">
                   <div class="col-md-6" style="margin-right: 10px">
                      <div class="form-group">
                            <p>Name &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ $data['student']->name }}</p>
@@ -115,39 +127,93 @@
                            <p>Semester &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ $data['transcript']->semester }}</p>
                      </div>
                   </div>
+               </div> --}}
+
+               <div class="col-6 mb-1 mt-1">  
+                  <div style="border: 1px solid white; padding: 10px;">
+                      <table>
+                          <tr>
+                              <td style="padding-right: 10px;">Nama</td>
+                              <td>:</td>
+                              <td style="padding-left: 10px;">{{ $data['student']->name }}</td>
+                          </tr>
+                          <tr>
+                              <td style="padding-right: 10px;">No. KP / No. Passport</td>
+                              <td>:</td>
+                              <td style="padding-left: 10px;">{{ $data['student']->ic }}</td>
+                          </tr>
+                          <tr>
+                              <td style="padding-right: 10px;">Sesi Kemasukan</td>
+                              <td>:</td>
+                              <td style="padding-left: 10px;">{{ $data['student']->intake }}</td>
+                          </tr>
+                          <tr>
+                              <td style="padding-right: 10px;">Sesi Semasa</td>
+                              <td>:</td>
+                              <td style="padding-left: 10px;">{{ $data['transcript']->session }}</td>
+                          </tr>
+                          <tr>
+                              <td style="padding-right: 10px;">No. Matriks</td>
+                              <td>:</td>
+                              <td style="padding-left: 10px;">{{ $data['student']->no_matric }}</td>
+                          </tr>
+                          <tr>
+                           <td style="padding-right: 10px;">Program</td>
+                           <td>:</td>
+                           <td style="padding-left: 10px;">{{ $data['student']->program }}</td>
+                       </tr>
+                      </table>
+                  </div> 
+               </div>
+               <div class="col-6 mb-1 mt-1">  
+                  <div style="border: 1px solid white; padding: 10px;">
+                      <table>
+                          <tr>
+                              <td style="padding-right: 10px;">Status</td>
+                              <td>:</td>
+                              <td style="padding-left: 10px;">{{ $data['student']->status }}</td>
+                          </tr>
+                          <tr>
+                              <td style="padding-right: 10px;">Semester</td>
+                              <td>:</td>
+                              <td style="padding-left: 10px;">{{ $data['transcript']->semester }}</td>
+                          </tr>
+                       </tr>
+                      </table>
+                  </div> 
                </div>
 
                <div class="col-md-12">
-                  <table class="w-100 table table-bordered display margin-top-10 w-p100">
+                  <table class="custom-table">
                      <thead>
                         <tr class="line">
-                           <td><strong>#</strong></td>
-                           <td class="text-center"><strong>KOD KURSUS</strong></td>
-                           <td class="text-center"><strong>NAMA KURSUS</strong></td>
-                           <td class="text-center"><strong>GRED</strong></td>
-                           <td class="text-center"><strong>NILAI MATA</strong></td>
-                           <td class="text-center"><strong>KREDIT</strong></td>
+                           <td class="text-center" style="width: 2%"><strong>BIL</strong></td>
+                           <td class="text-center" style="width: 5%"><strong>KOD KURSUS</strong></td>
+                           <td class="text-center" style="width: 20%"><strong>NAMA KURSUS</strong></td>
+                           <td class="text-center" style="width: 5%"><strong>GRED</strong></td>
+                           <td class="text-center" style="width: 5%"><strong>NILAI MATA</strong></td>
+                           <td class="text-center" style="width: 5%"><strong>KREDIT</strong></td>
                         </tr>
                      </thead>
                      <tbody>
                      @foreach($data['subject'] as $key => $subject)
                      <tr>
-                        <td>
+                        <td class="text-center">
                            {{ $key + 1 }}
                         </td>
-                        <td>
+                        <td class="text-center">
                            {{ $subject->course_code }}
                         </td>
-                        <td>
+                        <td class="text-center">
                            {{ $subject->course_name }}
                         </td>
-                        <td>
+                        <td class="text-center">
                            {{ $subject->grade }}
                         </td>
-                        <td>
+                        <td class="text-center">
                            {{ $subject->pointer }}
                         </td>
-                        <td>
+                        <td class="text-center">
                            {{ $subject->credit }}
                         </td>
                      </tr>
@@ -157,7 +223,7 @@
                </div>
 
                <div class="col-md-12 mt-10">
-                  <table class="w-100 table table-bordered display margin-top-10 w-p100">
+                  <table class="custom-table">
                      <thead>
                         <tr>
                            <td><strong></strong></td>
@@ -169,7 +235,7 @@
                      <tbody>
                        <tr>
                            <td class="text-center">
-                              SEMESTER
+                              SEMESTER SEMASA
                            </td>
                            <td class="text-center">
                               {{ $data['transcript']->total_credit_s }}
@@ -183,7 +249,7 @@
                        </tr>
                        <tr>
                            <td class="text-center">
-                              KUMULATIF
+                              KESELURUHAN SEMESTER
                            </td>
                            <td class="text-center">
                               {{ $data['transcript']->count_credit_c }}
@@ -206,11 +272,11 @@
                      </tbody>
                   </table>
                </div>
+
+               <p class="text-center mt-2">* Penyata ini dicetak olek komputer, oleh itu tandatangan Pendaftar tidak diperlukan.</p>
             </div>
          </div>
       </div>
-   </div>
-   <!-- END INVOICE -->
    </div>
 </body>
 <script type="text/javascript">
