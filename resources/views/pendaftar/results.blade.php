@@ -37,7 +37,7 @@
          font-size: 100%;
          vertical-align: baseline;
          background: transparent;
-         font-size: 10px; /* reduce font-size */
+         font-size: 12px; /* reduce font-size */
       }
       h2,h3,p {
          margin: 0;
@@ -50,16 +50,21 @@
          font-size: 10px; /* reduce font-size */
       }
       h1 {
-         font-size: 20px; /* increase font-size */
+         font-size: 18px; /* increase font-size */
       }
       b {
          font-weight: bold;
-         font-size: 20px; /* increase font-size */
+         font-size: 18px; /* increase font-size */
       }
 
       .b2 {
          font-weight: bold;
-         font-size: 18px; /* increase font-size */
+         font-size: 16px; /* increase font-size */
+      }
+
+      .b3 {
+         font-weight: bold;
+         font-size: 10px; /* increase font-size */
       }
 
       .container {
@@ -111,11 +116,13 @@
                   <div class="col-12 d-flex">
                      <img src="{{ asset('assets/images/logo/Kolej-UNITI.png')}}" alt="" height="50">
                      <address>
+                        <div class="b3">
                         <strong>KOLEJ UNITI</strong><br>
                         PERSIARAN UNITI VILLAGE, TANJUNG AGAS<br>
                         71250, PORT DICKSON, NEGERI SEMBILAN.<br>
                         <abbr title="Phone">Tel:</abbr> 06-649 0350 | <abbr title="Phone">Fax:</abbr> 06-661 0509<br>
                         http://www.uniti.edu.my | <abbr title="Email">Email:</abbr> info@uniti.edu.my
+                        </div>
                      </address>
                   </div>
                </div>
@@ -243,7 +250,7 @@
                         <td class="text-center">
                            {{ $subject->course_code }}
                         </td>
-                        <td class="text-center">
+                        <td>
                            {{ $subject->course_name }}
                         </td>
                         <td class="text-center">
@@ -268,7 +275,7 @@
                            <td><strong></strong></td>
                            <td class="text-center"><strong>KREDIT AMBIL</strong></td>
                            <td class="text-center"><strong>JUMLAH NILAI GRED</strong></td>
-                           <td class="text-center"><strong>PNG</strong></td>
+                           <td class="text-center" style="width: 12.4%"><strong>PNG</strong></td>
                         </tr>
                      </thead>
                      <tbody>
