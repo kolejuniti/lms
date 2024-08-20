@@ -133,7 +133,7 @@
                             <th class="text-center" style="width: 2%">KOD</th>
                             <th style="width: 10%">KURSUS</th>
                             <th class="text-center" style="width: 1%">KR</th>
-                            <th class="text-center" style="width: 1%">GR</th>
+                            <th style="width: 1%">GR</th>
                         </tr>
                     </thead>
                 </table>
@@ -143,9 +143,9 @@
                     <thead>
                         <tr class="line">
                             <th class="text-center" style="width: 2%">KOD</th>
-                            <th style="width: 10%">KURSUS</th>
+                            <th style="width: 15%">KURSUS</th>
                             <th class="text-center" style="width: 1%">KR</th>
-                            <th class="text-center" style="width: 1%">GR</th>
+                            <th style="width: 1%">GR</th>
                         </tr>
                     </thead>
                 </table>
@@ -197,7 +197,7 @@
             <div style="border: 1px solid white; padding: 10px;">
             <table style="float: right;">
                 <tr>
-                <td style="padding-right: 10px;"><b>PURATA TUMBUNAN MATA NILAIAN</b></td>
+                <td style="padding-right: 10px;"><b>PURATA TIMBUNAN MATA NILAIAN</b></td>
                 <td><b>:</b></td>
                 <td style="padding-left: 10px;"><b>{{ $data['lastCGPA'] }}</b></td>
                 </tr>
@@ -215,7 +215,8 @@
         <br>
         <br>
 
-        <p style="text-align: right;"><b>AZHAR BIN ZUNAIDAK<br>
+        <p style="text-align: right;"><b>......................................<br>
+        AZHAR BIN ZUNAIDAK<br>
         PENOLONG PENDAFTAR<br>
         HAL EHWAL AKADEMIK<br>
         BP: KETUA EKSEKUTIF</b></p><br>
