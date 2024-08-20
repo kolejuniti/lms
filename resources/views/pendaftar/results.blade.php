@@ -97,7 +97,7 @@
       .border-line {
             width: 100%;
             border-top: 1px solid black; /* Border as the line */
-            margin: 15px 0; /* Space around the line */
+            margin: 0px 0; /* Space around the line */
       }
    </style>
 
@@ -173,7 +173,7 @@
                   </div>
                </div>
                <!-- Black Line Divider using Border -->
-               <div class="border-line"></div>
+               <div class="border-line mt-2"></div>
 
                <div class="col-6 mb-1 mt-1">  
                   <div style="border: 1px solid white; padding: 10px;">
@@ -250,7 +250,7 @@
                         <td class="text-center">
                            {{ $subject->course_code }}
                         </td>
-                        <td>
+                        <td style="padding-left: 5px;">
                            {{ $subject->course_name }}
                         </td>
                         <td class="text-center">
