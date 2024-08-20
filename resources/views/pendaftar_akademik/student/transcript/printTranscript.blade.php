@@ -195,11 +195,22 @@
 
         <div class="col-12 mb-1 mt-1" style="text-align: right;">  
             <div style="border: 1px solid white; padding: 10px;">
-            <p style="text-align: right;"><b>PURATA TUMBUNAN MATA NILAIAN &nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp;{{ $data['lastCGPA'] }}</b></p>
-            <p style="text-align: right;"><b>JUMLAH KREDIT KESELURUHAN &nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp;{{ $total_credit }}</b></p>
+            <table style="float: right;">
+                <tr>
+                <td style="padding-right: 10px;"><b>PURATA TUMBUNAN MATA NILAIAN</b></td>
+                <td><b>:</b></td>
+                <td style="padding-left: 10px;"><b>{{ $data['lastCGPA'] }}</b></td>
+                </tr>
+                <tr>
+                <td style="padding-right: 10px;"><b>JUMLAH KREDIT KESELURUHAN</b></td>
+                <td><b>:</b></td>
+                <td style="padding-left: 10px;"><b>{{ $total_credit }}</b></td>
+                </tr>
+            </table>
             </div> 
         </div>
         {{-- <img src="{{ asset('storage/signature/signature2.png') }}" alt="Image" width="10%" height="10%" style="float: right;"> --}}
+        <br>
         <br>
         <br>
         <br>
