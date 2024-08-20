@@ -4642,7 +4642,7 @@ class AR_Controller extends Controller
 
         $classdateParsed = Carbon::parse($request->date);
 
-        $data['date'] = $classdateParsed->format('d F Y');
+        $data['date'] = $classdateParsed->isoFormat('D MMMM Y');
 
         $data['student'] = DB::table('students')
                            ->join('tblprogramme', 'students.program', 'tblprogramme.id')
@@ -4652,7 +4652,10 @@ class AR_Controller extends Controller
 
         $data['semesters'] = DB::table('student_subjek')
                              ->groupBy('semesterid')
-                             ->where('student_ic', $request->ic)
+                             ->where([
+                                ['student_ic', $request->ic],
+                                ['group_id','!=', null]
+                                ])
                              ->pluck('semesterid');
 
         foreach($data['semesters'] as $key => $sm)
