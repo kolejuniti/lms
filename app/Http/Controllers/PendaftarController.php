@@ -2300,7 +2300,7 @@ class PendaftarController extends Controller
                            ->join('sessions AS A2', 'students.session', 'A2.SessionID')
                            ->join('tblprogramme', 'students.program', 'tblprogramme.id')
                            ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
-                           ->select('students.*', 'tblprogramme.progname AS program', 'tblstudent_status.name AS status', 'A1.SessionName AS intake', 'A2.SessionName AS session')
+                           ->select('students.*', 'tblprogramme.progname AS program', 'tblprogramme.progcode AS code', 'tblstudent_status.name AS status', 'A1.SessionName AS intake', 'A2.SessionName AS session')
                            ->where('students.ic', $data['transcript']->student_ic)
                            ->first();
 

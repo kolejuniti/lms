@@ -49,6 +49,18 @@
          background: transparent;
          font-size: 10px; /* reduce font-size */
       }
+      h1 {
+         font-size: 20px; /* increase font-size */
+      }
+      b {
+         font-weight: bold;
+         font-size: 20px; /* increase font-size */
+      }
+
+      .b2 {
+         font-weight: bold;
+         font-size: 18px; /* increase font-size */
+      }
 
       .container {
          transform: scale(1.0); /* scale down everything */
@@ -57,12 +69,12 @@
          transform: scaleY(1.0); /* Scale vertically down */
          transform-origin: top left;
          margin: 0;
-    padding: 0;
-      }
+         padding: 0;
+            }
 
       .container table + table {
-    margin-top: 5px; /* Adjust this value to reduce the gap */
-}
+         margin-top: 5px; /* Adjust this value to reduce the gap */
+      }
    
       .form-group {
             page-break-inside: avoid;
@@ -74,6 +86,13 @@
       .custom-table {
             width: 100%;
             border-collapse: collapse;
+      }
+
+      /* Use border instead of background */
+      .border-line {
+            width: 100%;
+            border-top: 1px solid black; /* Border as the line */
+            margin: 15px 0; /* Space around the line */
       }
    </style>
 
@@ -129,6 +148,26 @@
                   </div>
                </div> --}}
 
+               <div class="col-12">
+                  <div class="row">
+                     <div class="col-12">
+                        <h1><b>PEJABAT PENDAFTAR BAHAGIAN AKADEMIK</b></h1>
+                     </div>
+                  </div>
+                  <div class="row">
+                     <div class="col-12">
+                           <h3><div class="b2">KEPUTUSAN PEPERIKSAAN</div></h3>
+                     </div>
+                  </div>
+                  <div class="row mt-2">
+                     <div class="col-12">
+                           <h3><div class="b2">PROGRAM : {{ $data['student']->code }}-{{ $data['student']->program }}</div></h3>
+                     </div>
+                  </div>
+               </div>
+               <!-- Black Line Divider using Border -->
+               <div class="border-line"></div>
+
                <div class="col-6 mb-1 mt-1">  
                   <div style="border: 1px solid white; padding: 10px;">
                       <table>
@@ -138,9 +177,9 @@
                               <td style="padding-left: 10px;">{{ $data['student']->name }}</td>
                           </tr>
                           <tr>
-                              <td style="padding-right: 10px;">No. KP / No. Passport</td>
+                              <td style="padding-right: 10px;">No. Matriks</td>
                               <td>:</td>
-                              <td style="padding-left: 10px;">{{ $data['student']->ic }}</td>
+                              <td style="padding-left: 10px;">{{ $data['student']->no_matric }}</td>
                           </tr>
                           <tr>
                               <td style="padding-right: 10px;">Sesi Kemasukan</td>
@@ -148,20 +187,15 @@
                               <td style="padding-left: 10px;">{{ $data['student']->intake }}</td>
                           </tr>
                           <tr>
-                              <td style="padding-right: 10px;">Sesi Semasa</td>
+                              <td style="padding-right: 10px;">Status</td>
                               <td>:</td>
-                              <td style="padding-left: 10px;">{{ $data['transcript']->session }}</td>
+                              <td style="padding-left: 10px;">{{ $data['student']->status }}</td>
                           </tr>
-                          <tr>
-                              <td style="padding-right: 10px;">No. Matriks</td>
+                          {{-- <tr>
+                              <td style="padding-right: 10px;">Program</td>
                               <td>:</td>
-                              <td style="padding-left: 10px;">{{ $data['student']->no_matric }}</td>
-                          </tr>
-                          <tr>
-                           <td style="padding-right: 10px;">Program</td>
-                           <td>:</td>
-                           <td style="padding-left: 10px;">{{ $data['student']->program }}</td>
-                       </tr>
+                              <td style="padding-left: 10px;">{{ $data['student']->program }}</td>
+                          </tr> --}}
                       </table>
                   </div> 
                </div>
@@ -169,14 +203,19 @@
                   <div style="border: 1px solid white; padding: 10px;">
                       <table>
                           <tr>
-                              <td style="padding-right: 10px;">Status</td>
+                              <td style="padding-right: 10px;">No. KP / No. Passport</td>
                               <td>:</td>
-                              <td style="padding-left: 10px;">{{ $data['student']->status }}</td>
+                              <td style="padding-left: 10px;">{{ $data['student']->ic }}</td>
                           </tr>
                           <tr>
                               <td style="padding-right: 10px;">Semester</td>
                               <td>:</td>
                               <td style="padding-left: 10px;">{{ $data['transcript']->semester }}</td>
+                          </tr>
+                          <tr>
+                              <td style="padding-right: 10px;">Sesi Semasa</td>
+                              <td>:</td>
+                              <td style="padding-left: 10px;">{{ $data['transcript']->session }}</td>
                           </tr>
                        </tr>
                       </table>
