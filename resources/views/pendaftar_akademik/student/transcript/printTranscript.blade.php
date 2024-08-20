@@ -193,19 +193,23 @@
             @endforeach  
         </div>
 
-        <div class="col-12 mb-1 mt-1">  
+        <div class="col-12 mb-1 mt-1" style="text-align: right;">  
             <div style="border: 1px solid white; padding: 10px;">
-                <p>PURATA TUMBUNAN MATA NILAIAN &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ $data['lastCGPA'] }}</p>
-                <p>JUMLAH KREDIT KESELURUHAN &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ $total_credit }}</p>
+            <p style="text-align: right;"><b>PURATA TUMBUNAN MATA NILAIAN &nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp;{{ $data['lastCGPA'] }}</b></p>
+            <p style="text-align: right;"><b>JUMLAH KREDIT KESELURUHAN &nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp;{{ $total_credit }}</b></p>
             </div> 
         </div>
-        <img src="{{ asset('storage/signature/signature2.png') }}" alt="Image" width="10%" height="10%">
-        <p><b>AZHAR BIN ZUNAIDAK<br>
+        {{-- <img src="{{ asset('storage/signature/signature2.png') }}" alt="Image" width="10%" height="10%" style="float: right;"> --}}
+        <br>
+        <br>
+        <br>
+
+        <p style="text-align: right;"><b>AZHAR BIN ZUNAIDAK<br>
         PENOLONG PENDAFTAR<br>
         HAL EHWAL AKADEMIK<br>
         BP: KETUA EKSEKUTIF</b></p><br>
 
-        <p>TARIKH: {{ $data['date'] }}<br>
+        <p style="text-align: right;"><b>TARIKH: {{ $data['date'] }}</b><br>
         
     </body>
 </html>
