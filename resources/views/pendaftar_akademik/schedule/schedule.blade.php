@@ -366,7 +366,7 @@
                 },
                 hiddenDays: hiddenDays, // Hide Sunday (0) and Saturday (6)
                 slotMinTime: '07:00:00', // Set the minimum visible time to 8 AM
-                slotMaxTime: '18:00:00', // Set the maximum visible time to 5 PM (17:00)
+                slotMaxTime: '20:00:00', // Set the maximum visible time to 5 PM (17:00)
                 slotDuration: '00:30:00', // Sets the duration of each time slot, e.g., '00:30:00' for 30 minutes
                 slotLabelInterval: '00:30:00', // Sets the interval at which time labels are displayed, e.g., '00:30:00' for every 30 minutes
                 height: 'auto', // You can set this to 'auto' or a specific pixel value like '800px'
@@ -490,6 +490,71 @@
                     }
                 },
 
+                eventDragStart: async function(info) {
+                    var event = info.event;
+
+                    // Send data to the backend
+                    const response = await fetch(`/AR/schedule/fetch/${event.id}/fetchExistEvent`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                        }
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (data.error) {
+                            info.revert();
+                            alert(data.error);
+                        } else {
+                            // Iterate over each fetched event and create a background highlight event
+                            data.forEach(fetchedEvent => {
+                                // Create specific date objects for start and end time
+                                const startTime = new Date();
+                                startTime.setHours(...fetchedEvent.startTime.split(':'));
+                                
+                                const endTime = new Date();
+                                endTime.setHours(...fetchedEvent.endTime.split(':'));
+                                
+                                // Adjust for the specific day of the week
+                                const currentDay = startTime.getDay();
+                                const targetDay = fetchedEvent.daysOfWeek[0]; // assuming daysOfWeek is an array with one element
+                                
+                                const dayDifference = targetDay - currentDay;
+                                startTime.setDate(startTime.getDate() + dayDifference);
+                                endTime.setDate(endTime.getDate() + dayDifference);
+
+                                // Create and add the highlight event
+                                var highlightEvent = {
+                                    id: 'highlight-' + fetchedEvent.id,
+                                    start: startTime,
+                                    end: endTime,
+                                    display: 'background',
+                                    backgroundColor: '#d3d3d3', // Highlight color
+                                    allDay: false
+                                };
+
+                                info.view.calendar.addEvent(highlightEvent);
+                            });
+                        }
+                    } else {
+                        alert('Failed to fetch existing events');
+                        info.revert();
+                    }
+                },
+
+
+                eventDragStop: function(info) {
+                    // Remove all the temporary highlight events
+                    info.view.calendar.getEvents().forEach(event => {
+                        if (event.id.startsWith('highlight-')) {
+                            event.remove();
+                        }
+                    });
+                },
+
+
                 eventDrop: async function(info) {
                     var event = info.event;
 
@@ -511,7 +576,7 @@
 
                     if (response.ok) {
                         const data = await response.json();
-                        if(data.error) {
+                        if (data.error) {
                             info.revert();
                             alert(data.error);
                         } else {
@@ -521,7 +586,15 @@
                         alert('Failed to update event');
                         info.revert();
                     }
-                },
+
+                    // Remove all the temporary highlight events after drop
+                    info.view.calendar.getEvents().forEach(event => {
+                        if (event.id.startsWith('highlight-')) {
+                            event.remove();
+                        }
+                    });
+                }
+
             });
 
             calendar.render();
@@ -536,7 +609,7 @@
                 var eventStart = convertToPhpMyAdminDatetime(new Date(document.getElementById('event-start').value));
 
                 const slotMinTime = '07:00:00';
-                const slotMaxTime = '18:00:00';
+                const slotMaxTime = '20:00:00';
 
                 const startHour = parseInt(eventStart.slice(11, 13));
 
@@ -695,7 +768,7 @@
                 const newEnd = document.getElementById('edit-end').value;
 
                 const slotMinTime = '07:00:00';
-                const slotMaxTime = '18:00:00';
+                const slotMaxTime = '20:00:00';
 
                 const startHour = parseInt(newStart.slice(11, 13));
                 const endHour = parseInt(newEnd.slice(11, 13));
