@@ -1302,7 +1302,16 @@ class PendaftarController extends Controller
 
         $data['semester'] = DB::table('semester')->get();
 
-        $data['status'] = DB::table('tblstudent_status')->get();
+        if(Auth::user()->usrtype == "AR")
+        {
+
+            $data['status'] = DB::table('tblstudent_status')->whereIn('id', [3,8])->get();
+        
+        }else{
+
+            $data['status'] = DB::table('tblstudent_status')->get();
+
+        }
 
         $data['batch'] = DB::table('tblbatch')->get();
 
