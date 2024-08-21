@@ -102,11 +102,11 @@
                       </i>
                       Table
                   </a>
-                  <a class="btn btn-danger btn-sm" href="#" onclick="deleteMaterial('{{ $lct->ic }}')">
+                  {{-- <a class="btn btn-danger btn-sm" href="#" onclick="deleteMaterial('{{ $lct->ic }}')">
                       <i class="ti-trash">
                       </i>
                       Delete
-                  </a>
+                  </a> --}}
                 </td>
               </tr>
             @endforeach
