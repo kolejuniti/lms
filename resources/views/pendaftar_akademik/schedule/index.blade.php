@@ -99,7 +99,7 @@
                                 {{ $lct->ic }}
                             </td>
                             <td class="project-actions text-right" >
-                                <a class="btn btn-info btn-sm" href="/AR/schedule/scheduleTable/{{ $lct->ic }}">
+                                <a class="btn btn-info btn-sm" href="/AR/schedule/scheduleTable/{{ $lct->ic }}?type={{ request()->type }}">
                                     <i class="ti-info-alt"></i>
                                     Table
                                 </a>
@@ -156,7 +156,7 @@
                             {{ $std->progcode }} - {{ $std->progname }}
                           </td>
                           <td class="project-actions text-right" >
-                              <a class="btn btn-info btn-sm" href="/AR/schedule/scheduleTable/{{ $std->ic }}">
+                              <a class="btn btn-info btn-sm" href="/AR/schedule/scheduleTable/{{ $std->ic }}?type={{ request()->type }}">
                                   <i class="ti-info-alt"></i>
                                   Table
                               </a>
@@ -247,7 +247,7 @@
                             {!! $rm->description !!}
                           </td>
                           <td class="project-actions text-right" >
-                              <a class="btn btn-info btn-sm" href="/AR/schedule/scheduleTable/{{ $rm->id }}">
+                              <a class="btn btn-info btn-sm" href="/AR/schedule/scheduleTable/{{ $rm->id }}?type={{ request()->type }}">
                                   <i class="ti-info-alt"></i>
                                   Table
                               </a>

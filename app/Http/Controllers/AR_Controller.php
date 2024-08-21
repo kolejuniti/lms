@@ -2546,27 +2546,36 @@ class AR_Controller extends Controller
     public function scheduleTable()
     {
 
-        $data = [
-            // 'lectureInfo' => DB::table('tbllecture')
-            //                  ->join('tbllecture_room', 'tbllecture.room_id', 'tbllecture_room.id')
-            //                  ->join('sessions', 'tbllecture.session_id', 'sessions.SessionID')
-            //                  ->select('tbllecture_room.*', 'sessions.SessionName AS session')
-            //                  ->where('tbllecture.id', request()->id)
-            //                  ->first(),
-            // 'totalBooking' => DB::table('tblevents')->where('lecture_id', request()->id)
-            //                   ->select(DB::raw('COUNT(tblevents.id) AS total_booking'))
-            //                   ->first(),
-            // 'lecturer' => DB::table('users')
-            //               ->whereIn('usrtype', ['LCT', 'PL', 'AO'])
-            //               ->get(),
-            'lecturerInfo' => DB::table('users')->where('ic', request()->id)->first(),
-            'session' => DB::table('sessions')->where('Status', 'ACTIVE')->get(),
-            'lecture_room' => DB::table('tbllecture_room')->get()
-        ];
+        if(request()->type == 'lct')
+        {
 
-        //dd($data);
+            $data = [
+                // 'lectureInfo' => DB::table('tbllecture')
+                //                  ->join('tbllecture_room', 'tbllecture.room_id', 'tbllecture_room.id')
+                //                  ->join('sessions', 'tbllecture.session_id', 'sessions.SessionID')
+                //                  ->select('tbllecture_room.*', 'sessions.SessionName AS session')
+                //                  ->where('tbllecture.id', request()->id)
+                //                  ->first(),
+                // 'totalBooking' => DB::table('tblevents')->where('lecture_id', request()->id)
+                //                   ->select(DB::raw('COUNT(tblevents.id) AS total_booking'))
+                //                   ->first(),
+                // 'lecturer' => DB::table('users')
+                //               ->whereIn('usrtype', ['LCT', 'PL', 'AO'])
+                //               ->get(),
+                'lecturerInfo' => DB::table('users')->where('ic', request()->id)->first(),
+                'session' => DB::table('sessions')->where('Status', 'ACTIVE')->get(),
+                'lecture_room' => DB::table('tbllecture_room')->get()
+            ];
 
-        return view('pendaftar_akademik.schedule.schedule', compact('data'));
+            return view('pendaftar_akademik.schedule.schedule', compact('data'));
+
+        }else{
+
+            return view('pendaftar_akademik.schedule.schedule2');
+
+        }
+
+        
 
     }
 
@@ -2601,48 +2610,149 @@ class AR_Controller extends Controller
 
     public function fetchEvents()
     {
-        $events = Tblevent::join('user_subjek', 'tblevents.group_id', 'user_subjek.id')
-                  ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
-                  ->join('tbllecture_room', 'tblevents.lecture_id', 'tbllecture_room.id')
-                  ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
-                  ->where('tblevents.user_ic', request()->id)
-                  ->groupBy('subjek.sub_id', 'tblevents.id')
-                  ->select('tblevents.*', 'subjek.course_code AS code' , 'subjek.course_name AS subject', 'tbllecture_room.name AS room', 'sessions.SessionName AS session')->get();
+        if(isset(request()->type))
+        {
 
-        $formattedEvents = $events->map(function ($event) {
+            if(request()->type == 'std')
+            {
 
-            $count = DB::table('student_subjek')
-                                ->where([
-                                ['group_id', $event->group_id],
-                                ['group_name', $event->group_name]
-                                ])
-                                ->select(DB::raw('COUNT(student_ic) AS total_student'))
-                                ->first();
+                $events = Tblevent::join('student_subjek', 'tblevents.group_id', 'student_subjek.group_id')
+                        ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
+                        ->join('tbllecture_room', 'tblevents.lecture_id', 'tbllecture_room.id')
+                        ->join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
+                        ->where('student_subjek.student_ic', request()->id)
+                        ->groupBy('subjek.sub_id', 'tblevents.id')
+                        ->select('tblevents.*', 'subjek.course_code AS code' , 'subjek.course_name AS subject', 'tbllecture_room.name AS room', 'sessions.SessionName AS session')->get();
 
-            // Map day of the week from PHP (1 for Monday through 7 for Sunday) to FullCalendar (0 for Sunday through 6 for Saturday)
-            $dayOfWeekMap = [
-                1 => 1, // Monday
-                2 => 2, // Tuesday
-                3 => 3, // Wednesday
-                4 => 4, // Thursday
-                5 => 5, // Friday
-                6 => 6, // Saturday
-                7 => 0  // Sunday
-            ];
+                $formattedEvents = $events->map(function ($event) {
 
-            $dayOfWeek = date('N', strtotime($event->start));
-            $fullCalendarDayOfWeek = $dayOfWeekMap[$dayOfWeek];
+                    $count = DB::table('student_subjek')
+                                        ->where([
+                                        ['group_id', $event->group_id],
+                                        ['group_name', $event->group_name]
+                                        ])
+                                        ->select(DB::raw('COUNT(student_ic) AS total_student'))
+                                        ->first();
 
-            return [
-                'id' => $event->id,
-                'title' => strtoupper($event->room) . ' (' . $event->session . ')',
-                'description' => $event->code. ' - ' . $event->subject . ' (' . $event->group_name .') ' . '|' . ' Total Student :' . ' ' .$count->total_student,
-                'startTime' => date('H:i', strtotime($event->start)),
-                'endTime' => date('H:i', strtotime($event->end)),
-                'duration' => gmdate('H:i', strtotime($event->end) - strtotime($event->start)),
-                'daysOfWeek' => [$fullCalendarDayOfWeek] // Recurring on the same day of the week
-            ];
-        });
+                    // Map day of the week from PHP (1 for Monday through 7 for Sunday) to FullCalendar (0 for Sunday through 6 for Saturday)
+                    $dayOfWeekMap = [
+                        1 => 1, // Monday
+                        2 => 2, // Tuesday
+                        3 => 3, // Wednesday
+                        4 => 4, // Thursday
+                        5 => 5, // Friday
+                        6 => 6, // Saturday
+                        7 => 0  // Sunday
+                    ];
+
+                    $dayOfWeek = date('N', strtotime($event->start));
+                    $fullCalendarDayOfWeek = $dayOfWeekMap[$dayOfWeek];
+
+                    return [
+                        'id' => $event->id,
+                        'title' => strtoupper($event->room) . ' (' . $event->session . ')',
+                        'description' => $event->code. ' - ' . $event->subject . ' (' . $event->group_name .') ' . '|' . ' Total Student :' . ' ' .$count->total_student,
+                        'startTime' => date('H:i', strtotime($event->start)),
+                        'endTime' => date('H:i', strtotime($event->end)),
+                        'duration' => gmdate('H:i', strtotime($event->end) - strtotime($event->start)),
+                        'daysOfWeek' => [$fullCalendarDayOfWeek] // Recurring on the same day of the week
+                    ];
+                });
+
+
+            }else{
+
+                $events = Tblevent::join('user_subjek', 'tblevents.group_id', 'user_subjek.id')
+                        ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
+                        ->join('tbllecture_room', 'tblevents.lecture_id', 'tbllecture_room.id')
+                        ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+                        ->where('tblevents.lecture_id', request()->id)
+                        ->groupBy('subjek.sub_id', 'tblevents.id')
+                        ->select('tblevents.*', 'subjek.course_code AS code' , 'subjek.course_name AS subject', 'tbllecture_room.name AS room', 'sessions.SessionName AS session')->get();
+
+                $formattedEvents = $events->map(function ($event) {
+
+                    $count = DB::table('student_subjek')
+                                        ->where([
+                                        ['group_id', $event->group_id],
+                                        ['group_name', $event->group_name]
+                                        ])
+                                        ->select(DB::raw('COUNT(student_ic) AS total_student'))
+                                        ->first();
+
+                    // Map day of the week from PHP (1 for Monday through 7 for Sunday) to FullCalendar (0 for Sunday through 6 for Saturday)
+                    $dayOfWeekMap = [
+                        1 => 1, // Monday
+                        2 => 2, // Tuesday
+                        3 => 3, // Wednesday
+                        4 => 4, // Thursday
+                        5 => 5, // Friday
+                        6 => 6, // Saturday
+                        7 => 0  // Sunday
+                    ];
+
+                    $dayOfWeek = date('N', strtotime($event->start));
+                    $fullCalendarDayOfWeek = $dayOfWeekMap[$dayOfWeek];
+
+                    return [
+                        'id' => $event->id,
+                        'title' => strtoupper($event->room) . ' (' . $event->session . ')',
+                        'description' => $event->code. ' - ' . $event->subject . ' (' . $event->group_name .') ' . '|' . ' Total Student :' . ' ' .$count->total_student,
+                        'startTime' => date('H:i', strtotime($event->start)),
+                        'endTime' => date('H:i', strtotime($event->end)),
+                        'duration' => gmdate('H:i', strtotime($event->end) - strtotime($event->start)),
+                        'daysOfWeek' => [$fullCalendarDayOfWeek] // Recurring on the same day of the week
+                    ];
+                });
+
+            }
+
+        }else{
+
+            $events = Tblevent::join('user_subjek', 'tblevents.group_id', 'user_subjek.id')
+                    ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
+                    ->join('tbllecture_room', 'tblevents.lecture_id', 'tbllecture_room.id')
+                    ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+                    ->where('tblevents.user_ic', request()->id)
+                    ->groupBy('subjek.sub_id', 'tblevents.id')
+                    ->select('tblevents.*', 'subjek.course_code AS code' , 'subjek.course_name AS subject', 'tbllecture_room.name AS room', 'sessions.SessionName AS session')->get();
+
+            $formattedEvents = $events->map(function ($event) {
+
+                $count = DB::table('student_subjek')
+                                    ->where([
+                                    ['group_id', $event->group_id],
+                                    ['group_name', $event->group_name]
+                                    ])
+                                    ->select(DB::raw('COUNT(student_ic) AS total_student'))
+                                    ->first();
+
+                // Map day of the week from PHP (1 for Monday through 7 for Sunday) to FullCalendar (0 for Sunday through 6 for Saturday)
+                $dayOfWeekMap = [
+                    1 => 1, // Monday
+                    2 => 2, // Tuesday
+                    3 => 3, // Wednesday
+                    4 => 4, // Thursday
+                    5 => 5, // Friday
+                    6 => 6, // Saturday
+                    7 => 0  // Sunday
+                ];
+
+                $dayOfWeek = date('N', strtotime($event->start));
+                $fullCalendarDayOfWeek = $dayOfWeekMap[$dayOfWeek];
+
+                return [
+                    'id' => $event->id,
+                    'title' => strtoupper($event->room) . ' (' . $event->session . ')',
+                    'description' => $event->code. ' - ' . $event->subject . ' (' . $event->group_name .') ' . '|' . ' Total Student :' . ' ' .$count->total_student,
+                    'startTime' => date('H:i', strtotime($event->start)),
+                    'endTime' => date('H:i', strtotime($event->end)),
+                    'duration' => gmdate('H:i', strtotime($event->end) - strtotime($event->start)),
+                    'daysOfWeek' => [$fullCalendarDayOfWeek] // Recurring on the same day of the week
+                ];
+            });
+
+        }
 
         return response()->json($formattedEvents);
     }
