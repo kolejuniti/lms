@@ -945,7 +945,7 @@ class AR_Controller extends Controller
         $data = [
             'room' => DB::table('tbllecture_room')->get(),
             'session' => DB::table('sessions')->where('Status', 'ACTIVE')->get(),
-            'lecturer' => DB::table('users')->whereIn('usrtype', ['LCT', 'KP', 'AO'])->get()
+            'lecturer' => DB::table('users')->whereIn('usrtype', ['LCT', 'PL', 'AO'])->get()
         ];
 
         return view('pendaftar_akademik.schedule.index', compact('data'));
