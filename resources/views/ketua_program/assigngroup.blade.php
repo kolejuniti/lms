@@ -103,7 +103,6 @@
                       <div class="form-group">
                         <label class="form-label" for="group">Group</label>
                         <select class="form-select" id="group" name="group">
-                          <option value="TIADA">TIADA</option>
                           <option value="A">A</option>
                           <option value="B">B</option>
                           <option value="C">C</option>
