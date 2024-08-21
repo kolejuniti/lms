@@ -942,11 +942,35 @@ class AR_Controller extends Controller
     public function scheduleIndex()
     {
 
-        $data = [
-            'room' => DB::table('tbllecture_room')->get(),
-            'session' => DB::table('sessions')->where('Status', 'ACTIVE')->get(),
-            'lecturer' => DB::table('users')->whereIn('usrtype', ['LCT', 'PL', 'AO'])->get()
-        ];
+        $data['type'] = request()->type;
+
+        if(request()->type == 'lct')
+        {
+
+            $data = [
+                'room' => DB::table('tbllecture_room')->get(),
+                'session' => DB::table('sessions')->where('Status', 'ACTIVE')->get(),
+                'lecturer' => DB::table('users')->whereIn('usrtype', ['LCT', 'PL', 'AO'])->get()
+            ];
+
+        }elseif(request()->type == 'std')
+        {
+
+            $data = [
+                'student' => DB::table('students')
+                             ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+                             ->orderBy('students.program')
+                             ->where('status', 2)
+                             ->get()
+            ];
+
+        }elseif(request()->type == 'lcr'){
+
+            $data = [
+                'room' => DB::table('tbllecture_room')->get()
+            ];
+
+        }
 
         return view('pendaftar_akademik.schedule.index', compact('data'));
 

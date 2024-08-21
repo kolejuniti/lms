@@ -67,52 +67,206 @@
             </div>
           </div>
         </div> --}}
+        @if(request()->type == 'lct')
+        <div class="card-body">
+            <table id="complex_header" class="table table-striped projects display dataTable">
+                <thead>
+                    <tr>
+                        <th>
+                            No.
+                        </th>
+                        <th>
+                            Name
+                        </th>
+                        <th>
+                            Ic
+                        </th>
+                        <th>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody id="table">
+                @if(isset($data['lecturer']) && count($data['lecturer']) > 0)
+                    @foreach ($data['lecturer'] as $key => $lct)
+                        <tr>
+                            <td>
+                                {{ $key+1 }}
+                            </td>
+                            <td>
+                                {{ $lct->name }}
+                            </td>
+                            <td>
+                                {{ $lct->ic }}
+                            </td>
+                            <td class="project-actions text-right" >
+                                <a class="btn btn-info btn-sm" href="/AR/schedule/scheduleTable/{{ $lct->ic }}">
+                                    <i class="ti-info-alt"></i>
+                                    Table
+                                </a>
+                                {{-- <a class="btn btn-danger btn-sm" href="#" onclick="deleteMaterial('{{ $lct->ic }}')">
+                                    <i class="ti-trash"></i>
+                                    Delete
+                                </a> --}}
+                            </td>
+                        </tr>
+                    @endforeach
+                @else
+                    <tr>
+                        <td colspan="4">No lecturers available.</td>
+                    </tr>
+                @endif
+                </tbody>
+            </table>
+        </div>
+        @elseif(request()->type == 'std')
         <div class="card-body">
           <table id="complex_header" class="table table-striped projects display dataTable">
-            <thead>
-                <tr>
-                    <th>
+              <thead>
+                  <tr>
+                      <th>
+                          No.
+                      </th>
+                      <th>
+                          Name
+                      </th>
+                      <th>
+                          Ic
+                      </th>
+                      <th>
+                          Program
+                      </th>
+                      <th>
+                      </th>
+                  </tr>
+              </thead>
+              <tbody id="table">
+              @if(isset($data['student']) && count($data['student']) > 0)
+                  @foreach ($data['student'] as $key => $std)
+                      <tr>
+                          <td>
+                              {{ $key+1 }}
+                          </td>
+                          <td>
+                              {{ $std->name }}
+                          </td>
+                          <td>
+                              {{ $std->ic }}
+                          </td>
+                          <td>
+                            {{ $std->progcode }} - {{ $std->progname }}
+                          </td>
+                          <td class="project-actions text-right" >
+                              <a class="btn btn-info btn-sm" href="/AR/schedule/scheduleTable/{{ $std->ic }}">
+                                  <i class="ti-info-alt"></i>
+                                  Table
+                              </a>
+                              {{-- <a class="btn btn-danger btn-sm" href="#" onclick="deleteMaterial('{{ $lct->ic }}')">
+                                  <i class="ti-trash"></i>
+                                  Delete
+                              </a> --}}
+                          </td>
+                      </tr>
+                  @endforeach
+              @else
+                  <tr>
+                      <td colspan="4">No lecturers available.</td>
+                  </tr>
+              @endif
+              </tbody>
+          </table>
+        </div>
+        @elseif(request()->type == 'lcr')
+        <div class="card-body">
+          <table id="complex_header" class="table table-striped projects display dataTable">
+              <thead>
+                  <tr>
+                    <th style="width: 1%">
                         No.
                     </th>
                     <th>
-                        Name
+                        Room Name
                     </th>
                     <th>
-                        Ic
+                        Start Time
                     </th>
                     <th>
+                        End Time
                     </th>
-                </tr>
-            </thead>
-            <tbody id="table">
-            @foreach ($data['lecturer'] as $key=> $lct)
-              <tr>
-                <td>
-                  {{ $key+1 }}
-                </td>
-                <td>
-                  {{ $lct->name }}
-                </td>
-                <td>
-                  {{ $lct->ic }}
-                </td>
-                <td class="project-actions text-right" >
-                  <a class="btn btn-info btn-sm" href="/AR/schedule/scheduleTable/{{ $lct->ic }}">
-                      <i class="ti-info-alt">
-                      </i>
-                      Table
-                  </a>
-                  {{-- <a class="btn btn-danger btn-sm" href="#" onclick="deleteMaterial('{{ $lct->ic }}')">
-                      <i class="ti-trash">
-                      </i>
-                      Delete
-                  </a> --}}
-                </td>
-              </tr>
-            @endforeach
-            </tbody>
+                    <th>
+                        Capacity
+                    </th>
+                    <th>
+                        Total Hour Per Day
+                    </th>
+                    <th>
+                        Projector
+                    </th>
+                    <th>
+                        Weekend
+                    </th>
+                    <th>
+                        Description
+                    </th>
+                      <th>
+                      </th>
+                  </tr>
+              </thead>
+              <tbody id="table">
+              @if(isset($data['room']) && count($data['room']) > 0)
+                  @foreach ($data['room'] as $key => $rm)
+                      <tr>
+                          <td style="width: 1%">
+                            {{ $key+1 }}
+                          </td>
+                          <td>
+                            {{ $rm->name }}
+                          </td>
+                          <td>
+                            {{ (new DateTime($rm->start))->format('h:i A') }}
+                          </td>
+                          <td>
+                            {{ (new DateTime($rm->end))->format('h:i A') }}
+                          </td>
+                          <td>
+                            {{ $rm->capacity }}
+                          </td>
+                          <td>
+                            {{ $rm->total_hour }}
+                          </td>
+                          <td>
+                            {{ $rm->projector }}
+                          </td>
+                          <td>
+                            @if($rm->weekend == 0 )
+                            No
+                            @else
+                            Yes
+                            @endif
+                          </td>
+                          <td>
+                            {!! $rm->description !!}
+                          </td>
+                          <td class="project-actions text-right" >
+                              <a class="btn btn-info btn-sm" href="/AR/schedule/scheduleTable/{{ $rm->id }}">
+                                  <i class="ti-info-alt"></i>
+                                  Table
+                              </a>
+                              {{-- <a class="btn btn-danger btn-sm" href="#" onclick="deleteMaterial('{{ $lct->ic }}')">
+                                  <i class="ti-trash"></i>
+                                  Delete
+                              </a> --}}
+                          </td>
+                      </tr>
+                  @endforeach
+              @else
+                  <tr>
+                      <td colspan="4">No lecturers available.</td>
+                  </tr>
+              @endif
+              </tbody>
           </table>
         </div>
+        @endif
         <!-- /.card-body -->
         <div id="uploadModal" class="modal" class="modal fade" role="dialog">
           <div class="modal-dialog modal-lg">
