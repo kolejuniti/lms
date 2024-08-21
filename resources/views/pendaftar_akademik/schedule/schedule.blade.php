@@ -312,7 +312,7 @@
                         $('#group').empty();
                         $('#subject').append('<option value="-" selected disabled>Select Subject</option>');
                         $.each(data, function(key, value) {
-                            $('#subject').append('<option value="' + value.id + '">' + value.name + '</option>');  // Make sure 'id' and 'name' are correct based on your data structure
+                            $('#subject').append('<option value="' + value.id + '">' + value.name + '(' + value.code + ')' + '</option>');  // Make sure 'id' and 'name' are correct based on your data structure
                         });
                     }
                 });

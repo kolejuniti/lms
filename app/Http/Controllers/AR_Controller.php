@@ -2555,7 +2555,7 @@ class AR_Controller extends Controller
                       ['user_subjek.user_ic', $request->id],
                       ['user_subjek.session_id', $request->sessionID]
                    ])
-                   ->select('subjek.course_name AS name', 'user_subjek.id AS id')->get();
+                   ->select('subjek.course_name AS name','subjek.course_code AS code', 'user_subjek.id AS id')->get();
 
         return response()->json($subject);
 
