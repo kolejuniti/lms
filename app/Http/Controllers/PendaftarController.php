@@ -2349,6 +2349,12 @@ class PendaftarController extends Controller
             $data['R2M'] = 0;
             $data['R2F'] = 0;
 
+            $data['WM'] = 0;
+            $data['WF'] = 0;
+
+            $data['NAM'] = 0;
+            $data['NAF'] = 0;
+
             // Define a function to create the base query
             $baseQuery = function () use ($request) {
                 return DB::table('students')
