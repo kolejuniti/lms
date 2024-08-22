@@ -2373,7 +2373,17 @@ class PendaftarController extends Controller
 
             // Use the base query for studentR2
             $data['studentR2'] = ($baseQuery)()
-                ->wherein('students.status', [2,4,6,16,17])
+                ->wherein('students.status', [2,6,16,17])
+                ->get();
+
+            // Use the base query for studentR2
+            $data['withdraw'] = ($baseQuery)()
+                ->wherein('students.status', [4])
+                ->get();
+
+            // Use the base query for studentR2
+            $data['notActive'] = ($baseQuery)()
+                ->wherein('students.status', [14])
                 ->get();
 
             $data['ref1'] = [];
@@ -2416,8 +2426,6 @@ class PendaftarController extends Controller
 
             }
 
-          
-
             foreach($data['studentR2'] as $key => $student)
             {
 
@@ -2452,6 +2460,80 @@ class PendaftarController extends Controller
                 }
 
                 $data['quaR2'][$key] = DB::table('tblqualification_std')->where('id', $student->qualification)->value('name');
+
+            }
+
+            foreach($data['withdraw'] as $key => $student)
+            {
+
+                $results = [];
+
+                $data['resultWithdraw'][] = DB::table('tblpayment')
+                                ->leftjoin('tblpaymentdtl', 'tblpayment.id', 'tblpaymentdtl.payment_id')
+                                ->leftjoin('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
+                                ->where('tblpayment.student_ic', $student->ic)
+                                ->where('tblpayment.process_status_id', 2)
+                                ->whereNotIn('tblpayment.process_type_id', [8])
+                                ->whereNotIn('tblstudentclaim.groupid', [4,5])
+                                ->select(
+
+                                    DB::raw('CASE
+                                                WHEN IFNULL(SUM(tblpaymentdtl.amount), 0) < 250 THEN "R"
+                                                WHEN IFNULL(SUM(tblpaymentdtl.amount), 0) >= 250 THEN "R1"
+                                            END AS group_alias'),
+                                    DB::raw('IFNULL(SUM(tblpaymentdtl.amount), 0) AS amount')
+
+                                )->first();
+
+                if($student->sex == 'L')
+                {
+                    $data['WM'] = $data['WM'] + 1;
+
+                }elseif($student->sex == 'P') 
+                {
+
+                    $data['WF'] = $data['WF'] + 1;
+                    
+                }
+
+                $data['quaW'][$key] = DB::table('tblqualification_std')->where('id', $student->qualification)->value('name');
+
+            }
+
+            foreach($data['notActive'] as $key => $student)
+            {
+
+                $results = [];
+
+                $data['resultNA'][] = DB::table('tblpayment')
+                                ->leftjoin('tblpaymentdtl', 'tblpayment.id', 'tblpaymentdtl.payment_id')
+                                ->leftjoin('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
+                                ->where('tblpayment.student_ic', $student->ic)
+                                ->where('tblpayment.process_status_id', 2)
+                                ->whereNotIn('tblpayment.process_type_id', [8])
+                                ->whereNotIn('tblstudentclaim.groupid', [4,5])
+                                ->select(
+
+                                    DB::raw('CASE
+                                                WHEN IFNULL(SUM(tblpaymentdtl.amount), 0) < 250 THEN "R"
+                                                WHEN IFNULL(SUM(tblpaymentdtl.amount), 0) >= 250 THEN "R1"
+                                            END AS group_alias'),
+                                    DB::raw('IFNULL(SUM(tblpaymentdtl.amount), 0) AS amount')
+
+                                )->first();
+
+                if($student->sex == 'L')
+                {
+                    $data['NAM'] = $data['NAM'] + 1;
+
+                }elseif($student->sex == 'P') 
+                {
+
+                    $data['NAF'] = $data['NAF'] + 1;
+                    
+                }
+
+                $data['quaNA'][$key] = DB::table('tblqualification_std')->where('id', $student->qualification)->value('name');
 
             }
 
