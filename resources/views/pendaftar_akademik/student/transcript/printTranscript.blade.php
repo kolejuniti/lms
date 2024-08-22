@@ -172,7 +172,7 @@
                             <td style="width: 1%">{{ $crs->grade }}</td>
                         </tr>
                         @php
-                        $total_credit += $crs->credit;
+                        $total_credit += (!in_array($crs->grade, ['E','F','GL'])) ? $crs->credit : 0;
                         @endphp
                         @endforeach
                     </tbody>
