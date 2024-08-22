@@ -2317,7 +2317,8 @@ class PendaftarController extends Controller
                            ->join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
                            ->where([
                             ['student_subjek.student_ic', $data['student']->ic],
-                            ['student_subjek.semesterid', $data['transcript']->semester]
+                            ['student_subjek.semesterid', $data['transcript']->semester],
+                            ['student_subjek.group_id','!=',null]
                            ])
                            ->groupBy('student_subjek.courseid')
                            ->select('student_subjek.*', 'subjek.course_name', 'subjek.course_code')
