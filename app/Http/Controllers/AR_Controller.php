@@ -4874,7 +4874,7 @@ class AR_Controller extends Controller
                                     ->get();
 
             $data['detail'][$key] = DB::table('student_transcript')
-                                    ->join('sessions', 'sessions.SessionID', 'student_transcript.session_id')
+                                    ->leftJoin('sessions', 'sessions.SessionID', 'student_transcript.session_id')
                                     ->where([
                                         ['student_ic', $request->ic],
                                         ['semester', $sm]
