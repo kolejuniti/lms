@@ -43,6 +43,13 @@
         align-items: start; /* This aligns the child elements (text) to the start (top) of the flex container */
     }
 
+    .fc-event .program-info {
+        text-align: center;
+        font-size: smaller;
+        font-weight: bold;
+    }
+
+
 </style>
 
 <!-- Content Wrapper. Contains page content -->
@@ -405,6 +412,20 @@
                             console.error('Error fetching events:', error);
                             failureCallback(error);
                         });
+                },
+                eventDidMount: function(info) {
+                    // Create a div for the program information
+                    var programDiv = document.createElement('div');
+                    programDiv.classList.add('program-info');
+                    programDiv.style.position = 'absolute';
+                    programDiv.style.bottom = '0';
+                    programDiv.style.width = '100%';
+                    // programDiv.style.backgroundColor = 'rgba(255, 255, 255, 0.8)'; // optional styling
+                    programDiv.style.padding = '5px'; // optional padding
+                    programDiv.textContent = 'Programs: ' + info.event.extendedProps.programInfo;
+
+                    // Append the program div to the event element
+                    info.el.appendChild(programDiv);
                 },
                 editable: true,
                 selectable: true,

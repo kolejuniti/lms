@@ -2634,6 +2634,22 @@ class AR_Controller extends Controller
                                         ->select(DB::raw('COUNT(student_ic) AS total_student'))
                                         ->first();
 
+                    $program = DB::table('student_subjek')
+                                        ->join('students', 'student_subjek.student_ic', 'students.ic')
+                                        ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+                                        ->where([
+                                        ['student_subjek.group_id', $event->group_id],
+                                        ['student_subjek.group_name', $event->group_name]
+                                        ])
+                                        ->groupBy('tblprogramme.id')
+                                        ->select('tblprogramme.*')
+                                        ->get();
+
+                    // Convert program information into a string
+                    $programInfo = $program->map(function($prog) {
+                        return $prog->progname; // Assuming 'progname' is the relevant field you want to display
+                    })->implode(', ');
+
                     // Map day of the week from PHP (1 for Monday through 7 for Sunday) to FullCalendar (0 for Sunday through 6 for Saturday)
                     $dayOfWeekMap = [
                         1 => 1, // Monday
@@ -2651,7 +2667,7 @@ class AR_Controller extends Controller
                     return [
                         'id' => $event->id,
                         'title' => strtoupper($event->room) . ' (' . $event->session . ')',
-                        'description' => $event->code. ' - ' . $event->subject . ' (' . $event->group_name .') ' . '|' . ' Total Student :' . ' ' .$count->total_student,
+                        'description' => $event->code . ' - ' . $event->subject . ' (' . $event->group_name . ') | Total Student: ' . $count->total_student . ' | Programs: ' . $programInfo,
                         'startTime' => date('H:i', strtotime($event->start)),
                         'endTime' => date('H:i', strtotime($event->end)),
                         'duration' => gmdate('H:i', strtotime($event->end) - strtotime($event->start)),
@@ -2720,12 +2736,28 @@ class AR_Controller extends Controller
             $formattedEvents = $events->map(function ($event) {
 
                 $count = DB::table('student_subjek')
-                                    ->where([
-                                    ['group_id', $event->group_id],
-                                    ['group_name', $event->group_name]
-                                    ])
-                                    ->select(DB::raw('COUNT(student_ic) AS total_student'))
-                                    ->first();
+                        ->where([
+                        ['group_id', $event->group_id],
+                        ['group_name', $event->group_name]
+                        ])
+                        ->select(DB::raw('COUNT(student_ic) AS total_student'))
+                        ->first();
+
+                $program = DB::table('student_subjek')
+                            ->join('students', 'student_subjek.student_ic', 'students.ic')
+                            ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+                            ->where([
+                            ['student_subjek.group_id', $event->group_id],
+                            ['student_subjek.group_name', $event->group_name]
+                            ])
+                            ->groupBy('tblprogramme.id')
+                            ->select('tblprogramme.*')
+                            ->get();
+
+                // Convert program information into a string
+                $programInfo = $program->map(function($prog) {
+                    return $prog->progcode; // Assuming 'progname' is the relevant field you want to display
+                })->implode(', ');
 
                 // Map day of the week from PHP (1 for Monday through 7 for Sunday) to FullCalendar (0 for Sunday through 6 for Saturday)
                 $dayOfWeekMap = [
@@ -2744,11 +2776,12 @@ class AR_Controller extends Controller
                 return [
                     'id' => $event->id,
                     'title' => strtoupper($event->room) . ' (' . $event->session . ')',
-                    'description' => $event->code. ' - ' . $event->subject . ' (' . $event->group_name .') ' . '|' . ' Total Student :' . ' ' .$count->total_student,
+                    'description' => $event->code . ' - ' . $event->subject . ' (' . $event->group_name . ') | Total Student: ' . $count->total_student,
                     'startTime' => date('H:i', strtotime($event->start)),
                     'endTime' => date('H:i', strtotime($event->end)),
                     'duration' => gmdate('H:i', strtotime($event->end) - strtotime($event->start)),
-                    'daysOfWeek' => [$fullCalendarDayOfWeek] // Recurring on the same day of the week
+                    'daysOfWeek' => [$fullCalendarDayOfWeek],
+                    'programInfo' => $programInfo // Add program info to the event object
                 ];
             });
 
@@ -3038,6 +3071,22 @@ class AR_Controller extends Controller
                                         ->where('tblevents.id', $event->id)
                                         ->groupBy('subjek.sub_id', 'tblevents.id')
                                         ->select('tblevents.*', 'subjek.course_code AS code' , 'subjek.course_name AS subject', 'tbllecture_room.name AS room', 'sessions.SessionName AS session')->first();
+
+                                $program = DB::table('student_subjek')
+                                            ->join('students', 'student_subjek.student_ic', 'students.ic')
+                                            ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+                                            ->where([
+                                            ['student_subjek.group_id', $events->group_id],
+                                            ['student_subjek.group_name', $events->group_name]
+                                            ])
+                                            ->groupBy('tblprogramme.id')
+                                            ->select('tblprogramme.*')
+                                            ->get();
+
+                                // Convert program information into a string
+                                $programInfo = $program->map(function($prog) {
+                                    return $prog->progcode; // Assuming 'progname' is the relevant field you want to display
+                                })->implode(', ');
         
 
                                 $count = DB::table('student_subjek')
@@ -3055,7 +3104,8 @@ class AR_Controller extends Controller
                                         'title' => strtoupper($events->room) . ' (' . $events->session . ')', 
                                         'description' => $events->code . ' - ' . $events->subject . ' (' . $events->group_name .') ' . '|' . ' Total Student :' . ' ' .$count->total_student,
                                         'start' => $events->start,
-                                        'end' => $events->end
+                                        'end' => $events->end,
+                                        'programInfo' => $programInfo // Add program info to the event object
                                     ]
 
                                 ]);
