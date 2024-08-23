@@ -68,10 +68,11 @@ class PendaftarController extends Controller
             ->join('sessions AS b', 'students.session', 'b.SessionID')
             ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
             ->join('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
+            ->leftJoin('tblqualification_std', 'tblstudent_personal.qualification', 'tblqualification_std.id')
             ->join('tblsex', 'tblstudent_personal.sex_id', 'tblsex.id')
             ->select('students.*', 'tblprogramme.progcode', 'a.SessionName AS intake', 
                      'b.SessionName AS session', 'tblstudent_status.name AS status',
-                     'tblstudent_personal.no_tel', 'tblsex.code AS gender');
+                     'tblstudent_personal.no_tel', 'tblsex.code AS gender', 'tblqualification_std.name AS qualification');
 
         if(!empty($request->program) && $request->program != '-')
         {
@@ -185,6 +186,9 @@ class PendaftarController extends Controller
                                 Campus
                             </th>
                             <th>
+                                Qualification
+                            </th>
+                            <th>
                             </th>
                         </tr>
                     </thead>
@@ -232,6 +236,9 @@ class PendaftarController extends Controller
                 </td>
                 <td>
                 '. $student_status[$key] .'
+                </td>
+                <td>
+                '. $student->qualification .'
                 </td>';
                 
 
