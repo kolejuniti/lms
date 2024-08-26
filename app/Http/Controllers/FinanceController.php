@@ -17,6 +17,7 @@ use Carbon\Carbon;
 use League\Flysystem\AwsS3V3\PortableVisibilityConverter;
 use Mail;
 use Intervention\Image\Facades\Image;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class FinanceController extends Controller
 {
@@ -11197,6 +11198,175 @@ class FinanceController extends Controller
         }
 
         return response()->json(['message' => 'Success', 'data' => $content]);
+
+    }
+
+    public function studentCtos()
+    {
+
+        $data = $this->getStudentCtos();
+
+        return view('finance.debt.student_ctos.studentCtos', compact('data'));
+
+    }
+
+    private function getStudentCtos()
+    {
+
+        $baseQuery = function () {
+            return DB::table('tblstudent_ctos')
+            ->leftjoin('students', 'tblstudent_ctos.student_ic', 'students.ic')
+            ->leftjoin('tblprogramme', 'students.program', 'tblprogramme.id')
+            ->leftjoin('users', 'tblstudent_ctos.user_ic', 'users.ic')
+            ->select('tblstudent_ctos.*', 'students.name', 'students.ic', 'users.name AS addBy','students.no_matric', 'tblprogramme.progcode');
+        };
+
+        $data['CTOS']  = ($baseQuery)()
+                         ->where('tblstudent_ctos.status', 0)
+                         ->get();
+
+        $data['CTOSRelease']  = ($baseQuery)()
+                         ->where('tblstudent_ctos.status', 1)
+                         ->get();
+
+        return $data;
+
+    }
+
+    // public function importCtos(Request $request)
+    // {
+
+    //     // Validate the uploaded file
+    //     $request->validate([
+    //         'file' => 'required|mimes:xlsx,xls'
+    //     ]);
+
+    //     // Load the uploaded file
+    //     $file = $request->file('file');
+    //     $spreadsheet = IOFactory::load($file->getRealPath());
+
+    //     // Get the first sheet of the Excel file
+    //     $sheet = $spreadsheet->getActiveSheet();
+    //     $rows = $sheet->toArray();
+
+    //     // Iterate over the rows starting from the second row (to skip the header)
+    //     foreach ($rows as $index => $row) {
+    //         if ($index == 0) continue; // Skip header row
+
+    //         $student_ic = $row[0]; // Assuming the first column is student_ic
+
+    //         // Insert the student_ic value into the student_ctos table
+    //         DB::table('student_ctos')->insert([
+    //             'student_ic' => $student_ic,
+    //             'status' => 0,
+    //             'date_ctos' => now(),
+    //             'user_ic' => Auth::user()->ic
+    //         ]);
+    //     }
+
+    //     return response()->json(['success' => 'Students imported successfully.']);
+
+    // }
+
+    public function importCtos(Request $request)
+    {
+        try {
+            // Validate the uploaded file
+            $request->validate([
+                'file' => 'required|mimes:xlsx,xls',
+                'data' => 'required'
+            ]);
+
+            $datas = json_decode($request->data);
+
+            // Load the uploaded file
+            $file = $request->file('file');
+            $spreadsheet = IOFactory::load($file->getRealPath());
+
+            // Get the first sheet of the Excel file
+            $sheet = $spreadsheet->getActiveSheet();
+            $rows = $sheet->toArray();
+
+            // Iterate over the rows starting from the second row (to skip the header)
+            foreach ($rows as $index => $row) {
+                if ($index == 0) continue; // Skip header row
+
+                $student_ic = $row[0]; // Assuming the first column is student_ic
+
+                if(DB::table('tblstudent_ctos')->where('student_ic', $student_ic)->exists())
+                {
+                    
+                }else{
+
+                    // Insert the student_ic value into the student_ctos table
+                    DB::table('tblstudent_ctos')->insert([
+                        'student_ic' => $student_ic,
+                        'status' => 0,
+                        'date_ctos' => $datas->date,
+                        'user_ic' => Auth::user()->ic
+                    ]);
+
+                }
+
+                
+            }
+
+            $data = $this->getStudentCtos();
+
+            return response()->json(['success' => 'Students imported successfully.', 'data' => $data]);
+
+        } catch (Exception $e) {
+            // Return the error message as JSON
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
+    }
+
+    public function releaseCTOS(Request $request)
+    {
+
+        try{
+
+            $request->validate([
+                'id' => 'required',
+                'date' => 'required|date'
+            ]);
+
+            DB::table('tblstudent_ctos')->where('id', $request->id)->update([
+                'status' => 1,
+                'date_release' => $request->date
+            ]);
+
+            $data = $this->getStudentCtos();
+
+            return response()->json(['success' => 'CTOS released successfully.', 'data' => $data]);
+
+        } catch(Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
+
+    }
+
+    public function deleteCTOS(Request $request)
+    {
+
+        try{
+
+            $request->validate([
+                'id' => 'required'
+            ]);
+
+            DB::table('tblstudent_ctos')->where('id', $request->id)->update([
+                'status' => 0,
+                'date_release' => null
+            ]);
+
+            $data = $this->getStudentCtos();
+
+            return response()->json(['success' => 'CTOS deleted successfully.', 'data' => $data]);
+
+        } catch(Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
 
     }
 

@@ -710,6 +710,10 @@ Route::get('/finance/debt/arrearNotice', function(){
     return view('finance.debt.arrear_notice.index');
 })->name('finance.arrearNotice');
 Route::post('/finance/debt/arrearNotice/printArrearNotice', [App\Http\Controllers\FinanceController::class,'printArrearNotice'])->name('finance.arrearNotice.store');
+Route::get('/finance/debt/studentCtos', [App\Http\Controllers\FinanceController::class,'studentCtos'])->name('finance.studentCtos');
+Route::post('/finance/debt/studentCtos/importCtos', [App\Http\Controllers\FinanceController::class,'importCtos'])->name('finance.studentCtos.importCtos');
+Route::post('/finance/debt/studentCtos/releaseCTOS', [App\Http\Controllers\FinanceController::class,'releaseCTOS'])->name('finance.studentCtos.releaseCTOS');
+Route::post('/finance/debt/studentCtos/deleteCTOS', [App\Http\Controllers\FinanceController::class,'deleteCTOS'])->name('finance.studentCtos.deleteCTOS');
 
 
 Route::get('/treasurer_dashboard', [App\Http\Controllers\TreasurerController::class, 'dashboard'])->name('treasurer.dashboard');
