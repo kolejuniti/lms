@@ -429,7 +429,7 @@
 					<li><a href="{{ route('finance.monthlyPayment') }}" class="{{ (route('finance.monthlyPayment') == Request::url()) ? 'active' : ''}}">Student Monthly Payment Report</a></li>
 					<li><a href="{{ route('finance.ctosReport') }}" class="{{ (route('finance.ctosReport') == Request::url()) ? 'active' : ''}}">CTOS Report</a></li>
 					<li><a href="{{ route('finance.arrearNotice') }}" class="{{ (route('finance.arrearNotice') == Request::url()) ? 'active' : ''}}">Arrear Notice</a></li>
-					<li><a href="{{ route('finance.studentCtos') }}" class="{{ (route('finance.studentCtos') == Request::url()) ? 'active' : ''}}">Student CTOS</a></li>
+					<li><a href="{{ route('finance.studentCtos') }}" class="{{ (route('finance.studentCtos') == Request::url()) ? 'active' : ''}}">Student CTOSs</a></li>
 				</ul>
 			  </li>
 			  <li>
