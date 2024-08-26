@@ -193,11 +193,11 @@
                               <td>:</td>
                               <td style="padding-left: 10px;">{{ $data['student']->intake }}</td>
                           </tr>
-                          <tr>
+                          {{-- <tr>
                               <td style="padding-right: 10px;">Status</td>
                               <td>:</td>
                               <td style="padding-left: 10px;">{{ $data['student']->status }}</td>
-                          </tr>
+                          </tr> --}}
                           {{-- <tr>
                               <td style="padding-right: 10px;">Program</td>
                               <td>:</td>
