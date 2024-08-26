@@ -4856,7 +4856,8 @@ class AR_Controller extends Controller
                              ->groupBy('semesterid')
                              ->where([
                                 ['student_ic', $request->ic],
-                                ['group_id','!=', null]
+                                ['group_id','!=', null],
+                                ['grade', '!=', null]
                                 ])
                              ->pluck('semesterid');
 
