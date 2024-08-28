@@ -31,7 +31,7 @@
                 font-size: 100%;
                 vertical-align: baseline;
                 background: transparent;
-                font-size: 8px;
+                font-size: 9px;
             }
             h2, h3, p {
                 margin: 0;
@@ -41,7 +41,7 @@
                 font-size: 100%;
                 vertical-align: baseline;
                 background: transparent;
-                font-size: 8px;
+                font-size: 9px;
             }
             h1 {
                 font-size:45px; /* increase font-size */
