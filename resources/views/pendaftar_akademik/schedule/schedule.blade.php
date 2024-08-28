@@ -98,15 +98,15 @@
                                                  
                                                 </div>
                                                 <button type="button" id="myButton" class="btn btn-info">More Info</button> --}}
-                                                {{-- <div class="col-12 mt-45 d-md-flex align-items-center">
+                                                <div class="col-12 mt-45 d-md-flex align-items-center">
                                                     <div class="col-mx-4 me-30 mb-30 mb-md-0">
                                                         <div class="d-flex align-items-center">
                                                             <div class="me-15 text-center fs-24 w-50 h-50 l-h-50 bg-danger b-1 border-white rounded-circle">
-                                                                <i class="fa fa-users"></i>
+                                                                <i class="fa fa-clock-o"></i>
                                                             </div>
                                                             <div>
-                                                                <h5 class="mb-0">Room Capacity</h5>
-                                                                <p class="mb-0 text-white-70">{{ $data['lectureInfo']->capacity }}</p>
+                                                                <h5 class="mb-0">Total Meeting Hours</h5>
+                                                                <p class="mb-0 text-white-70">{{ $data['details']->value('total_hour') }}</p>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -116,8 +116,8 @@
                                                                 <i class="fa fa-calendar"></i>
                                                             </div>
                                                             <div>
-                                                                <h5 class="mb-0">Total Hours Per Day</h5>
-                                                                <p class="mb-0 text-white-70">{{ $data['lectureInfo']->total_hour }} Hours</p>
+                                                                <h5 class="mb-0">Meeting Hour Used</h5>
+                                                                <p class="mb-0 text-white-70">{{ $data['used']->value('total_hours') }}</p>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -127,19 +127,19 @@
                                                                 <i class="fa fa-clock-o"></i>
                                                             </div>
                                                             <div>
-                                                                <h5 class="mb-0">Time Start/End</h5>
-                                                                <p class="mb-0 text-white-70">{{ (new DateTime($data['lectureInfo']->start))->format('h:i A') }} - {{ (new DateTime($data['lectureInfo']->end))->format('h:i A') }}</p>
+                                                                <h5 class="mb-0">Meeting Hour Left</h5>
+                                                                <p class="mb-0 text-white-70">{{ $data['details']->value('total_hour') - $data['used']->value('total_hours') }}</p>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <div class="col-mx-4 me-30 mb-30 mb-md-0">
+                                                    {{-- <div class="col-mx-4 me-30 mb-30 mb-md-0">
                                                         <div class="d-flex align-items-center">
                                                             <div class="me-15 text-center fs-24 w-50 h-50 l-h-50 bg-info b-1 border-white rounded-circle">
                                                                 <i class="fa fa-address-book"></i>
                                                             </div>
                                                             <div>
                                                                 <h5 class="mb-0">Total Bookings</h5>
-                                                                <p class="mb-0 text-white-70">{{ ($data['totalBooking']) ? $data['totalBooking']->total_booking : '0' }}</p>
+                                                                <p class="mb-0 text-white-70"></p>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -150,11 +150,11 @@
                                                             </div>
                                                             <div>
                                                                 <h5 class="mb-0">Total Projector</h5>
-                                                                <p class="mb-0 text-white-70">{{ $data['lectureInfo']->projector }}</p>
+                                                                <p class="mb-0 text-white-70"></p>
                                                             </div>
                                                         </div>
-                                                    </div>
-                                                </div> --}}
+                                                    </div> --}}
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -203,13 +203,13 @@
                                 <div class="row mt-3">
                                     <div class="col-md-4 mr-3">
                                         <div class="form-group">
-                                          <label class="form-label" for="room">Room</label>
-                                          <select class="form-select" id="room" name="room">
-                                            <option value="-" selected>-</option>
-                                            @foreach($data['lecture_room'] as $rm)
-                                            <option value="{{ $rm->id }}">{{ $rm->name }}</option>
-                                            @endforeach
-                                          </select>
+                                            <label class="form-label" for="room">Room</label>
+                                            <select class="form-select" id="room" name="room">
+                                                <option value="-" selected>-</option>
+                                                @foreach($data['lecture_room'] as $rm)
+                                                <option value="{{ $rm->id }}">{{ $rm->name }}</option>
+                                                @endforeach
+                                            </select>
                                         </div>
                                     </div>
                                 </div>
@@ -217,7 +217,14 @@
                                     <input type="submit" id="add-event" class="form-controlwaves-effect waves-light btn btn-primary btn-sm pull-right" value="Add Event">
                                 </div>
                             </div>
+                            <h2 class="text-center">Last published on {{ date('d M Y', strtotime($data['time'])) }}</h2>
                             <div id='calendar' style="width: 100%;"></div>
+                            <div class="row mt-4">
+                                <div class="form-group pull-right">
+                                    <input type="submit" class="btn btn-primary pull-right" value="Publish" style="margin-left: 10px;" id="publish-schedule">
+                                    <input type="submit" class="btn btn-warning pull-right" value="Reset" style="margin-left: 10px;" id="reset-schedule">
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -703,6 +710,80 @@
                     alert('Please enter an event title.');
                 }
             });
+
+            // Add event button click listener
+            document.getElementById('publish-schedule').addEventListener('click', async function () {
+                // var eventTitle = document.getElementById('event-title').value.trim();
+                var ic = '{{ $data['lecturerInfo']->ic }}';
+
+                var eventData = {
+                        // title: eventTitle,
+                        ic: ic,
+                    };
+                
+                // Send data to the backend
+                const response = await fetch('/AR/schedule/publish/{{ request()->id }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    body: JSON.stringify(eventData)
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if(data.error)
+                    {
+                        alert(data.error);
+                    }else{
+                        alert(data.success);  
+                    }
+                } else {
+                    alert('Failed to add event.'); // Inform the user that adding the event failed
+                }
+            });
+
+            // Add event button click listener
+            document.getElementById('reset-schedule').addEventListener('click', async function () {
+                var ic = '{{ $data['lecturerInfo']->ic }}';
+
+                var eventData = {
+                    ic: ic,
+                };
+
+                Swal.fire({
+                    title: "Are you sure?",
+                    text: "This will be permanent",
+                    showCancelButton: true,
+                    confirmButtonText: "Yes, delete it!"
+                }).then(async function (res) {  // Make the callback async
+                    if (res.isConfirmed) {
+                        // Send data to the backend
+                        const response = await fetch('/AR/schedule/reset/{{ request()->id }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                            },
+                            body: JSON.stringify(eventData)
+                        });
+
+                        if (response.ok) {
+                            const data = await response.json();
+                            if (data.error) {
+                                Swal.fire('Error', data.error, 'error');
+                            } else {
+                                Swal.fire('Success', data.success, 'success');
+                                calendar.refetchEvents(); // Refetch the events after the reset
+                            }
+                        } else {
+                            Swal.fire('Failed', 'Failed to reset schedule.', 'error');
+                        }
+                    }
+                });
+            });
+
 
             // Event drop callback for updating event time
             // calendar.setOption('eventDrop', async function (info) {

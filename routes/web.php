@@ -183,6 +183,8 @@ Route::get('/AR/schedule/fetch/{id}/fetchExistEvent', [App\Http\Controllers\AR_C
 // Route::get('/AR/schedule/index/old', [App\Http\Controllers\AR_Controller::class, 'scheduleIndex'])->name('pendaftar_akademik.schedule.old');
 // Route::post('/AR/schedule/store', [App\Http\Controllers\AR_Controller::class, 'dropzoneStore'])->name('pendaftar_akademik.schedule.store');
 Route::post('/AR/schedule/create/{id}', [App\Http\Controllers\AR_Controller::class, 'createEvent']);
+Route::post('/AR/schedule/publish/{id}', [App\Http\Controllers\AR_Controller::class, 'publishEvent']);
+Route::post('/AR/schedule/reset/{id}', [App\Http\Controllers\AR_Controller::class, 'resetEvent']);
 Route::put('/AR/schedule/update/{id}', [App\Http\Controllers\AR_Controller::class, 'updateEvent']);
 Route::put('/AR/schedule/update2/{id}', [App\Http\Controllers\AR_Controller::class, 'updateEvent2']);
 Route::delete('/AR/schedule/delete/{id}', [App\Http\Controllers\AR_Controller::class, 'deleteEvent']);

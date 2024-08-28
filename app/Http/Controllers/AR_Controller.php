@@ -2,22 +2,23 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\Request;
-use App\Models\User;
-use App\Models\subject;
-use App\Models\student;
-use App\Models\Tblevent;
-use App\Models\UserStudent;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Contracts\Filesystem\Filesystem;
-use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
-use League\Flysystem\AwsS3V3\PortableVisibilityConverter;
+use App\Models\User;
+use App\Models\student;
+use App\Models\subject;
+use App\Models\Tblevent;
+use App\Models\Tblevent2;
+use App\Models\UserStudent;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Contracts\Filesystem\Filesystem;
+use League\Flysystem\AwsS3V3\PortableVisibilityConverter;
 
 class AR_Controller extends Controller
 {
@@ -2564,7 +2565,41 @@ class AR_Controller extends Controller
                 //               ->get(),
                 'lecturerInfo' => DB::table('users')->where('ic', request()->id)->first(),
                 'session' => DB::table('sessions')->where('Status', 'ACTIVE')->get(),
-                'lecture_room' => DB::table('tbllecture_room')->get()
+                'lecture_room' => DB::table('tbllecture_room')->get(),
+                'details' => DB::table('user_subjek')
+                             ->join('subjek_structure', 'user_subjek.course_id', 'subjek_structure.courseID')
+                             ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
+                             ->where([
+                                ['user_subjek.user_ic', request()->id],
+                                ['sessions.Status', 'ACTIVE']
+                                ])
+                             ->select(DB::raw('SUM(subjek_structure.meeting_hour) AS total_hour'))
+                             ->groupBy('user_subjek.id')
+                             ->get(),
+                // 'used' => DB::table('tblevents')
+                //           ->join('user_subjek', function($join){
+                //             $join->on('tblevents.group_id', 'user_subjek.id');
+                //             $join->on('tblevents.session_id', 'user_subjek.session_id');
+                //           })
+                //           ->join('subjek_structure', 'user_subjek.course_id', 'subjek_structure.courseID')
+                //           ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
+                //           ->where([
+                //             ['tblevents.user_ic', request()->id],
+                //             ['sessions.Status', 'ACTIVE']
+                //           ])
+                //           ->select(DB::raw('SUM(subjek_structure.meeting_hour) AS total_hour'))
+                //           ->groupBy('user_subjek.id')
+                //           ->get(),
+
+                'used' => DB::table('tblevents')
+                            ->join('sessions', 'tblevents.session_id', '=', 'sessions.SessionID')
+                            ->where([
+                                ['tblevents.user_ic', request()->id],
+                                ['sessions.Status', '=', 'ACTIVE']
+                            ])
+                            ->select(DB::raw('SUM(TIMESTAMPDIFF(HOUR, tblevents.start, tblevents.end)) as total_hours'))
+                            ->get(),
+                'time' => DB::table('tblevents_second')->where('user_ic', request()->id)->value('timestamps'),
             ];
 
             return view('pendaftar_akademik.schedule.schedule', compact('data'));
@@ -2616,7 +2651,10 @@ class AR_Controller extends Controller
             if(request()->type == 'std')
             {
 
-                $events = Tblevent::join('student_subjek', 'tblevents.group_id', 'student_subjek.group_id')
+                $events = Tblevent::join('student_subjek', function($join){
+                            $join->on('tblevents.group_id', 'student_subjek.group_id');
+                            $join->on('tblevents.group_name', 'student_subjek.group_name');
+                        })
                         ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
                         ->join('tbllecture_room', 'tblevents.lecture_id', 'tbllecture_room.id')
                         ->join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
@@ -2826,6 +2864,13 @@ class AR_Controller extends Controller
                 ->where('tblevents.id', '!=', $id)
                 ->whereIn('student_subjek.student_ic', $students)
                 ->groupBy('tblevents.id')
+                ->select('tblevents.*');
+
+        $events = DB::table('tblevents')
+                ->where('tblevents.id', '!=', $id)
+                ->where('tblevents.user_ic', $event->user_ic)
+                ->groupBy('tblevents.id')
+                ->unionAll($events)
                 ->select('tblevents.*')
                 ->get();
 
@@ -3139,6 +3184,74 @@ class AR_Controller extends Controller
             }
 
         }
+    }
+
+    public function publishEvent(Request $request)
+    {
+
+        try{
+
+            DB::table('tblevents_second')->where('user_ic', $request->id)->delete();
+
+            $event = Tblevent::where('user_ic', $request->id)->get();
+    
+            foreach($event as $ev)
+            {
+    
+                $events = new Tblevent2;
+                $events->lecture_id = $ev->lecture_id;
+                $events->user_ic = $ev->user_ic;
+                $events->group_id = $ev->group_id;
+                $events->group_name = $ev->group_name;
+                $events->session_id = $ev->session_id;
+                $events->start = $ev->start;
+                $events->end = $ev->end;
+                $events->save();
+    
+            }
+    
+            return response()->json(['success' => 'Event has been published successfully!']);
+
+        }catch(Exception $e){
+
+            return response()->json(['error' => 'Error: ' . $e->getMessage()]);
+
+        }
+
+    }
+
+    public function resetEvent(Request $request)
+    {
+
+        try{
+
+            DB::table('tblevents')->where('user_ic', $request->id)->delete();
+
+            $event = Tblevent2::where('user_ic', $request->id)->get();
+    
+            foreach($event as $ev)
+            {
+    
+                $events = new Tblevent;
+                $events->lecture_id = $ev->lecture_id;
+                $events->user_ic = $ev->user_ic;
+                $events->group_id = $ev->group_id;
+                $events->group_name = $ev->group_name;
+                $events->session_id = $ev->session_id;
+                $events->start = $ev->start;
+                $events->end = $ev->end;
+                $events->save();
+    
+            }
+    
+            return response()->json(['success' => 'Event has been resetted successfully!']);
+
+        }catch(Exception $e){
+
+            return response()->json(['error' => 'Error: ' . $e->getMessage()]);
+
+        }
+
     }
 
     public function updateEvent(Request $request, $id)
