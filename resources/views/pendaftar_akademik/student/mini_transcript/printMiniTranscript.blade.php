@@ -259,6 +259,9 @@
             $total_credit = 0;
             @endphp
             @foreach($data['semesters'] as $key => $sm)
+            @php
+            $total_credit_c = 0;
+            @endphp
             <div class="col-md-6 mt-3">
                 <div class="mb-1"><b>SESI {{ $data['detail'][$key]->session }} SEMESTER {{ $sm }}</b></div>
                 <table class="custom-table">
@@ -272,6 +275,7 @@
                         </tr>
                         @php
                         $total_credit += (!in_array($crs->grade, ['E','F','GL'])) ? $crs->credit : 0;
+                        $total_credit_c += (!in_array($crs->grade, ['E','F','GL'])) ? $crs->credit : 0;
                         @endphp
                         @endforeach
                     </tbody>
@@ -297,7 +301,7 @@
                             </tr>
                             <tr>
                                 <td style="width: 10%; padding-left: 10px; padding-right: 10px;"><b>KREDIT</b></td>
-                                <td style="padding-left: 10px;"><b>{{ $data['detail'][$key]->gpa }}</b></td>
+                                <td style="padding-left: 10px;"><b>{{ $total_credit_c }} ({{ $total_credit }})</b></td>
                             </tr>
                         </table>
                     </div>
