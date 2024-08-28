@@ -125,7 +125,7 @@
         <div class="row">
             <div class="col-12 d-flex justify-content-center align-items-center">
                 <div class="me-2">
-                    <img src="{{ asset('assets/images/logo/Kolej-UNITI.png')}}" alt="Kolej Uniti Logo" height="50">
+                    <img src="{{ asset('assets/images/logo/Kolej-UNITI.png')}}" alt="Kolej Uniti Logo" height="45">
                 </div>
                 <div>
                     <h1 class="mb-0">KOLEJ UNITI</h1>
