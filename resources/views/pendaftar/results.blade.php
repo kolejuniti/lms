@@ -312,7 +312,7 @@
                               KEPUTUSAN
                            </td>
                            <td colspan="3" class="text-center">
-                              {{ $data['transcript']->transcript_status_id }}
+                              {{ $data['transcript']->transcript_status_id }} {{ ($data['transcript']->count_credit_c >= $data['student']->limit_credit) ? '- Tamat Pengajian' : '' }}
                            </td>
                         </tr>
                      </tbody>
