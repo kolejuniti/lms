@@ -5005,6 +5005,71 @@ class AR_Controller extends Controller
 
     }
 
+    public function miniTranscript()
+    {
+
+        return view('pendaftar_akademik.student.mini_transcript.miniTranscript');
+
+    }
+
+    public function printStudentMiniTranscript(Request $request)
+    {
+        // Set Carbon's locale to Malay
+        Carbon::setLocale('ms');
+
+        $classdateParsed = Carbon::parse($request->date);
+
+        $data['date'] = $classdateParsed->isoFormat('D MMMM Y');
+
+        $data['student'] = DB::table('students')
+                           ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+                           ->join('sessions AS a', 'students.intake', 'a.SessionID')
+                           ->join('sessions AS b', 'students.session', 'b.SessionID')
+                           ->join('tblfaculty', 'tblprogramme.facultyid', 'tblfaculty.id')
+                           ->select('students.*', 'tblprogramme.progname AS program', 'tblprogramme.mqa_code AS mqa', 'a.SessionName AS intake', 'b.SessionName AS session', 'tblfaculty.facultyname AS faculty')
+                           ->where('students.ic', $request->ic)
+                           ->first();
+
+        $data['semesters'] = DB::table('student_subjek')
+                             ->groupBy('semesterid')
+                             ->where([
+                                ['student_ic', $request->ic],
+                                ['group_id','!=', null],
+                                ['grade', '!=', null]
+                                ])
+                             ->pluck('semesterid');
+
+        foreach($data['semesters'] as $key => $sm)
+        {
+
+            $data['course'][$key] = DB::table('student_subjek')
+                                    ->leftJoin('subjek', 'student_subjek.courseid', 'subjek.sub_id')
+                                    ->where([
+                                        ['student_subjek.student_ic', $request->ic],
+                                        ['student_subjek.semesterid', $sm]
+                                    ])
+                                    ->groupBy('student_subjek.id')
+                                    ->select('student_subjek.*','subjek.course_name', 'subjek.course_code')
+                                    ->get();
+
+            $data['detail'][$key] = DB::table('student_transcript')
+                                    ->leftJoin('sessions', 'sessions.SessionID', 'student_transcript.session_id')
+                                    ->where([
+                                        ['student_ic', $request->ic],
+                                        ['semester', $sm]
+                                    ])
+                                    ->select('student_transcript.*', 'sessions.SessionName AS session')
+                                    ->first();
+
+        }
+
+        $lastDetail = end($data['detail']); // Get the last element of the $data['detail'] array
+        $data['lastCGPA'] = $lastDetail->cgpa ?? null; // Access the `cgpa` value
+
+        return view('pendaftar_akademik.student.mini_transcript.printMiniTranscript', compact('data'));
+
+    }
+
     // public function groupTable()
     // {
 

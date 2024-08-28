@@ -214,6 +214,8 @@ Route::get('/AR/student/studentAssessment/getGroupLecturer', [App\Http\Controlle
 Route::get('/AR/student/transcript', [App\Http\Controllers\AR_Controller::class, 'transcript'])->name('pendaftar_akademik.transcript');
 Route::post('/AR/student/transcript/getStudentTranscript', [App\Http\Controllers\AR_Controller::class, 'getStudentTranscript']);
 Route::post('/AR/student/transcript/printStudentTranscript', [App\Http\Controllers\AR_Controller::class, 'printStudentTranscript']);
+Route::get('/AR/student/miniTranscript', [App\Http\Controllers\AR_Controller::class, 'miniTranscript'])->name('pendaftar_akademik.miniTranscript');
+Route::post('/AR/student/miniTranscript/printStudentMiniTranscript', [App\Http\Controllers\AR_Controller::class, 'printStudentMiniTranscript']);
 // Route::get('/AR/student/groupTable', [App\Http\Controllers\AR_Controller::class, 'groupTable'])->name('pendaftar_akademik.groupTable');
 
 Route::get('/lecturer/getSuratAmaran', [App\Http\Controllers\LecturerController::class, 'getSuratAmaran'])->name('lecturer.suratamaran');
