@@ -44,7 +44,7 @@
                 font-size: 10px;
             }
             h1 {
-                font-size:50px; /* increase font-size */
+                font-size:45px; /* increase font-size */
             }
             .b2 {
                 font-weight: bold;
@@ -254,7 +254,6 @@
 
         <!-- Another Black Line Divider if needed -->
         <div class="border-line"></div>
-        <br>
         <div class="row col-md-12 mt-2">
             @php
             $total_credit = 0;
