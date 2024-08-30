@@ -78,6 +78,10 @@
                     width: 100%;
                     margin-right: 2%;
                 }
+                .col-md-12 {
+                    width: 100%;
+                    margin-right: 2%;
+                }
             }
 
             /* Use border instead of background */
@@ -368,6 +372,17 @@
                         <thead>
                             <tr class="line">
                                 <th class="text-center">BERILMU</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+            <div class="flex-container col-md-12 mt-2">
+                <div class="col-md-12">
+                    <table>
+                        <thead>
+                            <tr class="line">
+                                <th class="text-center">*<i>Cetakan komputer. Tiada tandatangan diperlukan.</i>*</th>
                             </tr>
                         </thead>
                     </table>
