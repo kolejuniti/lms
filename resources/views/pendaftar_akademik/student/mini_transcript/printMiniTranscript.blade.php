@@ -233,7 +233,7 @@
         <!-- Black Line Divider using Border -->
         <div class="border-line"></div>
   
-        <div class="flex-container col-md-12 mt-2">
+        {{-- <div class="flex-container col-md-12 mt-2">
             <div class="col-md-6">
                 <table class="custom-table">
                     <thead>
@@ -256,6 +256,37 @@
                             <th class="text-center" style="width: 1%">GRED</th>
                         </tr>
                     </thead>
+                </table>
+            </div>
+        </div> --}}
+
+        <div class="row col-md-12 mt-2">
+            <div class="col-md-6 mt-3">
+                <table class="custom-table">
+                    <tbody>
+                        <tr class="line">
+                            <td class="text-center" style="width: 8%">KOD</td>
+                            <td class="text-center" style="width: 30%">KURSUS</td>
+                            <td class="text-center" style="width: 4%">KREDIT</td>
+                            <td class="text-center" style="width: 3%">GRED</td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                    </tfoot>
+                </table>
+            </div> 
+            <div class="col-md-6 mt-3">
+                <table class="custom-table">
+                    <tbody>
+                        <tr class="line">
+                            <td class="text-center" style="width: 8%">KOD</td>
+                            <td class="text-center" style="width: 31%">KURSUS</td>
+                            <td class="text-center" style="width: 4%">KREDIT</td>
+                            <td class="text-center" style="width: 3%">GRED</td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                    </tfoot>
                 </table>
             </div>
         </div>
