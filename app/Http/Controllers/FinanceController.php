@@ -1534,7 +1534,8 @@ class FinanceController extends Controller
 
                     DB::connection('mysql2')->table('students')->where('ic', $student->ic)->update([
                         'register_at' => now(),
-                        'commission' => 300
+                        'commission' => 300,
+                        'status_id' => 20
                     ]);
 
                 }
