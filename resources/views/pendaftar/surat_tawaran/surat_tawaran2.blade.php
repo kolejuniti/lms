@@ -87,7 +87,7 @@ use Carbon\Carbon;
 
         <br>
         <br>
-        <p>Surat Kami : UNITI/KUSB/2023/040616070397</p>
+        <p>Surat Kami : UNITI/KUSB/2023/{{ $data['student']->ic }}</p>
         <p>Tarikh : {{ $formattedDate }}</p>
         <br>
         <p>
