@@ -218,17 +218,6 @@
                                 {{ $crs->SessionName }}
                                 </td>
                                 @if(Auth::user()->usrtype == 'AR')
-                                <td style="text-align: center;">
-                                    <div class="pull right">
-                                        <button class="btn btn-danger btn-sm mr-2" onclick="unregister('{{ $crs->IDS }}','{{ $data['student']->ic }}')">
-                                            <i class="fa fa-user-times">
-                                            </i>
-                                            Un-Register
-                                        </button>
-                                    </div>
-                                </td>
-                                @elseif(Auth::user()->usrtype == 'PL')
-                                    @if($data['students']->semester == $crs->semester)
                                     <td style="text-align: center;">
                                         <div class="pull right">
                                             <button class="btn btn-danger btn-sm mr-2" onclick="unregister('{{ $crs->IDS }}','{{ $data['student']->ic }}')">
@@ -238,11 +227,29 @@
                                             </button>
                                         </div>
                                     </td>
+                                @elseif(Auth::user()->usrtype == 'PL')
+                                    @if($data['students']->semester == $crs->semester)
+                                        <td style="text-align: center;">
+                                            @php
+                                                $start_date = strtotime('2/9/2024');
+                                                $end_date = strtotime('13/9/2024');
+                                                $current_date = strtotime(date('d/m/Y'));
+                                            @endphp
+                                            @if ($current_date >= $start_date && $current_date <= $end_date)
+                                                <div class="pull right">
+                                                    <button class="btn btn-danger btn-sm mr-2" onclick="unregister('{{ $crs->IDS }}','{{ $data['student']->ic }}')">
+                                                        <i class="fa fa-user-times">
+                                                        </i>
+                                                        Un-Register
+                                                    </button>
+                                                </div>
+                                            @endif
+                                        </td>
                                     @endif
                                 @else
-                                <td>
+                                    <td style="text-align: center;">
 
-                                </td>
+                                    </td>
                                 @endif
                             </tr>
                         @endforeach
