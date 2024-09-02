@@ -231,16 +231,15 @@
                                     @if($data['students']->semester == $crs->semester)
                                         <td style="text-align: center;">
                                             @php
-                                                $start_date = strtotime('2/9/2024');
-                                                $end_date = strtotime('13/9/2024');
-                                                $current_date = strtotime(date('d/m/Y'));
+                                                $start_date = strtotime('2024-09-02');  // Format: YYYY-MM-DD
+                                                $end_date = strtotime('2024-09-13');    // Format: YYYY-MM-DD
+                                                $current_date = strtotime(date('Y-m-d'));  // Format: YYYY-MM-DD
                                             @endphp
+
                                             @if ($current_date >= $start_date && $current_date <= $end_date)
-                                                <div class="pull right">
+                                                <div class="float-right">
                                                     <button class="btn btn-danger btn-sm mr-2" onclick="unregister('{{ $crs->IDS }}','{{ $data['student']->ic }}')">
-                                                        <i class="fa fa-user-times">
-                                                        </i>
-                                                        Un-Register
+                                                        <i class="fa fa-user-times"></i> Un-Register
                                                     </button>
                                                 </div>
                                             @endif
