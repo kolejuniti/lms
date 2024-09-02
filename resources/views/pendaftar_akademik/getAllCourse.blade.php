@@ -45,7 +45,6 @@
     </div>
 </div>
 
-@if(Auth::user()->usrtype == 'AR')
 <div class="card mb-3" id="stud_info">
     <div class="card-header">
     <b>Register Custom</b>
@@ -83,7 +82,7 @@
         </div>
     </div>
 </div>
-@endif
+
 
 <div class="col-12">
     <div class="box">
@@ -228,9 +227,21 @@
                                         </button>
                                     </div>
                                 </td>
+                                @elseif(Auth::user()->usrtype == 'PL')
+                                    @if($data['students']->semester == $crs->semester)
+                                    <td style="text-align: center;">
+                                        <div class="pull right">
+                                            <button class="btn btn-danger btn-sm mr-2" onclick="unregister('{{ $crs->IDS }}','{{ $data['student']->ic }}')">
+                                                <i class="fa fa-user-times">
+                                                </i>
+                                                Un-Register
+                                            </button>
+                                        </div>
+                                    </td>
+                                    @endif
                                 @else
                                 <td>
-                                    
+
                                 </td>
                                 @endif
                             </tr>
