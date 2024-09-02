@@ -245,9 +245,13 @@
                                                 </div>
                                             @endif
                                         </td>
+                                    @else
+                                        <td>
+
+                                        </td>
                                     @endif
                                 @else
-                                    <td style="text-align: center;">
+                                    <td>
 
                                     </td>
                                 @endif
