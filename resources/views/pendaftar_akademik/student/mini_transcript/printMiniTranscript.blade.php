@@ -74,6 +74,10 @@
                     width: 48%;
                     margin-right: 2%;
                 }
+                .col-md-3 {
+                    width: 20%;
+                    margin-right: 2%;
+                }
                 .col-md-4 {
                     width: 100%;
                     margin-right: 2%;
@@ -336,11 +340,20 @@
                     </thead>
                 </table>
             </div>
-            <div class="col-md-6" style="border: 1px solid white">
+            <div class="col-md-3" style="border: 1px solid white">
                 <table>
                     <thead>
                         <tr class="line">
                             <th class="text-center" style="width: 15%">DISAHKAN OLEH</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+            <div class="col-md-3" style="border: 1px solid white">
+                <table>
+                    <thead>
+                        <tr class="line">
+                            <img src="{{ asset('storage/chop/uniti-chop.png') }}" alt="Image" width="50%" height="100%">
                         </tr>
                     </thead>
                 </table>
@@ -405,9 +418,9 @@
                 </tr>
             </table>
             </div> 
-        </div>
-        <img src="{{ asset('storage/signature/signature2.png') }}" alt="Image" width="10%" height="10%" style="float: right;">
-        <br>
+        </div> --}}
+        {{-- <img src="{{ asset('storage/signature/signature2.png') }}" alt="Image" width="10%" height="10%" style="float: right;"> --}}
+        {{-- <br>
         <br>
         <br>
         <br>
