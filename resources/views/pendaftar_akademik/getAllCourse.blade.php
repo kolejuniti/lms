@@ -228,7 +228,7 @@
                                         </div>
                                     </td>
                                 @elseif(Auth::user()->usrtype == 'PL')
-                                    @if($data['students']->semester == $crs->semester)
+                                    @if($data['students']->semester == $crs->semester && in_array($crs->sessionid, $data['atvSession']))
                                         <td style="text-align: center;">
                                             @php
                                                 $start_date = strtotime('2024-09-02');  // Format: YYYY-MM-DD
