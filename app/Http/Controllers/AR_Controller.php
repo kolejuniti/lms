@@ -751,6 +751,8 @@ class AR_Controller extends Controller
                             ->orderBy('subjek_structure.semester_id')
                             ->select('subjek.*', 'subjek_structure.semester_id AS semesterid')->get();
 
+        $data['atvSession'] = DB::table('sessions')->where('Status', 'ACTIVE')->pluck('SessionID')->toArray();
+
         return view('pendaftar_akademik.getAllCourse', compact('data'));
 
     }
@@ -808,6 +810,8 @@ class AR_Controller extends Controller
                             ])
                             ->orderBy('subjek_structure.semester_id')
                             ->select('subjek.*', 'subjek_structure.semester_id AS semesterid')->get();
+
+        $data['atvSession'] = DB::table('sessions')->where('Status', 'ACTIVE')->pluck('SessionID')->toArray();
 
         return view('pendaftar_akademik.getAllCourse', compact('data'));
 
