@@ -733,7 +733,7 @@ class AR_Controller extends Controller
                       ->groupBy('student_subjek.courseid')
                       ->groupBy('student_subjek.semesterid');
 
-        $data['allCourse'] = $getCourse->select('student_subjek.id as IDS', 'student_subjek.courseid', 'student_subjek.semesterid AS semester', 'sessions.SessionName', 'subjek.*')->orderBy('student_subjek.semesterid')->get();
+        $data['allCourse'] = $getCourse->select('student_subjek.sessionid', 'student_subjek.id as IDS', 'student_subjek.courseid', 'student_subjek.semesterid AS semester', 'sessions.SessionName', 'subjek.*')->orderBy('student_subjek.semesterid')->get();
 
         $crsExists = $getCourse->where('student_subjek.course_status_id', '!=', 2)->pluck('student_subjek.courseid')->toArray();
 
@@ -791,7 +791,7 @@ class AR_Controller extends Controller
                       ->groupBy('student_subjek.courseid')
                       ->groupBy('student_subjek.semesterid');
 
-        $data['allCourse'] = $getCourse->select('student_subjek.id as IDS', 'student_subjek.courseid', 'student_subjek.semesterid AS semester', 'sessions.SessionName', 'subjek.*')->orderBy('student_subjek.semesterid')->get();
+        $data['allCourse'] = $getCourse->select('student_subjek.sessionid', 'student_subjek.id as IDS', 'student_subjek.courseid', 'student_subjek.semesterid AS semester', 'sessions.SessionName', 'subjek.*')->orderBy('student_subjek.semesterid')->get();
 
         $crsExists = $getCourse->where('student_subjek.course_status_id', '!=', 2)->pluck('student_subjek.courseid')->toArray();
 
