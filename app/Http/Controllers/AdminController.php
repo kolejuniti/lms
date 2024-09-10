@@ -896,7 +896,7 @@ class AdminController extends Controller
         {
 
 
-                $students[] = $data = DB::table('user_subjek')
+                $students[] = DB::table('user_subjek')
                 ->join('student_subjek', 'user_subjek.id', 'student_subjek.group_id')
                 ->join('students', 'student_subjek.student_ic', 'students.ic')
                 ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
@@ -1520,7 +1520,11 @@ class AdminController extends Controller
                         $finalcollection = collect($overallfinal[$ky]);
                     }
 
-                    $overallall[$ky][$keys] = $overallquiz[$ky][$keys] + $overalltest[$ky][$keys] + $overallassign[$ky][$keys] + $overallextra[$ky][$keys] + $overallother[$ky][$keys] + $overallmidterm[$ky][$keys] + $overallfinal[$ky][$keys];
+                    $overallalls[$ky][$keys] = $overallquiz[$ky][$keys] + $overalltest[$ky][$keys] + $overallassign[$ky][$keys] + $overallextra[$ky][$keys] + $overallother[$ky][$keys] + $overallmidterm[$ky][$keys] + $overallfinal[$ky][$keys];
+
+                    $overallall2[$ky][$keys] = round($overallalls[$ky][$keys], 1);
+
+                    $overallall[$ky][$keys] = round($overallall2[$ky][$keys]);
 
                     $collectionall = collect($overallall[$ky]);
 
@@ -1583,7 +1587,7 @@ class AdminController extends Controller
                                                                        'other', 'otheranswer', 'overallother', 'otheravg', 'othermax', 'othermin', 'othercollection','otheravgoverall',
                                                                        'midterm', 'midtermanswer', 'overallmidterm', 'midtermavg', 'midtermmax', 'midtermmin', 'midtermcollection','midtermavgoverall',
                                                                        'final', 'finalanswer', 'overallfinal', 'finalavg', 'finalmax', 'finalmin', 'finalcollection','finalavgoverall',
-                                                                       'overallall', 'avgoverall', 'valGrade', 'data'
+                                                                       'overallall', 'overallall2', 'avgoverall', 'valGrade', 'data'
                                                                     ));
 
     }
