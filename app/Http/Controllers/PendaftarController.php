@@ -2074,22 +2074,14 @@ class PendaftarController extends Controller
                     // ->selectRaw('SUM(credit) as total')
                     // ->value('total');
 
-                    $grade_pointer = DB::table('student_subjek as ss1')
-    ->select('ss1.id')
-    ->where('ss1.student_ic', $std)
-    ->whereNotNull('ss1.group_id')
-    ->where('ss1.semesterid', '<=', $data->semester)
-    ->whereIn('ss1.course_status_id', [1, 2, 12, 15])
-    ->join(DB::raw('(SELECT courseid, MAX(semesterid) as max_semesterid 
-                    FROM student_subjek
-                    WHERE student_ic = ?
-                    GROUP BY courseid) as ss2'), function($join) use ($std) {
-        $join->on('ss1.courseid', '=', 'ss2.courseid')
-             ->on('ss1.semesterid', '=', 'ss2.max_semesterid');
-    })
-    ->selectRaw('MAX(ss1.id) as max_id')
-    ->groupBy('ss1.courseid')
-    ->setBindings([$std])
+                    $grade_pointer = DB::table('student_subjek as ss')
+    ->select('ss.id')
+    ->where('ss.student_ic', $std)
+    ->whereNotNull('ss.group_id')
+    ->where('ss.semesterid', '<=', $data->semester)
+    ->whereIn('ss.course_status_id', [1, 2, 12, 15])
+    ->groupBy('ss.courseid')
+    ->selectRaw('ss.courseid, MAX(ss.semesterid) as max_semesterid, MAX(ss.id) as max_id')
     ->get();
 
 
