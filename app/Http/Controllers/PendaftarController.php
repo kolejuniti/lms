@@ -2074,29 +2074,43 @@ class PendaftarController extends Controller
                     // ->selectRaw('SUM(credit) as total')
                     // ->value('total');
 
-                    $grade_pointer = DB::table('student_subjek as ss1')
-    ->where([
-        ['student_ic', $std],
-        ['group_id', '!=', null]
-    ])
+                    // $grade_pointer = DB::table('student_subjek')
+                    //     ->selectRaw('MAX(id) as max_id')
+                    //     ->where([
+                    //         ['student_ic', $std],
+                    //         ['group_id','!=',null]
+                    //         ])
+                    //     ->where('semesterid', '<=', $data->semester)
+                    //     ->whereIn('course_status_id', [1, 2, 12, 15])
+                    //     ->groupBy('courseid')
+                    //     ->get();
+
+                    // $grade_pointer_c = DB::table('student_subjek')
+                    //     ->whereIn('id', $grade_pointer->pluck('max_id'))
+                    //     ->selectRaw('SUM(credit * pointer) as total')
+                    //     ->value('total');
+
+                    $subquery = DB::table('student_subjek')
+    ->select('courseid', DB::raw('MAX(semesterid) as max_semesterid'))
+    ->where('student_ic', $std)
+    ->whereNotNull('group_id')
     ->where('semesterid', '<=', $data->semester)
     ->whereIn('course_status_id', [1, 2, 12, 15])
-    ->whereIn('id', function ($query) use ($std, $data) {
-        $query->select(DB::raw('MAX(id)'))
-            ->from('student_subjek as ss2')
-            ->whereColumn('ss2.courseid', 'ss1.courseid')
-            ->where('ss2.semesterid', '<=', $data->semester)
-            ->where('ss2.student_ic', $std)
-            ->groupBy('ss2.courseid')
-            ->havingRaw('MAX(ss2.semesterid)');
+    ->groupBy('courseid');
+
+$grade_pointer = DB::table('student_subjek as ss')
+    ->joinSub($subquery, 'sub', function ($join) {
+        $join->on('ss.courseid', '=', 'sub.courseid')
+             ->on('ss.semesterid', '=', 'sub.max_semesterid');
     })
+    ->select('ss.id as max_id')
     ->get();
 
-$grade_pointer_c = DB::table('student_subjek')
-    ->whereIn('id', $grade_pointer->pluck('id'))
-    ->selectRaw('SUM(credit * pointer) as total')
-    ->value('total');
 
+                    $grade_pointer_c = DB::table('student_subjek')
+                        ->whereIn('id', $grade_pointer->pluck('max_id'))
+                        ->selectRaw('SUM(credit * pointer) as total')
+                        ->value('total');
 
                     // $grade_pointer_c = DB::table('student_subjek')
                     // ->where([
