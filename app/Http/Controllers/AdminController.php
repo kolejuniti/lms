@@ -871,6 +871,17 @@ class AdminController extends Controller
 
         $id = Session::get('CourseID');
 
+        $data['lectInfo'] = DB::table('user_subjek')
+                            ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+                            ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
+                            ->where([
+                                ['user_subjek.user_ic', $user->ic],
+                                ['user_subjek.session_id', Session::get('SessionID')],
+                                ['subjek.id', $id]
+                             ])
+                            ->select('subjek.*', 'sessions.SessionName AS session')
+                            ->first();
+
         $groups = DB::table('user_subjek')
                   ->join('student_subjek', 'user_subjek.id', 'student_subjek.group_id')
                   ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
@@ -1572,7 +1583,7 @@ class AdminController extends Controller
                                                                        'other', 'otheranswer', 'overallother', 'otheravg', 'othermax', 'othermin', 'othercollection','otheravgoverall',
                                                                        'midterm', 'midtermanswer', 'overallmidterm', 'midtermavg', 'midtermmax', 'midtermmin', 'midtermcollection','midtermavgoverall',
                                                                        'final', 'finalanswer', 'overallfinal', 'finalavg', 'finalmax', 'finalmin', 'finalcollection','finalavgoverall',
-                                                                       'overallall', 'avgoverall', 'valGrade'
+                                                                       'overallall', 'avgoverall', 'valGrade', 'data'
                                                                     ));
 
     }
