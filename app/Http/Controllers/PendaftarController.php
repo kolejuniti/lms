@@ -2091,20 +2091,21 @@ class PendaftarController extends Controller
                     //     ->value('total');
 
                     $subquery = DB::table('student_subjek')
-    ->select('courseid', DB::raw('MAX(semesterid) as max_semesterid'))
-    ->where('student_ic', $std)
-    ->whereNotNull('group_id')
-    ->where('semesterid', '<=', $data->semester)
-    ->whereIn('course_status_id', [1, 2, 12, 15])
-    ->groupBy('courseid');
+                        ->select('courseid', DB::raw('MAX(semesterid) as max_semesterid'))
+                        ->where('student_ic', $std)
+                        ->whereNotNull('group_id')
+                        ->where('semesterid', '<=', $data->semester)
+                        ->whereIn('course_status_id', [1, 2, 12, 15])
+                        ->groupBy('courseid');
 
-$grade_pointer = DB::table('student_subjek as ss')
-    ->joinSub($subquery, 'sub', function ($join) {
-        $join->on('ss.courseid', '=', 'sub.courseid')
-             ->on('ss.semesterid', '=', 'sub.max_semesterid');
-    })
-    ->select('ss.id as max_id')
-    ->get();
+                    $grade_pointer = DB::table('student_subjek as ss')
+                        ->joinSub($subquery, 'sub', function ($join) {
+                            $join->on('ss.courseid', '=', 'sub.courseid')
+                                ->on('ss.semesterid', '=', 'sub.max_semesterid');
+                        })
+                        ->where('ss.student_ic', $std)
+                        ->select('ss.id as max_id')
+                        ->get();
 
 
                     $grade_pointer_c = DB::table('student_subjek')
