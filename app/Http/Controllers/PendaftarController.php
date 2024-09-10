@@ -2081,7 +2081,7 @@ class PendaftarController extends Controller
     ->where('ss.semesterid', '<=', $data->semester)
     ->whereIn('ss.course_status_id', [1, 2, 12, 15])
     ->groupBy('ss.courseid')
-    ->selectRaw('ss.courseid, MAX(ss.semesterid) as max_semesterid, MAX(ss.id) as max_id')
+    ->selectRaw('ss.courseid, MAX(ss.semesterid) as max_semesterid, ss.id as max_id')
     ->get();
 
 
