@@ -2107,7 +2107,6 @@ class PendaftarController extends Controller
                         ->select('ss.id as max_id')
                         ->get();
 
-
                     $grade_pointer_c = DB::table('student_subjek')
                         ->whereIn('id', $grade_pointer->pluck('max_id'))
                         ->selectRaw('SUM(credit * pointer) as total')
@@ -2167,15 +2166,37 @@ class PendaftarController extends Controller
                     // ->groupBy(DB::raw('(SELECT MAX(id) FROM student_subjek as ss2 WHERE ss2.courseid = student_subjek.courseid)'))
                     // ->value('total');
 
-                    $cgpa_old = DB::table('student_subjek')
-                        ->selectRaw('MAX(id) as max_id')
-                        ->where([
-                            ['student_ic', $std],
-                            ['group_id','!=',null]
-                            ])
-                        ->where('semesterid', '<=', $data->semester)
-                        ->whereIn('course_status_id', [1, 2, 12, 15])
-                        ->groupBy('courseid')
+                    // $cgpa_old = DB::table('student_subjek')
+                    //     ->selectRaw('MAX(id) as max_id')
+                    //     ->where([
+                    //         ['student_ic', $std],
+                    //         ['group_id','!=',null]
+                    //         ])
+                    //     ->where('semesterid', '<=', $data->semester)
+                    //     ->whereIn('course_status_id', [1, 2, 12, 15])
+                    //     ->groupBy('courseid')
+                    //     ->get();
+
+                    // $cgpa = DB::table('student_subjek')
+                    //     ->whereIn('id', $cgpa_old->pluck('max_id'))
+                    //     ->selectRaw('ROUND(SUM(credit * pointer) / SUM(credit), 2) as total')
+                    //     ->value('total');
+
+                    // $subquery = DB::table('student_subjek')
+                    //     ->select('courseid', DB::raw('MAX(semesterid) as max_semesterid'))
+                    //     ->where('student_ic', $std)
+                    //     ->whereNotNull('group_id')
+                    //     ->where('semesterid', '<=', $data->semester)
+                    //     ->whereIn('course_status_id', [1, 2, 12, 15])
+                    //     ->groupBy('courseid');
+
+                    $cgpa_old = DB::table('student_subjek as ss')
+                        ->joinSub($subquery, 'sub', function ($join) {
+                            $join->on('ss.courseid', '=', 'sub.courseid')
+                                ->on('ss.semesterid', '=', 'sub.max_semesterid');
+                        })
+                        ->where('ss.student_ic', $std)
+                        ->select('ss.id as max_id')
                         ->get();
 
                     $cgpa = DB::table('student_subjek')
