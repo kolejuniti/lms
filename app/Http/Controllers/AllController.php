@@ -289,6 +289,15 @@ class AllController extends Controller
                               ->whereNotIn('tblgrade_spm.id', [8,9,10,19,20,21,22])
                               ->select(DB::raw('COUNT(tblspm_dtl.id) AS result'))
                               ->value('result');
+
+            $data['spmv'][$key] = DB::table('tblstudent_spmv')
+                                  ->where('student_ic', $std->ic)
+                                  ->first();
+
+            $data['skm'][$key] = DB::table('tblstudent_skm')
+                                 ->where('student_ic', $std->ic)
+                                 ->first();
+                                 
         }
 
         return view('alluser.student.spm.indexGetSPM', compact('data'));
