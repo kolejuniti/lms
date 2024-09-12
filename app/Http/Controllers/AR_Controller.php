@@ -4107,24 +4107,29 @@ class AR_Controller extends Controller
 
             $gpa_column = ($datas->type == 'gpa') ? 'GPAs' : 'CGPAs';
 
-$data = DB::table('students')
-    ->join('student_transcript', 'students.ic', 'student_transcript.student_ic')
-    ->join('tblprogramme', 'students.program', 'tblprogramme.id')
-    ->join('transcript_status', 'student_transcript.transcript_status_id', 'transcript_status.id')
-    ->select(
-        'student_transcript.*',
-        'students.name', 
-        'students.ic', 
-        'students.no_matric', 
-        'tblprogramme.progcode', 
-        'transcript_status.status_name',
-        DB::raw("'$gpa_column' AS type") // Explicitly cast the gpa or cgpa column as string
-    )
-    ->whereNotIn('students.status', [4, 9])
-    ->where('student_transcript.session_id', $datas->session)
-    ->whereBetween('student_transcript.gpa', [$datas->start, $datas->end])
-    ->orderBy('students.name')
-    ->get();
+            $data = DB::table('students')
+                ->join('student_transcript', 'students.ic', 'student_transcript.student_ic')
+                ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+                ->join('transcript_status', 'student_transcript.transcript_status_id', 'transcript_status.id')
+                ->select(
+                    'student_transcript.*',
+                    'students.name', 
+                    'students.ic', 
+                    'students.no_matric', 
+                    'tblprogramme.progcode', 
+                    'transcript_status.status_name',
+                    DB::raw("'$gpa_column' AS type") // Explicitly cast the gpa or cgpa column as string
+                )
+                ->whereNotIn('students.status', [4, 9])
+                ->where('student_transcript.session_id', $datas->session)
+                ->when($datas->type == 'gpa', function ($query) use ($datas) {
+                    return $query->whereBetween('student_transcript.gpa', [$datas->start, $datas->end]);
+                })
+                ->when($datas->type == 'cgpa', function ($query) use ($datas) {
+                    return $query->whereBetween('student_transcript.cgpa', [$datas->start, $datas->end]);
+                })
+                ->orderBy('students.name')
+                ->get();
 
 
             return response()->json(['data' => $data]);
