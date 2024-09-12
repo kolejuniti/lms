@@ -1,3 +1,4 @@
+<h3>SPM</h3>
 <table id="table_dismissed" class="w-100 table table-bordered display margin-top-10 w-p100 table-layout: fixed;" style="width: 100%;">
     <thead>
         <tr>
@@ -35,6 +36,7 @@
     </tbody>
 </table>
 
+<h3>SPMV</h3>
 <table id="table_spmv" class="w-100 table table-bordered display margin-top-10 w-p100 table-layout: fixed;" style="width: 100%;">
   <thead>
       <tr>
@@ -70,6 +72,7 @@
   </tbody>
 </table>
 
+<h3>SKM</h3>
 <table id="table_skm" class="w-100 table table-bordered display margin-top-10 w-p100 table-layout: fixed;" style="width: 100%;">
   <thead>
       <tr>
