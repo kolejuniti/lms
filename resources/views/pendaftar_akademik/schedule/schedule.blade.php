@@ -379,7 +379,7 @@
                     right: 'timeGridWeek,timeGridDay'
                 },
                 hiddenDays: hiddenDays, // Hide Sunday (0) and Saturday (6)
-                slotMinTime: '08:00:00', // Set the minimum visible time to 8 AM
+                slotMinTime: '08:30:00', // Set the minimum visible time to 8 AM
                 slotMaxTime: '18:00:00', // Set the maximum visible time to 5 PM (17:00)
                 slotDuration: '00:30:00', // Sets the duration of each time slot, e.g., '00:30:00' for 30 minutes
                 slotLabelInterval: '00:30:00', // Sets the interval at which time labels are displayed, e.g., '00:30:00' for every 30 minutes
