@@ -30,23 +30,63 @@ class ResultReport extends React.Component {
 
 
   renderTableData() {
-    return this.props.data.map((item, index) => (
-      <tr key={index}>
-        <td>{index+1}</td>
-        <td>{item.name}</td>
-        <td>{item.ic}</td>
-        <td>{item.progcode}</td>
-        <td>{item.no_matric}</td>
-        <td>{item.semester}</td>
-        <td>{item.gpa}</td>
-        <td>{item.cgpa}</td>
-        <td>{item.status_name}</td>
-        {/* Add more fields as needed */}
-      </tr>
-    ));
+
+    const firstItem = this.props.data[0];
+
+    if (firstItem && firstItem.type == 'GPAs')
+    {
+
+      return this.props.data.map((item, index) => (
+        <tr key={index}>
+          <td>{index+1}</td>
+          <td>{item.name}</td>
+          <td>{item.ic}</td>
+          <td>{item.progcode}</td>
+          <td>{item.no_matric}</td>
+          <td>{item.semester}</td>
+          <td>{item.gpa}</td>
+          <td>{item.status_name}</td>
+          {/* Add more fields as needed */}
+        </tr>
+      ));
+
+    }else if(firstItem && firstItem.type == 'CGPAs'){
+
+      return this.props.data.map((item, index) => (
+        <tr key={index}>
+          <td>{index+1}</td>
+          <td>{item.name}</td>
+          <td>{item.ic}</td>
+          <td>{item.progcode}</td>
+          <td>{item.no_matric}</td>
+          <td>{item.semester}</td>
+          <td>{item.cgpa}</td>
+          <td>{item.status_name}</td>
+          {/* Add more fields as needed */}
+        </tr>
+      ));
+
+    }
+
+    // return this.props.data.map((item, index) => (
+    //   <tr key={index}>
+    //     <td>{index+1}</td>
+    //     <td>{item.name}</td>
+    //     <td>{item.ic}</td>
+    //     <td>{item.progcode}</td>
+    //     <td>{item.no_matric}</td>
+    //     <td>{item.semester}</td>
+    //     <td>{item.gpa}</td>
+    //     <td>{item.cgpa}</td>
+    //     <td>{item.status_name}</td>
+    //     {/* Add more fields as needed */}
+    //   </tr>
+    // ));
   }
 
   render() {
+    const firstItem = this.props.data[0];
+    const columnTitle = firstItem.type == 'GPAs' ? 'GPA' : 'CGPA';
     return (
       <div>
         <table id="senate_report" className="table table-bordered" ref={el => this.el = el}>
@@ -58,8 +98,7 @@ class ResultReport extends React.Component {
               <th>Program</th>
               <th>Matric No.</th>
               <th>Semester</th>
-              <th>GPA</th>
-              <th>CGPA</th>
+              <th>{columnTitle}</th>
               <th>Result</th>
               {/* Add more headers as needed */}
             </tr>

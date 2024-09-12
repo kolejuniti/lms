@@ -39,9 +39,9 @@
       <div class="card card-primary">
         <div class="card-header">
           <b>Search Student</b>
-          <button id="printButton" class="waves-effect waves-light btn btn-primary btn-sm">
+          {{-- <button id="printButton" class="waves-effect waves-light btn btn-primary btn-sm">
             <i class="ti-printer"></i>&nbsp Print
-          </button>
+          </button> --}}
         </div>
         <div class="card-body">
           <div class="row">
@@ -53,6 +53,14 @@
                     @foreach ($data['session'] as $ses)
                     <option value="{{ $ses->SessionID }}">{{ $ses->SessionName }}</option> 
                     @endforeach
+                  </select>
+              </div>
+              <div class="form-group">
+                  <label class="form-label" for="type">Type</label>
+                  <select class="form-select" id="type" name="type">
+                  <option value="" selected disabled>-</option>
+                  <option value="gpa">GPA</option>
+                  <option value="cgpa">CGPA</option>
                   </select>
               </div>
             </div>
@@ -176,6 +184,7 @@
 
     getInput = {
       session : $('#session').val(),
+      type : $('#type').val(),
       start : $('#start').val(),
       end : $('#end').val()
     };

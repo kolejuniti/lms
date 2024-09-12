@@ -4090,7 +4090,7 @@ class AR_Controller extends Controller
     {
 
         $data = [
-            'session' => DB::table('sessions')->get()
+            'session' => DB::table('sessions')->orderBy('SessionID', 'DESC')->get()
         ];
 
         return view('pendaftar_akademik.student.result_report.resultReport', compact('data'));
@@ -4105,17 +4105,27 @@ class AR_Controller extends Controller
         if($datas->session !=  '' && $datas->start != '' && $datas->end != '')
         {
 
-            $data = DB::table('students')
-                    ->join('student_transcript', 'students.ic', 'student_transcript.student_ic')
-                    ->join('tblprogramme', 'students.program', 'tblprogramme.id')
-                    ->join('transcript_status', 'student_transcript.transcript_status_id', 'transcript_status.id')
-                    ->select('student_transcript.*', 'students.name', 'students.ic', 
-                             'students.no_matric', 'tblprogramme.progcode', 'transcript_status.status_name')
-                    ->whereNotIn('students.status', [4,9])
-                    ->where('student_transcript.session_id', $datas->session)
-                    ->whereBetween('student_transcript.gpa', [$datas->start, $datas->end])
-                    ->orderBy('students.name')
-                    ->get();
+            $gpa_column = ($datas->type == 'gpa') ? 'GPAs' : 'CGPAs';
+
+$data = DB::table('students')
+    ->join('student_transcript', 'students.ic', 'student_transcript.student_ic')
+    ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+    ->join('transcript_status', 'student_transcript.transcript_status_id', 'transcript_status.id')
+    ->select(
+        'student_transcript.*',
+        'students.name', 
+        'students.ic', 
+        'students.no_matric', 
+        'tblprogramme.progcode', 
+        'transcript_status.status_name',
+        DB::raw("'$gpa_column' AS type") // Explicitly cast the gpa or cgpa column as string
+    )
+    ->whereNotIn('students.status', [4, 9])
+    ->where('student_transcript.session_id', $datas->session)
+    ->whereBetween('student_transcript.gpa', [$datas->start, $datas->end])
+    ->orderBy('students.name')
+    ->get();
+
 
             return response()->json(['data' => $data]);
 
