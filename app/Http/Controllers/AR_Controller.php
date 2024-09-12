@@ -1966,7 +1966,7 @@ class AR_Controller extends Controller
     //     // Parse the start and end times from the request
     //     $startTime = Carbon::parse($request->start);
     //     $endTime = Carbon::parse($request->end);
-    //     $rehat1 = '13:00:00';
+    //     $rehat1 = '13:30:00';
     //     $rehat2 = '14:00:00';
 
     //     // Get the day of the week (e.g., Thursday)
@@ -2209,7 +2209,7 @@ class AR_Controller extends Controller
     //     // Parse the start and end times from the request
     //     $startTime = Carbon::parse($request->start);
     //     $endTime = Carbon::parse($request->end);
-    //     $rehat1 = '13:00:00';
+    //     $rehat1 = '13:30:00';
     //     $rehat2 = '14:00:00';
 
     //     // Get the day of the week (e.g., Thursday)
@@ -2377,7 +2377,7 @@ class AR_Controller extends Controller
     //     // Parse the start and end times from the request
     //     $startTime = Carbon::parse($request->start);
     //     $endTime = Carbon::parse($request->end);
-    //     $rehat1 = '13:00:00';
+    //     $rehat1 = '13:30:00';
     //     $rehat2 = '14:00:00';
 
     //     // Get the day of the week (e.g., Thursday)
@@ -2913,8 +2913,11 @@ class AR_Controller extends Controller
         // Parse the start and end times from the request
         $startTime = Carbon::parse($request->start)->setMinute(0)->setSecond(0);
         $endTime = Carbon::parse($request->end)->setMinute(0)->setSecond(0);
-        $rehat1 = '13:00:00';
+        $rehat1 = '13:30:00';
         $rehat2 = '14:00:00';
+
+        $rehat3 = '12:30:00';
+        $rehat4 = '14:30:00';
 
         // Get the day of the week (e.g., Thursday)
         $dayOfWeek = $startTime->format('l');
@@ -3001,6 +3004,28 @@ class AR_Controller extends Controller
             return response()->json(['error' => 'Time selected is already occupied, please select another time!']);
 
         }else{
+
+            if($dayOfWeek == 'Friday')
+            {
+
+                if(($startTimeOnly <= $rehat3 && $endTimeOnly >= $rehat4) ||
+                ($startTimeOnly >= $rehat3 && $endTimeOnly <= $rehat4) ||
+                ($startTimeOnly <= $rehat3 && $endTimeOnly <= $rehat4 && $endTimeOnly > $rehat3))
+                {
+
+                    Log::info('Overlap detected for event on:', [
+                        'dayOfWeek' => $dayOfWeek,
+                        'startTime' => $startTime->toDateTimeString(),
+                        'endTime' => $endTime->toDateTimeString(),
+                        'overlapStart' => $rehat3,
+                        'overlapEnd' => $rehat4,
+                    ]);
+        
+                    return response()->json(['error' => 'Time selected is already occupied, please select another time!']);
+
+                }
+
+            }
 
             $events = DB::table('tblevents')
             ->whereRaw('DAYNAME(start) = ?', [$dayOfWeek])
@@ -3267,8 +3292,11 @@ class AR_Controller extends Controller
         // Parse the start and end times from the request
         $startTime = Carbon::parse($request->start);
         $endTime = Carbon::parse($request->end);
-        $rehat1 = '13:00:00';
+        $rehat1 = '13:30:00';
         $rehat2 = '14:00:00';
+
+        $rehat3 = '12:30:00';
+        $rehat4 = '14:30:00';
 
         // Get the day of the week (e.g., Thursday)
         $dayOfWeek = $startTime->format('l');
@@ -3343,6 +3371,28 @@ class AR_Controller extends Controller
             return response()->json(['error' => 'Time selected is already occupied, please select another time!']);
 
         }else{
+
+            if($dayOfWeek == 'Friday')
+            {
+
+                if(($startTimeOnly <= $rehat3 && $endTimeOnly >= $rehat4) ||
+                ($startTimeOnly >= $rehat3 && $endTimeOnly <= $rehat4) ||
+                ($startTimeOnly <= $rehat3 && $endTimeOnly <= $rehat4 && $endTimeOnly > $rehat3))
+                {
+
+                    Log::info('Overlap detected for event on:', [
+                        'dayOfWeek' => $dayOfWeek,
+                        'startTime' => $startTime->toDateTimeString(),
+                        'endTime' => $endTime->toDateTimeString(),
+                        'overlapStart' => $rehat3,
+                        'overlapEnd' => $rehat4,
+                    ]);
+        
+                    return response()->json(['error' => 'Time selected is already occupied, please select another time!']);
+
+                }
+
+            }
 
             $credit_hour = DB::table('tblevents')
                                     ->where([
@@ -3439,8 +3489,11 @@ class AR_Controller extends Controller
         // Parse the start and end times from the request
         $startTime = Carbon::parse($request->start);
         $endTime = Carbon::parse($request->end);
-        $rehat1 = '13:00:00';
+        $rehat1 = '13:30:00';
         $rehat2 = '14:00:00';
+
+        $rehat3 = '12:30:00';
+        $rehat4 = '14:30:00';
 
         // Get the day of the week (e.g., Thursday)
         $dayOfWeek = $startTime->format('l');
@@ -3516,6 +3569,28 @@ class AR_Controller extends Controller
             return response()->json(['error' => 'Time selected is already occupied, please select another time!']);
 
         }else{
+
+            if($dayOfWeek == 'Friday')
+            {
+
+                if(($startTimeOnly <= $rehat3 && $endTimeOnly >= $rehat4) ||
+                ($startTimeOnly >= $rehat3 && $endTimeOnly <= $rehat4) ||
+                ($startTimeOnly <= $rehat3 && $endTimeOnly <= $rehat4 && $endTimeOnly > $rehat3))
+                {
+
+                    Log::info('Overlap detected for event on:', [
+                        'dayOfWeek' => $dayOfWeek,
+                        'startTime' => $startTime->toDateTimeString(),
+                        'endTime' => $endTime->toDateTimeString(),
+                        'overlapStart' => $rehat3,
+                        'overlapEnd' => $rehat4,
+                    ]);
+        
+                    return response()->json(['error' => 'Time selected is already occupied, please select another time!']);
+
+                }
+
+            }
 
             $credit_hour = DB::table('tblevents')
                                     ->join('tbllecture', 'tblevents.lecture_id', 'tbllecture.id')
