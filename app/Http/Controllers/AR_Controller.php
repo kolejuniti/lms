@@ -2664,9 +2664,10 @@ class AR_Controller extends Controller
                         ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
                         ->join('tbllecture_room', 'tblevents.lecture_id', 'tbllecture_room.id')
                         ->join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
+                        ->join('users', 'tblevents.user_ic', 'users.ic')
                         ->where('student_subjek.student_ic', request()->id)
                         ->groupBy('subjek.sub_id', 'tblevents.id')
-                        ->select('tblevents.*', 'subjek.course_code AS code' , 'subjek.course_name AS subject', 'tbllecture_room.name AS room', 'sessions.SessionName AS session')->get();
+                        ->select('tblevents.*','users.name AS lecturer' ,'subjek.course_code AS code' , 'subjek.course_name AS subject', 'tbllecture_room.name AS room', 'sessions.SessionName AS session')->get();
 
                 $formattedEvents = $events->map(function ($event) {
 
@@ -2716,7 +2717,8 @@ class AR_Controller extends Controller
                         'endTime' => date('H:i', strtotime($event->end)),
                         'duration' => gmdate('H:i', strtotime($event->end) - strtotime($event->start)),
                         'daysOfWeek' => [$fullCalendarDayOfWeek], // Recurring on the same day of the week
-                        'programInfo' => $programInfo // Add program info to the event object
+                        'programInfo' => $programInfo, // Add program info to the event object
+                        'lectInfo' => $event->lecturer // Add program info to the event object
                     ];
                 });
 
