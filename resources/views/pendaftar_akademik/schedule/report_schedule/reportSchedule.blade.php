@@ -97,7 +97,7 @@
                                         @endif
                                         @if ($groupKey === 0)
                                             <td style="text-align: center; border: 1px solid black;" rowspan="{{ $subjectRowSpan }}">
-                                                {{ $subject->course_name }}
+                                              {{ $subject->course_code }} - {{ $subject->course_name }}
                                             </td>
                                             <td style="text-align: center; border: 1px solid black;" rowspan="{{ $subjectRowSpan }}">
                                                 {{ $subject->session }}
