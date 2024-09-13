@@ -358,7 +358,7 @@
 
         // Define the hiddenDays variable based on the condition
         var hiddenDays;
-        hiddenDays = [];
+        hiddenDays = [0, 6];
 
         document.addEventListener('DOMContentLoaded', function () {
             var options = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
@@ -371,8 +371,8 @@
                     right: 'timeGridWeek,timeGridDay'
                 },
                 hiddenDays: hiddenDays, // Hide Sunday (0) and Saturday (6)
-                slotMinTime: '07:00:00', // Set the minimum visible time to 8 AM
-                slotMaxTime: '20:00:00', // Set the maximum visible time to 5 PM (17:00)
+                slotMinTime: '08:30:00', // Set the minimum visible time to 8 AM
+                slotMaxTime: '18:00:00', // Set the maximum visible time to 5 PM (17:00)
                 slotDuration: '00:30:00', // Sets the duration of each time slot, e.g., '00:30:00' for 30 minutes
                 slotLabelInterval: '00:30:00', // Sets the interval at which time labels are displayed, e.g., '00:30:00' for every 30 minutes
                 height: 'auto', // You can set this to 'auto' or a specific pixel value like '800px'
@@ -385,13 +385,29 @@
                     var rehatEvents = [];
                     var date = new Date(fetchInfo.start);
                     while (date < fetchInfo.end) {
-                        rehatEvents.push({
-                            title: 'REHAT',
-                            start: new Date(date.getFullYear(), date.getMonth(), date.getDate(), 13, 0, 0),
-                            end: new Date(date.getFullYear(), date.getMonth(), date.getDate(), 14, 0, 0),
-                            allDay: false,
-                            color: 'red'
-                        });
+                        var dayOfWeek = date.getDay(); // 0 = Sunday, 1 = Monday, ..., 5 = Friday, 6 = Saturday
+                        
+                        if (dayOfWeek >= 1 && dayOfWeek <= 4) { // Monday to Thursday
+                            // Add REHAT event from 13:30 to 14:00
+                            rehatEvents.push({
+                                title: 'REHAT',
+                                start: new Date(date.getFullYear(), date.getMonth(), date.getDate(), 13, 30, 0),
+                                end: new Date(date.getFullYear(), date.getMonth(), date.getDate(), 14, 0, 0),
+                                allDay: false,
+                                color: 'red'
+                            });
+                        } else if (dayOfWeek === 5) { // Friday
+                            // Add REHAT event from 12:30 to 14:30
+                            rehatEvents.push({
+                                title: 'REHAT',
+                                start: new Date(date.getFullYear(), date.getMonth(), date.getDate(), 12, 30, 0),
+                                end: new Date(date.getFullYear(), date.getMonth(), date.getDate(), 14, 30, 0),
+                                allDay: false,
+                                color: 'red'
+                            });
+                        }
+                        
+                        // Move to the next day
                         date.setDate(date.getDate() + 1);
                     }
 
@@ -628,8 +644,8 @@
                 var roomId = document.getElementById('room').value;
                 var eventStart = convertToPhpMyAdminDatetime(new Date(document.getElementById('event-start').value));
 
-                const slotMinTime = '07:00:00';
-                const slotMaxTime = '20:00:00';
+                const slotMinTime = '08:30:00';
+                const slotMaxTime = '18:00:00';
 
                 const startHour = parseInt(eventStart.slice(11, 13));
 
@@ -787,8 +803,8 @@
                 const newStart = document.getElementById('edit-start').value;
                 const newEnd = document.getElementById('edit-end').value;
 
-                const slotMinTime = '07:00:00';
-                const slotMaxTime = '20:00:00';
+                const slotMinTime = '08:30:00';
+                const slotMaxTime = '18:00:00';
 
                 const startHour = parseInt(newStart.slice(11, 13));
                 const endHour = parseInt(newEnd.slice(11, 13));
