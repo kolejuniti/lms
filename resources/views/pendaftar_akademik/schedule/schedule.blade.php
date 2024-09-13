@@ -437,18 +437,21 @@
                         });
                 },
                 eventDidMount: function(info) {
-                    // Create a div for the program information
-                    var programDiv = document.createElement('div');
-                    programDiv.classList.add('program-info');
-                    programDiv.style.position = 'absolute';
-                    programDiv.style.bottom = '0';
-                    programDiv.style.width = '100%';
-                    // programDiv.style.backgroundColor = 'rgba(255, 255, 255, 0.8)'; // optional styling
-                    programDiv.style.padding = '5px'; // optional padding
-                    programDiv.textContent = 'Programs: ' + info.event.extendedProps.programInfo;
+                    // Check if the event title is 'REHAT'
+                    if (info.event.title !== 'REHAT') {
+                        // Create a div for the program information
+                        var programDiv = document.createElement('div');
+                        programDiv.classList.add('program-info');
+                        programDiv.style.position = 'absolute';
+                        programDiv.style.bottom = '0';
+                        programDiv.style.width = '100%';
+                        // programDiv.style.backgroundColor = 'rgba(255, 255, 255, 0.8)'; // optional styling
+                        programDiv.style.padding = '5px'; // optional padding
+                        programDiv.textContent = 'Programs: ' + info.event.extendedProps.programInfo;
 
-                    // Append the program div to the event element
-                    info.el.appendChild(programDiv);
+                        // Append the program div to the event element
+                        info.el.appendChild(programDiv);
+                    }
                 },
                 editable: true,
                 selectable: true,
