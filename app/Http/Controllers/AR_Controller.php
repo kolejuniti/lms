@@ -2718,7 +2718,7 @@ class AR_Controller extends Controller
                         'duration' => gmdate('H:i', strtotime($event->end) - strtotime($event->start)),
                         'daysOfWeek' => [$fullCalendarDayOfWeek], // Recurring on the same day of the week
                         'programInfo' => $programInfo, // Add program info to the event object
-                        'lectInfo' => $event->lecturer // Add program info to the event object
+                        'lectInfo' => $event->lecturer
                     ];
                 });
 
@@ -2731,7 +2731,7 @@ class AR_Controller extends Controller
                         ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
                         ->where('tblevents.lecture_id', request()->id)
                         ->groupBy('subjek.sub_id', 'tblevents.id')
-                        ->select('tblevents.*', 'subjek.course_code AS code' , 'subjek.course_name AS subject', 'tbllecture_room.name AS room', 'sessions.SessionName AS session')->get();
+                        ->select('tblevents.*','users.name AS lecturer' , 'subjek.course_code AS code' , 'subjek.course_name AS subject', 'tbllecture_room.name AS room', 'sessions.SessionName AS session')->get();
 
                 $formattedEvents = $events->map(function ($event) {
 
@@ -2781,7 +2781,8 @@ class AR_Controller extends Controller
                         'endTime' => date('H:i', strtotime($event->end)),
                         'duration' => gmdate('H:i', strtotime($event->end) - strtotime($event->start)),
                         'daysOfWeek' => [$fullCalendarDayOfWeek], // Recurring on the same day of the week
-                        'programInfo' => $programInfo // Add program info to the event object
+                        'programInfo' => $programInfo, // Add program info to the event object
+                        'lectInfo' => $event->lecturer
                     ];
                 });
 
