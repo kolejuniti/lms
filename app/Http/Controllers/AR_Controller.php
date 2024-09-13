@@ -2729,6 +2729,7 @@ class AR_Controller extends Controller
                         ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
                         ->join('tbllecture_room', 'tblevents.lecture_id', 'tbllecture_room.id')
                         ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+                        ->join('users', 'tblevents.user_ic', 'users.ic')
                         ->where('tblevents.lecture_id', request()->id)
                         ->groupBy('subjek.sub_id', 'tblevents.id')
                         ->select('tblevents.*','users.name AS lecturer' , 'subjek.course_code AS code' , 'subjek.course_name AS subject', 'tbllecture_room.name AS room', 'sessions.SessionName AS session')->get();
