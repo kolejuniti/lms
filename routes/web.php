@@ -718,6 +718,14 @@ Route::get('/finance/debt/studentCtos', [App\Http\Controllers\FinanceController:
 Route::post('/finance/debt/studentCtos/importCtos', [App\Http\Controllers\FinanceController::class,'importCtos'])->name('finance.studentCtos.importCtos');
 Route::post('/finance/debt/studentCtos/releaseCTOS', [App\Http\Controllers\FinanceController::class,'releaseCTOS'])->name('finance.studentCtos.releaseCTOS');
 Route::post('/finance/debt/studentCtos/deleteCTOS', [App\Http\Controllers\FinanceController::class,'deleteCTOS'])->name('finance.studentCtos.deleteCTOS');
+Route::get('/finance/asset/vehicleRecord', [App\Http\Controllers\FinanceController::class,'vehicleRecord'])->name('finance.vehicleRecord');
+Route::post('/finance/asset/vehicleRecord/storeVehicle', [App\Http\Controllers\FinanceController::class,'storeVehicle']);
+Route::delete('/finance/asset/vehicleRecord/deleteVehicle', [App\Http\Controllers\FinanceController::class,'deleteVehicle']);
+Route::get('/finance/asset/vehicleRecord/updateVehicle', [App\Http\Controllers\FinanceController::class,'updateVehicle']);
+Route::get('/finance/asset/vehicleRecord/serviceRecord', [App\Http\Controllers\FinanceController::class,'serviceRecord']);
+Route::get('/finance/asset/vehicleRecord/getServiceList', [App\Http\Controllers\FinanceController::class,'getServiceList']);
+Route::post('/finance/asset/vehicleRecord/storeService', [App\Http\Controllers\FinanceController::class,'storeService']);
+Route::delete('/finance/asset/vehicleRecord/deleteRecord', [App\Http\Controllers\FinanceController::class,'deleteRecord']);
 
 
 Route::get('/treasurer_dashboard', [App\Http\Controllers\TreasurerController::class, 'dashboard'])->name('treasurer.dashboard');

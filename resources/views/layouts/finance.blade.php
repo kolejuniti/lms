@@ -432,6 +432,16 @@
 					<li><a href="{{ route('finance.studentCtos') }}" class="{{ (route('finance.studentCtos') == Request::url()) ? 'active' : ''}}">Student CTOSs</a></li>
 				</ul>
 			  </li>
+			  <li class="treeview">
+				<a href="#"><i data-feather="box"></i><span>Assets</span>
+					<span class="pull-right-container">
+						<i class="fa fa-angle-left pull-right"></i>
+					</span>
+				</a>
+				<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
+					<li><a href="{{ route('finance.vehicleRecord') }}" class="{{ (route('finance.vehicleRecord') == Request::url()) ? 'active' : ''}}">Vehicle & Service Records</a></li>
+				</ul>
+			  </li>
 			  <li>
 				<a href="/all/massage/user"><i data-feather="message-square"></i><span>Message</span></a>
 			  </li> 

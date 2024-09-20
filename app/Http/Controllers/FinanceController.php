@@ -11371,4 +11371,318 @@ class FinanceController extends Controller
 
     }
 
+    public function vehicleRecord()
+    {
+
+        $data = [
+
+            'vehicles' => DB::table('tblvehicle')->get(),
+            'year' => array_reverse(range(2000, now()->year))
+
+        ];
+
+        return view('finance.asset.vehicleRecord.index', compact('data'));
+
+    }
+
+    public function storeVehicle(Request $request)
+    {
+
+        try{
+
+            if(isset($request->idS))
+            {
+
+                $request->validate([
+                    'type' => 'required',
+                    'brand' => 'required',
+                    'model' => 'required',
+                    'colour' => 'required',
+                    'year' => 'required|integer',
+                    'reNo' => 'required',
+                    'roadtax' => 'required|date',
+                ]);
+
+                DB::table('tblvehicle')->where('id', $request->idS)->update([
+                    'type' => $request->type,
+                    'brand' => $request->brand,
+                    'model' => $request->model,
+                    'colour' => $request->colour,
+                    'year' => $request->year,
+                    'registration_number' => $request->reNo,
+                    'date_of_roadtax' => $request->roadtax
+                ]);
+
+                $message = 'Vehicle updated successfully.';
+
+            }
+            else{
+
+                $request->validate([
+                    'type' => 'required',
+                    'brand' => 'required',
+                    'model' => 'required',
+                    'colour' => 'required',
+                    'year' => 'required|integer',
+                    'reNo' => 'required',
+                    'roadtax' => 'required|date',
+                ]);
+
+                DB::table('tblvehicle')->insert([
+                    'type' => $request->type,
+                    'brand' => $request->brand,
+                    'model' => $request->model,
+                    'colour' => $request->colour,
+                    'year' => $request->year,
+                    'registration_number' => $request->reNo,
+                    'date_of_roadtax' => $request->roadtax
+                ]);
+
+                $message = 'Vehicle added successfully.';
+
+            }
+
+    
+            return back()->with('success', $message);
+
+        } catch(Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
+
+    }
+
+    public function deleteVehicle(Request $request)
+    {
+
+        try{
+
+            DB::table('tblvehicle')->where('id', $request->id)->delete();
+
+            return response()->json(['success' => 'Vehicle deleted successfully.']);
+
+        } catch(Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
+
+    }
+
+    public function updateVehicle(Request $request)
+    {
+
+        $data['car'] = DB::table('tblvehicle')->where('id', $request->id)->first();
+
+        $data['year'] = array_reverse(range(2000, now()->year));
+
+        return view('finance.asset.vehicleRecord.getVehicle', compact('data'))->with('id', $request->id);
+
+    }
+
+    public function serviceRecord()
+    {
+
+        return view('finance.asset.vehicleRecord.getServiceRecord')->with('id', request()->id);
+
+    }
+
+    public function getServiceList(Request $request)
+    {
+
+        $data['service'] = DB::table('tblvehicle_service')->where('vehicle_id', $request->id)->get();
+
+        foreach($data['service'] as $key => $srv)
+        {
+
+            $data['details'][$key] = DB::table('tblservice_details')->where('service_record_id', $srv->id)->get();
+
+        }
+
+        $content = "";
+
+        foreach($data['service'] as $key => $srv)
+        {
+            $content .= '<div class="card mb-3" id="stud_info">
+                <div class="card-body">';
+
+            $content .= '<div class="row">
+                <div class="col-md-6">
+                    <table class="table table-borderless">
+                        <tbody>
+                            <tr>
+                                <td style="width: 25%">Service Date</td>
+                                <td style="width: 10%">'. $srv->date_of_service .'</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col-md-6">
+                    <table class="table table-borderless">
+                        <tbody>
+                            <tr>
+                                <td style="width: 25%">Odometer (KM)</td>
+                                <td style="width: 10%">'. $srv->odometer .'</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>';
+
+            $content .= '<div class="row">
+                <div class="col-md-12">
+                    <table class="table table-borderless">
+                        <tbody>
+                            <tr>
+                                <td style="width: 2%">Company\'s Name & Address</td>
+                                <td style="width: 8%">'. $srv->company .'</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>';
+
+            
+            $content .= '<div class="row">
+                <div class="col-md-12">
+                    <table class="table table-borderless">
+                        <tbody>
+                            <tr>
+                                <td style="width: 2%">Service Type</td>
+                                <td style="width: 6.7%">';
+            
+                                // Loop through service details and concatenate the 'type_of_services'
+                                foreach ($data['details'][$key] as $detail) {
+                                    $content .= $detail->type_of_services. ' - ' . $detail->notes .'<br>';  // Add each service type with line break
+                                }
+            
+            $content .= '</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>';
+        
+            
+
+            $content .= '<div class="row">
+                <div class="col-md-12">
+                    <table class="table table-borderless">
+                        <tbody>
+                            <tr>
+                                <td style="width: 2%">Amount (RM)</td>
+                                <td style="width: 6.7%">'. $srv->amount .'</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>';
+
+            $content .= '<div class="row">
+                <div class="col-md-12">
+                    <table class="table table-borderless">
+                        <tbody>
+                            <tr>
+                                <td style="width: 2%">Note</td>
+                                <td style="width: 6%">'. $srv->notes .'</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>';
+
+            $content .= '<div class="form-group pull-right">
+                <input type="submit" name="submitService" class="btn btn-warning pull-right" value="Delete" onclick="deleteRecord(\''. $srv->id .'\')">
+            </div>';
+
+            $content .= '</div></div>';
+
+        }
+
+        return $content;
+
+
+    }
+
+    public function storeService(Request $request)
+    {
+
+        $data = json_decode($request->formData);
+
+        // Check if $data is null or if decoding failed
+        if ($data === null && json_last_error() !== JSON_ERROR_NONE) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Invalid JSON data.'
+            ], 200);
+        }
+
+        // If data is not null, proceed with further processing
+        // Example:
+        if (!empty($data->date) && !empty($data->meter) && !empty($data->address) && !empty($data->amount) && !empty($data->note)) {
+
+            // Now handle the checkbox and textarea values
+            if (!empty($data->checkboxes)) {
+                foreach ($data->checkboxes as $checkbox) {
+                    // Ensure the textarea value is not empty
+                    if (empty($checkbox->textareaValue)) {
+                        return response()->json([
+                            'status' => 'error',
+                            'message' => 'Textarea value for the checkbox is missing.'
+                        ], 200);
+                    }
+                }
+            }
+            
+            $id = DB::table('tblvehicle_service')->insertGetId([
+                    'vehicle_id' => $data->id,
+                    'date_of_service' => $data->date,
+                    'odometer' => $data->meter,
+                    'company' => $data->address,
+                    'amount' => $data->amount,
+                    'notes' => $data->note
+            ]);
+
+            // Now handle the checkbox and textarea values
+            if (!empty($data->checkboxes)) {
+                foreach ($data->checkboxes as $checkbox) {
+                    DB::table('tblservice_details')->insert([
+                        'service_record_id' => $id,  // Foreign key to the main record
+                        'type_of_services' => $checkbox->checkboxValue,  // Checkbox value
+                        'notes' => $checkbox->textareaValue  // Associated textarea value
+                    ]);
+                }
+            }
+
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Data successfully processed.'
+            ], 200);
+        } else {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Required fields are missing.'
+            ], 200);
+        }
+
+
+    }
+
+    public function deleteRecord(Request $request)
+    {
+
+        try{
+
+            $id = DB::table('tblvehicle_service')->where('id', $request->id)->value('vehicle_id');
+
+            DB::table('tblvehicle_service')->where('id', $request->id)->delete();
+
+            DB::table('tblservice_details')->where('service_record_id', $request->id)->delete();
+
+            return response()->json(['success' => 'Vehicle deleted successfully.', 'id' => $id]);
+
+        } catch(Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
+
+    }
+
 }
