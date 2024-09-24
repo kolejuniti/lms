@@ -3093,16 +3093,23 @@ class PendaftarController extends Controller
         ->distinct()
         ->pluck('tblstudent_log.student_ic');
 
+
         $sub1 = DB::table('tblstudent_log')
-               ->leftjoin('sessions', 'tblstudent_log.session_id', 'sessions.SessionID')
-               ->join('students', function($join){
-                    $join->on('tblstudent_log.student_ic', 'students.ic');
-               })
-               ->select('tblstudent_log.student_ic', DB::raw('MAX(tblstudent_log.id) as latest_id'))
-               ->whereIn('tblstudent_log.student_ic', $ic)
-               ->where('sessions.Year', $request->year)
-               ->where('tblstudent_log.semester_id', 1)
-               ->groupBy('tblstudent_log.student_ic');
+            ->join('sessions', 'tblstudent_log.session_id', '=', 'sessions.SessionID')
+            ->join('students', 'tblstudent_log.student_ic', '=', 'students.ic')
+            ->select('tblstudent_log.student_ic', DB::raw('MAX(tblstudent_log.id) as latest_id'))
+            ->whereIn('tblstudent_log.student_ic', $ic)
+            ->where('tblstudent_log.semester_id', 1)
+            ->groupBy('tblstudent_log.student_ic');
+
+        $filteredSub1 = DB::table('tblstudent_log as latest_log')
+            ->joinSub($sub1, 'sub1', function($join){
+                $join->on('latest_log.id', '=', 'sub1.latest_id');
+            })
+            ->join('sessions', 'latest_log.session_id', '=', 'sessions.SessionID')
+            ->select('latest_log.student_ic', 'latest_log.id')
+            ->where('sessions.Year', '=', $request->year);
+
 
         $sub2 = DB::table('tblstudent_log')
                ->leftjoin('sessions', 'tblstudent_log.session_id', 'sessions.SessionID')
@@ -3128,7 +3135,7 @@ class PendaftarController extends Controller
         };
 
         $data['student1'] = ($baseQuery)()
-        ->joinSub($sub1, 'latest_logs', function ($join) {
+        ->joinSub($filteredSub1, 'latest_logs', function ($join) {
             $join->on('tblstudent_log.student_ic', '=', 'latest_logs.student_ic')
                  ->on('tblstudent_log.id', '=', 'latest_logs.latest_id');
         })
