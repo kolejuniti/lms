@@ -3134,15 +3134,16 @@ class PendaftarController extends Controller
         ->where('sessions.Year', $request->year);
         };
 
-        $data['student1'] = ($baseQuery)()
+        $data['student1'] = ($baseQuery)()  // Make sure $baseQuery is defined correctly
         ->joinSub($filteredSub1, 'latest_logs', function ($join) {
             $join->on('tblstudent_log.student_ic', '=', 'latest_logs.student_ic')
-                 ->on('tblstudent_log.id', '=', 'latest_logs.latest_id');
+                ->on('tblstudent_log.id', '=', 'latest_logs.latest_id');
         })
         ->where('tblstudent_log.semester_id', 1)
-        ->select('students.name', 'students.ic', 'students.no_matric', 'tblsex.code as gender', 'tblprogramme.progcode',
-                'sessions.SessionName AS session', 'tblstudent_log.semester_id AS semester', 'tblstudent_log.date', 'tblstudent_log.remark',
-                'tblstudent_status.name AS status')
+        ->select('students.name', 'students.ic', 'students.no_matric', 'tblsex.code as gender', 
+                'tblprogramme.progcode', 'sessions.SessionName AS session', 
+                'tblstudent_log.semester_id AS semester', 'tblstudent_log.date', 
+                'tblstudent_log.remark', 'tblstudent_status.name AS status')
         ->get();
 
         $data['student2'] = ($baseQuery)()
