@@ -55,6 +55,12 @@
                       </select>
                     </div>
                 </div>
+                <div class="row d-flex mt-2 pull-right">
+                    <div class="col-md-6">
+                      <input type="checkbox" id="withheld" class="filled-in" name="withheld" value="1">
+                      <label for="withheld">Withheld</label>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
