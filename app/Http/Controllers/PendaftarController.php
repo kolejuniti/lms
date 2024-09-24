@@ -3107,7 +3107,7 @@ class PendaftarController extends Controller
                 $join->on('latest_log.id', '=', 'sub1.latest_id');
             })
             ->join('sessions', 'latest_log.session_id', '=', 'sessions.SessionID')
-            ->select('latest_log.student_ic', 'latest_log.id')
+            ->select('latest_log.student_ic', 'latest_log.id AS latest_id')
             ->where('sessions.Year', '=', $request->year);
 
 
