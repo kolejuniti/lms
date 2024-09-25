@@ -2561,6 +2561,22 @@ class AR_Controller extends Controller
         if(request()->type == 'lct')
         {
 
+            $id = DB::table('tblevents')
+                    ->join('sessions', 'tblevents.session_id', '=', 'sessions.SessionID')
+                    ->where([
+                        ['tblevents.user_ic', request()->id],
+                        ['sessions.Status', '=', 'ACTIVE']
+                    ])
+                    ->groupBy(
+                        DB::raw('TIME(tblevents.start)'),      // Group by time part of start
+                        DB::raw('TIME(tblevents.end)'),        // Group by time part of end
+                        DB::raw('DAYNAME(tblevents.start)')    // Group by day name (e.g., "Wednesday")
+                    )
+                    ->pluck('tblevents.id'); // Retrieve the ids of grouped rows
+
+
+                //dd($id);
+
             $data = [
                 // 'lectureInfo' => DB::table('tbllecture')
                 //                  ->join('tbllecture_room', 'tbllecture.room_id', 'tbllecture_room.id')
@@ -2604,14 +2620,13 @@ class AR_Controller extends Controller
 
                 'used' => DB::table('tblevents')
                             ->join('sessions', 'tblevents.session_id', '=', 'sessions.SessionID')
-                            ->where([
-                                ['tblevents.user_ic', request()->id],
-                                ['sessions.Status', '=', 'ACTIVE']
-                            ])
+                            ->whereIn('tblevents.id', $id)
                             ->select(DB::raw('SUM(TIMESTAMPDIFF(HOUR, tblevents.start, tblevents.end)) as total_hours'))
                             ->get(),
                 'time' => DB::table('tblevents_second')->where('user_ic', request()->id)->value('timestamps'),
             ];
+
+            //dd($data['used']);
 
             return view('pendaftar_akademik.schedule.schedule', compact('data'));
 
@@ -2681,6 +2696,9 @@ class AR_Controller extends Controller
                         ->join('tbllecture_room', 'tblevents.lecture_id', 'tbllecture_room.id')
                         ->join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
                         ->join('users', 'tblevents.user_ic', 'users.ic')
+                        ->where([
+                        ['sessions.Status', 'ACTIVE']
+                        ])
                         ->where('student_subjek.student_ic', request()->id)
                         ->groupBy('subjek.sub_id', 'tblevents.id')
                         ->select('tblevents.*','users.name AS lecturer' ,'subjek.course_code AS code' , 'subjek.course_name AS subject', 'tbllecture_room.name AS room', 'sessions.SessionName AS session')->get();
@@ -2746,6 +2764,9 @@ class AR_Controller extends Controller
                         ->join('tbllecture_room', 'tblevents.lecture_id', 'tbllecture_room.id')
                         ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
                         ->join('users', 'tblevents.user_ic', 'users.ic')
+                        ->where([
+                            ['sessions.Status', 'ACTIVE']
+                            ])
                         ->where('tblevents.lecture_id', request()->id)
                         ->groupBy('subjek.sub_id', 'tblevents.id')
                         ->select('tblevents.*','users.name AS lecturer' , 'subjek.course_code AS code' , 'subjek.course_name AS subject', 'tbllecture_room.name AS room', 'sessions.SessionName AS session')->get();
@@ -2811,6 +2832,9 @@ class AR_Controller extends Controller
                     ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
                     ->join('tbllecture_room', 'tblevents.lecture_id', 'tbllecture_room.id')
                     ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+                    ->where([
+                        ['sessions.Status', 'ACTIVE']
+                        ])
                     ->where('tblevents.user_ic', request()->id)
                     ->groupBy('subjek.sub_id', 'tblevents.id')
                     ->select('tblevents.*', 'subjek.course_code AS code' , 'subjek.course_name AS subject', 'tbllecture_room.name AS room', 'sessions.SessionName AS session')->get();
@@ -3202,6 +3226,9 @@ class AR_Controller extends Controller
                                         ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
                                         ->join('tbllecture_room', 'tblevents.lecture_id', 'tbllecture_room.id')
                                         ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+                                        ->where([
+                                            ['sessions.Status', 'ACTIVE']
+                                            ])
                                         ->where('tblevents.id', $event->id)
                                         ->groupBy('subjek.sub_id', 'tblevents.id')
                                         ->select('tblevents.*', 'subjek.course_code AS code' , 'subjek.course_name AS subject', 'tbllecture_room.name AS room', 'sessions.SessionName AS session')->first();
