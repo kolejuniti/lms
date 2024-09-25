@@ -2628,13 +2628,24 @@ class AR_Controller extends Controller
     public function getSubjectSchedule(Request $request)
     {
 
-        $subject = DB::table('user_subjek')
+        $query1 = DB::table('user_subjek')
                    ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
                    ->where([
                       ['user_subjek.user_ic', $request->id],
                       ['user_subjek.session_id', $request->sessionID]
                    ])
-                   ->select('subjek.course_name AS name','subjek.course_code AS code', 'user_subjek.id AS id')->get();
+                   ->select('subjek.course_name AS name','subjek.course_code AS code', 'user_subjek.id AS id');
+
+        $subject = DB::table('user_subjek')
+                   ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+                   ->where([
+                      ['user_subjek.amali_ic', $request->id],
+                      ['user_subjek.session_id', $request->sessionID]
+                   ])
+                   ->unionAll($query1)
+                   ->select('subjek.course_name AS name','subjek.course_code AS code', 'user_subjek.id AS id')
+                   ->groupBy('user_subjek.id')
+                   ->get();
 
         return response()->json($subject);
 
@@ -2939,16 +2950,35 @@ class AR_Controller extends Controller
                        ->where('tbllecture_room.id', $request->roomId)
                        ->select('tbllecture_room.*')
                        ->first();
+        
+        $column = null;
 
-        $courseDetails = DB::table('student_subjek')
-                         ->join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
-                         ->join('subjek_structure', 'subjek.sub_id', 'subjek_structure.courseID')
-                         ->where([
-                            ['group_id', $request->groupId],
-                            ['group_name', $request->groupName]
-                         ])
-                         ->select('subjek_structure.meeting_hour AS course_credit')
-                         ->first();
+        // Determine the column based on the condition
+        if (DB::table('user_subjek')->where([
+            'user_ic' => $request->id,
+            'id' => $request->groupId
+        ])->exists()) {
+            $column = 'subjek_structure.meeting_hour AS course_credit';
+        } elseif (DB::table('user_subjek')->where([
+            'amali_ic' => $request->id,
+            'id' => $request->groupId
+        ])->exists()) {
+            $column = 'subjek_structure.amali_hour AS course_credit';
+        }
+        
+        // Run the query only if a valid column is selected
+        if ($column) {
+            $courseDetails = DB::table('student_subjek')
+                ->join('subjek', 'student_subjek.courseid', '=', 'subjek.sub_id')
+                ->join('subjek_structure', 'subjek.sub_id', '=', 'subjek_structure.courseID')
+                ->where([
+                    ['group_id', '=', $request->groupId],
+                    ['group_name', '=', $request->groupName]
+                ])
+                ->select(DB::raw($column))
+                ->first();
+        }
+                       
  
         if(DB::table('tblevents')
         ->where('lecture_id', $request->id)
@@ -3081,6 +3111,7 @@ class AR_Controller extends Controller
                     $credit_hour = DB::table('tblevents')
                                     ->join('tbllecture', 'tblevents.lecture_id', 'tbllecture.id')
                                     ->where([
+                                        ['tblevents.user_ic', $request->id],
                                         ['tblevents.group_id', $request->groupId],
                                         ['tblevents.group_name', $request->groupName],
                                         ['tblevents.session_id', $request->session]
@@ -3319,15 +3350,33 @@ class AR_Controller extends Controller
                        ->select('tbllecture_room.*')
                        ->first();
 
-        $courseDetails = DB::table('student_subjek')
-                       ->join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
-                       ->join('subjek_structure', 'subjek.sub_id', 'subjek_structure.courseID')
-                       ->where([
-                          ['group_id', $request->groupId],
-                          ['group_name', $request->groupName]
-                       ])
-                       ->select('subjek_structure.meeting_hour AS course_credit')
-                       ->first();
+        $column = null;
+
+        // Determine the column based on the condition
+        if (DB::table('user_subjek')->where([
+            'user_ic' => $event->user_ic,
+            'id' => $event->group_id
+        ])->exists()) {
+            $column = 'subjek_structure.meeting_hour AS course_credit';
+        } elseif (DB::table('user_subjek')->where([
+            'amali_ic' => $event->user_ic,
+            'id' => $event->group_id
+        ])->exists()) {
+            $column = 'subjek_structure.amali_hour AS course_credit';
+        }
+        
+        // Run the query only if a valid column is selected
+        if ($column) {
+            $courseDetails = DB::table('student_subjek')
+                ->join('subjek', 'student_subjek.courseid', '=', 'subjek.sub_id')
+                ->join('subjek_structure', 'subjek.sub_id', '=', 'subjek_structure.courseID')
+                ->where([
+                    ['group_id', '=', $event->group_id],
+                    ['group_name', '=', $event->group_name]
+                ])
+                ->select(DB::raw($column))
+                ->first();
+        }
 
         if(DB::table('tblevents')
         ->where('user_ic', $event->user_ic)
@@ -3405,6 +3454,7 @@ class AR_Controller extends Controller
 
             $credit_hour = DB::table('tblevents')
                                     ->where([
+                                        ['tblevents.user_ic', $event->user_ic],
                                         ['tblevents.group_id', $event->group_id],
                                         ['tblevents.group_name', $event->group_name],
                                         ['tblevents.session_id', $event->session_id],
@@ -3517,15 +3567,33 @@ class AR_Controller extends Controller
                        ->select('tbllecture_room.*', 'tbllecture.session_id AS session')
                        ->first();
 
-        $courseDetails = DB::table('student_subjek')
-                       ->join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
-                       ->join('subjek_structure', 'subjek.sub_id', 'subjek_structure.courseID')
-                       ->where([
-                          ['group_id', $request->groupId],
-                          ['group_name', $request->groupName]
-                       ])
-                       ->select('subjek_structure.meeting_hour AS course_credit')
-                       ->first();
+        $column = null;
+
+        // Determine the column based on the condition
+        if (DB::table('user_subjek')->where([
+            'user_ic' => $event->user_ic,
+            'id' => $event->group_id
+        ])->exists()) {
+            $column = 'subjek_structure.meeting_hour AS course_credit';
+        } elseif (DB::table('user_subjek')->where([
+            'amali_ic' => $event->user_ic,
+            'id' => $event->group_id
+        ])->exists()) {
+            $column = 'subjek_structure.amali_hour AS course_credit';
+        }
+        
+        // Run the query only if a valid column is selected
+        if ($column) {
+            $courseDetails = DB::table('student_subjek')
+                ->join('subjek', 'student_subjek.courseid', '=', 'subjek.sub_id')
+                ->join('subjek_structure', 'subjek.sub_id', '=', 'subjek_structure.courseID')
+                ->where([
+                    ['group_id', '=', $event->group_id],
+                    ['group_name', '=', $event->group_name]
+                ])
+                ->select(DB::raw($column))
+                ->first();
+        }
 
         if(DB::table('tblevents')
         ->where('lecture_id', $event->lecture_id)
@@ -3604,6 +3672,7 @@ class AR_Controller extends Controller
             $credit_hour = DB::table('tblevents')
                                     ->join('tbllecture', 'tblevents.lecture_id', 'tbllecture.id')
                                     ->where([
+                                        ['tblevents.user_ic', $event->user_ic],
                                         ['tblevents.group_id', $event->group_id],
                                         ['tblevents.group_name', $event->group_name],
                                         ['tbllecture.session_id', $roomDetails->session],
