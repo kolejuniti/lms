@@ -19,7 +19,10 @@
                                 Code
                             </th>
                             <th style="width: 5%">
-                                Meeting Hour
+                                Kuliah Hour
+                            </th>
+                            <th style="width: 5%">
+                                Amali Hour
                             </th>
                         </tr>
                     </thead>
@@ -38,6 +41,9 @@
                             <td>
                                 <input type="text" name="m_id[]" value="{{ $crs->courseID }}" hidden>
                                 <input type="text" name="m_hour[]" id="m_hour" value="{{ $crs->meeting_hour }}" class="form-control">
+                            </td>
+                            <td>
+                                <input type="text" name="a_hour[]" id="a_hour" value="{{ $crs->amali_hour }}" class="form-control">
                             </td>
                         </tr>
                         @endforeach

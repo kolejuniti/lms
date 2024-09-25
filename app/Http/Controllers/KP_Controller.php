@@ -1144,7 +1144,7 @@ $content .= '<tr>
                            ->join('subjek', 'subjek_structure.courseID', 'subjek.sub_id')
                            ->where('subjek_structure.program_id', $request->id)
                            ->groupBy('courseID')
-                           ->select('subjek_structure.courseID', 'subjek_structure.meeting_hour', 'subjek.course_name', 'subjek.course_code')
+                           ->select('subjek_structure.courseID', 'subjek_structure.meeting_hour', 'subjek_structure.amali_hour', 'subjek.course_name', 'subjek.course_code')
                            ->get();
 
         return view('ketua_program.assign.subject.getMeetingHour', compact('data'));
@@ -1156,12 +1156,16 @@ $content .= '<tr>
 
         $m_ids = $request->input('m_id');
         $m_hours = $request->input('m_hour');
+        $a_hours = $request->input('a_hour');
 
-        if (is_array($m_ids) && is_array($m_hours)) {
+        if (is_array($m_ids) && is_array($m_hours) && is_array($a_hours)) {
             foreach ($m_ids as $index => $id) {
                 DB::table('subjek_structure')
                 ->where('courseID', $id)
-                ->update(['meeting_hour' => $m_hours[$index]]);
+                ->update([
+                    'meeting_hour' => $m_hours[$index],
+                    'amali_hour' => $a_hours[$index]
+                ]);
             }
         }
 
