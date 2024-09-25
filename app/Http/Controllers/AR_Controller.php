@@ -3788,16 +3788,27 @@ class AR_Controller extends Controller
         {
 
             $data['subject'][$key] = DB::table('user_subjek')
-                               ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
-                               ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
-                               ->join('subjek_structure', function($join){
-                                 $join->on('subjek.sub_id', 'subjek_structure.courseID');
-                               })
-                               ->where('user_subjek.user_ic', $lct->ic)
-                               ->whereIn('user_subjek.session_id', $session)
-                               ->groupBy('user_subjek.course_id')
-                               ->select('user_subjek.id AS ids', 'subjek.*', 'sessions.SessionName AS session', 'subjek_structure.meeting_hour')
-                               ->get();
+                                    ->join('subjek', 'user_subjek.course_id', '=', 'subjek.sub_id')
+                                    ->join('sessions', 'user_subjek.session_id', '=', 'sessions.SessionID')
+                                    ->join('subjek_structure', 'subjek.sub_id', '=', 'subjek_structure.courseID')
+                                    ->where(function($query) use ($lct) {
+                                        // Combine both conditions in one query using OR
+                                        $query->where('user_subjek.user_ic', $lct->ic)
+                                            ->orWhere('user_subjek.amali_ic', $lct->ic);
+                                    })
+                                    ->whereIn('user_subjek.session_id', $session)
+                                    ->select(
+                                        'user_subjek.id AS ids', 
+                                        'subjek.*', 
+                                        'sessions.SessionName AS session',
+                                        DB::raw("CASE 
+                                                    WHEN user_subjek.user_ic = '$lct->ic' THEN subjek_structure.meeting_hour 
+                                                    ELSE subjek_structure.amali_hour 
+                                                END AS meeting_hour") // Conditionally select meeting_hour or amali_hour
+                                    )
+                                    ->groupBy('user_subjek.course_id')
+                                    ->get();
+
 
             foreach($data['subject'][$key] as $key2 => $sbj)
             {
