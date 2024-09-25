@@ -593,6 +593,9 @@ $content .= '<tr>
     public function getLecturerSubject(Request $request)
     {
 
+        //this will fetch user data where usrtype is not ADM
+        $user = User::whereIn('usrtype',['LCT', 'AO', 'PL'])->get();
+
         $data['subject'] = DB::table('user_subjek')
                            ->where('sessions.Status', 'ACTIVE')
                            ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
@@ -605,7 +608,7 @@ $content .= '<tr>
                             ['subjek_structure.program_id', $request->program]
                             ])
                             ->groupBy('user_subjek.id')
-                           ->select('users.name', 'users.no_staf','user_subjek.id', 'subjek.course_name', 'subjek.course_code', 'sessions.SessionName')
+                           ->select('users.name', 'users.no_staf','user_subjek.id','user_subjek.amali_ic', 'subjek.course_name', 'subjek.course_code', 'sessions.SessionName')
                            ->get();
 
         $content = "";
@@ -616,6 +619,7 @@ $content .= '<tr>
             <th>No.</th>
             <th>Name</th>
             <th>Staff No.</th>
+            <th>Lecturer Amali</th>
             <th>Course</th>
             <th>Session</th>
             <th></th>
@@ -636,12 +640,28 @@ $content .= '<tr>
                     '. $sbj->no_staf .'
                 </td>
                 <td>
+                    <div class="form-group">
+                          <select class="form-select" id="lct-'. $sbj->id .'" name="lct-'. $sbj->id .'">
+                              <option value="-" selected disabled>-</option>';
+                              foreach($user as $usr)
+                              {
+                                $content .= '<option value="'. $usr->ic .'" '. (($sbj->amali_ic == $usr->ic) ? 'selected' : '') .'>'. $usr->name .'</option>';
+                              }
+              $content .= '</select>
+                      </div>
+                </td>
+                <td>
                     <p >'.$sbj->course_code.' - '.$sbj->course_name.'</p>
                 </td>
                 <td>
                     <p>'.$sbj->SessionName.'</p>
                 </td>
                 <td>
+                    <a class="btn btn-info btn-sm" href="#" onclick="updateSubjek(\''. $sbj->id .'\')">
+                        <i class="ti-save-alt">
+                        </i>
+                        Update
+                    </a>
                     <a class="btn btn-danger btn-sm" href="#" onclick="deleteSubjek(\''. $sbj->id .'\')">
                         <i class="ti-trash">
                         </i>
@@ -758,6 +778,22 @@ $content .= '<tr>
         }
         
         return $content;
+    }
+
+    public function updateLecturer(Request $request)
+    {
+
+        if($request->ic)
+        {
+
+            DB::table('user_subjek')->where('id', $request->id)->update([
+                'amali_ic' => $request->ic
+            ]);
+
+            return response()->json(['message' => 'success']);
+
+        }
+
     }
 
     public function getGroupOption(Request $request){
