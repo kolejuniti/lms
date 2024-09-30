@@ -154,8 +154,7 @@
 
         <!-- Another Black Line Divider if needed -->
         <div class="border-line"></div>
-        <br>
-        <div class="row col-md-12 mt-2">
+        <div class="row col-md-12 mt-1">
             @php
             $total_credit = 0;
             @endphp
@@ -210,7 +209,6 @@
             </div> 
         </div>
         {{-- <img src="{{ asset('storage/signature/signature2.png') }}" alt="Image" width="10%" height="10%" style="float: right;"> --}}
-        <br>
         <br>
         <br>
         <br>
