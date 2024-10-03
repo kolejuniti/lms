@@ -3119,7 +3119,7 @@ class PendaftarController extends Controller
                })
                ->select('tblstudent_log.student_ic', DB::raw('MAX(tblstudent_log.id) as latest_id'))
                ->whereIn('tblstudent_log.student_ic', $ic)
-               ->where('sessions.Year', $request->year)
+               ->whereYear('tblstudent_log.date', '=', $request->year)
                ->where('tblstudent_log.semester_id', '>', 1)
                ->groupBy('tblstudent_log.student_ic');
 
@@ -3132,7 +3132,7 @@ class PendaftarController extends Controller
         ->leftjoin('sessions', 'tblstudent_log.session_id', 'sessions.SessionID')
         ->leftjoin('tblstudent_status', 'tblstudent_log.status_id', 'tblstudent_status.id')
         ->whereIn('students.ic', $ic)
-        ->where('sessions.Year', $request->year);
+        ->whereYear('tblstudent_log.date', '=', $request->year);
         };
 
         $data['student1'] = ($baseQuery)()  // Make sure $baseQuery is defined correctly
