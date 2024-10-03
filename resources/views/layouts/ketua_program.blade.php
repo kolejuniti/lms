@@ -323,10 +323,13 @@
 					<a href="{{ route('posting.staff') }}" class="{{ (route('posting.staff') == Request::url()) ? 'active' : ''}}"><i data-feather="tv"></i><span>Posting</span></a>
 				</li> 
 				<li>
-					<a href="{{ Storage::disk('linode')->url('classschedule/index.htm') }}" target="_blank"><i data-feather="layout"></i><span>Schedule</span></a>
+					<a href="{{ Storage::disk('linode')->url('classschedule/index.htm') }}" target="_blank"><i data-feather="layout"></i><span>Schedule Old</span></a>
 				</li> 
 				<li>
 					<a href="{{ route('lecturer.class.schedule') }}" class="{{ (route('lecturer.class.schedule') == Request::url()) ? 'active' : ''}}"><i data-feather="layout"></i><span>Schedule</span></a>
+				</li> 
+				<li>
+					<a href="{{ asset('storage/finals_schedule/Jadual Pengawasan Peperiksaan Akhir UNITI Kemasukan Julai 20242025-I.pdf') }}" target="_blank"><i data-feather="layout"></i><span>Finals Schedule</span></a>
 				</li> 
 			  </ul>
 			  <div class="sidebar-widgets">
