@@ -20,7 +20,7 @@
    <style>
     @page {
        size: A4 potrait; /* reduced height for A5 size in landscape orientation */
-       margin: 0cm;
+       margin: 0.7cm;
      }
  
      * {
