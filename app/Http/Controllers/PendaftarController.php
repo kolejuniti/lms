@@ -3100,7 +3100,7 @@ class PendaftarController extends Controller
             ->select('tblstudent_log.student_ic', DB::raw('MAX(tblstudent_log.id) as latest_id'))
             ->whereIn('tblstudent_log.student_ic', $ic)
             ->where('tblstudent_log.semester_id', 1)
-            ->where('sessions.Year', '=', $request->year)
+            ->whereYear('tblstudent_log.date', '=', $request->year)
             ->groupBy('tblstudent_log.student_ic');
 
         $filteredSub1 = DB::table('tblstudent_log as latest_log')
@@ -3109,7 +3109,7 @@ class PendaftarController extends Controller
             })
             ->join('sessions', 'latest_log.session_id', '=', 'sessions.SessionID')
             ->select('latest_log.student_ic', 'latest_log.id AS latest_id')
-            ->where('sessions.Year', '=', $request->year);
+            ->whereYear('latest_log.date', '=', $request->year);
 
 
         $sub2 = DB::table('tblstudent_log')
