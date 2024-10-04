@@ -3087,8 +3087,7 @@ class PendaftarController extends Controller
           $query->select('students.ic')
                 ->from('students')
                 ->where('students.no_matric', '!=', null)
-                ->where('students.status', '<>', 9)
-                ->where('students.campus_id', 1);
+                ->where('students.status', '<>', 9);
         })
         ->where('sessions.Year', $request->year)
         ->distinct()
