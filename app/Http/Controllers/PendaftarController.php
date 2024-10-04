@@ -3088,7 +3088,7 @@ class PendaftarController extends Controller
                 ->from('students')
                 ->where('students.no_matric', '!=', null)
                 ->where('students.status', '<>', 9)
-                ->where('students.campus_id', 1);
+                ->where('tblstudent_log.kuliah_id', 1);
         })
         ->where('sessions.Year', $request->year)
         ->distinct()
@@ -3101,7 +3101,7 @@ class PendaftarController extends Controller
             ->select('tblstudent_log.student_ic', DB::raw('MAX(tblstudent_log.id) as latest_id'))
             ->whereIn('tblstudent_log.student_ic', $ic)
             ->where('tblstudent_log.semester_id', 1)
-            ->where('students.campus_id', 1)
+            ->where('tblstudent_log.kuliah_id', 1)
             ->whereYear('tblstudent_log.date', '=', $request->year)
             ->groupBy('tblstudent_log.student_ic');
 
@@ -3123,7 +3123,7 @@ class PendaftarController extends Controller
                ->whereIn('tblstudent_log.student_ic', $ic)
                ->whereYear('tblstudent_log.date', '=', $request->year)
                ->where('tblstudent_log.semester_id', '>', 1)
-               ->where('students.campus_id', 1)
+               ->where('tblstudent_log.kuliah_id', 1)
                ->groupBy('tblstudent_log.student_ic');
 
         $baseQuery = function () use ($ic, $request) {
