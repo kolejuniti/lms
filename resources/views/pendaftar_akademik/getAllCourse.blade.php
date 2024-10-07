@@ -231,8 +231,8 @@
                                     @if($data['students']->semester == $crs->semester && in_array($crs->sessionid, $data['atvSession']))
                                         <td style="text-align: center;">
                                             @php
-                                                $start_date = strtotime('2024-09-02');  // Format: YYYY-MM-DD
-                                                $end_date = strtotime('2024-09-13');    // Format: YYYY-MM-DD
+                                                $start_date = strtotime('2024-10-07');  // Format: YYYY-MM-DD
+                                                $end_date = strtotime('2024-10-18');    // Format: YYYY-MM-DD
                                                 $current_date = strtotime(date('Y-m-d'));  // Format: YYYY-MM-DD
                                             @endphp
 
