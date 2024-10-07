@@ -3113,18 +3113,37 @@ class PendaftarController extends Controller
             // ->whereYear('latest_log.date', '=', $request->year)
             ->where('sessions.Year', $request->year);
 
-
         $sub2 = DB::table('tblstudent_log')
-               ->leftjoin('sessions', 'tblstudent_log.session_id', 'sessions.SessionID')
-               ->join('students', function($join){
-                    $join->on('tblstudent_log.student_ic', 'students.ic');
-               })
-               ->select('tblstudent_log.student_ic', DB::raw('MAX(tblstudent_log.id) as latest_id'))
-               ->whereIn('tblstudent_log.student_ic', $ic)
-            //    ->whereYear('tblstudent_log.date', '=', $request->year)
-                // ->where('sessions.Year', $request->year)
-               ->where('tblstudent_log.semester_id', '>', 1)
-               ->groupBy('tblstudent_log.student_ic');
+            ->join('sessions', 'tblstudent_log.session_id', '=', 'sessions.SessionID')
+            ->join('students', 'tblstudent_log.student_ic', '=', 'students.ic')
+            ->select('tblstudent_log.student_ic', DB::raw('MAX(tblstudent_log.id) as latest_id'))
+            ->whereIn('tblstudent_log.student_ic', $ic)
+            ->where('tblstudent_log.semester_id', '>', 1)
+            // ->whereYear('tblstudent_log.date', '=', $request->year)
+            // ->where('sessions.Year', $request->year)
+            ->groupBy('tblstudent_log.student_ic');
+
+        $filteredSub2 = DB::table('tblstudent_log as latest_log')
+            ->joinSub($sub2, 'sub1', function($join){
+                $join->on('latest_log.id', '=', 'sub1.latest_id');
+            })
+            ->join('sessions', 'latest_log.session_id', '=', 'sessions.SessionID')
+            ->select('latest_log.student_ic', 'latest_log.id AS latest_id')
+            // ->whereYear('latest_log.date', '=', $request->year)
+            ->where('sessions.Year', $request->year);
+
+
+        // $sub2 = DB::table('tblstudent_log')
+        //        ->leftjoin('sessions', 'tblstudent_log.session_id', 'sessions.SessionID')
+        //        ->join('students', function($join){
+        //             $join->on('tblstudent_log.student_ic', 'students.ic');
+        //        })
+        //        ->select('tblstudent_log.student_ic', DB::raw('MAX(tblstudent_log.id) as latest_id'))
+        //        ->whereIn('tblstudent_log.student_ic', $ic)
+        //     //    ->whereYear('tblstudent_log.date', '=', $request->year)
+        //         ->where('sessions.Year', $request->year)
+        //        ->where('tblstudent_log.semester_id', '>', 1)
+        //        ->groupBy('tblstudent_log.student_ic');
 
         $baseQuery = function () use ($ic, $request) {
         return DB::table('students')
@@ -3152,7 +3171,7 @@ class PendaftarController extends Controller
         ->get();
 
         $data['student2'] = ($baseQuery)()
-        ->joinSub($sub2, 'latest_logs', function ($join) {
+        ->joinSub($filteredSub2, 'latest_logs', function ($join) {
             $join->on('tblstudent_log.student_ic', '=', 'latest_logs.student_ic')
                  ->on('tblstudent_log.id', '=', 'latest_logs.latest_id');
         })
