@@ -121,7 +121,7 @@ use Carbon\Carbon;
         <!-- Black Line Divider using Border -->
         <div class="border-line"></div>
 
-        <p>Pelajar seperti berikut hanya dibenarkan mengambil salinan transkrip sahaja kerana mempunyai baki tunggakan semasa pengajian di Kolej Uniti:-</p>
+        <p>Pelajar seperti berikut hanya dibenarkan mengambil mini transkrip sahaja kerana mempunyai baki tunggakan semasa pengajian di Kolej Uniti:-</p>
         <div class="col-12 mb-1 mt-1">  
             <div style="border: 1px solid white; padding: 10px;">
                 <table>
