@@ -10936,6 +10936,28 @@ class FinanceController extends Controller
 
     }
 
+    public function printAuthorizeTranscript(Request $request)
+    {
+
+        $validator = Validator::make($request->all(), [
+            'student' => 'required',
+        ]);
+
+        if($validator->fails()){
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $data['student'] = DB::table('students')
+                           ->leftjoin('tblstudent_address', 'students.ic', 'tblstudent_address.student_ic')
+                           ->leftjoin('tblstate', 'tblstudent_address.state_id', 'tblstate.id')
+                           ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+                           ->select('students.*', 'tblstudent_address.*', 'tblstate.state_name AS state', 'tblprogramme.progcode AS code', 'tblprogramme.progname AS program')
+                           ->where('students.ic', $request->student)->first();
+
+        return view('finance.debt.authorize_transcript.printAuthorizeTranscript', compact('data'));
+
+    }
+
     public function studentArrearsReport()
     {
 
