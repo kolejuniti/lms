@@ -5687,25 +5687,45 @@ class FinanceController extends Controller
         }
         //dd( $data['otherStudMethod']);
         
-        $other = DB::table('tblpaymentdtl')
-        ->join('tblpayment', 'tblpaymentdtl.payment_id', 'tblpayment.id')
-        ->join('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
-        // ->join('tblstudentclaim', function($join){
-        //     $join->on('tblpaymentdtl.claim_type_id', '=', 'tblstudentclaim.id');
-        //     $join->on('tblpaymentdtl.amount', '=', 'tblstudentclaim.amount');
-        // })
-        // ->join('tblpaymentmethod', 'tblpayment.id', 'tblpaymentmethod.payment_id')
-        ->join('tblpaymentmethod', function($join){
-            $join->on('tblpayment.id', '=', 'tblpaymentmethod.payment_id');
-            $join->on('tblpaymentdtl.amount', '=', 'tblpaymentmethod.amount');
+        // Subquery for tblpaymentdtl with row numbers
+        $paymentDtl = DB::table('tblpaymentdtl')
+        ->select('id', 'payment_id', 'claim_type_id', 'amount',
+            DB::raw('ROW_NUMBER() OVER (PARTITION BY payment_id ORDER BY id) as row_num')
+        );
+
+        // Subquery for tblpaymentmethod with row numbers
+        $paymentMethod = DB::table('tblpaymentmethod')
+        ->select('id', 'payment_id', 'claim_method_id', 'bank_id', 'no_document',
+            DB::raw('ROW_NUMBER() OVER (PARTITION BY payment_id ORDER BY id) as row_num')
+        );
+
+        // Main query with join modifications
+        $other = DB::table('tblpayment')
+        ->joinSub($paymentDtl, 'dtl', function ($join) {
+            $join->on('dtl.payment_id', '=', 'tblpayment.id');
         })
-        ->leftjoin('tblpayment_bank', 'tblpaymentmethod.bank_id', 'tblpayment_bank.id')
-        ->join('tblpayment_method', 'tblpaymentmethod.claim_method_id', 'tblpayment_method.id')
+        ->joinSub($paymentMethod, 'method', function ($join) {
+            $join->on('method.payment_id', '=', 'tblpayment.id')
+                ->on('method.row_num', '=', 'dtl.row_num');
+        })
+        ->join('tblstudentclaim', 'dtl.claim_type_id', '=', 'tblstudentclaim.id')
+        ->leftJoin('tblpayment_bank', 'method.bank_id', '=', 'tblpayment_bank.id')
+        ->join('tblpayment_method', 'method.claim_method_id', '=', 'tblpayment_method.id')
         ->whereBetween('tblpayment.add_date', [$request->from, $request->to])
         ->where('tblpayment.process_status_id', 2)
-        ->select('tblpayment.*', 'tblstudentclaim.groupid', 'tblstudentclaim.name AS type', 'tblpaymentdtl.amount', 'tblpaymentdtl.claim_type_id', 'tblpaymentmethod.no_document', 'tblpayment_method.name AS method', 'tblpayment_bank.name AS bank')
+        ->select(
+            'tblpayment.*',
+            'tblstudentclaim.groupid',
+            'tblstudentclaim.name AS type',
+            'dtl.amount',
+            'dtl.claim_type_id',
+            'method.no_document',
+            'tblpayment_method.name AS method',
+            'tblpayment_bank.name AS bank'
+        )
         ->orderBy('tblpayment.ref_no', 'asc')
-        ->groupBy('tblpaymentdtl.id')->get();
+        ->groupBy('dtl.id')
+        ->get();
 
 
         foreach($other as $ot)
