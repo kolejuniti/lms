@@ -5690,6 +5690,10 @@ class FinanceController extends Controller
         $other = DB::table('tblpaymentdtl')
         ->join('tblpayment', 'tblpaymentdtl.payment_id', 'tblpayment.id')
         ->join('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
+        ->join('tblstudentclaim', function($join){
+            $join->on('tblpaymentdtl.claim_type_id', '=', 'tblstudentclaim.id');
+            $join->on('tblpaymentdtl.amount', '=', 'tblstudentclaim.amount');
+        })
         ->join('tblpaymentmethod', 'tblpayment.id', 'tblpaymentmethod.payment_id')
         ->leftjoin('tblpayment_bank', 'tblpaymentmethod.bank_id', 'tblpayment_bank.id')
         ->join('tblpayment_method', 'tblpaymentmethod.claim_method_id', 'tblpayment_method.id')
