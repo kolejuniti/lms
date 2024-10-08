@@ -334,7 +334,7 @@ class KP_Controller extends Controller
         //$course = DB::table('subjek')
                   //->join('tblprogramme', 'subjek.prgid', 'tblprogramme.id')->whereIn('prgid', $programs)->get();
 
-        $session = DB::table('sessions')->where('Status', 'ACTIVE')->get();
+        $session = DB::table('sessions')->where('Status', 'ACTIVE')->orderBy('SessionID', 'DESC')->get();
 
         return view('ketua_program.assigngroup', compact('programs', 'session', 'semester'));
     }
