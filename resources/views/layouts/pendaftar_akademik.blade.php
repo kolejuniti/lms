@@ -368,7 +368,7 @@
 					</ul>
 				</li>
 				<li class="treeview">
-					<a href="#"><i data-feather="video"></i><span>Schedle</span>
+					<a href="#"><i data-feather="video"></i><span>Schedule</span>
 						<span class="pull-right-container">
 							<i class="fa fa-angle-left pull-right"></i>
 						</span>
