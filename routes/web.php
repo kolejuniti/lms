@@ -186,6 +186,11 @@ Route::get('/AR/schedule/fetch/{id}/fetchExistEvent', [App\Http\Controllers\AR_C
 Route::post('/AR/schedule/create/{id}', [App\Http\Controllers\AR_Controller::class, 'createEvent']);
 Route::post('/AR/schedule/publish/{id}', [App\Http\Controllers\AR_Controller::class, 'publishEvent']);
 Route::post('/AR/schedule/reset/{id}', [App\Http\Controllers\AR_Controller::class, 'resetEvent']);
+Route::post('/AR/schedule/log/{id}', [App\Http\Controllers\AR_Controller::class, 'logEvent']);
+Route::get('/AR/schedule/log/{id}/getLoggedSchedule', [App\Http\Controllers\AR_Controller::class, 'getLoggedSchedule']);
+Route::post('/AR/schedule/log/{id}/delete', [App\Http\Controllers\AR_Controller::class, 'deleteLogEvent']);
+Route::get('/AR/schedule/log/{id}/view', [App\Http\Controllers\AR_Controller::class, 'viewLogEvent']);
+Route::get('/AR/schedule/log/{id}/fetch', [App\Http\Controllers\AR_Controller::class, 'fetchLogEvent']);
 Route::put('/AR/schedule/update/{id}', [App\Http\Controllers\AR_Controller::class, 'updateEvent']);
 Route::put('/AR/schedule/update2/{id}', [App\Http\Controllers\AR_Controller::class, 'updateEvent2']);
 Route::delete('/AR/schedule/delete/{id}', [App\Http\Controllers\AR_Controller::class, 'deleteEvent']);

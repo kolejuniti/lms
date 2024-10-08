@@ -3352,6 +3352,186 @@ class AR_Controller extends Controller
 
     }
 
+    public function logEvent(Request $request)
+    {
+
+        try{
+
+            DB::table('tblevents_log')
+            ->where('user_ic', $request->id)
+            ->whereDate('date', now()->toDateString())
+            ->delete();
+
+            $event = Tblevent::where('user_ic', $request->id)->get();
+    
+            foreach($event as $ev)
+            {
+
+                DB::table('tblevents_log')->insert([
+                    'event_id' => $ev->id,
+                    'user_ic' => $ev->user_ic,
+                    'date' => now()->toDateString()
+                ]);
+    
+            }
+    
+            return response()->json(['success' => 'Event has been logged successfully!']);
+
+        }catch(Exception $e){
+
+            return response()->json(['error' => 'Error: ' . $e->getMessage()]);
+
+        }
+
+    }
+
+    public function getLoggedSchedule(Request $request)
+    {
+
+        $data = DB::table('tblevents_log')
+                ->where([
+                    ['user_ic', $request->id]
+                ])
+                ->groupBy('date')
+                ->get();
+
+        return response()->json($data);
+
+    }
+
+    public function deleteLogEvent(Request $request)
+    {
+
+        try{
+
+            DB::table('tblevents_log')
+            ->where('user_ic', $request->id)
+            ->where('date', $request->idS)
+            ->delete();
+
+            return response()->json(['success' => 'Event log has been deleted successfully!']);
+
+        }catch(Exception $e){
+
+            return response()->json(['error' => 'Error: ' . $e->getMessage()]);
+
+        }
+
+    }
+
+    public function viewLogEvent()
+    {
+
+            $data = [
+                // 'lectureInfo' => DB::table('tbllecture')
+                //                  ->join('tbllecture_room', 'tbllecture.room_id', 'tbllecture_room.id')
+                //                  ->join('sessions', 'tbllecture.session_id', 'sessions.SessionID')
+                //                  ->select('tbllecture_room.*', 'sessions.SessionName AS session')
+                //                  ->where('tbllecture.id', request()->id)
+                //                  ->first(),
+                // 'totalBooking' => DB::table('tblevents')->where('lecture_id', request()->id)
+                //                   ->select(DB::raw('COUNT(tblevents.id) AS total_booking'))
+                //                   ->first(),
+                // 'lecturer' => DB::table('users')
+                //               ->whereIn('usrtype', ['LCT', 'PL', 'AO'])
+                //               ->get(),
+                'lecturerInfo' => DB::table('users')->where('ic', request()->id)->first(),
+                'session' => DB::table('sessions')->where('Status', 'ACTIVE')->get(),
+                'lecture_room' => DB::table('tbllecture_room')->get(),
+                'details' => DB::table('user_subjek')
+                             ->join('subjek_structure', 'user_subjek.course_id', 'subjek_structure.courseID')
+                             ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
+                             ->where([
+                                ['user_subjek.user_ic', request()->id],
+                                ['sessions.Status', 'ACTIVE']
+                                ])
+                             ->select(DB::raw('SUM(subjek_structure.meeting_hour) AS total_hour'))
+                             ->groupBy('user_subjek.id')
+                             ->get(),
+                'time' => DB::table('tblevents_second')->where('user_ic', request()->id)->value('timestamps'),
+            ];
+
+            //dd($data['used']);
+
+            return view('pendaftar_akademik.schedule.schedule3', compact('data'));
+
+    }
+
+    public function fetchLogEvent(Request $request)
+    {
+        $ids = DB::table('tblevents_log')
+               ->where([
+                ['user_ic', $request->id],
+                ['date', $request->idS]
+               ])
+               ->pluck('event_id');
+
+        $events = Tblevent::join('user_subjek', 'tblevents.group_id', 'user_subjek.id')
+                ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
+                ->join('tbllecture_room', 'tblevents.lecture_id', 'tbllecture_room.id')
+                ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+                ->where([
+                    ['sessions.Status', 'ACTIVE']
+                    ])
+                ->whereIn('tblevents.id', $ids)
+                ->groupBy('subjek.sub_id', 'tblevents.id')
+                ->select('tblevents.*', 'subjek.course_code AS code' , 'subjek.course_name AS subject', 'tbllecture_room.name AS room', 'sessions.SessionName AS session')->get();
+
+        $formattedEvents = $events->map(function ($event) {
+
+            $count = DB::table('student_subjek')
+                    ->where([
+                    ['group_id', $event->group_id],
+                    ['group_name', $event->group_name]
+                    ])
+                    ->select(DB::raw('COUNT(student_ic) AS total_student'))
+                    ->first();
+
+            $program = DB::table('student_subjek')
+                        ->join('students', 'student_subjek.student_ic', 'students.ic')
+                        ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+                        ->where([
+                        ['student_subjek.group_id', $event->group_id],
+                        ['student_subjek.group_name', $event->group_name]
+                        ])
+                        ->groupBy('tblprogramme.id')
+                        ->select('tblprogramme.*')
+                        ->get();
+
+            // Convert program information into a string
+            $programInfo = $program->map(function($prog) {
+                return $prog->progcode; // Assuming 'progname' is the relevant field you want to display
+            })->implode(', ');
+
+            // Map day of the week from PHP (1 for Monday through 7 for Sunday) to FullCalendar (0 for Sunday through 6 for Saturday)
+            $dayOfWeekMap = [
+                1 => 1, // Monday
+                2 => 2, // Tuesday
+                3 => 3, // Wednesday
+                4 => 4, // Thursday
+                5 => 5, // Friday
+                6 => 6, // Saturday
+                7 => 0  // Sunday
+            ];
+
+            $dayOfWeek = date('N', strtotime($event->start));
+            $fullCalendarDayOfWeek = $dayOfWeekMap[$dayOfWeek];
+
+            return [
+                'id' => $event->id,
+                'title' => strtoupper($event->room) . ' (' . $event->session . ')',
+                'description' => $event->code . ' - ' . $event->subject . ' (' . $event->group_name . ') | Total Student: ' . $count->total_student,
+                'startTime' => date('H:i', strtotime($event->start)),
+                'endTime' => date('H:i', strtotime($event->end)),
+                'duration' => gmdate('H:i', strtotime($event->end) - strtotime($event->start)),
+                'daysOfWeek' => [$fullCalendarDayOfWeek],
+                'programInfo' => $programInfo // Add program info to the event object
+            ];
+        });
+
+        return response()->json($formattedEvents);
+    }
+
     public function updateEvent(Request $request, $id)
     {
         $event = DB::table('tblevents')->where('id', $id)->first();

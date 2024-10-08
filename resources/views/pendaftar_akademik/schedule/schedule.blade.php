@@ -223,12 +223,46 @@
                                 <div class="form-group pull-right">
                                     <input type="submit" class="btn btn-primary pull-right" value="Publish" style="margin-left: 10px;" id="publish-schedule">
                                     <input type="submit" class="btn btn-warning pull-right" value="Reset" style="margin-left: 10px;" id="reset-schedule">
+                                    <input type="submit" class="btn btn-info pull-right" value="Log" style="margin-left: 10px;" id="log-schedule">
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="box">
+                    <div class="box-body">
+                        <h4 class="box-title">Logged Schedule</h4>
+                        <hr>
+                        <div class="card-body">
+                            <table id="complex_header" class="table table-striped projects display dataTable">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            No.
+                                        </th>
+                                        <th>
+                                            Date
+                                        </th>
+                                        <th>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody id="table">
+                           
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="box-footer">
+                            
+                    </div>
+                </div>
+            </div>
+        </div>
     </section>
     <!-- /.content -->
 
@@ -310,6 +344,62 @@
 			$("#collapsee").slideToggle(500);
 		});
 	});
+
+    $(document).ready(function() {
+        getLoggedSchedule();
+    });
+
+    function getLoggedSchedule()
+    {
+        $.ajax({
+            url: '/AR/schedule/log/{{ request()->id }}/getLoggedSchedule',
+            type: "GET",
+            dataType: "json",
+            success: function(data) {
+                $('#table').empty();
+                var i = 1;
+                $.each(data, function(key, value) {
+                    $('#table').append('<tr><td>'+ i +'</td><td>'+ value.date +'</td><td><a href="/AR/schedule/log/{{ request()->id }}/view?idS='+ value.date +'" class="btn btn-primary btn-sm me-2">View</a><a onClick="deleteLog(\''+ value.date +'\')" class="btn btn-danger btn-sm">Delete</a></td></tr>');
+                    i++;
+                });
+            }
+        });
+    }
+
+    function deleteLog(id)
+    {
+
+        Swal.fire({
+            title: "Are you sure?",
+            text: "This will be permanent",
+            showCancelButton: true,
+            confirmButtonText: "Yes, delete it!"
+        }).then(async function (res) {  // Make the callback async
+            if (res.isConfirmed) {
+                // Send data to the backend
+                const response = await fetch('/AR/schedule/log/{{ request()->id }}/delete?idS=' + id, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    },
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.error) {
+                        Swal.fire('Error', data.error, 'error');
+                    } else {
+                        Swal.fire('Success', data.success, 'success');
+                        getLoggedSchedule();
+                    }
+                } else {
+                    Swal.fire('Failed', 'Failed to reset schedule.', 'error');
+                }
+            }
+        });
+
+    }
 </script>
 <script>
         $('#ses').change(function() {
@@ -801,6 +891,40 @@
                         }
                     }
                 });
+            });
+
+            // Add event button click listener
+            document.getElementById('log-schedule').addEventListener('click', async function () {
+                // var eventTitle = document.getElementById('event-title').value.trim();
+                var ic = '{{ $data['lecturerInfo']->ic }}';
+
+                var eventData = {
+                        // title: eventTitle,
+                        ic: ic,
+                    };
+                
+                // Send data to the backend
+                const response = await fetch('/AR/schedule/log/{{ request()->id }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    body: JSON.stringify(eventData)
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if(data.error)
+                    {
+                        alert(data.error);
+                    }else{
+                        alert(data.success); 
+                        getLoggedSchedule(); 
+                    }
+                } else {
+                    alert('Failed to log event.'); // Inform the user that adding the event failed
+                }
             });
 
 
