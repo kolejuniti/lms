@@ -2559,6 +2559,12 @@ class PendaftarController extends Controller
 
                                 )->first();
 
+                $data['lastWithdraw'][$key] = DB::table('tblstudent_log')
+                                              ->where([
+                                                ['student_ic', $student->ic],
+                                                ['status_id', 4]
+                                              ])->orderBy('id', 'DESC')->value('date');
+
                 if($student->sex == 'L')
                 {
                     $data['WM'] = $data['WM'] + 1;

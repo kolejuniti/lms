@@ -337,6 +337,9 @@
                     Date Offer
                 </th>
                 <th style="width: 5%">
+                    Date Withdraw
+                </th>
+                <th style="width: 5%">
                     Program
                 </th>
                 <th style="width: 5%">
@@ -382,6 +385,9 @@
             </td>
             <td>
             {{ $rgs->date_offer }}
+            </td>
+            <td>
+            {{ $data['lastWithdraw'][$key] }}
             </td>
             <td>
             {{ $rgs->progcode }}
