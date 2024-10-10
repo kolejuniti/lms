@@ -3369,7 +3369,14 @@ class AR_Controller extends Controller
 
                 DB::table('tblevents_log')->insert([
                     'event_id' => $ev->id,
+                    'lecture_id' => $ev->lecture_id,
                     'user_ic' => $ev->user_ic,
+                    'group_id' => $ev->group_id,
+                    'group_name' => $ev->group_name,
+                    'session_id' => $ev->session_id,
+                    'title' => $ev->title,
+                    'start' => $ev->start,
+                    'end' => $ev->end,
                     'date' => now()->toDateString()
                 ]);
     
@@ -3459,23 +3466,23 @@ class AR_Controller extends Controller
 
     public function fetchLogEvent(Request $request)
     {
-        $ids = DB::table('tblevents_log')
-               ->where([
-                ['user_ic', $request->id],
-                ['date', $request->idS]
-               ])
-               ->pluck('event_id');
+        // $ids = DB::table('tblevents_log')
+        //        ->where([
+        //         ['user_ic', $request->id],
+        //         ['date', $request->idS]
+        //        ])
+        //        ->pluck('event_id');
 
-        $events = Tblevent::join('user_subjek', 'tblevents.group_id', 'user_subjek.id')
+        $events = DB::table('tblevents_log')->join('user_subjek', 'tblevents_log.group_id', 'user_subjek.id')
                 ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
-                ->join('tbllecture_room', 'tblevents.lecture_id', 'tbllecture_room.id')
+                ->join('tbllecture_room', 'tblevents_log.lecture_id', 'tbllecture_room.id')
                 ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
                 ->where([
-                    ['sessions.Status', 'ACTIVE']
+                    ['tblevents_log.date', $request->idS]
                     ])
-                ->whereIn('tblevents.id', $ids)
-                ->groupBy('subjek.sub_id', 'tblevents.id')
-                ->select('tblevents.*', 'subjek.course_code AS code' , 'subjek.course_name AS subject', 'tbllecture_room.name AS room', 'sessions.SessionName AS session')->get();
+                ->where('tblevents_log.user_ic', $request->id)
+                ->groupBy('subjek.sub_id', 'tblevents_log.id')
+                ->select('tblevents_log.*', 'subjek.course_code AS code' , 'subjek.course_name AS subject', 'tbllecture_room.name AS room', 'sessions.SessionName AS session')->get();
 
         $formattedEvents = $events->map(function ($event) {
 
