@@ -4846,16 +4846,16 @@ $content .= '</tr>
     {
         $user = Auth::user();
 
-        $events = Tblevent2::join('user_subjek', 'tblevents.group_id', 'user_subjek.id')
+        $events = Tblevent2::join('user_subjek', 'tblevents_second.group_id', 'user_subjek.id')
                   ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
-                  ->join('tbllecture_room', 'tblevents.lecture_id', 'tbllecture_room.id')
+                  ->join('tbllecture_room', 'tblevents_second.lecture_id', 'tbllecture_room.id')
                   ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
                   ->where([
-                    ['tblevents.user_ic', $user->ic],
+                    ['tblevents_second.user_ic', $user->ic],
                     ['sessions.Status', 'ACTIVE']
                     ])
-                  ->groupBy('subjek.sub_id', 'tblevents.id')
-                  ->select('tblevents.*', 'subjek.course_code AS code' , 'subjek.course_name AS subject', 'tbllecture_room.name AS room', 'sessions.SessionName AS session')->get();
+                  ->groupBy('subjek.sub_id', 'tblevents_second.id')
+                  ->select('tblevents_second.*', 'subjek.course_code AS code' , 'subjek.course_name AS subject', 'tbllecture_room.name AS room', 'sessions.SessionName AS session')->get();
 
         $formattedEvents = $events->map(function ($event) {
 
