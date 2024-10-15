@@ -273,6 +273,7 @@
 						@if($now >= $range->Start && $now <= $range->End)
 						<li><a href="{{ route('student.affair.result') }}" class="{{ (route('student.affair.result') == Request::url()) ? 'active' : ''}}">Result</a></li>
 						@endif
+						<li><a href="/AR/student/getSlipExam?student={{ Auth::guard('student')->user()->ic }}" target="_blank">Slip Exam</a></li>
 					</ul>
 				</li> 
 				<li class="treeview">
