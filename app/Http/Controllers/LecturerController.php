@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\subject;
 use App\Models\student;
-use App\Models\Tblevent;
+use App\Models\Tblevent2;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -4846,7 +4846,7 @@ $content .= '</tr>
     {
         $user = Auth::user();
 
-        $events = Tblevent::join('user_subjek', 'tblevents.group_id', 'user_subjek.id')
+        $events = Tblevent2::join('user_subjek', 'tblevents.group_id', 'user_subjek.id')
                   ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
                   ->join('tbllecture_room', 'tblevents.lecture_id', 'tbllecture_room.id')
                   ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
