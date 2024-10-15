@@ -1,5 +1,6 @@
 
-@extends('layouts.pendaftar_akademik')
+@extends(isset(Auth::user()->usrtype) ? ((Auth::user()->usrtype == "AR") ? 'layouts.pendaftar_akademik' : '') : 'layouts.student')
+
 
 @section('main')
 
@@ -92,10 +93,15 @@
                                     <div class="flex-grow-1 p-30 flex-grow-1 bg-img bg-none-md" style="background-position: right bottom; background-size: auto 100%; background-image: url(images/svg-icon/color-svg/custom-30.svg)">
                                         <div class="row">
                                             <div class="col-12 col-xl-12">
-                                                {{-- <h1 class="mb-0 fw-600">{{ $data['lecturerInfo']->name }}</h1>
-                                                <p class="my-10 fs-16"><strong>Ic : {{ $data['lecturerInfo']->ic }}</strong> </p>
-                                                <p class="my-10 fs-16"><strong>Staff No. : {{ $data['lecturerInfo']->no_staf }}</strong> </p>
-                                                <p class="my-10 fs-16"><strong>Staff No. : {{ $data['lecturerInfo']->email }}</strong> </p> --}}
+                                                @if(request()->type == 'std')
+                                                <h1 class="mb-0 fw-600">{{ $data['studentInfo']->name }}</h1>
+                                                <p class="my-10 fs-16"><strong>Ic : {{ $data['studentInfo']->ic }}</strong> </p>
+                                                <p class="my-10 fs-16"><strong>Matric No. : {{ $data['studentInfo']->no_matric }}</strong> </p>
+                                                <p class="my-10 fs-16"><strong>Session : {{ $data['studentInfo']->session }}</strong> </p>
+                                                @elseif(request()->type == 'lcr')
+                                                <h1 class="mb-0 fw-600">{{ $data['roomInfo']->name }}</h1>
+                                                <p class="my-10 fs-16"><strong>Time : {{ $data['roomInfo']->start }} - {{ $data['roomInfo']->end }}</strong> </p>
+                                                @endif
                                                 {{-- <p class="my-10 fs-16"><strong>Staff No. :</strong> </p>
                                                 <p class="my-10 fs-16"><strong>Email :</strong> </p> --}}
                                                 {{-- <div id="collapsee">

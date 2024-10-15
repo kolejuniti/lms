@@ -252,7 +252,10 @@
 					<a href="{{ route('student') }}" class="{{ (route('student') == Request::url()) ? 'active' : ''}}"><i data-feather="bookmark"></i><span>Course</span></a>
 				</li> 
 				<li>
-					<a href="{{ Storage::disk('linode')->url('classschedule/index.htm') }}" target="_blank"><i data-feather="layout"></i><span>Schedule</span></a>
+					<a href="{{ Storage::disk('linode')->url('classschedule/index.htm') }}" target="_blank"><i data-feather="layout"></i><span>Old Schedule</span></a>
+				</li>
+				<li>
+					<a href="AR/schedule/scheduleTable/{{ Auth::guard('student')->user()->ic }}?type=std" target="_blank"><i data-feather="layout"></i><span>Schedule</span></a>
 				</li>
 				<li class="treeview">
 					<a href="#"><i data-feather="users"></i><span>Student Affair</span>

@@ -2632,7 +2632,26 @@ class AR_Controller extends Controller
 
         }else{
 
-            return view('pendaftar_akademik.schedule.schedule2');
+            if(request()->type == 'std')
+            {
+
+                $data = [
+                    'studentInfo' => DB::table('students')
+                                    ->join('sessions', 'students.session', 'sessions.SessionID')
+                                    ->where('ic', request()->id)
+                                    ->select('students.*', 'sessions.SessionName AS session')
+                                    ->first(),
+                ];
+
+            }elseif(request()->type == 'lcr'){
+
+                $data = [
+                    'roomInfo' => DB::table('tbllecture_room')->where('id', request()->id)->first(),
+                ];
+
+            }
+
+            return view('pendaftar_akademik.schedule.schedule2', compact('data'));
 
         }
 
