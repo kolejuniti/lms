@@ -4103,6 +4103,77 @@ class AR_Controller extends Controller
 
     }
 
+    public function scheduleReport2()
+    {
+
+        $data['room'] = DB::table('tbllecture_room')->get();
+
+        $data['time'] = [
+            1 => '08:30:00/09:00:00',
+            2 => '09:00:00/09:30:00',
+            3 => '09:30:00/10:00:00',
+            4 => '10:00:00/10:30:00',
+            5 => '10:30:00/11:00:00',
+            6 => '11:00:00/11:30:00',
+            7 => '11:30:00/12:00:00',
+            8 => '12:00:00/12:30:00',
+            9 => '12:30:00/13:00:00',
+            10 => '13:00:00/13:30:00',
+            11 => '13:30:00/14:00:00',
+            12 => '14:00:00/14:30:00',
+            13 => '14:30:00/15:00:00',
+            14 => '15:00:00/15:30:00',
+            15 => '15:30:00/16:00:00',
+            16 => '16:00:00/16:30:00',
+            17 => '16:30:00/17:00:00',
+            18 => '17:00:00/17:30:00',
+            19 => '17:30:00/18:00:00',
+        ];
+
+        $data['days'] = [
+            1 => 'Monday',
+            2 => 'Tuesday',
+            3 => 'Wednesday',
+            4 => 'Thursday',
+            5 => 'Friday',
+            6 => 'Saturday',
+            7 => 'Sunday',
+        ];
+
+        foreach($data['room'] as $key => $room)
+        {
+
+            foreach($data['days'] as $key2 => $day)
+            {
+
+                foreach($data['time'] as $key3 => $t)
+                {
+
+                    $time = explode('/', $t);
+
+                    $data['times'][$key][$key2][$key3] = DB::table('tblevents')
+                                 ->join('user_subjek', 'tblevents.group_id', 'user_subjek.id')
+                                 ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
+                                 ->where('tblevents.lecture_id', $room->id)
+                                 ->whereRaw('DAYNAME(tblevents.start) = ?', $day)
+                                 ->whereRaw('TIME(tblevents.start) >= ?',$time[0])
+                                 ->whereRaw('TIME(tblevents.end) >= ?',$time[1])
+                                 ->where('sessions.Status', 'ACTIVE')
+                                 ->first();
+
+                }
+
+            }
+
+        }
+        
+
+        //dd($data['times']);
+
+        return view('pendaftar_akademik.schedule.report_schedule.reportSchedule2', compact('data'));
+
+    }
+
     public function studentReportR()
     {
 
