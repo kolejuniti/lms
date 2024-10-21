@@ -350,6 +350,7 @@
 					</a>
 					<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
 						<li><a href="{{ route('pendaftar.student.transcript') }}" class="{{ (route('pendaftar.student.transcript') == Request::url()) ? 'active' : ''}}">Generate Result Student</a></li>
+						<li><a href="{{ route('pendaftar.student.transcript2') }}" class="{{ (route('pendaftar.student.transcript2') == Request::url()) ? 'active' : ''}}">Generate Individual Result</a></li>
 						<li><a href="{{ route('pendaftar_akademik.senateReport') }}" class="{{ (route('pendaftar_akademik.senateReport') == Request::url()) ? 'active' : ''}}">Senate Report</a></li>
 						<li><a href="{{ route('pendaftar_akademik.resultReport') }}" class="{{ (route('pendaftar_akademik.resultReport') == Request::url()) ? 'active' : ''}}">Result Report</a></li>
 						<li><a href="{{ route('pendaftar_akademik.transcript') }}" class="{{ (route('pendaftar_akademik.transcript') == Request::url()) ? 'active' : ''}}">Transcript</a></li>

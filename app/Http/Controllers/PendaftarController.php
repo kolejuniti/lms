@@ -2314,6 +2314,388 @@ class PendaftarController extends Controller
 
     }
 
+    public function studentTranscript2()
+    {
+
+        $data = [
+            'session' => DB::table('sessions')->get(),
+            'semester' => DB::table('semester')->get()
+        ];
+
+        return view('pendaftar.studentTranscript2', compact('data'));
+
+    }
+    
+    public function getTranscript2(Request $request)
+    {
+
+        $data = DB::table('student_transcript')
+                    ->join('students', 'student_transcript.student_ic', 'students.ic')
+                    ->join('sessions', 'student_transcript.session_id', 'sessions.SessionID')
+                    ->join('transcript_status', 'student_transcript.transcript_status_id', 'transcript_status.id')
+                    ->where([
+                        ['students.ic', $request->student],
+                        ['student_transcript.session_id', $request->session],
+                        ['student_transcript.semester', $request->semester]
+                    ])->select('student_transcript.*', 'students.name', 'sessions.SessionName','transcript_status.status_name AS transcript_status_id')
+                    ->get();
+
+                    // ob_start();
+                    // dd($data); // This will output debug information
+                    // $debugOutput = ob_get_clean();
+
+                    // Convert the data to JSON format
+                    $jsonData = $data->toJson();
+   
+
+        return response()->json(['message' => 'Success', 'data' => $data, 'log' => $jsonData]);
+
+    }
+
+    public function addTranscript2(Request $request)
+    {
+
+        $data = json_decode($request->addTranscript);
+
+        $transcript_status_id = '';
+
+        if($data->student != null && $data->session != null && $data->semester != null)
+        {
+
+            DB::table('student_transcript')
+            ->join('students', 'student_transcript.student_ic', 'students.ic')
+            ->where([
+                ['students.ic', $data->student],
+                ['student_transcript.session_id', $data->session],
+                ['student_transcript.semester', $data->semester]
+            ])->delete();
+
+            $students = DB::table('students')->where([
+                ['ic', $data->student]
+            ])->pluck('ic');
+
+            foreach($students as $std)
+            {
+                
+                if(DB::table('student_subjek')->where([
+                    ['student_ic', $std],
+                    ['sessionid', $data->session],
+                    ['semesterid', $data->semester],
+                    ['group_id','!=',null]
+                ])->count() > 0)
+                {
+
+                    $total_credit_s = DB::table('student_subjek')->where([
+                        ['student_ic', $std],
+                        ['sessionid', $data->session],
+                        ['semesterid', $data->semester],
+                        ['group_id','!=',null]
+                    ])->whereIn('course_status_id', [1,2,12,15])->sum('credit');
+
+                    $passed_credit_s = DB::table('student_subjek')->where([
+                        ['student_ic', $std],
+                        ['sessionid', $data->session],
+                        ['semesterid', $data->semester],
+                        ['group_id','!=',null]
+                    ])->whereIn('course_status_id', [1])->sum('credit');
+
+                    $grade_pointer_s = DB::table('student_subjek')
+                    ->where([
+                        ['student_ic', $std],
+                        ['sessionid', $data->session],
+                        ['semesterid', $data->semester],
+                        ['group_id','!=',null]
+                    ])
+                    ->whereIn('course_status_id', [1,2,12,15])
+                    ->selectRaw('SUM(credit * pointer) as total')
+                    ->value('total');
+
+                    $gpa = DB::table('student_subjek')
+                    ->where([
+                        ['student_ic', $std],
+                        ['sessionid', $data->session],
+                        ['semesterid', $data->semester],
+                        ['group_id','!=',null]
+                    ])
+                    ->whereIn('course_status_id', [1,2,12,15])
+                    ->selectRaw('SUM(credit * pointer) / SUM(credit) as total')
+                    ->value('total');
+
+                    $total_credit_c = DB::table('student_subjek')->where([
+                        ['student_ic', $std],
+                        ['group_id','!=',null]
+                    ])->where('semesterid', '<=', $data->semester)
+                    ->whereIn('course_status_id', [1,2,12,15])
+                    ->sum('credit');
+
+                    $passed_credit_c = DB::table('student_subjek')->where([
+                        ['student_ic', $std],
+                        ['group_id','!=',null]
+                    ])->where('semesterid', '<=', $data->semester)
+                    ->whereIn('course_status_id', [1])->sum('credit');
+
+                    $distinct_courses = DB::table('student_subjek')
+                    ->where([
+                        ['student_ic', $std],
+                        ['group_id','!=',null]
+                    ])
+                    ->where('semesterid', '<=', $data->semester)
+                    ->whereIn('course_status_id', [1, 2, 12, 15])
+                    ->distinct()
+                    ->select('courseid', 'credit');
+
+                    $count_credit_c = DB::table(DB::raw("({$distinct_courses->toSql()}) as sub"))
+                    ->mergeBindings($distinct_courses) // Needed to pass the bindings from the subquery
+                    ->sum('credit');
+                    
+                    // $count_credit_c = DB::table('student_subjek')->where([
+                    //     ['student_ic', $std]
+                    // ])->where('semesterid', '<=', $data->semester)
+                    // ->whereIn('course_status_id', [1,2,12,15])
+                    // ->distinct('courseid')
+                    // ->selectRaw('SUM(credit) as total')
+                    // ->value('total');
+
+                    // $grade_pointer = DB::table('student_subjek')
+                    //     ->selectRaw('MAX(id) as max_id')
+                    //     ->where([
+                    //         ['student_ic', $std],
+                    //         ['group_id','!=',null]
+                    //         ])
+                    //     ->where('semesterid', '<=', $data->semester)
+                    //     ->whereIn('course_status_id', [1, 2, 12, 15])
+                    //     ->groupBy('courseid')
+                    //     ->get();
+
+                    // $grade_pointer_c = DB::table('student_subjek')
+                    //     ->whereIn('id', $grade_pointer->pluck('max_id'))
+                    //     ->selectRaw('SUM(credit * pointer) as total')
+                    //     ->value('total');
+
+                    $subquery = DB::table('student_subjek')
+                        ->select('courseid', DB::raw('MAX(semesterid) as max_semesterid'))
+                        ->where('student_ic', $std)
+                        ->whereNotNull('group_id')
+                        ->where('semesterid', '<=', $data->semester)
+                        ->whereIn('course_status_id', [1, 2, 12, 15])
+                        ->groupBy('courseid');
+
+                    $grade_pointer = DB::table('student_subjek as ss')
+                        ->joinSub($subquery, 'sub', function ($join) {
+                            $join->on('ss.courseid', '=', 'sub.courseid')
+                                ->on('ss.semesterid', '=', 'sub.max_semesterid');
+                        })
+                        ->where('ss.student_ic', $std)
+                        ->select('ss.id as max_id')
+                        ->get();
+
+                    $grade_pointer_c = DB::table('student_subjek')
+                        ->whereIn('id', $grade_pointer->pluck('max_id'))
+                        ->selectRaw('SUM(credit * pointer) as total')
+                        ->value('total');
+
+                    // $grade_pointer_c = DB::table('student_subjek')
+                    // ->where([
+                    //     ['student_ic', $std]
+                    // ])->where('semesterid', '<=', $data->semester)
+                    // ->whereIn('course_status_id', [1, 2, 12, 15])
+                    // ->selectRaw('SUM(credit * pointer) as total')
+                    // ->selectRaw('MAX(id) as max_id')
+                    // ->groupBy('courseid')
+                    // ->value('total');
+
+
+                    // $sub_query = DB::table('student_subjek')
+                    //             ->where([
+                    //                 ['student_ic', $std]
+                    //             ])->where('semesterid', '<=', $data->semester)
+                    //             ->select('courseid', DB::raw('MAX(id) as cid'))
+                    //             ->groupBy('courseid');
+
+                    // $result = DB::table(DB::raw("({$sub_query->toSql()}) as a"))
+                    //             ->mergeBindings($sub_query)
+                    //             ->join('student_subjek as b', 'a.cid', '=', 'b.courseid')
+                    //             ->where([
+                    //                 ['b.student_ic', $std]
+                    //             ])->where('b.semesterid', '<=', $data->semester)
+                    //             ->select(DB::raw('SUM(b.pointer*b.credit) as grade_c'))
+                    //             ->value('grade_c');
+                            
+                    // $grade_pointer_c = $result;
+
+                    // $grade_pointers = DB::table('student_subjek')
+                    //     ->where('student_ic', $std)
+                    //     ->where('semesterid', '<=', $data->semester)
+                    //     ->whereIn('course_status_id', [1, 2, 12, 15])
+                    //     ->select('courseid', DB::raw('SUM(credit * pointer) as total'))
+                    //     ->groupBy('courseid')
+                    //     ->get();
+
+                    // // Now you can iterate through the collection to access each course's total
+                    // foreach ($grade_pointers as $grade_pointer) {
+                    //     $courseid = $grade_pointer->courseid;
+                    //     $total = $grade_pointer->total;
+                    //     // Do something with $courseid and $total
+                    // }
+
+                    // $cgpa = DB::table('student_subjek')
+                    // ->select('courseid', DB::raw('ROUND(SUM(credit * pointer) / 2) as total'))
+                    // ->where([
+                    //     ['student_ic', $std]
+                    // ])->where('semesterid', '<=', $data->semester)
+                    // ->whereIn('course_status_id', [1,2,12,15])
+                    // ->groupBy('courseid')
+                    // ->groupBy(DB::raw('(SELECT MAX(id) FROM student_subjek as ss2 WHERE ss2.courseid = student_subjek.courseid)'))
+                    // ->value('total');
+
+                    // $cgpa_old = DB::table('student_subjek')
+                    //     ->selectRaw('MAX(id) as max_id')
+                    //     ->where([
+                    //         ['student_ic', $std],
+                    //         ['group_id','!=',null]
+                    //         ])
+                    //     ->where('semesterid', '<=', $data->semester)
+                    //     ->whereIn('course_status_id', [1, 2, 12, 15])
+                    //     ->groupBy('courseid')
+                    //     ->get();
+
+                    // $cgpa = DB::table('student_subjek')
+                    //     ->whereIn('id', $cgpa_old->pluck('max_id'))
+                    //     ->selectRaw('ROUND(SUM(credit * pointer) / SUM(credit), 2) as total')
+                    //     ->value('total');
+
+                    // $subquery = DB::table('student_subjek')
+                    //     ->select('courseid', DB::raw('MAX(semesterid) as max_semesterid'))
+                    //     ->where('student_ic', $std)
+                    //     ->whereNotNull('group_id')
+                    //     ->where('semesterid', '<=', $data->semester)
+                    //     ->whereIn('course_status_id', [1, 2, 12, 15])
+                    //     ->groupBy('courseid');
+
+                    $cgpa_old = DB::table('student_subjek as ss')
+                        ->joinSub($subquery, 'sub', function ($join) {
+                            $join->on('ss.courseid', '=', 'sub.courseid')
+                                ->on('ss.semesterid', '=', 'sub.max_semesterid');
+                        })
+                        ->where('ss.student_ic', $std)
+                        ->select('ss.id as max_id')
+                        ->get();
+
+                    $cgpa = DB::table('student_subjek')
+                        ->whereIn('id', $cgpa_old->pluck('max_id'))
+                        ->selectRaw('ROUND(SUM(credit * pointer) / SUM(credit), 2) as total')
+                        ->value('total');
+
+                    if($cgpa >= 3.67 && $cgpa <= 4)
+                    {
+
+                        $transcript_status_id = 6;
+
+                    }elseif($cgpa >= 3 && $cgpa <= 3.66)
+                    {
+
+                        $transcript_status_id = 1;
+
+                    }elseif($cgpa >= 2 && $cgpa <= 2.99)
+                    {
+
+                        $transcript_status_id = 2;
+
+                    }elseif($cgpa >= 1 && $cgpa <= 1.99)
+                    {
+
+                        $transcript_status_id = 3;
+
+                    }elseif($cgpa >= 0.50 && $cgpa <= 0.99)
+                    {
+
+                        $transcript_status_id = 4;
+
+                    }elseif($cgpa >= 0 && $cgpa <= 0.49)
+                    {
+
+                        $transcript_status_id = 5;
+
+                    }
+
+                    if($data->semester != 1)
+                    {
+
+                        if($transcript_status_id == 3)
+                        {
+
+                            $total = DB::table('student_transcript')
+                                     ->where('student_ic', $std)
+                                     ->where('semester', '<', $data->semester)
+                                     ->whereIn('transcript_status_id', [3,4])
+                                     ->count();
+
+                            if($total > 0)
+                            {
+
+                                $transcript_status_id = 4;
+
+                            }
+
+                        }
+
+                        if($transcript_status_id == 4)
+                        {
+
+                            $total = DB::table('student_transcript')
+                                     ->where('student_ic', $std)
+                                     ->where('semester', '<', $data->semester)
+                                     ->whereIn('transcript_status_id', [4,5])
+                                     ->count();
+
+                            if($total > 0)
+                            {
+
+                                $transcript_status_id = 5;
+
+                            }
+
+                        }
+
+                    }
+
+                    DB::table('student_transcript')->insert([
+                        'student_ic' => $std,
+                        'session_id' => $data->session,
+                        'semester' => $data->semester,
+                        'total_credit_s' => $total_credit_s,
+                        'passed_credit_s' => $passed_credit_s,
+                        'grade_pointer_s' => $grade_pointer_s,
+                        'gpa' => $gpa,
+                        'total_credit_c' => $total_credit_c,
+                        'passed_credit_c' => $passed_credit_c,
+                        'count_credit_c' => $count_credit_c,
+                        'grade_pointer_c' => $grade_pointer_c,
+                        'cgpa' => $cgpa,
+                        'transcript_status_id' => $transcript_status_id
+                    ]);
+
+                }
+  
+            }
+
+            $data = DB::table('student_transcript')
+                    ->join('students', 'student_transcript.student_ic', 'students.ic')
+                    ->join('sessions', 'student_transcript.session_id', 'sessions.SessionID')
+                    ->join('transcript_status', 'student_transcript.transcript_status_id', 'transcript_status.id')
+                    ->where([
+                        ['students.ic', $data->student],
+                        ['student_transcript.session_id', $data->session],
+                        ['student_transcript.semester', $data->semester]
+                    ])->select('student_transcript.*', 'students.name', 'sessions.SessionName','transcript_status.status_name AS transcript_status_id')
+                    ->get();
+
+            return response()->json(['message' => 'Success', 'data' => $data]);
+
+        }
+
+    }
+
     public function studentResult()
     {
 

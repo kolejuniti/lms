@@ -35,17 +35,20 @@
           </div>
         </div>
         <div class="card-body">
-          <div class="row mt-3 ">
-            <div class="col-md-12 ml-3" id="program-card">
-              <div class="form-group">
-                <label class="form-label" for="program">Program</label>
-                <select class="form-select" id="program" name="program">
-                  <option value="-" selected disabled>-</option>
-                  @foreach ($data['program'] as $prg)
-                  <option value="{{ $prg->id }}">{{ $prg->progcode }} - {{ $prg->progname }}</option> 
-                  @endforeach
-                </select>
-              </div>
+          <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                <label class="form-label" for="name">Name / No. IC / No. Matric</label>
+                <input type="text" class="form-control" id="search" placeholder="Search..." name="search">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                  <label class="form-label" for="student">Student</label>
+                  <select class="form-select" id="student" name="student">
+                    <option value="-" selected disabled>-</option>
+                  </select>
+                </div>
             </div>
           </div>
           <div class="row mt-3 ">
@@ -214,6 +217,34 @@
 
 <script type="text/javascript">
 
+  $('#search').keyup(function(event){
+    if (event.keyCode === 13) { // 13 is the code for the "Enter" key
+        var searchTerm = $(this).val();
+        getStudent(searchTerm);
+      }
+  });
+
+  function getStudent(search)
+  {
+
+      return $.ajax({
+              headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
+              url      : "{{ url('pendaftar/student/status/listStudent') }}",
+              method   : 'POST',
+              data 	 : {search: search},
+              error:function(err){
+                  alert("Error");
+                  console.log(err);
+              },
+              success  : function(data){
+                  $('#student').html(data);
+                  $('#student').selectpicker('refresh');
+
+              }
+          });
+      
+  }
+
   function deleteMaterial(id){     
       Swal.fire({
     title: "Are you sure?",
@@ -262,52 +293,52 @@
   </script>
 
   <script type="text/javascript">
-   var selected_program = "";
-    var selected_session = "";
+   var selected_student = "";
+   var selected_session = "";
     var selected_semester = "";
 
     var url = window.location.href;
 
     //var session = document.getElementById('session-card');
 
-    $(document).on('change', '#program', function(e){
-      selected_program = $(e.target).val();
+    $(document).on('change', '#student', function(e){
+      selected_student = $(e.target).val();
       // session.hidden = false;
       // document.getElementById('semester-card').hidden = false;
       
-      getTranscript(selected_program,selected_session,selected_semester);
+      getTranscript(selected_student,selected_session,selected_semester);
 
     })
 
     $(document).on('change', '#session', function(e){
     selected_session = $(e.target).val();
 
-      getTranscript(selected_program,selected_session,selected_semester);
+      getTranscript(selected_student,selected_session,selected_semester);
 
     });
 
     $(document).on('change', '#semester', function(e){
     selected_semester = $(e.target).val();
 
-      getTranscript(selected_program,selected_session,selected_semester);
+      getTranscript(selected_student,selected_session,selected_semester);
 
     });
 
-    function getTranscript(program,session,semester)
+    function getTranscript(student,session,semester)
     {
 
       // $('#complex_header').DataTable().destroy();
 
-      if(program != "" && session != "" && semester != "")
+      if(student != "" && session != "" && semester != "")
       {
 
-        //alert(program + session + semester);
+        //alert(student + session + semester);
 
         return $.ajax({
               headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
-              url      : "{{ url('pendaftar/student/transcript/getTranscript') }}",
+              url      : "{{ url('pendaftar/student/transcript/getTranscript2') }}",
               method   : 'POST',
-              data 	 : {program: program,session: session,semester: semester},
+              data 	 : {student: student,session: session,semester: semester},
               // beforeSend:function(xhr){
               //   $("#complex_header").LoadingOverlay("show", {
               //     image: `<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="24px" height="30px" viewBox="0 0 24 30" style="enable-background:new 0 0 50 50;" xml:space="preserve">
@@ -439,7 +470,7 @@
       var formData = new FormData();
 
       getInput = {
-        program : $('#program').val(),
+        student : $('#student').val(),
         session : $('#session').val(),
         semester : $('#semester').val()
       };
@@ -451,7 +482,7 @@
 
       $.ajax({
           headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
-          url: "{{ url('pendaftar/student/transcript/addTranscript') }}",
+          url: "{{ url('pendaftar/student/transcript/addTranscript2') }}",
           type: 'POST',
           data: formData,
           cache : false,
