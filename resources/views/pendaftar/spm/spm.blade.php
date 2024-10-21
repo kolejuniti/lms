@@ -46,7 +46,7 @@
             <div class="card card-primary">
               <!-- /.card-header -->
               @php 
-              $required = ['1','2','3','4','5','6'];
+              $required = ['1','2','3','4','5','6','7'];
               @endphp
               <!-- form start -->
               <form action="/pendaftar/spm/{{ request()->ic }}/store" method="POST">
@@ -267,35 +267,81 @@
                             </div>
                             @endforeach
                         @else
-                            @foreach ($data['spm'] as $key=> $req)
+                        @php
+                            $totalRows = 11; // Define the total number of rows you want
+                            $existingRows = count($data['spm']); // Get the count of existing rows
+                            $remainingRows = $totalRows - $existingRows; // Calculate how many rows are left to add
+                        @endphp
+                        
+                        @foreach ($data['spm'] as $key => $req)
                             <div class="col-md-12">
                                 <div class="row">
                                     <div class="col-md-5">
                                         <div class="form-group">
                                             <label class="form-label" for="subject">Subject</label>
-                                            <select class="form-select" id="subject_{{ $key }}" name="subject[]" onchange="reqGrade('{{ $key }}')" >
-                                            <option value="" selected >-</option>
-                                            @foreach ($data['subject'] as $sub)
-                                                <option value="{{ $sub->id }}" {{  $req->subject_spm_id == $sub->id ? "selected": "" }} {{ ((0 <= $key) && ($key <= 3)) ? ($sub->id == $req->subject_spm_id) ? '' : 'disabled' : ''}}>{{$sub->name }}</option> 
-                                            @endforeach
+                                            <select class="form-select" id="subject_{{ $key }}" name="subject[]" onchange="reqGrade('{{ $key }}')">
+                                                <option value="" selected>-</option>
+                                                @foreach ($data['subject'] as $sub)
+                                                    <option value="{{ $sub->id }}" {{ $req->subject_spm_id == $sub->id ? "selected" : "" }} 
+                                                        {{ ((0 <= $key) && ($key <= 3)) ? ($sub->id == $req->subject_spm_id ? '' : 'disabled') : '' }}>
+                                                        {{ $sub->name }}
+                                                    </option>
+                                                @endforeach
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-md-2 align-self-center "> <div class="d-flex justify-content-center align-middle">-</div></div>
+                                    <div class="col-md-2 align-self-center">
+                                        <div class="d-flex justify-content-center align-middle">-</div>
+                                    </div>
                                     <div class="col-md-5">
                                         <div class="form-group">
                                             <label class="form-label" for="grade">Grade</label>
                                             <select class="form-select" id="grade_{{ $key }}" name="grade[]">
-                                            <option value="" selected >-</option>
-                                            @foreach ($data['grade'] as $grd)
-                                                <option value="{{ $grd->id }}" {{ $req->grade_spm_id == $grd->id ? "selected": "" }}>{{$grd->name }}</option> 
-                                            @endforeach
+                                                <option value="" selected>-</option>
+                                                @foreach ($data['grade'] as $grd)
+                                                    <option value="{{ $grd->id }}" {{ $req->grade_spm_id == $grd->id ? "selected" : "" }}>{{ $grd->name }}</option>
+                                                @endforeach
                                             </select>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            @endforeach
+                        @endforeach
+                        
+                        {{-- Add the remaining rows if the total count is less than 11 --}}
+                        @for ($i = 0; $i < $remainingRows; $i++)
+                            @php $key = $existingRows + $i; @endphp
+                            <div class="col-md-12">
+                                <div class="row">
+                                    <div class="col-md-5">
+                                        <div class="form-group">
+                                            <label class="form-label" for="subject">Subject</label>
+                                            <select class="form-select" id="subject_{{ $key }}" name="subject[]" onchange="reqGrade('{{ $key }}')">
+                                                <option value="" selected>-</option>
+                                                @foreach ($data['subject'] as $sub)
+                                                    <option value="{{ $sub->id }}" {{ old('subject.' . $key) == $sub->id ? "selected" : "" }}>{{ $sub->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2 align-self-center">
+                                        <div class="d-flex justify-content-center align-middle">-</div>
+                                    </div>
+                                    <div class="col-md-5">
+                                        <div class="form-group">
+                                            <label class="form-label" for="grade">Grade</label>
+                                            <select class="form-select" id="grade_{{ $key }}" name="grade[]">
+                                                <option value="" selected>-</option>
+                                                @foreach ($data['grade'] as $grd)
+                                                    <option value="{{ $grd->id }}" {{ old('grade.' . $key) == $grd->id ? "selected" : "" }}>{{ $grd->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endfor
+                    
                         @endif
                     </div>
                 </div>
