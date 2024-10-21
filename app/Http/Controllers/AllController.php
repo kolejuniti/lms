@@ -266,12 +266,29 @@ class AllController extends Controller
         foreach($data['student'] as $key => $std)
         {
 
-            $data['spm'][$key] = DB::table('tblspm_dtl')
-                              ->join('tblsubject_spm', 'tblspm_dtl.subject_spm_id', 'tblsubject_spm.id')
-                              ->join('tblgrade_spm', 'tblspm_dtl.grade_spm_id', 'tblgrade_spm.id')
-                              ->where('tblspm_dtl.student_spm_ic', $std->ic)
-                              ->select('tblsubject_spm.name AS subject', 'tblgrade_spm.name AS grade')
-                              ->get();
+            // Fetch the first four specific records (1, 2, 5, 6)
+            $firstFour = DB::table('tblspm_dtl')
+            ->join('tblsubject_spm', 'tblspm_dtl.subject_spm_id', 'tblsubject_spm.id')
+            ->join('tblgrade_spm', 'tblspm_dtl.grade_spm_id', 'tblgrade_spm.id')
+            ->where('tblspm_dtl.student_spm_ic', $std->ic)
+            ->whereIn('tblsubject_spm.id', [1, 2, 5, 6]) // Filter for the specific subjects
+            ->orderByRaw(DB::raw("FIELD(tblsubject_spm.id, 1, 2, 5, 6)")) // Order them in specific order
+            ->select('tblsubject_spm.name AS subject', 'tblgrade_spm.name AS grade')
+            ->get();
+
+            // Fetch the rest of the records in random order
+            $randomSubjects = DB::table('tblspm_dtl')
+            ->join('tblsubject_spm', 'tblspm_dtl.subject_spm_id', 'tblsubject_spm.id')
+            ->join('tblgrade_spm', 'tblspm_dtl.grade_spm_id', 'tblgrade_spm.id')
+            ->where('tblspm_dtl.student_spm_ic', $std->ic)
+            ->whereNotIn('tblsubject_spm.id', [1, 2, 5, 6]) // Exclude the first four subjects
+            ->inRandomOrder() // Randomize the rest
+            ->select('tblsubject_spm.name AS subject', 'tblgrade_spm.name AS grade')
+            ->get();
+
+            // Merge the two collections
+            $data['spm'][$key] = $firstFour->merge($randomSubjects);
+
 
             // Check if the fetched data is less than 10
             $fetchedDataCount = count($data['spm'][$key]);
@@ -282,13 +299,29 @@ class AllController extends Controller
                 }
             }
 
-            $data['result'][$key] = DB::table('tblspm_dtl')
-                              ->join('tblsubject_spm', 'tblspm_dtl.subject_spm_id', 'tblsubject_spm.id')
-                              ->join('tblgrade_spm', 'tblspm_dtl.grade_spm_id', 'tblgrade_spm.id')
-                              ->where('tblspm_dtl.student_spm_ic', $std->ic)
-                              ->whereNotIn('tblgrade_spm.id', [8,9,10,19,20,21,22])
-                              ->select(DB::raw('COUNT(tblspm_dtl.id) AS result'))
-                              ->value('result');
+            // Count the subjects excluding grades 8, 9, 10, 19, 20, 21, 22, with specific conditions first
+            $firstFourCount = DB::table('tblspm_dtl')
+            ->join('tblsubject_spm', 'tblspm_dtl.subject_spm_id', 'tblsubject_spm.id')
+            ->join('tblgrade_spm', 'tblspm_dtl.grade_spm_id', 'tblgrade_spm.id')
+            ->where('tblspm_dtl.student_spm_ic', $std->ic)
+            ->whereNotIn('tblgrade_spm.id', [8, 9, 10, 19, 20, 21, 22]) // Exclude these specific grades
+            ->whereIn('tblsubject_spm.id', [1, 2, 5, 6]) // Filter for specific subjects first
+            ->select(DB::raw('COUNT(tblspm_dtl.id) AS count'))
+            ->value('count');
+
+            // Count the rest of the subjects (excluding both specific grades and specific subjects)
+            $randomCount = DB::table('tblspm_dtl')
+            ->join('tblsubject_spm', 'tblspm_dtl.subject_spm_id', 'tblsubject_spm.id')
+            ->join('tblgrade_spm', 'tblspm_dtl.grade_spm_id', 'tblgrade_spm.id')
+            ->where('tblspm_dtl.student_spm_ic', $std->ic)
+            ->whereNotIn('tblgrade_spm.id', [8, 9, 10, 19, 20, 21, 22]) // Exclude the specific grades
+            ->whereNotIn('tblsubject_spm.id', [1, 2, 5, 6]) // Exclude the specific subjects
+            ->select(DB::raw('COUNT(tblspm_dtl.id) AS count'))
+            ->value('count');
+
+            // Sum the two counts to get the final result
+            $data['result'][$key] = $firstFourCount + $randomCount;
+
 
             $data['spmv'][$key] = DB::table('tblstudent_spmv')
                                   ->where('student_ic', $std->ic)
