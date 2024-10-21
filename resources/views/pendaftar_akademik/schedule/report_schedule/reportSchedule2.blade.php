@@ -73,7 +73,7 @@
                                       <td style="text-align: center; border: 1px solid black;
                                           background-color: 
                                               @if(isset($data['times'][$key][$key2][$key3]) && $data['times'][$key][$key2][$key3])
-                                                  red;  /* Occupied */
+                                                  #8B0000;  /* Dark Red */
                                               @else
                                                   green;  /* Free */
                                               @endif
