@@ -1084,7 +1084,7 @@ class PendaftarController extends Controller
 
         $data['info'] = DB::table('tblstudent_spm')->where('student_ic', request()->ic)->first();
 
-        $data['subject'] = DB::table('tblsubject_spm')->get();
+        $data['subject'] = DB::table('tblsubject_spm')->orderBy('name')->get();
 
         $data['grade'] = DB::table('tblgrade_spm')->get();
 
