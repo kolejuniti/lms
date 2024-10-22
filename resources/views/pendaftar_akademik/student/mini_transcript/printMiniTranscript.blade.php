@@ -21,7 +21,7 @@
         <style>
             @page {
                 size: A4;
-                margin: 0.5cm;
+                margin: 1cm;
             }
             * {
                 margin: 0;
@@ -357,10 +357,7 @@
             @endforeach  
         </div>
 
-        <br>
-        <br>
-
-        <div class="flex-container col-md-12">
+        <div class="flex-container col-md-12 mt-1">
             <div class="col-md-6" style="border: 1px solid white">
                 <table>
                     <thead>
