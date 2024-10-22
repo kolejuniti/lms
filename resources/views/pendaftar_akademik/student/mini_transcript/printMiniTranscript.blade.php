@@ -21,7 +21,7 @@
         <style>
             @page {
                 size: A4;
-                margin: 0.5cm;
+                margin: 1cm;
             }
             * {
                 margin: 0;
@@ -31,7 +31,7 @@
                 font-size: 100%;
                 vertical-align: baseline;
                 background: transparent;
-                font-size: 9.5px;
+                font-size: 9px;
             }
             h2, h3, p {
                 margin: 0;
@@ -41,7 +41,7 @@
                 font-size: 100%;
                 vertical-align: baseline;
                 background: transparent;
-                font-size: 9.5px;
+                font-size: 9px;
             }
             h1 {
                 font-size:40px; /* increase font-size */
