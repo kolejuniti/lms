@@ -67,6 +67,9 @@
                     <th style="width: 10%">
                         Roadtax Due Date
                     </th>
+                    <th style="width: 10%">
+                        Next Service
+                    </th>
                     <th style="width: 20%">
                     </th>
                 </tr>
@@ -91,6 +94,9 @@
                 </td>
                 <td>
                   {{ $vec->date_of_roadtax }}
+                </td>
+                <td>
+                  {{ $data['nextService'][$key] }}
                 </td>
                 <td class="project-actions text-right" style="text-align: center;">
                   <a class="btn btn-info btn-sm btn-sm mr-2" href="#" onclick="updateVehicle('{{ $vec->id }}')">

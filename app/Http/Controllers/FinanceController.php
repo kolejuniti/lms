@@ -11431,6 +11431,15 @@ class FinanceController extends Controller
 
         ];
 
+        foreach($data['vehicles'] as $key => $vehicle)
+        {
+
+            $odometer = DB::table('tblvehicle_service')->where('vehicle_id', $vehicle->id)->orderBy('id', 'DESC')->first();
+
+            $data['nextService'][$key] = ($odometer) ? $odometer->odometer + 5000 : 0;
+
+        }
+
         return view('finance.asset.vehicleRecord.index', compact('data'));
 
     }
