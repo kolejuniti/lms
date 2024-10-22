@@ -44,11 +44,11 @@
                 font-size: 9px;
             }
             h1 {
-                font-size:40px; /* increase font-size */
+                font-size:35px; /* increase font-size */
             }
             .b2 {
                 font-weight: bold;
-                font-size: 15px; /* increase font-size */
+                font-size: 10px; /* increase font-size */
             }
             .form-group {
                 page-break-inside: avoid;
@@ -133,7 +133,7 @@
         <div class="row">
             <div class="col-12 d-flex justify-content-center align-items-center">
                 <div class="me-2">
-                    <img src="{{ asset('assets/images/logo/Kolej-UNITI.png')}}" alt="Kolej Uniti Logo" height="40">
+                    <img src="{{ asset('assets/images/logo/Kolej-UNITI.png')}}" alt="Kolej Uniti Logo" height="35">
                 </div>
                 <div>
                     <h1 class="mb-0">KOLEJ UNITI</h1>
