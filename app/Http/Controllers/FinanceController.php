@@ -11600,7 +11600,7 @@ class FinanceController extends Controller
             
                                 // Loop through service details and concatenate the 'type_of_services'
                                 foreach ($data['details'][$key] as $detail) {
-                                    $content .= $detail->type_of_services. ' - ' . $detail->notes .'<br>';  // Add each service type with line break
+                                    $content .= $detail->type_of_services. ' - ' . $detail->notes . ' (RM' . $detail->amount . ')' . '<br>';  // Add each service type with line break
                                 }
             
             $content .= '</td>
@@ -11696,7 +11696,8 @@ class FinanceController extends Controller
                     DB::table('tblservice_details')->insert([
                         'service_record_id' => $id,  // Foreign key to the main record
                         'type_of_services' => $checkbox->checkboxValue,  // Checkbox value
-                        'notes' => $checkbox->textareaValue  // Associated textarea value
+                        'notes' => $checkbox->textareaValue,  // Associated textarea value
+                        'amount' => $checkbox->inputValue
                     ]);
                 }
             }

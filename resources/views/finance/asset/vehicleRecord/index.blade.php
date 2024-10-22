@@ -449,11 +449,28 @@
         var checkboxId = this.id; // Get the checkbox id
         var textareaId = `#${checkboxId}d`; // Construct the corresponding textarea id
         var textareaValue = $(textareaId).val(); // Get the value of the textarea
+        var valueInputId = `#${checkboxId}value`; // Construct the id for the associated number input
+        var inputValue = $(valueInputId).val(); // Get the number input value
 
-        // Push both checkbox value and corresponding textarea value to the array
+        // Push both checkbox value, corresponding textarea value, and the number input value
         forminput.checkboxes.push({
             checkboxValue: $(this).val(),
-            textareaValue: textareaValue
+            textareaValue: textareaValue,
+            inputValue: inputValue // Adding the associated number input field
+        });
+    });
+
+    // Collect all dynamically added 'lainlain[]' and 'lainlaind[]' fields
+    $("input[name='lainlain[]']").each(function(index) {
+        var lainlainTitle = $(this).val(); // Get the value of the 'lainlain[]' title input
+        var lainlaindDetails = $("textarea[name='lainlaind[]']").eq(index).val(); // Get the corresponding 'lainlaind[]' details
+        var lainlainValue = $("input[name='lainlainvalue[]']").eq(index).val(); // Get the corresponding 'lainlainvalue[]' amount
+
+        // Push the title and details as if they were checkboxes (since they are dynamic)
+        forminput.checkboxes.push({
+            checkboxValue: lainlainTitle,
+            textareaValue: lainlaindDetails,
+            inputValue: lainlainValue // Adding the associated number input field
         });
     });
 

@@ -32,16 +32,19 @@
             <input type="checkbox" id="MH" class="filled-in" name="MH" value="Minyak HItam">
             <label for="MH">Minyak Hitam</label>
             <textarea name="MHd" id="MHd" class="form-control" cols="4" rows="3" hidden></textarea>
+            <input type="number" name="MHvalue" id="MHvalue" class="form-control mt-2" placeholder="Enter amount" oninput="updateTotal()" hidden>
           </div>
           <div class="col-md-4">
             <input type="checkbox" id="tayar" class="filled-in" name="tayar" value="Tayar">
             <label for="tayar">Tayar</label>
             <textarea name="tayard" id="tayard" class="form-control" cols="4" rows="3" hidden></textarea>
+            <input type="number" name="tayarvalue" id="tayarvalue" class="form-control mt-2" placeholder="Enter amount" oninput="updateTotal()" hidden>
           </div>
           <div class="col-md-4">
             <input type="checkbox" id="belting" class="filled-in" name="belting" value="Belting">
             <label for="belting">Belting</label>
             <textarea name="beltingd" id="beltingd" class="form-control" cols="4" rows="3" hidden></textarea>
+            <input type="number" name="beltingvalue" id="beltingvalue" class="form-control mt-2" placeholder="Enter amount" oninput="updateTotal()" hidden>
           </div>
         </div>
       </div>
@@ -51,17 +54,19 @@
             <input type="checkbox" id="gearbox" class="filled-in" name="gearbox" value="Gearbox">
             <label for="gearbox">Gearbox</label>
             <textarea name="gearboxd" id="gearboxd" class="form-control" cols="4" rows="3" hidden></textarea>
+            <input type="number" name="gearboxvalue" id="gearboxvalue" class="form-control mt-2" placeholder="Enter amount" oninput="updateTotal()" hidden>
           </div>
           <div class="col-md-4">
             <input type="checkbox" id="brek" class="filled-in" name="brek" value="Brek">
             <label for="brek">Brek</label>
             <textarea name="brekd" id="brekd" class="form-control" cols="4" rows="3" hidden></textarea>
+            <input type="number" name="brekvalue" id="brekvalue" class="form-control mt-2" placeholder="Enter amount" oninput="updateTotal()" hidden>
           </div>
-          <div class="col-md-4">
+          {{-- <div class="col-md-4">
             <input type="checkbox" id="lainlain" class="filled-in" name="lainlain" value="Lain-Lain">
             <label for="lainlain">Lain-Lain</label>
             <textarea name="lainlaind" id="lainlaind" class="form-control" cols="4" rows="3" hidden></textarea>
-          </div>
+          </div> --}}
         </div>
       </div>
       <div>
@@ -70,32 +75,43 @@
             <input type="checkbox" id="aircond" class="filled-in" name="aircond" value="Aircond">
             <label for="aircond">Aircond</label>
             <textarea name="aircondd" id="aircondd" class="form-control" cols="4" rows="3" hidden></textarea>
+            <input type="number" name="aircondvalue" id="aircondvalue" class="form-control mt-2" placeholder="Enter amount" oninput="updateTotal()" hidden>
           </div>
           <div class="col-md-4">
             <input type="checkbox" id="bateri" class="filled-in" name="bateri" value="Bateri">
             <label for="bateri">Bateri</label>
             <textarea name="baterid" id="baterid" class="form-control" cols="4" rows="3" hidden></textarea>
+            <input type="number" name="baterivalue" id="baterivalue" class="form-control mt-2" placeholder="Enter amount" oninput="updateTotal()" hidden>
           </div>
         </div>
       </div>
       <div>
-        <div class="row d-flex mt-2">
+        <div class="row d-flex mt-2 mb-2">
           <div class="col-md-4">
             <input type="checkbox" id="lampu" class="filled-in" name="lampu" value="Lampu">
             <label for="lampu">Lampu</label>
             <textarea name="lampud" id="lampud" class="form-control" cols="4" rows="3" hidden></textarea>
+            <input type="number" name="lampuvalue" id="lampuvalue" class="form-control mt-2" placeholder="Enter amount" oninput="updateTotal()" hidden>
           </div>
           <div class="col-md-4">
             <input type="checkbox" id="SA" class="filled-in" name="SA" value="Shock Absorber">
             <label for="SA">Shock Absorber</label>
             <textarea name="SAd" id="SAd" class="form-control" cols="4" rows="3" hidden></textarea>
+            <input type="number" name="SAvalue" id="SAvalue" class="form-control mt-2" placeholder="Enter amount" oninput="updateTotal()" hidden>
           </div>
         </div>
       </div>
+      <div class="row d-flex mt-2">
+        <div class="col-md-4">
+          <button type="button" id="addLainLain" class="btn btn-info">Add Lain-Lain</button>
+        </div>
+      </div>
+      <!-- Container where new input fields will be added -->
+      <div id="lainlainContainer" class="mt-3"></div>
       <div>
         <div class="form-group">
           <label>Amount (RM)</label>
-          <input type="number" name="amount" id="amount" class="form-control">
+          <input type="number" name="amount" id="amount" class="form-control" readonly>
         </div>
       </div>
       <div>
@@ -203,10 +219,58 @@
 <script>
   $('.filled-in').change(function() {
       let textareaId = `#${this.id}d`; // Use 'id' to match the textarea
+      let numberInputId = `#${this.id}value`; // Use 'id' to match the number input field
       if(this.checked) {
           $(textareaId).removeAttr('hidden'); // Show the textarea
+          $(numberInputId).removeAttr('hidden'); // Show the number input
       } else {
           $(textareaId).attr('hidden', true); // Hide the textarea when unchecked
+          $(numberInputId).attr('hidden', true); // Hide the number input when unchecked
       }
   });
+
+  // Function to add new Lain-Lain input fields with amount input
+  let lainlainCount = 0; // Counter to create unique IDs for the inputs
+
+  document.getElementById('addLainLain').addEventListener('click', function() {
+    lainlainCount++;
+    
+    // Create a new div to hold the title input, textarea for details, and amount input
+    const newLainLainDiv = document.createElement('div');
+    newLainLainDiv.classList.add('row', 'd-flex', 'mt-2');
+    newLainLainDiv.innerHTML = `
+      <div class="col-md-4">
+        <label for="lainlain${lainlainCount}">Lain-Lain Title</label>
+        <input type="text" name="lainlain[]" id="lainlain${lainlainCount}" class="form-control" placeholder="Enter title">
+      </div>
+      <div class="col-md-4">
+        <label for="lainlaind${lainlainCount}">Lain-Lain Details</label>
+        <textarea name="lainlaind[]" id="lainlaind${lainlainCount}" class="form-control" cols="4" rows="3" placeholder="Enter details"></textarea>
+      </div>
+      <div class="col-md-4">
+        <label for="lainlainvalue${lainlainCount}">Amount</label>
+        <input type="number" name="lainlainvalue[]" id="lainlainvalue${lainlainCount}" class="form-control mt-2" placeholder="Enter amount" oninput="updateTotal()">
+      </div>
+    `;
+    
+    // Append the new div to the container
+    document.getElementById('lainlainContainer').appendChild(newLainLainDiv);
+  });
+
+  // Function to update the total amount
+  function updateTotal() {
+    let total = 0;
+
+    // Get all the monetary input fields (both static and dynamically added)
+    const amountFields = document.querySelectorAll('input[type="number"]:not(#amount)');
+
+    // Loop through all the monetary input fields and sum their values
+    amountFields.forEach(field => {
+      const value = parseFloat(field.value) || 0; // Default to 0 if input is empty
+      total += value;
+    });
+
+    // Update the amount input field with the total sum
+    document.getElementById('amount').value = total.toFixed(2);
+  }
 </script>
