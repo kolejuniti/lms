@@ -260,7 +260,7 @@
             </div>
         </div> --}}
 
-        <div class="row col-md-12 mt-1">
+        <div class="row col-md-12">
             <div class="col-md-6 mt-3">
                 <table class="custom-table">
                     <tbody>
