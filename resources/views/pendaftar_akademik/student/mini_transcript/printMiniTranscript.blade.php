@@ -144,7 +144,7 @@
             </div>
         </div>
         
-        <div class="flex-container col-12 mb-1 mt-1">  
+        <div class="flex-container col-12 mt-1">  
             <div class="col-md-6" style="border: 1px solid white; padding: 10px;">
                 <table>
                     <tr>
@@ -293,7 +293,7 @@
 
         <!-- Another Black Line Divider if needed -->
         <div class="border-line"></div>
-        <div class="row col-md-12 mt-2">
+        <div class="row col-md-12 mt-1">
             @php
             $total_credit = 0;
             @endphp
