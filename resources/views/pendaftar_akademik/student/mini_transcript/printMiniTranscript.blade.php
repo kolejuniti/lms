@@ -44,7 +44,7 @@
                 font-size: 9px;
             }
             h1 {
-                font-size:35px; /* increase font-size */
+                font-size:30px; /* increase font-size */
             }
             .b2 {
                 font-weight: bold;
