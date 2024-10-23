@@ -199,6 +199,7 @@ Route::put('/AR/schedule/update2/{id}', [App\Http\Controllers\AR_Controller::cla
 Route::delete('/AR/schedule/delete/{id}', [App\Http\Controllers\AR_Controller::class, 'deleteEvent']);
 Route::get('/AR/schedule/scheduleReport', [App\Http\Controllers\AR_Controller::class, 'scheduleReport'])->name('pendaftar_akademik.schedule.report');
 Route::get('/AR/schedule/scheduleReport2', [App\Http\Controllers\AR_Controller::class, 'scheduleReport2'])->name('pendaftar_akademik.schedule.report2');
+Route::get('/AR/schedule/scheduleReport2/getEventDetails', [App\Http\Controllers\AR_Controller::class, 'getEventDetails']);
 Route::get('/AR/leave', [App\Http\Controllers\AR_Controller::class, 'studentLeave'])->name('pendaftar_akademik.leave');
 Route::get('/AR/leave/getStudentLeave', [App\Http\Controllers\AR_Controller::class, 'getStudentLeave']);
 Route::post('/AR/leave/updateLeave', [App\Http\Controllers\AR_Controller::class, 'updateLeave']);

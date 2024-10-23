@@ -4157,6 +4157,7 @@ class AR_Controller extends Controller
                                  ->whereRaw('TIME(tblevents.start) >= ?',$time[0])
                                  ->whereRaw('TIME(tblevents.end) >= ?',$time[1])
                                  ->where('sessions.Status', 'ACTIVE')
+                                 ->select('tblevents.*')
                                  ->first();
 
                 }
@@ -4169,6 +4170,23 @@ class AR_Controller extends Controller
         //dd($data['times']);
 
         return view('pendaftar_akademik.schedule.report_schedule.reportSchedule2', compact('data'));
+
+    }
+
+    public function getEventDetails()
+    {
+
+        $data['event'] = DB::table('tblevents')
+                        ->join('user_subjek', 'tblevents.group_id', 'user_subjek.id')
+                        ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+                        ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
+                        ->join('tbllecture_room', 'tblevents.lecture_id', 'tbllecture_room.id')
+                        ->join('users', 'tblevents.user_ic', 'users.ic')
+                        ->where('tblevents.id', request()->id)
+                        ->select('tblevents.*', 'subjek.course_code', 'subjek.course_name', 'sessions.SessionName', 'tbllecture_room.name AS room', 'users.name AS lecturer')
+                        ->first();
+
+        return view('pendaftar_akademik.schedule.report_schedule.getEventDetails', compact('data'));
 
     }
 

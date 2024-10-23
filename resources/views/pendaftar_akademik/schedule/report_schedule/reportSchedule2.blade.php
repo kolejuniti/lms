@@ -70,21 +70,25 @@
                                   <td style="text-align: center; border: 1px solid black;">{{ $day }}</td>
 
                                   @foreach($data['time'] as $key3 => $t)
-                                      <td style="text-align: center; border: 1px solid black;
-                                          background-color: 
-                                              @if(isset($data['times'][$key][$key2][$key3]) && $data['times'][$key][$key2][$key3])
-                                                  #8B0000;  /* Dark Red */
-                                              @else
-                                                  green;  /* Free */
-                                              @endif
-                                          color: white;">
-                                          @if(isset($data['times'][$key][$key2][$key3]) && $data['times'][$key][$key2][$key3])
-                                              Occupied
-                                          @else
-                                              Free
-                                          @endif
-                                      </td>
-                                  @endforeach
+                                    <td style="text-align: center; border: 1px solid black;
+                                              background-color: 
+                                                  @if(isset($data['times'][$key][$key2][$key3]) && $data['times'][$key][$key2][$key3])
+                                                      #8B0000;  /* Dark Red */
+                                                  @else
+                                                      green;  /* Free */
+                                                  @endif;
+                                              color: white;" 
+                                        @if(isset($data['times'][$key][$key2][$key3]) && $data['times'][$key][$key2][$key3])
+                                            onClick="getEvent('{{ $data['times'][$key][$key2][$key3]->id }}')"
+                                        @endif>
+                                        @if(isset($data['times'][$key][$key2][$key3]) && $data['times'][$key][$key2][$key3])
+                                            Occupied
+                                        @else
+                                            Free
+                                        @endif
+                                    </td>
+                                    @endforeach
+
                               </tr>
                           @endforeach
                         @endforeach
@@ -168,10 +172,32 @@
       </div>
     </section>
     <!-- /.content -->
+    <div id="uploadModal" class="modal fade" role="dialog">
+      <div class="modal-dialog">
+          <!-- modal content-->
+          <div class="modal-content" id="getModal">
+          </div>
+      </div>
+    </div>  
   </div>
 </div>
 
 <script>
+  function getEvent(id) {
+    $.ajax({
+      url: "{{ url('AR/schedule/scheduleReport2/getEventDetails') }}",
+      type: "GET",
+      data: {
+        id: id,
+        _token: "{{ csrf_token() }}"
+      },
+      success: function(data) {
+        $('#getModal').html(data);
+        $('#uploadModal').modal('show');
+      }
+    });
+  }
+
   $(document).ready( function () {
       $('#table_dismissed').DataTable({
         dom: 'lBfrtip', // if you remove this line you will see the show entries dropdown
