@@ -44,6 +44,9 @@
               </div>
               <!-- /.card-header -->
               <!-- form start -->
+              <button id="printButton" class="waves-effect waves-light btn btn-primary btn-sm">
+                <i class="ti-printer"></i>&nbsp Print
+              </button>
               <form action="/pendaftar/edit/update?id={{ $student->ic }}" method="POST">
                 @csrf
                 <div class="card-body">
@@ -797,5 +800,10 @@ $(document).on('change', '#program', function(){
   document.getElementById('commenttxt').required = true;
 
 })
+</script>
+<script>
+  document.getElementById('printButton').addEventListener('click', function() {
+      window.open("/pendaftar/edit/{{ $student->ic }}?print=1", "_blank");
+  });
 </script>
 @endsection

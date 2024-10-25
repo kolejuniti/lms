@@ -815,55 +815,107 @@ class PendaftarController extends Controller
 
     public function edit()
     {
-        $student = DB::table('students')
+        
+        
+        //dd(request());
+
+        if(isset(request()->print))
+        {
+
+            $student = DB::table('students')
+                   ->leftjoin('tblprogramme', 'students.program', 'tblprogramme.id')
+                   ->leftjoin('sessions', 'students.intake', 'sessions.SessionID')
+                   ->leftJoin('tblbatch', 'students.batch', 'tblbatch.BatchID')
+                   ->leftjoin('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
+                   ->leftjoin('tblsex', 'tblstudent_personal.sex_id', 'tblsex.id')
+                   ->leftjoin('tblnationality', 'tblstudent_personal.nationality_id', 'tblnationality.id')
+                   ->leftjoin('tblstate AS a', 'tblstudent_personal.state_id', 'a.id')
+                   ->leftjoin('tblreligion', 'tblstudent_personal.religion_id', 'tblreligion.id')
+                   ->leftjoin('tblcitizenship_level', 'tblstudent_personal.statelevel_id', 'tblcitizenship_level.id')
+                   ->leftjoin('tblcitizenship', 'tblstudent_personal.citizenship_id', 'tblcitizenship.id')
+                   ->leftjoin('tblmarriage', 'tblstudent_personal.marriage_id', 'tblmarriage.id')
+                   ->leftjoin('tbledu_advisor', 'tblstudent_personal.advisor_id', 'tbledu_advisor.id')
+                   ->leftjoin('tbldun', 'tblstudent_personal.dun', 'tbldun.id')
+                   ->leftjoin('tblparlimen', 'tblstudent_personal.parlimen', 'tblparlimen.id')
+                   ->leftjoin('tblqualification_std', 'tblstudent_personal.qualification', 'tblqualification_std.id')
+                   ->leftjoin('tblstudent_address', 'students.ic', 'tblstudent_address.student_ic')
+                   ->leftjoin('tblcountry', 'tblstudent_address.country_id', 'tblcountry.id')
+                   ->leftjoin('tblstate AS b', 'tblstudent_address.state_id', 'b.id')
+                   ->leftjoin('tblstudent_pass', 'students.ic', 'tblstudent_pass.student_ic')
+                   ->leftjoin('tblpass_type', 'tblstudent_pass.pass_type', 'tblpass_type.id')
+                   ->leftjoin('student_form', 'students.ic', 'student_form.student_ic')
+                   ->select('students.*', 'tblstudent_personal.*', 'tblstudent_address.*', 
+                                     'tblstudent_pass.*', 'student_form.*', 'a.state_name AS place_birth',
+                                     'tblbatch.BatchName', 'tblsex.sex_name', 'tblnationality.nationality_name',
+                                     'tblreligion.religion_name', 'tblcitizenship_level.citizenshiplevel_name', 'tblcitizenship.citizenship_name',
+                                     'tblmarriage.marriage_name', 'tbledu_advisor.name AS advisor', 'tblpass_type.name AS pass_type',
+                                     'tblcountry.name AS country', 'b.state_name AS state_name2', 'tbldun.name AS dun',
+                                     'tblparlimen.name AS parlimen', 'tblqualification_std.name AS qualification',
+                                     'tblprogramme.progname', 'sessions.SessionName')
+                   ->where('students.ic',request()->ic)->first();
+
+            $data['waris'] = DB::table('tblstudent_waris')
+                             ->leftjoin('tblrelationship', 'tblstudent_waris.relationship', 'tblrelationship.id')
+                             ->where('student_ic', $student->ic)
+                             ->select('tblstudent_waris.*', 'tblrelationship.name AS relationship')
+                             ->get();
+
+            return view('pendaftar.updatePrint', compact(['student','data']));
+
+        }else{
+
+            $student = DB::table('students')
                    ->leftjoin('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
                    ->leftjoin('tblstudent_address', 'students.ic', 'tblstudent_address.student_ic')
                    ->leftjoin('tblstudent_pass', 'students.ic', 'tblstudent_pass.student_ic')
                    ->leftjoin('student_form', 'students.ic', 'student_form.student_ic')
-                   ->select('students.*', 'tblstudent_personal.*', 'tblstudent_address.*', 'tblstudent_pass.*', 'student_form.*', 'tblstudent_personal.state_id AS place_birth')
+                   ->select('students.*', 'tblstudent_personal.*', 'tblstudent_address.*', 
+                                     'tblstudent_pass.*', 'student_form.*', 'tblstudent_personal.state_id AS place_birth')
                    ->where('ic',request()->ic)->first();
 
-        $data['waris'] = DB::table('tblstudent_waris')->where('student_ic', $student->ic)->get();
+            $data['waris'] = DB::table('tblstudent_waris')->where('student_ic', $student->ic)->get();
 
-        //dd($data['waris']);
+            //dd($data['waris']);
 
-        $program = DB::table('tblprogramme')->get();
+            $program = DB::table('tblprogramme')->get();
 
-        $session = DB::table('sessions')->get();
+            $session = DB::table('sessions')->get();
 
-        $data['batch'] = DB::table('tblbatch')->get();
+            $data['batch'] = DB::table('tblbatch')->get();
 
-        $data['state'] = DB::table('tblstate')->orderBy('state_name')->get();
+            $data['state'] = DB::table('tblstate')->orderBy('state_name')->get();
 
-        $data['gender'] = DB::table('tblsex')->get();
+            $data['gender'] = DB::table('tblsex')->get();
 
-        $data['race'] = DB::table('tblnationality')->orderBy('nationality_name')->get();
+            $data['race'] = DB::table('tblnationality')->orderBy('nationality_name')->get();
 
-        $data['relationship'] = DB::table('tblrelationship')->get();
+            $data['relationship'] = DB::table('tblrelationship')->get();
 
-        $data['wstatus'] = DB::table('tblwaris_status')->get();
+            $data['wstatus'] = DB::table('tblwaris_status')->get();
 
-        $data['religion'] =  DB::table('tblreligion')->orderBy('religion_name')->get();
+            $data['religion'] =  DB::table('tblreligion')->orderBy('religion_name')->get();
 
-        $data['CL'] = DB::table('tblcitizenship_level')->get();
+            $data['CL'] = DB::table('tblcitizenship_level')->get();
 
-        $data['citizen'] = DB::table('tblcitizenship')->get();
+            $data['citizen'] = DB::table('tblcitizenship')->get();
 
-        $data['mstatus'] = DB::table('tblmarriage')->get();
+            $data['mstatus'] = DB::table('tblmarriage')->get();
 
-        $data['EA'] = DB::table('tbledu_advisor')->orderBy('name')->get();
+            $data['EA'] = DB::table('tbledu_advisor')->orderBy('name')->get();
 
-        $data['pass'] = DB::table('tblpass_type')->get();
+            $data['pass'] = DB::table('tblpass_type')->get();
 
-        $data['country'] = DB::table('tblcountry')->get();
-        
-        $data['dun'] = DB::table('tbldun')->orderBy('name')->get();
+            $data['country'] = DB::table('tblcountry')->get();
+            
+            $data['dun'] = DB::table('tbldun')->orderBy('name')->get();
 
-        $data['parlimen'] = DB::table('tblparlimen')->orderBy('name')->get();
+            $data['parlimen'] = DB::table('tblparlimen')->orderBy('name')->get();
 
-        $data['qualification'] = DB::table('tblqualification_std')->get();
+            $data['qualification'] = DB::table('tblqualification_std')->get();
 
-        return view('pendaftar.update', compact(['student','program','session','data']));
+            return view('pendaftar.update', compact(['student','program','session','data']));
+
+        }
 
     }
 
