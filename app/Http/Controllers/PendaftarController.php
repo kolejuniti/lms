@@ -856,9 +856,20 @@ class PendaftarController extends Controller
 
             $data['waris'] = DB::table('tblstudent_waris')
                              ->leftjoin('tblrelationship', 'tblstudent_waris.relationship', 'tblrelationship.id')
+                             ->leftjoin('tblwaris_status', 'tblstudent_waris.status', 'tblwaris_status.id')
                              ->where('student_ic', $student->ic)
-                             ->select('tblstudent_waris.*', 'tblrelationship.name AS relationship')
+                             ->select('tblstudent_waris.*', 'tblrelationship.name AS relationship', 'tblwaris_status.name AS status')
                              ->get();
+
+            $data['hostel'] = DB::connection('mysql3')->table('tblstudent_hostel')
+                              ->leftjoin('tblblock_unit', 'tblstudent_hostel.block_unit_id', 'tblblock_unit.id')
+                              ->leftjoin('tblblock', 'tblblock_unit.block_id', 'tblblock.id')
+                              ->where('tblstudent_hostel.student_ic', $student->ic)
+                              ->where('tblstudent_hostel.status', 'IN')
+                              ->select('tblblock_unit.no_unit', DB::raw('CONCAT(tblblock.name, " - ", tblblock.location) AS block_name'))
+                              ->orderBy('tblstudent_hostel.id', 'DESC')
+                              ->first();
+
 
             return view('pendaftar.updatePrint', compact(['student','data']));
 

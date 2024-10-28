@@ -249,7 +249,7 @@
     <!-- Divider -->
     <div class="border-line"></div>
     
-    <div class="flex-container col-12 mt-1">
+    {{-- <div class="flex-container col-12 mt-1">
         <div class="col-md-6" style="border: 1px solid white; padding: 10px;">
             <table>
                 <tr>
@@ -283,10 +283,10 @@
     
     
     <!-- Divider -->
-    <div class="border-line"></div>
+    <div class="border-line"></div> --}}
     
     <!-- Visa / Student Pass Information Section -->
-    <div class="flex-container col-12 mt-1">
+    {{-- <div class="flex-container col-12 mt-1">
         <div class="col-md-6" style="border: 1px solid white; padding: 10px;">
             <table>
                 <tr>
@@ -316,7 +316,7 @@
                 </tr>
             </table>
         </div>
-    </div>
+    </div> --}}
 
     <div class="flex-container col-12 mt-1">
       <div class="col-md-6" style="border: 1px solid white; padding: 10px;">
@@ -415,15 +415,43 @@
       </div>
   </div>
 
+  <div class="border-line"></div>
+  
+  <div class="flex-container col-12 mt-1">
+      <div class="col-md-6" style="border: 1px solid white; padding: 10px;">
+          <table>
+              <tr>
+                  <td style="padding-right: 10px;">Block</td>
+                  <td>:</td>
+                  <td style="padding-left: 10px;">{{ $data['hostel']->block_name ?? '-' }}</td>
+              </tr>
+          </table>
+      </div>
+  
+      <div class="col-md-6" style="border: 1px solid white; padding: 10px;">
+          <table>
+              <tr>
+                  <td style="padding-right: 10px;">Unit</td>
+                  <td>:</td>
+                  <td style="padding-left: 10px;">{{ $data['hostel']->no_unit ?? '-' }}</td>
+              </tr>
+          </table>
+      </div>
+  </div>
+
      
   <div class="row col-md-12">
-    <div class="col-md-6 mt-3">
+    <div class="col-md-12 mt-3">
         <table class="custom-table">
             <thead>
                 <tr>
                     <th class="text-center">Heir (Waris) Name</th>
                     <th class="text-center">Phone Number</th>
                     <th class="text-center">Relationship</th>
+                    <th class="text-center">Occupation</th>
+                    <th class="text-center">Salary (kasar)</th>
+                    <th class="text-center">Salary (Bersih)</th>
+                    <th class="text-center">Status</th>
                 </tr>
             </thead>
             <tbody>
@@ -432,6 +460,10 @@
                     <td class="text-center">{{ $waris->name ?? '-' }}</td>
                     <td class="text-center">{{ $waris->phone_tel ?? '-' }}</td>
                     <td class="text-center">{{ $waris->relationship ?? '-' }}</td>
+                    <td class="text-center">{{ $waris->occupation ?? '-' }}</td>
+                    <td class="text-center">{{ $waris->kasar ?? '-' }}</td>
+                    <td class="text-center">{{ $waris->bersih ?? '-' }}</td>
+                    <td class="text-center">{{ $waris->status ?? '-' }}</td>
                 </tr>
                 @endforeach
             </tbody>
