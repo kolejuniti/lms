@@ -82,13 +82,13 @@ use Carbon\Carbon;
                 background-image: url('{{ asset("assets/images/letter_head/letter_head.jpg") }}');
                 background-size: cover; /* Cover the entire page */
                 background-position: center; /* Center the background image */
-                background-repeat: no-repeat; /* Do not repeat the image */
+                /* background-repeat: no-repeat; Do not repeat the image */
             }
         </style>
         @endif
     </head>
     <body>
-        <img class="background-img" src="{{ asset('assets/images/letter_head/letter_head.jpg') }}" alt="Background Image">
+        {{-- <img class="background-img" src="{{ asset('assets/images/letter_head/letter_head.jpg') }}" alt="Background Image"> --}}
         {{-- @php
 
             // Get the date two weeks before
@@ -166,7 +166,7 @@ use Carbon\Carbon;
 
         <div style="page-break-before: always;"></div>
 
-        <img class="background-img" src="{{ asset('assets/images/letter_head/letter_head.jpg') }}" alt="Background Image">
+        {{-- <img class="background-img" src="{{ asset('assets/images/letter_head/letter_head.jpg') }}" alt="Background Image"> --}}
 
         <br>
         <br>
@@ -190,7 +190,7 @@ use Carbon\Carbon;
             Akhir / Projek Akhir</b> bagi kursus <b>{{ str_replace(' ', '', $data['warning']->course_code)  }} – {{ $data['warning']->course_name  }}</b> di peperiksaan akan datang. Keputusan adalah muktamad.</p>
         <p class="mt-1 mb-1">Sekian, Harap Maklum.</p>
         <br>
-        <img class="background-img" src="{{ asset('assets/images/letter_head/letter_head.jpg') }}" alt="Background Image">
+        {{-- <img class="background-img" src="{{ asset('assets/images/letter_head/letter_head.jpg') }}" alt="Background Image"> --}}
         <p style="text-align: center;"><b>[THIS IS A COMPUTER GENERATED AND DOES NOT REQUIRE SIGNATURE]</b></p>
         {{-- <p>Yang benar,</p>
         <img src="{{ asset('storage/signature/signature2.png') }}" alt="Image" width="10%" height="10%">
