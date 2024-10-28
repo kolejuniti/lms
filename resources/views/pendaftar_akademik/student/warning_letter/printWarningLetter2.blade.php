@@ -159,8 +159,8 @@ use Carbon\Carbon;
         </div>
         <br>
         <p class="mt-2">Peratusan kehadiran yang tidak memuaskan ini menjadi asas untuk tidak
-            membenarkan anda menduduki Peperiksaan Akhir / Projek Akhir bagi kursus DPE3013
-            – Pendidikan Nutrisi, Kesihatan dan Keselamatan Kanak-Kanak di bawah para 3.8.4
+            membenarkan anda menduduki Peperiksaan Akhir / Projek Akhir bagi kursus {{ $data['warning']->course_code }}
+            – {{ $data['warning']->course_name }} di bawah para 3.8.4
             (c), Peraturan Akademik Kolej UNITI Pindaan 2021 yang menyatakan bahawa: </p>
         <p class="mt-3"><i>“Pelajar yang kehadirannya kurang daripada 80% dalam sesuatu kursus tanpa sebab-sebab yang boleh diterima akan dikira gagal dalam kursus tersebut.”</i></p>
 
