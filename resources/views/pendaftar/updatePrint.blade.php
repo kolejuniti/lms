@@ -382,9 +382,9 @@
                   <td style="padding-left: 10px;">{{ $student->SessionName ?? '-' }}</td>
               </tr>
               <tr>
-                  <td style="padding-right: 10px;">Batch</td>
+                  <td style="padding-right: 10px;">Session</td>
                   <td>:</td>
-                  <td style="padding-left: 10px;">{{ $student->BatchName ?? '-' }}</td>
+                  <td style="padding-left: 10px;">{{ $student->session ?? '-' }}</td>
               </tr>
           </table>
       </div>
@@ -397,11 +397,11 @@
                   <td style="padding-left: 10px;">{{ $student->date_offer ?? '-' }}</td>
               </tr>
               <tr>
-                  <td style="padding-right: 10px;">Main</td>
+                  <td style="padding-right: 10px;">Semester</td>
                   <td>:</td>
-                  <td style="padding-left: 10px;">{{ $student->main ? 'Yes' : 'No' }}</td>
+                  <td style="padding-left: 10px;">{{ $student->semester ?? '-' }}</td>
               </tr>
-              <tr>
+              {{-- <tr>
                   <td style="padding-right: 10px;">Pre-Registration</td>
                   <td>:</td>
                   <td style="padding-left: 10px;">{{ $student->pre_registration ? 'Yes' : 'No' }}</td>
@@ -410,7 +410,7 @@
                   <td style="padding-right: 10px;">Complete Form</td>
                   <td>:</td>
                   <td style="padding-left: 10px;">{{ $student->complete_form ? 'Yes' : 'No' }}</td>
-              </tr>
+              </tr> --}}
           </table>
       </div>
   </div>
