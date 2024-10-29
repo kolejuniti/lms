@@ -404,7 +404,7 @@
               <tr>
                   <td style="padding-right: 10px;">Status</td>
                   <td>:</td>
-                  <td style="padding-left: 10px;">{{ $student->status ? 'Yes' : 'No' }}</td>
+                  <td style="padding-left: 10px;">{{ $student->status ?? '-' }}</td>
               </tr>
               {{-- <tr>
                   <td style="padding-right: 10px;">Complete Form</td>
