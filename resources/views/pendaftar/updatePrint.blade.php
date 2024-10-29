@@ -401,12 +401,12 @@
                   <td>:</td>
                   <td style="padding-left: 10px;">{{ $student->semester ?? '-' }}</td>
               </tr>
-              {{-- <tr>
-                  <td style="padding-right: 10px;">Pre-Registration</td>
-                  <td>:</td>
-                  <td style="padding-left: 10px;">{{ $student->pre_registration ? 'Yes' : 'No' }}</td>
-              </tr>
               <tr>
+                  <td style="padding-right: 10px;">Status</td>
+                  <td>:</td>
+                  <td style="padding-left: 10px;">{{ $student->status ? 'Yes' : 'No' }}</td>
+              </tr>
+              {{-- <tr>
                   <td style="padding-right: 10px;">Complete Form</td>
                   <td>:</td>
                   <td style="padding-left: 10px;">{{ $student->complete_form ? 'Yes' : 'No' }}</td>

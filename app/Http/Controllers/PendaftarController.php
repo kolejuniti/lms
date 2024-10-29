@@ -828,6 +828,7 @@ class PendaftarController extends Controller
                    ->leftjoin('sessions AS d', 'students.session', 'd.SessionID')
                    ->leftJoin('tblbatch', 'students.batch', 'tblbatch.BatchID')
                    ->leftjoin('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
+                   ->leftjoin('tblstudent_status', 'students.status', 'tblstudent_status.id')
                    ->leftjoin('tblsex', 'tblstudent_personal.sex_id', 'tblsex.id')
                    ->leftjoin('tblnationality', 'tblstudent_personal.nationality_id', 'tblnationality.id')
                    ->leftjoin('tblstate AS a', 'tblstudent_personal.state_id', 'a.id')
@@ -852,7 +853,7 @@ class PendaftarController extends Controller
                                      'tblmarriage.marriage_name', 'tbledu_advisor.name AS advisor', 'tblpass_type.name AS pass_type',
                                      'tblcountry.name AS country', 'b.state_name AS state_name2', 'tbldun.name AS dun',
                                      'tblparlimen.name AS parlimen', 'tblqualification_std.name AS qualification',
-                                     'tblprogramme.progname', 'c.SessionName', 'd.SessionName AS session')
+                                     'tblprogramme.progname', 'c.SessionName', 'd.SessionName AS session', 'tblstudent_status.name AS status')
                    ->where('students.ic',request()->ic)->first();
 
             $data['waris'] = DB::table('tblstudent_waris')
