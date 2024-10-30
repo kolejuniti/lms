@@ -68,55 +68,78 @@
                         Roadtax Due Date
                     </th>
                     <th style="width: 10%">
-                        Next Service
+                        Next Service (Odometer)
+                    </th>
+                    <th style="width: 10%">
+                        Next Service (Month)
                     </th>
                     <th style="width: 20%">
                     </th>
                 </tr>
             </thead>
             <tbody id="table">
-            @foreach ($data['vehicles'] as $key=> $vec)
-              <tr>
-                <td style="width: 1%">
-                  {{ $key+1 }}
-                </td>
-                <td style="width: 20%">
-                  {{ $vec->brand }}
-                </td>
-                <td style="width: 10%">
-                  {{ $vec->model }}
-                </td>
-                <td style="width: 10%">
-                  {{ $vec->year }}
-                </td>
-                <td style="width: 10%">
-                  {{ $vec->registration_number }}
-                </td>
-                <td>
-                  {{ $vec->date_of_roadtax }}
-                </td>
-                <td>
-                  {{ $data['nextService'][$key] }}
-                </td>
-                <td class="project-actions text-right" style="text-align: center;">
-                  <a class="btn btn-info btn-sm btn-sm mr-2" href="#" onclick="updateVehicle('{{ $vec->id }}')">
-                      <i class="ti-pencil-alt">
-                      </i>
-                      Edit
-                  </a>
-                  <a class="btn btn-primary btn-sm btn-sm mr-2" href="#" onclick="serviceRecord('{{ $vec->id }}')">
-                      <i class="ti-pencil-alt">
-                      </i>
-                      Record
-                  </a>
-                  <a class="btn btn-danger btn-sm" href="#" onclick="deleteVehicle('{{ $vec->id }}')">
-                      <i class="ti-trash">
-                      </i>
-                      Delete
-                  </a>
-                </td>
-              </tr>
-            @endforeach
+              @foreach ($data['vehicles'] as $key => $vec)
+                @php
+                    $nextServiceDate = \Carbon\Carbon::parse($data['nextService2'][$key]);
+                    $currentDate = \Carbon\Carbon::now();
+                    $differenceInDays = $currentDate->diffInDays($nextServiceDate, false); // false to get negative values if in the past
+
+                    // Determine the row color based on the difference
+                    if ($differenceInDays <= 7) {
+                        $rowColor = 'background-color: red;'; // Red for 1 week or less
+                    } elseif ($differenceInDays <= 14) {
+                        $rowColor = 'background-color: #bcc719;'; // Yellow for 2 weeks or less
+                    } else {
+                        $rowColor = ''; // No specific color for others
+                    }
+
+                    (!isset($data['nextService2'][$key])) ? $rowColor = '' : '';
+                @endphp
+                <tr style="{{ $rowColor }}">
+                    <td style="width: 1%">
+                        {{ $key+1 }}
+                    </td>
+                    <td style="width: 20%">
+                        {{ $vec->brand }}
+                    </td>
+                    <td style="width: 10%">
+                        {{ $vec->model }}
+                    </td>
+                    <td style="width: 10%">
+                        {{ $vec->year }}
+                    </td>
+                    <td style="width: 10%">
+                        {{ $vec->registration_number }}
+                    </td>
+                    <td>
+                        {{ $vec->date_of_roadtax }}
+                    </td>
+                    <td>
+                        {{ $data['nextService'][$key] }}
+                    </td>
+                    <td>
+                        {{ $data['nextService2'][$key] }}
+                    </td>
+                    <td class="project-actions text-right" style="text-align: center;">
+                        <a class="btn btn-info btn-sm btn-sm mr-2" href="#" onclick="updateVehicle('{{ $vec->id }}')">
+                            <i class="ti-pencil-alt"></i>
+                            Edit
+                        </a>
+                        <a class="btn btn-primary btn-sm btn-sm mr-2" href="#" onclick="serviceRecord('{{ $vec->id }}')">
+                            <i class="ti-pencil-alt"></i>
+                            Record
+                        </a>
+                        <a class="btn btn-success btn-sm btn-sm mr-2" href="#" onclick="odometerRecord('{{ $vec->id }}')">
+                            <i class="ti-pencil-alt"></i>
+                            Odometer
+                        </a>
+                        <a class="btn btn-danger btn-sm mt-2" href="#" onclick="deleteVehicle('{{ $vec->id }}')">
+                            <i class="ti-trash"></i>
+                            Delete
+                        </a>
+                    </td>
+                </tr>
+              @endforeach          
             </tbody>
           </table>
         </div>
@@ -300,6 +323,14 @@
               </div>
           </div>
         </div> 
+
+        <div id="uploadModal4" class="modal fade" role="dialog">
+          <div class="modal-dialog modal-lg"> <!-- Add modal-lg or your custom class -->
+              <!-- modal content-->
+              <div class="modal-content" id="getModal4">
+              </div>
+          </div>
+        </div> 
       </div>
       <!-- /.card -->
     </section>
@@ -380,6 +411,33 @@
       });
   }
 
+  function deleteOdometer(id){     
+      Swal.fire({
+    title: "Are you sure?",
+    text: "This will be permanent",
+    showCancelButton: true,
+    confirmButtonText: "Yes, delete it!"
+  }).then(function(res){
+    
+    if (res.isConfirmed){
+              $.ajax({
+                  headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
+                  url      : "{{ url('/finance/asset/vehicleRecord/deleteOdometerRecord') }}",
+                  method   : 'DELETE',
+                  data 	 : {id:id},
+                  error:function(err){
+                      alert("Error");
+                      console.log(err);
+                  },
+                  success  : function(data){
+                      Swal.fire('Success', data.success, 'success');
+                      getOdometerList(data.id);
+                  }
+              });
+          }
+      });
+  }
+
 </script>
 
 <script>
@@ -433,6 +491,25 @@
         });
   }
 
+  function odometerRecord(id)
+  {
+    return $.ajax({
+            headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
+            url      : "{{ url('finance/asset/vehicleRecord/odometerRecord') }}",
+            method   : 'GET',
+            data 	 : {id: id},
+            error:function(err){
+                alert("Error");
+                console.log(err);
+            },
+            success  : function(data){
+                $('#getModal4').html(data);
+                $('#uploadModal4').modal('show');
+                getOdometerList(id);
+            }
+        });
+  }
+
   function storeService(id)
   {
     var idS = id;
@@ -465,6 +542,7 @@
             inputValue: inputValue // Adding the associated number input field
         });
     });
+
 
     // Collect all dynamically added 'lainlain[]' and 'lainlaind[]' fields
     $("input[name='lainlain[]']").each(function(index) {
@@ -534,6 +612,71 @@
 
   }
 
+  function storeOdometer(id)
+  {
+    var idS = id;
+
+    var forminput = [];
+    var formData = new FormData();
+
+    forminput = {
+      id: id,
+      odometer: $('#odometer').val(),
+    };
+
+    // Example: adding formData if needed
+    formData.append('formData', JSON.stringify(forminput));
+
+    $.ajax({
+        headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
+        url: '{{ url('/finance/asset/vehicleRecord/storeOdometerRecord') }}',
+        type: 'POST',
+        data: formData,
+        cache : false,
+        processData: false,
+        contentType: false,
+        error:function(err){
+            console.log(err);
+        },
+        success:function(res){
+            try{
+                if(res.status == "success"){
+                    alert("Success! Service details has been added!");
+
+                    getOdometerList(idS);
+
+                    // $('#voucher_table').html(res.data);
+
+                    // if (res.exists && res.exists.length > 0) {
+                    //     var existingVouchers = res.exists.join(', ');
+                    //     alert('These vouchers already exist: ' + existingVouchers);
+                    // }
+                    
+                    // $('#voucher_table').DataTable();
+                    
+                }else{
+                    $('.error-field').html('');
+                    if(res.message == "Field Error"){
+                        for (f in res.error) {
+                            $('#'+f+'_error').html(res.error[f]);
+                        }
+                    }
+                    else if(res.message == "Please fill all required field!"){
+                        alert(res.message);
+                    }
+                    else{
+                        alert(res.message);
+                    }
+                    $("html, body").animate({ scrollTop: 0 }, "fast");
+                }
+            }catch(err){
+                alert("Ops sorry, there is an error");
+            }
+        }
+    });
+
+  }
+
   function getService(id)
   {
 
@@ -548,6 +691,25 @@
             },
             success  : function(data){
                 $('#service_list').html(data);
+            }
+        });
+
+  }
+
+  function getOdometerList(id)
+  {
+
+    return $.ajax({
+            headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
+            url      : "{{ url('finance/asset/vehicleRecord/getOdometerRecord') }}",
+            method   : 'GET',
+            data 	 : {id: id},
+            error:function(err){
+                alert("Error");
+                console.log(err);
+            },
+            success  : function(data){
+                $('#odometer_list').html(data);
             }
         });
 

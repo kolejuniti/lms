@@ -11433,12 +11433,17 @@ class FinanceController extends Controller
 
         foreach($data['vehicles'] as $key => $vehicle)
         {
-
             $odometer = DB::table('tblvehicle_service')->where('vehicle_id', $vehicle->id)->orderBy('id', 'DESC')->first();
 
             $data['nextService'][$key] = ($odometer) ? $odometer->odometer + 5000 : 0;
 
+            if ($odometer) {
+                $data['nextService2'][$key] = Carbon::parse($odometer->date_of_service)->addMonths(3)->toDateString();
+            } else {
+                $data['nextService2'][$key] = null;
+            }
         }
+
 
         return view('finance.asset.vehicleRecord.index', compact('data'));
 
@@ -11540,6 +11545,13 @@ class FinanceController extends Controller
     {
 
         return view('finance.asset.vehicleRecord.getServiceRecord')->with('id', request()->id);
+
+    }
+
+    public function odometerRecord()
+    {
+
+        return view('finance.asset.vehicleRecord.getOdometerRecord')->with('id', request()->id);
 
     }
 
@@ -11660,6 +11672,63 @@ class FinanceController extends Controller
 
     }
 
+    public function getOdometerRecord(Request $request)
+    {
+
+        $data['service'] = DB::table('tblvehicle_odometer')->where('vehicle_id', $request->id)->get();
+
+        $content = "";
+                    $content .= '<table id="table_projectprogress_course" class="table table-striped projects display dataTable no-footer" style="width: 100%;"><thead>
+                                    <tr>
+                                        <th style="width: 1%">
+                                            No.
+                                        </th>
+                                        <th>
+                                            Odometer (KM)
+                                        </th>
+                                        <th>
+                                            Date
+                                        </th>
+                                        <th>
+                                            Action
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody id="table">';
+                                
+                    foreach($data['service'] as $key => $dtl){
+                    //$registered = ($dtl->status == 'ACTIVE') ? 'checked' : '';
+                    $content .= '
+                        <tr>
+                            <td style="width: 1%">
+                            '. $key+1 .'
+                            </td>
+                            <td>
+                            '. $dtl->odometer .'
+                            </td>
+                            <td>
+                            '. $dtl->created_at .'
+                            </td>
+                            <td>
+                              <a class="btn btn-danger btn-sm" href="#" onclick="deleteOdometer('. $dtl->id .')">
+                                  <i class="ti-trash">
+                                  </i>
+                                  Delete
+                              </a>
+                            </td>
+                        </tr>
+                        ';
+                        }
+                    $content .= '</tbody>';
+                    $content .= '<tfoot>
+                                </tfoot>
+                                </table>';
+
+        return $content;
+
+
+    }
+
     public function storeService(Request $request)
     {
 
@@ -11726,6 +11795,42 @@ class FinanceController extends Controller
 
     }
 
+    public function storeOdometerRecord(Request $request)
+    {
+
+        $data = json_decode($request->formData);
+
+        // Check if $data is null or if decoding failed
+        if ($data === null && json_last_error() !== JSON_ERROR_NONE) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Invalid JSON data.'
+            ], 200);
+        }
+
+        // If data is not null, proceed with further processing
+        // Example:
+        if (!empty($data->odometer)) {
+            
+            $id = DB::table('tblvehicle_odometer')->insertGetId([
+                    'vehicle_id' => $data->id,
+                    'odometer' => $data->odometer
+            ]);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Data successfully processed.'
+            ], 200);
+        } else {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Required fields are missing.'
+            ], 200);
+        }
+
+
+    }
+
     public function deleteRecord(Request $request)
     {
 
@@ -11738,6 +11843,23 @@ class FinanceController extends Controller
             DB::table('tblservice_details')->where('service_record_id', $request->id)->delete();
 
             return response()->json(['success' => 'Vehicle deleted successfully.', 'id' => $id]);
+
+        } catch(Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
+
+    }
+
+    public function deleteOdometerRecord(Request $request)
+    {
+
+        try{
+
+            $id = DB::table('tblvehicle_odometer')->where('id', $request->id)->value('vehicle_id');
+
+            DB::table('tblvehicle_odometer')->where('id', $request->id)->delete();
+
+            return response()->json(['success' => 'Odometer record deleted successfully.', 'id' => $id]);
 
         } catch(Exception $e) {
             return response()->json(['message' => $e->getMessage()], 500);

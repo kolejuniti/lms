@@ -741,6 +741,10 @@ Route::get('/finance/asset/vehicleRecord/serviceRecord', [App\Http\Controllers\F
 Route::get('/finance/asset/vehicleRecord/getServiceList', [App\Http\Controllers\FinanceController::class,'getServiceList']);
 Route::post('/finance/asset/vehicleRecord/storeService', [App\Http\Controllers\FinanceController::class,'storeService']);
 Route::delete('/finance/asset/vehicleRecord/deleteRecord', [App\Http\Controllers\FinanceController::class,'deleteRecord']);
+Route::get('/finance/asset/vehicleRecord/odometerRecord', [App\Http\Controllers\FinanceController::class,'odometerRecord']);
+Route::get('/finance/asset/vehicleRecord/getOdometerRecord', [App\Http\Controllers\FinanceController::class,'getOdometerRecord']);
+Route::post('/finance/asset/vehicleRecord/storeOdometerRecord', [App\Http\Controllers\FinanceController::class,'storeOdometerRecord']);
+Route::delete('/finance/asset/vehicleRecord/deleteOdometerRecord', [App\Http\Controllers\FinanceController::class,'deleteOdometerRecord']);
 
 
 Route::get('/treasurer_dashboard', [App\Http\Controllers\TreasurerController::class, 'dashboard'])->name('treasurer.dashboard');
