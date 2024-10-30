@@ -145,6 +145,22 @@
                       'copy', 'csv', 'excel', 'pdf', 'print'
                   ],
                 });
+
+                $('#myTable3').DataTable({
+                  dom: 'lBfrtip', // if you remove this line you will see the show entries dropdown
+                  
+                  buttons: [
+                      'copy', 'csv', 'excel', 'pdf', 'print'
+                  ],
+                });
+
+                $('#myTable4').DataTable({
+                  dom: 'lBfrtip', // if you remove this line you will see the show entries dropdown
+                  
+                  buttons: [
+                      'copy', 'csv', 'excel', 'pdf', 'print'
+                  ],
+                });
             }
         });
 

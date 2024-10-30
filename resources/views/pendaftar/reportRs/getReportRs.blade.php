@@ -309,7 +309,7 @@
     <b>Students Report Withdraw</b>
     </div>
     <div class="card-body p-0">
-      <table id="myTable2" class="table table-striped projects display dataTable">
+      <table id="myTable3" class="table table-striped projects display dataTable">
         <thead>
             <tr>
                 <th style="width: 1%">
@@ -468,7 +468,7 @@
     <b>Students Report Not Active</b>
     </div>
     <div class="card-body p-0">
-      <table id="myTable2" class="table table-striped projects display dataTable">
+      <table id="myTable4" class="table table-striped projects display dataTable">
         <thead>
             <tr>
                 <th style="width: 1%">
