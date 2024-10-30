@@ -3049,7 +3049,7 @@ class PendaftarController extends Controller
 
                                 )->first();
 
-                $data['lastWithdraw'][$key] = DB::table('tblstudent_log')
+                $data['lastWithdraw2'][$key] = DB::table('tblstudent_log')
                                 ->where([
                                   ['student_ic', $student->ic],
                                   ['status_id', 4]

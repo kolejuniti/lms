@@ -546,7 +546,7 @@
             {{ $rgs->date_offer }}
             </td>
             <td>
-            {{ $data['lastWithdraw'][$key] }}
+            {{ $data['lastWithdraw2'][$key] }}
             </td>
             <td>
             {{ $rgs->progcode }}
