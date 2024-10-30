@@ -716,7 +716,7 @@
 
 					<!-- other -->
 
-					@if ($percentageother != "")
+					{{-- @if ($percentageother != "")
 					<div class="col-12">
 						<div class="box">
 							<div class="card-header">
@@ -789,7 +789,7 @@
 							</div>
 						</div>
 					</div>
-					@else
+					@else --}}
 					<!--<div class="box bg-danger">
 						<div class="box-body d-flex p-0">
 							<div class="flex-grow-1 p-30 flex-grow-1 bg-img bg-none-md" style="background-position: right bottom; background-size: auto 100%; background-image: url(images/svg-icon/color-svg/custom-30.svg)">
