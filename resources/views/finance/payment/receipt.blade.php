@@ -139,6 +139,9 @@
                         </tr>
                      </thead>
                      <tbody>
+                        @php
+                        $sum = 0;
+                        @endphp
                         @foreach ($data['method'] as $key => $dtl)
                         <tr>
                            <td style="width: 10px;">{{ $key+1 }}</td>
@@ -151,12 +154,15 @@
                            @endif
                            <td></td>
                            <td>RM{{ number_format($dtl->amount, 2, '.', ',') }}</td>
+                           @php
+                           $sum += $dtl->amount;
+                           @endphp
                         </tr>
                         @endforeach
                         <tr>
                            <td colspan="4">
                            </td><td class="text-center; width: 50px;"><strong>Jumlah :</strong></td>
-                           <td class="text-center; width: 50px;"><strong>RM{{ number_format($data['total2'], 2, '.', ',') }}</strong></td>
+                           <td class="text-center; width: 50px;"><strong>RM{{ number_format($sum, 2, '.', ',') }}</strong></td>
                         </tr>
                      </tbody>
                   </table>
