@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import SenateReport from './components/senateReport/senateReport.jsx';
 import ResultReport from './components/resultReport/resultReport.jsx';
+import VehicleReport from './components/vehicleReport/vehicleReport.jsx';
 
 window.renderSenateReport = function(data) {
 
@@ -25,6 +26,19 @@ window.renderResultReport = function(data){
     ReactDOM.render(
         <ResultReport data={data} />,
         document.getElementById('resultReport')
+    )
+
+}
+
+window.renderVehicleReport = (data) => {
+
+    const container = document.createElement('div');
+    container.id = 'vehicleReport';
+    $('#form-student').html(container);
+
+    ReactDOM.render(
+        <VehicleReport data={data} />,
+        document.getElementById('vehicleReport')
     )
 
 }

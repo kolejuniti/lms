@@ -11867,4 +11867,36 @@ class FinanceController extends Controller
 
     }
 
+    public function vehicleReport()
+    {
+
+        return view('finance.asset.vehicleRecord.report.vehicleReport');
+
+    }
+
+    public function getVehicleReport()
+    {
+
+        $data['vehicle'] = DB::table('tblvehicle')->get();
+
+        foreach($data['vehicle'] As $key => $vehicle)
+        {
+
+            $data['service'][$key] = DB::table('tblvehicle_service')->where('vehicle_id', $vehicle->id)->get();
+
+            foreach($data['service'][$key] as $key2 => $srv)
+            {
+
+                $data['details'][$key][$key2] = DB::table('tblservice_details')->where('service_record_id', $srv->id)->get();
+
+            }
+
+            $data['odometer'][$key] = DB::table('tblvehicle_odometer')->where('vehicle_id', $vehicle->id)->get();
+
+        }
+
+        return response()->json(['data' => $data]);
+
+    }
+
 }

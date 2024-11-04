@@ -441,6 +441,7 @@
 				</a>
 				<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
 					<li><a href="{{ route('finance.vehicleRecord') }}" class="{{ (route('finance.vehicleRecord') == Request::url()) ? 'active' : ''}}">Vehicle & Service Records</a></li>
+					<li><a href="{{ route('finance.asset.vehicleRecord.vehicleReport') }}" class="{{ (route('finance.asset.vehicleRecord.vehicleReport') == Request::url()) ? 'active' : ''}}">Vehicle Report</a></li>
 				</ul>
 			  </li>
 			  <li>
