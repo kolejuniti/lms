@@ -1,4 +1,4 @@
-@extends('layouts.ketua_program')
+@extends((Auth::user()->usrtype == "AR") ? 'layouts.pendaftar_akademik' : 'layouts.ketua_program')
 
 @section('main')
 <!-- Content Header (Page header) -->

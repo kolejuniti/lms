@@ -1021,12 +1021,24 @@ $content .= '<tr>
     {
         $user = Auth::user();
 
-        $course = DB::table('subjek')
+        if(Auth::user()->usrtype == 'AR')
+        {
+
+            $course = DB::table('subjek')
+                  ->join('subjek_structure', 'subjek.sub_id', 'subjek_structure.courseID')
+                  ->groupBy('subjek_structure.courseID')
+                  ->select('subjek.*')->get();
+
+        }else{
+
+            $course = DB::table('subjek')
                   ->join('subjek_structure', 'subjek.sub_id', 'subjek_structure.courseID')
                   ->join('user_program', 'subjek_structure.program_id', 'user_program.program_id')
                   ->where('user_program.user_ic', $user->ic)
                   ->groupBy('subjek_structure.courseID')
                   ->select('subjek.*')->get();
+
+        }
 
         //dd($course);
 
