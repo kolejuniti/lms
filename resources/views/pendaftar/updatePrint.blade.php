@@ -115,6 +115,11 @@
         <div>
           <div class="b2 text-center">Maklumat Pelajar</div>
         </div>
+        <div class="col-12 d-flex justify-content-center align-items-center">
+            <div class="me-2">
+                <img src="{{ Storage::disk('linode')->url('storage/student_image/' . Session::get('User')->ic . '.jpg') }}" class="avatar bg-primary-light h-80 w-70" alt="" />
+            </div>
+          </div>
       </div>
 
       <div class="flex-container col-12 mt-1">
