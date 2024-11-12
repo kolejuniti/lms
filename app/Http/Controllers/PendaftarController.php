@@ -25,7 +25,56 @@ class PendaftarController extends Controller
     {
         Session::put('User', Auth::user());
 
-        return view('dashboard');
+        $data['year'] = DB::table('tblyear')->get();
+
+        foreach($data['year'] as $key => $year)
+        {
+
+            $data['student'][$key] = DB::table('tblstudent_log')
+                                     ->where(DB::raw('YEAR(date)'), $year->year)
+                                     ->where([
+                                        ['semester_id', 1],
+                                        ['status_id', 2]
+                                        ])
+                                     ->count();
+        }
+
+        $data['status'] = DB::table('tblstudent_status')->get();
+
+        return view('dashboard', compact('data'));
+    }
+
+    public function getCircleData(Request $request)
+    {
+        // Parse the date from the request
+        $selectedDate = Carbon::parse($request->date);
+
+        // Extract month and year from the selected date
+        $selectedMonth = $selectedDate->month;
+        $selectedYear = $selectedDate->year;
+
+        // Retrieve counts based on the selected statuses and date
+        $statusCounts = DB::table('tblstudent_log')
+            ->select('status_id', DB::raw('count(*) as total'))
+            ->whereIn('status_id', $request->statuses)
+            ->whereYear('date', '=', $selectedYear)
+            ->whereMonth('date', '=', $selectedMonth)
+            ->groupBy('status_id')
+            ->get();
+
+        // Prepare the response data
+        $labels = [];
+        $data = [];
+        foreach ($statusCounts as $statusCount) {
+            $status = DB::table('tblstudent_status')->where('id', $statusCount->status_id)->first();
+            $labels[] = $status->name;
+            $data[] = $statusCount->total;
+        }
+
+        return response()->json([
+            'labels' => $labels,
+            'data' => $data,
+        ]);
     }
     
     public function index()

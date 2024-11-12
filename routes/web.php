@@ -100,6 +100,7 @@ Route::get('/AO', [App\Http\Controllers\AO_Controller::class, 'index'])->name('p
 Route::get('/DN', [App\Http\Controllers\DN_Controller::class, 'index'])->name('dekan');
 
 Route::get('/pendaftar_dashboard', [App\Http\Controllers\PendaftarController::class, 'dashboard'])->name('pendaftar.dashboard');
+Route::post('/pendaftar_dashboard/getCircleData', [App\Http\Controllers\PendaftarController::class, 'getCircleData']);
 Route::get('/pendaftar', [App\Http\Controllers\PendaftarController::class, 'index'])->name('pendaftar');
 Route::get('/pendaftar/create', [App\Http\Controllers\PendaftarController::class, 'create'])->name('pendaftar.create');
 Route::post('/pendaftar/create/search', [App\Http\Controllers\PendaftarController::class, 'createSearch'])->name('pendaftar.create.search');
