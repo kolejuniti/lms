@@ -341,6 +341,7 @@
 						<li><a href="{{ route('pendaftar_akademik.warningLetter') }}" class="{{ (route('pendaftar_akademik.warningLetter') == Request::url()) ? 'active' : ''}}">Student Warning Letter</a></li>
 						<li><a href="{{ route('pendaftar.student.status') }}" class="{{ (route('pendaftar.student.status') == Request::url()) ? 'active' : ''}}">Update Status</a></li>
 						<li><a href="{{ route('finance.statement') }}" class="{{ (route('finance.statement') == Request::url()) ? 'active' : ''}}">Student Account Statement</a></li>
+						<li><a href="{{ route('treasurer.payment.debit') }}" class="{{ (route('treasurer.payment.debit') == Request::url()) ? 'active' : ''}}">Debit Note</a></li>
 					</ul>
 				</li>
 				<li class="treeview">

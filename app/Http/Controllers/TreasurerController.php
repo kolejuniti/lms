@@ -379,7 +379,19 @@ class TreasurerController extends Controller
                            ->select('students.*', 'tblstudent_status.name AS status', 'tblprogramme.progname AS program', 'students.program AS progid', 't1.SessionName AS intake_name', 't2.SessionName AS session_name')
                            ->where('ic', $request->student)->first();
 
-        $data['type'] = DB::table('tblstudentclaim')->get();
+        if(Auth::user()->usrtype == "AR")
+        {
+            $items = [9,10,11,12,13,14,15,16,17,20,21,22,24,25,26,27];
+
+            $data['type'] = DB::table('tblstudentclaim')->whereNotIn('id', $items)->get();
+
+        }else{
+
+            $data['type'] = DB::table('tblstudentclaim')->get();
+
+        }
+        
+        // $data['type'] = DB::table('tblstudentclaim')->get();
 
         return view('treasurer.payment.debitGetStudent', compact('data'));
 
