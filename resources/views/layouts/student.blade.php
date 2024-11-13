@@ -268,12 +268,16 @@
 						@php
 						$range = DB::table('tblresult_period')->first();
 						$now = now();
+
+						$block_status = Auth::guard('student')->user()->block_status;
 						@endphp
 
 						@if($now >= $range->Start && $now <= $range->End)
 						<li><a href="{{ route('student.affair.result') }}" class="{{ (route('student.affair.result') == Request::url()) ? 'active' : ''}}">Result</a></li>
 						@endif
+						@if($block_status == 0)
 						<li><a href="/AR/student/getSlipExam?student={{ Auth::guard('student')->user()->ic }}" target="_blank">Slip Exam</a></li>
+						@endif
 					</ul>
 				</li> 
 				<li class="treeview">
