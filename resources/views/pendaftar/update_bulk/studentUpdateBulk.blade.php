@@ -115,11 +115,12 @@
   var selected_program = '';
   var selected_session = '';
   var selected_semester = '';
+  var selected_session2 = '';
 
   $(document).on('change', '#program', async function(e){
     selected_program = $(e.target).val();
 
-    await getStudent(selected_program, selected_session, selected_semester);
+    await getStudent(selected_program, selected_session, selected_semester, selected_session2);
 
   });
 
@@ -127,22 +128,57 @@
   $(document).on('change', '#session1', async function(e){
     selected_session = $(e.target).val();
 
-    await getStudent(selected_program, selected_session, selected_semester);
+    await getStudent(selected_program, selected_session, selected_semester, selected_session2);
   });
 
   $(document).on('change', '#semester', async function(e){
     selected_semester = $(e.target).val();
 
-    await getStudent(selected_program, selected_session, selected_semester);
+    await getStudent(selected_program, selected_session, selected_semester, selected_session2);
   });
 
-  function getStudent(program,session,semester)
+  function onLeave()
+  {
+    var leave = [];
+
+    selected_session2 = $('#session2').val();
+
+    var session2 = selected_session2;
+
+    $("#campus :selected").each(function() {
+      leave.push($(this).val());
+    });
+
+    if(session2 == null)
+    {
+      alert("Please select new session");
+      return;
+    }
+
+    return $.ajax({
+            headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
+            url      : "{{ url('pendaftar/student/status/updateStatusUpdateBulk') }}",
+            method   : 'POST',
+            data 	 : {leave: leave, session2: session2},
+            error:function(err){
+                alert("Error");
+                console.log(err);
+            },
+            success  : function(data){
+                
+              getStudent(selected_program, selected_session, selected_semester, selected_session2);
+
+            }
+        });
+  }
+
+  function getStudent(program,session,semester,session2)
   {
     return $.ajax({
             headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
             url      : "{{ url('pendaftar/student/status/getStatusUpdateBulk') }}",
             method   : 'GET',
-            data 	 : {program: program,session: session,semester: semester},
+            data 	 : {program: program,session: session,semester: semester,session2: session2},
             error:function(err){
                 alert("Error");
                 console.log(err);
@@ -151,31 +187,6 @@
                 $('#studentList').removeAttr('hidden');
                 $('#studentList').html(data);
                 //$('#student').selectpicker('refresh');
-
-            }
-        });
-  }
-
-  function onLeave()
-  {
-    var leave = [];
-
-    $("#campus :selected").each(function() {
-      leave.push($(this).val());
-    });
-
-    return $.ajax({
-            headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
-            url      : "{{ url('AR/leave/updateLeave') }}",
-            method   : 'POST',
-            data 	 : {leave: leave},
-            error:function(err){
-                alert("Error");
-                console.log(err);
-            },
-            success  : function(data){
-                
-              getStudent(selected_program, selected_session, selected_semester);
 
             }
         });
