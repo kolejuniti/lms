@@ -1629,6 +1629,58 @@ class PendaftarController extends Controller
 
     }
 
+    public function statusUpdateBulk()
+    {
+
+        $data = [
+            'programs' => DB::table('tblprogramme')->get(),
+            'sessions' => DB::table('sessions')->orderBy('SessionID', 'DESC')->get(),
+            'semesters' => DB::table('semester')->get(),
+            'status' => DB::table('tblstudent_status')->get(),
+            'batch' => DB::table('tblbatch')->get()
+        ];
+
+        return view('pendaftar.update_bulk.studentUpdateBulk', compact('data'));
+
+    }
+
+    public function getStatusUpdateBulk(Request $request)
+    {
+
+        $program = $request->program;
+        $session = $request->session;
+        $semester = $request->semester;
+
+        $query = DB::table('students')->where(function($query) {
+            $query->where('campus_id', 0)
+                  ->where('status', 2)
+                  ->where('block_status', '!=', 1);
+        });
+
+        if($program != '' && $session != '' && $semester != '')
+        {
+
+            $data['campus'] = $query->where([
+                ['program', $program],
+                ['session', $session],
+                ['semester', $semester]
+            ])->get();
+
+            $data['leave'] = [];
+
+        }else{
+
+
+            $data['campus'] = [];
+
+            $data['leave'] = [];
+
+        }
+
+
+        return view('pendaftar.update_bulk.getStudentUpdateBulk', compact('data'));
+    }
+
     public function generateMatric(Request $request)
     {
 

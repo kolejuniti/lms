@@ -284,6 +284,7 @@
 						<li><a href="{{ route('pendaftar.student.edit') }}" class="{{ (route('pendaftar.student.edit') == Request::url()) ? 'active' : ''}}">Student Edit</a></li>
 						<li><a href="{{ route('pendaftar.create') }}" class="{{ (route('pendaftar.create') == Request::url()) ? 'active' : ''}}">Create Student</a></li>
 						<li><a href="{{ route('pendaftar.student.status') }}" class="{{ (route('pendaftar.student.status') == Request::url()) ? 'active' : ''}}">Update Status</a></li>
+						<li><a href="{{ route('pendaftar.student.statusUpdateBulk') }}" class="{{ (route('pendaftar.student.statusUpdateBulk') == Request::url()) ? 'active' : ''}}">Update Status Bulk</a></li>
 						{{-- <li><a href="{{ route('pendaftar.student.viewstatus') }}" class="{{ (route('pendaftar.student.viewstatus') == Request::url()) ? 'active' : ''}}">Status Report</a></li> --}}
 						<li><a href="{{ route('pendaftar.student.studentreport') }}" class="{{ (route('pendaftar.student.studentreport') == Request::url()) ? 'active' : ''}}">Student Report</a></li>
 						<li><a href="{{ route('pendaftar_akademik.reportR') }}" class="{{ (route('pendaftar_akademik.reportR') == Request::url()) ? 'active' : ''}}">Student Report R</a></li>
