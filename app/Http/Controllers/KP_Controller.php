@@ -881,10 +881,10 @@ $content .= '<tr>
         if(isset($request->student))
         {
 
-            if(count($request->student) > 40)
+            if(count($request->student) > 45)
             {
 
-                return redirect()->back()->withErrors(['The limit for student in a group cannot exceed more than 40 !']);
+                return redirect()->back()->withErrors(['The limit for student in a group cannot exceed more than 45 !']);
 
             }else{
 
