@@ -92,6 +92,9 @@ tr:hover {
     <div class="container">
         <!-- BEGIN INVOICE -->
         <div class="col-12">
+        <h1>Charge Report as of {{ $data['from'] }} until {{ $data['to'] }}</h1>
+        <br>
+        <br>
             <!--pre registration -->
             <!-- new student -->
             <div class="card mb-3" id="stud_info">
