@@ -751,6 +751,7 @@ Route::post('/finance/asset/vehicleRecord/storeOdometerRecord', [App\Http\Contro
 Route::delete('/finance/asset/vehicleRecord/deleteOdometerRecord', [App\Http\Controllers\FinanceController::class,'deleteOdometerRecord']);
 Route::get('/finance/asset/vehicleRecord/vehicleReport', [App\Http\Controllers\FinanceController::class,'vehicleReport'])->name('finance.asset.vehicleRecord.vehicleReport');
 Route::get('/finance/asset/vehicleRecord/getVehicleReport', [App\Http\Controllers\FinanceController::class,'getVehicleReport']);
+Route::get('/finance/student/blockList', [App\Http\Controllers\FinanceController::class,'blockList'])->name('finance.student.blockList');
 
 
 Route::get('/treasurer_dashboard', [App\Http\Controllers\TreasurerController::class, 'dashboard'])->name('treasurer.dashboard');
