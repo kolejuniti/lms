@@ -275,9 +275,39 @@
 						@if($now >= $range->Start && $now <= $range->End)
 						<li><a href="{{ route('student.affair.result') }}" class="{{ (route('student.affair.result') == Request::url()) ? 'active' : ''}}">Result</a></li>
 						@endif
-						@if($block_status == 0)
-						<li><a href="/AR/student/getSlipExam?student={{ Auth::guard('student')->user()->ic }}" target="_blank">Slip Exam</a></li>
-						@endif
+						<!-- Link with JavaScript onclick handler -->
+<li>
+    <a id="examSlipLink" href="#" target="_blank">Slip Exam</a>
+</li>
+
+<!-- Modal structure -->
+<div id="blockAlertModal" style="display: none;">
+    <div style="background: #fff; padding: 20px; border-radius: 8px; width: 300px; text-align: center;">
+        <p>Anda mempunyai tunggakan yang perlu dijelaskan, sila semak penyata kewangan anda.</p>
+        <button onclick="closeModal()">OK</button>
+    </div>
+</div>
+
+<script>
+    document.getElementById('examSlipLink').addEventListener('click', function(event) {
+        event.preventDefault(); // Prevent default navigation
+
+        var block_status = {{ $block_status }}; // Fetch the block status from PHP
+
+        if (block_status === 1) {
+            // Show the modal
+            document.getElementById('blockAlertModal').style.display = 'block';
+        } else {
+            // Redirect to the link if block_status is 0
+            window.open("/AR/student/getSlipExam?student={{ Auth::guard('student')->user()->ic }}", "_blank");
+        }
+    });
+
+    function closeModal() {
+        document.getElementById('blockAlertModal').style.display = 'none';
+    }
+</script>
+
 					</ul>
 				</li> 
 				<li class="treeview">
