@@ -161,3 +161,7 @@
     </div>
 </div>
 </div>
+
+<script>
+    var user = '{{ $data["user"]->name }}';
+</script>

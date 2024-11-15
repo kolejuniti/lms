@@ -138,7 +138,7 @@ function getUserInfo(user)
                     {
                         extend: 'excelHtml5',
                         messageTop: output,
-                        title: 'Excel' + '-' + output,
+                        title: 'Training' + ' - ' + user,
                         text:'Export to excel'
                         //Columns to export
                         //exportOptions: {
@@ -147,7 +147,7 @@ function getUserInfo(user)
                     },
                     {
                         extend: 'pdfHtml5',
-                        title: 'PDF' + '-' + output,
+                        title: 'Training' + ' - ' + user,
                         text: 'Export to PDF'
                         //Columns to export
                         //exportOptions: {
