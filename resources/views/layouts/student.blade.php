@@ -276,38 +276,9 @@
 						<li><a href="{{ route('student.affair.result') }}" class="{{ (route('student.affair.result') == Request::url()) ? 'active' : ''}}">Result</a></li>
 						@endif
 						<!-- Link with JavaScript onclick handler -->
-<li>
-    <a id="examSlipLink" href="#" target="_blank">Slip Exam</a>
-</li>
-
-<!-- Modal structure -->
-<div id="blockAlertModal" style="display: none;">
-    <div style="background: #fff; padding: 20px; border-radius: 8px; width: 300px; text-align: center;">
-        <p>Anda mempunyai tunggakan yang perlu dijelaskan, sila semak penyata kewangan anda.</p>
-        <button onclick="closeModal()">OK</button>
-    </div>
-</div>
-
-<script>
-    document.getElementById('examSlipLink').addEventListener('click', function(event) {
-        event.preventDefault(); // Prevent default navigation
-
-        var block_status = {{ $block_status }}; // Fetch the block status from PHP
-
-        if (block_status === 1) {
-            // Show the modal
-            document.getElementById('blockAlertModal').style.display = 'block';
-        } else {
-            // Redirect to the link if block_status is 0
-            window.open("/AR/student/getSlipExam?student={{ Auth::guard('student')->user()->ic }}", "_blank");
-        }
-    });
-
-    function closeModal() {
-        document.getElementById('blockAlertModal').style.display = 'none';
-    }
-</script>
-
+						<li>
+							<a id="examSlipLink" href="#" target="_blank">Slip Exam</a>
+						</li>
 					</ul>
 				</li> 
 				<li class="treeview">
@@ -394,7 +365,81 @@
     </section>
   </aside>
 
-  
+  <!-- Modal Structure Outside the Sidebar -->
+  <div id="overlay" style="display: none;">
+	<div id="blockAlertModal">
+		<h3>Anda mempunyai tunggakan yang perlu dijelaskan, sila semak penyata kewangan anda.</h3>
+		<button onclick="closeModal()">OK</button>
+	</div>
+  </div>
+
+  <style>
+	/* Full-screen overlay background with blur effect */
+	#overlay {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100vw;
+		height: 100vh;
+		background: rgba(0, 0, 0, 0.6);
+		backdrop-filter: blur(5px); /* Blurring effect */
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		z-index: 1000;
+	}
+
+	/* Modal styling */
+	#blockAlertModal {
+		background: #fff;
+		padding: 20px;
+		border-radius: 8px;
+		width: 300px;
+		text-align: center;
+		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+		animation: fadeIn 0.3s ease; /* Optional animation */
+	}
+
+	/* Button styling */
+	#blockAlertModal button {
+		padding: 10px 20px;
+		background-color: #007bff;
+		color: #fff;
+		border: none;
+		border-radius: 4px;
+		cursor: pointer;
+	}
+
+	#blockAlertModal button:hover {
+		background-color: #0056b3;
+	}
+
+	/* Fade-in animation for the modal */
+	@keyframes fadeIn {
+		from { opacity: 0; transform: scale(0.9); }
+		to { opacity: 1; transform: scale(1); }
+	}
+  </style>
+
+  <script>
+	document.getElementById('examSlipLink').addEventListener('click', function(event) {
+		event.preventDefault(); // Prevent default navigation
+
+		var block_status = {{ $block_status }}; // Fetch the block status from PHP
+
+		if (block_status === 1) {
+			// Show the overlay and modal
+			document.getElementById('overlay').style.display = 'flex';
+		} else {
+			// Redirect to the link if block_status is 0
+			window.open("/AR/student/getSlipExam?student={{ Auth::guard('student')->user()->ic }}", "_blank");
+		}
+	});
+
+	function closeModal() {
+		document.getElementById('overlay').style.display = 'none';
+	}
+  </script>
 	
   <!-- BEGIN Page Content -->
   @yield('main')	
