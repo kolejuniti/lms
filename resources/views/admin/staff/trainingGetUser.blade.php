@@ -163,5 +163,5 @@
 </div>
 
 <script>
-    var user = '{{ $data["user"]->name }}';
+    var users = '{{ $data["user"]->name }}';
 </script>
