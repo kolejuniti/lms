@@ -366,80 +366,96 @@
   </aside>
 
   <!-- Modal Structure Outside the Sidebar -->
-  <div id="overlay" style="display: none;">
-	<div id="blockAlertModal">
-		<h3>Anda mempunyai tunggakan yang perlu dijelaskan, sila semak penyata kewangan anda.</h3>
-		<button onclick="closeModal()">OK</button>
-	</div>
-  </div>
+<div id="overlay" style="display: none;">
+    <div id="blockAlertModal">
+        <div class="warning-icon">
+            <!-- Warning SVG Icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="orange" viewBox="0 0 24 24">
+                <path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm1 17.5h-2v-2h2v2zm0-4.5h-2v-7h2v7z"/>
+            </svg>
+        </div>
+        <h3>Anda mempunyai tunggakan yang perlu dijelaskan, sila semak penyata kewangan anda.</h3>
+        <button onclick="closeModal()">OK</button>
+    </div>
+</div>
 
-  <style>
-	/* Full-screen overlay background with blur effect */
-	#overlay {
-		position: fixed;
-		top: 0;
-		left: 0;
-		width: 100vw;
-		height: 100vh;
-		background: rgba(0, 0, 0, 0.6);
-		backdrop-filter: blur(5px); /* Blurring effect */
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		z-index: 1000;
-	}
+<style>
+    /* Full-screen overlay background with blur effect */
+    #overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(5px); /* Blurring effect */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    }
 
-	/* Modal styling */
-	#blockAlertModal {
-		background: #fff;
-		padding: 20px;
-		border-radius: 8px;
-		width: 300px;
-		text-align: center;
-		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-		animation: fadeIn 0.3s ease; /* Optional animation */
-	}
+    /* Modal styling */
+    #blockAlertModal {
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        width: 350px;
+        text-align: center;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        animation: fadeIn 0.3s ease; /* Optional animation */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+    }
 
-	/* Button styling */
-	#blockAlertModal button {
-		padding: 10px 20px;
-		background-color: #007bff;
-		color: #fff;
-		border: none;
-		border-radius: 4px;
-		cursor: pointer;
-	}
+    /* Warning icon styling */
+    .warning-icon {
+        margin-bottom: 10px;
+    }
 
-	#blockAlertModal button:hover {
-		background-color: #0056b3;
-	}
+    /* Button styling */
+    #blockAlertModal button {
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
 
-	/* Fade-in animation for the modal */
-	@keyframes fadeIn {
-		from { opacity: 0; transform: scale(0.9); }
-		to { opacity: 1; transform: scale(1); }
-	}
-  </style>
+    #blockAlertModal button:hover {
+        background-color: #0056b3;
+    }
 
-  <script>
-	document.getElementById('examSlipLink').addEventListener('click', function(event) {
-		event.preventDefault(); // Prevent default navigation
+    /* Fade-in animation for the modal */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: scale(0.9); }
+        to { opacity: 1; transform: scale(1); }
+    }
+</style>
 
-		var block_status = {{ $block_status }}; // Fetch the block status from PHP
+<script>
+    document.getElementById('examSlipLink').addEventListener('click', function(event) {
+        event.preventDefault(); // Prevent default navigation
 
-		if (block_status === 1) {
-			// Show the overlay and modal
-			document.getElementById('overlay').style.display = 'flex';
-		} else {
-			// Redirect to the link if block_status is 0
-			window.open("/AR/student/getSlipExam?student={{ Auth::guard('student')->user()->ic }}", "_blank");
-		}
-	});
+        var block_status = {{ $block_status }}; // Fetch the block status from PHP
 
-	function closeModal() {
-		document.getElementById('overlay').style.display = 'none';
-	}
-  </script>
+        if (block_status === 1) {
+            // Show the overlay and modal
+            document.getElementById('overlay').style.display = 'flex';
+        } else {
+            // Redirect to the link if block_status is 0
+            window.open("/AR/student/getSlipExam?student={{ Auth::guard('student')->user()->ic }}", "_blank");
+        }
+    });
+
+    function closeModal() {
+        document.getElementById('overlay').style.display = 'none';
+    }
+</script>
+
 	
   <!-- BEGIN Page Content -->
   @yield('main')	
