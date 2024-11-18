@@ -103,7 +103,7 @@
                     scales: {
                         y: {
                             beginAtZero: true,
-                            max: 5000,
+                            max: 8000,
                             ticks: {
                                 stepSize: 500,
                                 callback: function(value) { return value.toLocaleString(); }
