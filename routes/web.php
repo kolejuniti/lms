@@ -57,6 +57,8 @@ Route::get('/admin/report/student', [App\Http\Controllers\AdminController::class
 Route::get('/admin/training', [App\Http\Controllers\AdminController::class, 'userTraining'])->name('admin.training');
 Route::post('/admin/training/getUserList', [App\Http\Controllers\AdminController::class, 'getUserList']);
 Route::post('/admin/training/getUserInfo', [App\Http\Controllers\AdminController::class, 'getUserInfo']);
+Route::get('/admin/training/getTrainingData', [App\Http\Controllers\AdminController::class, 'getTrainingData']);
+Route::patch('/admin/training/updateTrainingData', [App\Http\Controllers\AdminController::class, 'updateTrainingData']);
 Route::post('/admin/training/storeUserTraining', [App\Http\Controllers\AdminController::class, 'storeUserTraining']);
 Route::post('/admin/training/deleteUserTraining', [App\Http\Controllers\AdminController::class, 'deleteUserTraining']);
 

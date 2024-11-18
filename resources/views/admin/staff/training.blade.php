@@ -65,6 +65,98 @@
         </div>
       </div>
     </section>
+
+    <div id="uploadModal" class="modal" class="modal fade" role="dialog">
+      <div class="modal-dialog">
+          <!-- modal content-->
+          <div class="modal-content" id="getModal">
+              <form action="/admin/training/updateTrainingData" method="post" role="form" enctype="multipart/form-data">
+                @csrf
+                @method('PATCH')
+                <div class="modal-header">
+                    <div class="">
+                        <button class="close waves-effect waves-light btn btn-danger btn-sm pull-right" data-dismiss="modal">
+                            &times;
+                        </button>
+                    </div>
+                </div>
+                <div class="modal-body">
+                  <div class="row col-md-12">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                          <label class="form-label" for="name">Course Name</label>
+                          <input type="text" class="form-control" id="name2" name="name2" required>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group">
+                          <label class="form-label" for="organizer">organizer</label>
+                          <input type="text" class="form-control" id="organizer2" name="organizer2" required>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label class="form-label" for="type2">Training Mode</label>
+                            <select class="form-select" id="type2" name="type2">
+                            <option value="-" selected disabled>-</option>
+                            <option value="Indoor Program">Indoor Program</option>
+                            <option value="Outdoor Program">Outdoor Program</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                          <label class="form-label" for="start_date2">Start Date</label>
+                          <input type="date" class="form-control" id="start_date2" name="start_date2" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                          <label class="form-label" for="end_date2">End Date</label>
+                          <input type="date" class="form-control" id="end_date2" name="end_date2" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                          <label class="form-label" for="start_time2">Start Time</label>
+                          <input type="time" class="form-control" id="start_time2" name="start_time2" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                          <label class="form-label" for="end_time2">End Time</label>
+                          <input type="time" class="form-control" id="end_time2" name="end_time2" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                          <label class="form-label" for="year2">Year</label>
+                          <input type="text" class="form-control" id="year2" name="year2" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                          <label class="form-label" for="cpd2">CPD Point</label>
+                          <input type="text" class="form-control" id="cpd2" name="cpd2" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6" hidden>
+                      <div class="form-group">
+                        <input type="text" class="form-control" id="id" name="id" required>
+                      </div>
+                  </div>
+                </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="form-group pull-right">
+                        <input type="submit" name="addtopic" class="form-controlwaves-effect waves-light btn btn-primary btn-sm pull-right" value="submit">
+                    </div>
+                </div>
+              </form>
+          </div>
+      </div>
+    </div>
+
     <!-- /.content -->
   </div>
 </div>
@@ -182,6 +274,7 @@ function submitForm(ic)
         start_time: $('#start_time').val(),
         end_time: $('#end_time').val(),
         year: $('#year').val(),
+        cpd: $('#cpd').val(),
         // comment: editor.getData(),
       };
 
@@ -261,6 +354,35 @@ function deletedtl(id, ic)
                       $('#complex_header').html(data);
                   }
               });
+          }
+      });
+
+}
+
+function updateTraining(id)
+{
+
+  return $.ajax({
+          headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
+          url      : "{{ url('admin/training/getTrainingData') }}",
+          method   : 'GET',
+          data 	 : {id: id},
+          error:function(err){
+              alert("Error");
+              console.log(err);
+          },
+          success  : function(data){
+              $('#name2').val(data.training_name);
+              $('#organizer2').val(data.organizer);
+              $('#type2').val(data.training_type).change();
+              $('#start_date2').val(data.start_date);
+              $('#end_date2').val(data.end_date);
+              $('#start_time2').val(data.start_time);
+              $('#end_time2').val(data.end_time);
+              $('#year2').val(data.year);
+              $('#cpd2').val(data.cpd_point);
+              $('#id').val(data.id);
+              $('#uploadModal').modal('show');
           }
       });
 

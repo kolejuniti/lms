@@ -31,11 +31,11 @@
             </div>
             <div class="col-md-12">
                 <div class="form-group">
-                    <label class="form-label" for="type">Training Type</label>
+                    <label class="form-label" for="type">Training Mode</label>
                     <select class="form-select" id="type" name="type">
                     <option value="-" selected disabled>-</option>
-                    <option value="In The Field">In The Field</option>
-                    <option value="Outside The Field">Outside The Field</option>
+                    <option value="Indoor Program">Indoor Program</option>
+                    <option value="Outdoor Program">Outdoor Program</option>
                     </select>
                 </div>
             </div>
@@ -69,6 +69,12 @@
                   <input type="text" class="form-control" id="year" name="year" required>
                 </div>
             </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                  <label class="form-label" for="cpd">CPD Point</label>
+                  <input type="text" class="form-control" id="cpd" name="cpd" required>
+                </div>
+            </div>
         </div>
     </div>
     <!-- /.card-body -->
@@ -88,29 +94,32 @@
                 <th style="width: 1%">
                     No.
                 </th>
-                <th style="width: 15%">
+                <th>
                     Course Name
                 </th>
-                <th style="width: 15%">
+                <th>
                     Organizer
                 </th>
-                <th style="width: 10%">
-                    Training Type
+                <th>
+                    Training Mode
                 </th>
-                <th style="width: 10%">
+                <th>
                     Start Date
                 </th>
-                <th style="width: 10%">
+                <th>
                     End Date
                 </th>
-                <th style="width: 10%">
+                <th>
                     Start Time
                 </th>
-                <th style="width: 20%">
+                <th>
                     End Time
                 </th>
-                <th style="width: 10%">
+                <th>
                     Year
+                </th>
+                <th>
+                    CPD Point
                 </th>
                 <th>
 
@@ -147,8 +156,15 @@
                 <td>
                     {{ $tr->year }}
                 </td>
-                <th>
-                    <a class="btn btn-danger btn-sm" href="#" onclick="deletedtl('{{ $tr->id }}','{{ $tr->user_ic }}')">
+                <td>
+                    {{ $tr->cpd_point }}
+                </td>
+                <td class="text-center">
+                    <a class="btn btn-info btn-sm btn-sm mr-2" href="#" onclick="updateTraining('{{ $tr->id }}')">
+                        <i class="ti-pencil-alt"></i>
+                        Edit
+                    </a>
+                    <a class="btn btn-danger btn-sm btn-sm mr-2" href="#" onclick="deletedtl('{{ $tr->id }}','{{ $tr->user_ic }}')">
                         <i class="ti-trash">
                         </i>
                         Delete

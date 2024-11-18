@@ -1644,6 +1644,35 @@ class AdminController extends Controller
 
     }
 
+    public function getTrainingData()
+    {
+
+        $data = DB::table('tbluser_training')->find(request()->id);
+
+        return response()->json($data);
+
+    }
+
+    public function updateTrainingData(Request $request)
+    {
+
+        DB::table('tbluser_training')->where('id', $request->id)
+        ->update([
+            'training_name' => $request->name2,
+            'organizer' => $request->organizer2,
+            'training_type' => $request->type2,
+            'start_date' => $request->start_date2,
+            'end_date' => $request->end_date2,
+            'start_time' => $request->start_time2,
+            'end_time' => $request->end_time2,
+            'year' => $request->year2,
+            'cpd_point' => $request->cpd2,
+        ]);
+
+        return back();
+
+    }
+
     public function storeUserTraining(Request $request)
     {
 
@@ -1674,6 +1703,7 @@ class AdminController extends Controller
                     'start_time' => $user->start_time,
                     'end_time' => $user->end_time,
                     'year' => $user->year,
+                    'cpd_point' => $user->cpd,
                 ]);
 
                 $training = DB::table('tbluser_training')
@@ -1686,29 +1716,32 @@ class AdminController extends Controller
                                     <th style="width: 1%">
                                         No.
                                     </th>
-                                    <th style="width: 15%">
+                                    <th>
                                         Course Name
                                     </th>
-                                    <th style="width: 15%">
+                                    <th>
                                         Organizer
                                     </th>
-                                    <th style="width: 10%">
-                                        Training Type
+                                    <th>
+                                        Training Mode
                                     </th>
-                                    <th style="width: 10%">
+                                    <th>
                                         Start Date
                                     </th>
-                                    <th style="width: 10%">
+                                    <th>
                                         End Date
                                     </th>
-                                    <th style="width: 10%">
+                                    <th>
                                         Start Time
                                     </th>
-                                    <th style="width: 20%">
+                                    <th>
                                         End Time
                                     </th>
-                                    <th style="width: 10%">
+                                    <th>
                                         Year
+                                    </th>
+                                    <th>
+                                        CPD Point
                                     </th>
                                     <th>
                     
@@ -1748,7 +1781,14 @@ class AdminController extends Controller
                         <td>
                         '. $tr->year .'
                         </td>
+                        <td>
+                        '. $tr->cpd_point .'
+                        </td>
                         <th>
+                        <a class="btn btn-info btn-sm btn-sm mr-2" href="#" onclick="updateTraining('. $tr->id .')">
+                            <i class="ti-pencil-alt"></i>
+                            Edit
+                        </a>
                         <a class="btn btn-danger btn-sm" href="#" onclick="deletedtl('. $tr->id .','. $user->ic .')">
                             <i class="ti-trash">
                             </i>
@@ -1794,29 +1834,32 @@ class AdminController extends Controller
                             <th style="width: 1%">
                                 No.
                             </th>
-                            <th style="width: 15%">
+                            <th>
                                 Course Name
                             </th>
-                            <th style="width: 15%">
+                            <th>
                                 Organizer
                             </th>
-                            <th style="width: 10%">
-                                Training Type
+                            <th>
+                                Training Mode
                             </th>
-                            <th style="width: 10%">
+                            <th>
                                 Start Date
                             </th>
-                            <th style="width: 10%">
+                            <th>
                                 End Date
                             </th>
-                            <th style="width: 10%">
+                            <th>
                                 Start Time
                             </th>
-                            <th style="width: 20%">
+                            <th>
                                 End Time
                             </th>
-                            <th style="width: 10%">
+                            <th>
                                 Year
+                            </th>
+                            <th>
+                                CPD Point
                             </th>
                             <th>
             
@@ -1857,6 +1900,13 @@ class AdminController extends Controller
                 '. $tr->year .'
                 </td>
                 <td>
+                '. $tr->cpd_point .'
+                </td>
+                <td>
+                    <a class="btn btn-info btn-sm btn-sm mr-2" href="#" onclick="updateTraining('. $tr->id .')">
+                        <i class="ti-pencil-alt"></i>
+                        Edit
+                    </a>
                     <a class="btn btn-danger btn-sm" href="#" onclick="deletedtl('. $tr->id .','. $request->ic .')">
                         <i class="ti-trash">
                         </i>
