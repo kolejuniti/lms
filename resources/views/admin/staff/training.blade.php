@@ -227,26 +227,34 @@ function getUserInfo(user)
                   dom: 'lBfrtip', // if you remove this line you will see the show entries dropdown
                   
                   buttons: [
-                    {
-                        extend: 'excelHtml5',
-                        messageTop: output,
-                        title: 'Training' + ' - ' + users,
-                        text:'Export to excel'
-                        //Columns to export
-                        //exportOptions: {
-                       //     columns: [0, 1, 2, 3,4,5,6]
-                       // }
-                    },
-                    {
-                        extend: 'pdfHtml5',
-                        title: 'Training' + ' - ' + users,
-                        text: 'Export to PDF'
-                        //Columns to export
-                        //exportOptions: {
-                       //     columns: [0, 1, 2, 3, 4, 5, 6]
-                      //  }
-                    }
+                      {
+                          extend: 'pdfHtml5',
+                          title: 'Training' + ' - ' + users,
+                          text: 'Report',
+                          exportOptions: {
+                              columns: ':not(:last-child)' // Exclude the last column (Edit/Delete)
+                          },
+                          customize: function (doc) {
+                              // Center the title
+                              doc.content[1].text = doc.content[1].text;
+                              doc.content[1].alignment = 'center';
+
+                              // Format the current date as dd/mm/yyyy
+                              var currentDate = new Intl.DateTimeFormat('en-GB').format(new Date());
+
+                              // Add the formatted current date to the right side of the header
+                              doc.content.unshift({
+                                  text: currentDate,
+                                  alignment: 'right',
+                                  margin: [0, 10, 10, 0], // Top, right margin
+                                  style: 'header'
+                              });
+                          }
+                      }
                   ],
+
+
+
                 });
                 //$('#student').selectpicker('refresh');
 
