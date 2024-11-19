@@ -885,13 +885,31 @@ class AR_Controller extends Controller
 
         }else{
 
-            DB::table('sessions')->insert([
+            $id = DB::table('sessions')->insertGetId([
                 'SessionName' => $name,
                 'Start' => $data['start'],
                 'End' => $data['end'],
                 'Year' => $data['year'],
                 'Status' => 'ACTIVE'
             ]);
+
+            $newId = $id - 1;
+
+            $oldStructure = DB::table('subjek_structure')->where('intake_id', $newId)->get();
+
+            foreach($oldStructure as $os)
+            {
+
+                DB::table('subjek_structure')->insert([
+                    'courseID' => $os->courseID,
+                    'structure' => $os->structure,
+                    'intake_id' => $id,
+                    'program_id' => $os->program_id,
+                    'semester_id' => $os->semester_id
+                ]);
+
+            }
+
         }
 
         return redirect(route('pendaftar_akademik.session'));
