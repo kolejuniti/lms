@@ -8699,6 +8699,67 @@ class FinanceController extends Controller
 
     }
 
+    public function PTPTNReport()
+    {
+
+        $data['semester'] = DB::table('semester')->where('id', '!=', 1)->get();
+
+        $data['session'] = DB::table('sessions')->where('Status', 'ACTIVE')->get();
+
+        $data['package'] = ['FULL', '75%', '50%', 'SENDIRI'];
+
+        $data['total'] = [];
+
+        foreach($data['semester'] as $key => $sm)
+        {
+
+            foreach($data['package'] as $key2 => $pcg)
+            {
+
+                if($pcg == 'FULL')
+                {
+
+                    $packageID = [6,7,8];
+
+                }elseif($pcg == '75%'){
+
+                    $packageID = [2];
+
+                }elseif($pcg == '50%'){
+
+                    $packageID = [3];
+
+                }elseif($pcg == 'SENDIRI'){
+
+                    $packageID = [1,4,5];
+
+                }
+
+                foreach($data['session'] as $key3 => $ssn)
+                {
+
+                    $data['total'][$key][$key2][$key3] = DB::table('tblpackage_sponsorship')
+                    ->join('students', 'tblpackage_sponsorship.student_ic', 'students.ic')
+                    ->join('tblpackage', 'tblpackage_sponsorship.package_id', 'tblpackage.id')
+                    ->where([
+                        ['students.intake', $ssn->SessionID],
+                        ['students.semester', $sm->id],
+                        ['students.status', 2]
+                    ])
+                    ->whereIn('tblpackage.id', $packageID)
+                    ->groupBy('tblpackage_sponsorship.student_ic')
+                    ->count();
+
+                }
+
+            }
+
+        }
+
+        dd($data['total']);
+
+    }
+
     public function claimLog()
     {
 
