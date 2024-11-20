@@ -8747,7 +8747,6 @@ class FinanceController extends Controller
                         ['students.status', 2]
                     ])
                     ->whereIn('tblpackage.id', $packageID)
-                    ->groupBy('tblpackage_sponsorship.student_ic')
                     ->count();
 
                 }
@@ -8756,7 +8755,9 @@ class FinanceController extends Controller
 
         }
 
-        dd($data['total']);
+        //dd($data['total']);
+
+        return view('finance.sponsorship.ptptn_report.ptptnReport', compact('data'));
 
     }
 
