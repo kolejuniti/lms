@@ -8702,7 +8702,7 @@ class FinanceController extends Controller
     public function PTPTNReport()
     {
 
-        $data['semester'] = DB::table('semester')->where('id', '!=', 1)->get();
+        $data['semester'] = DB::table('semester')->get();
 
         $data['session'] = DB::table('sessions')->where('Status', 'ACTIVE')->get();
 
