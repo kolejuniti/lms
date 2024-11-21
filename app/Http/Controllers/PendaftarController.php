@@ -119,9 +119,12 @@ class PendaftarController extends Controller
             ->join('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
             ->leftJoin('tblqualification_std', 'tblstudent_personal.qualification', 'tblqualification_std.id')
             ->join('tblsex', 'tblstudent_personal.sex_id', 'tblsex.id')
+            ->leftjoin('tblreligion', 'tblstudent_personal.religion_id', 'tblreligion.id')
+            ->leftjoin('tblnationality', 'tblstudent_personal.nationality_id', 'tblnationality.id')
             ->select('students.*', 'tblprogramme.progcode', 'a.SessionName AS intake', 
                      'b.SessionName AS session', 'tblstudent_status.name AS status',
-                     'tblstudent_personal.no_tel', 'tblsex.code AS gender', 'tblqualification_std.name AS qualification');
+                     'tblstudent_personal.no_tel', 'tblsex.code AS gender', 'tblqualification_std.name AS qualification',
+                     'tblreligion.religion_name AS religion', 'tblnationality.nationality_name AS race');
 
         if(!empty($request->program) && $request->program != '-')
         {
@@ -238,6 +241,12 @@ class PendaftarController extends Controller
                                 Qualification
                             </th>
                             <th>
+                                Race
+                            </th>
+                            <th>
+                                Religion
+                            </th>
+                            <th>
                             </th>
                         </tr>
                     </thead>
@@ -288,6 +297,12 @@ class PendaftarController extends Controller
                 </td>
                 <td>
                 '. $student->qualification .'
+                </td>
+                <td>
+                '. $student->race .'
+                </td>
+                <td>
+                '. $student->religion .'
                 </td>';
                 
 

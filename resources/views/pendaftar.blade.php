@@ -121,6 +121,12 @@
                     <th style="width: 10%">
                         Program
                     </th>
+                    <th style="width: 10%">
+                        Race
+                    </th>
+                    <th style="width: 10%">
+                        Religion
+                    </th>
                     <th style="width: 20%">
                     </th>
                 </tr>
