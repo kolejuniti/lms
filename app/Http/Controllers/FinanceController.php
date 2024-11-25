@@ -8702,7 +8702,7 @@ class FinanceController extends Controller
     public function PTPTNReport()
     {
 
-        $data['semester'] = DB::table('semester')->get();
+        $data['semester'] = DB::table('semester')->where('id', '!=', 1)->get();
 
         $data['session'] = DB::table('sessions')->where('Status', 'ACTIVE')->get();
 
@@ -8748,6 +8748,25 @@ class FinanceController extends Controller
                     ])
                     ->whereIn('tblpackage.id', $packageID)
                     ->count();
+
+                    if($pcg == 'FULL')
+                    {
+
+                        $data['amount'][$key][$key2][$key3] = $data['total'][$key][$key2][$key3] * 3900;
+
+                    }elseif($pcg == '75%'){
+
+                        $data['amount'][$key][$key2][$key3] = $data['total'][$key][$key2][$key3] * 2450;
+
+                    }elseif($pcg == '50%'){
+
+                        $data['amount'][$key][$key2][$key3] = $data['total'][$key][$key2][$key3] * 1600;
+
+                    }elseif($pcg == 'SENDIRI'){
+
+                        $data['amount'][$key][$key2][$key3] = 0;
+
+                    }
 
                 }
 
