@@ -8742,7 +8742,7 @@ class FinanceController extends Controller
                     ->join('students', 'tblpackage_sponsorship.student_ic', 'students.ic')
                     ->join('tblpackage', 'tblpackage_sponsorship.package_id', 'tblpackage.id')
                     ->where([
-                        ['students.intake', $ssn->SessionID],
+                        ['students.session', $ssn->SessionID],
                         ['students.semester', $sm->id],
                         ['students.status', 2]
                     ])
