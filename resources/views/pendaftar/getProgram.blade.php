@@ -42,7 +42,7 @@
               {{ $intake[$key]->SessionName }}
             </td>
             <td>
-              {{ $batch[$key]->SessionName }}
+              {{ $batch[$key]->BatchName }}
             </td>
             <td>
               {{ $prg->session }}

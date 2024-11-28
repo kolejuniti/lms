@@ -1161,7 +1161,7 @@ class PendaftarController extends Controller
                   ->where('student_ic', $request->ic)->get();
 
         $batch = DB::table('student_program')
-                 ->join('sessions', 'student_program.batch', 'sessions.SessionID')
+                 ->join('tblbatch', 'student_program.batch', 'tblbatch.BatchID')
                  ->where('student_ic', $request->ic)->get();
                    
 
