@@ -8719,11 +8719,11 @@ class FinanceController extends Controller
                 if($pcg == 'FULL')
                 {
 
-                    $packageID = [6,7,8,9];
+                    $packageID = [6,7,8,9,10];
 
                 }elseif($pcg == '75%'){
 
-                    $packageID = [2];
+                    $packageID = [2,11];
 
                 }elseif($pcg == '50%'){
 
