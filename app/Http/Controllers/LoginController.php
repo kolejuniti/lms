@@ -46,6 +46,11 @@ class LoginController extends Controller
                 elseif($user->usrtype == 'LCT')
                 {
                     return redirect()->route('lecturer');
+
+                }elseif($user->usrtype == 'HEA')
+                {
+                    return redirect()->route('HEA');
+
                 }else
                 {
                     return back()->with(["message"=>"Please login again using Administrator login!"]);

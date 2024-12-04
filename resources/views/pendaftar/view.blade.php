@@ -1,4 +1,4 @@
-@extends((Auth::user()->usrtype == "ADM") ? 'layouts.admin' : (Auth::user()->usrtype == "RGS" ? 'layouts.pendaftar' : (Auth::user()->usrtype == "AR" ? 'layouts.pendaftar_akademik' : (Auth::user()->usrtype == "FN" ? 'layouts.finance' : (Auth::user()->usrtype == "TS" ? 'layouts.treasurer' : (Auth::user()->usrtype == "DN" ? 'layouts.deen' : (Auth::user()->usrtype == "OTR" ? 'layouts.other_user' : (Auth::user()->usrtype == "COOP" ? 'layouts.coop' : (Auth::user()->usrtype == "PL" || Auth::user()->usrtype == "AO" || Auth::user()->usrtype == "LCT" ? 'layouts.ketua_program' : (Auth::user()->usrtype == "UR" ? 'layouts.ur' : ''))))))))))
+@extends((Auth::user()->usrtype == "ADM") ? 'layouts.admin' : (Auth::user()->usrtype == "RGS" ? 'layouts.pendaftar' : (Auth::user()->usrtype == "AR" ? 'layouts.pendaftar_akademik' : (Auth::user()->usrtype == "FN" ? 'layouts.finance' : (Auth::user()->usrtype == "TS" ? 'layouts.treasurer' : (Auth::user()->usrtype == "DN" ? 'layouts.deen' : (Auth::user()->usrtype == "OTR" ? 'layouts.other_user' : (Auth::user()->usrtype == "COOP" ? 'layouts.coop' : (Auth::user()->usrtype == "PL" || Auth::user()->usrtype == "AO" || Auth::user()->usrtype == "LCT" ? 'layouts.ketua_program' : (Auth::user()->usrtype == "UR" ? 'layouts.ur' : (Auth::user()->usrtype == "HEA" ? 'layouts.hea' : '')))))))))))
 
 @section('main')
 
@@ -50,6 +50,9 @@
                     <div class="card-header">
                       <b>Maklumat Peribadi</b>
                     </div>
+                    <button id="printButton" class="waves-effect waves-light btn btn-primary btn-sm">
+                      <i class="ti-printer"></i>&nbsp Print
+                    </button>
                     <div class="card-body">
                       <div class="row">
                         <div class="col-md-12">
@@ -780,5 +783,10 @@ $(document).on('change', '#program', function(){
   document.getElementById('commenttxt').readonly = true;
 
 })
+</script>
+<script>
+  document.getElementById('printButton').addEventListener('click', function() {
+      window.open("/pendaftar/edit/{{ $student->ic }}?print=1", "_blank");
+  });
 </script>
 @endsection

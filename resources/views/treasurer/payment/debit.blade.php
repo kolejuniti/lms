@@ -1,4 +1,4 @@
-@extends((Auth::user()->usrtype == "TS") ? '../layouts.treasurer' : (Auth::user()->usrtype == "FN" ? '../layouts.finance' : (Auth::user()->usrtype == "AR" ? '../layouts.pendaftar_akademik' : '')))
+@extends((Auth::user()->usrtype == "TS") ? '../layouts.treasurer' : (Auth::user()->usrtype == "FN" ? '../layouts.finance' : (Auth::user()->usrtype == "AR" ? '../layouts.pendaftar_akademik' : (Auth::user()->usrtype == "HEA" ? '../layouts.hea' : ''))))
 
 @section('main')
 <!-- Content Header (Page header) -->
