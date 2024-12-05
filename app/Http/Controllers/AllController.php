@@ -633,6 +633,7 @@ class AllController extends Controller
                     ->join('tblmessage_dtl', 'tblmessage.id', '=', 'tblmessage_dtl.message_id')
                     ->where('tblmessage.user_type', Auth::user()->usrtype)
                     ->where('tblmessage_dtl.status', 'NEW')
+                    ->select('tblmessage.*')
                     ->count();
 
         return response()->json(['count' => $count]);
