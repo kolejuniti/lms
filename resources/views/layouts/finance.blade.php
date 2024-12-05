@@ -156,6 +156,23 @@
   100% { transform: rotate(360deg); }
 }
 	
+.count-circle {
+	background-color: red;      /* Red background */
+	color: white;               /* White text */
+	border-radius: 50%;         /* Makes the element a circle */
+	padding: 5px 10px;          /* Padding to make the circle look good */
+	font-size: 12px;            /* Font size */
+	min-width: 24px;            /* Minimum width to keep a circular shape */
+	text-align: center;         /* Center the text */
+	line-height: 1;             /* Align the text vertically */
+	position: absolute;         /* Position to adjust its placement */
+	top: -5px;                  /* Adjust top positioning */
+	right: -10px;               /* Adjust right positioning */
+}
+
+li a {
+	position: relative; /* Parent positioning so the count is correctly placed */
+}
 </style>
 
 <div id="loading-spinner" class="spinner-overlay">
@@ -447,8 +464,34 @@
 				</ul>
 			  </li>
 			  <li>
-				<a href="/all/massage/user"><i data-feather="message-square"></i><span>Message</span></a>
-			  </li> 
+				<a href="/all/massage/user">
+					<i data-feather="message-square"></i>
+					<span>Message</span> 
+					<span id="count" class="count-circle">0</span>
+				</a>
+			  </li>
+			  <script>
+				 $(document).ready(function() {
+					function fetchMessageCount() {
+						$.ajax({
+							url: '{{ route("all.massage.student.countMassageAdmin") }}',
+							type: 'GET',
+							success: function(response) {
+								$('#count').text(response.count);
+							},
+							error: function() {
+								console.error('Failed to fetch message count');
+							}
+						});
+					}
+
+					// Fetch the count every 30 seconds
+					setInterval(fetchMessageCount, 30000);
+
+					// Initial fetch when page loads
+					fetchMessageCount();
+				});
+			  </script>
 			  <li>
 				<a href="{{ route('posting.staff') }}" class="{{ (route('posting.staff') == Request::url()) ? 'active' : ''}}"><i data-feather="tv"></i><span>Posting</span></a>
 			  </li> 

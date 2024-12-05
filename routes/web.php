@@ -805,6 +805,7 @@ Route::post('/all/massage/user/getStudentMassage', [App\Http\Controllers\AllCont
 Route::post('/all/massage/user/sendMassage', [App\Http\Controllers\AllController::class, 'sendMassage']);
 Route::post('/all/massage/user/getMassage', [App\Http\Controllers\AllController::class, 'getMassage']);
 Route::get('/all/massage/student/countMessage', [App\Http\Controllers\AllController::class, 'countMessage']);
+Route::get('/all/massage/student/countMassageAdmin', [App\Http\Controllers\AllController::class, 'countMassageAdmin'])->name('all.massage.student.countMassageAdmin');
 
 Route::get('/yuran-pengajian', [App\Http\Controllers\PaymentController::class, 'showPaymentForm'])->name('yuran-pengajian');
 Route::post('/yuran-pengajian/submitPayment', [App\Http\Controllers\PaymentController::class, 'submitPayment'])->name('yuran-pengajian.submitpayment');

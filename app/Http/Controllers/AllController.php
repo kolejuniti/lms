@@ -626,5 +626,18 @@ class AllController extends Controller
 
     }
 
+    public function countMassageAdmin(Request $request)
+    {
+
+        $count = DB::table('tblmessage')
+                    ->join('tblmessage_dtl', 'tblmessage.id', '=', 'tblmessage_dtl.message_id')
+                    ->where('tblmessage.user_type', Auth::user()->usrtype)
+                    ->where('tblmessage_dtl.status', 'NEW')
+                    ->count();
+
+        return response()->json(['count' => $count]);
+
+    }
+
 
 }
