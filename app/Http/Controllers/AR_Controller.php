@@ -4534,6 +4534,7 @@ class AR_Controller extends Controller
                             ['student_transcript.semester', $datas->semester]
                         ])
                         ->select('student_transcript.*', 'students.name', 'students.ic','students.no_matric', 'transcript_status.status_name AS status')
+                        ->orderBy('students.name')
                         ->get();
 
                 $data['course'] = DB::table('student_subjek')
@@ -4545,6 +4546,7 @@ class AR_Controller extends Controller
                                     ['student_subjek.semesterid', $datas->semester]
                                   ])
                                   ->groupBy('subjek.sub_id')
+                                  ->orderBy('subjek.course_name')
                                   ->get();
 
                 $data['status'] = DB::table('transcript_status')->get();
@@ -4595,6 +4597,7 @@ class AR_Controller extends Controller
                                         ['student_transcript.semester', $datas->semester]
                                     ])
                                     ->select('student_transcript.*', 'students.name', 'transcript_status.status_name AS status')
+                                    ->orderBy('students.name')
                                     ->get();
 
                     return response()->json(['data' => $data]);
