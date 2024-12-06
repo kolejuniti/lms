@@ -37,6 +37,11 @@ window.getMessage = function(ic) {
     window.dispatchEvent(event);
 };
 
+// Set up the listener for the custom event
+window.addEventListener('message-requested', function(event) {
+    getNewStudent();
+});
+
 app.mount('#app');
 
 // Import React setup
