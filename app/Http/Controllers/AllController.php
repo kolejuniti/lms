@@ -497,6 +497,7 @@ class AllController extends Controller
                      'b.SessionName AS session')
             ->where('tblmessage_dtl.status', 'NEW')
             ->where('tblmessage.user_type', Auth::user()->usrtype)
+            ->distinct('students.ic')
             ->get();
 
         $content = "";
