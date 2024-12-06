@@ -731,7 +731,8 @@ class AllController extends Controller
             $query->select(DB::raw(1))
                 ->from('tblmessage_dtl')
                 ->whereColumn('tblmessage_dtl.message_id', 'tblmessage.id')
-                ->where('tblmessage_dtl.status', 'NEW');
+                ->where('tblmessage_dtl.status', 'NEW')
+                ->where('tblmessage_dtl.user_type', '!=', Auth::user()->usrtype);
         })
         ->count();
 
