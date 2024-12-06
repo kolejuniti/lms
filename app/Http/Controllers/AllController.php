@@ -716,7 +716,7 @@ class AllController extends Controller
 
         $count = DB::table('tblmessage')
                     ->join('tblmessage_dtl', 'tblmessage.id', '=', 'tblmessage_dtl.message_id')
-                    ->where('tblmessage.user_type', Auth::user()->usrtype)
+                    ->where('tblmessage.user_type', $request->type)
                     ->where('tblmessage.recipient', Auth::guard('student')->user()->ic)
                     ->where('tblmessage_dtl.sender', '!=', Auth::guard('student')->user()->ic)
                     ->where('tblmessage_dtl.status', 'NEW')
@@ -730,11 +730,15 @@ class AllController extends Controller
     {
 
         $count = DB::table('tblmessage')
-                    ->join('tblmessage_dtl', 'tblmessage.id', '=', 'tblmessage_dtl.message_id')
-                    ->where('tblmessage.user_type', Auth::user()->usrtype)
-                    ->where('tblmessage_dtl.status', 'NEW')
-                    ->select('tblmessage.*')
-                    ->count();
+        ->where('user_type', Auth::user()->usrtype)
+        ->whereExists(function ($query) {
+            $query->select(DB::raw(1))
+                ->from('tblmessage_dtl')
+                ->whereColumn('tblmessage_dtl.message_id', 'tblmessage.id')
+                ->where('tblmessage_dtl.status', 'NEW');
+        })
+        ->count();
+
 
         return response()->json(['count' => $count]);
 
