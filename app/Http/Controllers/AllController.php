@@ -491,14 +491,10 @@ class AllController extends Controller
             ->join('tblprogramme', 'students.program', 'tblprogramme.id')
             ->join('sessions AS a', 'students.intake', 'a.SessionID')
             ->join('sessions AS b', 'students.session', 'b.SessionID')
-            ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
-            ->join('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
-            ->join('tblsex', 'tblstudent_personal.sex_id', 'tblsex.id')
             ->join('tblmessage_dtl', 'students.ic', 'tblmessage_dtl.sender')
             ->join('tblmessage', 'tblmessage_dtl.message_id', 'tblmessage.id')
             ->select('students.*', 'tblprogramme.progname', 'a.SessionName AS intake', 
-                     'b.SessionName AS session', 'tblstudent_status.name AS status',
-                     'tblstudent_personal.no_tel', 'tblsex.sex_name AS gender')
+                     'b.SessionName AS session')
             ->where('tblmessage_dtl.status', 'NEW')
             ->where('tblmessage.user_type', Auth::user()->usrtype)
             ->get();
