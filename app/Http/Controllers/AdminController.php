@@ -1159,7 +1159,7 @@ class AdminController extends Controller
                     $sumquiz[$ky][$keys] = DB::table('tblclassstudentquiz')->where('userid', $std->ic)->whereIn('quizid', $quizid)->sum('final_mark');
 
                     $percentquiz = DB::table('tblclassmarks')
-                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.id')->where([
+                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
                                 ['subjek.id',$id],
                                 ['assessment', 'quiz']
                                 ])->first();
