@@ -495,10 +495,12 @@ class AllController extends Controller
             ->join('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
             ->join('tblsex', 'tblstudent_personal.sex_id', 'tblsex.id')
             ->join('tblmessage_dtl', 'students.ic', 'tblmessage_dtl.sender')
+            ->join('tblmessage', 'tblmessage_dtl.message_id', 'tblmessage.id')
             ->select('students.*', 'tblprogramme.progname', 'a.SessionName AS intake', 
                      'b.SessionName AS session', 'tblstudent_status.name AS status',
                      'tblstudent_personal.no_tel', 'tblsex.sex_name AS gender')
             ->where('tblmessage_dtl.status', 'NEW')
+            ->where('tblmessage.user_type', Auth::user()->usrtype)
             ->get();
 
         $content = "";
@@ -677,7 +679,7 @@ class AllController extends Controller
             $messages = DB::table('tblmessage')
                 ->join('tblmessage_dtl', 'tblmessage.id', '=', 'tblmessage_dtl.message_id')
                 ->where('tblmessage.user_type', $request->type)
-                ->where('tblmessage_dtl.sender', $request->ic)
+                ->where('tblmessage.recipient', $request->ic)
                 // If you want to include messages where the user is the recipient, uncomment the line below:
                 //->orWhere('tblmessage.recipient', Auth::user()->ic)
                 ->select('tblmessage_dtl.*', 'tblmessage_dtl.user_type', 'tblmessage.recipient', 'tblmessage.datetime as message_datetime')
@@ -714,7 +716,7 @@ class AllController extends Controller
 
         $count = DB::table('tblmessage')
                     ->join('tblmessage_dtl', 'tblmessage.id', '=', 'tblmessage_dtl.message_id')
-                    ->where('tblmessage.user_type', $request->type)
+                    ->where('tblmessage.user_type', Auth::user()->usrtype)
                     ->where('tblmessage.recipient', Auth::guard('student')->user()->ic)
                     ->where('tblmessage_dtl.sender', '!=', Auth::guard('student')->user()->ic)
                     ->where('tblmessage_dtl.status', 'NEW')
