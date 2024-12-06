@@ -371,7 +371,16 @@
 								url: '{{ route("all.massage.student.countMassageAdmin") }}',
 								type: 'GET',
 								success: function(response) {
-									$('#count').text(response.count);
+									if(response.count > 0) {
+
+										$('#count').text(response.count);
+										$('#count').show();
+
+									} else {
+
+										$('#count').hide();
+
+									}
 								},
 								error: function() {
 									console.error('Failed to fetch message count');
