@@ -4546,7 +4546,7 @@ class AR_Controller extends Controller
                                     ['student_subjek.semesterid', $datas->semester]
                                   ])
                                   ->groupBy('subjek.sub_id')
-                                  ->orderBy('subjek.course_name')
+                                  ->orderBy('subjek.course_code')
                                   ->get();
 
                 $data['status'] = DB::table('transcript_status')->get();
