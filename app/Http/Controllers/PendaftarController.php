@@ -2639,47 +2639,39 @@ class PendaftarController extends Controller
                 if(DB::table('student_subjek')->where([
                     ['student_ic', $std],
                     ['sessionid', $data->session],
-                    ['semesterid', $data->semester]
+                    ['semesterid', $data->semester],
+                    ['group_id', '!=', null]
                 ])
-                ->where(function($query){
-                    $query->where('group_id', '!=', null)
-                    ->orWhere('grade', '!=', null);
-                })
                 ->count() > 0)
                 {
 
                     $total_credit_s = DB::table('student_subjek')->where([
                         ['student_ic', $std],
                         ['sessionid', $data->session],
-                        ['semesterid', $data->semester]
+                        ['semesterid', $data->semester],
+                        ['group_id', '!=', null]
                     ])
-                    ->where(function($query){
-                        $query->where('group_id', '!=', null)
-                        ->orWhere('grade', '!=', null);
-                    })
                     ->whereIn('course_status_id', [1,2,12,15])->sum('credit');
 
                     $passed_credit_s = DB::table('student_subjek')->where([
                         ['student_ic', $std],
                         ['sessionid', $data->session],
-                        ['semesterid', $data->semester]
+                        ['semesterid', $data->semester],
+                        ['group_id', '!=', null]
                     ])
-                    ->where(function($query){
-                        $query->where('group_id', '!=', null)
-                        ->orWhere('grade', '!=', null);
-                    })
                     ->whereIn('course_status_id', [1])->sum('credit');
 
                     $grade_pointer_s = DB::table('student_subjek')
                     ->where([
                         ['student_ic', $std],
                         ['sessionid', $data->session],
-                        ['semesterid', $data->semester]
+                        ['semesterid', $data->semester],
+                        ['group_id', '!=', null]
                     ])
-                    ->where(function($query){
-                        $query->where('group_id', '!=', null)
-                        ->orWhere('grade', '!=', null);
-                    })
+                    // ->where(function($query){
+                    //     $query->where('group_id', '!=', null)
+                    //     ->orWhere('grade', '!=', null);
+                    // })
                     ->whereIn('course_status_id', [1,2,12,15])
                     ->selectRaw('SUM(credit * pointer) as total')
                     ->value('total');
@@ -2688,45 +2680,33 @@ class PendaftarController extends Controller
                     ->where([
                         ['student_ic', $std],
                         ['sessionid', $data->session],
-                        ['semesterid', $data->semester]
+                        ['semesterid', $data->semester],
+                        ['group_id', '!=', null]
                     ])
-                    ->where(function($query){
-                        $query->where('group_id', '!=', null)
-                        ->orWhere('grade', '!=', null);
-                    })
                     ->whereIn('course_status_id', [1,2,12,15])
                     ->selectRaw('SUM(credit * pointer) / SUM(credit) as total')
                     ->value('total');
 
                     $total_credit_c = DB::table('student_subjek')->where([
-                        ['student_ic', $std]
+                        ['student_ic', $std],
+                        ['group_id', '!=', null]
                     ])
-                    ->where(function($query){
-                        $query->where('group_id', '!=', null)
-                        ->orWhere('grade', '!=', null);
-                    })
                     ->where('semesterid', '<=', $data->semester)
                     ->whereIn('course_status_id', [1,2,12,15])
                     ->sum('credit');
 
                     $passed_credit_c = DB::table('student_subjek')->where([
-                        ['student_ic', $std]
+                        ['student_ic', $std],
+                        ['group_id', '!=', null]
                     ])
-                    ->where(function($query){
-                        $query->where('group_id', '!=', null)
-                        ->orWhere('grade', '!=', null);
-                    })
                     ->where('semesterid', '<=', $data->semester)
                     ->whereIn('course_status_id', [1])->sum('credit');
 
                     $distinct_courses = DB::table('student_subjek')
                     ->where([
-                        ['student_ic', $std]
+                        ['student_ic', $std],
+                        ['group_id', '!=', null]
                     ])
-                    ->where(function($query){
-                        $query->where('group_id', '!=', null)
-                        ->orWhere('grade', '!=', null);
-                    })
                     ->where('semesterid', '<=', $data->semester)
                     ->whereIn('course_status_id', [1, 2, 12, 15])
                     ->distinct()
@@ -2778,6 +2758,7 @@ class PendaftarController extends Controller
                         ->get();
 
                     $grade_pointer_c = DB::table('student_subjek')
+                        ->whereNotNull('group_id')
                         ->whereIn('id', $grade_pointer->pluck('max_id'))
                         ->selectRaw('SUM(credit * pointer) as total')
                         ->value('total');
@@ -2870,6 +2851,7 @@ class PendaftarController extends Controller
                         ->get();
 
                     $cgpa = DB::table('student_subjek')
+                        ->whereNotNull('group_id')
                         ->whereIn('id', $cgpa_old->pluck('max_id'))
                         ->selectRaw('ROUND(SUM(credit * pointer) / SUM(credit), 2) as total')
                         ->value('total');
