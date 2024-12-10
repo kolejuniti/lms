@@ -4549,6 +4549,12 @@ class AR_Controller extends Controller
                                   ->orderBy('subjek.course_code')
                                   ->get();
 
+                $data = [
+                    'program' => DB::table('tblprogramme')->where('id', $datas->program)->first(),
+                    'session' => DB::table('sessions')->where('SessionID', $datas->session)->first(),
+                    'semester' => $datas->semester,
+                ];
+
                 $data['status'] = DB::table('transcript_status')->get();
 
                 // Initializing total counts array

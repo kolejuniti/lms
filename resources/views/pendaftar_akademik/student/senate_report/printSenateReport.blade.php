@@ -108,11 +108,16 @@ tr:hover {
         <div class="col-12">
             <h1>Senate Report as of {{ now() }}</h1>
             <br>
+            <h2>Program : {{ $data['program']->progname }}</h2>
+            <br>
+            <h2>Session : {{ $data['session']->SessionName }}</h2>
+            <br>
+            <h2>Semester : {{ $data['semester'] }}</h2>
             <br>
             <!--pre registration -->
             <div class="card mb-3" id="stud_info">
                 <div class="card-header">
-                <b>Pre Registration</b>
+                <b>Senate Report</b>
                 </div>
                 <div class="card-body p-0">
                 <table class="w-100 table table-bordered display margin-top-10 w-p100">
