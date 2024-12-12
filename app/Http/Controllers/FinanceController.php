@@ -3248,6 +3248,562 @@ class FinanceController extends Controller
 
     }
 
+    public function paymentAllowance()
+    {
+        $method = [];
+
+        $payment = DB::table('tblallowance')
+                   ->where([['tblallowance.student_ic', null],['tblallowance.process_status_id',2]])
+                   ->select('tblallowance.*',)->get();
+
+        foreach($payment as $key => $pym)
+        {
+
+            $method[$key] = DB::table('tblallowancemethod')->where('payment_id', $pym->id)->get();
+
+        }
+
+        return view('finance.payment.allowance.allowance', compact('payment','method'));
+
+    }
+
+    public function paymentAllowanceInput()
+    {
+
+        return view('finance.payment.allowance.allowanceInput');
+
+    }
+
+    public function deleteAllowance(Request $request)
+    {
+
+        DB::table('tblallowance')->where('id', $request->id)->delete();
+
+        DB::table('tblallowancemethod')->where('payment_id', $request->id)->delete();
+
+        return ["message" => "Success"];
+
+    }
+
+    public function paymentAllowanceStore(Request $request)
+    {
+
+        $paymentData = $request->paymentData;
+
+        $validator = Validator::make($request->all(), [
+            'paymentData' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return ["message"=>"Field Error", "error" => $validator->messages()->get('*')];
+        }
+
+        try{ 
+            DB::beginTransaction();
+            DB::connection()->enableQueryLog();
+
+            try{
+                $payment = json_decode($paymentData);
+                
+                if($payment->name != null && $payment->total != null)
+                {
+
+
+                    $id = DB::table('tblallowance')->insertGetId([
+                        'name' => $payment->name,
+                        'date' => date('Y-m-d'),
+                        'amount' => $payment->total,
+                        'process_status_id' => 1,
+                        'process_type_id' => 7,
+                        'add_staffID' => Auth::user()->ic,
+                        'add_date' => date('Y-m-d'),
+                        'mod_staffID' => Auth::user()->ic,
+                        'mod_date' => date('Y-m-d')
+                    ]);
+
+                    $data['method'] = DB::table('tblpayment_method')->get();
+
+                    $data['bank'] = DB::table('tblpayment_bank')->orderBy('name', 'asc')->get();
+ 
+                
+                }else{
+                    return ["message" => "Please fill all required field!"];
+                }
+                
+            }catch(QueryException $ex){
+                DB::rollback();
+                if($ex->getCode() == 23000){
+                    return ["message"=>"Class code already existed inside the system"];
+                }else{
+                    \Log::debug($ex);
+                    return ["message"=>"DB Error"];
+                }
+            }
+
+            DB::commit();
+        }catch(Exception $ex){
+            return ["message"=>"Error"];
+        }
+
+        return view('finance.sponsorship.getSponserMethod', compact('id', 'data'));
+
+    }
+
+    public function paymentAllowanceStore2(Request $request)
+    {
+
+        $paymentData = $request->paymentData;
+
+        $validator = Validator::make($request->all(), [
+            'paymentData' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return ["message"=>"Field Error", "error" => $validator->messages()->get('*')];
+        }
+
+        try{ 
+            DB::beginTransaction();
+            DB::connection()->enableQueryLog();
+
+            try{
+                $payment = json_decode($paymentData);
+                
+                if($payment->method != null && $payment->amount != null)
+                {
+                    $total = $payment->amount;
+
+                    $main = DB::table('tblallowance')->where('id', $payment->id)->first();
+
+                    $details = DB::table('tblallowancemethod')->where('payment_id', $payment->id)->get();
+
+                    if(count($details) > 0)
+                    {
+
+                        $total = $total + DB::table('tblallowancemethod')->where('payment_id', $payment->id)->sum('amount');
+                        
+                    }
+
+                    if($total > $main->amount)
+                    {
+
+                        return ["message" => "Add cannot exceed initial payment value!"];
+
+                    }else{
+
+                        if(($payment->nodoc != null) ? DB::table('tblallowancemethod')->join('tblallowance', 'tblallowancemethod.payment_id', 'tblallowance.id')
+                        ->where('tblallowancemethod.no_document', $payment->nodoc)->whereNotIn('tblallowance.process_status_id', [1, 3])->exists() : '')
+                        {
+
+                            return ["message" => "Document with the same number already used! Please use a different document no."];
+
+                        }else{
+
+                            DB::table('tblallowancemethod')->insert([
+                                'payment_id' => $payment->id,
+                                'claim_method_id' => $payment->method,
+                                'bank_id' => $payment->bank,
+                                'no_document' => $payment->nodoc,
+                                'amount' => $payment->amount,
+                                'add_staffID' => Auth::user()->ic,
+                                'add_date' => date('Y-m-d'),
+                                'mod_staffID' => Auth::user()->ic,
+                                'mod_date' => date('Y-m-d')
+                            ]);
+
+                        }
+
+                    }
+
+                    $methods = DB::table('tblallowancemethod')
+                               ->join('tblpayment_method', 'tblallowancemethod.claim_method_id', 'tblpayment_method.id')
+                               ->where('tblallowancemethod.payment_id', $payment->id)
+                               ->select('tblallowancemethod.*', 'tblpayment_method.name AS claim_method_id')->get();
+
+                    $sum = DB::table('tblallowancemethod')->where('payment_id', $payment->id)->sum('amount');
+
+                    $content = "";
+                    $content .= '<thead>
+                                    <tr>
+                                        <th style="width: 1%">
+                                            No.
+                                        </th>
+                                        <th style="width: 10%">
+                                            Date
+                                        </th>
+                                        <th style="width: 15%">
+                                            Type
+                                        </th>
+                                        <th style="width: 10%">
+                                            Amount
+                                        </th>
+                                        <th style="width: 10%">
+                                            Document No.
+                                        </th>
+                                        <th style="width: 20%">
+                                            Remark
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody id="table">';
+                                
+                    foreach($methods as $key => $dtl){
+                    //$registered = ($dtl->status == 'ACTIVE') ? 'checked' : '';
+                    $content .= '
+                        <tr>
+                            <td style="width: 1%">
+                            '. $key+1 .'
+                            </td>
+                            <td style="width: 15%">
+                            '. $main->date .'
+                            </td>
+                            <td style="width: 15%">
+                            '. $dtl->claim_method_id .'
+                            </td>
+                            <td style="width: 30%">
+                            '. $dtl->amount .'
+                            </td>
+                            <td style="width: 30%">
+                            '. $dtl->no_document .'
+                            </td>
+                            <td>
+                              <a class="btn btn-danger btn-sm" href="#" onclick="deletedtl('. $dtl->id .','. $main->id .')">
+                                  <i class="ti-trash">
+                                  </i>
+                                  Delete
+                              </a>
+                            </td>
+                        </tr>
+                        ';
+                        }
+                        $content .= '</tbody>';
+                        $content .= '<tfoot>
+                        <tr>
+                            <td style="width: 1%">
+                            
+                            </td>
+                            <td style="width: 15%">
+                            TOTAL AMOUNT
+                            </td>
+                            <td style="width: 15%">
+                            :
+                            </td>
+                            <td style="width: 30%">
+                            '. $sum .'
+                            </td>
+                            <td>
+                                <div class="col-md-6" hidden>
+                                     <input type="number" class="form-control" name="sum" id="sum" value="'. $sum .'">
+                                </div> 
+                            </td>
+                        </tr>
+                        </tfoot>';
+
+                
+                }else{
+                    return ["message" => "Please fill all required field!"];
+                }
+                
+            }catch(QueryException $ex){
+                DB::rollback();
+                if($ex->getCode() == 23000){
+                    return ["message"=>"Class code already existed inside the system"];
+                }else{
+                    \Log::debug($ex);
+                    return ["message"=>"DB Error"];
+                }
+            }
+
+            DB::commit();
+        }catch(Exception $ex){
+            return ["message"=>"Error"];
+        }
+
+        return ["message" => "Success", "data" => $content];
+
+    }
+
+    public function paymentAllowanceDelete(Request $request)
+    {
+        DB::table('tblallowancemethod')->where('id', $request->dtl)->delete();
+
+        $main = DB::table('tblallowance')->where('id', $request->id)->first();
+
+        $sum = DB::table('tblallowancemethod')->where('payment_id', $request->id)->sum('amount');
+
+        $methods = DB::table('tblallowancemethod')
+                               ->join('tblpayment_method', 'tblallowancemethod.claim_method_id', 'tblpayment_method.id')
+                               ->where('tblallowancemethod.payment_id', $request->id)
+                               ->select('tblallowancemethod.*', 'tblpayment_method.name AS claim_method_id')->get();
+
+        $content = "";
+        $content .= '<thead>
+                        <tr>
+                            <th style="width: 1%">
+                                No.
+                            </th>
+                            <th style="width: 10%">
+                                Date
+                            </th>
+                            <th style="width: 15%">
+                                Type
+                            </th>
+                            <th style="width: 10%">
+                                Amount
+                            </th>
+                            <th style="width: 10%">
+                                Document No.
+                            </th>
+                            <th style="width: 20%">
+                                Remark
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="table">';
+                    
+        foreach($methods as $key => $dtl){
+        //$registered = ($dtl->status == 'ACTIVE') ? 'checked' : '';
+        $content .= '
+            <tr>
+                <td style="width: 1%">
+                '. $key+1 .'
+                </td>
+                <td style="width: 15%">
+                '. $main->date .'
+                </td>
+                <td style="width: 15%">
+                '. $dtl->claim_method_id .'
+                </td>
+                <td style="width: 30%">
+                '. $dtl->amount .'
+                </td>
+                <td style="width: 30%">
+                '. $dtl->no_document .'
+                </td>
+                <td>
+                    <a class="btn btn-danger btn-sm" href="#" onclick="deletedtl('. $dtl->id .', '. $dtl->payment_id .')">
+                        <i class="ti-trash">
+                        </i>
+                        Delete
+                    </a>
+                </td>
+            </tr>
+            ';
+            }
+        $content .= '</tbody>';
+        $content .= '<tfoot>
+                <tr>
+                    <td style="width: 1%">
+                    
+                    </td>
+                    <td style="width: 15%">
+                    TOTAL AMOUNT
+                    </td>
+                    <td style="width: 15%">
+                    :
+                    </td>
+                    <td style="width: 30%">
+                    '. $sum .'
+                    </td>
+                    <td>
+                
+                    </td>
+                </tr>
+            </tfoot>';
+        
+
+        return $content;
+
+    }
+
+    public function paymentAllowanceConfirm(Request $request)
+    {
+
+        DB::table('tblallowance')->where('id', $request->id)->update([
+            'process_status_id' => 2
+        ]);
+
+        return true;
+
+    }
+
+    public function paymentStudentAllowance()
+    {
+
+        $allowance = DB::table('tblallowance')
+                   ->where('tblallowance.id', request()->id)
+                   ->first();
+
+        return view('finance.payment.allowance.studentPayment', compact('allowance'));
+
+    }
+
+    public function getStudentAllowance(Request $request)
+    {
+
+        $data['student'] = DB::table('students')
+                           ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
+                           ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+                           ->join('sessions AS t1', 'students.intake', 't1.SessionID')
+                           ->join('sessions AS t2', 'students.session', 't2.SessionID')
+                           ->select('students.*', 'tblstudent_status.name AS status', 'tblprogramme.progname AS program', 'students.program AS progid', 't1.SessionName AS intake_name', 't2.SessionName AS session_name')
+                           ->where('ic', $request->student)->first();
+        
+        return view('finance.payment.allowance.allowanceGetStudent', compact('data'));
+
+    }
+
+    public function storeStudentAllowance(Request $request)
+    {
+
+        $paymentData = $request->paymentData;
+
+        $validator = Validator::make($request->all(), [
+            'paymentData' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return ["message"=>"Field Error", "error" => $validator->messages()->get('*')];
+        }
+
+        try{ 
+            DB::beginTransaction();
+            DB::connection()->enableQueryLog();
+
+            try{
+                $payment = json_decode($paymentData);
+                
+                if($payment->total != null)
+                {
+                    $stddetail = DB::table('students')->where('ic', $payment->ic)->first();
+
+                    $pymdetails = DB::table('tblallowance')->where('id', $payment->id)->first();
+
+                    if(count(DB::table('tblallowance')->where([['allowance_id', $payment->id],['process_status_id', 2]])->get()) > 0)
+                    {
+                        $sum = DB::table('tblallowance')->where([['allowance_id', $payment->id],['process_status_id', 2]])->sum('amount');
+
+                        $balance = $pymdetails->amount - $sum;
+
+                    }else{
+
+                        $balance = $pymdetails->amount;
+
+                    }
+
+                    $count = DB::table('tblallowance')->where([['allowance_id', $payment->id],['process_status_id', 2],['student_ic', $payment->ic]])->get();
+
+                    if(count($count) > 0)
+                    {
+
+                        return ["message" => "Student sponsorship has already been paid!"];
+
+                    }else{
+
+                        if($payment->total > $balance)
+                        {
+
+                            return ["message" => "Amount cannot exceed " . $balance . "!"];
+
+                        }else{
+
+                            $id = DB::table('tblallowance')->insertGetId([
+                                'student_ic' => $payment->ic,
+                                'allowance_id' => $payment->id,
+                                'date' => date('Y-m-d'),
+                                'ref_no' => null,
+                                'program_id' => $stddetail->program,
+                                'session_id' => $stddetail->session,
+                                'semester_id' => $stddetail->semester,
+                                'amount' => $payment->total,
+                                'process_status_id' => 1,
+                                'process_type_id' => 7,
+                                'add_staffID' => Auth::user()->ic,
+                                'add_date' => date('Y-m-d'),
+                                'mod_staffID' => Auth::user()->ic,
+                                'mod_date' => date('Y-m-d')
+                            ]);
+
+                        }
+
+                    }
+
+                
+                }else{
+                    return ["message" => "Please fill all required field!"];
+                }
+                
+            }catch(QueryException $ex){
+                DB::rollback();
+                if($ex->getCode() == 23000){
+                    return ["message"=>"Class code already existed inside the system"];
+                }else{
+                    \Log::debug($ex);
+                    return ["message"=>"DB Error"];
+                }
+            }
+
+            DB::commit();
+        }catch(Exception $ex){
+            return ["message"=>"Error"];
+        }
+
+        return ["message" => "Success", "data" => $id, "sum" => $payment->total];
+
+    }
+
+    public function confirmStudentAllowance(Request $request)
+    {
+
+        $paymentDetail = $request->paymentDetail;
+
+        $validator = Validator::make($request->all(), [
+            'paymentDetail' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return ["message"=>"Field Error", "error" => $validator->messages()->get('*')];
+        }
+
+        try{ 
+            DB::beginTransaction();
+            DB::connection()->enableQueryLog();
+
+            try{
+                $payment = json_decode($paymentDetail);
+                
+                if($payment != null)
+                {
+
+                    DB::table('tblallowance')->where('id', $payment->id)->update([
+                        'process_status_id' => 2,
+                        'ref_no' => null
+                    ]);
+
+                
+                }else{
+                    return ["message" => "Please fill all required field!", "id" => $payment->id];
+                }
+                
+            }catch(QueryException $ex){
+                DB::rollback();
+                if($ex->getCode() == 23000){
+                    return ["message"=>"Class code already existed inside the system"];
+                }else{
+                    \Log::debug($ex);
+                    return ["message"=>"DB Error"];
+                }
+            }
+
+            DB::commit();
+        }catch(Exception $ex){
+            return ["message"=>"Error"];
+        }
+
+        return ["message" => "Success", "id" => $payment->id];
+
+    }
+
     public function sponsorLibrary()
     {
 

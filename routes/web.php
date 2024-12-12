@@ -630,6 +630,17 @@ Route::get('/finance/payment/KWSPrefund', [App\Http\Controllers\FinanceControlle
 Route::post('/finance/payment/KWSPrefund/getStudent', [App\Http\Controllers\FinanceController::class, 'getStudentKWSPrefund']);
 Route::post('/finance/payment/KWSPrefund/storeKWSPrefund', [App\Http\Controllers\FinanceController::class, 'storeKWSPrefund']);
 Route::post('/finance/payment/KWSPrefund/deleteKWSPrefund', [App\Http\Controllers\FinanceController::class, 'deleteKWSPrefund']);
+Route::get('/finance/payment/allowance/payment', [App\Http\Controllers\FinanceController::class, 'paymentAllowance'])->name('allowance.payment');
+Route::get('/finance/payment/allowance/payment/input', [App\Http\Controllers\FinanceController::class, 'paymentAllowanceInput'])->name('allowance.payment.input');
+Route::post('/finance/payment/allowance/payment/delete', [App\Http\Controllers\FinanceController::class, 'deleteAllowance']);
+Route::post('/finance/payment/allowance/payment/input/store', [App\Http\Controllers\FinanceController::class, 'paymentAllowanceStore']);
+Route::post('/finance/payment/allowance/payment/input/store2', [App\Http\Controllers\FinanceController::class, 'paymentAllowanceStore2']);
+Route::post('/finance/payment/allowance/payment/input/delete', [App\Http\Controllers\FinanceController::class, 'paymentAllowanceDelete']);
+Route::post('/finance/payment/allowance/payment/input/confirm', [App\Http\Controllers\FinanceController::class, 'paymentAllowanceConfirm']);
+Route::get('/finance/payment/allowance/student', [App\Http\Controllers\FinanceController::class, 'paymentStudentAllowance'])->name('allowance.payment.student');
+Route::post('/finance/payment/allowance/student/getStudent', [App\Http\Controllers\FinanceController::class, 'getStudentAllowance']);
+Route::post('/finance/payment/allowance/student/storeStudent', [App\Http\Controllers\FinanceController::class, 'storeStudentAllowance']);
+Route::post('/finance/payment/allowance/student/confirmStudent', [App\Http\Controllers\FinanceController::class, 'confirmStudentAllowance']);
 Route::get('/finance/sponsorship/library', [App\Http\Controllers\FinanceController::class, 'sponsorLibrary'])->name('sponsorship.library');
 Route::post('/finance/sponsorship/library/create', [App\Http\Controllers\FinanceController::class, 'createSponsor']);
 Route::post('/finance/sponsorship/library/update', [App\Http\Controllers\FinanceController::class, 'updateSponsor']);

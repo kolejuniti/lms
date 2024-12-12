@@ -390,6 +390,7 @@ li a {
 					<li><a href="{{ route('finance.payment.cancel') }}" class="{{ (route('finance.payment.cancel') == Request::url()) ? 'active' : ''}}">Cancel Transaction</a></li>
 					<li><a href="{{ route('treasurer.payment.credit') }}" class="{{ (route('treasurer.payment.credit') == Request::url()) ? 'active' : ''}}">Credit Note</a></li>
 					<li><a href="{{ route('treasurer.payment.debit') }}" class="{{ (route('treasurer.payment.debit') == Request::url()) ? 'active' : ''}}">Debit Note</a></li>
+					<li><a href="{{ route('allowance.payment') }}" class="{{ (route('allowance.payment') == Request::url()) ? 'active' : ''}}">Allowance Payment</a></li>
 				</ul>
 			  </li>
 			  <li class="treeview">
