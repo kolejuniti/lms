@@ -4063,7 +4063,8 @@ class PendaftarController extends Controller
                           ->leftjoin('tblstudent_waris','students.ic','tblstudent_waris.student_ic')
                           ->where([
                             ['students.status', 2],
-                            ['students.campus_id', 1]
+                            ['students.campus_id', 1],
+                            ['tblstudent_waris', '!=', 2]
                           ])
                           ->whereIn('students.student_status', [1,2,4])
                           ->groupBy('students.ic')
