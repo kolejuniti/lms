@@ -4066,6 +4066,7 @@ class PendaftarController extends Controller
                             ['students.campus_id', 1],
                             ['tblstudent_waris.status', '!=', 2]
                           ])
+                          ->whereNotIn('tblstudent_waris.status', [2,4])
                           ->whereIn('students.student_status', [1,2,4])
                           ->groupBy('students.ic')
                           ->orderBy('students.name')
