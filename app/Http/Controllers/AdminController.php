@@ -1375,7 +1375,7 @@ class AdminController extends Controller
                     $percentother = DB::table('tblclassmarks')
                                 ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
                                 ['subjek.id',$id],
-                                ['assessment', 'other']
+                                ['assessment', 'lain-lain']
                                 ])->first();
 
                     if($others = DB::table('tblclassother')
