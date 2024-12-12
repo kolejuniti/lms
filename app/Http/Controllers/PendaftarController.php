@@ -4053,26 +4053,46 @@ class PendaftarController extends Controller
             
 
         $query = DB::table('students')
-                          ->leftjoin('tblstudent_personal','students.ic','tblstudent_personal.student_ic')
-                          ->leftjoin('tblsex','tblstudent_personal.sex_id','tblsex.id')
-                          ->leftjoin('tblprogramme','students.program','tblprogramme.id')
-                          ->leftjoin('sessions','students.session','sessions.SessionID')
-                          ->leftjoin('tblstudent_status','students.status','tblstudent_status.id')
-                          ->leftjoin('tblstudent_address','students.ic','tblstudent_address.student_ic')
-                          ->leftjoin('tblstate','tblstudent_address.state_id','tblstate.id')
-                          ->leftjoin('tblstudent_waris','students.ic','tblstudent_waris.student_ic')
-                          ->where([
-                            ['students.status', 2],
-                            ['students.campus_id', 1],
-                            ['tblstudent_waris.status', '!=', 2]
-                          ])
-                          ->whereNotIn('tblstudent_waris.status', [2,4])
-                          ->whereIn('students.student_status', [1,2,4])
-                          ->groupBy('students.ic')
-                          ->orderBy('students.name')
-                          ->select('students.*', 'tblsex.code', 'tblprogramme.progcode', 'sessions.SessionName', 'tblstudent_status.name AS status','tblstudent_personal.no_tel',
-                                    DB::raw('CONCAT_WS(", ", tblstudent_address.address1, tblstudent_address.address2, tblstudent_address.address3, tblstudent_address.city, tblstudent_address.postcode, tblstate.state_name) AS full_address'),
-                                    'tblstudent_waris.dependent_no', DB::raw('SUM(tblstudent_waris.kasar) AS gajikasar'));
+        ->leftjoin('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
+        ->leftjoin('tblsex', 'tblstudent_personal.sex_id', 'tblsex.id')
+        ->leftjoin('tblprogramme', 'students.program', 'tblprogramme.id')
+        ->leftjoin('sessions', 'students.session', 'sessions.SessionID')
+        ->leftjoin('tblstudent_status', 'students.status', 'tblstudent_status.id')
+        ->leftjoin('tblstudent_address', 'students.ic', 'tblstudent_address.student_ic')
+        ->leftjoin('tblstate', 'tblstudent_address.state_id', 'tblstate.id')
+        ->leftjoin('tblstudent_waris', 'students.ic', 'tblstudent_waris.student_ic')
+        ->where([
+            ['students.status', 2],
+            ['students.campus_id', 1],
+            ['tblstudent_waris.status', '!=', 2],
+        ])
+        ->whereIn('students.student_status', [1, 2, 4])
+        ->groupBy('students.ic')
+        ->orderBy('students.name')
+        ->select(
+            'students.*',
+            'tblsex.code',
+            'tblprogramme.progcode',
+            'sessions.SessionName',
+            'tblstudent_status.name AS status',
+            'tblstudent_personal.no_tel',
+            DB::raw('CONCAT_WS(", ", tblstudent_address.address1, tblstudent_address.address2, tblstudent_address.address3, tblstudent_address.city, tblstudent_address.postcode, tblstate.state_name) AS full_address'),
+            'tblstudent_waris.dependent_no',
+            DB::raw('SUM(tblstudent_waris.kasar) AS gajikasar')
+        )
+        ->where(function ($query) {
+            $query->where('tblstudent_waris.dependent_no', '!=', 0)
+                ->orWhere(function ($query) {
+                    $query->where('tblstudent_waris.dependent_no', '=', 0)
+                            ->whereNotExists(function ($subquery) {
+                                $subquery->select(DB::raw(1))
+                                    ->from('tblstudent_waris as inner_waris')
+                                    ->whereColumn('inner_waris.student_ic', 'tblstudent_waris.student_ic')
+                                    ->where('inner_waris.dependent_no', '!=', 0);
+                            });
+                });
+        });
+
 
         if($data['b40'])
         {
