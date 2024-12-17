@@ -37,7 +37,7 @@
                 <div class="card-header">
                   <b>Student view result period</b>
                 </div>
-                <div class="card-body">
+                {{-- <div class="card-body">
                   <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
@@ -53,7 +53,7 @@
                     </div>
                   </div>
                   <button type="submit" class="btn btn-primary pull-right mb-3" onclick="submit()">Submit</button>
-                </div>
+                </div> --}}
               </div>
               <div class="card mb-3">
                 <div class="card-header">

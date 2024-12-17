@@ -234,6 +234,8 @@ Route::post('/AR/student/transcript/printStudentTranscript', [App\Http\Controlle
 Route::get('/AR/student/miniTranscript', [App\Http\Controllers\AR_Controller::class, 'miniTranscript'])->name('pendaftar_akademik.miniTranscript');
 Route::post('/AR/student/miniTranscript/printStudentMiniTranscript', [App\Http\Controllers\AR_Controller::class, 'printStudentMiniTranscript']);
 // Route::get('/AR/student/groupTable', [App\Http\Controllers\AR_Controller::class, 'groupTable'])->name('pendaftar_akademik.groupTable');
+Route::get('/AR/student/resultOverall', [App\Http\Controllers\AR_Controller::class, 'resultOverall'])->name('pendaftar_akademik.resultOverall');
+Route::post('/AR/student/resultOverall/submit', [App\Http\Controllers\AR_Controller::class, 'resultOverallSubmit']);
 
 Route::get('/HEA', [App\Http\Controllers\HEA_Controller::class, 'index'])->name('HEA');
 

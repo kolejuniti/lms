@@ -5644,4 +5644,62 @@ class AR_Controller extends Controller
 
     // }
 
+    public function resultOverall()
+    {
+        $data = [
+            'program' => DB::table('tblprogramme')->get(),
+            'session' => DB::table('sessions')->get(),
+            'semester' => DB::table('semester')->get(),
+            'period' => DB::table('tblresult_period')->first(),
+            'program_data' => DB::table('tblresult_program')->get(),
+            'session_data' => DB::table('tblresult_session')->get(),
+            'semester_data' => DB::table('tblresult_semester')->get()
+        ];
+
+        return view('pendaftar_akademik.student.result_overall.resultOverall', compact('data'));
+
+    }
+
+    public function resultOverallSubmit(Request $request)
+    {
+
+        $data = json_decode($request->submitData);
+
+        DB::table('tblresult_period')->upsert([
+            'id' => 1,
+            'Start' => $data->from,
+            'END' => $data->to
+        ],['id']);
+
+        DB::table('tblresult_program')->truncate();
+
+        DB::table('tblresult_session')->truncate();
+
+        DB::table('tblresult_semester')->truncate();
+
+        foreach($data->program as $prg)
+        {
+            DB::table('tblresult_program')->insert([
+                'program_id' => $prg
+            ]);
+        }
+
+        foreach($data->session as $ses)
+        {
+            DB::table('tblresult_session')->insert([
+                'session_id' => $ses
+            ]);
+        }
+
+        foreach($data->semester as $sem)
+        {
+            DB::table('tblresult_semester')->insert([
+                'semester_id' => $sem
+            ]);
+        }
+
+        return response()->json(['success' => 'Data has been updated successfully!']);
+
+    }
+
 }
