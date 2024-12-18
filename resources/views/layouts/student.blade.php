@@ -355,7 +355,7 @@
 					<a href="/yuran-pengajian" class=""><i data-feather="shopping-bag"></i><span>Payment</span></a>
 				</li>
 				<li>
-					<a href="{{ asset('storage/finals_schedule/Jadual Peperiksaan Akhir UNITI Intake September 20242025-I.pdf') }}" target="_blank"><i data-feather="layout"></i><span>Finals Schedule</span></a>
+					<a href="{{ asset('storage/finals_schedule/Jadual_Peperiksaan_Akhir_UNITI_Intake_September_20242025-I[1].pdf') }}" target="_blank"><i data-feather="layout"></i><span>Finals Schedule</span></a>
 				</li> 
 			  </ul>
 			  <div class="sidebar-widgets">
