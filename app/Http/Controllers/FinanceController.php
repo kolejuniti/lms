@@ -11904,6 +11904,7 @@ class FinanceController extends Controller
             return ["message"=>"Field Error", "error" => $validator->messages()->get('*')];
         }
 
+
                 $filter = json_decode($filtersData);
 
                 if($filter->program == 'all')
@@ -12050,16 +12051,16 @@ class FinanceController extends Controller
 
                         }
 
-                        // if($std->ic == '040616070397')
-                        // {
+                        if($std->ic == '060907101120')
+                        {
 
 
-                        //     // Return the JSON data as part of the response
-                        //     return response()->json([
-                        //         'data' => $std->ic,
-                        //     ]);
+                            // Return the JSON data as part of the response
+                            return response()->json([
+                                'data' => $data['sum3'],
+                            ]);
 
-                        // }
+                        }
 
                         if($data['value'] > 0)
                         {
