@@ -11999,7 +11999,35 @@ class FinanceController extends Controller
 
                     $data['sum3'] = end($data['total']);
 
-                   
+                    if($std->ic = '040616070397')
+                    {
+
+                        // Convert the data to JSON format
+                        $jsonData = $data['sum3']->toJson();
+
+                        // Return the JSON data as part of the response
+                        return response()->json([
+                            'data' => $jsonData,
+                        ]);
+
+                    }
+
+                    if(in_array($std->semester, [7,8]))
+                    {
+
+                        if($data['sum3'] > 0)
+                        {
+
+                            DB::table('students')->where('ic', $std->ic)->update(['block_status' => 1]);
+
+                        }else{
+
+                            DB::table('students')->where('ic', $std->ic)->update(['block_status' => 0]);
+
+                        }
+
+
+                    }else{
 
                         
 
@@ -12050,6 +12078,7 @@ class FinanceController extends Controller
 
                         }
 
+                    }
 
                 }
 
