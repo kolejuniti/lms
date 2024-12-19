@@ -11918,8 +11918,6 @@ class FinanceController extends Controller
                     
                 }
 
-                $data['total'] = [];
-
                 $data['student'] = DB::table('students')
                                    ->leftjoin('sessions', 'students.session', 'sessions.SessionID')
                                    ->leftjoin('tblprogramme', 'students.program', 'tblprogramme.id')
@@ -11936,6 +11934,8 @@ class FinanceController extends Controller
 
                 foreach($data['student'] as $key => $std)
                 {
+
+                    $data['total'] = [];
 
                     $record = DB::table('tblpaymentdtl')
                     ->leftJoin('tblpayment', 'tblpaymentdtl.payment_id', 'tblpayment.id')
