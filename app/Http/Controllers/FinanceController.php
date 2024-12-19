@@ -12064,16 +12064,16 @@ class FinanceController extends Controller
 
                         }
 
-                        if($data['value'] > 0)
-                        {
+                        // if($data['value'] > 0)
+                        // {
 
-                            DB::table('students')->where('ic', $std->ic)->update(['block_status' => 1]);
+                        //     DB::table('students')->where('ic', $std->ic)->update(['block_status' => 1]);
 
-                        }else{
+                        // }else{
 
-                            DB::table('students')->where('ic', $std->ic)->update(['block_status' => 0]);
+                        //     DB::table('students')->where('ic', $std->ic)->update(['block_status' => 0]);
 
-                        }
+                        // }
 
                     }
 
