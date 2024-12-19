@@ -11918,6 +11918,8 @@ class FinanceController extends Controller
                     
                 }
 
+                $data['total'] = [];
+
                 $data['student'] = DB::table('students')
                                    ->leftjoin('sessions', 'students.session', 'sessions.SessionID')
                                    ->leftjoin('tblprogramme', 'students.program', 'tblprogramme.id')
