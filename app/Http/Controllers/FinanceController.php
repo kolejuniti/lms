@@ -12002,12 +12002,10 @@ class FinanceController extends Controller
                     if($std->ic = '040616070397')
                     {
 
-                        // Convert the data to JSON format
-                        $jsonData = $data['sum3']->toJson();
 
                         // Return the JSON data as part of the response
                         return response()->json([
-                            'data' => $jsonData,
+                            'data' => $data['sum3'],
                         ]);
 
                     }

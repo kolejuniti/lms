@@ -298,9 +298,6 @@
             // Display the JSON data in the console
         console.log(res.data);
 
-// Parse the JSON data if needed
-var parsedData = JSON.parse(res.data);
-console.log(parsedData);
 
 
               try{
