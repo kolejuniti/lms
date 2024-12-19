@@ -12001,17 +12001,6 @@ class FinanceController extends Controller
 
                     $data['sum3'] = end($data['total']);
 
-                    if($std->ic == '040616070397')
-                    {
-
-
-                        // Return the JSON data as part of the response
-                        return response()->json([
-                            'data' => $data['sum3'],
-                        ]);
-
-                    }
-
                     if(in_array($std->semester, [7,8]))
                     {
 
@@ -12064,6 +12053,17 @@ class FinanceController extends Controller
                         }else{
 
                             $data['value'] = 0;
+
+                        }
+
+                        if($std->ic == '040616070397')
+                        {
+
+
+                            // Return the JSON data as part of the response
+                            return response()->json([
+                                'data' => $data['value'],
+                            ]);
 
                         }
 
