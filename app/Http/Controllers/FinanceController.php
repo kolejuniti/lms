@@ -11999,50 +11999,71 @@ class FinanceController extends Controller
 
                     $data['sum3'] = end($data['total']);
 
-                    $data['sponsor'] = DB::table('tblpackage_sponsorship')
-                            ->join('tblpackage', 'tblpackage_sponsorship.package_id', 'tblpackage.id')
-                            ->join('tblpayment_type', 'tblpackage_sponsorship.payment_type_id', 'tblpayment_type.id')
-                            ->where('student_ic', $std->ic)
-                            ->select('tblpackage_sponsorship.*', 'tblpackage.name AS package', 'tblpayment_type.name AS type')
-                            ->first();
-
-                    if($data['sponsor'] != null) {
-
-                        $data['package'] = DB::table('tblpayment_package')
-                                        ->join('tblpackage', 'tblpayment_package.package_id', 'tblpackage.id')
-                                        ->join('tblpayment_type', 'tblpayment_package.payment_type_id', 'tblpayment_type.id')
-                                        ->join('tblpayment_program', 'tblpayment_package.id', 'tblpayment_program.payment_package_id')
-                                        ->where([
-                                            ['tblpayment_package.package_id', $data['sponsor']->package_id],
-                                            ['tblpayment_package.payment_type_id', $data['sponsor']->payment_type_id],
-                                            ['tblpayment_program.intake_id', $std->intake],
-                                            ['tblpayment_program.program_id',$std->program]
-                                        ])->select('tblpayment_package.*','tblpackage.name AS package', 'tblpayment_type.name AS type')->first();
-
-                        $semester_column = 'semester_' . $std->semester; // e.g., this will be 'semester_2' if $user->semester is 2
-
-                        if (isset($data['package']->$semester_column)) {
-                            $data['value'] = $data['sum3'] - $data['package']->$semester_column;
-                            // Do something with $semester_value
-                        } else {
-                            $data['value'] = 0;
-                            // Handle case where the column is not set
-                        }
-
-                    }else{
-
-                        $data['value'] = 0;
-
-                    }
-
-                    if($data['value'] > 0)
+                    if(in_array($std->semester, [7,8]))
                     {
 
-                        DB::table('students')->where('ic', $std->ic)->update(['block_status' => 1]);
+                        if($data['sum3'] > 0)
+                        {
+
+                            DB::table('students')->where('ic', $std->ic)->update(['block_status' => 1]);
+
+                        }else{
+
+                            DB::table('students')->where('ic', $std->ic)->update(['block_status' => 0]);
+
+                        }
+
 
                     }else{
 
-                        DB::table('students')->where('ic', $std->ic)->update(['block_status' => 0]);
+                        
+
+                        $data['sponsor'] = DB::table('tblpackage_sponsorship')
+                                ->join('tblpackage', 'tblpackage_sponsorship.package_id', 'tblpackage.id')
+                                ->join('tblpayment_type', 'tblpackage_sponsorship.payment_type_id', 'tblpayment_type.id')
+                                ->where('student_ic', $std->ic)
+                                ->select('tblpackage_sponsorship.*', 'tblpackage.name AS package', 'tblpayment_type.name AS type')
+                                ->first();
+
+                        if($data['sponsor'] != null) {
+
+                            $data['package'] = DB::table('tblpayment_package')
+                                            ->join('tblpackage', 'tblpayment_package.package_id', 'tblpackage.id')
+                                            ->join('tblpayment_type', 'tblpayment_package.payment_type_id', 'tblpayment_type.id')
+                                            ->join('tblpayment_program', 'tblpayment_package.id', 'tblpayment_program.payment_package_id')
+                                            ->where([
+                                                ['tblpayment_package.package_id', $data['sponsor']->package_id],
+                                                ['tblpayment_package.payment_type_id', $data['sponsor']->payment_type_id],
+                                                ['tblpayment_program.intake_id', $std->intake],
+                                                ['tblpayment_program.program_id',$std->program]
+                                            ])->select('tblpayment_package.*','tblpackage.name AS package', 'tblpayment_type.name AS type')->first();
+
+                            $semester_column = 'semester_' . $std->semester; // e.g., this will be 'semester_2' if $user->semester is 2
+
+                            if (isset($data['package']->$semester_column)) {
+                                $data['value'] = $data['sum3'] - $data['package']->$semester_column;
+                                // Do something with $semester_value
+                            } else {
+                                $data['value'] = 0;
+                                // Handle case where the column is not set
+                            }
+
+                        }else{
+
+                            $data['value'] = 0;
+
+                        }
+
+                        if($data['value'] > 0)
+                        {
+
+                            DB::table('students')->where('ic', $std->ic)->update(['block_status' => 1]);
+
+                        }else{
+
+                            DB::table('students')->where('ic', $std->ic)->update(['block_status' => 0]);
+
+                        }
 
                     }
 
