@@ -11940,6 +11940,8 @@ class FinanceController extends Controller
                 foreach($data['student'] as $key => $std)
                 {
 
+                    $data['sum3'] = 0;
+
                     $record = DB::table('tblpaymentdtl')
                     ->leftJoin('tblpayment', 'tblpaymentdtl.payment_id', 'tblpayment.id')
                     ->leftJoin('tblprocess_type', 'tblpayment.process_type_id', 'tblprocess_type.id')
