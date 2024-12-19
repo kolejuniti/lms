@@ -11904,12 +11904,6 @@ class FinanceController extends Controller
             return ["message"=>"Field Error", "error" => $validator->messages()->get('*')];
         }
 
-        try{ 
-            DB::beginTransaction();
-            DB::connection()->enableQueryLog();
-
-            try{
-
                 $filter = json_decode($filtersData);
 
                 if($filter->program == 'all')
@@ -12056,26 +12050,27 @@ class FinanceController extends Controller
 
                         }
 
-                        if($std->ic == '040616070397')
-                        {
-
-
-                            DB::table('students')->where('ic', $std->ic)->update([
-                                'block_status' => 0
-                            ]);
-
-                        }
-
-                        // if($data['value'] > 0)
+                        // if($std->ic == '040616070397')
                         // {
 
-                        //     DB::table('students')->where('ic', $std->ic)->update(['block_status' => 1]);
 
-                        // }else{
-
-                        //     DB::table('students')->where('ic', $std->ic)->update(['block_status' => 0]);
+                        //     // Return the JSON data as part of the response
+                        //     return response()->json([
+                        //         'data' => $std->ic,
+                        //     ]);
 
                         // }
+
+                        if($data['value'] > 0)
+                        {
+
+                            DB::table('students')->where('ic', $std->ic)->update(['block_status' => 1]);
+
+                        }else{
+
+                            DB::table('students')->where('ic', $std->ic)->update(['block_status' => 0]);
+
+                        }
 
                     }
 
@@ -12083,21 +12078,7 @@ class FinanceController extends Controller
 
                 return response()->json(['message' => 'Success']);
 
-                
-            }catch(QueryException $ex){
-                // DB::rollback();
-                if($ex->getCode() == 23000){
-                    return ["message"=>"Class code already existed inside the system"];
-                }else{
-                    \Log::debug($ex);
-                    return ["message"=>"DB Error"];
-                }
-            } 
-
-            DB::commit();
-        }catch(Exception $ex){
-            return ["message"=>"Error"];
-        }
+ 
 
     }
 
