@@ -12085,7 +12085,7 @@ class FinanceController extends Controller
 
                 
             }catch(QueryException $ex){
-                DB::rollback();
+                // DB::rollback();
                 if($ex->getCode() == 23000){
                     return ["message"=>"Class code already existed inside the system"];
                 }else{
