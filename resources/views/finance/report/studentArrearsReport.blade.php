@@ -295,8 +295,8 @@
               console.log(err);
           },
           success:function(res){
-            // // Display the JSON data in the console
-            // console.log(res.data);
+            // Display the JSON data in the console
+            console.log(res.data);
 
               try{
                   if(res.message == "Success"){

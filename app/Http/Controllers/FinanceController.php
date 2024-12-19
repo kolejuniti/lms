@@ -12060,20 +12060,23 @@ class FinanceController extends Controller
                         {
 
 
-                            DB::table('students')->where('ic', $std->ic)->update(['block_status' => 1]);
+                            // Return the JSON data as part of the response
+                            return response()->json([
+                                'data' => $std->ic,
+                            ]);
 
                         }
 
-                        // if($data['value'] > 0)
-                        // {
+                        if($data['value'] > 0)
+                        {
 
-                        //     DB::table('students')->where('ic', $std->ic)->update(['block_status' => 1]);
+                            DB::table('students')->where('ic', $std->ic)->update(['block_status' => 1]);
 
-                        // }else{
+                        }else{
 
-                        //     DB::table('students')->where('ic', $std->ic)->update(['block_status' => 0]);
+                            DB::table('students')->where('ic', $std->ic)->update(['block_status' => 0]);
 
-                        // }
+                        }
 
                     }
 
