@@ -12056,16 +12056,16 @@ class FinanceController extends Controller
 
                         }
 
-                        if($std->ic == '040616070397')
-                        {
+                        // if($std->ic == '040616070397')
+                        // {
 
 
-                            // Return the JSON data as part of the response
-                            return response()->json([
-                                'data' => $data['value'],
-                            ]);
+                        //     // Return the JSON data as part of the response
+                        //     return response()->json([
+                        //         'data' => $data['value'],
+                        //     ]);
 
-                        }
+                        // }
 
                         if($data['value'] > 0)
                         {
