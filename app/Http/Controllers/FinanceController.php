@@ -12060,9 +12060,8 @@ class FinanceController extends Controller
                         {
 
 
-                            // Return the JSON data as part of the response
-                            return response()->json([
-                                'data' => $std->ic,
+                            DB::table('students')->where('ic', $std->ic)->update([
+                                'block_status' => 0
                             ]);
 
                         }
