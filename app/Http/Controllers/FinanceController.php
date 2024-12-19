@@ -12001,7 +12001,7 @@ class FinanceController extends Controller
 
                     $data['sum3'] = end($data['total']);
 
-                    if($std->ic = '040616070397')
+                    if($std->ic == '040616070397')
                     {
 
 
