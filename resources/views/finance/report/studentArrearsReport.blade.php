@@ -71,6 +71,7 @@
               </div>
             </div>
           </div>
+          <button type="submit" id="block" class="btn btn-warning pull-left mb-3 mt-3" onclick="submit2()" hidden>Block / Unblock</button>
           <button type="submit" class="btn btn-primary pull-right mb-3" onclick="submit()">Find</button>
 
         </div>
@@ -239,6 +240,65 @@
 
                       // Remove the cells that are hidden
                       $("#complex_header td:first-child:hidden").remove();
+
+                      $("#block").attr("hidden", false);
+                      
+                  }else{
+                      $('.error-field').html('');
+                      if(res.message == "Field Error"){
+                          for (f in res.error) {
+                              $('#'+f+'_error').html(res.error[f]);
+                          }
+                      }
+                      else if(res.message == "Group code already existed inside the system"){
+                          $('#classcode_error').html(res.message);
+                      }
+                      else{
+                          alert(res.message);
+                      }
+                      $("html, body").animate({ scrollTop: 0 }, "fast");
+                  }
+              }catch(err){
+                  alert("Ops sorry, there is an error");
+              }
+          }
+      });
+
+    }
+
+    function submit2()
+    {
+
+      var forminput = [];
+      var formData = new FormData();
+
+      forminput = {
+        program: $('#program').val(),
+        session: $('#session').val(),
+        status: $('#status').val(),
+      };
+
+
+      formData.append('filtersData', JSON.stringify(forminput));
+
+      $('#complex_header').DataTable().destroy();
+
+      $.ajax({
+          headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
+          url: '{{ url('/finance/report/studentArrearsReport/blockStudentArrears') }}',
+          type: 'POST',
+          data: formData,
+          cache : false,
+          processData: false,
+          contentType: false,
+          error:function(err){
+              console.log(err);
+          },
+          success:function(res){
+              try{
+                  if(res.message == "Success"){
+                      
+                      alert("Success! Student has been blocked/unblocked!");
                       
                   }else{
                       $('.error-field').html('');

@@ -11891,6 +11891,183 @@ class FinanceController extends Controller
 
     }
 
+    public function blockStudentArrears(Request $request)
+    {
+
+        $filtersData = $request->filtersData;
+
+        $validator = Validator::make($request->all(), [
+            'filtersData' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return ["message"=>"Field Error", "error" => $validator->messages()->get('*')];
+        }
+
+        try{ 
+            DB::beginTransaction();
+            DB::connection()->enableQueryLog();
+
+            try{
+
+                $filter = json_decode($filtersData);
+
+                if($filter->program == 'all')
+                {
+
+                    $program = DB::table('tblprogramme')->pluck('id');
+
+                }else{
+
+                    $program = DB::table('tblprogramme')->where('id', $filter->program)->pluck('id');
+                    
+                }
+
+                $data['student'] = DB::table('students')
+                                   ->leftjoin('sessions', 'students.session', 'sessions.SessionID')
+                                   ->leftjoin('tblprogramme', 'students.program', 'tblprogramme.id')
+                                   ->leftjoin('tblstudent_status', 'students.status', 'tblstudent_status.id')
+                                   ->whereIn('students.program', $program)
+                                   ->when($filter->status != 'all', function ($query) use ($filter){
+                                        return $query->where('students.status', $filter->status);
+                                   })
+                                   ->when($filter->session != 'all', function ($query) use ($filter){
+                                        return $query->where('students.session', $filter->session);
+                                    })
+                                   ->select('students.*')
+                                   ->get();
+
+                foreach($data['student'] as $key => $std)
+                {
+
+                    $record = DB::table('tblpaymentdtl')
+                    ->leftJoin('tblpayment', 'tblpaymentdtl.payment_id', 'tblpayment.id')
+                    ->leftJoin('tblprocess_type', 'tblpayment.process_type_id', 'tblprocess_type.id')
+                    ->leftJoin('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
+                    ->leftjoin('tblprogramme', 'tblpayment.program_id', 'tblprogramme.id')
+                    ->where([
+                        ['tblpayment.student_ic', $std->ic],
+                        ['tblpayment.process_status_id', 2], 
+                        ['tblstudentclaim.groupid', 1], 
+                        ['tblpaymentdtl.amount', '!=', 0]
+                        ])
+                    ->select(DB::raw("'payment' as source"), 'tblprocess_type.name AS process', 'tblpayment.ref_no','tblpayment.date', 'tblstudentclaim.name', 
+                    'tblpaymentdtl.amount',
+                    'tblpayment.process_type_id', 'tblprogramme.progcode AS program', DB::raw('NULL as remark'));
+
+                    $data['record'] = DB::table('tblclaimdtl')
+                    ->leftJoin('tblclaim', 'tblclaimdtl.claim_id', 'tblclaim.id')
+                    ->leftJoin('tblprocess_type', 'tblclaim.process_type_id', 'tblprocess_type.id')
+                    ->leftJoin('tblstudentclaim', 'tblclaimdtl.claim_package_id', 'tblstudentclaim.id')
+                    ->leftjoin('tblprogramme', 'tblclaim.program_id', 'tblprogramme.id')
+                    ->where([
+                        ['tblclaim.student_ic', $std->ic],
+                        ['tblclaim.process_status_id', 2],  
+                        ['tblstudentclaim.groupid', 1],
+                        ['tblclaimdtl.amount', '!=', 0]
+                        ])
+                    ->unionALL($record)
+                    ->select(DB::raw("'claim' as source"), 'tblprocess_type.name AS process', 'tblclaim.ref_no','tblclaim.date', 'tblstudentclaim.name', 
+                    'tblclaimdtl.amount',
+                    'tblclaim.process_type_id', 'tblprogramme.progcode AS program', 'tblclaim.remark')
+                    ->orderBy('date')
+                    ->get();
+
+                    $val = 0;
+
+                    foreach($data['record'] as $key => $req)
+                    {
+
+                        if(array_intersect([2,3,4,5,11], (array) $req->process_type_id) && $req->source == 'claim')
+                        {
+
+                            $data['total'][$key] = $val + $req->amount;
+
+                            $val = $val + $req->amount;
+                            
+
+                        }elseif(array_intersect([1,5,6,7,8,9,10,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26], (array) $req->process_type_id) && $req->source == 'payment')
+                        {
+
+                            $data['total'][$key] = $val - $req->amount;
+
+                            $val = $val - $req->amount;
+
+                        }
+
+                    }   
+
+                    $data['sum3'] = end($data['total']);
+
+                    $data['sponsor'] = DB::table('tblpackage_sponsorship')
+                            ->join('tblpackage', 'tblpackage_sponsorship.package_id', 'tblpackage.id')
+                            ->join('tblpayment_type', 'tblpackage_sponsorship.payment_type_id', 'tblpayment_type.id')
+                            ->where('student_ic', $std->ic)
+                            ->select('tblpackage_sponsorship.*', 'tblpackage.name AS package', 'tblpayment_type.name AS type')
+                            ->first();
+
+                    if($data['sponsor'] != null) {
+
+                        $data['package'] = DB::table('tblpayment_package')
+                                        ->join('tblpackage', 'tblpayment_package.package_id', 'tblpackage.id')
+                                        ->join('tblpayment_type', 'tblpayment_package.payment_type_id', 'tblpayment_type.id')
+                                        ->join('tblpayment_program', 'tblpayment_package.id', 'tblpayment_program.payment_package_id')
+                                        ->where([
+                                            ['tblpayment_package.package_id', $data['sponsor']->package_id],
+                                            ['tblpayment_package.payment_type_id', $data['sponsor']->payment_type_id],
+                                            ['tblpayment_program.intake_id', $std->intake],
+                                            ['tblpayment_program.program_id',$std->program]
+                                        ])->select('tblpayment_package.*','tblpackage.name AS package', 'tblpayment_type.name AS type')->first();
+
+                        $semester_column = 'semester_' . $std->semester; // e.g., this will be 'semester_2' if $user->semester is 2
+
+                        if (isset($data['package']->$semester_column)) {
+                            $data['value'] = $data['sum3'] - $data['package']->$semester_column;
+                            // Do something with $semester_value
+                        } else {
+                            $data['value'] = 0;
+                            // Handle case where the column is not set
+                        }
+
+                    }else{
+
+                        $data['value'] = 0;
+
+                    }
+
+                    if($data['value'] > 0)
+                    {
+
+                        DB::table('students')->where('ic', $std->ic)->update(['block_status' => 1]);
+
+                    }else{
+
+                        DB::table('students')->where('ic', $std->ic)->update(['block_status' => 0]);
+
+                    }
+
+                }
+
+                return response()->json(['message' => 'Success']);
+
+                
+            }catch(QueryException $ex){
+                DB::rollback();
+                if($ex->getCode() == 23000){
+                    return ["message"=>"Class code already existed inside the system"];
+                }else{
+                    \Log::debug($ex);
+                    return ["message"=>"DB Error"];
+                }
+            } 
+
+            DB::commit();
+        }catch(Exception $ex){
+            return ["message"=>"Error"];
+        }
+
+    }
+
     public function studentCtos()
     {
 
