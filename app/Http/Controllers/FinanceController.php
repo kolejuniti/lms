@@ -12733,7 +12733,13 @@ class FinanceController extends Controller
     public function blockList()
     {
 
-        $data['block'] = DB::table('students')->where('block_status', 1)->get();
+        $data['block'] = DB::table('students')
+                        ->leftjoin('sessions', 'students.session', 'sessions.SessionID')
+                        ->leftjoin('tblprogramme', 'students.program', 'tblprogramme.id')
+                        ->leftjoin('tblstudent_status', 'students.status', 'tblstudent_status.id')
+                        ->whereIn('students.block_status', [1])
+                        ->select('students.*', 'sessions.SessionName', 'tblprogramme.progcode', 'tblstudent_status.name AS status')
+                        ->get();
 
         return view('finance.student.block_list.blockList', compact('data'));
         

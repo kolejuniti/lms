@@ -1,4 +1,4 @@
-@extends('layouts.finance')
+@extends((Auth::user()->usrtype == "ADM") ? 'layouts.admin' : (Auth::user()->usrtype == "RGS" ? 'layouts.pendaftar' : (Auth::user()->usrtype == "AR" ? 'layouts.pendaftar_akademik' : (Auth::user()->usrtype == "FN" ? 'layouts.finance' : (Auth::user()->usrtype == "TS" ? 'layouts.treasurer' : (Auth::user()->usrtype == "DN" ? 'layouts.deen' : (Auth::user()->usrtype == "OTR" ? 'layouts.other_user' : (Auth::user()->usrtype == "COOP" ? 'layouts.coop' : (Auth::user()->usrtype == "UR" ? 'layouts.ur' : (Auth::user()->usrtype == "AO" ? 'layouts.ketua_program' : (Auth::user()->usrtype == "HEA" ? 'layouts.hea' : '')))))))))))
 
 @section('main')
 
@@ -64,6 +64,12 @@
                     <th>
                         No. Matric
                     </th>
+                    <th>
+                        Program
+                    </th>
+                    <th>
+                        Session
+                    </th>
                     {{-- <th>
                     </th> --}}
                 </tr>
@@ -82,6 +88,12 @@
                 </td>
                 <td>
                   {{ $std->no_matric }}
+                </td>
+                <td>
+                  {{ $std->progcode }}
+                </td>
+                <td>
+                  {{ $std->SessionName }}
                 </td>
                 {{-- <td class="project-actions text-right" style="text-align: center;">
                   <a class="btn btn-info btn-sm btn-sm mr-2" href="#" onclick="updateClaim('{{ $clm->id }}')">
