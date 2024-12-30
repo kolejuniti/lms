@@ -1394,7 +1394,7 @@ class AdminController extends Controller
                                 ['sessionid', Session::get('SessionID')]
                             ])->exists()){
                                 //dd($totalother);
-                                $overallother[$ky][$keys] = number_format((float)$sumother[$ky][$keys] / $totalother * $percentother->mark_percentage, 2, '.', '');
+                                $overallother[$ky][$keys] = number_format((float)$sumother[$ky][$keys], 2, '.', '');
 
                                 $othercollection = collect($overallother[$ky]);
                             }else{
