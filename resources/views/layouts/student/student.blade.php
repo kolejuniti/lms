@@ -272,6 +272,14 @@
 						</ul>
 					</li>
 					<li class="treeview">
+						<a href="#"><span>Test 2</span>
+						</a>
+						<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
+						<li><a href="/student/test3/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Online</a></li>
+						<li><a href="/student/test4/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Offline</a></li>
+						</ul>
+					</li>
+					<li class="treeview">
 						<a href="#"><span>Assignment</span>
 						</a>
 						<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">

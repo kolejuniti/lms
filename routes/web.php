@@ -390,6 +390,33 @@ Route::post('/lecturer/test2/{id}/{test}/getGroup', [App\Http\Controllers\TestCo
 Route::get('/lecturer/test2/{testid}/{userid}/result', [App\Http\Controllers\TestController::class, 'test2result']);
 Route::post('/lecturer/test2/getChapters', [App\Http\Controllers\TestController::class, 'getChapters']);
 
+Route::get('/lecturer/test3/{id}', [App\Http\Controllers\Test2Controller::class, 'testlist'])->name('lecturer.test3');
+Route::post('/lecturer/test3/getextend', [App\Http\Controllers\Test2Controller::class, 'getExtendTest']);
+Route::post('/lecturer/test3/updateExtend', [App\Http\Controllers\Test2Controller::class, 'updateExtendTest']);
+Route::get('/lecturer/test3/{id}/create', [App\Http\Controllers\Test2Controller::class, 'testcreate'])->name('lecturer.test3.create');
+Route::post('/lecturer/test3/insert', [App\Http\Controllers\Test2Controller::class, 'inserttest']);
+Route::post('/lecturer/test3/getStatus', [App\Http\Controllers\Test2Controller::class, 'getStatus']);
+Route::post('/lecturer/test3/updatetestresult', [App\Http\Controllers\Test2Controller::class, 'updatetestresult']);
+Route::get('/lecturer/test3/{id}/{test}', [App\Http\Controllers\Test2Controller::class, 'lecturerteststatus'])->name('lecturer.test3.status');
+Route::post('/lecturer/test3/{id}/{test}/getGroup', [App\Http\Controllers\Test2Controller::class, 'testGetGroup']);
+Route::delete('/lecturer/test3/status/delete', [App\Http\Controllers\Test2Controller::class, 'deleteteststatus']);
+Route::get('/lecturer/test3/{testid}/{userid}/result', [App\Http\Controllers\Test2Controller::class, 'testresult']);
+Route::post('/lecturer/test3/getChapters', [App\Http\Controllers\Test2Controller::class, 'getChapters']);
+Route::post('/lecturer/test3/deletetest', [App\Http\Controllers\Test2Controller::class, 'deletetest']);
+
+Route::get('/lecturer/test4/{id}', [App\Http\Controllers\Test2Controller::class, 'test2list'])->name('lecturer.test4');
+Route::get('/lecturer/test4/{id}/create', [App\Http\Controllers\Test2Controller::class, 'test2create'])->name('lecturer.test4.create');
+Route::post('/lecturer/test4/insert', [App\Http\Controllers\Test2Controller::class, 'inserttest2']);
+Route::post('/lecturer/test4/update', [App\Http\Controllers\Test2Controller::class, 'updatetest2']);
+Route::post('/lecturer/test4/getStatus', [App\Http\Controllers\Test2Controller::class, 'getStatus']);
+Route::post('/lecturer/test4/updatetest2result', [App\Http\Controllers\Test2Controller::class, 'updatetest2result']);
+Route::get('/lecturer/test4/{id}/{test}', [App\Http\Controllers\Test2Controller::class, 'lecturertest2status'])->name('lecturer.test4.status');
+Route::post('/lecturer/test4/{id}/{test}/getGroup', [App\Http\Controllers\Test2Controller::class, 'test2GetGroup']);
+Route::get('/lecturer/test4/{testid}/{userid}/result', [App\Http\Controllers\Test2Controller::class, 'test2result']);
+Route::post('/lecturer/test4/getChapters', [App\Http\Controllers\Test2Controller::class, 'getChapters']);
+
+
+
 
 Route::get('/lecturer/assign/{id}', [App\Http\Controllers\AssignmentController::class, 'assignlist'])->name('lecturer.assign');
 Route::get('/lecturer/assign/{id}/create', [App\Http\Controllers\AssignmentController::class, 'assigncreate'])->name('lecturer.assign.create');
@@ -533,6 +560,17 @@ Route::post('/student/test/savetest', [App\Http\Controllers\TestController::clas
 Route::post('/student/test/submittest', [App\Http\Controllers\TestController::class, 'submittest']);
 
 Route::get('/student/test2/{id}', [App\Http\Controllers\TestController::class, 'studenttest2list'])->name('student.test2');
+
+Route::get('/student/test3/{id}', [App\Http\Controllers\Test2Controller::class, 'studenttestlist'])->name('student.test3');
+Route::get('/student/test3/{id}/{test}', [App\Http\Controllers\Test2Controller::class, 'studentteststatus'])->name('student.test.status');
+Route::get('/student/test3/{id}/{test}/view', [App\Http\Controllers\Test2Controller::class, 'testview']);
+Route::get('/student/test3/{testid}/{userid}/result', [App\Http\Controllers\Test2Controller::class, 'testresultstd']);
+Route::post('/student/test3/starttest', [App\Http\Controllers\Test2Controller::class, 'starttest']);
+Route::post('/student/test3/savetest', [App\Http\Controllers\Test2Controller::class, 'savetest']);
+Route::post('/student/test3/submittest', [App\Http\Controllers\Test2Controller::class, 'submittest']);
+
+Route::get('/student/test4/{id}', [App\Http\Controllers\Test2Controller::class, 'studenttest2list'])->name('student.test4');
+
 
 
 Route::get('/student/assign/{id}', [App\Http\Controllers\AssignmentController::class, 'studentassignlist'])->name('student.assign');
