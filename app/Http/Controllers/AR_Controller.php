@@ -5182,6 +5182,51 @@ class AR_Controller extends Controller
 
         }
 
+        if(request()->type == 'final')
+        {
+
+            $data['group'] = DB::table('user_subjek')
+                    ->join('tblclassfinal_group', 'user_subjek.id', 'tblclassfinal_group.groupid')
+                    ->join('tblclassfinal', 'tblclassfinal_group.finalid', 'tblclassfinal.id')
+                    ->where([
+                        ['tblclassfinal.id', request()->id]
+                    ])->get();
+
+            $data['assessment'] = DB::table('student_subjek')
+                    ->join('tblclassfinal_group', function($join){
+                        $join->on('student_subjek.group_id', 'tblclassfinal_group.groupid');
+                        $join->on('student_subjek.group_name', 'tblclassfinal_group.groupname');
+                    })
+                    ->join('tblclassfinal', 'tblclassfinal_group.finalid', 'tblclassfinal.id')
+                    ->join('students', 'student_subjek.student_ic', 'students.ic')
+                    ->select('student_subjek.*', 'tblclassfinal.id AS clssid', 'tblclassfinal.total_mark', 'students.no_matric', 'students.name')
+                    ->where([
+                        ['tblclassfinal.id', request()->id]
+                    ])->whereNotIn('students.status', [4,5,6,7,16])->orderBy('students.name')->get();
+
+            foreach($data['assessment'] as $qz)
+            {
+
+                if(!DB::table('tblclassstudentfinal')->where([['finalid', $qz->clssid],['userid', $qz->student_ic]])->exists()){
+
+                    DB::table('tblclassstudentfinal')->insert([
+                        'finalid' => $qz->clssid,
+                        'userid' => $qz->student_ic
+                    ]);
+    
+                }
+
+                $data['status'][] = DB::table('tblclassstudentfinal')
+                ->where([
+                    ['finalid', $qz->clssid],
+                    ['userid', $qz->student_ic]
+                ])->first();
+            }
+
+            return view('pendaftar_akademik.student.assessment.assessmentStatus', compact('data'));
+
+        }
+
     }
 
     public function updateAssessmentStatus(Request $request)
