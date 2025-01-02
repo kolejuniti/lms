@@ -4868,6 +4868,33 @@ class AR_Controller extends Controller
                 
             }
 
+            if($request->assessment == 'final')
+            {
+
+                $data['assessment'] = DB::table('tblclassfinal')
+                ->join('users', 'tblclassfinal.addby', 'users.ic')
+                ->join('tblclassfinalstatus', 'tblclassfinal.status', 'tblclassfinalstatus.id')
+                ->where([
+                    ['tblclassfinal.classid', $subject->id],
+                    ['tblclassfinal.sessionid', $subject->session_id],
+                    ['tblclassfinal.addby', $subject->user_ic],
+                    ['tblclassfinal.status', '!=', 3]
+                ])
+                ->select('tblclassfinal.*', 'users.name AS addby', 'tblclassfinalstatus.statusname')->get();
+
+                foreach($data['assessment'] as $dt)
+                {
+                    $data['group'][] = DB::table('tblclassfinal_group')
+                            ->join('user_subjek', 'tblclassfinal_group.groupid', 'user_subjek.id')
+                            ->where('tblclassfinal_group.finalid', $dt->id)->get();
+
+                    $data['chapter'][] = DB::table('tblclassfinal_chapter')
+                            ->join('material_dir', 'tblclassfinal_chapter.chapterid', 'material_dir.DrID')
+                            ->where('tblclassfinal_chapter.finalid', $dt->id)->get();
+                }
+                
+            }
+
             return view('pendaftar_akademik.student.assessment.getStudentAssessment', compact('data'));
 
         }else{

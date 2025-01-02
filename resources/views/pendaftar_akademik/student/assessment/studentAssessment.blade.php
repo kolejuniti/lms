@@ -82,6 +82,7 @@
                   <option value="midterm" >Midterm</option>
                   <option value="other" >Other</option>
                   <option value="extra" >Extra</option>
+                  <option value="final" >Final</option>
                 </select>
               </div>
           </div>
