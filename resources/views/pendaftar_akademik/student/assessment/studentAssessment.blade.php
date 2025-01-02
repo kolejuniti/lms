@@ -85,7 +85,18 @@
                   <option value="final" >Final</option>
                 </select>
               </div>
-          </div>
+            </div>
+            <div class="col-md-4 mr-3">
+              <div class="form-group">
+                <label class="form-label" for="intake">Intake</label>
+                <select class="form-select" id="intake" name="intake">
+                  <option value="" selected>-</option>
+                  @foreach($data['intake'] as $itk)
+                  <option value="{{ $itk->SessionID }}">{{ $itk->SessionName }}</option>
+                  @endforeach
+                </select>
+              </div>
+            </div>
           </div>
           <button type="submit" class="btn btn-primary pull-right mb-3" onclick="submit()">Find</button>
           <div id="form-student">
@@ -183,6 +194,7 @@
     var subject = '';
     var group = '';
     var assessment = '';
+    var intake = '';
 
   function submit()
   {
@@ -191,6 +203,7 @@
     var subject = $('#subject').val();
     var group = $('#group').val();
     var assessment = $('#ass').val();
+    var intake = $('#intake').val();
 
     // Show the spinner
     $('#loading-spinner').css('display', 'block');
@@ -199,7 +212,7 @@
               headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
               url      : "{{ url('AR/student/studentAssessment/getStudentAssessment') }}",
               method   : 'GET',
-              data 	 : {lecturer: lecturer, subject: subject, group: group, assessment: assessment},
+              data 	 : {lecturer: lecturer, subject: subject, group: group, assessment: assessment, intake: intake},
               error:function(err){
                   alert("Error");
                   console.log("Error details:", err);

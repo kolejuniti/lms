@@ -4679,6 +4679,7 @@ class AR_Controller extends Controller
             'lecturer' => DB::table('users')
                           ->whereIn('usrtype', ['LCT', 'PL', 'AO'])
                           ->get(),
+            'intake' => DB::table('sessions')->orderBy('SessionID', 'DESC')->get()
         ];
 
         return view('pendaftar_akademik.student.assessment.studentAssessment', compact('data'));
@@ -4703,6 +4704,8 @@ class AR_Controller extends Controller
                        ->first();
 
             $data['type'] = $request->assessment;
+
+            $data['intake'] = $request->intake;
 
             //return response()->json($subject);
 
@@ -4912,6 +4915,8 @@ class AR_Controller extends Controller
 
         $data['id'] = request()->id;
 
+        $data['intake'] = request()->intake;
+
         if(request()->type == 'quiz')
         {
 
@@ -4929,6 +4934,9 @@ class AR_Controller extends Controller
                     })
                     ->join('tblclassquiz', 'tblclassquiz_group.quizid', 'tblclassquiz.id')
                     ->join('students', 'student_subjek.student_ic', 'students.ic')
+                    ->when(request()->intake != '', function($query){
+                        return $query->where('students.intake', request()->intake);
+                    })
                     ->select('student_subjek.*', 'tblclassquiz.id AS clssid', 'tblclassquiz.total_mark', 'students.no_matric', 'students.name')
                     ->where([
                         ['tblclassquiz.id', request()->id]
@@ -4974,6 +4982,9 @@ class AR_Controller extends Controller
                     })
                     ->join('tblclasstest', 'tblclasstest_group.testid', 'tblclasstest.id')
                     ->join('students', 'student_subjek.student_ic', 'students.ic')
+                    ->when(request()->intake != '', function($query){
+                        return $query->where('students.intake', request()->intake);
+                    })
                     ->select('student_subjek.*', 'tblclasstest.id AS clssid', 'tblclasstest.total_mark', 'students.no_matric', 'students.name')
                     ->where([
                         ['tblclasstest.id', request()->id]
@@ -5019,6 +5030,9 @@ class AR_Controller extends Controller
                     })
                     ->join('tblclassassign', 'tblclassassign_group.assignid', 'tblclassassign.id')
                     ->join('students', 'student_subjek.student_ic', 'students.ic')
+                    ->when(request()->intake != '', function($query){
+                        return $query->where('students.intake', request()->intake);
+                    })
                     ->select('student_subjek.*', 'tblclassassign.id AS clssid', 'tblclassassign.total_mark', 'students.no_matric', 'students.name')
                     ->where([
                         ['tblclassassign.id', request()->id]
@@ -5064,6 +5078,9 @@ class AR_Controller extends Controller
                     })
                     ->join('tblclassmidterm', 'tblclassmidterm_group.midtermid', 'tblclassmidterm.id')
                     ->join('students', 'student_subjek.student_ic', 'students.ic')
+                    ->when(request()->intake != '', function($query){
+                        return $query->where('students.intake', request()->intake);
+                    })
                     ->select('student_subjek.*', 'tblclassmidterm.id AS clssid', 'tblclassmidterm.total_mark', 'students.no_matric', 'students.name')
                     ->where([
                         ['tblclassmidterm.id', request()->id]
@@ -5109,6 +5126,9 @@ class AR_Controller extends Controller
                     })
                     ->join('tblclassother', 'tblclassother_group.otherid', 'tblclassother.id')
                     ->join('students', 'student_subjek.student_ic', 'students.ic')
+                    ->when(request()->intake != '', function($query){
+                        return $query->where('students.intake', request()->intake);
+                    })
                     ->select('student_subjek.*', 'tblclassother.id AS clssid', 'tblclassother.total_mark', 'students.no_matric', 'students.name')
                     ->where([
                         ['tblclassother.id', request()->id]
@@ -5154,6 +5174,9 @@ class AR_Controller extends Controller
                     })
                     ->join('tblclassextra', 'tblclassextra_group.extraid', 'tblclassextra.id')
                     ->join('students', 'student_subjek.student_ic', 'students.ic')
+                    ->when(request()->intake != '', function($query){
+                        return $query->where('students.intake', request()->intake);
+                    })
                     ->select('student_subjek.*', 'tblclassextra.id AS clssid', 'tblclassextra.total_mark', 'students.no_matric', 'students.name')
                     ->where([
                         ['tblclassextra.id', request()->id]
@@ -5199,10 +5222,15 @@ class AR_Controller extends Controller
                     })
                     ->join('tblclassfinal', 'tblclassfinal_group.finalid', 'tblclassfinal.id')
                     ->join('students', 'student_subjek.student_ic', 'students.ic')
+                    ->when(request()->intake != '', function($query){
+                        return $query->where('students.intake', request()->intake);
+                    })
                     ->select('student_subjek.*', 'tblclassfinal.id AS clssid', 'tblclassfinal.total_mark', 'students.no_matric', 'students.name')
                     ->where([
                         ['tblclassfinal.id', request()->id]
-                    ])->whereNotIn('students.status', [4,5,6,7,16])->orderBy('students.name')->get();
+                    ])
+                    ->whereNotIn('students.status', [4,5,6,7,16])->orderBy('students.name')
+                    ->get();
 
             foreach($data['assessment'] as $qz)
             {
