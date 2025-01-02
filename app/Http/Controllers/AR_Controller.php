@@ -5453,6 +5453,43 @@ class AR_Controller extends Controller
 
         }
 
+        if($request->type == 'final')
+        {
+
+            $marks = json_decode($request->marks);
+
+            $ics = json_decode($request->ics);
+
+            $assessmentid = json_decode($request->assessmentid);
+
+            $limitpercen = DB::table('tblclassfinal')->where('id', $assessmentid)->first();
+
+            foreach($marks as $key => $mrk)
+            {
+
+                if($mrk > $limitpercen->total_mark)
+                {
+                    return ["message"=>"Field Error", "id" => $ics];
+                }
+
+            }
+
+        
+            $upsert = [];
+            foreach($marks as $key => $mrk){
+                array_push($upsert, [
+                'userid' => $ics[$key],
+                'finalid' => $assessmentid,
+                'submittime' => date("Y-m-d H:i:s"),
+                'final_mark' => $mrk,
+                'status' => 1
+                ]);
+            }
+
+            DB::table('tblclassstudentfinal')->upsert($upsert, ['userid', 'finalid']);
+
+        }
+
         return ["message"=>"Success", "id" => $ics];
 
     }
