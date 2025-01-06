@@ -12266,7 +12266,7 @@ class FinanceController extends Controller
         {
             $odometer = DB::table('tblvehicle_service')->where('vehicle_id', $vehicle->id)->orderBy('id', 'DESC')->first();
 
-            $data['nextService'][$key] = ($odometer) ? $odometer->odometer + 5000 : 0;
+            $data['nextService'][$key] = ($odometer) ? $odometer->odometer + 10000 : 0;
 
             if ($odometer) {
                 $data['nextService2'][$key] = Carbon::parse($odometer->date_of_service)->addMonths(3)->toDateString();
