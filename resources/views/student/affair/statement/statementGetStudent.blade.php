@@ -152,7 +152,7 @@
                                         </div>
                                     </div>
                                     <div class="col-md-6">
-                                        <div class="form-group">
+                                        {{-- <div class="form-group">
                                             <table class="w-100 table table-bordered display margin-top-10 w-p100">
                                                 <tr>
                                                     <th>Semester 1</th>
@@ -172,7 +172,7 @@
                                                 </tr>
                                                 <!-- More rows can be added here -->
                                             </table>
-                                        </div>
+                                        </div> --}}
                                         <div class="form-group">
                                             <p>CURRENT SEMESTER ARREARS &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ isset($data['value']) ? $data['value'] : 0.00 }}</p>
                                         </div>
