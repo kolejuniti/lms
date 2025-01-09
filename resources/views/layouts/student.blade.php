@@ -285,6 +285,15 @@
 						<li>
 							<a id="examSlipLink" href="#" target="_blank">Slip Exam</a>
 						</li>
+						<li>
+							<a href="{{ asset('storage/memo/2025.01.07 - Memo 01 Ketetapan Mod Pengajian Kuliah Kolej UNITI bagi Sesi 20242025-II.pdf') }}" target="_blank"><i data-feather="layout"></i><span>Memo</span></a>
+						</li> 
+						<li>
+							<a href="{{ asset('storage/takwim/Takwim Akademik Intake Mac Semester II-20242025 (Kolej UNITI) - Edaran Pelajar.pdf') }}" target="_blank"><i data-feather="layout"></i><span>Takwim Uniti</span></a>
+						</li> 
+						<li>
+							<a href="{{ asset('storage/takwim/Takwim Akademik Semester II-20242025 (UiTM) - Edaran Pelajar.pdf') }}" target="_blank"><i data-feather="layout"></i><span>Takwim UiTM</span></a>
+						</li> 
 					</ul>
 				</li> 
 				<li class="treeview">
