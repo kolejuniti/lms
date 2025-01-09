@@ -5274,7 +5274,7 @@ class FinanceController extends Controller
                 if(DB::table('tblpaymentdtl')
                 ->join('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
                 ->where('tblpaymentdtl.payment_id', $pym->id)
-                ->whereIn('tblstudentclaim.groupid', [1])->exists())
+                ->whereIn('tblstudentclaim.groupid', [1])->exists() && $pym->process_type_id != 10)
                 {
 
                     $data['newStudent'][] = $pym;
