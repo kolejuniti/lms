@@ -1368,6 +1368,12 @@ class AR_Controller extends Controller
                             'semester' => $newsem
                         ]);
 
+                    }else{
+
+                        DB::table('students')->where('no_matric', $request->no_matric)->update([
+                            'session' => $request->session
+                        ]);
+
                     }
 
                     $userUpt = UserStudent::where('no_matric', $request->no_matric)->first();
