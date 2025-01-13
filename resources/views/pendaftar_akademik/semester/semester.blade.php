@@ -139,7 +139,7 @@ function confirm()
 {
 
   var session = $('#session').val();
-  var withheld = $('#withheld').val();
+  var withheld = $('#withheld').is(':checked') ? 1 : 0;
 
   if(session != '')
   {
