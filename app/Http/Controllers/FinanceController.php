@@ -6302,6 +6302,18 @@ class FinanceController extends Controller
 
         }
         
+        $data['allowance'] = DB::table('tblallowance As a')
+                             ->join('tblallowancedtl As b', 'a.id', 'b.allowance_id')
+                             ->join('students As c', 'a.student_ic', 'c.ic')
+                             ->where([
+                                ['a.student_ic', '!=', null],
+                                ['a.process_status_id', 2],
+                                ['a.add_date', '>=', $request->from],
+                                ['a.add_date', '<=', $request->to]
+                             ])
+                             ->select('a.*', 'b.name AS Allowance', 'b.amount AS Total', 'c.name AS student', 'c.no_matric')
+                             ->get();
+        
         if(isset($request->print))
         {
 

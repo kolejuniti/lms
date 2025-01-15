@@ -2852,4 +2852,72 @@
     </div>
     <!-- /.card-body -->
   </div>
+
+  <!-- new student -->
+  <div class="card mb-3" id="stud_info">
+    <div class="card-header">
+    <b>Allowance Payment</b>
+    </div>
+    <div class="card-body p-0">
+      <table id="myTable" class="table table-striped projects display dataTable">
+        <thead>
+            <tr>
+                <th style="width: 1%">
+                    No.
+                </th>
+                <th style="width: 15%">
+                    Name
+                </th>
+                <th style="width: 5%">
+                    No.Matric
+                </th>
+                <th style="width: 5%">
+                    Date
+                </th>
+                <th style="width: 5%">
+                    Amount
+                </th>
+            </tr>
+        </thead>
+        <tbody id="table">
+        @php
+        $totalAllowance = 0;
+        @endphp
+        @foreach ($data['allowance'] as $key => $alw)
+          <tr>
+            <td>
+            {{ $key+1 }}
+            </td>
+            <td>
+            {{ $alw->student }}
+            </td>
+            <td>
+            {{ $alw->no_matric }}
+            </td>
+            <td>
+            {{ $alw->date }}
+            </td>
+            <td>
+              <div>{{ $alw->amount }}</div>
+              @php
+                $totalAllowance += $alw->amount;
+              @endphp
+            </td>
+          </tr>
+        @endforeach
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="9" style="text-align: center">
+                    TOTAL
+                </td>
+                <td>
+                    {{  number_format($totalAllowance, 2) }}
+                </td>
+              </tr>
+        </tfoot>
+      </table>
+    </div>
+    <!-- /.card-body -->
+  </div>
 </div>
