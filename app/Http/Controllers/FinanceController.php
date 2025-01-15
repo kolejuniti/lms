@@ -6303,7 +6303,7 @@ class FinanceController extends Controller
         }
         
         $data['allowance'] = DB::table('tblallowance As a')
-                             ->join('tblallowancedtl As b', 'a.id', 'b.allowance_id')
+                             ->join('tblallowance As b', 'a.id', 'b.allowance_id')
                              ->join('students As c', 'a.student_ic', 'c.ic')
                              ->where([
                                 ['a.student_ic', '!=', null],
