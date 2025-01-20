@@ -742,4 +742,77 @@ class AllController extends Controller
     }
 
 
+    // Display a listing of the announcements
+    public function indexAnnouncements()
+    {
+        $announcements = DB::table('tblstdannoucement')->get();
+
+        // Debugging: Check the data being fetched
+        error_log($announcements);
+
+        return response()->json($announcements);
+    }
+
+
+    // Store a newly created announcement
+    public function storeAnnouncements(Request $request)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'content' => 'required|string',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+            'department' => 'required|string|max:100',
+            'priority' => 'required|string|in:low,medium,high',
+        ]);
+
+        $id = DB::table('tblstdannoucement')->insertGetId($validated);
+
+        return response()->json(['message' => 'Announcement created successfully', 'id' => $id]);
+    }
+
+    // Display the specified announcement
+    public function showAnnouncements($id)
+    {
+        $announcement = DB::table('tblstdannoucement')->where('id', $id)->first();
+
+        if (!$announcement) {
+            return response()->json(['message' => 'Announcement not found'], 404);
+        }
+
+        return response()->json($announcement);
+    }
+
+    // Update the specified announcement
+    public function updateAnnouncements(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'title' => 'sometimes|required|string|max:255',
+            'content' => 'sometimes|required|string',
+            'start_date' => 'sometimes|required|date',
+            'end_date' => 'sometimes|required|date|after_or_equal:start_date',
+            'department' => 'sometimes|required|string|max:100',
+            'priority' => 'sometimes|required|string|in:low,medium,high',
+        ]);
+
+        $updated = DB::table('tblstdannoucement')->where('id', $id)->update($validated);
+
+        if ($updated) {
+            return response()->json(['message' => 'Announcement updated successfully']);
+        }
+
+        return response()->json(['message' => 'No changes made or announcement not found'], 404);
+    }
+
+    // Remove the specified announcement
+    public function destroyAnnouncements($id)
+    {
+        $deleted = DB::table('tblstdannoucement')->where('id', $id)->delete();
+
+        if ($deleted) {
+            return response()->json(['message' => 'Announcement deleted successfully']);
+        }
+
+        return response()->json(['message' => 'Announcement not found'], 404);
+    }
 }

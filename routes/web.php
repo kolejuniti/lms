@@ -860,6 +860,18 @@ Route::post('/all/massage/user/getMassage', [App\Http\Controllers\AllController:
 Route::get('/all/massage/student/countMessage', [App\Http\Controllers\AllController::class, 'countMessage']);
 Route::get('/all/massage/student/countMassageAdmin', [App\Http\Controllers\AllController::class, 'countMassageAdmin'])->name('all.massage.student.countMassageAdmin');
 
+Route::prefix('all')->group(function () {
+    Route::get('/student/announcements/getannoucement', [App\Http\Controllers\AllController::class, 'indexAnnouncements']);
+    Route::post('/student/announcements/post', [App\Http\Controllers\AllController::class, 'storeAnnouncements']);
+    Route::get('/student/announcements/get/{id}', [App\Http\Controllers\AllController::class, 'showAnnouncements']);
+    Route::put('/student/announcements/put/{id}', [App\Http\Controllers\AllController::class, 'updateAnnouncements']);
+    Route::delete('/student/announcements/delete/{id}', [App\Http\Controllers\AllController::class, 'destroyAnnouncements']);
+});
+
+Route::get('/all/student/announcements', function () {
+    return view('alluser.student.announcements.index');
+})->name('all.student.announcements');
+
 Route::get('/yuran-pengajian', [App\Http\Controllers\PaymentController::class, 'showPaymentForm'])->name('yuran-pengajian');
 Route::post('/yuran-pengajian/submitPayment', [App\Http\Controllers\PaymentController::class, 'submitPayment'])->name('yuran-pengajian.submitpayment');
 Route::get('/yuran-pengajian/showQuotation', [App\Http\Controllers\PaymentController::class, 'showQuotation'])->name('yuran-pengajian.showQuotation');
