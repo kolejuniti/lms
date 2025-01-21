@@ -240,7 +240,7 @@
 			  <!-- sidebar menu-->
 			  <ul class="sidebar-menu" data-widget="tree">	
           <li>
-            <a href="/student"><i data-feather="home"></i><span>Home</span></a>
+            <a href="/studentDashboard"><i data-feather="home"></i><span>Home</span></a>
           </li>
           <li>
             <a href="/student/{{ Session::get('CourseID') }}" class=""><i data-feather="archive"></i><span>Course Summary</span></a>

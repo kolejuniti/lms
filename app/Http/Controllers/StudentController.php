@@ -18,7 +18,8 @@ use Carbon\Carbon;
 
 class StudentController extends Controller
 {
-    public function index()
+
+    public function dashboard()
     {
         Session::put('User', Auth::guard('student')->user());
 
@@ -30,6 +31,14 @@ class StudentController extends Controller
         }
 
         $user = Session::put('StudInfo', $student);
+
+        return view('student.dashboard');
+    }
+
+    public function index()
+    {
+
+        $student = Session::get('StudInfo');
 
         $lecturer = [];
 

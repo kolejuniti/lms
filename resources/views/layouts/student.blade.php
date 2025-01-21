@@ -247,7 +247,10 @@
 	  	<div class="multinav">
 		  <div class="multinav-scroll" style="height: 97%;">	
 			  <!-- sidebar menu-->
-			  <ul class="sidebar-menu" data-widget="tree">	  
+			  <ul class="sidebar-menu" data-widget="tree">
+				<li>
+					<a href="{{ route('studentDashboard') }}" class="{{ (route('studentDashboard') == Request::url()) ? 'active' : ''}}"><i data-feather="home"></i><span>Dashboard</span></a>
+				</li> 	  
         		<li>
 					<a href="{{ route('student') }}" class="{{ (route('student') == Request::url()) ? 'active' : ''}}"><i data-feather="bookmark"></i><span>Course</span></a>
 				</li> 

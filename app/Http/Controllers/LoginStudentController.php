@@ -14,9 +14,10 @@ class LoginStudentController extends Controller
 
     public function login(Request $request)
     {
+        
         if(Auth::guard('student')->attempt(['no_matric' => $request->ic, 'password' => $request->password]))
         {
-               return redirect()->route('student');
+               return redirect()->route('studentDashboard');
         }else{
             return back()->with(["message"=>"Incorrect IC or Password!"]);
         }
