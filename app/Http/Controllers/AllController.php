@@ -745,7 +745,19 @@ class AllController extends Controller
     // Display a listing of the announcements
     public function indexAnnouncements()
     {
-        $announcements = DB::table('tblstdannoucement')->get();
+        $userRole = Auth::user()->usrtype;
+
+        if ($userRole === 'ADM') {
+            $type = 'Admin';
+        } else if ($userRole === 'FN') {
+            $type = 'Finance';
+        } else if ($userRole === 'AR') {
+            $type = 'Pendaftar Akademik';
+        } else if ($userRole === 'RGS') {
+            $type = 'Pendaftar';
+        }
+
+        $announcements = DB::table('tblstdannoucement')->where('department', $type)->get();
 
         // Debugging: Check the data being fetched
         error_log($announcements);
