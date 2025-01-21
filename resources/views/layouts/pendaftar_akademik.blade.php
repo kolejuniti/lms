@@ -361,6 +361,7 @@ li a {
 						<li><a href="{{ route('finance.statement') }}" class="{{ (route('finance.statement') == Request::url()) ? 'active' : ''}}">Student Account Statement</a></li>
 						<li><a href="{{ route('treasurer.payment.debit') }}" class="{{ (route('treasurer.payment.debit') == Request::url()) ? 'active' : ''}}">Debit Note</a></li>
 						<li><a href="{{ route('finance.student.blockList') }}" class="{{ (route('finance.student.blockList') == Request::url()) ? 'active' : ''}}">Blocked List</a></li>
+						<li><a href="{{ route('all.student.announcements') }}" class="{{ (route('all.student.announcements') == Request::url()) ? 'active' : ''}}">Annoucement</a></li>
 					</ul>
 				</li>
 				<li class="treeview">
