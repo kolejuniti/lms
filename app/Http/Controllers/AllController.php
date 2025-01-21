@@ -819,8 +819,8 @@ class AllController extends Controller
     public function getBannerAnnouncement()
     {
         $announcements = DB::table('tblstdannoucement')
-        // ->whereDate('start_date', '<=', now()) // Fetch rows where start_date is before or equal to today
-        // ->whereDate('end_date', '>=', now())   // Fetch rows where end_date is after or equal to today
+        ->whereDate('start_date', '<=', now()) // Fetch rows where start_date is before or equal to today
+        ->whereDate('end_date', '>=', now())   // Fetch rows where end_date is after or equal to today
         ->orderByRaw("FIELD(priority, 'high', 'medium', 'low')") // Sort by priority
         ->orderBy('created_at', 'desc') // Optional: Further sort by creation date
         ->get();
