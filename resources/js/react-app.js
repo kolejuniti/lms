@@ -4,6 +4,7 @@ import SenateReport from './components/senateReport/senateReport.jsx';
 import ResultReport from './components/resultReport/resultReport.jsx';
 import VehicleReport from './components/vehicleReport/vehicleReport.jsx';
 import AnnouncementSystem from './components/annoucementStudent/annoucementStudent.jsx';
+import AnnouncementBanner from './components/annoucementStudent/annoucementBanner.jsx';
 
 window.renderSenateReport = function(data) {
 
@@ -55,4 +56,8 @@ window.renderAnnouncementSystem = () => {
         document.getElementById('announcementSystem')
     )
 
+}
+
+if (document.getElementById('announcementBanner')) {
+    ReactDOM.render(<AnnouncementBanner />, document.getElementById('announcementBanner'));
 }

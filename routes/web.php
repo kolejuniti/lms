@@ -867,6 +867,7 @@ Route::prefix('all')->group(function () {
     Route::get('/student/announcements/get/{id}', [App\Http\Controllers\AllController::class, 'showAnnouncements']);
     Route::put('/student/announcements/put/{id}', [App\Http\Controllers\AllController::class, 'updateAnnouncements']);
     Route::delete('/student/announcements/delete/{id}', [App\Http\Controllers\AllController::class, 'destroyAnnouncements']);
+    Route::get('/student/announcements/getBannerAnnouncement', [App\Http\Controllers\AllController::class, 'getBannerAnnouncement']);
 });
 
 Route::get('/all/student/announcements', function () {

@@ -37,6 +37,10 @@
             </div>
           </div>
         </div>
+        
+        <!-- Announcement Banner Placeholder -->
+        <div id="announcementBanner"></div>
+        
       </div>
     </section>
     <!-- /.content -->
@@ -46,33 +50,6 @@
 <script src="{{ asset('assets/src/js/pages/data-table.js') }}"></script>
 
 <script type="text/javascript">
-
-  function deleteMaterial(ic){     
-      Swal.fire({
-    title: "Are you sure?",
-    text: "This will be permanent",
-    showCancelButton: true,
-    confirmButtonText: "Yes, delete it!"
-  }).then(function(res){
-    
-    if (res.isConfirmed){
-              $.ajax({
-                  headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
-                  url      : "{{ url('/admin/delete') }}",
-                  method   : 'DELETE',
-                  data 	 : {ic:ic},
-                  error:function(err){
-                      alert("Error");
-                      console.log(err);
-                  },
-                  success  : function(data){
-                      window.location.reload();
-                      alert("success");
-                  }
-              });
-          }
-      });
-  }
 
 </script>
 @endsection
