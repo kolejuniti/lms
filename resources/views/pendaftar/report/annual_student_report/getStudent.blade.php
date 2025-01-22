@@ -46,6 +46,7 @@
       </thead>
       <tbody id="table">
       @foreach ($data['student1'] as $key => $std)
+        @php $studentSts1 = '' @endphp
         <tr>
           <td>
           {{ $key+1 }}
@@ -76,20 +77,21 @@
           if($std->student_status == 1)
           {
 
-            $student_status[$key] = 'Holding';
+            $studentSts1 = 'Holding';
 
           }elseif($std->student_status == 2)
           {
 
-            $student_status[$key] = 'Kuliah';
+            $studentSts1 = 'Kuliah';
 
           }elseif($std->student_status == 4)
           {
 
-            $student_status[$key] = 'Latihan Industri';
+            $studentSts1 = 'Latihan Industri';
 
           }
           @endphp
+          {{ $studentSts1 }}
           </td>
           <td>
           {{ $std->status }}
@@ -166,6 +168,7 @@
         </thead>
         <tbody id="table">
         @foreach ($data['student2'] as $key => $std)
+        @php $studentSts2 = '' @endphp
           <tr>
             <td>
             {{ $key+1 }}
@@ -196,20 +199,21 @@
             if($std->student_status == 1)
             {
     
-                $student_status[$key] = 'Holding';
+                $studentSts2 = 'Holding';
     
             }elseif($std->student_status == 2)
             {
     
-                $student_status[$key] = 'Kuliah';
+                $studentSts2 = 'Kuliah';
     
             }elseif($std->student_status == 4)
             {
     
-                $student_status[$key] = 'Latihan Industri';
+                $studentSts2 = 'Latihan Industri';
     
             }
             @endphp
+            {{ $studentSts2 }}
             </td>
             <td>
             {{ $std->status }}
