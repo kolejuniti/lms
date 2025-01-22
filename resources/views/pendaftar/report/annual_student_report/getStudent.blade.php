@@ -148,10 +148,10 @@
                     Session
                 </th>
                 <th style="width: 5%">
-                    Campus
+                    Semester
                 </th>
                 <th style="width: 5%">
-                    Semester
+                    Campus
                 </th>
                 <th style="width: 5%">
                     Status
