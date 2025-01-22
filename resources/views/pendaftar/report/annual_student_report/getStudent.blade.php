@@ -31,6 +31,9 @@
                   Semester
               </th>
               <th style="width: 5%">
+                  Campus
+              </th>
+              <th style="width: 5%">
                   Status
               </th>
               <th style="width: 5%">
@@ -67,6 +70,26 @@
           </td>
           <td>
           {{ $std->semester }}
+          </td>
+          <td>
+          @php
+          if($std->student_status == 1)
+          {
+
+            $student_status[$key] = 'Holding';
+
+          }elseif($std->student_status == 2)
+          {
+
+            $student_status[$key] = 'Kuliah';
+
+          }elseif($std->student_status == 4)
+          {
+
+            $student_status[$key] = 'Latihan Industri';
+
+          }
+          @endphp
           </td>
           <td>
           {{ $std->status }}
@@ -125,6 +148,9 @@
                     Session
                 </th>
                 <th style="width: 5%">
+                    Campus
+                </th>
+                <th style="width: 5%">
                     Semester
                 </th>
                 <th style="width: 5%">
@@ -164,6 +190,26 @@
             </td>
             <td>
             {{ $std->semester }}
+            </td>
+            <td>
+            @php
+            if($std->student_status == 1)
+            {
+    
+                $student_status[$key] = 'Holding';
+    
+            }elseif($std->student_status == 2)
+            {
+    
+                $student_status[$key] = 'Kuliah';
+    
+            }elseif($std->student_status == 4)
+            {
+    
+                $student_status[$key] = 'Latihan Industri';
+    
+            }
+            @endphp
             </td>
             <td>
             {{ $std->status }}
