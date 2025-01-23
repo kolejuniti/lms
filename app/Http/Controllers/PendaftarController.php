@@ -1492,7 +1492,7 @@ class PendaftarController extends Controller
                     'session_id' => $student->session,
                     'semester_id' => $student->semester,
                     'status_id' => $student->status,
-                    'kuliah_id' => $stds,
+                    'kuliah_id' => $student->kuliah,
                     'block_id' => $student->block,
                     'date' => date("Y-m-d H:i:s"),
                     'remark' => $student->comment,
