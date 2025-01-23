@@ -41,6 +41,14 @@ class PendaftarController extends Controller
 
         $data['status'] = DB::table('tblstudent_status')->get();
 
+        DB::table('student_subjek')
+        ->join('subjek', 'student_subjek.courseid', 'subjek.id')
+        ->where('student_subjek.semesterid', 5)
+        ->where('student_subjek.sessionid', 110)
+        ->update([
+            'student_subjek.credit' => DB::raw('subjek.course_credit')
+        ]);
+
         return view('dashboard', compact('data'));
     }
 
