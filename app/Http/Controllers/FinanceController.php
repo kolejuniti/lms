@@ -1232,7 +1232,8 @@ class FinanceController extends Controller
                 'session_id' => $student->session,
                 'semester_id' => $student->semester,
                 'status_id' => 2,
-                'kuliah_id' => 1,
+                'kuliah_id' => $student->student_status,
+                'campus_id' => 1,
                 'date' => date("Y-m-d H:i:s"),
                 'remark' => null,
                 'add_staffID' => Auth::user()->ic

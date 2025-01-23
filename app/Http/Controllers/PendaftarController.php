@@ -713,7 +713,8 @@ class PendaftarController extends Controller
                 'session_id' => $data['session'],
                 'semester_id' => 1,
                 'status_id' => 1,
-                'kuliah_id' => 0,
+                'kuliah_id' => 1,
+                'campus_id' => 0,
                 'date' => date("Y-m-d H:i:s"),
                 'remark' => null,
                 'add_staffID' => Auth::user()->ic
@@ -1493,6 +1494,7 @@ class PendaftarController extends Controller
                     'semester_id' => $student->semester,
                     'status_id' => $student->status,
                     'kuliah_id' => $student->kuliah,
+                    'campus_id' => $stds,
                     'block_id' => $student->block,
                     'date' => date("Y-m-d H:i:s"),
                     'remark' => $student->comment,
@@ -1747,7 +1749,8 @@ class PendaftarController extends Controller
                     'session_id' => $userUpt->session,
                     'semester_id' => $userUpt->semester,
                     'status_id' => $userUpt->status,
-                    'kuliah_id' => $userUpt->campus_id,
+                    'kuliah_id' => $userUpt->student_status,
+                    'campus_id' => $userUpt->campus_id,
                     'date' => date("Y-m-d H:i:s"),
                     'remark' => null,
                     'add_staffID' => Auth::user()->ic
@@ -1847,6 +1850,7 @@ class PendaftarController extends Controller
                     'semester_id' => $student->semester,
                     'status_id' => 2,
                     'kuliah_id' => 1,
+                    'campus_id' => 1,
                     'date' => date("Y-m-d H:i:s"),
                     'remark' => null,
                     'add_staffID' => Auth::user()->ic
