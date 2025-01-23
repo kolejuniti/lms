@@ -1411,12 +1411,12 @@ class PendaftarController extends Controller
 
                 // }
 
-                if($log->kuliah_id == 0)
+                if($log->campus_id == 0)
                 {
 
                     $kuliah[$key] = 'No';
 
-                }elseif($log->kuliah_id == 2)
+                }elseif($log->campus_id == 2)
                 {
 
                     $kuliah[$key] = 'Yes';
@@ -1533,12 +1533,12 @@ class PendaftarController extends Controller
 
                     // }
 
-                    if($log->kuliah_id == 0)
+                    if($log->campus_id == 0)
                     {
 
                         $kuliah[$key] = 'No';
 
-                    }elseif($log->kuliah_id == 2)
+                    }elseif($log->campus_id == 2)
                     {
 
                         $kuliah[$key] = 'Yes';
