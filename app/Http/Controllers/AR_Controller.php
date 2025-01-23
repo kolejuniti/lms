@@ -673,7 +673,8 @@ class AR_Controller extends Controller
                     'sessionid' => $data['student']->session,
                     'semesterid' => $data['student']->semester,
                     'course_status_id' => 15,
-                    'status' => 'ACTIVE'
+                    'status' => 'ACTIVE',
+                    'credit' => $course->course_credit
                 ]);
     
                 if($data['student']->student_status == 1  && $data['student']->student_status != 4)
