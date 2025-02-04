@@ -5074,7 +5074,7 @@ class FinanceController extends Controller
                    ->whereBetween('tblpayment.add_date', [$request->from, $request->to])
                    ->where('tblpayment.process_status_id', 2)
                    ->whereNotNull('tblpayment.ref_no')
-                   ->orderBy('tblpayment.ref_no', 'asc')
+                   ->orderByRaw('CAST(SUBSTRING(tblpayment.ref_no, 2) AS UNSIGNED) ASC')
                    ->get();
 
         $sponsor = DB::table('tblpayment')
@@ -5084,7 +5084,7 @@ class FinanceController extends Controller
                    ->where('tblpayment.process_status_id', 2)
                    ->whereNotNull('tblpayment.student_ic')
                    ->whereNotNull('tblpayment.payment_sponsor_id')
-                   ->orderBy('tblpayment.ref_no', 'asc')
+                   ->orderByRaw('CAST(SUBSTRING(tblpayment.ref_no, 2) AS UNSIGNED) ASC')
                    ->get();
 
         $data['program'] = DB::table('tblprogramme')->orderBy('program_ID')->get();
