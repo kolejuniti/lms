@@ -320,8 +320,8 @@
 					</li>
 					<li><a href="/lecturer/midterm/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Midterm</a></li>
 					<li><a href="/lecturer/final/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Final</a></li>
-					<!--<li><a href="/lecturer/paperwork/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Paperwork</a></li>
-					<li><a href="/lecturer/practical/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Practical</a></li>-->
+					{{-- <li><a href="/lecturer/paperwork/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Paperwork</a></li> --}}
+					<li><a href="/lecturer/practical/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Practical</a></li>
 					<li><a href="/lecturer/other/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Lain-Lain</a></li>
 					<li><a href="/lecturer/extra/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Extra</a></li>
 					<li><a href="/lecturer/report/{{ Session::get('CourseID') }}" class="">Report</a></li>
