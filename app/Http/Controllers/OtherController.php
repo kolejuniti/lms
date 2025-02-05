@@ -159,7 +159,7 @@ class OtherController extends Controller
             ['status', '!=', 3]
         ])->sum('total_mark');
 
-        $maxMark = $percentage->mark_percentage - $total_mark;
+        $maxMark = $percentage->mark_percentage;
 
         //dd($folder);
 
@@ -205,21 +205,22 @@ class OtherController extends Controller
         
             if( !empty($otherid) ){
 
-                $total_mark = DB::table('tblclassother')->where([
-                    ['classid', $classid],
-                    ['sessionid', $sessionid],
-                    ['addby', $user->ic],
-                    ['status', '!=', 3]
-                ])->where('id', '!=', $otherid)->sum('total_mark');
+                // $total_mark = DB::table('tblclassother')
+                // ->join('tblclassother_group', 'tblclassother.id', 'tblclassother_group.otherid')->where([
+                //     ['classid', $classid],
+                //     ['sessionid', $sessionid],
+                //     ['addby', $user->ic],
+                //     ['status', '!=', 3]
+                // ])->where('tblclassother.id', '!=', $otherid)->sum('total_mark');
 
-                $fullmarks = $total_mark + $marks;
+                // $fullmarks = $total_mark + $marks;
 
-                if($fullmarks > $percentage->mark_percentage)
-                {
+                // if($fullmarks > $percentage->mark_percentage)
+                // {
 
-                    return redirect()->back()->withErrors(['Marks cannot exceeds ' . $percentage->mark_percentage - $total_mark . ' , please lower the marks']);
+                //     return redirect()->back()->withErrors(['Marks cannot exceeds ' . $percentage->mark_percentage - $total_mark . ' , please lower the marks']);
 
-                }else{
+                // }else{
       
                     $other = DB::table('tblclassother')->where('id', $otherid)->first();
 
@@ -286,28 +287,28 @@ class OtherController extends Controller
                             "otherid" => $otherid
                         ]);
                     }
-                }
+                // }
 
             }else{
 
                 if($percentage->mark_percentage != null || $percentage->mark_percentage != 0)
                 {
 
-                    $total_mark = DB::table('tblclassother')->where([
-                        ['classid', $classid],
-                        ['sessionid', $sessionid],
-                        ['addby', $user->ic],
-                        ['status', '!=', 3]
-                    ])->sum('total_mark');
+                    // $total_mark = DB::table('tblclassother')->where([
+                    //     ['classid', $classid],
+                    //     ['sessionid', $sessionid],
+                    //     ['addby', $user->ic],
+                    //     ['status', '!=', 3]
+                    // ])->sum('total_mark');
 
-                    $fullmarks = $total_mark + $marks;
+                    // $fullmarks = $total_mark + $marks;
 
-                    if($fullmarks > $percentage->mark_percentage)
-                    {
+                    // if($fullmarks > $percentage->mark_percentage)
+                    // {
 
-                        return redirect()->back()->withErrors(['Marks cannot exceeds ' . $percentage->mark_percentage - $total_mark . ' , please lower the marks']);
+                    //     return redirect()->back()->withErrors(['Marks cannot exceeds ' . $percentage->mark_percentage - $total_mark . ' , please lower the marks']);
 
-                    }else{
+                    // }else{
 
                         if($file != null)
                         {
@@ -365,7 +366,7 @@ class OtherController extends Controller
                                 "otherid" => $q
                             ]);
                         }
-                    }
+                    // }
                 }else{
 
                     return redirect()->back()->withErrors(['Percentage is not set yet, please consult the person in charge (KETUA PROGRAM)']);
