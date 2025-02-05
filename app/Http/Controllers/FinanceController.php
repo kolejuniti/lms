@@ -6361,13 +6361,21 @@ class FinanceController extends Controller
         $data['otherTotal'] = [];
         $data['otherTotals'] = [];
 
-        $data['creditFee'] = [];
-        $data['creditFeeTotal'] = [];
-        $data['creditFeeTotals'] = [];
+        $data['creditFeeOld'] = [];
+        $data['creditFeeOldTotal'] = [];
+        $data['creditFeeOldTotals'] = [];
 
-        $data['creditFine'] = [];
-        $data['creditFineTotal'] = [];
-        $data['creditFineTotals'] = [];
+        $data['creditFeeGrad'] = [];
+        $data['creditFeeGradTotal'] = [];
+        $data['creditFeeGradTotals'] = [];
+
+        $data['creditFineOld'] = [];
+        $data['creditFineOldTotal'] = [];
+        $data['creditFineOldTotals'] = [];
+
+        $data['creditFineGrad'] = [];
+        $data['creditFineGradTotal'] = [];
+        $data['creditFineGradTotals'] = [];
 
         $data['creditDiscount'] = [];
         $data['creditDiscountTotal'] = [];
@@ -6385,6 +6393,7 @@ class FinanceController extends Controller
                             DB::raw('SUM(tblclaimdtl.amount) AS amount'), 
                             'students.name', 'students.program', 
                             'students.no_matric', 
+                            'students.status', 
                             'tblprogramme.progname', 
                             'tblstudentclaim.groupid',
                             'tblstudentclaim.name AS type')
@@ -6525,61 +6534,119 @@ class FinanceController extends Controller
 
                 }
 
-            }elseif($crg->process_type_id == 5 && $crg->process_status_id == 2 && $crg->groupid == 1 && $crg->reduction_id < 6)
+            }elseif($crg->process_type_id == 5 && $crg->process_status_id == 2 && $crg->groupid == 1 && $crg->reduction_id < 6 && $crg->status == 2)
             {
 
-                $data['creditFee'][] = $crg;
+                $data['creditFeeOld'][] = $crg;
 
                 //program
 
                 foreach($data['program'] as $key => $prg)
                 {
-                    foreach($data['creditFee'] as $keys => $dbt)
+                    foreach($data['creditFeeOld'] as $keys => $dbt)
                     {
            
                         if($dbt->program == $prg->id)
                         {
 
-                            $data['creditFeeTotal'][$key][$keys] =+  $dbt->amount;
+                            $data['creditFeeOldTotal'][$key][$keys] =+  $dbt->amount;
 
                         }else{
 
-                            $data['creditFeeTotal'][$key][$keys] =+ 0;
+                            $data['creditFeeOldTotal'][$key][$keys] =+ 0;
 
                         }
 
                     }
 
-                    $data['creditFeeTotals'][$key] =+ array_sum($data['creditFeeTotal'][$key]);
+                    $data['creditFeeOldTotals'][$key] =+ array_sum($data['creditFeeOldTotal'][$key]);
 
                 }
 
-            }elseif($crg->process_type_id == 5 && $crg->process_status_id == 2 && $crg->groupid != 1)
+            }elseif($crg->process_type_id == 5 && $crg->process_status_id == 2 && $crg->groupid == 1 && $crg->reduction_id < 6 && $crg->status == 8)
             {
 
-                $data['creditFine'][] = $crg;
+                $data['creditFeeGrad'][] = $crg;
 
                 //program
 
                 foreach($data['program'] as $key => $prg)
                 {
-                    foreach($data['creditFine'] as $keys => $dbt)
+                    foreach($data['creditFeeGrad'] as $keys => $dbt)
                     {
            
                         if($dbt->program == $prg->id)
                         {
 
-                            $data['creditFineTotal'][$key][$keys] =+  $dbt->amount;
+                            $data['creditFeeGradTotal'][$key][$keys] =+  $dbt->amount;
 
                         }else{
 
-                            $data['creditFineTotal'][$key][$keys] =+ 0;
+                            $data['creditFeeGradTotal'][$key][$keys] =+ 0;
 
                         }
 
                     }
 
-                    $data['creditFineTotals'][$key] =+ array_sum($data['creditFineTotal'][$key]);
+                    $data['creditFeeGradTotals'][$key] =+ array_sum($data['creditFeeGradTotal'][$key]);
+
+                }
+
+            }elseif($crg->process_type_id == 5 && $crg->process_status_id == 2 && $crg->groupid != 1 && $crg->status == 2)
+            {
+
+                $data['creditFineOld'][] = $crg;
+
+                //program
+
+                foreach($data['program'] as $key => $prg)
+                {
+                    foreach($data['creditFineOld'] as $keys => $dbt)
+                    {
+           
+                        if($dbt->program == $prg->id)
+                        {
+
+                            $data['creditFineOldTotal'][$key][$keys] =+  $dbt->amount;
+
+                        }else{
+
+                            $data['creditFineOldTotal'][$key][$keys] =+ 0;
+
+                        }
+
+                    }
+
+                    $data['creditFineOldTotals'][$key] =+ array_sum($data['creditFineOldTotal'][$key]);
+
+                }
+
+            }elseif($crg->process_type_id == 5 && $crg->process_status_id == 2 && $crg->groupid != 1 && $crg->status == 8)
+            {
+
+                $data['creditFineGrad'][] = $crg;
+
+                //program
+
+                foreach($data['program'] as $key => $prg)
+                {
+                    foreach($data['creditFineGrad'] as $keys => $dbt)
+                    {
+           
+                        if($dbt->program == $prg->id)
+                        {
+
+                            $data['creditFineGradTotal'][$key][$keys] =+  $dbt->amount;
+
+                        }else{
+
+                            $data['creditFineGradTotal'][$key][$keys] =+ 0;
+
+                        }
+
+                    }
+
+                    $data['creditFineGradTotals'][$key] =+ array_sum($data['creditFineGradTotal'][$key]);
 
                 }
 
