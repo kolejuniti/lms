@@ -1488,6 +1488,19 @@ class PendaftarController extends Controller
                     'block_status' => $student->block
                 ]);
 
+                if($student->status == 3)
+                {
+
+                    DB::table('student_transcript')
+                        ->where('student_ic', $student->ic)
+                        ->orderBy('id', 'desc')
+                        ->limit(1)
+                        ->update([
+                            'transcript_status_id' => 5
+                        ]);
+
+                }
+
                 DB::table('tblstudent_log')->insert([
                     'student_ic' => $student->ic,
                     'session_id' => $student->session,
