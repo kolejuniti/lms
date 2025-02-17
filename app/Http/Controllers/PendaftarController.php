@@ -254,7 +254,7 @@ class PendaftarController extends Controller
                     
         foreach($students as $key => $student){
             //$registered = ($student->status == 'ACTIVE') ? 'checked' : '';
-            $rowClass = $student->campus_id == 0 ? 'style="background-color: #f8d7da;"' : '';
+            $rowClass = $student->campus_id == 0 ? 'style="background-color: red;"' : '';
             $content .= '
             <tr '. $rowClass .'>
             <td style="width: 1%">
