@@ -176,6 +176,10 @@ Route::get('/AR/session', [App\Http\Controllers\AR_Controller::class, 'sessionLi
 Route::post('/AR/session/create', [App\Http\Controllers\AR_Controller::class, 'createSession']);
 Route::post('/AR/session/update', [App\Http\Controllers\AR_Controller::class, 'updateSession']);
 Route::delete('/AR/session/delete', [App\Http\Controllers\AR_Controller::class, 'deleteDelete'])->name('pendaftar_akademik.session.delete');
+Route::get('/AR/batch', [App\Http\Controllers\AR_Controller::class, 'batchList'])->name('pendaftar_akademik.batch');
+Route::post('/AR/batch/create', [App\Http\Controllers\AR_Controller::class, 'createBatch']);
+Route::post('/AR/batch/update', [App\Http\Controllers\AR_Controller::class, 'updateBatch']);
+Route::delete('/AR/batch/delete', [App\Http\Controllers\AR_Controller::class, 'deleteBatch'])->name('pendaftar_akademik.batch.delete');
 Route::get('/AR/schedule/lecturer', [App\Http\Controllers\AR_Controller::class, 'scheduleIndex'])->name('pendaftar_akademik.schedule.lecturer');
 Route::get('/AR/schedule/student', [App\Http\Controllers\AR_Controller::class, 'scheduleIndex'])->name('pendaftar_akademik.schedule.student');
 Route::get('/AR/schedule/lecture', [App\Http\Controllers\AR_Controller::class, 'scheduleIndex'])->name('pendaftar_akademik.schedule.lecture');
@@ -335,6 +339,7 @@ Route::get('/lecturer/quiz/{id}', [App\Http\Controllers\QuizController::class, '
 Route::post('/lecturer/quiz/getextend', [App\Http\Controllers\QuizController::class, 'getExtendQuiz']);
 Route::post('/lecturer/quiz/updateExtend', [App\Http\Controllers\QuizController::class, 'updateExtendQuiz']);
 Route::get('/lecturer/quiz/{id}/create', [App\Http\Controllers\QuizController::class, 'quizcreate'])->name('lecturer.quiz.create');
+Route::post('/lecturer/quiz/{id}/generate-ai-quiz', [App\Http\Controllers\QuizController::class, 'generateAIQuiz'])->name('lecturer.quiz.generate-ai-quiz');
 Route::post('/lecturer/quiz/insert', [App\Http\Controllers\QuizController::class, 'insertquiz']);
 Route::post('/lecturer/quiz/getStatus', [App\Http\Controllers\QuizController::class, 'getStatus']);
 Route::post('/lecturer/quiz/updatequizresult', [App\Http\Controllers\QuizController::class, 'updatequizresult']);
@@ -725,6 +730,8 @@ Route::post('finance/report/statusAgingReport/getStatusAgingReport', [App\Http\C
 Route::get('finance/report/studentArrearsReport', [App\Http\Controllers\FinanceController::class,'studentArrearsReport'])->name('finance.studentArrearsReport');
 Route::post('finance/report/studentArrearsReport/getStudentArrearsReport', [App\Http\Controllers\FinanceController::class,'getStudentArrearsReport']);
 Route::post('finance/report/studentArrearsReport/blockStudentArrears', [App\Http\Controllers\FinanceController::class,'blockStudentArrears']);
+Route::get('finance/report/gradReport', [App\Http\Controllers\FinanceController::class,'gradReport'])->name('finance.gradReport');
+Route::post('finance/report/gradReport/getGradReport', [App\Http\Controllers\FinanceController::class,'getGradReport']);
 Route::get('/finance/payment/other', [App\Http\Controllers\FinanceController::class, 'studentOtherPayment'])->name('finance.payment.other');
 Route::post('/finance/payment/other/getStudent', [App\Http\Controllers\FinanceController::class, 'getOtherStudentPayment']);
 Route::post('/finance/payment/other/storePayment', [App\Http\Controllers\FinanceController::class, 'storeOtherPayment']);

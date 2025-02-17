@@ -328,6 +328,9 @@ li a {
 				<li>
 					<a href="{{ route('pendaftar_akademik.session') }}" class="{{ (route('pendaftar_akademik.session') == Request::url()) ? 'active' : ''}}"><i data-feather="trello"></i><span>Session List</span></a>
 				</li>
+				<li>
+					<a href="{{ route('pendaftar_akademik.batch') }}" class="{{ (route('pendaftar_akademik.batch') == Request::url()) ? 'active' : ''}}"><i data-feather="aperture"></i><span>Batch List</span></a>
+				</li>
 				<li class="treeview">
 					<a href="#"><i data-feather="book-open"></i><span>Academic</span>
 						<span class="pull-right-container">

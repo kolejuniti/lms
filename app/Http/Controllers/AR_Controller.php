@@ -954,6 +954,71 @@ class AR_Controller extends Controller
 
     }
 
+    public function batchList()
+    {
+        $data = [
+            'batch' => DB::table('tblbatch')->get(),
+            'year' => DB::table('tblyear')->get()
+        ];
+
+        return view('pendaftar_akademik.batch', compact('data'));
+
+    }
+
+    public function createBatch(Request $request)
+    {
+        $data = $request->validate([
+            'name' => ['required'],
+            'start' => ['required'],
+            'end' => ['required']
+        ]);
+
+        if(isset($request->idS))
+        {
+
+            DB::table('tblbatch')->where('BatchID', $request->idS)->update([
+                'BatchName' => $data['name'],
+                'Start' => $data['start'],
+                'End' => $data['end'],
+                'Status' => $request->status
+                
+            ]);
+
+        }else{
+
+            DB::table('tblbatch')->insertGetId([
+                'BatchName' => $data['name'],
+                'Start' => $data['start'],
+                'End' => $data['end'],
+                'Status' => 'ACTIVE'
+            ]);
+
+        }
+
+        return redirect(route('pendaftar_akademik.batch'));
+
+    }
+    public function updateBatch(Request $request)
+    {
+
+        $data = [
+            'course' => DB::table('tblbatch')->where('BatchID', $request->id)->first(),
+            'year' => DB::table('tblyear')->get()
+        ];
+
+        return view('pendaftar_akademik.getBatch', compact('data'))->with('id', $request->id);
+
+    }
+
+    public function deleteBatch(Request $request)
+    {
+
+        DB::table('tblbatch')->where('BatchID', $request->id)->delete();
+
+        return true;
+
+    }
+
     // public function scheduleIndex()
     // {
 
