@@ -1254,64 +1254,64 @@ class AR_Controller extends Controller
                 ['session', $session]
             ])->get();
 
-        }elseif($program != '' && $semester != '')
-        {
+        // }elseif($program != '' && $semester != '')
+        // {
 
-            $data['campus'] = $query->where([
-                ['program', $program],
-                ['semester', $semester]
-            ])->get();
+        //     $data['campus'] = $query->where([
+        //         ['program', $program],
+        //         ['semester', $semester]
+        //     ])->get();
 
-            $data['leave'] = $query2->where([
-                ['program', $program],
-                ['semester', $semester]
-            ])->get();
+        //     $data['leave'] = $query2->where([
+        //         ['program', $program],
+        //         ['semester', $semester]
+        //     ])->get();
 
-        }elseif($session != '' && $semester != '')
-        {
+        // }elseif($session != '' && $semester != '')
+        // {
 
-            $data['campus'] = $query->where([
-                ['session', $session],
-                ['semester', $semester]
-            ])->get();
+        //     $data['campus'] = $query->where([
+        //         ['session', $session],
+        //         ['semester', $semester]
+        //     ])->get();
 
-            $data['leave'] = $query2->where([
-                ['session', $session],
-                ['semester', $semester]
-            ])->get();
+        //     $data['leave'] = $query2->where([
+        //         ['session', $session],
+        //         ['semester', $semester]
+        //     ])->get();
 
-        }elseif($program != '')
-        {
+        // }elseif($program != '')
+        // {
 
-            $data['campus'] = $query->where([
-                ['program', $program]
-            ])->get();
+        //     $data['campus'] = $query->where([
+        //         ['program', $program]
+        //     ])->get();
 
-            $data['leave'] = $query2->where([
-                ['program', $program]
-            ])->get();
+        //     $data['leave'] = $query2->where([
+        //         ['program', $program]
+        //     ])->get();
 
-        }elseif($session != '')
-        {
+        // }elseif($session != '')
+        // {
 
-            $data['campus'] = $query->where([
-                ['session', $session]
-            ])->get();
+        //     $data['campus'] = $query->where([
+        //         ['session', $session]
+        //     ])->get();
 
-            $data['leave'] = $query2->where([
-                ['session', $session]
-            ])->get();
+        //     $data['leave'] = $query2->where([
+        //         ['session', $session]
+        //     ])->get();
 
-        }elseif($semester != '')
-        {
+        // }elseif($semester != '')
+        // {
 
-            $data['campus'] = $query->where([
-                ['semester', $semester]
-            ])->get();
+        //     $data['campus'] = $query->where([
+        //         ['semester', $semester]
+        //     ])->get();
 
-            $data['leave'] = $query2->where([
-                ['semester', $semester]
-            ])->get();
+        //     $data['leave'] = $query2->where([
+        //         ['semester', $semester]
+        //     ])->get();
 
         }
 
