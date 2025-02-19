@@ -133,7 +133,7 @@ class AR_Controller extends Controller
             'name' => ['required'],
             'code' => ['required'],
             'credit' => ['required'],
-            'prerequisite' => ['nullable'],
+            'prerequisite' => ['nullable'] ?? null,
             'clid' => ['required'],
             'offer' => ['required']
         ]);
@@ -148,7 +148,7 @@ class AR_Controller extends Controller
                 'course_name' => $data['name'],
                 'course_code' => $data['code'],
                 'course_credit' => $data['credit'],
-                'prerequisite_id' => $data['prerequisite'],
+                'prerequisite_id' => $data['prerequisite'] ?? null,
                 'course_level_id' => $data['clid'],
                 'offer' => $data['offer']
             ]);
