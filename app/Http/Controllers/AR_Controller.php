@@ -133,7 +133,7 @@ class AR_Controller extends Controller
             'name' => ['required'],
             'code' => ['required'],
             'credit' => ['required'],
-            'prerequisite' => ['required'],
+            'prerequisite' => ['nullable'],
             'clid' => ['required'],
             'offer' => ['required']
         ]);
