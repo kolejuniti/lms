@@ -70,6 +70,12 @@
                     <th>
                         Session
                     </th>
+                    <th>
+                        Semester
+                    </th>
+                    <th>
+                        Campus
+                    </th>
                     {{-- <th>
                     </th> --}}
                 </tr>
@@ -94,6 +100,18 @@
                 </td>
                 <td>
                   {{ $std->SessionName }}
+                </td>
+                <td>
+                  {{ $std->semester }}
+                </td>
+                <td>
+                  @if($std->student_status == 1)
+                    {{ $student_status[$key] = 'Holding' }}
+                  @elseif($std->student_status == 2)
+                    {{ $student_status[$key] = 'Kuliah' }}
+                  @elseif($std->student_status == 4)
+                    {{ $student_status[$key] = 'Latihan Industri' }}
+                  @endif
                 </td>
                 {{-- <td class="project-actions text-right" style="text-align: center;">
                   <a class="btn btn-info btn-sm btn-sm mr-2" href="#" onclick="updateClaim('{{ $clm->id }}')">
