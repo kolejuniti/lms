@@ -353,9 +353,44 @@
         $('#complex_header').removeAttr('hidden');
         $('#complex_header').html(data);
         $('#complex_header').DataTable({
-          dom: 'lBfrtip',
-          buttons: ['copy', 'csv', 'excel', 'pdf', 'print']
+            dom: 'lBfrtip',
+            buttons: [
+                'copy',
+                'csv',
+                'pdf',
+                'print',
+                {
+                    extend: 'excelHtml5',
+                    text: 'Excel',
+                    title: 'Student Data',
+                    customize: function (xlsx) {
+                        var sheet = xlsx.xl.worksheets['sheet1.xml'];
+                        
+                        // Loop through each row in the Excel file
+                        $('row', sheet).each(function (index) {
+                            var row = $(this);
+
+                            // Example: If the first cell in the row is "0" (for campus_id == 0)
+                            var firstCell = $('c[r^="A"] t', row).text(); // First cell in the row
+
+                            if (firstCell === '0') { // Apply red background if first cell is zero
+                                row.attr('s', '22'); // Style ID '22' for red background
+                            }
+                        });
+
+                        // Apply red background style in Excel
+                        var styles = xlsx.xl['styles.xml'];
+                        var fills = $('fills', styles);
+                        var cellXfs = $('cellXfs', styles);
+
+                        // Add red background color
+                        fills.append('<fill><patternFill patternType="solid"><fgColor rgb="FFFF0000"/><bgColor indexed="64"/></patternFill></fill>');
+                        cellXfs.append('<xf fillId="2" borderId="0" applyFill="1"/>');
+                    }
+                }
+            ]
         });
+
       }
     });
   }
