@@ -288,6 +288,45 @@
     await getStudent(selected_program, selected_session, selected_year, selected_semester, selected_status);
   });
 
+  // 1) Helper functions to add a custom fill style
+function addFill(styleSheet, color) {
+    const fills = $('fills', styleSheet);
+    let fillCount = parseInt(fills.attr('count'), 10);
+    fillCount++;
+    fills.attr('count', fillCount);
+
+    // newFillId is fillCount - 1 (0-based index)
+    const newFillId = fillCount - 1;
+    // Append a new <fill> with a solid pattern using the specified color
+    fills.append(
+        `<fill>
+           <patternFill patternType="solid">
+             <fgColor rgb="${color}"/>
+             <bgColor indexed="64"/>
+           </patternFill>
+         </fill>`
+    );
+    return newFillId;
+}
+
+function addCellStyle(cellXfs, fillId) {
+    let xfCount = parseInt(cellXfs.attr('count'), 10);
+    xfCount++;
+    cellXfs.attr('count', xfCount);
+
+    // newXfId is xfCount - 1
+    const newXfId = xfCount - 1;
+    // Append a new <xf> referencing our fill
+    cellXfs.append(
+        `<xf xfId="0" applyFill="1" fillId="${fillId}"
+             borderId="0" fontId="0" numFmtId="0"
+             applyNumberFormat="0" applyBorder="0" applyAlignment="0"
+             applyProtection="0"/>`
+    );
+    return newXfId;
+}
+
+
   function getStudent(program, session, year, semester, status) {
     $('#complex_header').DataTable().destroy();
     return $.ajax({
@@ -353,41 +392,60 @@
         $('#complex_header').removeAttr('hidden');
         $('#complex_header').html(data);
         $('#complex_header').DataTable({
-    dom: 'lBfrtip',
-    buttons: [
-        'copy',
-        'csv',
-        'pdf',
-        'print',
-        {
-            extend: 'excelHtml5',
-            text: 'Excel',
-            title: 'Student Data',
-            customize: function (xlsx) {
-                var sheet = xlsx.xl.worksheets['sheet1.xml'];
-                var styles = xlsx.xl['styles.xml'];
+          dom: 'lBfrtip',
+            // Example: Sort by "Name" column ascending on load
+            // The marker is column 0, "No." is column 1, so "Name" is column 2
+            order: [[1, 'asc']], 
+            columnDefs: [
+              {
+                targets: 0, // marker column
+                visible: false
+              }
+            ],
+            buttons: [
+                'copy',
+                'csv',
+                {
+                    extend: 'excelHtml5',
+                    text: 'Custom Excel', // Custom label
+                    exportOptions: {
+                        // Include the hidden marker column so we can read "red"
+                        columns: ':visible, :hidden'
+                    },
+                    customize: function (xlsx) {
+                        // 1) References to relevant parts of the workbook
+                        var sheet = xlsx.xl.worksheets['sheet1.xml'];
+                        var styleSheet = xlsx.xl['styles.xml'];
 
-                // Define red background style
-                var fills = $('fills', styles);
-                var cellXfs = $('cellXfs', styles);
+                        // 2) Create a new fill for red background
+                        var fillId = addFill(styleSheet, 'FFFF0000'); // ARGB for red
+                        // 3) Create a cell style (xf) that uses that fill
+                        var xfId = addCellStyle($('cellXfs', styleSheet), fillId);
 
-                fills.append('<fill><patternFill patternType="solid"><fgColor rgb="FFFF0000"/></patternFill></fill>');
-                var redFillIndex = fills.children().length - 1;
+                        // 4) Loop each row (<row>) in sheet1.xml
+                        $('row', sheet).each(function() {
+                            // The first <c> in the row is our hidden marker
+                            var markerCell = $(this).find('c').eq(0);
+                            if (!markerCell) return;
 
-                cellXfs.append(`<xf applyFill="1" fillId="${redFillIndex}" borderId="0"/>`);
-                var redStyleIndex = cellXfs.children().length - 1;
+                            // If the marker is "red", apply our new style to the entire row
+                            if (markerCell.text() === 'red') {
+                                $(this).find('c').attr('s', xfId);
+                            }
+                        });
 
-                // Apply red style based on the HTML row class or inline style
-                $('#complex_header tbody tr').each(function (index) {
-                    var row = $('row', sheet).eq(index);
-                    if ($(this).css('background-color') === 'rgb(255, 0, 0)' || $(this).hasClass('bg-red')) {
-                        row.attr('s', redStyleIndex); // Apply red background
+                        // 5) Hide the first column so it won't be visible in Excel
+                        //    (the marker column is still there, but hidden)
+                        var firstCol = $('cols col', sheet).eq(0);
+                        if (firstCol) {
+                            firstCol.attr('hidden', '1');
+                        }
                     }
-                });
-            }
-        }
-    ]
-});
+                },
+                'pdf',
+                'print'
+            ]
+        });
 
       }
     });

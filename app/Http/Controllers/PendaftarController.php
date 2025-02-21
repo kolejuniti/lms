@@ -196,168 +196,98 @@ class PendaftarController extends Controller
         }
 
         $content = "";
+        // Add a hidden marker header column:
         $content .= '<thead>
                         <tr>
-                            <th style="width: 1%">
-                                No.
-                            </th>
-                            <th>
-                                Name
-                            </th>
-                            <th>
-                                Gender
-                            </th>
-                            <th>
-                                No. IC
-                            </th>
-                            <th>
-                                No. Matric
-                            </th>
-                            <th>
-                                Program
-                            </th>
-                            <th>
-                                Intake
-                            </th>
-                            <th>
-                                Current Session
-                            </th>
-                            <th>
-                                Semester
-                            </th>
-                            <th>
-                                Sponsorship
-                            </th>
-                            <th>
-                                Status
-                            </th>
-                            <th>
-                                No. Phone
-                            </th>
-                            <th>
-                                Campus
-                            </th>
-                            <th>
-                                Qualification
-                            </th>
-                            <th>
-                                Race
-                            </th>
-                            <th>
-                                Religion
-                            </th>
-                            <th>
-                            </th>
+                            <th style="display:none">Marker</th> <!-- Hidden marker column -->
+                            <th style="width: 1%">No.</th>
+                            <th>Name</th>
+                            <th>Gender</th>
+                            <th>No. IC</th>
+                            <th>No. Matric</th>
+                            <th>Program</th>
+                            <th>Intake</th>
+                            <th>Current Session</th>
+                            <th>Semester</th>
+                            <th>Sponsorship</th>
+                            <th>Status</th>
+                            <th>No. Phone</th>
+                            <th>Campus</th>
+                            <th>Qualification</th>
+                            <th>Race</th>
+                            <th>Religion</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody id="table">';
-                    
-        foreach($students as $key => $student){
-            //$registered = ($student->status == 'ACTIVE') ? 'checked' : '';
-            $rowClass = $student->campus_id == 0 ? 'style="background-color: red;"' : '';
-            $content .= '
-            <tr '. $rowClass .'>
-            <td style="width: 1%">
-            '. $key+1 .'
-            </td>
-            <td>
-            '. $student->name .'
-            </td>
-            <td>
-            '. $student->gender .'
-            </td>
-            <td>
-            '. $student->ic .'
-            </td>
-            <td>
-            '. $student->no_matric .'
-            </td>
-            <td>
-            '. $student->progcode .'
-            </td>
-            <td>
-            '. $student->intake .'
-            </td>
-            <td>
-            '. $student->session .'
-            </td>
-            <td>
-            '. $student->semester .'
-            </td>
-            <td>
-            '. $sponsor[$key] .'
-            </td>
-            <td>
-            '. $student->status .'
-            </td>
-            <td>
-            '. $student->no_tel .'
-            </td>
-            <td>
-            '. $student_status[$key] .'
-            </td>
-            <td>
-            '. $student->qualification .'
-            </td>
-            <td>
-            '. $student->race .'
-            </td>
-            <td>
-            '. $student->religion .'
-            </td>';
-            
 
+        foreach ($students as $key => $student) {
+            // Determine if this row should be marked red
+            $marker = ($student->campus_id == 0) ? 'red' : '';
+
+            // Open the <tr> tag, conditionally apply inline red background
+            $content .= '<tr ' . ($student->campus_id == 0 ? 'style="background-color: red;"' : '') . '>';
+
+            // Hidden marker cell
+            $content .= '<td style="display:none;">' . $marker . '</td>';
+
+            // "No." column
+            $content .= '<td style="width: 1%">' . ($key + 1) . '</td>';
+
+            // Other columns
+            $content .= '<td>' . $student->name . '</td>';
+            $content .= '<td>' . $student->gender . '</td>';
+            $content .= '<td>' . $student->ic . '</td>';
+            $content .= '<td>' . $student->no_matric . '</td>';
+            $content .= '<td>' . $student->progcode . '</td>';
+            $content .= '<td>' . $student->intake . '</td>';
+            $content .= '<td>' . $student->session . '</td>';
+            $content .= '<td>' . $student->semester . '</td>';
+            $content .= '<td>' . $sponsor[$key] . '</td>';
+            $content .= '<td>' . $student->status . '</td>';
+            $content .= '<td>' . $student->no_tel . '</td>';
+            $content .= '<td>' . $student_status[$key] . '</td>';
+            $content .= '<td>' . $student->qualification . '</td>';
+            $content .= '<td>' . $student->race . '</td>';
+            $content .= '<td>' . $student->religion . '</td>';
+
+            // Action buttons
             if (isset($request->edit)) {
-                $content .= '<td class="project-actions text-right" >
-                    <a class="btn btn-info btn-sm btn-sm mr-2 mb-2" href="/pendaftar/view/'. $student->ic .'">
-                        <i class="ti-pencil-alt">
-                        </i>
-                        View
-                    </a>
-                    <a class="btn btn-info btn-sm btn-sm mr-2 mb-2" href="/pendaftar/edit/'. $student->ic .'">
-                        <i class="ti-pencil-alt">
-                        </i>
-                        Edit
-                    </a>
-                    <a class="btn btn-primary btn-sm btn-sm mr-2 mb-2" href="/pendaftar/spm/'. $student->ic .'">
-                        <i class="ti-ruler-pencil">
-                        </i>
-                        SPM/SVM/SKM
-                    </a>
-                    <a class="btn btn-secondary btn-sm btn-sm mr-2 mb-2" href="#" onclick="getProgram(\''. $student->ic .'\')">
-                        <i class="ti-eye">
-                        </i>
-                        Program History
-                    </a>
-                    <a class="btn btn-secondary btn-sm btn-sm mr-2 mb-2" target="_blank" href="/AR/student/getSlipExam?student='. $student->ic .'">
-                        <i class="fa fa-info">
-                        </i>
-                        Slip Exam
-                    </a>
-                    <!-- <a class="btn btn-danger btn-sm" href="#" onclick="deleteMaterial('. $student->ic .')">
-                        <i class="ti-trash">
-                        </i>
-                        Delete
-                    </a> -->
-                    </td>
-                    
-                    ';
-            }else{
-                $content .= '<td class="project-actions text-right" >
-                <a class="btn btn-secondary btn-sm btn-sm mr-2" href="#" onclick="getProgram(\''. $student->ic .'\')">
-                <i class="ti-eye">
-                </i>
-                Program History
-                </a>
-                </td>
-            
-            ';
-
+                $content .= '<td class="project-actions text-right">
+                                <a class="btn btn-info btn-sm mr-2 mb-2" href="/pendaftar/view/' . $student->ic . '">
+                                    <i class="ti-pencil-alt"></i> View
+                                </a>
+                                <a class="btn btn-info btn-sm mr-2 mb-2" href="/pendaftar/edit/' . $student->ic . '">
+                                    <i class="ti-pencil-alt"></i> Edit
+                                </a>
+                                <a class="btn btn-primary btn-sm mr-2 mb-2" href="/pendaftar/spm/' . $student->ic . '">
+                                    <i class="ti-ruler-pencil"></i> SPM/SVM/SKM
+                                </a>
+                                <a class="btn btn-secondary btn-sm mr-2 mb-2" href="#" onclick="getProgram(\'' . $student->ic . '\')">
+                                    <i class="ti-eye"></i> Program History
+                                </a>
+                                <a class="btn btn-secondary btn-sm mr-2 mb-2" target="_blank" href="/AR/student/getSlipExam?student=' . $student->ic . '">
+                                    <i class="fa fa-info"></i> Slip Exam
+                                </a>
+                            </td>';
+            } else {
+                $content .= '<td class="project-actions text-right">
+                                <a class="btn btn-secondary btn-sm mr-2" href="#" onclick="getProgram(\'' . $student->ic . '\')">
+                                    <i class="ti-eye"></i> Program History
+                                </a>
+                            </td>';
             }
-            }
-            $content .= '</tr></tbody>';
 
-            return $content;
+            // Close the row here
+            $content .= '</tr>';
+        }
+
+        // After the loop, only close the <tbody>
+        $content .= '</tbody>';
+
+        // Return the final HTML
+        return $content;
+
 
     }
 
