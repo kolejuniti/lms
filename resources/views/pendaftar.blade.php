@@ -365,25 +365,25 @@
             title: 'Student Data',
             customize: function (xlsx) {
                 var sheet = xlsx.xl.worksheets['sheet1.xml'];
-                var rows = $('row', sheet);
-
-                // Style index for red background
-                var redStyleIndex = 22;
-
-                rows.each(function (index, row) {
-                    var firstCell = $('c[r^="A"] t', row).text(); // Get value of first cell in each row
-                    if (firstCell && firstCell.includes('040901040365')) { // Example: Color row with specific IC
-                        $(row).attr('s', redStyleIndex); // Apply red style
-                    }
-                });
+                var styles = xlsx.xl['styles.xml'];
 
                 // Define red background style
-                var styles = xlsx.xl['styles.xml'];
                 var fills = $('fills', styles);
                 var cellXfs = $('cellXfs', styles);
 
-                fills.append('<fill><patternFill patternType="solid"><fgColor rgb="FFFF0000"/><bgColor indexed="64"/></patternFill></fill>');
-                cellXfs.append('<xf fillId="2" borderId="0" applyFill="1"/>'); // fillId="2" should match the new fill
+                fills.append('<fill><patternFill patternType="solid"><fgColor rgb="FFFF0000"/></patternFill></fill>');
+                var redFillIndex = fills.children().length - 1;
+
+                cellXfs.append(`<xf applyFill="1" fillId="${redFillIndex}" borderId="0"/>`);
+                var redStyleIndex = cellXfs.children().length - 1;
+
+                // Apply red style based on the HTML row class or inline style
+                $('#complex_header tbody tr').each(function (index) {
+                    var row = $('row', sheet).eq(index);
+                    if ($(this).css('background-color') === 'rgb(255, 0, 0)' || $(this).hasClass('bg-red')) {
+                        row.attr('s', redStyleIndex); // Apply red background
+                    }
+                });
             }
         }
     ]
