@@ -357,7 +357,7 @@
             @endforeach  
         </div>
 
-        <div class="flex-container col-md-12 mt-1">
+        <div class="flex-container col-md-12 mt-4">
             <div class="col-md-6" style="border: 1px solid white">
                 <table>
                     <thead>
@@ -368,7 +368,7 @@
                     </thead>
                 </table>
             </div>
-            <div class="col-md-3" style="border: 1px solid white">
+            <div class="col-md-1" style="border: 1px solid white">
                 <table>
                     <thead>
                         <tr class="line">
