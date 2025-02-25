@@ -1410,7 +1410,8 @@ class AR_Controller extends Controller
 
         $student = DB::table('students')->where('no_matric', $request->no_matric)->first();
 
-        if($request->session != '' && $request->session != $student->session && $request->session > $student->session)
+        // if($request->session != '' && $request->session != $student->session && $request->session > $student->session)
+        if($request->session != '' && $request->session != $student->session)
         {
             if($student->status == 2 && $student->campus_id == 0)
             {
