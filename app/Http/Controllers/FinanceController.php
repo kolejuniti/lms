@@ -10307,9 +10307,9 @@ class FinanceController extends Controller
             ->where('students.program', '!=', 30)
             ->whereIn('students.status', [8])
             ->whereBetween('sessions.Year', [$request->from, $request->to])
-            ->when($request->input('remark'), function($query) use ($filterStd) {
-                return $query->whereNotIn('students.ic', $filterStd);
-            })
+            // ->when($request->input('remark'), function($query) use ($filterStd) {
+            //     return $query->whereNotIn('students.ic', $filterStd);
+            // })
             ->select('students.*', 'sessions.Year AS graduate', 'sessions.SessionName AS session')
             ->get();
 
