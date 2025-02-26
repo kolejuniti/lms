@@ -10251,7 +10251,7 @@ class FinanceController extends Controller
          // Get current month and year
         $currentMonth = date('m');
         $currentYear = date('Y');
-        // $filterStd = array();
+        $filterStd = [];
 
         // Set the start date to January of the previous year
         $startYear = $currentYear - 1;
@@ -10272,16 +10272,15 @@ class FinanceController extends Controller
             }
         }
 
-        if($request->input('remark'))
-        {
-
+        $remark = filter_var($request->input('remark'), FILTER_VALIDATE_BOOLEAN);
+        if($remark) {
             $filterStd = DB::table('student_remarks')
                 ->select('student_ic')
                 ->get()
                 ->pluck('student_ic')
                 ->toArray();
-
         }
+
 
         //A
 
@@ -10296,6 +10295,7 @@ class FinanceController extends Controller
             ->when($request->input('remark'), function($query) use ($filterStd) {
                 return $query->whereNotIn('students.ic', $filterStd);
             })
+
             ->select('students.*', 'sessions.Year AS graduate', 'sessions.SessionName AS session')
             ->get();
 
@@ -10310,6 +10310,7 @@ class FinanceController extends Controller
             ->when($request->input('remark'), function($query) use ($filterStd) {
                 return $query->whereNotIn('students.ic', $filterStd);
             })
+
             ->select('students.*', 'sessions.Year AS graduate', 'sessions.SessionName AS session')
             ->get();
 
