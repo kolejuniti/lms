@@ -10276,6 +10276,7 @@ class FinanceController extends Controller
         if($remark) {
             $filterStd = DB::table('student_remarks')
                 ->select('student_ic')
+                ->where('latest_balance', '<=', 0)
                 ->get()
                 ->pluck('student_ic')
                 ->toArray();
