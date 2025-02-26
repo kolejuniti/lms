@@ -181,6 +181,11 @@
                                                             <p class="card-text"><strong>Latest Balance :</strong> {{ $data['remark']->latest_balance }}</p>
                                                         </div>
                                                     </div>
+                                                    <div class="col-md-6">  
+                                                        <div class="p-3 mb-2 bg-danger text-white rounded">
+                                                            <p class="card-text"><strong>Notes :</strong> {{ $data['remark']->notes }}</p>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>

@@ -746,6 +746,23 @@ class FinanceController extends Controller
                 'ref_no' => $ref_no->code . $ref_no->ref_no + 1
             ]);
 
+            //check if student has remark
+
+            if(DB::table('student_remarks')->where('student_ic', $ref_no->student_ic)->exists())
+            {
+
+                $balance = DB::table('student_remarks')->where('student_ic', $ref_no->student_ic)->value('latest_balance');
+
+                $value = DB::table('tblpayment')->where('id', $request->id)->value('amount');
+
+                $newbalance = $balance - $value;
+
+                DB::table('student_remarks')->where('student_ic', $ref_no->student_ic)->update([
+                    'latest_balance' => $newbalance
+                ]);
+
+            }
+
             //check if newstudent & more than 250
 
             $student = DB::table('students')->where('ic', $ref_no->student_ic)->first();
