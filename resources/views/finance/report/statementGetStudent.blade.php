@@ -215,6 +215,29 @@
                                 </div>
                             </div>
                         </div>
+
+                        @if(!empty($data['remark']))
+                            <div class="card border-danger mb-3">
+                                <div class="card-header bg-danger text-white">
+                                    Remark Details
+                                </div>
+                                <div class="card-body">
+                                    <p class="card-text mb-3"><strong>Category :</strong> {{ $data['remark']->name }}</p>
+                                    <div class="row">
+                                        <div class="col-md-6">  
+                                            <div class="p-3 mb-2 bg-danger text-white rounded">
+                                                <p class="card-text"><strong>Correct Amount :</strong> {{ $data['remark']->correction_amount }}</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">  
+                                            <div class="p-3 mb-2 bg-danger text-white rounded">
+                                                <p class="card-text"><strong>Latest Balance :</strong> {{ $data['remark']->latest_balance }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>

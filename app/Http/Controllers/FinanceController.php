@@ -4854,6 +4854,14 @@ class FinanceController extends Controller
 
         $data['total_all'] =  $data['current_balance'] + $data['pk_balance'];
 
+        //REMARk
+
+        $data['remark'] = DB::table('student_remarks')
+                          ->join('categories', 'student_remarks.category_id', 'categories.id')
+                          ->where('student_remarks.student_ic', $request->student)
+                          ->select('student_remarks.*', 'categories.name')
+                          ->first();
+
         if(isset($request->print))
         {
 
@@ -9896,6 +9904,14 @@ class FinanceController extends Controller
         ->where('students.ic', '=', request()->ic)
         ->orderBy('student_payment_log.date_of_call', 'DESC')
         ->get();
+
+        //H
+
+        $data['remark'] = DB::table('student_remarks')
+                          ->join('categories', 'student_remarks.category_id', 'categories.id')
+                          ->where('student_remarks.student_ic', request()->ic)
+                          ->select('student_remarks.*', 'categories.name')
+                          ->first();
 
 
 

@@ -306,6 +306,29 @@ tr:hover {
                                         </div>
                                     </div>
                                 </div>
+
+                                @if(!empty($data['remark']))
+                                <div class="card mb-3" id="stud_info">
+                                    <div class="card-header bg-danger text-white">
+                                        Remark Details
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row mb-5">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <p>Category &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ $data['remark']->name }}</p>
+                                                </div>
+                                                <div class="form-group">
+                                                    <p>Correct Amount &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ $data['remark']->correction_amount }}</p>
+                                                </div>
+                                                <div class="form-group">
+                                                    <p>Latest Balance &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ $data['remark']->latest_balance }}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                @endif
                             </div>
                         </div>
                     </div>
