@@ -90,6 +90,16 @@
                         </div>
                     </div>
                   </div>
+                  <div class="row">
+                    <div class="col-md-12 mt-4">
+                      <div class="form-group">
+                        <div class="form-check">
+                          <input class="form-check-input" type="checkbox" id="filterRemarkStudent" name="filterRemarkStudent">
+                          <label class="form-check-label" for="filterRemarkStudent">Filter Remark Student</label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                   <button type="submit" class="btn btn-primary pull-right mb-3" onclick="submit()">Find</button>
                   <div class="row">
                     <div id="form-student">
@@ -118,6 +128,7 @@ function submit() {
   var program = $('#program').val();
   var from = $('#from').val();
   var to = $('#to').val();
+  var remark = $('#filterRemarkStudent').is(':checked');
 
   // Show the spinner
   $('#loading-spinner').css('display', 'block');
@@ -126,7 +137,7 @@ function submit() {
     headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
     url: "{{ url('finance/debt/monthlyPayment/getMonthlyPayment') }}",
     method: 'POST',
-    data: {program: program, from: from, to: to},
+    data: {program: program, from: from, to: to, remark: remark},
     error: function(err){
       alert("Error");
       console.log(err);
