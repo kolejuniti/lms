@@ -12332,6 +12332,160 @@ class FinanceController extends Controller
 
     }
 
+    public function studentRemarks()
+    {
+
+        return view('finance.debt.student_remarks.studentRemarks');
+
+    }
+
+    public function getStudentRemarks(Request $request)
+    {
+
+        $data['student'] = DB::table('students')
+                           ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
+                           ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+                           ->join('sessions AS t1', 'students.intake', 't1.SessionID')
+                           ->join('sessions AS t2', 'students.session', 't2.SessionID')
+                           ->select('students.*', 'tblstudent_status.name AS statusName', 'tblprogramme.progname AS program', 'students.program AS progid', 't1.SessionName AS intake_name', 't2.SessionName AS session_name')
+                           ->where('ic', $request->student)->first();
+
+        $data['remarks'] = DB::table('student_remarks')
+                           ->join('categories', 'student_remarks.category_id', 'categories.id')
+                           ->join('students', 'student_remarks.student_ic', 'students.ic')
+                           ->where('student_ic', $request->student)
+                           ->select('student_remarks.*', 'categories.name AS category', 'students.name AS student_name')
+                           ->get();
+
+        $data['category'] = DB::table('categories')->get();
+
+
+        return view('finance.debt.student_remarks.updateStudentRemarks', compact('data'));
+
+    }
+
+    public function storeStudentRemarks(Request $request)
+    {
+
+        $studentData = $request->studentData;
+
+        $validator = Validator::make($request->all(), [
+            'studentData' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return ["message"=>"Field Error", "error" => $validator->messages()->get('*')];
+        }
+
+        try{ 
+            DB::beginTransaction();
+            DB::connection()->enableQueryLog();
+
+            try{
+                $student = json_decode($studentData);
+
+                $exists = DB::table('student_remarks')
+                    ->where('student_ic', $student->ic)
+                    ->exists();
+
+                if (!$exists) {
+                    DB::table('student_remarks')->insert([
+                        'student_ic' => $student->ic,
+                        'category_id' => $student->categories,
+                        'correction_amount' => $student->correction,
+                        'latest_balance' => $student->current,
+                        'notes' => $student->comment,
+                        'add_staffID' => Auth::user()->ic
+                    ]);
+                } else {
+                    return ["message" => "Remark already exists"];
+                }
+
+                $std_rem = DB::table('student_remarks')
+                           ->join('categories', 'student_remarks.category_id', 'categories.id')
+                           ->join('students', 'student_remarks.student_ic', 'students.ic')
+                           ->where('student_ic', $student->ic)
+                           ->select('student_remarks.*', 'categories.name AS category', 'students.name AS student_name')
+                           ->get();
+
+                $content = "";
+                $content .= '<thead>
+                                <tr>
+                                    <th style="width: 1%">
+                                        No.
+                                    </th>
+                                    <th>
+                                        No. IC
+                                    </th>
+                                    <th>
+                                        Name
+                                    </th>
+                                    <th>
+                                        Category
+                                    </th>
+                                    <th>
+                                        Correction Amount
+                                    </th>
+                                    <th>
+                                        Latest Balance
+                                    </th>
+                                    <th>
+                                        Remark
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="table">';
+                            
+                foreach($std_rem as $key => $std){
+                    //$registered = ($std->status == 'ACTIVE') ? 'checked' : '';
+                    $content .= '
+                    <tr>
+                        <td>
+                        '. $key+1 .'
+                        </td>
+                        <td>
+                        '. $std->student_ic .'
+                        </td>
+                        <td>
+                        '. $std->student_name .'
+                        </td>
+                        <td>
+                        '. $std->category .'
+                        </td>
+                        <td>
+                        '. $std->correction_amount .'
+                        </td>
+                        <td>
+                        '. $std->latest_balance .'
+                        </td>
+                        <td>
+                        '. $std->notes .'
+                        </td>
+                    </tr>
+                    ';
+                    }
+                $content .= '</tbody>';
+                
+            }catch(QueryException $ex){
+                DB::rollback();
+                if($ex->getCode() == 23000){
+                    return ["message"=>"Class code already existed inside the system"];
+                }else{
+                    \Log::debug($ex);
+                    return ["message"=>"DB Error"];
+                }
+            }
+
+            DB::commit();
+        }catch(Exception $ex){
+            return ["message"=>"Error"];
+        }
+
+        return ["message"=>"Success", "data" => $content];
+
+    }
+
+
     public function vehicleRecord()
     {
 

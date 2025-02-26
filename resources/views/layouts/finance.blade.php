@@ -425,6 +425,7 @@ li a {
 					<li><a href="{{ route('finance.programAgingReport') }}" class="{{ (route('finance.programAgingReport') == Request::url()) ? 'active' : ''}}">Program Aging Report</a></li>
 					<li><a href="{{ route('finance.statusAgingReport') }}" class="{{ (route('finance.statusAgingReport') == Request::url()) ? 'active' : ''}}">Status Aging Report</a></li>
 					<li><a href="{{ route('finance.studentArrearsReport') }}" class="{{ (route('finance.studentArrearsReport') == Request::url()) ? 'active' : ''}}">Student Arrears Report</a></li>
+					<li><a href="{{ route('finance.gradReport') }}" class="{{ (route('finance.gradReport') == Request::url()) ? 'active' : ''}}">Grad Report</a></li>
 				</ul>
 			  </li>
 			  <li class="treeview">
@@ -452,6 +453,7 @@ li a {
 					<li><a href="{{ route('finance.arrearNotice') }}" class="{{ (route('finance.arrearNotice') == Request::url()) ? 'active' : ''}}">Arrear Notice</a></li>
 					<li><a href="{{ route('finance.studentCtos') }}" class="{{ (route('finance.studentCtos') == Request::url()) ? 'active' : ''}}">Student CTOSs</a></li>
 					<li><a href="{{ route('finance.authorizeTranscript') }}" class="{{ (route('finance.authorizeTranscript') == Request::url()) ? 'active' : ''}}">Autorization Transcript</a></li>
+					<li><a href="{{ route('finance.studentRemarks') }}" class="{{ (route('finance.studentRemarks') == Request::url()) ? 'active' : ''}}">Student Remark</a></li>
 				</ul>
 			  </li>
 			  <li class="treeview">

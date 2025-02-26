@@ -632,22 +632,35 @@ Route::post('/student/forum/{id}/topic/insert', [App\Http\Controllers\ForumContr
 Route::get('/student/warning/{id}', [App\Http\Controllers\StudentController::class, 'warningLetter'])->name('student.warning');
 Route::get('/student/warning/{id}/getWarningLetter', [App\Http\Controllers\StudentController::class, 'getWarningLetter']);
 
+// Mark all unread notifications as read for the authenticated student
 Route::get('/notifications/clear', function () {
-    // Mark all unread notifications as read for the authenticated user
     if (auth()->guard('student')->check()) {
         auth()->guard('student')->user()->unreadNotifications->markAsRead();
     }
     return back();
 })->name('notifications.clear');
 
+// Retrieve all notifications (read and unread) for display
 Route::get('/notifications', function () {
-    // Retrieve all notifications (read and unread) for display
     if (auth()->guard('student')->check()) {
         $notifications = auth()->guard('student')->user()->notifications;
         return view('student.notificationsAll', compact('notifications'));
     }
     return redirect('/');
 })->name('notifications.index');
+
+// Mark a single notification as read via AJAX
+Route::post('/notifications/mark-read/{id}', function ($id) {
+    if (auth()->guard('student')->check()) {
+        $notification = auth()->guard('student')->user()->unreadNotifications->find($id);
+        if ($notification) {
+            $notification->markAsRead();
+            return response()->json(['success' => true]);
+        }
+    }
+    return response()->json(['success' => false], 404);
+})->name('notifications.markRead');
+
 
 Route::get('/finance_dashboard', [App\Http\Controllers\FinanceController::class, 'dashboard'])->name('finance.dashboard');
 Route::get('/finance', [App\Http\Controllers\FinanceController::class, 'index'])->name('finance');
@@ -820,6 +833,9 @@ Route::get('/finance/debt/studentCtos', [App\Http\Controllers\FinanceController:
 Route::post('/finance/debt/studentCtos/importCtos', [App\Http\Controllers\FinanceController::class,'importCtos'])->name('finance.studentCtos.importCtos');
 Route::post('/finance/debt/studentCtos/releaseCTOS', [App\Http\Controllers\FinanceController::class,'releaseCTOS'])->name('finance.studentCtos.releaseCTOS');
 Route::post('/finance/debt/studentCtos/deleteCTOS', [App\Http\Controllers\FinanceController::class,'deleteCTOS'])->name('finance.studentCtos.deleteCTOS');
+Route::get('/finance/debt/studentRemarks', [App\Http\Controllers\FinanceController::class, 'studentRemarks'])->name('finance.studentRemarks');
+Route::post('/finance/debt/studentRemarks/getStudentRemarks', [App\Http\Controllers\FinanceController::class, 'getStudentRemarks']);
+Route::post('/finance/debt/studentRemarks/storeStudentRemarks', [App\Http\Controllers\FinanceController::class, 'storeStudentRemarks']);
 Route::get('/finance/asset/vehicleRecord', [App\Http\Controllers\FinanceController::class,'vehicleRecord'])->name('finance.vehicleRecord');
 Route::post('/finance/asset/vehicleRecord/storeVehicle', [App\Http\Controllers\FinanceController::class,'storeVehicle']);
 Route::delete('/finance/asset/vehicleRecord/deleteVehicle', [App\Http\Controllers\FinanceController::class,'deleteVehicle']);
