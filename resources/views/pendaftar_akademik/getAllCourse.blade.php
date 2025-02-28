@@ -232,7 +232,7 @@
                                         <td style="text-align: center;">
                                             @php
                                                 $start_date = strtotime('2024-10-06');  // Format: YYYY-MM-DD
-                                                $end_date = strtotime('2024-10-18');    // Format: YYYY-MM-DD
+                                                $end_date = strtotime('2025-03-30');    // Format: YYYY-MM-DD
                                                 $current_date = strtotime(date('Y-m-d'));  // Format: YYYY-MM-DD
                                             @endphp
 
