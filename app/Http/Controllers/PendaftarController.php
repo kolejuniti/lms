@@ -1432,6 +1432,15 @@ class PendaftarController extends Controller
 
                 }
 
+                if($student->status != 2)
+                {
+
+                    DB::table('students')->where('ic', $student->ic)->update([
+                        'campus_id' => 0
+                    ]);
+
+                }
+
                 DB::table('tblstudent_log')->insert([
                     'student_ic' => $student->ic,
                     'session_id' => $student->session,
