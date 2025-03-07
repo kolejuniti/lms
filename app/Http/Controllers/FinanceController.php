@@ -11121,7 +11121,8 @@ class FinanceController extends Controller
                             }
 
                             // Define the first part of the union
-                            $query = DB::table('tblclaim')
+                            $query = DB::table('students')
+                            ->join('tblclaim', 'students.ic', 'tblclaim.student_ic')
                             ->leftjoin('tblclaimdtl', 'tblclaim.id', '=', 'tblclaimdtl.claim_id')
                             ->leftjoin('tblstudentclaim', 'tblclaimdtl.claim_package_id', '=', 'tblstudentclaim.id')
                             ->where([
@@ -11133,7 +11134,8 @@ class FinanceController extends Controller
                             ->select(DB::raw("IFNULL(SUM(tblclaimdtl.amount), 0) AS claim"), DB::raw('0 as payment'));
 
                             // Define the second part of the union
-                            $subQuery = DB::table('tblpayment')
+                            $subQuery = DB::table('students')
+                            ->join('tblpayment', 'students.ic', 'tblpayment.student_ic')
                             ->leftjoin('tblpaymentdtl', 'tblpayment.id', '=', 'tblpaymentdtl.payment_id')
                             ->leftjoin('tblstudentclaim', 'tblpaymentdtl.claim_type_id', '=', 'tblstudentclaim.id')
                             ->where([
