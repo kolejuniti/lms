@@ -11055,214 +11055,170 @@ class FinanceController extends Controller
 
     public function getProgramAgingReport(Request $request)
     {
-
-        $lastKnownBalance = 0; // Default to 0 initially
-        $filtersData = $request->filtersData;
-
+        // Validate request
         $validator = Validator::make($request->all(), [
             'filtersData' => 'required'
         ]);
 
         if ($validator->fails()) {
-            return ["message"=>"Field Error", "error" => $validator->messages()->get('*')];
+            return ["message" => "Field Error", "error" => $validator->messages()->get('*')];
         }
 
-        try{ 
-            DB::beginTransaction();
-            DB::connection()->enableQueryLog();
-
-            try{
-
-                $filter = json_decode($filtersData);
-
-                if($filter->program == 'all')
-                {
-
-                    $data['program'] = DB::table('tblprogramme')->pluck('id');
-
-                }else{
-
-                    $data['program'] = DB::table('tblprogramme')->where('id', $filter->program)->pluck('id');
+        try {
+            $filter = json_decode($request->filtersData);
+            
+            // Get programs once, outside the loop
+            if ($filter->program == 'all') {
+                $programs = DB::table('tblprogramme')
+                    ->select('id', 'progcode', 'progname')
+                    ->get();
+            } else {
+                $programs = DB::table('tblprogramme')
+                    ->select('id', 'progcode', 'progname')
+                    ->where('id', $filter->program)
+                    ->get();
+            }
+            
+            // Calculate years range
+            $startYear = date('Y', strtotime($filter->from));
+            $endYear = date('Y', strtotime($filter->to));
+            $currentYear = now()->year;
+            
+            // Create array of years
+            $arrayYears = range($startYear, $currentYear);
+            $rangeYears = range($startYear, $endYear);
+            
+            // Initialize results array with proper structure
+            $results = [];
+            $totals = array_fill_keys($arrayYears, 0);
+            
+            // Get all needed data in a single query per program instead of per year
+            foreach ($programs as $program) {
+                $programId = $program->id;
+                $yearlyBalances = [];
+                $lastKnownBalance = 0;
+                
+                // Get all claims and payments in one query with year extraction
+                $query = DB::select("
+                    SELECT 
+                        YEAR(transaction_date) as year,
+                        SUM(CASE WHEN transaction_type = 'claim' THEN amount ELSE 0 END) as total_claims,
+                        SUM(CASE WHEN transaction_type = 'payment' THEN amount ELSE 0 END) as total_payments
+                    FROM (
+                        SELECT 
+                            tblclaim.add_date as transaction_date,
+                            'claim' as transaction_type,
+                            IFNULL(SUM(tblclaimdtl.amount), 0) as amount
+                        FROM students
+                        JOIN tblclaim ON students.ic = tblclaim.student_ic
+                        LEFT JOIN tblclaimdtl ON tblclaim.id = tblclaimdtl.claim_id
+                        LEFT JOIN tblstudentclaim ON tblclaimdtl.claim_package_id = tblstudentclaim.id
+                        WHERE tblclaim.process_status_id = 2
+                        AND tblstudentclaim.groupid = 1
+                        AND tblclaim.program_id = ?
+                        AND tblclaim.add_date BETWEEN ? AND ?
+                        GROUP BY YEAR(tblclaim.add_date)
+                        
+                        UNION ALL
+                        
+                        SELECT 
+                            tblpayment.add_date as transaction_date,
+                            'payment' as transaction_type,
+                            IFNULL(SUM(tblpaymentdtl.amount), 0) as amount
+                        FROM students
+                        JOIN tblpayment ON students.ic = tblpayment.student_ic
+                        LEFT JOIN tblpaymentdtl ON tblpayment.id = tblpaymentdtl.payment_id
+                        LEFT JOIN tblstudentclaim ON tblpaymentdtl.claim_type_id = tblstudentclaim.id
+                        WHERE tblpayment.process_status_id = 2
+                        AND tblstudentclaim.groupid = 1
+                        AND tblpayment.program_id = ?
+                        AND tblpayment.add_date BETWEEN ? AND ?
+                        GROUP BY YEAR(tblpayment.add_date)
+                    ) as combined_data
+                    GROUP BY year
+                    ORDER BY year
+                ", [$programId, $filter->from, $filter->to, $programId, $filter->from, $filter->to]);
+                
+                // Convert query results to a more manageable format
+                $yearData = [];
+                foreach ($query as $row) {
+                    $yearData[$row->year] = $row->total_claims - $row->total_payments;
+                }
+                
+                // Fill in the results for each year
+                foreach ($arrayYears as $year) {
+                    if (in_array($year, $rangeYears)) {
+                        if (isset($yearData[$year])) {
+                            // We have data for this year
+                            $balance = $lastKnownBalance + $yearData[$year];
+                            $lastKnownBalance = $balance;
+                        }
+                        // If no data for this year, keep last known balance
+                    } 
                     
+                    $yearlyBalances[$year] = $lastKnownBalance;
+                    $totals[$year] += $lastKnownBalance;
                 }
-
-                // Assuming $request->year has the value of 2019
-                $startYear = date('Y', strtotime($filter->from)); // Starting year
-                $endYear = date('Y', strtotime($filter->to)); // Starting year
-                $currentYear = now()->year; // This gets the current year
-
-                // Create an array of years from start year to current year
-                $data['arrayYears'] = range($startYear, $currentYear);
-
-                // Create an array of years from and to
-                $data['rangeYears'] = range($startYear, $endYear);
-
-                foreach($data['program'] as $key => $prg)
-                {
-
-                    foreach($data['arrayYears'] as $key2 => $year)
-                    {
-
-                        if(in_array($year, $data['rangeYears']))
-                        {
-
-                            // Create a date instance for the last day of the year using Carbon
-                            $lastDayOfYear = Carbon::createFromDate($year)->endOfYear()->toDateString();
-                            
-                            if($year == $endYear)
-                            {
-
-                                $endYear2 = $filter->to;
-
-                            }else{
-
-                                $endYear2 = $lastDayOfYear;
-
-                            }
-
-                            // Define the first part of the union
-                            $query = DB::table('students')
-                            ->join('tblclaim', 'students.ic', 'tblclaim.student_ic')
-                            ->leftjoin('tblclaimdtl', 'tblclaim.id', '=', 'tblclaimdtl.claim_id')
-                            ->leftjoin('tblstudentclaim', 'tblclaimdtl.claim_package_id', '=', 'tblstudentclaim.id')
-                            ->where([
-                                ['tblclaim.process_status_id', '=', 2],
-                                ['tblstudentclaim.groupid', '=', 1]
-                            ])
-                            ->where('tblclaim.program_id', $prg)
-                            ->whereBetween('tblclaim.add_date', [$filter->from, $endYear2])
-                            ->select(DB::raw("IFNULL(SUM(tblclaimdtl.amount), 0) AS claim"), DB::raw('0 as payment'));
-
-                            // Define the second part of the union
-                            $subQuery = DB::table('students')
-                            ->join('tblpayment', 'students.ic', 'tblpayment.student_ic')
-                            ->leftjoin('tblpaymentdtl', 'tblpayment.id', '=', 'tblpaymentdtl.payment_id')
-                            ->leftjoin('tblstudentclaim', 'tblpaymentdtl.claim_type_id', '=', 'tblstudentclaim.id')
-                            ->where([
-                                ['tblpayment.process_status_id', '=', 2],
-                                ['tblstudentclaim.groupid', '=', 1]
-                            ])
-                            ->where('tblpayment.program_id', $prg)
-                            ->whereBetween('tblpayment.add_date', [$filter->from, $endYear2])
-                            ->select(DB::raw('0 as claim'), DB::raw("IFNULL(SUM(tblpaymentdtl.amount), 0) AS payment"))
-                            ->unionAll($query); // Here, use the Query Builder instance directly
-
-                            // // Now, wrap the subquery and calculate the balance
-                            // $data['balance'][$key][$key2] = DB::query()->fromSub($subQuery, 'sub')
-                            // ->select(DB::raw('SUM(claim) - SUM(payment) AS balance'))
-                            // ->get();
-
-                            $result = DB::query()->fromSub($subQuery, 'sub')
-                            ->select(DB::raw('SUM(claim) - SUM(payment) AS balance'))
-                            ->get();
-
-                            if ($result->isNotEmpty() && isset($result[0]->balance)) {
-                                // Update last known balance if the result is not empty
-                                $lastKnownBalance = $result[0]->balance;
-                                $data['balance'][$key][$key2] = $result;
-                            } else {
-                                // If result is empty, ensure last known balance is maintained
-                                $data['balance'][$key][$key2] = collect([(object) ['balance' => $lastKnownBalance]]);
-                            }
-
-                        }else{
-
-                            // // Set balance to a default object in a collection if the year is not in the array
-                            // $data['balance'][$key][$key2] = collect([ (object) ['balance' => 0] ]);
-
-                            // Set balance to the last known balance if the year is not in the array
-                            $data['balance'][$key][$key2] = collect([(object) ['balance' => $lastKnownBalance]]);
-
-                        }
-
-                    }
-
-                }
-
-                $content = "";
-                $content .= '<thead>
-                                <tr>
-                                    <th rowspan="2">
-                                        Program
-                                    </th>
-                                    <th colspan="'. count($data['arrayYears']) .'" style="text-align: center">
-                                        AGING REPORT BY PROGRAM AND YEAR from '. $startYear .' UNTIL '. $currentYear; 
-                        $content .= '</th>
-                                </tr>
-                                <tr>';
-                                    foreach($data['arrayYears'] as $year)
-                                    {
-                                    $content .= 
-                                    '<th>
-                                    '. $year .'  
-                                    </th>';
-                                    }
-
-
-                    $content .= '</tr>
-                            </thead>
-                            <tbody id="table">';
-
-                            // Initialize totals array
-                            $totals = array_fill_keys($data['arrayYears'], 0);
-                            
-                foreach($data['program'] as $key => $prg){
-                    //$registered = ($std->status == 'ACTIVE') ? 'checked' : '';
-
-                    $program = DB::table('tblprogramme')->where('id', $prg)->select('progcode', 'progname')->first();
-
-                    $content .= '
-                    <tr>
-                        <td>
-                        '. $program->progcode .' - '. $program->progname .'
-                        </td>';
-                        foreach($data['arrayYears'] as $key2 => $year)
-                        {
-                            foreach($data['balance'][$key][$key2] as $balance)
-                            {
-                            // Add balance to totals
-                            $totals[$year] += $balance->balance;
-
-                            $content .= 
-                            '<td>
-                            '. $balance->balance .'  
-                            </td>';
-                            }
-                        }
-        $content .='</tr>
-                    ';
-                    }
-
-                $content .= '</tbody>';
-                $content .= '<tfoot>
-                        <tr>
-                            <td>
-                                TOTAL
-                            </td>';
-                            // Display totals in the footer
-                            foreach($totals as $yearTotal) {
-                                $content .= '<td>'. number_format($yearTotal, 2) .'</td>';
+                
+                $results[] = [
+                    'program' => $program,
+                    'balances' => $yearlyBalances
+                ];
+            }
+            
+            // Build the HTML directly in the function as requested
+            $content = "";
+            $content .= '<thead>
+                            <tr>
+                                <th rowspan="2">
+                                    Program
+                                </th>
+                                <th colspan="'. count($arrayYears) .'" style="text-align: center">
+                                    AGING REPORT BY PROGRAM AND YEAR from '. $startYear .' UNTIL '. $currentYear; 
+            $content .= '</th>
+                            </tr>
+                            <tr>';
+                            foreach($arrayYears as $year) {
+                                $content .= '<th>'. $year .'</th>';
                             }
             $content .= '</tr>
-                    </tfoot>';
-
-            }catch(QueryException $ex){
-                DB::rollback();
-                if($ex->getCode() == 23000){
-                    return ["message"=>"Class code already existed inside the system"];
-                }else{
-                    \Log::debug($ex);
-                    return ["message"=>"DB Error"];
+                        </thead>
+                        <tbody id="table">';
+            
+            foreach ($results as $result) {
+                $program = $result['program'];
+                $balances = $result['balances'];
+                
+                $content .= '<tr>
+                                <td>'. $program->progcode .' - '. $program->progname .'</td>';
+                
+                foreach ($arrayYears as $year) {
+                    $content .= '<td>'. $balances[$year] .'</td>';
                 }
-            } 
-
-            DB::commit();
-        }catch(Exception $ex){
-            return ["message"=>"Error"];
+                
+                $content .= '</tr>';
+            }
+            
+            $content .= '</tbody>';
+            $content .= '<tfoot>
+                            <tr>
+                                <td>TOTAL</td>';
+            
+            foreach ($totals as $yearTotal) {
+                $content .= '<td>'. number_format($yearTotal, 2) .'</td>';
+            }
+            
+            $content .= '</tr>
+                        </tfoot>';
+            
+            return response()->json(['message' => 'Success', 'data' => $content]);
+            
+        } catch (QueryException $ex) {
+            \Log::debug($ex);
+            return ["message" => "Database Error: " . $ex->getMessage()];
+        } catch (Exception $ex) {
+            return ["message" => "Error: " . $ex->getMessage()];
         }
-
-        return response()->json(['message' => 'Success', 'data' => $content]);
-
     }
 
     public function statusAgingReport()
