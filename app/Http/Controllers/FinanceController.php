@@ -11125,9 +11125,9 @@ class FinanceController extends Controller
                             ->leftjoin('tblclaimdtl', 'tblclaim.id', '=', 'tblclaimdtl.claim_id')
                             ->leftjoin('tblstudentclaim', 'tblclaimdtl.claim_package_id', '=', 'tblstudentclaim.id')
                             ->where([
-                                ['tblclaim.process_status_id', '=', 2],
-                                ['tblstudentclaim.groupid', '=', 1]
+                                ['tblclaim.process_status_id', '=', 2]
                             ])
+                            ->whereIn('tblstudentclaim.groupid', [1,4,5])
                             ->where('tblclaim.program_id', $prg)
                             ->whereBetween('tblclaim.add_date', [$filter->from, $endYear2])
                             ->select(DB::raw("IFNULL(SUM(tblclaimdtl.amount), 0) AS claim"), DB::raw('0 as payment'));
@@ -11137,9 +11137,9 @@ class FinanceController extends Controller
                             ->leftjoin('tblpaymentdtl', 'tblpayment.id', '=', 'tblpaymentdtl.payment_id')
                             ->leftjoin('tblstudentclaim', 'tblpaymentdtl.claim_type_id', '=', 'tblstudentclaim.id')
                             ->where([
-                                ['tblpayment.process_status_id', '=', 2],
-                                ['tblstudentclaim.groupid', '=', 1]
+                                ['tblpayment.process_status_id', '=', 2]
                             ])
+                            ->whereIn('tblstudentclaim.groupid', [1,4,5])
                             ->where('tblpayment.program_id', $prg)
                             ->whereBetween('tblpayment.add_date', [$filter->from, $endYear2])
                             ->select(DB::raw('0 as claim'), DB::raw("IFNULL(SUM(tblpaymentdtl.amount), 0) AS payment"))
