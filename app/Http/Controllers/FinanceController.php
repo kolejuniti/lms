@@ -11347,7 +11347,7 @@ class FinanceController extends Controller
                                 ['tblclaim.process_status_id', '=', 2],
                                 ['tblstudentclaim.groupid', '=', 1]
                             ])
-                            ->where('students.status', $sts)
+                            // ->where('students.status', $sts)
                             ->whereBetween('tblclaim.add_date', [$filter->from, $endYear2])
                             ->select(DB::raw("IFNULL(SUM(tblclaimdtl.amount), 0) AS claim"), DB::raw('0 as payment'));
 
@@ -11360,7 +11360,7 @@ class FinanceController extends Controller
                                 ['tblpayment.process_status_id', '=', 2],
                                 ['tblstudentclaim.groupid', '=', 1]
                             ])
-                            ->where('students.status', $sts)
+                                // ->where('students.status', $sts)
                             ->whereBetween('tblpayment.add_date', [$filter->from, $endYear2])
                             ->select(DB::raw('0 as claim'), DB::raw("IFNULL(SUM(tblpaymentdtl.amount), 0) AS payment"))
                             ->unionAll($query); // Here, use the Query Builder instance directly
