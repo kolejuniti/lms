@@ -96,10 +96,9 @@
                   </div>
                 </form>
                 @else
-                <div class="text-center py-4 alert alert-info m-3 border-0">
-                  <i class="fa fa-info-circle fa-2x mb-3 text-info"></i>
-                  <h5 class="mb-1">Please select a topic first</h5>
-                  <p class="mb-0">Choose a topic from the sidebar to join the discussion</p>
+                <div class="text-center py-4">
+                    <img src="{{ asset('storage/storage/forum2.png') }}" alt="Select Topic" class="mb-3" style="max-width: 200px;">
+                  <h5 class="text-muted">Please select a topic to join the discussion</h5>
                 </div>
                 @endif
               </div>

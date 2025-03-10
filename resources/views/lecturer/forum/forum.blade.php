@@ -96,7 +96,7 @@
                 </form>
                 @else
                 <div class="text-center py-4">
-                  <img src="{{ asset('assets/images/select-topic.svg') }}" alt="Select Topic" class="mb-3" style="max-width: 200px;">
+                    <img src="{{ asset('storage/storage/forum2.png') }}" alt="Select Topic" class="mb-3" style="max-width: 200px;">
                   <h5 class="text-muted">Please select a topic to join the discussion</h5>
                 </div>
                 @endif
