@@ -95,7 +95,7 @@ if(isset($TopicID) && $TopicID != '') {
                         </div>
                         
                         <!-- Message body -->
-                        <div class="message-body mb-2">
+                        <div class="message-body mb-2 text-dark">
                             <?php echo $content; ?>
                         </div>
                         
