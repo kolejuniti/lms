@@ -3284,7 +3284,8 @@ class AR_Controller extends Controller
                                         ['tblevents.user_ic', $request->id],
                                         ['tblevents.group_id', $request->groupId],
                                         ['tblevents.group_name', $request->groupName],
-                                        ['tblevents.session_id', $request->session]
+                                        ['tblevents.session_id', $request->session],
+                                        ['tbllecture.title', $request->groupType]
                                     ])->get();
 
                     $totalCredit = 0;
