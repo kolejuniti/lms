@@ -3834,6 +3834,7 @@ class AR_Controller extends Controller
                                         ['tblevents.group_id', $event->group_id],
                                         ['tblevents.group_name', $event->group_name],
                                         ['tblevents.session_id', $event->session_id],
+                                        ['tblevents.title', $event->title],
                                         ['tblevents.id', '!=', $id]
                                     ])->get();
 
@@ -4066,6 +4067,7 @@ class AR_Controller extends Controller
                                         ['tblevents.group_id', $event->group_id],
                                         ['tblevents.group_name', $event->group_name],
                                         ['tbllecture.session_id', $roomDetails->session],
+                                        ['tblevents.title', $event->title],
                                         ['tblevents.id', '!=', $id]
                                     ])->get();
 
