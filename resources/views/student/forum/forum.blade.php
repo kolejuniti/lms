@@ -1,198 +1,295 @@
 @extends('layouts.student.student')
 
 @section('main')
-<!-- Content Header (Page header) -->
-<div class="content-wrapper" style="min-height: 695.8px;">
+<div class="content-wrapper">
   <div class="container-full">
-    <!-- Content Header (Page header) -->	  
-    <div class="content-header">
-      <div class="d-flex align-items-center">
-        <div class="me-auto">
-          <h4 class="page-title">Forum</h4>
-          <div class="d-inline-block align-items-center">
-            <nav>
-              <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="#"><i class="mdi mdi-home-outline"></i></a></li>
-                <li class="breadcrumb-item" aria-current="page">Online Class</li>
-                <li class="breadcrumb-item active" aria-current="page">Forum</li>
+    <!-- Header section with animated wave background -->
+    <div class="forum-header position-relative overflow-hidden bg-gradient-primary text-white py-4 mb-4">
+      <div class="container">
+        <div class="row align-items-center">
+          <div class="col-md-8">
+            <h2 class="fw-bold mb-0 d-flex align-items-center">
+              <i class="fa fa-comments me-3 forum-icon"></i>
+              Course Forum
+            </h2>
+            <nav aria-label="breadcrumb" class="mt-2">
+              <ol class="breadcrumb bg-transparent p-0 mb-0">
+                <li class="breadcrumb-item"><a href="#" class="text-white-50"><i class="mdi mdi-home-outline"></i> Home</a></li>
+                <li class="breadcrumb-item"><a href="#" class="text-white-50">Online Class</a></li>
+                <li class="breadcrumb-item active text-white" aria-current="page">Forum</li>
               </ol>
             </nav>
           </div>
+          <div class="col-md-4 text-end">
+            <h4 class="course-title">{{ $course->course_name }}</h4>
+          </div>
         </div>
       </div>
+      <!-- Animated wave SVG -->
+      <svg class="position-absolute bottom-0 start-0 w-100" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 100">
+        <path fill="#ffffff" fill-opacity="1" d="M0,64L60,53.3C120,43,240,21,360,16C480,11,600,21,720,42.7C840,64,960,96,1080,96C1200,96,1320,64,1380,48L1440,32L1440,100L1380,100C1320,100,1200,100,1080,100C960,100,840,100,720,100C600,100,480,100,360,100C240,100,120,100,60,100L0,100Z"></path>
+      </svg>
     </div>
 
-		<!-- Main content -->
-        <section class="content">
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="col-md-9">
-                    <div class="card card-primary">
-                        <div class="card-header">
-                        <h3 class="card-title">
-                            {{ $course->course_name }}
-                        </h3>
-                        </div>
-                        <!-- /.card-header -->
-                        <div class="card-body">
-                        <div>
-                        @if($TopicID != '')
-                            <h5><b>Topik : {{ $TopicID }}</b></h5>
-                        @else
-                        <h5><b>Topik :</b></h5>
-                        @endif
-                        </div>
-                        <div class="row">
-                            <p class="col-md-2">
-                            Name
-                            </p>
-                            <p class="col-md-6">
-                            Comments
-                            </p>
-                            <p class="col-md-2 pull-right">
-                            Date/Time
-                            </p>
-                        </div>
-                        <table class="table" id="reftable">
-                            <?php //include_once 'TableForum.php';?>
-                            @include('student.forum.TableForum')
-                        </table>
-                        <script type='text/javascript'>
-                        var table = $('#reftable');
-                        // refresh every 5 seconds
-                        var refresher = setInterval(function(){
-                            table.load("student.forum.TableForum");
-                        }, 5000);
-                            setTimeout(function() {
-                            clearInterval(refresher);
-                        }, 1800000);
-                        </script>
-                        </div>
-                        <div class="card-body">
-                        <?php
-                        if($TopicID != ''){
-                        ?>
-                        <form action="/student/forum/{{ Session::get('CourseIDS') }}/topic/insert?tpcID={{ $TopicID }}" method="post" role="form">
-                            @csrf
-                            @method('POST')
-                            <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                <label>Comment Input</label>
-                                <textarea id="upforum" name="upforum" class="form-control" rows="3" placeholder="Enter ..."></textarea>
-                                </div>
-                            </div>
-                            </div>
-                            <div class="float-right">
-                            <input class="btn btn-block btn-primary float-right" name="addfrm" type="submit" value="Send">
-                            <input name="crsid" type="hidden" value="<?php //echo $crsid;?>">
-                            </div>
-                        </form>
-                        <?php
-                        }
-                        else{
-                        ?>
-                        <div class="col-md-3">
-                            <div class="box bg-danger">
-                                <div class="box-body d-flex p-0">
-                                    <div class="flex-grow-1 p-2 flex-grow-1 bg-img bg-none-md">
-                                        <div class="row"> 
-                                            <p class="mb-0 fw-600">Please select a Topic first.</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <?php
-                        }
-                        ?>
-                        </div>
-                            <!-- /.card-body -->
-                    </div>
-                            <!-- /.card -->
-                    </div>
-                    <div class="col-md-3">
-                    <div class="card">
-                        <div class="card-header bg-gradient-primary">
-                        <h3 class="card-title"><b>Discussion</b></h3>
-                        </div>
-                        <!-- /.card-header -->
-                        <div class="card-body p-0">
-                        <table class="table table-sm">
-                            <thead>
-                            <tr>
-                                <th style="width: 10px">No</th>
-                                <th>Topic</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                             @if(isset($topic))
-                                @if(!empty($topic))
-                                    @foreach ($topic as $key => $tpc)
-                                        <tr class="col-md-6">
-                                            <td>{{ $key+1 }}</a></td>
-                                            <td><a href="/student/forum/{{ Session::get('CourseIDS') }}?TopicID={{ $tpc->TopicID }}">{{ $tpc->TopicName }}</td>
-                                        </tr>
-                                    @endforeach
-                                @else
-                                <tr class="col-md-6">
-                                    <td>-</td>
-                                    <td>-</td>
-                                </tr>
-                                @endif
-                            @else
-                                <tr class="col-md-6">
-                                <td>-</td>
-                                <td>-</td>
-                                </tr>
-                            @endif
-                            </tbody>
-                        </table>
-                       
-                        <div class="card-footer">
-       
-                        </div> 
-                    </div>
-                    <!-- /.card-body -->
-                    </div>
-                    <!-- /.container-fluid -->
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        <div class="row">
+          <!-- Main forum content -->
+          <div class="col-md-8">
+            <div class="card shadow-sm rounded-lg border-0">
+              <div class="card-header d-flex justify-content-between align-items-center bg-white border-bottom-0">
+                <div>
+                  @if($TopicID != '')
+                    <h5 class="mb-0 fw-bold"><i class="fa fa-bookmark text-primary me-2"></i>Topic: {{ $TopicID }}</h5>
+                  @else
+                    <h5 class="mb-0 fw-bold"><i class="fa fa-bookmark text-primary me-2"></i>Topics</h5>
+                  @endif
                 </div>
+                <div>
+                  <button class="btn btn-sm btn-outline-primary" id="refreshBtn">
+                    <i class="fa fa-sync-alt me-1"></i> Refresh
+                  </button>
+                </div>
+              </div>
+              
+              <!-- Forum messages container -->
+              <div class="card-body p-0">
+                <div class="forum-list-header d-none d-md-flex bg-light p-3">
+                  <div class="col-md-2">
+                    <span class="text-muted fw-semibold">User</span>
+                  </div>
+                  <div class="col-md-7">
+                    <span class="text-muted fw-semibold">Discussion</span>
+                  </div>
+                  <div class="col-md-3 text-end">
+                    <span class="text-muted fw-semibold">Posted</span>
+                  </div>
+                </div>
+                
+                <div class="forum-messages" id="reftable">
+                  @include('student.forum.TableForum')
+                </div>
+              </div>
+              
+              <!-- Comment form -->
+              <div class="card-footer bg-white border-top-0 p-4">
+                @if($TopicID != '')
+                <form action="/student/forum/{{ Session::get('CourseIDS') }}/topic/insert?tpcID={{ $TopicID }}" method="post" role="form" class="comment-form">
+                  @csrf
+                  @method('POST')
+                  <div class="form-group mb-3">
+                    <label class="form-label d-flex align-items-center mb-2">
+                      <i class="fa fa-pen-alt me-2 text-primary"></i>
+                      <span class="fw-semibold">Add Your Comment</span>
+                    </label>
+                    <textarea id="upforum" name="upforum" class="form-control" rows="4" placeholder="Share your thoughts..."></textarea>
+                  </div>
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div class="form-text text-muted">
+                      <i class="fa fa-info-circle me-1"></i> 
+                      Be respectful and constructive in your comments
+                    </div>
+                    <button type="submit" name="addfrm" class="btn btn-primary px-4">
+                      <i class="fa fa-paper-plane me-2"></i> Send
+                    </button>
+                  </div>
+                </form>
+                @else
+                <div class="text-center py-4 alert alert-info m-3 border-0">
+                  <i class="fa fa-info-circle fa-2x mb-3 text-info"></i>
+                  <h5 class="mb-1">Please select a topic first</h5>
+                  <p class="mb-0">Choose a topic from the sidebar to join the discussion</p>
+                </div>
+                @endif
+              </div>
             </div>
-        </section>
-          <!-- /.content -->
+          </div>
+          
+          <!-- Topics sidebar -->
+          <div class="col-md-4">
+            <div class="card shadow-sm rounded-lg border-0">
+              <div class="card-header bg-gradient-primary text-white">
+                <h5 class="card-title mb-0 d-flex align-items-center">
+                  <i class="fa fa-list-alt me-2"></i>
+                  <span>Discussion Topics</span>
+                </h5>
+              </div>
+              
+              <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                  @if(isset($topic) && !empty($topic))
+                    @foreach ($topic as $key => $tpc)
+                      <a href="/student/forum/{{ Session::get('CourseIDS') }}?TopicID={{ $tpc->TopicID }}" 
+                         class="list-group-item list-group-item-action d-flex align-items-center {{ $TopicID == $tpc->TopicID ? 'active' : '' }}">
+                        <div class="topic-number me-3">{{ $key+1 }}</div>
+                        <div class="topic-name">{{ $tpc->TopicName }}</div>
+                      </a>
+                    @endforeach
+                  @else
+                    <div class="list-group-item text-center py-4">
+                      <div class="text-muted mb-2">
+                        <i class="fa fa-folder-open fa-2x"></i>
+                      </div>
+                      <p class="mb-0">No topics available</p>
+                    </div>
+                  @endif
+                </div>
+              </div>
+              
+              <!-- Additional helpful resources card -->
+              <div class="card mt-4 shadow-sm rounded-lg border-0">
+                <div class="card-header bg-white">
+                  <h5 class="card-title mb-0">
+                    <i class="fa fa-lightbulb text-warning me-2"></i>
+                    Forum Tips
+                  </h5>
+                </div>
+                <div class="card-body">
+                  <ul class="list-unstyled forum-tips">
+                    <li class="mb-2"><i class="fa fa-check-circle text-success me-2"></i> Ask clear, specific questions</li>
+                    <li class="mb-2"><i class="fa fa-check-circle text-success me-2"></i> Share your own insights</li>
+                    <li class="mb-2"><i class="fa fa-check-circle text-success me-2"></i> Check for existing answers first</li>
+                    <li><i class="fa fa-check-circle text-success me-2"></i> Engage with classmates' posts</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<!-- Toast notification for successful actions -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+  <div id="successToast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="toast-header bg-success text-white">
+      <strong class="me-auto"><i class="fa fa-check-circle me-2"></i>Success</strong>
+      <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+    <div class="toast-body">
+      Your comment was posted successfully!
     </div>
   </div>
 </div>
 
+<!-- Load required scripts -->
 <script src="{{ asset('assets/src/js/pages/data-table.js') }}"></script>
+
 <script type="text/javascript">
-
-  function deleteAnnouncement(id){     
-      Swal.fire({
-    title: "Are you sure?",
-    text: "This will be permanent",
-    showCancelButton: true,
-    confirmButtonText: "Yes, delete it!"
-  }).then(function(res){
+  $(document).ready(function(){
+    "use strict";
     
-    if (res.isConfirmed){
-              $.ajax({
-                  headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
-                  url      : "{{ url('student/class/announcement/list/delete') }}",
-                  method   : 'DELETE',
-                  data 	 : {id:id},
-                  error:function(err){
-                      alert("Error");
-                      console.log(err);
-                  },
-                  success  : function(data){
-                      window.location.reload();
-                      alert("success");
-                  }
-              });
-          }
-      });
-  }
+    // Auto-refresh forum messages
+    var table = $('#reftable');
+    var refresher = setInterval(function(){
+      table.load("student.forum.TableForum");
+    }, 30000); // Refresh every 30 seconds
+    
+    setTimeout(function() {
+      clearInterval(refresher);
+    }, 1800000); // Stop refreshing after 30 minutes
+    
+    // Manual refresh button
+    $('#refreshBtn').click(function() {
+      table.load("student.forum.TableForum");
+      
+      // Show refresh animation
+      $(this).html('<i class="fa fa-circle-notch fa-spin me-1"></i> Refreshing...');
+      setTimeout(() => {
+        $(this).html('<i class="fa fa-sync-alt me-1"></i> Refresh');
+      }, 1000);
+    });
+    
+    // Form validation
+    $('.comment-form').submit(function(e) {
+      if ($('#upforum').val().trim() === '') {
+        e.preventDefault();
+        $('#upforum').addClass('is-invalid');
+        return false;
+      }
+    });
+    
+    // Focus input when topic is selected
+    @if($TopicID != '')
+      setTimeout(() => {
+        $('#upforum').focus();
+      }, 500);
+    @endif
+    
+    // Show success toast after form submission (if success)
+    if (window.location.search.includes('success=true')) {
+      $('#successToast').toast('show');
+    }
+  });
 
+  // Add custom styles
+  document.head.insertAdjacentHTML('beforeend', `
+    <style>
+      .forum-header {
+        background: linear-gradient(135deg, #3f51b5 0%, #2196f3 100%);
+      }
+      
+      .forum-icon {
+        font-size: 1.5rem;
+      }
+      
+      .course-title {
+        display: inline-block;
+        background-color: rgba(255, 255, 255, 0.2);
+        padding: 8px 15px;
+        border-radius: 30px;
+      }
+      
+      .topic-number {
+        width: 24px;
+        height: 24px;
+        background-color: #f1f5f9;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8rem;
+        font-weight: bold;
+      }
+      
+      .list-group-item.active .topic-number {
+        background-color: rgba(255, 255, 255, 0.3);
+      }
+      
+      .forum-messages {
+        max-height: 500px;
+        overflow-y: auto;
+      }
+      
+      .forum-tips li {
+        position: relative;
+        padding-left: 0;
+      }
+      
+      .toast {
+        opacity: 0.95;
+      }
+      
+      /* Animations */
+      @keyframes slideInUp {
+        from { transform: translateY(20px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+      }
+      
+      .card {
+        animation: slideInUp 0.3s ease-out;
+      }
+      
+      /* Make the forum responsive */
+      @media (max-width: 768px) {
+        .course-title {
+          margin-top: 10px;
+        }
+      }
+    </style>
+  `);
 </script>
 @endsection
