@@ -405,7 +405,7 @@
                     $('#subject').append('<option value="-" selected disabled>Select Subject</option>');
                     $.each(data, function(key, value) {
                         $('#subject').append(
-                            `<option value="${value.id}">${value.name}(${value.code})</option>`
+                            `<option value="${value.id}|${value.Type}">${value.name}(${value.code})</option>`
                         );
                     });
                 }
@@ -712,7 +712,11 @@
         // Add event
         document.getElementById('add-event').addEventListener('click', async function () {
             var session   = document.getElementById('ses').value;
-            var groupId   = document.getElementById('subject').value;
+            var combinedValue = document.getElementById('subject').value;
+            var splitValues = combinedValue.split('|');
+
+            var groupId = splitValues[0]; // This will contain the id
+            var groupType = splitValues[1]; // This will contain the Type
             var groupName = document.getElementById('group').value;
             var roomId    = document.getElementById('room').value;
             
@@ -746,6 +750,7 @@
                 var eventData = {
                     session: session,
                     groupId: groupId,
+                    groupType: groupType,
                     groupName: groupName,
                     roomId: roomId,
                     start: (document.getElementById('event-start').value) ? eventStart : currentDate,

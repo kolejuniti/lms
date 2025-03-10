@@ -2764,7 +2764,7 @@ class AR_Controller extends Controller
                       ['user_subjek.user_ic', $request->id],
                       ['user_subjek.session_id', $request->sessionID]
                    ])
-                   ->select('subjek.course_name AS name','subjek.course_code AS code', 'user_subjek.id AS id');
+                   ->select(DB::raw("CONCAT(subjek.course_name, ' - ', ('Kuliah')) AS name"),'subjek.course_code AS code', 'user_subjek.id AS id', DB::raw("'Kuliah' AS Type"));
 
         $subject = DB::table('user_subjek')
                    ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
@@ -2773,7 +2773,7 @@ class AR_Controller extends Controller
                       ['user_subjek.session_id', $request->sessionID]
                    ])
                    ->unionAll($query1)
-                   ->select('subjek.course_name AS name','subjek.course_code AS code', 'user_subjek.id AS id')
+                   ->select(DB::raw("CONCAT(subjek.course_name, ' - ', ('Amali')) AS name"),'subjek.course_code AS code', 'user_subjek.id AS id', DB::raw("'Amali' AS Type"))
                    ->groupBy('user_subjek.id')
                    ->get();
 
@@ -3113,18 +3113,28 @@ class AR_Controller extends Controller
         
         $column = null;
 
-        // Determine the column based on the condition
-        if (DB::table('user_subjek')->where([
-            'user_ic' => $request->id,
-            'id' => $request->groupId
-        ])->exists()) {
+
+        if($request->groupType == 'Kuliah')
+        {
             $column = 'subjek_structure.meeting_hour AS course_credit';
-        } elseif (DB::table('user_subjek')->where([
-            'amali_ic' => $request->id,
-            'id' => $request->groupId
-        ])->exists()) {
+
+        }elseif($request->groupType == 'Amali')
+        {
             $column = 'subjek_structure.amali_hour AS course_credit';
         }
+
+        // // Determine the column based on the condition
+        // if (DB::table('user_subjek')->where([
+        //     'user_ic' => $request->id,
+        //     'id' => $request->groupId
+        // ])->exists()) {
+        //     $column = 'subjek_structure.meeting_hour AS course_credit';
+        // } elseif (DB::table('user_subjek')->where([
+        //     'amali_ic' => $request->id,
+        //     'id' => $request->groupId
+        // ])->exists()) {
+        //     $column = 'subjek_structure.amali_hour AS course_credit';
+        // }
         
         // Run the query only if a valid column is selected
         if ($column) {
@@ -3346,7 +3356,7 @@ class AR_Controller extends Controller
                                 $event->group_id = $request->groupId;
                                 $event->group_name = $request->groupName;
                                 $event->session_id = $request->session;
-                                // $event->title = $request->title;
+                                $event->title = $request->groupType;
                                 $event->start = $startTime->format('Y-m-d H:i:s');
                                 $event->end = $endTime->format('Y-m-d H:i:s');
                                 $event->save();
@@ -3438,6 +3448,7 @@ class AR_Controller extends Controller
                 $events->group_id = $ev->group_id;
                 $events->group_name = $ev->group_name;
                 $events->session_id = $ev->session_id;
+                $events->title = $ev->title;
                 $events->start = $ev->start;
                 $events->end = $ev->end;
                 $events->save();
@@ -3703,16 +3714,31 @@ class AR_Controller extends Controller
         $column = null;
 
         // Determine the column based on the condition
-        if (DB::table('user_subjek')->where([
-            'user_ic' => $event->user_ic,
-            'id' => $event->group_id
-        ])->exists()) {
-            $column = 'subjek_structure.meeting_hour AS course_credit';
-        } elseif (DB::table('user_subjek')->where([
-            'amali_ic' => $event->user_ic,
-            'id' => $event->group_id
-        ])->exists()) {
-            $column = 'subjek_structure.amali_hour AS course_credit';
+
+        if($event->title == null)
+        {
+            if (DB::table('user_subjek')->where([
+                'user_ic' => $event->user_ic,
+                'id' => $event->group_id
+            ])->exists()) {
+                $column = 'subjek_structure.meeting_hour AS course_credit';
+            } elseif (DB::table('user_subjek')->where([
+                'amali_ic' => $event->user_ic,
+                'id' => $event->group_id
+            ])->exists()) {
+                $column = 'subjek_structure.amali_hour AS course_credit';
+            }
+            
+        }else{
+
+            if($event->title == 'Kuliah')
+            {
+                $column = 'subjek_structure.meeting_hour AS course_credit';
+            }elseif($event->title == 'Amali')
+            {
+                $column = 'subjek_structure.amali_hour AS course_credit';
+            }
+
         }
         
         // Run the query only if a valid column is selected
@@ -3920,16 +3946,30 @@ class AR_Controller extends Controller
         $column = null;
 
         // Determine the column based on the condition
-        if (DB::table('user_subjek')->where([
-            'user_ic' => $event->user_ic,
-            'id' => $event->group_id
-        ])->exists()) {
-            $column = 'subjek_structure.meeting_hour AS course_credit';
-        } elseif (DB::table('user_subjek')->where([
-            'amali_ic' => $event->user_ic,
-            'id' => $event->group_id
-        ])->exists()) {
-            $column = 'subjek_structure.amali_hour AS course_credit';
+        if($event->title == null)
+        {
+            if (DB::table('user_subjek')->where([
+                'user_ic' => $event->user_ic,
+                'id' => $event->group_id
+            ])->exists()) {
+                $column = 'subjek_structure.meeting_hour AS course_credit';
+            } elseif (DB::table('user_subjek')->where([
+                'amali_ic' => $event->user_ic,
+                'id' => $event->group_id
+            ])->exists()) {
+                $column = 'subjek_structure.amali_hour AS course_credit';
+            }
+            
+        }else{
+
+            if($event->title == 'Kuliah')
+            {
+                $column = 'subjek_structure.meeting_hour AS course_credit';
+            }elseif($event->title == 'Amali')
+            {
+                $column = 'subjek_structure.amali_hour AS course_credit';
+            }
+
         }
         
         // Run the query only if a valid column is selected
