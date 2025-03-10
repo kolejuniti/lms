@@ -690,9 +690,18 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 $(document).ready(function() {
+  // Function to decode HTML entities
+  function decodeHTMLEntities(text) {
+    const textArea = document.createElement('textarea');
+    textArea.innerHTML = text;
+    return textArea.value;
+  }
+
   // Fill the input fields in the original card element with the first row of data
   var firstWaris = {!! json_encode($data['waris']->shift()) !!};
-  $('#w_name').val(firstWaris.name);
+  
+  // Use decoded values
+  $('#w_name').val(decodeHTMLEntities(firstWaris.name));
   $('#w_ic').val(firstWaris.ic);
   $('#w_email').val(firstWaris.email);
   $('#w_notel_home').val(firstWaris.home_tel);
@@ -709,7 +718,9 @@ $(document).ready(function() {
   @foreach ($data['waris'] as $waris)
     var newForm = $('#card-1').clone();
     newForm.attr('id', 'card-{{ $waris->id }}');
-    newForm.find('input[name="w_name[]"]').val('{{ $waris->name }}');
+    
+    // Use escaping and decoding to handle special characters properly in Blade
+    newForm.find('input[name="w_name[]"]').val('{!! addslashes(htmlspecialchars_decode($waris->name)) !!}');
     newForm.find('input[name="w_ic[]"]').val('{{ $waris->ic }}');
     newForm.find('input[name="w_email[]"]').val('{{ $waris->email }}');
     newForm.find('input[name="w_notel_home[]"]').val('{{ $waris->home_tel }}');
@@ -721,9 +732,11 @@ $(document).ready(function() {
     newForm.find('select[name="relationship[]"]').val('{{ $waris->relationship }}');
     //newForm.find('select[name="w_race[]"]').val('{{ $waris->race }}');
     newForm.find('select[name="w_status[]"]').val('{{ $waris->status }}');
+    
     // Add a delete button to the card element
-    var editButton = $('<div class="form-group" style="margin-left: 10px"><button class="btn btn-danger delete-form" type="button">Delete Form</button></div>');
-    newForm.append(editButton);
+    var deleteButton = $('<div class="form-group" style="margin-left: 10px"><button class="btn btn-danger delete-form" type="button">Delete Form</button></div>');
+    newForm.append(deleteButton);
+    
     // Add the new card element to the forms container
     $('#forms-container').append(newForm);
   @endforeach
