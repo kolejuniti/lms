@@ -232,60 +232,92 @@
                                 /**
                                 * Handles the generate quiz button click
                                 */
-                                function handleGenerateQuiz() {
-                                    // Create FormData from the form
-                                    const formData = new FormData(document.getElementById('aiQuizForm'));
-                                    
-                                    // Validate inputs before proceeding
-                                    if (!validateAIQuizForm()) {
-                                        return;
-                                    }
-                                    
-                                    // Show loading state
-                                    Swal.fire({
-                                        title: "Generating Quiz",
-                                        html: "Please wait while our AI analyzes your document and creates questions...",
-                                        allowOutsideClick: false,
-                                        didOpen: () => {
-                                            Swal.showLoading();
-                                        }
-                                    });
-                                    
-                                    // Send the request to the server
-                                    fetch(`/lecturer/quiz/${getCourseId()}/generate-ai-quiz`, {
-                                        method: 'POST',
-                                        body: formData,
-                                        headers: {
-                                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                                        },
-                                    })
-                                    .then(response => {
-                                        if (!response.ok) {
-                                            throw new Error(`HTTP error! Status: ${response.status}`);
-                                        }
-                                        return response.json();
-                                    })
-                                    .then(data => {
-                                        // Close loading indicator
-                                        Swal.close();
-                                        
-                                        // Handle the response
-                                        if (data.success) {
-                                            showSuccessMessage();
-                                            processQuizQuestions(data);
-                                        } else {
-                                            showErrorMessage(data.message || 'Failed to generate quiz.');
-                                        }
-                                    })
-                                    .catch(error => {
-                                        // Close loading indicator
-                                        Swal.close();
-                                        
-                                        // Show error message
-                                        console.error('Error:', error);
-                                        showErrorMessage('An error occurred while generating the quiz. Please check the document and try again.');
-                                    });
-                                }
+                                // JavaScript Frontend - Updated handleGenerateQuiz function
+function handleGenerateQuiz() {
+    // Create FormData from the form
+    const formData = new FormData(document.getElementById('aiQuizForm'));
+    
+    // Validate inputs before proceeding
+    if (!validateAIQuizForm()) {
+        return;
+    }
+    
+    // Show loading state
+    Swal.fire({
+        title: "Generating Quiz",
+        html: "Please wait while our AI analyzes your document and creates questions...",
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+    
+    // Send the request to the server
+    fetch(`/lecturer/quiz/${getCourseId()}/generate-ai-quiz`, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+        },
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(data => {
+                throw { status: response.status, data: data };
+            });
+        }
+        return response.json();
+    })
+    .then(data => {
+        // Close loading indicator
+        Swal.close();
+        
+        // Handle the response
+        if (data.success) {
+            showSuccessMessage();
+            processQuizQuestions(data);
+        } else {
+            showErrorMessage(data.message || 'Failed to generate quiz.');
+        }
+    })
+    .catch(error => {
+        // Close loading indicator
+        Swal.close();
+        
+        console.error('Error:', error);
+        
+        // Show specific error message based on error type
+        if (error.data && error.data.error_type) {
+            switch (error.data.error_type) {
+                case 'parse_error':
+                    showErrorMessage(error.data.message || 'Failed to parse the PDF document. Please ensure the file is properly formatted and not corrupted.');
+                    break;
+                case 'generation_error':
+                    showErrorMessage(error.data.message || 'Failed to generate quiz questions from your document. Please try a different document with more textual content.');
+                    break;
+                case 'validation_error':
+                    showErrorMessage(error.data.message || 'Please check your inputs and try again.');
+                    break;
+                default:
+                    showErrorMessage(error.data.message || 'An error occurred while generating the quiz. Please try again later.');
+            }
+        } else if (error.status === 413) {
+            showErrorMessage('The uploaded file is too large. Please upload a file smaller than 5MB.');
+        } else {
+            showErrorMessage('An unexpected error occurred while generating the quiz. Please try again later.');
+        }
+    });
+}
+
+// Optional: Enhanced error display function
+function showErrorMessage(message) {
+    Swal.fire({
+        icon: 'error',
+        title: 'Quiz Generation Failed',
+        text: message,
+        confirmButtonText: 'Try Again'
+    });
+}
 
                                 /**
                                 * Gets the course ID from session
