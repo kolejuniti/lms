@@ -1987,8 +1987,8 @@ class QuizController extends Controller
         // }
     // }
 
-    // PHP Backend - Updated generateAIQuiz function
-public function generateAIQuiz(Request $request) {
+    public function generateAIQuiz(Request $request)
+{
     try {
         // Step 1: Validate the inputs
         $request->validate([
@@ -1997,103 +1997,63 @@ public function generateAIQuiz(Request $request) {
             'multiple_choice_count' => 'required|integer|min:0',
             'subjective_count' => 'required|integer|min:0',
         ]);
-        
+
         // Step 2: Save and parse the PDF
         $filePath = $request->file('document')->store('documents');
-        
-        try {
-            $parser = new Parser();
-            $pdf = $parser->parseFile(storage_path('app/' . $filePath));
-            $text = $pdf->getText();
-            
-            // Check if we got enough text content to generate a quiz
-            if (empty(trim($text)) || strlen($text) < 100) {
-                return response()->json([
-                    'success' => false,
-                    'error_type' => 'parse_error',
-                    'message' => 'The PDF could not be parsed properly or contains insufficient text content.',
-                ], 422);
-            }
-        } catch (\Exception $e) {
-            Log::error('PDF parsing error: ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'error_type' => 'parse_error',
-                'message' => 'Failed to parse the PDF document. Please ensure the file is not corrupted or password-protected.',
-            ], 422);
-        }
-        
+        $parser = new Parser();
+        $pdf = $parser->parseFile(storage_path('app/' . $filePath));
+        $text = $pdf->getText();
+
         // Step 3: Generate quiz JSON
         $singleChoiceCount = $request->input('single_choice_count');
         $multipleChoiceCount = $request->input('multiple_choice_count');
         $subjectiveCount = $request->input('subjective_count');
-        
-        try {
-            $quizJSON = $this->generateFormBuilderJSON($text, $singleChoiceCount, $multipleChoiceCount, $subjectiveCount);
-        } catch (\Exception $e) {
-            Log::error('Quiz generation error: ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'error_type' => 'generation_error',
-                'message' => 'Failed to generate quiz questions from the document content.',
-            ], 500);
-        }
-        
+
+        $quizJSON = $this->generateFormBuilderJSON($text, $singleChoiceCount, $multipleChoiceCount, $subjectiveCount);
+
         // Step 4: Return the quiz JSON
         return response()->json([
             'success' => true,
             'formBuilderJSON' => $quizJSON,
         ]);
-        
-    } catch (\Illuminate\Validation\ValidationException $e) {
-        // Handle validation errors
-        $errors = $e->validator->errors()->first();
-        return response()->json([
-            'success' => false,
-            'error_type' => 'validation_error',
-            'message' => 'Validation error: ' . $errors,
-        ], 422);
+
     } catch (\Exception $e) {
-        // Handle other unexpected errors
-        Log::error('Unexpected error generating quiz: ' . $e->getMessage());
+        // Handle errors gracefully
+        Log::error('Error generating quiz: ' . $e->getMessage());
         return response()->json([
             'success' => false,
-            'error_type' => 'unexpected_error',
-            'message' => 'An unexpected error occurred while processing your request. Please try again later.',
+            'message' => 'Error generating quiz: ' . $e->getMessage(),
         ], 500);
     }
 }
 
 
+
 private function generateFormBuilderJSON($text, $singleChoiceCount, $multipleChoiceCount, $subjectiveCount)
 {
     $apiKey = env('OPENAI_API_KEY');
-    Log::info('OpenAI API Key retrieved. Length: ' . (empty($apiKey) ? '0 (EMPTY)' : strlen($apiKey) . ' chars'));
-    
     $client = new Client();
 
     try {
         // Build the AI prompt
-        $prompt = "Create a quiz with questions based on the following text. The response must be a valid JSON object with exactly this structure: {\"quiz\":{\"questions\":[array of question objects]}}. Each question object should have: type (either 'single-choice', 'multiple-choice', or 'subjective'), question (the text of the question), options (array of possible answers for choice questions), and answer (correct option for single-choice, array of correct options for multiple-choice, or can be omitted for subjective questions). Include:\n";
+        $prompt = "Create a quiz JSON structure based on the following text. The quiz should include:\n";
         $prompt .= "- $singleChoiceCount single-choice questions\n";
         $prompt .= "- $multipleChoiceCount multiple-choice questions\n";
         $prompt .= "- $subjectiveCount subjective questions\n\n";
         $prompt .= "Here is the text:\n\n" . $text;
 
-        // Log request details (sanitized)
-        Log::info('Preparing OpenAI request with prompt length: ' . strlen($prompt));
-        
-        $requestData = [
+        // Send the request to OpenAI API
+        $response = $client->post('https://api.openai.com/v1/chat/completions', [
             'headers' => [
                 'Authorization' => 'Bearer ' . $apiKey,
                 'Content-Type' => 'application/json',
             ],
             'json' => [
-                'model' => 'gpt-3.5-turbo-1106', 
+                'model' => 'gpt-3.5-turbo-1106', // Ensure this is an available model
                 'messages' => [
                     [
                         'role' => 'system',
-                        'content' => 'You are a system designed to generate quiz questions in valid JSON format. Always return a JSON object with the structure {"quiz":{"questions":[array of question objects]}}',
+                        'content' => 'You are a system designed to generate quiz questions for FormBuilder.',
                     ],
                     [
                         'role' => 'user',
@@ -2102,63 +2062,19 @@ private function generateFormBuilderJSON($text, $singleChoiceCount, $multipleCho
                 ],
                 'max_tokens' => 2000,
                 'temperature' => 0.7,
-                'response_format' => ['type' => 'json_object'] // Force JSON response
             ],
-        ];
+        ]);
 
-        // Send the request to OpenAI API
-        Log::info('Sending request to OpenAI API...');
-        $response = $client->post('https://api.openai.com/v1/chat/completions', $requestData);
-
-        // Log the response status
-        Log::info('OpenAI API response received. Status code: ' . $response->getStatusCode());
-        
         // Parse the response
         $responseBody = json_decode($response->getBody(), true);
-        
+
         if (isset($responseBody['choices'][0]['message']['content'])) {
-            $content = $responseBody['choices'][0]['message']['content'];
-            Log::info('Content extracted successfully. Length: ' . strlen($content));
-            
-            // Validate the JSON structure before returning
-            $decodedContent = json_decode($content, true);
-            if (json_last_error() !== JSON_ERROR_NONE) {
-                Log::error('Invalid JSON in OpenAI response: ' . json_last_error_msg());
-                Log::error('Response content: ' . $content);
-                throw new \Exception('OpenAI returned invalid JSON: ' . json_last_error_msg());
-            }
-            
-            // Check for expected structure
-            if (!isset($decodedContent['quiz']) || !isset($decodedContent['quiz']['questions']) || !is_array($decodedContent['quiz']['questions'])) {
-                Log::error('OpenAI response missing expected quiz structure');
-                Log::error('Response content: ' . $content);
-                throw new \Exception('OpenAI response missing expected quiz structure');
-            }
-            
-            return $content; // Return the validated JSON string
+            return $responseBody['choices'][0]['message']['content'];
         } else {
-            Log::error('Invalid OpenAI response structure: ' . json_encode($responseBody));
             throw new \Exception('Invalid AI response. No content found.');
         }
-    } catch (\GuzzleHttp\Exception\RequestException $e) {
-        // Detailed Guzzle error logging
-        Log::error('Guzzle Request Exception: ' . $e->getMessage());
-        
-        // Log the request that was sent
-        if ($e->hasRequest()) {
-            Log::error('Request: ' . $e->getRequest()->getMethod() . ' ' . $e->getRequest()->getUri());
-        }
-        
-        // Log the response if available
-        if ($e->hasResponse()) {
-            Log::error('Response status: ' . $e->getResponse()->getStatusCode());
-            Log::error('Response body: ' . $e->getResponse()->getBody());
-        }
-        
-        throw new \Exception('Error communicating with OpenAI API: ' . $e->getMessage());
     } catch (\Exception $e) {
-        Log::error('Error in generateFormBuilderJSON: ' . $e->getMessage());
-        Log::error('Stack trace: ' . $e->getTraceAsString());
+        Log::error('Error communicating with OpenAI: ' . $e->getMessage());
         throw new \Exception('Error communicating with AI: ' . $e->getMessage());
     }
 }

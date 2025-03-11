@@ -229,92 +229,63 @@
                                     }
                                 }
 
-              // JavaScript Frontend - Updated handleGenerateQuiz function
-function handleGenerateQuiz() {
-    // Create FormData from the form
-    const formData = new FormData(document.getElementById('aiQuizForm'));
-    
-    // Validate inputs before proceeding
-    if (!validateAIQuizForm()) {
-        return;
-    }
-    
-    // Show loading state
-    Swal.fire({
-        title: "Generating Quiz",
-        html: "Please wait while our AI analyzes your document and creates questions...",
-        allowOutsideClick: false,
-        didOpen: () => {
-            Swal.showLoading();
-        }
-    });
-    
-    // Send the request to the server
-    fetch(`/lecturer/quiz/${getCourseId()}/generate-ai-quiz`, {
-        method: 'POST',
-        body: formData,
-        headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-        },
-    })
-    .then(response => {
-        if (!response.ok) {
-            return response.json().then(data => {
-                throw { status: response.status, data: data };
-            });
-        }
-        return response.json();
-    })
-    .then(data => {
-        // Close loading indicator
-        Swal.close();
-        
-        // Handle the response
-        if (data.success) {
-            showSuccessMessage();
-            processQuizQuestions(data);
-        } else {
-            showErrorMessage(data.message || 'Failed to generate quiz.');
-        }
-    })
-    .catch(error => {
-        // Close loading indicator
-        Swal.close();
-        
-        console.error('Error:', error);
-        
-        // Show specific error message based on error type
-        if (error.data && error.data.error_type) {
-            switch (error.data.error_type) {
-                case 'parse_error':
-                    showErrorMessage(error.data.message || 'Failed to parse the PDF document. Please ensure the file is properly formatted and not corrupted.');
-                    break;
-                case 'generation_error':
-                    showErrorMessage(error.data.message || 'Failed to generate quiz questions from your document. Please try a different document with more textual content.');
-                    break;
-                case 'validation_error':
-                    showErrorMessage(error.data.message || 'Please check your inputs and try again.');
-                    break;
-                default:
-                    showErrorMessage(error.data.message || 'An error occurred while generating the quiz. Please try again later.');
-            }
-        } else if (error.status === 413) {
-            showErrorMessage('The uploaded file is too large. Please upload a file smaller than 5MB.');
-        } else {
-            showErrorMessage('An unexpected error occurred while generating the quiz. Please try again later.');
-        }
-    });
-}
-
-// Optional: Enhanced error display function
-function showErrorMessage(message) {
-    Swal.fire({
-        icon: 'error',
-        title: 'Quiz Generation Failed',
-        text: message,
-        confirmButtonText: 'Try Again'
-    });
-}
+                                /**
+                                * Handles the generate quiz button click
+                                */
+                                function handleGenerateQuiz() {
+                                    // Create FormData from the form
+                                    const formData = new FormData(document.getElementById('aiQuizForm'));
+                                    
+                                    // Validate inputs before proceeding
+                                    if (!validateAIQuizForm()) {
+                                        return;
+                                    }
+                                    
+                                    // Show loading state
+                                    Swal.fire({
+                                        title: "Generating Quiz",
+                                        html: "Please wait while our AI analyzes your document and creates questions...",
+                                        allowOutsideClick: false,
+                                        didOpen: () => {
+                                            Swal.showLoading();
+                                        }
+                                    });
+                                    
+                                    // Send the request to the server
+                                    fetch(`/lecturer/quiz/${getCourseId()}/generate-ai-quiz`, {
+                                        method: 'POST',
+                                        body: formData,
+                                        headers: {
+                                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                                        },
+                                    })
+                                    .then(response => {
+                                        if (!response.ok) {
+                                            throw new Error(`HTTP error! Status: ${response.status}`);
+                                        }
+                                        return response.json();
+                                    })
+                                    .then(data => {
+                                        // Close loading indicator
+                                        Swal.close();
+                                        
+                                        // Handle the response
+                                        if (data.success) {
+                                            showSuccessMessage();
+                                            processQuizQuestions(data);
+                                        } else {
+                                            showErrorMessage(data.message || 'Failed to generate quiz.');
+                                        }
+                                    })
+                                    .catch(error => {
+                                        // Close loading indicator
+                                        Swal.close();
+                                        
+                                        // Show error message
+                                        console.error('Error:', error);
+                                        showErrorMessage('An error occurred while generating the quiz. Please check the document and try again.');
+                                    });
+                                }
 
                                 /**
                                 * Gets the course ID from session
@@ -403,61 +374,30 @@ function showErrorMessage(message) {
                                 * @param {Object} data The response data from the server
                                 */
                                 function processQuizQuestions(data) {
-    try {
-        console.log("Processing quiz data:", data);
-        
-        // Try to parse the JSON data, handling different possible formats
-        let quizData;
-        
-        if (typeof data.formBuilderJSON === 'string') {
-            // If it's a string, try to parse it as JSON
-            try {
-                quizData = JSON.parse(data.formBuilderJSON);
-                console.log("Successfully parsed JSON string");
-            } catch (parseError) {
-                console.error("JSON parsing error:", parseError);
-                console.log("Raw JSON string:", data.formBuilderJSON);
-                showErrorMessage('Error parsing the generated quiz data. Invalid JSON format received.');
-                return;
-            }
-        } else if (typeof data.formBuilderJSON === 'object') {
-            // If it's already an object, use it directly
-            quizData = data.formBuilderJSON;
-            console.log("Using JSON object directly");
-        } else {
-            console.error("Unexpected data format:", typeof data.formBuilderJSON);
-            showErrorMessage('Unexpected data format received from the server.');
-            return;
-        }
-        
-        // Validate the expected structure
-        if (!quizData || !quizData.quiz || !Array.isArray(quizData.quiz.questions)) {
-            console.error("Invalid quiz data structure:", quizData);
-            showErrorMessage('The quiz data does not have the expected structure.');
-            return;
-        }
-        
-        const questions = quizData.quiz.questions;
-        console.log(`Found ${questions.length} questions to process`);
-        
-        // Process each question
-        questions.forEach((question, index) => {
-            console.log(`Processing question ${index + 1}:`, question);
-            addQuestionToFormBuilder(question, index);
-        });
-        
-        // Update question index value
-        updateQuestionIndex(questions.length);
-        
-        // Update marks calculation
-        if (typeof renderMark === 'function') {
-            renderMark();
-        }
-    } catch (e) {
-        console.error('Error processing quiz data:', e);
-        showErrorMessage('Error processing the generated quiz data. Please try again.');
-    }
-}
+                                    try {
+                                        // Parse the JSON data
+                                        const quizData = JSON.parse(data.formBuilderJSON);
+                                        
+                                        // Extract questions array
+                                        const questions = quizData.quiz.questions;
+                                        
+                                        // Process each question
+                                        questions.forEach((question, index) => {
+                                            addQuestionToFormBuilder(question, index);
+                                        });
+                                        
+                                        // Update question index value
+                                        updateQuestionIndex(questions.length);
+                                        
+                                        // Update marks calculation
+                                        if (typeof renderMark === 'function') {
+                                            renderMark();
+                                        }
+                                    } catch (e) {
+                                        console.error('Error processing quiz data:', e);
+                                        showErrorMessage('Error processing the generated quiz data. Please try again.');
+                                    }
+                                }
 
                                 /**
                                 * Adds a question to the form builder
