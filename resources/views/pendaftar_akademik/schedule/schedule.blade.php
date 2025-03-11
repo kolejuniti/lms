@@ -1205,12 +1205,20 @@ document.addEventListener('DOMContentLoaded', function () {
                     },
                     body: JSON.stringify(eventData)
                 });
-
+                
                 if (response.ok) {
                     const data = await response.json();
                     if(data.error) {
                         info.revert();
-                        showNotification(data.error, 'error');
+                        
+                        // Check if conflicting students list exists
+                        if (data.conflicting_students && data.conflicting_students.length > 0) {
+                            // Create list of student ICs
+                            const studentList = data.conflicting_students.map(student => student.student_ic).join(', ');
+                            showNotification(`${data.error}<br><br>Conflicting students: ${studentList}`, 'error', false);
+                        } else {
+                            showNotification(data.error, 'error');
+                        }
                     } else {
                         showNotification('Event updated successfully', 'success');
                     }
@@ -2116,8 +2124,8 @@ function showNotification(message, type = 'info', autoHide = true) {
     // Create toast notification
     const toast = document.createElement('div');
     toast.className = `toast-notification toast-${type}`;
-    toast.style.backgroundColor = type === 'success' ? '#4cc9f0' : 
-                                  type === 'error' ? '#e63946' : 
+    toast.style.backgroundColor = type === 'success' ? '#4cc9f0' :
+                                  type === 'error' ? '#e63946' :
                                   type === 'warning' ? '#f72585' : '#4895ef';
     toast.style.color = '#fff';
     toast.style.padding = '12px 20px';
@@ -2125,8 +2133,9 @@ function showNotification(message, type = 'info', autoHide = true) {
     toast.style.borderRadius = '8px';
     toast.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
     toast.style.display = 'flex';
-    toast.style.alignItems = 'center';
-    toast.style.maxWidth = '350px';
+    toast.style.alignItems = 'flex-start'; // Changed to flex-start for better alignment with multi-line content
+    toast.style.maxWidth = '400px'; // Increased max width to accommodate the list
+    toast.style.wordBreak = 'break-word'; // Added to prevent overflow of long student IDs
     
     // Add icon based on type
     const icon = document.createElement('i');
@@ -2135,10 +2144,12 @@ function showNotification(message, type = 'info', autoHide = true) {
         type === 'error' ? 'fa-exclamation-triangle' : 
         type === 'warning' ? 'fa-exclamation-circle' : 'fa-info-circle'
     } me-2`;
+    icon.style.marginTop = '2px'; // Align icon with first line of text
     
     // Add message
-    const messageSpan = document.createElement('span');
-    messageSpan.textContent = message;
+    const messageSpan = document.createElement('div'); // Changed to div for HTML content
+    messageSpan.innerHTML = message; // Changed to innerHTML to support HTML content
+    messageSpan.style.flex = '1';
     
     // Add close button
     const closeButton = document.createElement('button');

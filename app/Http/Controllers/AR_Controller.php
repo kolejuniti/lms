@@ -3865,40 +3865,47 @@ class AR_Controller extends Controller
             }else{
 
                 $students = DB::table('student_subjek')
-                            ->where([
-                                ['group_id', $event->group_id],
-                                ['group_name', $event->group_name]
-                            ])->pluck('student_ic');
+                    ->where([
+                        ['group_id', $event->group_id],
+                        ['group_name', $event->group_name]
+                    ])->pluck('student_ic');
 
-                if(DB::table('tblevents')
-                ->join('student_subjek', function($join){
-                    $join->on('tblevents.group_id', 'student_subjek.group_id')
-                         ->on('tblevents.group_name', 'student_subjek.group_name');
-                })
-                ->where('tblevents.id', '!=', $id)
-                ->whereIn('student_subjek.student_ic', $students)
-                ->whereRaw('DAYNAME(start) = ?', [$dayOfWeek])
-                ->where(function ($query) use ($startTimeOnly, $endTimeOnly) {
-                    $query->where(function ($query) use ($startTimeOnly) {
-                        $query->whereRaw('? BETWEEN TIME(start) AND TIME(end)', [$startTimeOnly])
-                                ->whereRaw('? != TIME(start)', [$startTimeOnly])
-                                ->whereRaw('? != TIME(end)', [$startTimeOnly]);
+                $conflictingStudents = DB::table('tblevents')
+                    ->join('student_subjek', function($join){
+                        $join->on('tblevents.group_id', 'student_subjek.group_id')
+                            ->on('tblevents.group_name', 'student_subjek.group_name');
                     })
-                    ->orWhere(function ($query) use ($endTimeOnly) {
-                        $query->whereRaw('? BETWEEN TIME(start) AND TIME(end)', [$endTimeOnly])
-                                ->whereRaw('? != TIME(start)', [$endTimeOnly])
-                                ->whereRaw('? != TIME(end)', [$endTimeOnly]);
+                    ->where('tblevents.id', '!=', $id)
+                    ->whereIn('student_subjek.student_ic', $students)
+                    ->whereRaw('DAYNAME(start) = ?', [$dayOfWeek])
+                    ->where(function ($query) use ($startTimeOnly, $endTimeOnly) {
+                        $query->where(function ($query) use ($startTimeOnly) {
+                            $query->whereRaw('? BETWEEN TIME(start) AND TIME(end)', [$startTimeOnly])
+                                    ->whereRaw('? != TIME(start)', [$startTimeOnly])
+                                    ->whereRaw('? != TIME(end)', [$startTimeOnly]);
+                        })
+                        ->orWhere(function ($query) use ($endTimeOnly) {
+                            $query->whereRaw('? BETWEEN TIME(start) AND TIME(end)', [$endTimeOnly])
+                                    ->whereRaw('? != TIME(start)', [$endTimeOnly])
+                                    ->whereRaw('? != TIME(end)', [$endTimeOnly]);
+                        })
+                        ->orWhere(function ($query) use ($startTimeOnly, $endTimeOnly) {
+                            $query->whereRaw('? <= TIME(start)', [$startTimeOnly])
+                                    ->whereRaw('? >= TIME(end)', [$endTimeOnly]);
+                        });
                     })
-                    ->orWhere(function ($query) use ($startTimeOnly, $endTimeOnly) {
-                        $query->whereRaw('? <= TIME(start)', [$startTimeOnly])
-                                ->whereRaw('? >= TIME(end)', [$endTimeOnly]);
-                    });
-                })
-                ->exists()){
+                    ->select('student_subjek.student_ic')
+                    ->distinct()
+                    ->get();
 
-                    return response()->json(['error' => 'Students in this class is already booked with the same period in another room/class!']);
+                if($conflictingStudents->count() > 0){
+                    
+                    return response()->json([
+                        'error' => 'Students in this class are already booked with the same period in another room/class!',
+                        'conflicting_students' => $conflictingStudents
+                    ]);
 
-                }else{
+                } else {
             
                     $event = Tblevent::find($id);
 
