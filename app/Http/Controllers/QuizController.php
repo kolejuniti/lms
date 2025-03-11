@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 use App\Notifications\MyCustomNotification;
 use App\Models\UserStudent;
+use Illuminate\Support\Facades\Http;
 
 class QuizController extends Controller
 {
@@ -1988,68 +1989,100 @@ class QuizController extends Controller
     // }
 
     public function generateAIQuiz(Request $request)
-{
-    try {
-        // Step 1: Validate the inputs
-        $request->validate([
-            'document' => 'required|file|mimes:pdf|max:5000',
-            'single_choice_count' => 'required|integer|min:0',
-            'multiple_choice_count' => 'required|integer|min:0',
-            'subjective_count' => 'required|integer|min:0',
-        ]);
+    {
+        try {
+            // Step 1: Validate the inputs
+            $request->validate([
+                'document' => 'required|file|mimes:pdf|max:5000',
+                'single_choice_count' => 'required|integer|min:0',
+                'multiple_choice_count' => 'required|integer|min:0',
+                'subjective_count' => 'required|integer|min:0',
+            ]);
 
-        // Step 2: Save and parse the PDF
-        $filePath = $request->file('document')->store('documents');
-        $parser = new Parser();
-        $pdf = $parser->parseFile(storage_path('app/' . $filePath));
-        $text = $pdf->getText();
+            // Step 2: Save the PDF and extract text
+            $filePath = $request->file('document')->store('documents');
+            $pdfText = $this->extractPdfText(storage_path('app/' . $filePath));
 
-        // Step 3: Generate quiz JSON
-        $singleChoiceCount = $request->input('single_choice_count');
-        $multipleChoiceCount = $request->input('multiple_choice_count');
-        $subjectiveCount = $request->input('subjective_count');
+            // Step 3: Generate quiz JSON
+            $singleChoiceCount = $request->input('single_choice_count');
+            $multipleChoiceCount = $request->input('multiple_choice_count');
+            $subjectiveCount = $request->input('subjective_count');
 
-        $quizJSON = $this->generateFormBuilderJSON($text, $singleChoiceCount, $multipleChoiceCount, $subjectiveCount);
+            $quizJSON = $this->generateFormBuilderJSON(
+                $pdfText, 
+                $singleChoiceCount, 
+                $multipleChoiceCount, 
+                $subjectiveCount
+            );
 
-        // Step 4: Return the quiz JSON
-        return response()->json([
-            'success' => true,
-            'formBuilderJSON' => $quizJSON,
-        ]);
+            // Step 4: Return the quiz JSON
+            return response()->json([
+                'success' => true,
+                'formBuilderJSON' => $quizJSON,
+            ]);
 
-    } catch (\Exception $e) {
-        // Handle errors gracefully
-        Log::error('Error generating quiz: ' . $e->getMessage());
-        return response()->json([
-            'success' => false,
-            'message' => 'Error generating quiz: ' . $e->getMessage(),
-        ], 500);
+        } catch (\Exception $e) {
+            // Handle errors gracefully
+            Log::error('Error generating quiz: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Error generating quiz: ' . $e->getMessage(),
+            ], 500);
+        }
     }
-}
 
+    /**
+     * Extract text from PDF using a PHP 8.2 compatible approach
+     */
+    private function extractPdfText($pdfPath)
+    {
+        // Option 1: Use shell command if pdftotext is available on your server
+        if (function_exists('shell_exec')) {
+            $text = shell_exec('pdftotext ' . escapeshellarg($pdfPath) . ' -');
+            if (!empty($text)) {
+                return $text;
+            }
+        }
 
+        // Option 2: If you have Spatie PDF to text package installed
+        // Make sure to install: composer require spatie/pdf-to-text
+        // Uncomment below if you've installed it
+        /*
+        try {
+            return (new \Spatie\PdfToText\Pdf())
+                ->setPdf($pdfPath)
+                ->text();
+        } catch (\Exception $e) {
+            Log::error('Spatie PDF extraction failed: ' . $e->getMessage());
+        }
+        */
 
-private function generateFormBuilderJSON($text, $singleChoiceCount, $multipleChoiceCount, $subjectiveCount)
-{
-    $apiKey = env('OPENAI_API_KEY');
-    $client = new Client();
+        // Option 3: Fallback to a simple solution that acknowledges limitations
+        return "PDF text extraction failed. Please install 'spatie/pdf-to-text' package " .
+               "or ensure 'pdftotext' is available on your server for better PDF parsing.";
+    }
 
-    try {
-        // Build the AI prompt
-        $prompt = "Create a quiz JSON structure based on the following text. The quiz should include:\n";
-        $prompt .= "- $singleChoiceCount single-choice questions\n";
-        $prompt .= "- $multipleChoiceCount multiple-choice questions\n";
-        $prompt .= "- $subjectiveCount subjective questions\n\n";
-        $prompt .= "Here is the text:\n\n" . $text;
+    /**
+     * Generate form builder JSON by calling OpenAI
+     */
+    private function generateFormBuilderJSON($text, $singleChoiceCount, $multipleChoiceCount, $subjectiveCount)
+    {
+        $apiKey = env('OPENAI_API_KEY');
 
-        // Send the request to OpenAI API
-        $response = $client->post('https://api.openai.com/v1/chat/completions', [
-            'headers' => [
+        try {
+            // Build the AI prompt
+            $prompt = "Create a quiz JSON structure based on the following text. The quiz should include:\n";
+            $prompt .= "- $singleChoiceCount single-choice questions\n";
+            $prompt .= "- $multipleChoiceCount multiple-choice questions\n";
+            $prompt .= "- $subjectiveCount subjective questions\n\n";
+            $prompt .= "Here is the text:\n\n" . $text;
+
+            // Using Laravel's built-in Http client instead of Guzzle directly
+            $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $apiKey,
                 'Content-Type' => 'application/json',
-            ],
-            'json' => [
-                'model' => 'gpt-3.5-turbo-1106', // Ensure this is an available model
+            ])->post('https://api.openai.com/v1/chat/completions', [
+                'model' => 'gpt-3.5-turbo-1106', 
                 'messages' => [
                     [
                         'role' => 'system',
@@ -2062,22 +2095,21 @@ private function generateFormBuilderJSON($text, $singleChoiceCount, $multipleCho
                 ],
                 'max_tokens' => 2000,
                 'temperature' => 0.7,
-            ],
-        ]);
+            ]);
 
-        // Parse the response
-        $responseBody = json_decode($response->getBody(), true);
+            // Parse the response
+            $responseBody = $response->json();
 
-        if (isset($responseBody['choices'][0]['message']['content'])) {
-            return $responseBody['choices'][0]['message']['content'];
-        } else {
-            throw new \Exception('Invalid AI response. No content found.');
+            if (isset($responseBody['choices'][0]['message']['content'])) {
+                return $responseBody['choices'][0]['message']['content'];
+            } else {
+                throw new \Exception('Invalid AI response. No content found.');
+            }
+        } catch (\Exception $e) {
+            Log::error('Error communicating with OpenAI: ' . $e->getMessage());
+            throw new \Exception('Error communicating with AI: ' . $e->getMessage());
         }
-    } catch (\Exception $e) {
-        Log::error('Error communicating with OpenAI: ' . $e->getMessage());
-        throw new \Exception('Error communicating with AI: ' . $e->getMessage());
     }
-}
 
 
 
