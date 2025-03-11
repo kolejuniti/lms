@@ -153,28 +153,28 @@
                                                             </div>
                                                         </div>
 
-                                                        <div class="col-md-3 mb-3">
+                                                        <div class="col-md-4 mb-3">
                                                             <div class="form-group">
                                                                 <label for="singleChoiceCount" class="form-label"><strong>Number of Single-Choice Questions</strong></label>
                                                                 <input type="number" class="form-control" id="singleChoiceCount" name="single_choice_count" min="0" value="0">
                                                             </div>
                                                         </div>
                                                         
-                                                        <div class="col-md-3 mb-3">
+                                                        <div class="col-md-4 mb-3">
                                                             <div class="form-group">
                                                                 <label for="multipleChoiceCount" class="form-label"><strong>Number of Multiple-Choice Questions</strong></label>
                                                                 <input type="number" class="form-control" id="multipleChoiceCount" name="multiple_choice_count" min="0" value="0">
                                                             </div>
                                                         </div>
                                                         
-                                                        <div class="col-md-3 mb-3">
+                                                        <div class="col-md-4 mb-3">
                                                             <div class="form-group">
                                                                 <label for="subjectiveCount" class="form-label"><strong>Number of Subjective Questions</strong></label>
                                                                 <input type="number" class="form-control" id="subjectiveCount" name="subjective_count" min="0" value="0">
                                                             </div>
                                                         </div>
 
-                                                        <div class="col-md-3 mb-3">
+                                                        <div class="col-md-4 mb-3">
                                                             <div class="form-group">
                                                                 <label for="languageSlider" class="form-label"><strong>Question Language</strong></label>
                                                                 <div class="slider-container">
@@ -347,152 +347,152 @@
 
                                                             <script>
                                                                 /**
- * Initializes the enhanced language slider functionality
- */
-function initializeLanguageSlider() {
-    const languageSlider = document.getElementById('languageSlider');
-    const languageInput = document.getElementById('language');
-    const englishLabel = document.getElementById('english-label');
-    const malayLabel = document.getElementById('malay-label');
-    const mixLabel = document.getElementById('mix-label');
-    const sliderTooltip = document.querySelector('.slider-tooltip');
-    const labelContainer = document.querySelector('.slider-label-container');
-    
-    // Map slider values to language options
-    const languageOptions = ['english', 'malay', 'mix'];
-    const languageLabels = [englishLabel, malayLabel, mixLabel];
-    const languageNames = ['English', 'Malay', 'Mix'];
-    
-    // Set initial active state
-    updateActiveLabel(0);
-    updateTooltipPosition(0);
-    
-    // Update language when slider changes
-    if (languageSlider) {
-        languageSlider.addEventListener('input', function() {
-            const value = parseInt(this.value);
-            languageInput.value = languageOptions[value];
-            updateActiveLabel(value);
-            updateTooltipPosition(value);
-            
-            // Add sliding class for animation
-            labelContainer.classList.add('sliding');
-        });
-        
-        // When slider interaction ends
-        languageSlider.addEventListener('change', function() {
-            // Remove sliding class to stop animation
-            labelContainer.classList.remove('sliding');
-            
-            // Add pulse animation to selected label only
-            const selectedLabel = document.querySelector('.slider-label.active');
-            selectedLabel.classList.add('pulse-once');
-            setTimeout(() => {
-                selectedLabel.classList.remove('pulse-once');
-            }, 500);
-        });
-        
-        // Update tooltip content and position on mousemove
-        languageSlider.addEventListener('mousemove', function(e) {
-            if (sliderTooltip) {
-                updateTooltipPosition(parseInt(this.value));
-            }
-        });
-        
-        // Show tooltip on mouse over
-        languageSlider.addEventListener('mouseenter', function() {
-            if (sliderTooltip) {
-                sliderTooltip.style.opacity = '1';
-            }
-        });
-        
-        // Hide tooltip on mouse out
-        languageSlider.addEventListener('mouseleave', function() {
-            if (sliderTooltip) {
-                sliderTooltip.style.opacity = '0';
-            }
-        });
-    }
-    
-    // Add click event to labels
-    languageLabels.forEach((label, index) => {
-        if (label) {
-            label.addEventListener('click', function() {
-                languageSlider.value = index;
-                languageInput.value = languageOptions[index];
-                updateActiveLabel(index);
-                updateTooltipPosition(index);
-                
-                // Add pulse animation to selected label
-                this.classList.add('pulse-once');
-                setTimeout(() => {
-                    this.classList.remove('pulse-once');
-                }, 500);
-            });
-        }
-    });
-    
-    // Function to update active label styling
-    function updateActiveLabel(activeIndex) {
-        languageLabels.forEach((label, index) => {
-            if (label) {
-                if (index === activeIndex) {
-                    label.classList.add('active');
-                } else {
-                    label.classList.remove('active');
-                }
-            }
-        });
-    }
-    
-    // Function to update tooltip position and content
-    function updateTooltipPosition(sliderValue) {
-        if (sliderTooltip) {
-            // Update content
-            sliderTooltip.textContent = languageNames[sliderValue];
-            
-            // Update position
-            const sliderWidth = languageSlider.offsetWidth;
-            const thumbPosition = (sliderValue / 2) * sliderWidth;
-            sliderTooltip.style.left = thumbPosition + 'px';
-        }
-    }
-    
-    // Add drag effect
-    let isDragging = false;
-    
-    languageSlider.addEventListener('mousedown', function() {
-        isDragging = true;
-        languageSlider.style.cursor = 'grabbing';
-        
-        // Add effect when dragging starts
-        document.body.classList.add('slider-dragging');
-        languageSlider.classList.add('dragging');
-    });
-    
-    document.addEventListener('mouseup', function() {
-        if (isDragging) {
-            isDragging = false;
-            languageSlider.style.cursor = 'grab';
-            
-            // Remove effect when dragging ends
-            document.body.classList.remove('slider-dragging');
-            languageSlider.classList.remove('dragging');
-        }
-    });
-    
-    document.addEventListener('mousemove', function(e) {
-        if (isDragging) {
-            // Optional: add some additional drag effects if desired
-        }
-    });
-}
+                                                                 * Initializes the enhanced language slider functionality
+                                                                 */
+                                                                function initializeLanguageSlider() {
+                                                                    const languageSlider = document.getElementById('languageSlider');
+                                                                    const languageInput = document.getElementById('language');
+                                                                    const englishLabel = document.getElementById('english-label');
+                                                                    const malayLabel = document.getElementById('malay-label');
+                                                                    const mixLabel = document.getElementById('mix-label');
+                                                                    const sliderTooltip = document.querySelector('.slider-tooltip');
+                                                                    const labelContainer = document.querySelector('.slider-label-container');
+                                                                    
+                                                                    // Map slider values to language options
+                                                                    const languageOptions = ['english', 'malay', 'mix'];
+                                                                    const languageLabels = [englishLabel, malayLabel, mixLabel];
+                                                                    const languageNames = ['English', 'Malay', 'Mix'];
+                                                                    
+                                                                    // Set initial active state
+                                                                    updateActiveLabel(0);
+                                                                    updateTooltipPosition(0);
+                                                                    
+                                                                    // Update language when slider changes
+                                                                    if (languageSlider) {
+                                                                        languageSlider.addEventListener('input', function() {
+                                                                            const value = parseInt(this.value);
+                                                                            languageInput.value = languageOptions[value];
+                                                                            updateActiveLabel(value);
+                                                                            updateTooltipPosition(value);
+                                                                            
+                                                                            // Add sliding class for animation
+                                                                            labelContainer.classList.add('sliding');
+                                                                        });
+                                                                        
+                                                                        // When slider interaction ends
+                                                                        languageSlider.addEventListener('change', function() {
+                                                                            // Remove sliding class to stop animation
+                                                                            labelContainer.classList.remove('sliding');
+                                                                            
+                                                                            // Add pulse animation to selected label only
+                                                                            const selectedLabel = document.querySelector('.slider-label.active');
+                                                                            selectedLabel.classList.add('pulse-once');
+                                                                            setTimeout(() => {
+                                                                                selectedLabel.classList.remove('pulse-once');
+                                                                            }, 500);
+                                                                        });
+                                                                        
+                                                                        // Update tooltip content and position on mousemove
+                                                                        languageSlider.addEventListener('mousemove', function(e) {
+                                                                            if (sliderTooltip) {
+                                                                                updateTooltipPosition(parseInt(this.value));
+                                                                            }
+                                                                        });
+                                                                        
+                                                                        // Show tooltip on mouse over
+                                                                        languageSlider.addEventListener('mouseenter', function() {
+                                                                            if (sliderTooltip) {
+                                                                                sliderTooltip.style.opacity = '1';
+                                                                            }
+                                                                        });
+                                                                        
+                                                                        // Hide tooltip on mouse out
+                                                                        languageSlider.addEventListener('mouseleave', function() {
+                                                                            if (sliderTooltip) {
+                                                                                sliderTooltip.style.opacity = '0';
+                                                                            }
+                                                                        });
+                                                                    }
+                                                                    
+                                                                    // Add click event to labels
+                                                                    languageLabels.forEach((label, index) => {
+                                                                        if (label) {
+                                                                            label.addEventListener('click', function() {
+                                                                                languageSlider.value = index;
+                                                                                languageInput.value = languageOptions[index];
+                                                                                updateActiveLabel(index);
+                                                                                updateTooltipPosition(index);
+                                                                                
+                                                                                // Add pulse animation to selected label
+                                                                                this.classList.add('pulse-once');
+                                                                                setTimeout(() => {
+                                                                                    this.classList.remove('pulse-once');
+                                                                                }, 500);
+                                                                            });
+                                                                        }
+                                                                    });
+                                                                    
+                                                                    // Function to update active label styling
+                                                                    function updateActiveLabel(activeIndex) {
+                                                                        languageLabels.forEach((label, index) => {
+                                                                            if (label) {
+                                                                                if (index === activeIndex) {
+                                                                                    label.classList.add('active');
+                                                                                } else {
+                                                                                    label.classList.remove('active');
+                                                                                }
+                                                                            }
+                                                                        });
+                                                                    }
+                                                                    
+                                                                    // Function to update tooltip position and content
+                                                                    function updateTooltipPosition(sliderValue) {
+                                                                        if (sliderTooltip) {
+                                                                            // Update content
+                                                                            sliderTooltip.textContent = languageNames[sliderValue];
+                                                                            
+                                                                            // Update position
+                                                                            const sliderWidth = languageSlider.offsetWidth;
+                                                                            const thumbPosition = (sliderValue / 2) * sliderWidth;
+                                                                            sliderTooltip.style.left = thumbPosition + 'px';
+                                                                        }
+                                                                    }
+                                                                    
+                                                                    // Add drag effect
+                                                                    let isDragging = false;
+                                                                    
+                                                                    languageSlider.addEventListener('mousedown', function() {
+                                                                        isDragging = true;
+                                                                        languageSlider.style.cursor = 'grabbing';
+                                                                        
+                                                                        // Add effect when dragging starts
+                                                                        document.body.classList.add('slider-dragging');
+                                                                        languageSlider.classList.add('dragging');
+                                                                    });
+                                                                    
+                                                                    document.addEventListener('mouseup', function() {
+                                                                        if (isDragging) {
+                                                                            isDragging = false;
+                                                                            languageSlider.style.cursor = 'grab';
+                                                                            
+                                                                            // Remove effect when dragging ends
+                                                                            document.body.classList.remove('slider-dragging');
+                                                                            languageSlider.classList.remove('dragging');
+                                                                        }
+                                                                    });
+                                                                    
+                                                                    document.addEventListener('mousemove', function(e) {
+                                                                        if (isDragging) {
+                                                                            // Optional: add some additional drag effects if desired
+                                                                        }
+                                                                    });
+                                                                }
 
-// Add this to ensure it's called when the document is ready
-document.addEventListener('DOMContentLoaded', function() {
-    initializeAIQuizGenerator();
-    initializeLanguageSlider();
-});
+                                                                // Add this to ensure it's called when the document is ready
+                                                                document.addEventListener('DOMContentLoaded', function() {
+                                                                    initializeAIQuizGenerator();
+                                                                    initializeLanguageSlider();
+                                                                });
                                                             </script>
                                                         
                                                         <div class="col-md-12 mt-2 text-right">
@@ -510,426 +510,426 @@ document.addEventListener('DOMContentLoaded', function() {
                                     
                                 <script>
                                 /**
- * AI Quiz Generator
- * 
- * This script handles the AI-powered quiz generation functionality.
- * It processes PDF documents and creates questions of different types
- * based on the document content.
- */
+                                 * AI Quiz Generator
+                                 * 
+                                 * This script handles the AI-powered quiz generation functionality.
+                                 * It processes PDF documents and creates questions of different types
+                                 * based on the document content.
+                                 */
 
-// Wait for DOM to be fully loaded before initializing
-document.addEventListener('DOMContentLoaded', function() {
-    initializeAIQuizGenerator();
-});
+                                // Wait for DOM to be fully loaded before initializing
+                                document.addEventListener('DOMContentLoaded', function() {
+                                    initializeAIQuizGenerator();
+                                });
 
-/**
- * Initializes the AI Quiz Generator functionality
- */
-function initializeAIQuizGenerator() {
-    // Get reference to the generate button
-    const generateButton = document.getElementById('generateQuizAI');
-    
-    // Add event listener to the generate button
-    if (generateButton) {
-        generateButton.addEventListener('click', handleGenerateQuiz);
-        
-        // Add a pulse animation to make the button more noticeable
-        generateButton.classList.add('pulse-animation');
-    }
-    
-    // Add file input listener to show filename when selected
-    const documentInput = document.getElementById('documentInput');
-    if (documentInput) {
-        documentInput.addEventListener('change', function(e) {
-            const fileName = e.target.files[0]?.name || 'No file selected';
-            const fileLabel = document.querySelector('label[for="documentInput"]');
-            if (fileLabel) {
-                fileLabel.innerHTML = `<strong>Document selected:</strong> ${fileName}`;
-            }
-        });
-    }
-}
+                                /**
+                                * Initializes the AI Quiz Generator functionality
+                                */
+                                function initializeAIQuizGenerator() {
+                                    // Get reference to the generate button
+                                    const generateButton = document.getElementById('generateQuizAI');
+                                    
+                                    // Add event listener to the generate button
+                                    if (generateButton) {
+                                        generateButton.addEventListener('click', handleGenerateQuiz);
+                                        
+                                        // Add a pulse animation to make the button more noticeable
+                                        generateButton.classList.add('pulse-animation');
+                                    }
+                                    
+                                    // Add file input listener to show filename when selected
+                                    const documentInput = document.getElementById('documentInput');
+                                    if (documentInput) {
+                                        documentInput.addEventListener('change', function(e) {
+                                            const fileName = e.target.files[0]?.name || 'No file selected';
+                                            const fileLabel = document.querySelector('label[for="documentInput"]');
+                                            if (fileLabel) {
+                                                fileLabel.innerHTML = `<strong>Document selected:</strong> ${fileName}`;
+                                            }
+                                        });
+                                    }
+                                }
 
-/**
- * Handles the generate quiz button click
- */
-function handleGenerateQuiz() {
-    // Create FormData from the form
-    const formData = new FormData(document.getElementById('aiQuizForm'));
-    
-    // Validate inputs before proceeding
-    if (!validateAIQuizForm()) {
-        return;
-    }
-    
-    // Show loading state
-    Swal.fire({
-        title: "Generating Quiz",
-        html: "Please wait while our AI analyzes your document and creates questions...",
-        allowOutsideClick: false,
-        didOpen: () => {
-            Swal.showLoading();
-        }
-    });
-    
-    // Send the request to the server
-    fetch(`/lecturer/quiz/${getCourseId()}/generate-ai-quiz`, {
-        method: 'POST',
-        body: formData,
-        headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-        },
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        return response.json();
-    })
-    .then(data => {
-        // Close loading indicator
-        Swal.close();
-        
-        // Handle the response
-        if (data.success) {
-            processQuizQuestions(data);
-        } else {
-            showErrorMessage(data.message || 'Failed to generate quiz.');
-        }
-    })
-    .catch(error => {
-        // Close loading indicator
-        Swal.close();
-        
-        // Show error message
-        console.error('Error:', error);
-        showErrorMessage('An error occurred while generating the quiz. Please check the document and try again.');
-    });
-}
+                                /**
+                                * Handles the generate quiz button click
+                                */
+                                function handleGenerateQuiz() {
+                                    // Create FormData from the form
+                                    const formData = new FormData(document.getElementById('aiQuizForm'));
+                                    
+                                    // Validate inputs before proceeding
+                                    if (!validateAIQuizForm()) {
+                                        return;
+                                    }
+                                    
+                                    // Show loading state
+                                    Swal.fire({
+                                        title: "Generating Quiz",
+                                        html: "Please wait while our AI analyzes your document and creates questions...",
+                                        allowOutsideClick: false,
+                                        didOpen: () => {
+                                            Swal.showLoading();
+                                        }
+                                    });
+                                    
+                                    // Send the request to the server
+                                    fetch(`/lecturer/quiz/${getCourseId()}/generate-ai-quiz`, {
+                                        method: 'POST',
+                                        body: formData,
+                                        headers: {
+                                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                                        },
+                                    })
+                                    .then(response => {
+                                        if (!response.ok) {
+                                            throw new Error(`HTTP error! Status: ${response.status}`);
+                                        }
+                                        return response.json();
+                                    })
+                                    .then(data => {
+                                        // Close loading indicator
+                                        Swal.close();
+                                        
+                                        // Handle the response
+                                        if (data.success) {
+                                            processQuizQuestions(data);
+                                        } else {
+                                            showErrorMessage(data.message || 'Failed to generate quiz.');
+                                        }
+                                    })
+                                    .catch(error => {
+                                        // Close loading indicator
+                                        Swal.close();
+                                        
+                                        // Show error message
+                                        console.error('Error:', error);
+                                        showErrorMessage('An error occurred while generating the quiz. Please check the document and try again.');
+                                    });
+                                }
 
-/**
- * Gets the course ID from session
- * @returns {string} The course ID
- */
-function getCourseId() {
-    return '{{ Session::get("CourseID") }}';
-}
+                                /**
+                                * Gets the course ID from session
+                                * @returns {string} The course ID
+                                */
+                                function getCourseId() {
+                                    return '{{ Session::get("CourseID") }}';
+                                }
 
-/**
- * Validates the AI Quiz form
- * @returns {boolean} Whether the form is valid
- */
-function validateAIQuizForm() {
-    const documentFile = document.getElementById('documentInput').files[0];
-    const singleChoiceCount = parseInt(document.getElementById('singleChoiceCount').value) || 0;
-    const multipleChoiceCount = parseInt(document.getElementById('multipleChoiceCount').value) || 0;
-    const subjectiveCount = parseInt(document.getElementById('subjectiveCount').value) || 0;
-    
-    // Check if a document is selected
-    if (!documentFile) {
-        showErrorMessage('Please select a PDF document.');
-        return false;
-    }
-    
-    // Check if the file is a PDF
-    if (documentFile.type !== 'application/pdf') {
-        showErrorMessage('Only PDF documents are supported.');
-        return false;
-    }
-    
-    // Check if any question count is negative
-    if (singleChoiceCount < 0 || multipleChoiceCount < 0 || subjectiveCount < 0) {
-        showErrorMessage('Question counts cannot be negative.');
-        return false;
-    }
-    
-    // Check if at least one question type has a count greater than zero
-    const totalQuestions = singleChoiceCount + multipleChoiceCount + subjectiveCount;
-    if (totalQuestions === 0) {
-        showErrorMessage('Please specify at least one question to generate.');
-        return false;
-    }
-    
-    // Check if total questions is reasonable (not too many)
-    if (totalQuestions > 50) {
-        showErrorMessage('Please generate 50 or fewer questions at once.');
-        return false;
-    }
-    
-    return true;
-}
+                                /**
+                                * Validates the AI Quiz form
+                                * @returns {boolean} Whether the form is valid
+                                */
+                                function validateAIQuizForm() {
+                                    const documentFile = document.getElementById('documentInput').files[0];
+                                    const singleChoiceCount = parseInt(document.getElementById('singleChoiceCount').value) || 0;
+                                    const multipleChoiceCount = parseInt(document.getElementById('multipleChoiceCount').value) || 0;
+                                    const subjectiveCount = parseInt(document.getElementById('subjectiveCount').value) || 0;
+                                    
+                                    // Check if a document is selected
+                                    if (!documentFile) {
+                                        showErrorMessage('Please select a PDF document.');
+                                        return false;
+                                    }
+                                    
+                                    // Check if the file is a PDF
+                                    if (documentFile.type !== 'application/pdf') {
+                                        showErrorMessage('Only PDF documents are supported.');
+                                        return false;
+                                    }
+                                    
+                                    // Check if any question count is negative
+                                    if (singleChoiceCount < 0 || multipleChoiceCount < 0 || subjectiveCount < 0) {
+                                        showErrorMessage('Question counts cannot be negative.');
+                                        return false;
+                                    }
+                                    
+                                    // Check if at least one question type has a count greater than zero
+                                    const totalQuestions = singleChoiceCount + multipleChoiceCount + subjectiveCount;
+                                    if (totalQuestions === 0) {
+                                        showErrorMessage('Please specify at least one question to generate.');
+                                        return false;
+                                    }
+                                    
+                                    // Check if total questions is reasonable (not too many)
+                                    if (totalQuestions > 50) {
+                                        showErrorMessage('Please generate 50 or fewer questions at once.');
+                                        return false;
+                                    }
+                                    
+                                    return true;
+                                }
 
-/**
- * Shows a success message using SweetAlert
- */
-function showSuccessMessage() {
-    Swal.fire({
-        title: "Success!",
-        text: "Quiz questions have been generated successfully.",
-        icon: "success",
-        confirmButtonText: "Great!"
-    });
-}
+                                /**
+                                * Shows a success message using SweetAlert
+                                */
+                                function showSuccessMessage() {
+                                    Swal.fire({
+                                        title: "Success!",
+                                        text: "Quiz questions have been generated successfully.",
+                                        icon: "success",
+                                        confirmButtonText: "Great!"
+                                    });
+                                }
 
-/**
- * Shows an error message using SweetAlert
- * @param {string} message The error message to display
- */
-function showErrorMessage(message) {
-    Swal.fire({
-        title: "Error",
-        text: message,
-        icon: "error",
-        confirmButtonText: "OK"
-    });
-}
+                                /**
+                                * Shows an error message using SweetAlert
+                                * @param {string} message The error message to display
+                                */
+                                function showErrorMessage(message) {
+                                    Swal.fire({
+                                        title: "Error",
+                                        text: message,
+                                        icon: "error",
+                                        confirmButtonText: "OK"
+                                    });
+                                }
 
-/**
- * Shows a warning message using SweetAlert
- * @param {string} message The warning message to display
- */
-function showWarningMessage(message) {
-    Swal.fire({
-        title: "Warning",
-        text: message,
-        icon: "warning",
-        confirmButtonText: "Continue Anyway"
-    });
-}
+                                /**
+                                * Shows a warning message using SweetAlert
+                                * @param {string} message The warning message to display
+                                */
+                                function showWarningMessage(message) {
+                                    Swal.fire({
+                                        title: "Warning",
+                                        text: message,
+                                        icon: "warning",
+                                        confirmButtonText: "Continue Anyway"
+                                    });
+                                }
 
-/**
- * Processes the quiz questions returned from the server
- * @param {Object} data The response data from the server
- */
-function processQuizQuestions(data) {
-    try {
-        // Parse the JSON data
-        let quizData;
-        if (typeof data.formBuilderJSON === 'string') {
-            quizData = JSON.parse(data.formBuilderJSON);
-        } else {
-            quizData = data.formBuilderJSON;
-        }
-        
-        // If no questions were received, create empty questions array
-        if (!quizData || !quizData.quiz || !quizData.quiz.questions || !Array.isArray(quizData.quiz.questions)) {
-            console.error('Invalid quiz data structure received.');
-            showErrorMessage('The AI generated an invalid quiz structure. Please try again.');
-            return;
-        }
-        
-        // Extract questions array
-        const allQuestions = quizData.quiz.questions;
-        
-        // Get the requested counts from the form
-        const requestedSingleChoice = parseInt(document.getElementById('singleChoiceCount').value) || 0;
-        const requestedMultipleChoice = parseInt(document.getElementById('multipleChoiceCount').value) || 0;
-        const requestedSubjective = parseInt(document.getElementById('subjectiveCount').value) || 0;
-        
-        // Sort questions by type
-        const singleChoiceQuestions = allQuestions.filter(q => q.type === 'single-choice');
-        const multipleChoiceQuestions = allQuestions.filter(q => q.type === 'multiple-choice');
-        const subjectiveQuestions = allQuestions.filter(q => q.type === 'subjective');
-        
-        // Create the final list of questions in the order they are requested
-        const finalQuestions = [
-            ...singleChoiceQuestions.slice(0, requestedSingleChoice),
-            ...multipleChoiceQuestions.slice(0, requestedMultipleChoice),
-            ...subjectiveQuestions.slice(0, requestedSubjective)
-        ];
-        
-        // Check if we have enough questions of each type
-        const actualSingleChoice = Math.min(singleChoiceQuestions.length, requestedSingleChoice);
-        const actualMultipleChoice = Math.min(multipleChoiceQuestions.length, requestedMultipleChoice);
-        const actualSubjective = Math.min(subjectiveQuestions.length, requestedSubjective);
-        
-        // If we didn't get enough questions of any type, show a warning
-        if (actualSingleChoice < requestedSingleChoice || 
-            actualMultipleChoice < requestedMultipleChoice || 
-            actualSubjective < requestedSubjective) {
-            
-            let message = "The AI couldn't generate enough questions of the requested types. Generated:";
-            if (requestedSingleChoice > 0) {
-                message += ` ${actualSingleChoice}/${requestedSingleChoice} single-choice questions.`;
-            }
-            if (requestedMultipleChoice > 0) {
-                message += ` ${actualMultipleChoice}/${requestedMultipleChoice} multiple-choice questions.`;
-            }
-            if (requestedSubjective > 0) {
-                message += ` ${actualSubjective}/${requestedSubjective} subjective questions.`;
-            }
-            
-            showWarningMessage(message);
-        } else {
-            // Show success message only if we got all the questions we wanted
-            showSuccessMessage();
-        }
-        
-        // If we have no questions to display, show an error
-        if (finalQuestions.length === 0) {
-            showErrorMessage('No valid questions were generated. Please try again with a different document or question settings.');
-            return;
-        }
-        
-        // Process each question
-        finalQuestions.forEach((question, index) => {
-            addQuestionToFormBuilder(question, index);
-        });
-        
-        // Update question index value
-        updateQuestionIndex(finalQuestions.length);
-        
-        // Update marks calculation
-        if (typeof renderMark === 'function') {
-            renderMark();
-        }
-    } catch (e) {
-        console.error('Error processing quiz data:', e);
-        showErrorMessage('Error processing the generated quiz data. Please try again.');
-    }
-}
+                                /**
+                                * Processes the quiz questions returned from the server
+                                * @param {Object} data The response data from the server
+                                */
+                                function processQuizQuestions(data) {
+                                    try {
+                                        // Parse the JSON data
+                                        let quizData;
+                                        if (typeof data.formBuilderJSON === 'string') {
+                                            quizData = JSON.parse(data.formBuilderJSON);
+                                        } else {
+                                            quizData = data.formBuilderJSON;
+                                        }
+                                        
+                                        // If no questions were received, create empty questions array
+                                        if (!quizData || !quizData.quiz || !quizData.quiz.questions || !Array.isArray(quizData.quiz.questions)) {
+                                            console.error('Invalid quiz data structure received.');
+                                            showErrorMessage('The AI generated an invalid quiz structure. Please try again.');
+                                            return;
+                                        }
+                                        
+                                        // Extract questions array
+                                        const allQuestions = quizData.quiz.questions;
+                                        
+                                        // Get the requested counts from the form
+                                        const requestedSingleChoice = parseInt(document.getElementById('singleChoiceCount').value) || 0;
+                                        const requestedMultipleChoice = parseInt(document.getElementById('multipleChoiceCount').value) || 0;
+                                        const requestedSubjective = parseInt(document.getElementById('subjectiveCount').value) || 0;
+                                        
+                                        // Sort questions by type
+                                        const singleChoiceQuestions = allQuestions.filter(q => q.type === 'single-choice');
+                                        const multipleChoiceQuestions = allQuestions.filter(q => q.type === 'multiple-choice');
+                                        const subjectiveQuestions = allQuestions.filter(q => q.type === 'subjective');
+                                        
+                                        // Create the final list of questions in the order they are requested
+                                        const finalQuestions = [
+                                            ...singleChoiceQuestions.slice(0, requestedSingleChoice),
+                                            ...multipleChoiceQuestions.slice(0, requestedMultipleChoice),
+                                            ...subjectiveQuestions.slice(0, requestedSubjective)
+                                        ];
+                                        
+                                        // Check if we have enough questions of each type
+                                        const actualSingleChoice = Math.min(singleChoiceQuestions.length, requestedSingleChoice);
+                                        const actualMultipleChoice = Math.min(multipleChoiceQuestions.length, requestedMultipleChoice);
+                                        const actualSubjective = Math.min(subjectiveQuestions.length, requestedSubjective);
+                                        
+                                        // If we didn't get enough questions of any type, show a warning
+                                        if (actualSingleChoice < requestedSingleChoice || 
+                                            actualMultipleChoice < requestedMultipleChoice || 
+                                            actualSubjective < requestedSubjective) {
+                                            
+                                            let message = "The AI couldn't generate enough questions of the requested types. Generated:";
+                                            if (requestedSingleChoice > 0) {
+                                                message += ` ${actualSingleChoice}/${requestedSingleChoice} single-choice questions.`;
+                                            }
+                                            if (requestedMultipleChoice > 0) {
+                                                message += ` ${actualMultipleChoice}/${requestedMultipleChoice} multiple-choice questions.`;
+                                            }
+                                            if (requestedSubjective > 0) {
+                                                message += ` ${actualSubjective}/${requestedSubjective} subjective questions.`;
+                                            }
+                                            
+                                            showWarningMessage(message);
+                                        } else {
+                                            // Show success message only if we got all the questions we wanted
+                                            showSuccessMessage();
+                                        }
+                                        
+                                        // If we have no questions to display, show an error
+                                        if (finalQuestions.length === 0) {
+                                            showErrorMessage('No valid questions were generated. Please try again with a different document or question settings.');
+                                            return;
+                                        }
+                                        
+                                        // Process each question
+                                        finalQuestions.forEach((question, index) => {
+                                            addQuestionToFormBuilder(question, index);
+                                        });
+                                        
+                                        // Update question index value
+                                        updateQuestionIndex(finalQuestions.length);
+                                        
+                                        // Update marks calculation
+                                        if (typeof renderMark === 'function') {
+                                            renderMark();
+                                        }
+                                    } catch (e) {
+                                        console.error('Error processing quiz data:', e);
+                                        showErrorMessage('Error processing the generated quiz data. Please try again.');
+                                    }
+                                }
 
-/**
- * Adds a question to the form builder
- * @param {Object} question The question object
- * @param {number} index The question index
- */
-function addQuestionToFormBuilder(question, index) {
-    // Add header for the question
-    formBuilder.actions.addField({
-        type: 'header',
-        className: 'mt-4',
-        label: `Question ${index + 1}`,
-    });
+                                /**
+                                * Adds a question to the form builder
+                                * @param {Object} question The question object
+                                * @param {number} index The question index
+                                */
+                                function addQuestionToFormBuilder(question, index) {
+                                    // Add header for the question
+                                    formBuilder.actions.addField({
+                                        type: 'header',
+                                        className: 'mt-4',
+                                        label: `Question ${index + 1}`,
+                                    });
 
-    // Add file upload field
-    formBuilder.actions.addField({
-        type: 'file',
-        className: 'form-control',
-        label: 'Upload Image',
-        description: 'Drag and drop or click to select an image file.',
-        name: `question_image_${index}`,
-    });
+                                    // Add file upload field
+                                    formBuilder.actions.addField({
+                                        type: 'file',
+                                        className: 'form-control',
+                                        label: 'Upload Image',
+                                        description: 'Drag and drop or click to select an image file.',
+                                        name: `question_image_${index}`,
+                                    });
 
-    // Add the question paragraph
-    formBuilder.actions.addField({
-        type: 'paragraph',
-        label: question.question,
-    });
+                                    // Add the question paragraph
+                                    formBuilder.actions.addField({
+                                        type: 'paragraph',
+                                        label: question.question,
+                                    });
 
-    // Handle different question formats
-    addQuestionByType(question, index);
+                                    // Handle different question formats
+                                    addQuestionByType(question, index);
 
-    // Add correct answer field with proper formatting
-    addCorrectAnswerField(question, index);
+                                    // Add correct answer field with proper formatting
+                                    addCorrectAnswerField(question, index);
 
-    // Add checkbox for marks
-    formBuilder.actions.addField({
-        type: 'checkbox-group',
-        className: 'collected-marks pull-right chk-col-danger',
-        label: '',
-        values: [
-            {
-                label: '1 mark',
-                value: '1',
-                selected: false,
-            },
-        ],
-    });
+                                    // Add checkbox for marks
+                                    formBuilder.actions.addField({
+                                        type: 'checkbox-group',
+                                        className: 'collected-marks pull-right chk-col-danger',
+                                        label: '',
+                                        values: [
+                                            {
+                                                label: '1 mark',
+                                                value: '1',
+                                                selected: false,
+                                            },
+                                        ],
+                                    });
 
-    // Add comment text field
-    formBuilder.actions.addField({
-        type: 'text',
-        className: 'feedback-text form-control',
-        placeholder: 'Comment',
-    });
-}
+                                    // Add comment text field
+                                    formBuilder.actions.addField({
+                                        type: 'text',
+                                        className: 'feedback-text form-control',
+                                        placeholder: 'Comment',
+                                    });
+                                }
 
-/**
- * Adds a correct answer field to the form builder
- * @param {Object} question The question object
- * @param {number} index The question index
- */
-function addCorrectAnswerField(question, index) {
-    if (!question.answer) {
-        return;
-    }
+                                /**
+                                * Adds a correct answer field to the form builder
+                                * @param {Object} question The question object
+                                * @param {number} index The question index
+                                */
+                                function addCorrectAnswerField(question, index) {
+                                    if (!question.answer) {
+                                        return;
+                                    }
 
-    let answerText = '';
-    
-    // Format the answer text based on question type
-    if (question.type === 'single-choice') {
-        answerText = question.answer;
-    } else if (question.type === 'multiple-choice') {
-        // Make sure multiple-choice answers are comma-separated
-        answerText = Array.isArray(question.answer) 
-            ? question.answer.join(',')
-            : question.answer;
-    } else if (question.type === 'subjective') {
-        answerText = question.answer;
-    }
+                                    let answerText = '';
+                                    
+                                    // Format the answer text based on question type
+                                    if (question.type === 'single-choice') {
+                                        answerText = question.answer;
+                                    } else if (question.type === 'multiple-choice') {
+                                        // Make sure multiple-choice answers are comma-separated
+                                        answerText = Array.isArray(question.answer) 
+                                            ? question.answer.join(',')
+                                            : question.answer;
+                                    } else if (question.type === 'subjective') {
+                                        answerText = question.answer;
+                                    }
 
-    // Add the answer field as plain text
-    formBuilder.actions.addField({
-        type: 'paragraph',
-        className: 'correct-answer',
-        label: answerText
-    });
-}
+                                    // Add the answer field as plain text
+                                    formBuilder.actions.addField({
+                                        type: 'paragraph',
+                                        className: 'correct-answer',
+                                        label: answerText
+                                    });
+                                }
 
-/**
- * Adds a question to the form builder based on its type
- * @param {Object} question The question object
- * @param {number} index The question index
- */
-function addQuestionByType(question, index) {
-    if (question.type === 'single-choice') {
-        // Add single-choice (radio button) question
-        formBuilder.actions.addField({
-            type: 'radio-group',
-            className: 'with-gap radio-col-primary',
-            label: '<label class="text-primary"><strong>Your Answer</strong></label>',
-            name: `radio_question_${index}`,
-            values: question.options.map((option, optionIndex) => ({
-                label: `${String.fromCharCode(97 + optionIndex)}) ${option}`,
-                value: option,
-            })),
-        });
-    } else if (question.type === 'multiple-choice') {
-        // Add multiple-choice (checkbox) question
-        formBuilder.actions.addField({
-            type: 'checkbox-group',
-            className: 'filled-in chk-col-warning',
-            label: '<label class="text-primary"><strong>Your Answer</strong></label>',
-            name: `checkbox_question_${index}`,
-            values: question.options.map((option, optionIndex) => ({
-                label: `${String.fromCharCode(97 + optionIndex)}) ${option}`,
-                value: option,
-            })),
-        });
-    } else if (question.type === 'subjective') {
-        // Add subjective (text area) question
-        formBuilder.actions.addField({
-            type: 'textarea',
-            rows: 5,
-            className: 'form-control',
-            placeholder: 'Your Answer',
-            name: `subjective_question_${index}`,
-        });
-    }
-}
+                                /**
+                                * Adds a question to the form builder based on its type
+                                * @param {Object} question The question object
+                                * @param {number} index The question index
+                                */
+                                function addQuestionByType(question, index) {
+                                    if (question.type === 'single-choice') {
+                                        // Add single-choice (radio button) question
+                                        formBuilder.actions.addField({
+                                            type: 'radio-group',
+                                            className: 'with-gap radio-col-primary',
+                                            label: '<label class="text-primary"><strong>Your Answer</strong></label>',
+                                            name: `radio_question_${index}`,
+                                            values: question.options.map((option, optionIndex) => ({
+                                                label: `${String.fromCharCode(97 + optionIndex)}) ${option}`,
+                                                value: option,
+                                            })),
+                                        });
+                                    } else if (question.type === 'multiple-choice') {
+                                        // Add multiple-choice (checkbox) question
+                                        formBuilder.actions.addField({
+                                            type: 'checkbox-group',
+                                            className: 'filled-in chk-col-warning',
+                                            label: '<label class="text-primary"><strong>Your Answer</strong></label>',
+                                            name: `checkbox_question_${index}`,
+                                            values: question.options.map((option, optionIndex) => ({
+                                                label: `${String.fromCharCode(97 + optionIndex)}) ${option}`,
+                                                value: option,
+                                            })),
+                                        });
+                                    } else if (question.type === 'subjective') {
+                                        // Add subjective (text area) question
+                                        formBuilder.actions.addField({
+                                            type: 'textarea',
+                                            rows: 5,
+                                            className: 'form-control',
+                                            placeholder: 'Your Answer',
+                                            name: `subjective_question_${index}`,
+                                        });
+                                    }
+                                }
 
-/**
- * Updates the question index after adding new questions
- * @param {number} addedQuestionsCount Number of questions added
- */
-function updateQuestionIndex(addedQuestionsCount) {
-    const questionIndexField = document.getElementById('question-index');
-    if (questionIndexField) {
-        const currentIndex = parseInt(questionIndexField.value) || 0;
-        questionIndexField.value = currentIndex + addedQuestionsCount;
-    }
-}
+                                /**
+                                * Updates the question index after adding new questions
+                                * @param {number} addedQuestionsCount Number of questions added
+                                */
+                                function updateQuestionIndex(addedQuestionsCount) {
+                                    const questionIndexField = document.getElementById('question-index');
+                                    if (questionIndexField) {
+                                        const currentIndex = parseInt(questionIndexField.value) || 0;
+                                        questionIndexField.value = currentIndex + addedQuestionsCount;
+                                    }
+                                }
 
                                 </script>
                                     
