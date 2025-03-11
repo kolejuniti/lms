@@ -144,6 +144,17 @@
                                                 <h5><i class="fa fa-magic me-2"></i> Generate Quiz from Document</h5>
                                             </div>
                                             <div class="card-body">
+                                                <!-- Tips Alert Section -->
+                                                <div class="alert alert-info mb-4" role="alert">
+                                                    <h6 class="alert-heading"><i class="fa fa-info-circle me-2"></i>Tips for Quiz Generation:</h6>
+                                                    <ul class="mb-0 ps-3">
+                                                        <li>For best results, keep the total number of questions under 20.</li>
+                                                        <li>Larger documents may require more processing time.</li>
+                                                        <li>If you encounter an error, please try again or reduce the number of requested questions.</li>
+                                                        <li>Make sure your PDF document is text-based (not scanned) for optimal results.</li>
+                                                    </ul>
+                                                </div>
+                                                
                                                 <form id="aiQuizForm" enctype="multipart/form-data">
                                                     <div class="row">
                                                         <div class="col-md-12 mb-3">
@@ -189,312 +200,7 @@
                                                                 <input type="hidden" id="language" name="language" value="english">
                                                             </div>
                                                         </div>
-                                                        
-                                                        <style>
-                                                            .slider-container {
-                                                                position: relative;
-                                                                padding: 10px 0;
-                                                            }
-                                                            
-                                                            .slider-label {
-                                                                font-size: 0.85rem;
-                                                                cursor: pointer;
-                                                                transition: all 0.3s ease;
-                                                                position: relative;
-                                                                padding: 5px 10px;
-                                                                border-radius: 15px;
-                                                            }
-                                                            
-                                                            .slider-label.active {
-                                                                font-weight: bold;
-                                                                color: #ffffff;
-                                                                background-color: #6610f2;
-                                                                transform: scale(1.1);
-                                                                box-shadow: 0 2px 8px rgba(102, 16, 242, 0.5);
-                                                            }
-                                                            
-                                                            /* Animation for all labels when sliding */
-                                                            .slider-label-container.sliding .slider-label {
-                                                                animation: pulse 1s infinite alternate;
-                                                            }
-                                                            
-                                                            @keyframes pulse {
-                                                                0% {
-                                                                    transform: scale(1);
-                                                                }
-                                                                100% {
-                                                                    transform: scale(1.05);
-                                                                }
-                                                            }
-                                                            
-                                                            /* Custom slider styling */
-                                                            #languageSlider {
-                                                                -webkit-appearance: none;
-                                                                width: 100%;
-                                                                height: 8px;
-                                                                border-radius: 10px;
-                                                                background: linear-gradient(to right, #6610f2 0%, #9333ea 50%, #6610f2 100%);
-                                                                outline: none;
-                                                                opacity: 0.8;
-                                                                transition: opacity 0.3s, transform 0.3s;
-                                                            }
-                                                            
-                                                            #languageSlider:hover {
-                                                                opacity: 1;
-                                                                transform: scaleY(1.2);
-                                                            }
-                                                            
-                                                            #languageSlider:active {
-                                                                cursor: grabbing;
-                                                                transform: scaleY(1.4);
-                                                            }
-                                                            
-                                                            #languageSlider::-webkit-slider-thumb {
-                                                                -webkit-appearance: none;
-                                                                appearance: none;
-                                                                width: 25px;
-                                                                height: 25px;
-                                                                border-radius: 50%;
-                                                                background: #ffffff;
-                                                                border: 3px solid #6610f2;
-                                                                cursor: grab;
-                                                                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-                                                                transition: all 0.3s;
-                                                            }
-                                                            
-                                                            #languageSlider::-webkit-slider-thumb:hover {
-                                                                background: #e9ecef;
-                                                                transform: scale(1.1);
-                                                            }
-                                                            
-                                                            #languageSlider::-webkit-slider-thumb:active {
-                                                                background: #6610f2;
-                                                                border-color: #ffffff;
-                                                                transform: scale(1.2);
-                                                                cursor: grabbing;
-                                                            }
-                                                            
-                                                            #languageSlider::-moz-range-thumb {
-                                                                width: 25px;
-                                                                height: 25px;
-                                                                border-radius: 50%;
-                                                                background: #ffffff;
-                                                                border: 3px solid #6610f2;
-                                                                cursor: grab;
-                                                                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-                                                                transition: all 0.3s;
-                                                            }
-                                                            
-                                                            #languageSlider::-moz-range-thumb:hover {
-                                                                background: #e9ecef;
-                                                                transform: scale(1.1);
-                                                            }
-                                                            
-                                                            #languageSlider::-moz-range-thumb:active {
-                                                                background: #6610f2;
-                                                                border-color: #ffffff;
-                                                                transform: scale(1.2);
-                                                                cursor: grabbing;
-                                                            }
-                                                            
-                                                            .form-range::-webkit-slider-runnable-track {
-                                                                height: 8px;
-                                                                background: linear-gradient(to right, #6610f2 0%, #9333ea 50%, #6610f2 100%);
-                                                                border-radius: 10px;
-                                                                box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3);
-                                                            }
-                                                            
-                                                            .form-range::-moz-range-track {
-                                                                height: 8px;
-                                                                background: linear-gradient(to right, #6610f2 0%, #9333ea 50%, #6610f2 100%);
-                                                                border-radius: 10px;
-                                                                box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3);
-                                                            }
-                                                            
-                                                            /* Tooltip for slider */
-                                                            .slider-tooltip {
-                                                                position: absolute;
-                                                                top: -30px;
-                                                                left: 0;
-                                                                background-color: #6610f2;
-                                                                color: white;
-                                                                padding: 2px 8px;
-                                                                border-radius: 4px;
-                                                                font-size: 0.8rem;
-                                                                opacity: 0;
-                                                                transition: opacity 0.3s;
-                                                                pointer-events: none;
-                                                                transform: translateX(-50%);
-                                                                box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-                                                            }
-                                                            
-                                                            .slider-tooltip::after {
-                                                                content: '';
-                                                                position: absolute;
-                                                                top: 100%;
-                                                                left: 50%;
-                                                                margin-left: -5px;
-                                                                border-width: 5px;
-                                                                border-style: solid;
-                                                                border-color: #6610f2 transparent transparent transparent;
-                                                            }
-                                                            
-                                                            #languageSlider:hover + .slider-tooltip,
-                                                            #languageSlider:active + .slider-tooltip {
-                                                                opacity: 1;
-                                                            }
-                                                            </style>
-
-                                                            <script>
-                                                                /**
-                                                                 * Initializes the enhanced language slider functionality
-                                                                 */
-                                                                function initializeLanguageSlider() {
-                                                                    const languageSlider = document.getElementById('languageSlider');
-                                                                    const languageInput = document.getElementById('language');
-                                                                    const englishLabel = document.getElementById('english-label');
-                                                                    const malayLabel = document.getElementById('malay-label');
-                                                                    const mixLabel = document.getElementById('mix-label');
-                                                                    const sliderTooltip = document.querySelector('.slider-tooltip');
-                                                                    const labelContainer = document.querySelector('.slider-label-container');
-                                                                    
-                                                                    // Map slider values to language options
-                                                                    const languageOptions = ['english', 'malay', 'mix'];
-                                                                    const languageLabels = [englishLabel, malayLabel, mixLabel];
-                                                                    const languageNames = ['English', 'Malay', 'Mix'];
-                                                                    
-                                                                    // Set initial active state
-                                                                    updateActiveLabel(0);
-                                                                    updateTooltipPosition(0);
-                                                                    
-                                                                    // Update language when slider changes
-                                                                    if (languageSlider) {
-                                                                        languageSlider.addEventListener('input', function() {
-                                                                            const value = parseInt(this.value);
-                                                                            languageInput.value = languageOptions[value];
-                                                                            updateActiveLabel(value);
-                                                                            updateTooltipPosition(value);
-                                                                            
-                                                                            // Add sliding class for animation
-                                                                            labelContainer.classList.add('sliding');
-                                                                        });
-                                                                        
-                                                                        // When slider interaction ends
-                                                                        languageSlider.addEventListener('change', function() {
-                                                                            // Remove sliding class to stop animation
-                                                                            labelContainer.classList.remove('sliding');
-                                                                            
-                                                                            // Add pulse animation to selected label only
-                                                                            const selectedLabel = document.querySelector('.slider-label.active');
-                                                                            selectedLabel.classList.add('pulse-once');
-                                                                            setTimeout(() => {
-                                                                                selectedLabel.classList.remove('pulse-once');
-                                                                            }, 500);
-                                                                        });
-                                                                        
-                                                                        // Update tooltip content and position on mousemove
-                                                                        languageSlider.addEventListener('mousemove', function(e) {
-                                                                            if (sliderTooltip) {
-                                                                                updateTooltipPosition(parseInt(this.value));
-                                                                            }
-                                                                        });
-                                                                        
-                                                                        // Show tooltip on mouse over
-                                                                        languageSlider.addEventListener('mouseenter', function() {
-                                                                            if (sliderTooltip) {
-                                                                                sliderTooltip.style.opacity = '1';
-                                                                            }
-                                                                        });
-                                                                        
-                                                                        // Hide tooltip on mouse out
-                                                                        languageSlider.addEventListener('mouseleave', function() {
-                                                                            if (sliderTooltip) {
-                                                                                sliderTooltip.style.opacity = '0';
-                                                                            }
-                                                                        });
-                                                                    }
-                                                                    
-                                                                    // Add click event to labels
-                                                                    languageLabels.forEach((label, index) => {
-                                                                        if (label) {
-                                                                            label.addEventListener('click', function() {
-                                                                                languageSlider.value = index;
-                                                                                languageInput.value = languageOptions[index];
-                                                                                updateActiveLabel(index);
-                                                                                updateTooltipPosition(index);
-                                                                                
-                                                                                // Add pulse animation to selected label
-                                                                                this.classList.add('pulse-once');
-                                                                                setTimeout(() => {
-                                                                                    this.classList.remove('pulse-once');
-                                                                                }, 500);
-                                                                            });
-                                                                        }
-                                                                    });
-                                                                    
-                                                                    // Function to update active label styling
-                                                                    function updateActiveLabel(activeIndex) {
-                                                                        languageLabels.forEach((label, index) => {
-                                                                            if (label) {
-                                                                                if (index === activeIndex) {
-                                                                                    label.classList.add('active');
-                                                                                } else {
-                                                                                    label.classList.remove('active');
-                                                                                }
-                                                                            }
-                                                                        });
-                                                                    }
-                                                                    
-                                                                    // Function to update tooltip position and content
-                                                                    function updateTooltipPosition(sliderValue) {
-                                                                        if (sliderTooltip) {
-                                                                            // Update content
-                                                                            sliderTooltip.textContent = languageNames[sliderValue];
-                                                                            
-                                                                            // Update position
-                                                                            const sliderWidth = languageSlider.offsetWidth;
-                                                                            const thumbPosition = (sliderValue / 2) * sliderWidth;
-                                                                            sliderTooltip.style.left = thumbPosition + 'px';
-                                                                        }
-                                                                    }
-                                                                    
-                                                                    // Add drag effect
-                                                                    let isDragging = false;
-                                                                    
-                                                                    languageSlider.addEventListener('mousedown', function() {
-                                                                        isDragging = true;
-                                                                        languageSlider.style.cursor = 'grabbing';
-                                                                        
-                                                                        // Add effect when dragging starts
-                                                                        document.body.classList.add('slider-dragging');
-                                                                        languageSlider.classList.add('dragging');
-                                                                    });
-                                                                    
-                                                                    document.addEventListener('mouseup', function() {
-                                                                        if (isDragging) {
-                                                                            isDragging = false;
-                                                                            languageSlider.style.cursor = 'grab';
-                                                                            
-                                                                            // Remove effect when dragging ends
-                                                                            document.body.classList.remove('slider-dragging');
-                                                                            languageSlider.classList.remove('dragging');
-                                                                        }
-                                                                    });
-                                                                    
-                                                                    document.addEventListener('mousemove', function(e) {
-                                                                        if (isDragging) {
-                                                                            // Optional: add some additional drag effects if desired
-                                                                        }
-                                                                    });
-                                                                }
-
-                                                                // Add this to ensure it's called when the document is ready
-                                                                document.addEventListener('DOMContentLoaded', function() {
-                                                                    initializeAIQuizGenerator();
-                                                                    initializeLanguageSlider();
-                                                                });
-                                                            </script>
-                                                        
+                                                                                                    
                                                         <div class="col-md-12 mt-2 text-right">
                                                             <button type="button" id="generateQuizAI" class="btn btn-primary ai-generate-btn">
                                                                 <i class="fa fa-robot me-2"></i> AI Generate Quiz
@@ -505,6 +211,312 @@
                                             </div>
                                         </div>
                                     </div>
+
+                                    <style>
+                                        .slider-container {
+                                            position: relative;
+                                            padding: 10px 0;
+                                        }
+                                        
+                                        .slider-label {
+                                            font-size: 0.85rem;
+                                            cursor: pointer;
+                                            transition: all 0.3s ease;
+                                            position: relative;
+                                            padding: 5px 10px;
+                                            border-radius: 15px;
+                                        }
+                                        
+                                        .slider-label.active {
+                                            font-weight: bold;
+                                            color: #ffffff;
+                                            background-color: #6610f2;
+                                            transform: scale(1.1);
+                                            box-shadow: 0 2px 8px rgba(102, 16, 242, 0.5);
+                                        }
+                                        
+                                        /* Animation for all labels when sliding */
+                                        .slider-label-container.sliding .slider-label {
+                                            animation: pulse 1s infinite alternate;
+                                        }
+                                        
+                                        @keyframes pulse {
+                                            0% {
+                                                transform: scale(1);
+                                            }
+                                            100% {
+                                                transform: scale(1.05);
+                                            }
+                                        }
+                                        
+                                        /* Custom slider styling */
+                                        #languageSlider {
+                                            -webkit-appearance: none;
+                                            width: 100%;
+                                            height: 8px;
+                                            border-radius: 10px;
+                                            background: linear-gradient(to right, #6610f2 0%, #9333ea 50%, #6610f2 100%);
+                                            outline: none;
+                                            opacity: 0.8;
+                                            transition: opacity 0.3s, transform 0.3s;
+                                        }
+                                        
+                                        #languageSlider:hover {
+                                            opacity: 1;
+                                            transform: scaleY(1.2);
+                                        }
+                                        
+                                        #languageSlider:active {
+                                            cursor: grabbing;
+                                            transform: scaleY(1.4);
+                                        }
+                                        
+                                        #languageSlider::-webkit-slider-thumb {
+                                            -webkit-appearance: none;
+                                            appearance: none;
+                                            width: 25px;
+                                            height: 25px;
+                                            border-radius: 50%;
+                                            background: #ffffff;
+                                            border: 3px solid #6610f2;
+                                            cursor: grab;
+                                            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+                                            transition: all 0.3s;
+                                        }
+                                        
+                                        #languageSlider::-webkit-slider-thumb:hover {
+                                            background: #e9ecef;
+                                            transform: scale(1.1);
+                                        }
+                                        
+                                        #languageSlider::-webkit-slider-thumb:active {
+                                            background: #6610f2;
+                                            border-color: #ffffff;
+                                            transform: scale(1.2);
+                                            cursor: grabbing;
+                                        }
+                                        
+                                        #languageSlider::-moz-range-thumb {
+                                            width: 25px;
+                                            height: 25px;
+                                            border-radius: 50%;
+                                            background: #ffffff;
+                                            border: 3px solid #6610f2;
+                                            cursor: grab;
+                                            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+                                            transition: all 0.3s;
+                                        }
+                                        
+                                        #languageSlider::-moz-range-thumb:hover {
+                                            background: #e9ecef;
+                                            transform: scale(1.1);
+                                        }
+                                        
+                                        #languageSlider::-moz-range-thumb:active {
+                                            background: #6610f2;
+                                            border-color: #ffffff;
+                                            transform: scale(1.2);
+                                            cursor: grabbing;
+                                        }
+                                        
+                                        .form-range::-webkit-slider-runnable-track {
+                                            height: 8px;
+                                            background: linear-gradient(to right, #6610f2 0%, #9333ea 50%, #6610f2 100%);
+                                            border-radius: 10px;
+                                            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3);
+                                        }
+                                        
+                                        .form-range::-moz-range-track {
+                                            height: 8px;
+                                            background: linear-gradient(to right, #6610f2 0%, #9333ea 50%, #6610f2 100%);
+                                            border-radius: 10px;
+                                            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3);
+                                        }
+                                        
+                                        /* Tooltip for slider */
+                                        .slider-tooltip {
+                                            position: absolute;
+                                            top: -30px;
+                                            left: 0;
+                                            background-color: #6610f2;
+                                            color: white;
+                                            padding: 2px 8px;
+                                            border-radius: 4px;
+                                            font-size: 0.8rem;
+                                            opacity: 0;
+                                            transition: opacity 0.3s;
+                                            pointer-events: none;
+                                            transform: translateX(-50%);
+                                            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+                                        }
+                                        
+                                        .slider-tooltip::after {
+                                            content: '';
+                                            position: absolute;
+                                            top: 100%;
+                                            left: 50%;
+                                            margin-left: -5px;
+                                            border-width: 5px;
+                                            border-style: solid;
+                                            border-color: #6610f2 transparent transparent transparent;
+                                        }
+                                        
+                                        #languageSlider:hover + .slider-tooltip,
+                                        #languageSlider:active + .slider-tooltip {
+                                            opacity: 1;
+                                        }
+                                    </style>
+
+                                    <script>
+                                        /**
+                                         * Initializes the enhanced language slider functionality
+                                         */
+                                        function initializeLanguageSlider() {
+                                            const languageSlider = document.getElementById('languageSlider');
+                                            const languageInput = document.getElementById('language');
+                                            const englishLabel = document.getElementById('english-label');
+                                            const malayLabel = document.getElementById('malay-label');
+                                            const mixLabel = document.getElementById('mix-label');
+                                            const sliderTooltip = document.querySelector('.slider-tooltip');
+                                            const labelContainer = document.querySelector('.slider-label-container');
+                                            
+                                            // Map slider values to language options
+                                            const languageOptions = ['english', 'malay', 'mix'];
+                                            const languageLabels = [englishLabel, malayLabel, mixLabel];
+                                            const languageNames = ['English', 'Malay', 'Mix'];
+                                            
+                                            // Set initial active state
+                                            updateActiveLabel(0);
+                                            updateTooltipPosition(0);
+                                            
+                                            // Update language when slider changes
+                                            if (languageSlider) {
+                                                languageSlider.addEventListener('input', function() {
+                                                    const value = parseInt(this.value);
+                                                    languageInput.value = languageOptions[value];
+                                                    updateActiveLabel(value);
+                                                    updateTooltipPosition(value);
+                                                    
+                                                    // Add sliding class for animation
+                                                    labelContainer.classList.add('sliding');
+                                                });
+                                                
+                                                // When slider interaction ends
+                                                languageSlider.addEventListener('change', function() {
+                                                    // Remove sliding class to stop animation
+                                                    labelContainer.classList.remove('sliding');
+                                                    
+                                                    // Add pulse animation to selected label only
+                                                    const selectedLabel = document.querySelector('.slider-label.active');
+                                                    selectedLabel.classList.add('pulse-once');
+                                                    setTimeout(() => {
+                                                        selectedLabel.classList.remove('pulse-once');
+                                                    }, 500);
+                                                });
+                                                
+                                                // Update tooltip content and position on mousemove
+                                                languageSlider.addEventListener('mousemove', function(e) {
+                                                    if (sliderTooltip) {
+                                                        updateTooltipPosition(parseInt(this.value));
+                                                    }
+                                                });
+                                                
+                                                // Show tooltip on mouse over
+                                                languageSlider.addEventListener('mouseenter', function() {
+                                                    if (sliderTooltip) {
+                                                        sliderTooltip.style.opacity = '1';
+                                                    }
+                                                });
+                                                
+                                                // Hide tooltip on mouse out
+                                                languageSlider.addEventListener('mouseleave', function() {
+                                                    if (sliderTooltip) {
+                                                        sliderTooltip.style.opacity = '0';
+                                                    }
+                                                });
+                                            }
+                                            
+                                            // Add click event to labels
+                                            languageLabels.forEach((label, index) => {
+                                                if (label) {
+                                                    label.addEventListener('click', function() {
+                                                        languageSlider.value = index;
+                                                        languageInput.value = languageOptions[index];
+                                                        updateActiveLabel(index);
+                                                        updateTooltipPosition(index);
+                                                        
+                                                        // Add pulse animation to selected label
+                                                        this.classList.add('pulse-once');
+                                                        setTimeout(() => {
+                                                            this.classList.remove('pulse-once');
+                                                        }, 500);
+                                                    });
+                                                }
+                                            });
+                                            
+                                            // Function to update active label styling
+                                            function updateActiveLabel(activeIndex) {
+                                                languageLabels.forEach((label, index) => {
+                                                    if (label) {
+                                                        if (index === activeIndex) {
+                                                            label.classList.add('active');
+                                                        } else {
+                                                            label.classList.remove('active');
+                                                        }
+                                                    }
+                                                });
+                                            }
+                                            
+                                            // Function to update tooltip position and content
+                                            function updateTooltipPosition(sliderValue) {
+                                                if (sliderTooltip) {
+                                                    // Update content
+                                                    sliderTooltip.textContent = languageNames[sliderValue];
+                                                    
+                                                    // Update position
+                                                    const sliderWidth = languageSlider.offsetWidth;
+                                                    const thumbPosition = (sliderValue / 2) * sliderWidth;
+                                                    sliderTooltip.style.left = thumbPosition + 'px';
+                                                }
+                                            }
+                                            
+                                            // Add drag effect
+                                            let isDragging = false;
+                                            
+                                            languageSlider.addEventListener('mousedown', function() {
+                                                isDragging = true;
+                                                languageSlider.style.cursor = 'grabbing';
+                                                
+                                                // Add effect when dragging starts
+                                                document.body.classList.add('slider-dragging');
+                                                languageSlider.classList.add('dragging');
+                                            });
+                                            
+                                            document.addEventListener('mouseup', function() {
+                                                if (isDragging) {
+                                                    isDragging = false;
+                                                    languageSlider.style.cursor = 'grab';
+                                                    
+                                                    // Remove effect when dragging ends
+                                                    document.body.classList.remove('slider-dragging');
+                                                    languageSlider.classList.remove('dragging');
+                                                }
+                                            });
+                                            
+                                            document.addEventListener('mousemove', function(e) {
+                                                if (isDragging) {
+                                                    // Optional: add some additional drag effects if desired
+                                                }
+                                            });
+                                        }
+
+                                        // Add this to ensure it's called when the document is ready
+                                        document.addEventListener('DOMContentLoaded', function() {
+                                            initializeAIQuizGenerator();
+                                            initializeLanguageSlider();
+                                        });
+                                    </script>
+
                                 </div>
                                     
                                     
