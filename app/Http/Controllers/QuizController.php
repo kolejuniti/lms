@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 use App\Notifications\MyCustomNotification;
 use App\Models\UserStudent;
+use Illuminate\Support\Facades\Artisan;
 
 class QuizController extends Controller
 {
