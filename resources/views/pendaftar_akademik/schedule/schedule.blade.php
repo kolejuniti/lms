@@ -2145,33 +2145,46 @@ function showNotification(message, type = 'info', autoHide = true) {
     } me-2`;
     icon.style.marginTop = '2px';
     
-    // Add message
-    const messageSpan = document.createElement('div');
-    messageSpan.innerHTML = message;
-    messageSpan.style.flex = '1';
+    // Add message container
+    const messageContainer = document.createElement('div');
+    messageContainer.innerHTML = message;
+    messageContainer.style.flex = '1';
     
-    // Add close button
+    // Create a more robust close button
     const closeButton = document.createElement('button');
+    closeButton.type = 'button'; // Explicitly set type
+    closeButton.setAttribute('aria-label', 'Close');
     closeButton.innerHTML = '&times;';
-    closeButton.style.marginLeft = '10px'; // Add some space between message and button
+    closeButton.style.marginLeft = '10px';
     closeButton.style.background = 'none';
     closeButton.style.border = 'none';
     closeButton.style.color = '#fff';
-    closeButton.style.fontSize = '20px';
+    closeButton.style.fontSize = '24px'; // Larger for better visibility and clickability
+    closeButton.style.fontWeight = 'bold';
     closeButton.style.cursor = 'pointer';
-    closeButton.style.padding = '0 5px'; // Add padding to make button easier to click
-    closeButton.style.height = '24px'; // Fixed height
-    closeButton.style.lineHeight = '20px'; // Align the × vertically
-    closeButton.style.flexShrink = '0'; // Prevent button from shrinking
+    closeButton.style.padding = '0 8px'; // Larger padding for bigger click area
+    closeButton.style.height = '30px'; // Taller
+    closeButton.style.display = 'flex';
+    closeButton.style.alignItems = 'center';
+    closeButton.style.justifyContent = 'center';
+    closeButton.style.position = 'relative'; // Position relative for z-index
+    closeButton.style.zIndex = '10'; // Ensure it's above other elements
     
-    // Fix the click event
-    closeButton.onclick = function() {
-        toastContainer.removeChild(toast);
+    // Force the close button to be an actual functioning button by using multiple event methods
+    const closeToast = function() {
+        if (toastContainer.contains(toast)) {
+            toastContainer.removeChild(toast);
+        }
     };
+    
+    // Add multiple event listeners to ensure it works
+    closeButton.addEventListener('click', closeToast);
+    closeButton.addEventListener('touchend', closeToast);
+    closeButton.onclick = closeToast; // Direct property assignment as well
     
     // Add elements to toast
     toast.appendChild(icon);
-    toast.appendChild(messageSpan);
+    toast.appendChild(messageContainer);
     toast.appendChild(closeButton);
     
     // Add toast to container
@@ -2180,7 +2193,7 @@ function showNotification(message, type = 'info', autoHide = true) {
     // Auto hide after 4 seconds
     if (autoHide) {
         setTimeout(() => {
-            if (toastContainer.contains(toast)) {
+            if (toastContainer && toastContainer.contains(toast)) {
                 toastContainer.removeChild(toast);
             }
         }, 4000);
