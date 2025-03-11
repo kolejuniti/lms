@@ -1,371 +1,291 @@
 @extends((Auth::user()->usrtype == "RGS") ? 'layouts.pendaftar' : (Auth::user()->usrtype == "FN" ? 'layouts.finance' : (Auth::user()->usrtype == "AR" ? 'layouts.pendaftar_akademik' : '')))
 
 @section('main')
-<!-- Content Header (Page header) -->
-<div class="content-wrapper" style="min-height: 695.8px;">
+<!-- Content wrapper -->
+<div class="content-wrapper">
   <div class="container-full">
-  <!-- Content Header (Page header) -->	  
-  <div class="content-header">
-    <div class="d-flex align-items-center">
-      <div class="me-auto">
-        <h4 class="page-title">Schedule Report 2</h4>
-        <div class="d-inline-block align-items-center">
-          <nav>
-            <ol class="breadcrumb">
-              <li class="breadcrumb-item"><a href="#"><i class="mdi mdi-home-outline"></i></a></li>
-              <li class="breadcrumb-item" aria-current="page">Dashboard</li>
-              <li class="breadcrumb-item active" aria-current="page">Schedule Report 2</li>
+    <!-- Content Header -->
+    <div class="content-header">
+      <div class="d-flex align-items-center">
+        <div class="me-auto">
+          <h2 class="page-title fw-bold text-primary mb-2">Schedule Overview</h2>
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb bg-transparent p-0 m-0">
+              <li class="breadcrumb-item"><a href="#"><i class="fa fa-home"></i> Home</a></li>
+              <li class="breadcrumb-item">Dashboard</li>
+              <li class="breadcrumb-item active" aria-current="page">Schedule Report</li>
             </ol>
           </nav>
         </div>
+        {{-- <div class="actions-btn">
+          <button id="print-btn" class="btn btn-primary me-2"><i class="fa fa-print me-2"></i>Print</button>
+          <button id="excel-btn" class="btn btn-success"><i class="fa fa-file-excel me-2"></i>Export to Excel</button>
+        </div> --}}
       </div>
     </div>
-  </div>
 
+    <!-- Main content -->
     <section class="content">
       <div class="container-fluid">
         <div class="row">
-          <!-- left column -->
           <div class="col-md-12">
-            <!-- general form elements -->
-            <div class="card card-primary">
-              <div class="card-header">
-                <h3 class="card-title">Schedule Report 2</h3>
-              </div>
-              <!-- /.card-header -->
-              <div class="card-body">
-                {{-- <div class="row">
-                  <div class="col-md-3">
-                      <div class="form-group">
-                      <label class="form-label" for="name">Date</label>
-                      <input type="date" class="form-control" id="date" name="date">
-                      </div>
+            <div class="card shadow-sm border-0 rounded-lg overflow-hidden">
+              <div class="card-header bg-gradient-primary text-white p-3">
+                <div class="d-flex justify-content-between align-items-center">
+                  <h3 class="card-title m-0 fw-bold">
+                    <i class="fa fa-calendar-alt me-2"></i>Room Schedule
+                  </h3>
+                  <div class="schedule-legend d-flex ms-4">
+                    <div class="d-flex align-items-center me-3">
+                      <div class="legend-box bg-success me-2"></div>
+                      <span>Available</span>
+                    </div>
+                    <div class="d-flex align-items-center">
+                      <div class="legend-box bg-danger me-2"></div>
+                      <span>Occupied</span>
+                    </div>
                   </div>
-                </div> --}}
-                <div class="card-body" style="width: 100%; overflow-x: auto;">
-                    <table id="table_dismissed" class="w-100 table display margin-top-10 w-p100 table-layout: fixed;" style="width: 100%;">
-                      <thead style="background-color: darkcyan">
-                        <tr>
-                          <th style="text-align: center; width: 10%; border: 1px solid black;">
-                          Room
-                          </th>
-                          <th style="text-align: center; width: 10%; border: 1px solid black;">
-                          Days
-                          </th>
-                          @foreach($data['time'] as $time)
-                          <th style="text-align: center; width: 10%; border: 1px solid black;">
-                          {{ $time }}
-                          </th>
-                          @endforeach
-                        </tr>
-                      </thead>
-                      <tbody id="table">
-                        @foreach($data['room'] as $key => $room)
-                          @foreach($data['days'] as $key2 => $day)
-                              <tr>
-                                  @if($key2 == 1) 
-                                      {{-- For first day (Monday), span room across all days --}}
-                                      <td style="text-align: center; border: 1px solid black;" rowspan="{{ count($data['days']) }}">{{ $room->name }}</td>
-                                  @endif
-                                  <td style="text-align: center; border: 1px solid black;">{{ $day }}</td>
-
-                                  @foreach($data['time'] as $key3 => $t)
-                                    <td style="text-align: center; border: 1px solid black;
-                                              background-color: 
-                                                  @if(isset($data['times'][$key][$key2][$key3]) && $data['times'][$key][$key2][$key3])
-                                                      #8B0000;  /* Dark Red */
-                                                  @else
-                                                      green;  /* Free */
-                                                  @endif;
-                                              color: white;" 
-                                        @if(isset($data['times'][$key][$key2][$key3]) && $data['times'][$key][$key2][$key3])
-                                            onClick="getEvent('{{ $data['times'][$key][$key2][$key3]->id }}')"
-                                        @endif>
-                                        @if(isset($data['times'][$key][$key2][$key3]) && $data['times'][$key][$key2][$key3])
-                                            Occupied
-                                        @else
-                                            Free
-                                        @endif
-                                    </td>
-                                    @endforeach
-
-                              </tr>
-                          @endforeach
+                </div>
+              </div>
+              
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table id="schedule-table" class="table table-bordered table-hover">
+                    <thead>
+                      <tr>
+                        <th class="text-center bg-light" style="width: 10%;">Room</th>
+                        <th class="text-center bg-light" style="width: 8%;">Day</th>
+                        @foreach($data['time'] as $time)
+                        <th class="text-center bg-light">{{ $time }}</th>
                         @endforeach
-                      </tbody>
-                      <tfoot style="background-color: darkcyan">
-                      </tfoot>
-                    </table>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @foreach($data['room'] as $key => $room)
+                        @foreach($data['days'] as $key2 => $day)
+                          <tr>
+                            @if($key2 == 1)
+                              <td class="text-center align-middle fw-bold" rowspan="{{ count($data['days']) }}">{{ $room->name }}</td>
+                            @endif
+                            <td class="text-center align-middle fw-bold">{{ $day }}</td>
+
+                            @foreach($data['time'] as $key3 => $t)
+                              <td class="text-center p-0" 
+                                  @if(isset($data['times'][$key][$key2][$key3]) && $data['times'][$key][$key2][$key3])
+                                    onclick="getEvent('{{ $data['times'][$key][$key2][$key3]->id }}')" 
+                                    style="cursor: pointer;"
+                                  @endif>
+                                <div class="time-slot {{ isset($data['times'][$key][$key2][$key3]) && $data['times'][$key][$key2][$key3] ? 'occupied' : 'available' }}">
+                                  {{ isset($data['times'][$key][$key2][$key3]) && $data['times'][$key][$key2][$key3] ? 'Occupied' : 'Free' }}
+                                </div>
+                              </td>
+                            @endforeach
+                          </tr>
+                        @endforeach
+                      @endforeach
+                    </tbody>
+                  </table>
                 </div>
               </div>
             </div>
-            <!-- /.card -->
           </div>
         </div>
-        {{-- <div class="row">
-          <div class="card mb-3" id="stud_info">
-            <div class="card-body">
-                <div class="row mb-5">
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <table id="secondTable" class="w-100 table display margin-top-10 w-p100 table-layout: fixed;" style="background-color: darkcyan">
-                                <thead>
-                                    <tr>
-                                        <th colspan="3" style="text-align: center; border: 1px solid black;">
-                                            Pecahan Pelajar Semester 1
-                                        </th>
-                                    </tr>
-                                    <tr>
-                                        <th style="text-align: center; border: 1px solid black;">
-                                            INTAKE
-                                        </th>
-                                        <th style="text-align: center; border: 1px solid black;">
-                                            HOLDING
-                                        </th>
-                                        <th style="text-align: center; border: 1px solid black;">
-                                            KULIAH
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                  @php
-                                  $totalKuliah = 0;
-                                  $totalHolding = 0;
-                                  @endphp
-                                  @foreach($data['sessions'] as $key => $ses)
-                                    <tr>
-                                        <td style="text-align: center; border: 1px solid black;">
-                                            {{ $ses->SessionName }}
-                                        </td>
-                                        <td style="text-align: center; border: 1px solid black;">
-                                            {{ $data['holding'][$key] }}
-                                        </td>
-                                        <td style="text-align: center; border: 1px solid black;">
-                                            {{ $data['kuliah'][$key] }}
-                                      </td>
-                                    </tr>
-                                    @php
-                                    $totalKuliah += $data['kuliah'][$key];
-
-                                    $totalHolding += $data['holding'][$key];
-                                    @endphp
-                                  @endforeach
-                                </tbody>
-                                <tfoot>
-                                  <tr>
-                                    <td style="text-align: center; border: 1px solid black;">JUMLAH</td>
-                                    <td style="text-align: center; border: 1px solid black;">
-                                      {{ $totalHolding }}
-                                    </td>
-                                    <td style="text-align: center; border: 1px solid black;">
-                                      {{ $totalKuliah }}
-                                    </td>
-                                  </tr>
-                                </tfoot>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-          </div>
-        </div> --}}
       </div>
     </section>
-    <!-- /.content -->
-    <div id="uploadModal" class="modal fade" role="dialog">
-      <div class="modal-dialog">
-          <!-- modal content-->
-          <div class="modal-content" id="getModal">
-          </div>
-      </div>
-    </div>  
   </div>
 </div>
 
-<script>
-  function getEvent(id) {
-    $.ajax({
-      url: "{{ url('AR/schedule/scheduleReport2/getEventDetails') }}",
-      type: "GET",
-      data: {
-        id: id,
-        _token: "{{ csrf_token() }}"
-      },
-      success: function(data) {
-        $('#getModal').html(data);
-        $('#uploadModal').modal('show');
-      }
-    });
+<!-- Event Details Modal -->
+<div id="uploadModal" class="modal fade" role="dialog">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" id="getModal">
+      <!-- Content will be loaded here via AJAX -->
+    </div>
+  </div>
+</div>
+
+<style>
+  .legend-box {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+  }
+  
+  .time-slot {
+    padding: 10px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    width: 100%;
+    height: 100%;
+  }
+  
+  .time-slot.available {
+    background-color: rgba(40, 167, 69, 0.8);
+    color: white;
+  }
+  
+  .time-slot.occupied {
+    background-color: rgba(220, 53, 69, 0.8);
+    color: white;
+  }
+  
+  td[onclick] {
+    cursor: pointer;
+  }
+  
+  td[onclick]:hover .time-slot {
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
   }
 
-  $(document).ready( function () {
-      $('#table_dismissed').DataTable({
-        dom: 'lBfrtip', // if you remove this line you will see the show entries dropdown
-        paging: false,
+  #schedule-table th, #schedule-table td {
+    vertical-align: middle;
+  }
+  
+  .bg-gradient-primary {
+    background: linear-gradient(135deg, #2c91e9 0%, #1976d2 100%);
+  }
+  
+  .card {
+    transition: all 0.3s ease;
+  }
+  
+  .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+  }
+  
+  .breadcrumb-item + .breadcrumb-item::before {
+    content: ">";
+  }
+</style>
 
-        buttons: [
-              {
-                extend: 'print',
-                text: 'Print',
-                orientation: 'landscape', // Set the orientation to landscape
-                customize: function(win) {
-                  var today = new Date();
-                  var dd = String(today.getDate()).padStart(2, '0');
-                  var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
-                  var yyyy = today.getFullYear();
+<script>
+// Define getEvent function in the global scope so it's accessible from onclick attributes
+function getEvent(id) {
+  $.ajax({
+    url: "{{ url('AR/schedule/scheduleReport2/getEventDetails') }}",
+    type: "GET",
+    data: {
+      id: id,
+      _token: "{{ csrf_token() }}"
+    },
+    success: function(data) {
+      $('#getModal').html(data);
+      $('#uploadModal').modal('show');
+    }
+  });
+}
 
-                  today = dd + '/' + mm + '/' + yyyy;
-
-                  var body = $(win.document.body);
-
-                  // Clone the main table and ensure the footer is shown
-                  var mainTable = $('#table_dismissed').clone();
-                  mainTable.find('tfoot').show();
-
-                  // Also clone the additional table you want to include
-                  var additionalTable = $('#secondTable').clone();
-                  additionalTable.find('tfoot').show();
-
-                  // Clear the body first
-                  body.html('');
-
-                  // Append the cloned tables
-                  body.append(`<h1>LAPORAN BILANGAN PELAJAR SETAKAT ${today}</h1>`); // Optional: Add a title or any additional content
-                  body.append(mainTable); // Append the main table
-                  body.append('<h2>Pecahan Pelajar Semester 1</h2>'); // Optional: Add subtitles or descriptions
-                  body.append(additionalTable); // Append the additional table
-
-                  // Additional customizations can be done here, like adjusting styles for print
-                  body.find('table').addClass('print-table').css({
-                      'border-collapse': 'collapse',
-                      'width': '100%'
-                  });
-                  body.find('th, td').css({
-                      'border': '1px solid black',
-                      'padding': '8px'
-                  });
-                  body.find('.print-table').css({
-                      'margin-bottom': '20px'
-                  });
-
-                  
-                }
-            },
-            {
-              
-              text: 'Excel',
-              action: function () {
-                // get the HTML table to export
-                const table = document.getElementById("table_dismissed");
-                
-                // create a new Workbook object
-                const wb = XLSX.utils.book_new();
-                
-                // add a new worksheet to the Workbook object
-                const ws = XLSX.utils.table_to_sheet(table);
-                XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
-                
-                // trigger the download of the Excel file
-                XLSX.writeFile(wb, "exported-data.xlsx");
-              }
-            }
-        ],
-
-      });
-
-      let db = document.getElementById("table_dismissed");
-      let dbRows = db.rows;
-      let lastValue = "";
-      let lastCounter = 1;
-      let lastRow = 0;
-      for (let i = 0; i < dbRows.length; i++) {
-        let thisValue = dbRows[i].cells[0].innerHTML;
+$(document).ready(function() {
+  // Initialize DataTable with enhanced features
+  const scheduleTable = $('#schedule-table').DataTable({
+    dom: '<"d-flex justify-content-between align-items-center mb-3"<"d-flex align-items-center"l><"d-flex"f>>rt<"d-flex justify-content-between align-items-center"<"d-flex align-items-center"i><"d-flex align-items-center"p>>',
+    lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+    paging: false,
+    searching: true,
+    ordering: false,
+    responsive: true,
+    buttons: [
+      {
+        extend: 'print',
+        text: 'Print',
+        className: 'btn btn-primary',
+        orientation: 'landscape',
+        customize: function(win) {
+          const today = new Date().toLocaleDateString();
+          const body = $(win.document.body);
+          
+          body.css('font-family', 'Arial, Helvetica, sans-serif');
+          
+          body.prepend(`
+            <div style="text-align: center; margin-bottom: 20px;">
+              <h1 style="margin-bottom: 5px;">Room Schedule Report</h1>
+              <h3>Generated on ${today}</h3>
+            </div>
+          `);
+          
+          body.find('table')
+            .addClass('compact')
+            .css({
+              'font-size': '11px',
+              'border-collapse': 'collapse',
+              'width': '100%'
+            });
+            
+          body.find('td, th')
+            .css({
+              'border': '1px solid #ddd',
+              'padding': '8px',
+              'text-align': 'center'
+            });
+            
+          body.find('.time-slot.available')
+            .css({
+              'background-color': '#d4edda',
+              'color': '#155724'
+            });
+            
+          body.find('.time-slot.occupied')
+            .css({
+              'background-color': '#f8d7da',
+              'color': '#721c24'
+            });
+        }
+      },
+      {
+        extend: 'excel',
+        text: 'Excel',
+        className: 'btn btn-success'
+      }
+    ]
+  });
+  
+  // Merge room cells 
+  function mergeCells() {
+    let table = document.getElementById("schedule-table");
+    let rows = table.rows;
+    let lastValue = "";
+    let lastCounter = 1;
+    let lastRow = 0;
+    
+    for (let i = 1; i < rows.length; i++) {
+      const firstCell = rows[i].cells[0];
+      if (firstCell) {
+        let thisValue = firstCell.innerHTML;
         if (thisValue == lastValue) {
           lastCounter++;
-          dbRows[lastRow].cells[0].rowSpan = lastCounter;
-          dbRows[i].cells[0].style.display = "none";
+          rows[lastRow].cells[0].rowSpan = lastCounter;
+          firstCell.style.display = "none";
         } else {
-          dbRows[i].cells[0].style.display = "table-cell";
+          firstCell.style.display = "table-cell";
           lastValue = thisValue;
           lastCounter = 1;
           lastRow = i;
         }
       }
-
-      // Remove the cells that are hidden
-      $("#table_dismissed td:first-child:hidden").remove();
-        } );
-</script>
-
-<script type="text/javascript">
-
-/*$(document).on('change', '#date', function(){
-
-    var date = $(this).val();
-
-    getReport(date);
-
-});
-
-function getReport(date)
-{
-
-  $('#table_dismissed').DataTable().destroy();
-
-    return $.ajax({
-            headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
-            url      : "{{ url('pendaftar/student/report/getStudentReport') }}",
-            method   : 'POST',
-            data 	 : {date: date},
-            beforeSend:function(xhr){
-              $("#table_dismissed").LoadingOverlay("show", {
-                image: `<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="24px" height="30px" viewBox="0 0 24 30" style="enable-background:new 0 0 50 50;" xml:space="preserve">
-                  <rect x="0" y="10" width="4" height="10" fill="#333" opacity="0.2">
-                  <animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0s" dur="0.6s" repeatCount="indefinite"></animate>
-                  <animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0s" dur="0.6s" repeatCount="indefinite"></animate>
-                  <animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0s" dur="0.6s" repeatCount="indefinite"></animate>
-                  </rect>
-                  <rect x="8" y="10" width="4" height="10" fill="#333" opacity="0.2">
-                  <animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0.15s" dur="0.6s" repeatCount="indefinite"></animate>
-                  <animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0.15s" dur="0.6s" repeatCount="indefinite"></animate>
-                  <animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0.15s" dur="0.6s" repeatCount="indefinite"></animate>
-                  </rect>
-                  <rect x="16" y="10" width="4" height="10" fill="#333" opacity="0.2">
-                  <animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0.3s" dur="0.6s" repeatCount="indefinite"></animate>
-                  <animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0.3s" dur="0.6s" repeatCount="indefinite"></animate>
-                  <animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0.3s" dur="0.6s" repeatCount="indefinite"></animate>
-                  </rect>
-                </svg>`,
-                background:"rgba(255,255,255, 0.3)",
-                imageResizeFactor : 1,    
-                imageAnimation : "2000ms pulse" , 
-                imageColor: "#019ff8",
-                text : "Please wait...",
-                textResizeFactor: 0.15,
-                textColor: "#019ff8",
-                textColor: "#019ff8"
-              });
-              $("#table_dismissed").LoadingOverlay("hide");
-            },
-            error:function(err){
-                alert("Error");
-                console.log(err);
-            },
-            success  : function(data){
-                $('#table_dismissed').removeAttr('hidden');
-                $('#table_dismissed').html(data);
-                
-                $('#table_dismissed').DataTable();
-                //window.location.reload();
-            }
-        });
+    }
+  }
   
-}*/
-
-
-
- window.onload = mergeCells;
- 
-
+  // Handle print button click
+  $('#print-btn').on('click', function() {
+    scheduleTable.button('0').trigger();
+  });
+  
+  // Handle excel button click
+  $('#excel-btn').on('click', function() {
+    scheduleTable.button('1').trigger();
+  });
+  
+  // Run merge cells function
+  mergeCells();
+  
+  // Enable tooltips
+  $('[data-toggle="tooltip"]').tooltip();
+  
+  // Add console log to help debug
+  console.log('Schedule table initialized successfully');
+});
 </script>
 @endsection
