@@ -149,7 +149,6 @@ body {
 
 .form-label {
     font-weight: 600;
-    color: var(--text-color);
     margin-bottom: 10px;
 }
 
@@ -171,7 +170,7 @@ body {
     padding: 12px 18px;
     border: 2px solid #e5e7eb;
     transition: all 0.3s ease;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 2px 5px rgba(78, 50, 50, 0.05);
 }
 
 .form-select:focus {
@@ -507,3 +506,4 @@ div.form-actions.btn-group > button {
 .pulse-animation {
     animation: pulse 2s infinite;
 }
+
