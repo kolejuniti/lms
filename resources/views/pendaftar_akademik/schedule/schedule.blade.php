@@ -2120,81 +2120,66 @@ function showNotification(message, type = 'info', autoHide = true) {
         document.body.appendChild(toastContainer);
     }
     
-    // Create toast notification
-    const toast = document.createElement('div');
-    toast.className = `toast-notification toast-${type}`;
-    toast.style.backgroundColor = type === 'success' ? '#4cc9f0' :
-                                  type === 'error' ? '#e63946' :
-                                  type === 'warning' ? '#f72585' : '#4895ef';
-    toast.style.color = '#fff';
-    toast.style.padding = '12px 20px';
-    toast.style.marginBottom = '10px';
-    toast.style.borderRadius = '8px';
-    toast.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
-    toast.style.display = 'flex';
-    toast.style.alignItems = 'flex-start';
-    toast.style.maxWidth = '400px';
-    toast.style.wordBreak = 'break-word';
+    // Generate a unique ID for this toast
+    const toastId = 'toast-' + Date.now();
     
-    // Add icon based on type
-    const icon = document.createElement('i');
-    icon.className = `fas ${
-        type === 'success' ? 'fa-check-circle' : 
-        type === 'error' ? 'fa-exclamation-triangle' : 
-        type === 'warning' ? 'fa-exclamation-circle' : 'fa-info-circle'
-    } me-2`;
-    icon.style.marginTop = '2px';
+    // Create the toast HTML structure using innerHTML for more reliable rendering
+    const toastHTML = `
+        <div id="${toastId}" class="toast-notification toast-${type}" style="
+            background-color: ${type === 'success' ? '#4cc9f0' : type === 'error' ? '#e63946' : type === 'warning' ? '#f72585' : '#4895ef'};
+            color: #fff;
+            padding: 12px 20px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: flex-start;
+            max-width: 400px;
+            word-break: break-word;
+            position: relative;
+        ">
+            <i class="fas ${
+                type === 'success' ? 'fa-check-circle' : 
+                type === 'error' ? 'fa-exclamation-triangle' : 
+                type === 'warning' ? 'fa-exclamation-circle' : 'fa-info-circle'
+            } me-2" style="margin-top: 2px;"></i>
+            <div style="flex: 1;">${message}</div>
+            <button onclick="document.getElementById('${toastId}').remove();" style="
+                margin-left: 10px;
+                background: none;
+                border: none;
+                color: #fff;
+                font-size: 24px;
+                font-weight: bold;
+                cursor: pointer;
+                padding: 0 8px;
+                position: relative;
+                z-index: 10;
+            ">&times;</button>
+        </div>
+    `;
     
-    // Add message container
-    const messageContainer = document.createElement('div');
-    messageContainer.innerHTML = message;
-    messageContainer.style.flex = '1';
+    // Insert the toast into the container
+    toastContainer.insertAdjacentHTML('beforeend', toastHTML);
     
-    // Create a more robust close button
-    const closeButton = document.createElement('button');
-    closeButton.type = 'button'; // Explicitly set type
-    closeButton.setAttribute('aria-label', 'Close');
-    closeButton.innerHTML = '&times;';
-    closeButton.style.marginLeft = '10px';
-    closeButton.style.background = 'none';
-    closeButton.style.border = 'none';
-    closeButton.style.color = '#fff';
-    closeButton.style.fontSize = '24px'; // Larger for better visibility and clickability
-    closeButton.style.fontWeight = 'bold';
-    closeButton.style.cursor = 'pointer';
-    closeButton.style.padding = '0 8px'; // Larger padding for bigger click area
-    closeButton.style.height = '30px'; // Taller
-    closeButton.style.display = 'flex';
-    closeButton.style.alignItems = 'center';
-    closeButton.style.justifyContent = 'center';
-    closeButton.style.position = 'relative'; // Position relative for z-index
-    closeButton.style.zIndex = '10'; // Ensure it's above other elements
+    // Get the newly created toast element
+    const toast = document.getElementById(toastId);
     
-    // Force the close button to be an actual functioning button by using multiple event methods
-    const closeToast = function() {
-        if (toastContainer.contains(toast)) {
-            toastContainer.removeChild(toast);
-        }
-    };
-    
-    // Add multiple event listeners to ensure it works
-    closeButton.addEventListener('click', closeToast);
-    closeButton.addEventListener('touchend', closeToast);
-    closeButton.onclick = closeToast; // Direct property assignment as well
-    
-    // Add elements to toast
-    toast.appendChild(icon);
-    toast.appendChild(messageContainer);
-    toast.appendChild(closeButton);
-    
-    // Add toast to container
-    toastContainer.appendChild(toast);
+    // Add a click handler directly to the close button
+    const closeBtn = toast.querySelector('button');
+    if (closeBtn) {
+        closeBtn.onclick = function() {
+            if (toast && toast.parentNode) {
+                toast.parentNode.removeChild(toast);
+            }
+        };
+    }
     
     // Auto hide after 4 seconds
     if (autoHide) {
         setTimeout(() => {
-            if (toastContainer && toastContainer.contains(toast)) {
-                toastContainer.removeChild(toast);
+            if (toast && toast.parentNode) {
+                toast.parentNode.removeChild(toast);
             }
         }, 4000);
     }
