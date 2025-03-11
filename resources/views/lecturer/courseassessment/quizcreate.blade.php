@@ -368,6 +368,7 @@
                                         confirmButtonText: "OK"
                                     });
                                 }
+                                
 
                                 /**
                                 * Processes the quiz questions returned from the server
