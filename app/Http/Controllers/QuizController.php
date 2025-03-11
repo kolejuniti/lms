@@ -1910,98 +1910,213 @@ class QuizController extends Controller
 
     }
 
-    public function generateAIQuiz(Request $request)
-{
-    try {
-        // Step 1: Validate the inputs
-        $request->validate([
-            'document' => 'required|file|mimes:pdf|max:5000',
-            'single_choice_count' => 'required|integer|min:0',
-            'multiple_choice_count' => 'required|integer|min:0',
-            'subjective_count' => 'required|integer|min:0',
-        ]);
-
-        // Step 2: Save and parse the PDF
-        $filePath = $request->file('document')->store('documents');
-        $parser = new Parser();
-        $pdf = $parser->parseFile(storage_path('app/' . $filePath));
-        $text = $pdf->getText();
-
-        // Step 3: Generate quiz JSON
-        $singleChoiceCount = $request->input('single_choice_count');
-        $multipleChoiceCount = $request->input('multiple_choice_count');
-        $subjectiveCount = $request->input('subjective_count');
-
-        $quizJSON = $this->generateFormBuilderJSON($text, $singleChoiceCount, $multipleChoiceCount, $subjectiveCount);
-
-        // Step 4: Return the quiz JSON
-        return response()->json([
-            'success' => true,
-            'formBuilderJSON' => $quizJSON,
-        ]);
-
-    } catch (\Exception $e) {
-        // Handle errors gracefully
-        Log::error('Error generating quiz: ' . $e->getMessage());
-        return response()->json([
-            'success' => false,
-            'message' => 'Error generating quiz: ' . $e->getMessage(),
-        ], 500);
-    }
-}
-
-
-
-private function generateFormBuilderJSON($text, $singleChoiceCount, $multipleChoiceCount, $subjectiveCount)
-{
-    $apiKey = env('OPENAI_API_KEY');
-    $client = new Client();
-
-    try {
-        // Build the AI prompt
-        $prompt = "Create a quiz JSON structure based on the following text. The quiz should include:\n";
-        $prompt .= "- $singleChoiceCount single-choice questions\n";
-        $prompt .= "- $multipleChoiceCount multiple-choice questions\n";
-        $prompt .= "- $subjectiveCount subjective questions\n\n";
-        $prompt .= "Here is the text:\n\n" . $text;
-
-        // Send the request to OpenAI API
-        $response = $client->post('https://api.openai.com/v1/chat/completions', [
-            'headers' => [
-                'Authorization' => 'Bearer ' . $apiKey,
-                'Content-Type' => 'application/json',
-            ],
-            'json' => [
-                'model' => 'gpt-3.5-turbo-1106', // Ensure this is an available model
-                'messages' => [
-                    [
-                        'role' => 'system',
-                        'content' => 'You are a system designed to generate quiz questions for FormBuilder.',
-                    ],
-                    [
-                        'role' => 'user',
-                        'content' => $prompt,
-                    ],
-                ],
-                'max_tokens' => 2000,
-                'temperature' => 0.7,
-            ],
-        ]);
-
-        // Parse the response
-        $responseBody = json_decode($response->getBody(), true);
-
-        if (isset($responseBody['choices'][0]['message']['content'])) {
-            return $responseBody['choices'][0]['message']['content'];
-        } else {
-            throw new \Exception('Invalid AI response. No content found.');
+    public function generateAIQuiz(Request $request) {
+        try {
+            // Step 1: Validate the inputs
+            $request->validate([
+                'document' => 'required|file|mimes:pdf|max:5000',
+                'single_choice_count' => 'nullable|integer|min:0',
+                'multiple_choice_count' => 'nullable|integer|min:0',
+                'subjective_count' => 'nullable|integer|min:0',
+                'language' => 'required|string|in:english,malay,mix',
+            ]);
+            
+            // Step 2: Save and parse the PDF
+            $filePath = $request->file('document')->store('documents');
+            $parser = new Parser();
+            $pdf = $parser->parseFile(storage_path('app/' . $filePath));
+            $text = $pdf->getText();
+            
+            // Step 3: Generate quiz JSON
+            $singleChoiceCount = $request->input('single_choice_count', 0);
+            $multipleChoiceCount = $request->input('multiple_choice_count', 0);
+            $subjectiveCount = $request->input('subjective_count', 0);
+            $language = $request->input('language', 'english');
+            
+            // Ensure we have at least one question
+            $totalQuestions = $singleChoiceCount + $multipleChoiceCount + $subjectiveCount;
+            if ($totalQuestions <= 0) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Please specify at least one question to generate.',
+                ], 400);
+            }
+            
+            $quizJSON = $this->generateFormBuilderJSON($text, $singleChoiceCount, $multipleChoiceCount, $subjectiveCount, $language);
+            
+            // Step 4: Return the quiz JSON
+            return response()->json([
+                'success' => true,
+                'formBuilderJSON' => $quizJSON,
+            ]);
+            
+        } catch (\Exception $e) {
+            // Handle errors gracefully
+            Log::error('Error generating quiz: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Error generating quiz: ' . $e->getMessage(),
+            ], 500);
         }
-    } catch (\Exception $e) {
-        Log::error('Error communicating with OpenAI: ' . $e->getMessage());
-        throw new \Exception('Error communicating with AI: ' . $e->getMessage());
     }
-}
-
-
+    
+    private function generateFormBuilderJSON($text, $singleChoiceCount, $multipleChoiceCount, $subjectiveCount, $language) {
+        $apiKey = env('OPENAI_API_KEY');
+        $client = new Client();
+        
+        try {
+            // Build the AI prompt with explicit instructions for question types
+            $prompt = "Create a quiz JSON structure based on the following text. The quiz should include:\n";
+            
+            if ($singleChoiceCount > 0) {
+                $prompt .= "- $singleChoiceCount single-choice questions\n";
+            } else {
+                $prompt .= "- No single-choice questions\n";
+            }
+            
+            if ($multipleChoiceCount > 0) {
+                $prompt .= "- $multipleChoiceCount multiple-choice questions\n";
+            } else {
+                $prompt .= "- No multiple-choice questions\n";
+            }
+            
+            if ($subjectiveCount > 0) {
+                $prompt .= "- $subjectiveCount subjective questions\n";
+            } else {
+                $prompt .= "- No subjective questions\n";
+            }
+            
+            // Add language instruction
+            $prompt .= "\nLANGUAGE REQUIREMENT:\n";
+            switch ($language) {
+                case 'malay':
+                    $prompt .= "- Generate all questions and answers in Malay (Bahasa Malaysia) only.\n";
+                    break;
+                case 'mix':
+                    $prompt .= "- Generate a mix of questions in both English and Malay (Bahasa Malaysia).\n";
+                    $prompt .= "- Approximately half of the questions should be in English and half in Malay.\n";
+                    break;
+                default: // english
+                    $prompt .= "- Generate all questions and answers in English only.\n";
+                    break;
+            }
+            
+            // Add specific formatting instructions for answers
+            $prompt .= "\nANSWER FORMAT REQUIREMENTS:\n";
+            $prompt .= "1. For single-choice questions, provide the correct answer as a single string without any prefixes or labels.\n";
+            $prompt .= "2. For multiple-choice questions, provide the correct answers as a comma-separated string without spaces (e.g., 'Option1,Option3,Option4').\n";
+            $prompt .= "3. For subjective questions, provide a concise sample answer.\n\n";
+            
+            // Example JSON structure to guide the AI
+            $prompt .= "Example JSON structure:\n";
+            $prompt .= '{"quiz":{"questions":[';
+            
+            if ($singleChoiceCount > 0) {
+                if ($language === 'malay') {
+                    $prompt .= '{"type":"single-choice","question":"Negeri manakah yang dikenali sebagai Negeri Bersejarah?","options":["Melaka","Pahang","Johor","Kedah"],"answer":"Melaka"}';
+                } else {
+                    $prompt .= '{"type":"single-choice","question":"Which state is known as the Historic State?","options":["Melaka","Pahang","Johor","Kedah"],"answer":"Melaka"}';
+                }
+                if ($multipleChoiceCount > 0 || $subjectiveCount > 0) {
+                    $prompt .= ',';
+                }
+            }
+            
+            if ($multipleChoiceCount > 0) {
+                if ($language === 'malay') {
+                    $prompt .= '{"type":"multiple-choice","question":"Manakah antara berikut adalah negeri di Malaysia?","options":["Melaka","Singapura","Pahang","Selangor"],"answer":"Melaka,Pahang,Selangor"}';
+                } else {
+                    $prompt .= '{"type":"multiple-choice","question":"Which of the following are states in Malaysia?","options":["Melaka","Singapore","Pahang","Selangor"],"answer":"Melaka,Pahang,Selangor"}';
+                }
+                if ($subjectiveCount > 0) {
+                    $prompt .= ',';
+                }
+            }
+            
+            if ($subjectiveCount > 0) {
+                if ($language === 'malay') {
+                    $prompt .= '{"type":"subjective","question":"Terangkan kepentingan Melaka dalam sejarah Malaysia.","answer":"Melaka merupakan pelabuhan perdagangan penting..."}';
+                } else {
+                    $prompt .= '{"type":"subjective","question":"Explain the importance of Melaka in Malaysian history.","answer":"Melaka was an important trading port..."}';
+                }
+            }
+            
+            $prompt .= ']}}'."\n\n";
+            
+            $prompt .= "Here is the text to generate questions from:\n\n" . $text;
+            
+            // Send the request to OpenAI API
+            $response = $client->post('https://api.openai.com/v1/chat/completions', [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $apiKey,
+                    'Content-Type' => 'application/json',
+                ],
+                'json' => [
+                    'model' => 'gpt-3.5-turbo-1106', 
+                    'messages' => [
+                        [
+                            'role' => 'system',
+                            'content' => 'You are a system designed to generate quiz questions for FormBuilder. Follow the format requirements exactly.' . 
+                                        ($language === 'malay' ? ' You are fluent in Malay (Bahasa Malaysia).' : '') .
+                                        ($language === 'mix' ? ' You are bilingual in English and Malay (Bahasa Malaysia).' : ''),
+                        ],
+                        [
+                            'role' => 'user',
+                            'content' => $prompt,
+                        ],
+                    ],
+                    'max_tokens' => 2000,
+                    'temperature' => 0.7,
+                ],
+            ]);
+            
+            // Parse the response
+            $responseBody = json_decode($response->getBody(), true);
+            
+            if (isset($responseBody['choices'][0]['message']['content'])) {
+                // Extract the JSON content from the response
+                $jsonContent = $responseBody['choices'][0]['message']['content'];
+                
+                // Try to decode the JSON
+                $decodedJson = json_decode($jsonContent, true);
+                
+                // Check if the JSON structure is valid
+                if (!$decodedJson || !isset($decodedJson['quiz']) || !isset($decodedJson['quiz']['questions'])) {
+                    // If the structure isn't valid, create a simple one with the requested counts
+                    Log::warning('AI response did not contain valid quiz JSON structure. Creating default structure.');
+                    
+                    $defaultQuiz = ['quiz' => ['questions' => []]];
+                    
+                    // Return the default structure as JSON
+                    return json_encode($defaultQuiz);
+                }
+                
+                // Log the actual question counts vs requested
+                $questions = $decodedJson['quiz']['questions'];
+                $actualSingleChoice = 0;
+                $actualMultipleChoice = 0;
+                $actualSubjective = 0;
+                
+                foreach ($questions as $question) {
+                    if (!isset($question['type'])) continue;
+                    
+                    if ($question['type'] === 'single-choice') $actualSingleChoice++;
+                    elseif ($question['type'] === 'multiple-choice') $actualMultipleChoice++;
+                    elseif ($question['type'] === 'subjective') $actualSubjective++;
+                }
+                
+                Log::info("Question counts - Requested: $singleChoiceCount single, $multipleChoiceCount multiple, $subjectiveCount subjective. Received: $actualSingleChoice single, $actualMultipleChoice multiple, $actualSubjective subjective.");
+                Log::info("Language requested: $language");
+                
+                // Return the JSON string as is - let the frontend handle filtering
+                return $jsonContent;
+            } else {
+                throw new \Exception('Invalid AI response. No content found.');
+            }
+        } catch (\Exception $e) {
+            Log::error('Error communicating with OpenAI: ' . $e->getMessage());
+            throw new \Exception('Error communicating with AI: ' . $e->getMessage());
+        }
+    }
 
 }

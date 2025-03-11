@@ -152,25 +152,41 @@
                                                                 <input type="file" class="form-control" id="documentInput" name="document" accept=".pdf" required>
                                                             </div>
                                                         </div>
-                                                        
+
                                                         <div class="col-md-4 mb-3">
                                                             <div class="form-group">
                                                                 <label for="singleChoiceCount" class="form-label"><strong>Number of Single-Choice Questions</strong></label>
-                                                                <input type="number" class="form-control" id="singleChoiceCount" name="single_choice_count" min="0" required>
+                                                                <input type="number" class="form-control" id="singleChoiceCount" name="single_choice_count" min="0" value="0">
                                                             </div>
                                                         </div>
                                                         
                                                         <div class="col-md-4 mb-3">
                                                             <div class="form-group">
                                                                 <label for="multipleChoiceCount" class="form-label"><strong>Number of Multiple-Choice Questions</strong></label>
-                                                                <input type="number" class="form-control" id="multipleChoiceCount" name="multiple_choice_count" min="0" required>
+                                                                <input type="number" class="form-control" id="multipleChoiceCount" name="multiple_choice_count" min="0" value="0">
                                                             </div>
                                                         </div>
                                                         
                                                         <div class="col-md-4 mb-3">
                                                             <div class="form-group">
                                                                 <label for="subjectiveCount" class="form-label"><strong>Number of Subjective Questions</strong></label>
-                                                                <input type="number" class="form-control" id="subjectiveCount" name="subjective_count" min="0" required>
+                                                                <input type="number" class="form-control" id="subjectiveCount" name="subjective_count" min="0" value="0">
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-md-4 mb-3">
+                                                            <div class="form-group">
+                                                                <label for="languageSlider" class="form-label"><strong>Question Language</strong></label>
+                                                                <div class="slider-container">
+                                                                    <input type="range" class="form-range" id="languageSlider" min="0" max="2" step="1" value="0">
+                                                                    <div class="slider-tooltip">English</div>
+                                                                </div>
+                                                                <div class="d-flex justify-content-between mt-1 slider-label-container">
+                                                                    <span class="slider-label active" id="english-label">English</span>
+                                                                    <span class="slider-label" id="malay-label">Malay</span>
+                                                                    <span class="slider-label" id="mix-label">Mix</span>
+                                                                </div>
+                                                                <input type="hidden" id="language" name="language" value="english">
                                                             </div>
                                                         </div>
                                                         
@@ -184,6 +200,310 @@
                                             </div>
                                         </div>
                                     </div>
+
+                                    <style>
+                                        .slider-container {
+                                            position: relative;
+                                            padding: 10px 0;
+                                        }
+                                        
+                                        .slider-label {
+                                            font-size: 0.85rem;
+                                            cursor: pointer;
+                                            transition: all 0.3s ease;
+                                            position: relative;
+                                            padding: 5px 10px;
+                                            border-radius: 15px;
+                                        }
+                                        
+                                        .slider-label.active {
+                                            font-weight: bold;
+                                            color: #ffffff;
+                                            background-color: #6610f2;
+                                            transform: scale(1.1);
+                                            box-shadow: 0 2px 8px rgba(102, 16, 242, 0.5);
+                                        }
+                                        
+                                        /* Animation for all labels when sliding */
+                                        .slider-label-container.sliding .slider-label {
+                                            animation: pulse 1s infinite alternate;
+                                        }
+                                        
+                                        @keyframes pulse {
+                                            0% {
+                                                transform: scale(1);
+                                            }
+                                            100% {
+                                                transform: scale(1.05);
+                                            }
+                                        }
+                                        
+                                        /* Custom slider styling */
+                                        #languageSlider {
+                                            -webkit-appearance: none;
+                                            width: 100%;
+                                            height: 8px;
+                                            border-radius: 10px;
+                                            background: linear-gradient(to right, #6610f2 0%, #9333ea 50%, #6610f2 100%);
+                                            outline: none;
+                                            opacity: 0.8;
+                                            transition: opacity 0.3s, transform 0.3s;
+                                        }
+                                        
+                                        #languageSlider:hover {
+                                            opacity: 1;
+                                            transform: scaleY(1.2);
+                                        }
+                                        
+                                        #languageSlider:active {
+                                            cursor: grabbing;
+                                            transform: scaleY(1.4);
+                                        }
+                                        
+                                        #languageSlider::-webkit-slider-thumb {
+                                            -webkit-appearance: none;
+                                            appearance: none;
+                                            width: 25px;
+                                            height: 25px;
+                                            border-radius: 50%;
+                                            background: #ffffff;
+                                            border: 3px solid #6610f2;
+                                            cursor: grab;
+                                            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+                                            transition: all 0.3s;
+                                        }
+                                        
+                                        #languageSlider::-webkit-slider-thumb:hover {
+                                            background: #e9ecef;
+                                            transform: scale(1.1);
+                                        }
+                                        
+                                        #languageSlider::-webkit-slider-thumb:active {
+                                            background: #6610f2;
+                                            border-color: #ffffff;
+                                            transform: scale(1.2);
+                                            cursor: grabbing;
+                                        }
+                                        
+                                        #languageSlider::-moz-range-thumb {
+                                            width: 25px;
+                                            height: 25px;
+                                            border-radius: 50%;
+                                            background: #ffffff;
+                                            border: 3px solid #6610f2;
+                                            cursor: grab;
+                                            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+                                            transition: all 0.3s;
+                                        }
+                                        
+                                        #languageSlider::-moz-range-thumb:hover {
+                                            background: #e9ecef;
+                                            transform: scale(1.1);
+                                        }
+                                        
+                                        #languageSlider::-moz-range-thumb:active {
+                                            background: #6610f2;
+                                            border-color: #ffffff;
+                                            transform: scale(1.2);
+                                            cursor: grabbing;
+                                        }
+                                        
+                                        .form-range::-webkit-slider-runnable-track {
+                                            height: 8px;
+                                            background: linear-gradient(to right, #6610f2 0%, #9333ea 50%, #6610f2 100%);
+                                            border-radius: 10px;
+                                            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3);
+                                        }
+                                        
+                                        .form-range::-moz-range-track {
+                                            height: 8px;
+                                            background: linear-gradient(to right, #6610f2 0%, #9333ea 50%, #6610f2 100%);
+                                            border-radius: 10px;
+                                            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3);
+                                        }
+                                        
+                                        /* Tooltip for slider */
+                                        .slider-tooltip {
+                                            position: absolute;
+                                            top: -30px;
+                                            left: 0;
+                                            background-color: #6610f2;
+                                            color: white;
+                                            padding: 2px 8px;
+                                            border-radius: 4px;
+                                            font-size: 0.8rem;
+                                            opacity: 0;
+                                            transition: opacity 0.3s;
+                                            pointer-events: none;
+                                            transform: translateX(-50%);
+                                            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+                                        }
+                                        
+                                        .slider-tooltip::after {
+                                            content: '';
+                                            position: absolute;
+                                            top: 100%;
+                                            left: 50%;
+                                            margin-left: -5px;
+                                            border-width: 5px;
+                                            border-style: solid;
+                                            border-color: #6610f2 transparent transparent transparent;
+                                        }
+                                        
+                                        #languageSlider:hover + .slider-tooltip,
+                                        #languageSlider:active + .slider-tooltip {
+                                            opacity: 1;
+                                        }
+                                    </style>
+                                    <script>
+                                        /**
+                                         * Initializes the enhanced language slider functionality
+                                         */
+                                        function initializeLanguageSlider() {
+                                            const languageSlider = document.getElementById('languageSlider');
+                                            const languageInput = document.getElementById('language');
+                                            const englishLabel = document.getElementById('english-label');
+                                            const malayLabel = document.getElementById('malay-label');
+                                            const mixLabel = document.getElementById('mix-label');
+                                            const sliderTooltip = document.querySelector('.slider-tooltip');
+                                            const labelContainer = document.querySelector('.slider-label-container');
+                                            
+                                            // Map slider values to language options
+                                            const languageOptions = ['english', 'malay', 'mix'];
+                                            const languageLabels = [englishLabel, malayLabel, mixLabel];
+                                            const languageNames = ['English', 'Malay', 'Mix'];
+                                            
+                                            // Set initial active state
+                                            updateActiveLabel(0);
+                                            updateTooltipPosition(0);
+                                            
+                                            // Update language when slider changes
+                                            if (languageSlider) {
+                                                languageSlider.addEventListener('input', function() {
+                                                    const value = parseInt(this.value);
+                                                    languageInput.value = languageOptions[value];
+                                                    updateActiveLabel(value);
+                                                    updateTooltipPosition(value);
+                                                    
+                                                    // Add sliding class for animation
+                                                    labelContainer.classList.add('sliding');
+                                                });
+                                                
+                                                // When slider interaction ends
+                                                languageSlider.addEventListener('change', function() {
+                                                    // Remove sliding class to stop animation
+                                                    labelContainer.classList.remove('sliding');
+                                                    
+                                                    // Add pulse animation to selected label only
+                                                    const selectedLabel = document.querySelector('.slider-label.active');
+                                                    selectedLabel.classList.add('pulse-once');
+                                                    setTimeout(() => {
+                                                        selectedLabel.classList.remove('pulse-once');
+                                                    }, 500);
+                                                });
+                                                
+                                                // Update tooltip content and position on mousemove
+                                                languageSlider.addEventListener('mousemove', function(e) {
+                                                    if (sliderTooltip) {
+                                                        updateTooltipPosition(parseInt(this.value));
+                                                    }
+                                                });
+                                                
+                                                // Show tooltip on mouse over
+                                                languageSlider.addEventListener('mouseenter', function() {
+                                                    if (sliderTooltip) {
+                                                        sliderTooltip.style.opacity = '1';
+                                                    }
+                                                });
+                                                
+                                                // Hide tooltip on mouse out
+                                                languageSlider.addEventListener('mouseleave', function() {
+                                                    if (sliderTooltip) {
+                                                        sliderTooltip.style.opacity = '0';
+                                                    }
+                                                });
+                                            }
+                                            
+                                            // Add click event to labels
+                                            languageLabels.forEach((label, index) => {
+                                                if (label) {
+                                                    label.addEventListener('click', function() {
+                                                        languageSlider.value = index;
+                                                        languageInput.value = languageOptions[index];
+                                                        updateActiveLabel(index);
+                                                        updateTooltipPosition(index);
+                                                        
+                                                        // Add pulse animation to selected label
+                                                        this.classList.add('pulse-once');
+                                                        setTimeout(() => {
+                                                            this.classList.remove('pulse-once');
+                                                        }, 500);
+                                                    });
+                                                }
+                                            });
+                                            
+                                            // Function to update active label styling
+                                            function updateActiveLabel(activeIndex) {
+                                                languageLabels.forEach((label, index) => {
+                                                    if (label) {
+                                                        if (index === activeIndex) {
+                                                            label.classList.add('active');
+                                                        } else {
+                                                            label.classList.remove('active');
+                                                        }
+                                                    }
+                                                });
+                                            }
+                                            
+                                            // Function to update tooltip position and content
+                                            function updateTooltipPosition(sliderValue) {
+                                                if (sliderTooltip) {
+                                                    // Update content
+                                                    sliderTooltip.textContent = languageNames[sliderValue];
+                                                    
+                                                    // Update position
+                                                    const sliderWidth = languageSlider.offsetWidth;
+                                                    const thumbPosition = (sliderValue / 2) * sliderWidth;
+                                                    sliderTooltip.style.left = thumbPosition + 'px';
+                                                }
+                                            }
+                                            
+                                            // Add drag effect
+                                            let isDragging = false;
+                                            
+                                            languageSlider.addEventListener('mousedown', function() {
+                                                isDragging = true;
+                                                languageSlider.style.cursor = 'grabbing';
+                                                
+                                                // Add effect when dragging starts
+                                                document.body.classList.add('slider-dragging');
+                                                languageSlider.classList.add('dragging');
+                                            });
+                                            
+                                            document.addEventListener('mouseup', function() {
+                                                if (isDragging) {
+                                                    isDragging = false;
+                                                    languageSlider.style.cursor = 'grab';
+                                                    
+                                                    // Remove effect when dragging ends
+                                                    document.body.classList.remove('slider-dragging');
+                                                    languageSlider.classList.remove('dragging');
+                                                }
+                                            });
+                                            
+                                            document.addEventListener('mousemove', function(e) {
+                                                if (isDragging) {
+                                                    // Optional: add some additional drag effects if desired
+                                                }
+                                            });
+                                        }
+
+                                        // Add this to ensure it's called when the document is ready
+                                        document.addEventListener('DOMContentLoaded', function() {
+                                            initializeAIQuizGenerator();
+                                            initializeLanguageSlider();
+                                        });
+                                    </script>
                                 </div>
                                     
                                     
@@ -202,8 +522,8 @@
                                 });
 
                                 /**
-                                * Initializes the AI Quiz Generator functionality
-                                */
+                                 * Initializes the AI Quiz Generator functionality
+                                 */
                                 function initializeAIQuizGenerator() {
                                     // Get reference to the generate button
                                     const generateButton = document.getElementById('generateQuizAI');
@@ -227,11 +547,19 @@
                                             }
                                         });
                                     }
+                                    
+                                    // Set default values for number inputs
+                                    const numberInputs = document.querySelectorAll('input[type="number"]');
+                                    numberInputs.forEach(input => {
+                                        if (!input.value) {
+                                            input.value = 0;
+                                        }
+                                    });
                                 }
 
                                 /**
-                                * Handles the generate quiz button click
-                                */
+                                 * Handles the generate quiz button click
+                                 */
                                 function handleGenerateQuiz() {
                                     // Create FormData from the form
                                     const formData = new FormData(document.getElementById('aiQuizForm'));
@@ -241,10 +569,21 @@
                                         return;
                                     }
                                     
-                                    // Show loading state
+                                    // Show loading state with language-specific message
+                                    const language = document.getElementById('language').value;
+                                    let loadingMessage = "Please wait while our AI analyzes your document and creates questions";
+                                    
+                                    if (language === 'malay') {
+                                        loadingMessage += " in Malay...";
+                                    } else if (language === 'mix') {
+                                        loadingMessage += " in English and Malay...";
+                                    } else {
+                                        loadingMessage += "...";
+                                    }
+                                    
                                     Swal.fire({
                                         title: "Generating Quiz",
-                                        html: "Please wait while our AI analyzes your document and creates questions...",
+                                        html: loadingMessage,
                                         allowOutsideClick: false,
                                         didOpen: () => {
                                             Swal.showLoading();
@@ -271,7 +610,6 @@
                                         
                                         // Handle the response
                                         if (data.success) {
-                                            showSuccessMessage();
                                             processQuizQuestions(data);
                                         } else {
                                             showErrorMessage(data.message || 'Failed to generate quiz.');
@@ -288,22 +626,23 @@
                                 }
 
                                 /**
-                                * Gets the course ID from session
-                                * @returns {string} The course ID
-                                */
+                                 * Gets the course ID from session
+                                 * @returns {string} The course ID
+                                 */
                                 function getCourseId() {
                                     return '{{ Session::get("CourseID") }}';
                                 }
 
                                 /**
-                                * Validates the AI Quiz form
-                                * @returns {boolean} Whether the form is valid
-                                */
+                                 * Validates the AI Quiz form
+                                 * @returns {boolean} Whether the form is valid
+                                 */
                                 function validateAIQuizForm() {
                                     const documentFile = document.getElementById('documentInput').files[0];
-                                    const singleChoiceCount = parseInt(document.getElementById('singleChoiceCount').value);
-                                    const multipleChoiceCount = parseInt(document.getElementById('multipleChoiceCount').value);
-                                    const subjectiveCount = parseInt(document.getElementById('subjectiveCount').value);
+                                    const singleChoiceCount = parseInt(document.getElementById('singleChoiceCount').value) || 0;
+                                    const multipleChoiceCount = parseInt(document.getElementById('multipleChoiceCount').value) || 0;
+                                    const subjectiveCount = parseInt(document.getElementById('subjectiveCount').value) || 0;
+                                    const language = document.getElementById('language').value;
                                     
                                     // Check if a document is selected
                                     if (!documentFile) {
@@ -317,25 +656,26 @@
                                         return false;
                                     }
                                     
-                                    // Check if at least one question type count is greater than zero
-                                    if (isNaN(singleChoiceCount) && isNaN(multipleChoiceCount) && isNaN(subjectiveCount)) {
-                                        showErrorMessage('Please specify the number of questions to generate.');
+                                    // Check if language is selected
+                                    if (!language) {
+                                        showErrorMessage('Please select a question language.');
                                         return false;
                                     }
                                     
                                     // Check if any question count is negative
-                                    if ((singleChoiceCount < 0) || (multipleChoiceCount < 0) || (subjectiveCount < 0)) {
+                                    if (singleChoiceCount < 0 || multipleChoiceCount < 0 || subjectiveCount < 0) {
                                         showErrorMessage('Question counts cannot be negative.');
                                         return false;
                                     }
                                     
-                                    // Check if total questions is reasonable (not too many)
-                                    const totalQuestions = (singleChoiceCount || 0) + (multipleChoiceCount || 0) + (subjectiveCount || 0);
+                                    // Check if at least one question type has a count greater than zero
+                                    const totalQuestions = singleChoiceCount + multipleChoiceCount + subjectiveCount;
                                     if (totalQuestions === 0) {
                                         showErrorMessage('Please specify at least one question to generate.');
                                         return false;
                                     }
                                     
+                                    // Check if total questions is reasonable (not too many)
                                     if (totalQuestions > 50) {
                                         showErrorMessage('Please generate 50 or fewer questions at once.');
                                         return false;
@@ -345,21 +685,33 @@
                                 }
 
                                 /**
-                                * Shows a success message using SweetAlert
-                                */
+                                 * Shows a success message using SweetAlert
+                                 */
                                 function showSuccessMessage() {
+                                    // Get the selected language
+                                    const language = document.getElementById('language').value;
+                                    let message = "Quiz questions have been generated successfully";
+                                    
+                                    if (language === 'malay') {
+                                        message += " in Malay.";
+                                    } else if (language === 'mix') {
+                                        message += " in a mix of English and Malay.";
+                                    } else {
+                                        message += ".";
+                                    }
+                                    
                                     Swal.fire({
                                         title: "Success!",
-                                        text: "Quiz questions have been generated successfully.",
+                                        text: message,
                                         icon: "success",
                                         confirmButtonText: "Great!"
                                     });
                                 }
 
                                 /**
-                                * Shows an error message using SweetAlert
-                                * @param {string} message The error message to display
-                                */
+                                 * Shows an error message using SweetAlert
+                                 * @param {string} message The error message to display
+                                 */
                                 function showErrorMessage(message) {
                                     Swal.fire({
                                         title: "Error",
@@ -368,27 +720,101 @@
                                         confirmButtonText: "OK"
                                     });
                                 }
-                                
 
                                 /**
-                                * Processes the quiz questions returned from the server
-                                * @param {Object} data The response data from the server
-                                */
+                                 * Shows a warning message using SweetAlert
+                                 * @param {string} message The warning message to display
+                                 */
+                                function showWarningMessage(message) {
+                                    Swal.fire({
+                                        title: "Warning",
+                                        text: message,
+                                        icon: "warning",
+                                        confirmButtonText: "Continue Anyway"
+                                    });
+                                }
+
+                                /**
+                                 * Processes the quiz questions returned from the server
+                                 * @param {Object} data The response data from the server
+                                 */
                                 function processQuizQuestions(data) {
                                     try {
                                         // Parse the JSON data
-                                        const quizData = JSON.parse(data.formBuilderJSON);
+                                        let quizData;
+                                        if (typeof data.formBuilderJSON === 'string') {
+                                            quizData = JSON.parse(data.formBuilderJSON);
+                                        } else {
+                                            quizData = data.formBuilderJSON;
+                                        }
+                                        
+                                        // If no questions were received, create empty questions array
+                                        if (!quizData || !quizData.quiz || !quizData.quiz.questions || !Array.isArray(quizData.quiz.questions)) {
+                                            console.error('Invalid quiz data structure received.');
+                                            showErrorMessage('The AI generated an invalid quiz structure. Please try again.');
+                                            return;
+                                        }
                                         
                                         // Extract questions array
-                                        const questions = quizData.quiz.questions;
+                                        const allQuestions = quizData.quiz.questions;
+                                        
+                                        // Get the requested counts from the form
+                                        const requestedSingleChoice = parseInt(document.getElementById('singleChoiceCount').value) || 0;
+                                        const requestedMultipleChoice = parseInt(document.getElementById('multipleChoiceCount').value) || 0;
+                                        const requestedSubjective = parseInt(document.getElementById('subjectiveCount').value) || 0;
+                                        
+                                        // Sort questions by type
+                                        const singleChoiceQuestions = allQuestions.filter(q => q.type === 'single-choice');
+                                        const multipleChoiceQuestions = allQuestions.filter(q => q.type === 'multiple-choice');
+                                        const subjectiveQuestions = allQuestions.filter(q => q.type === 'subjective');
+                                        
+                                        // Create the final list of questions in the order they are requested
+                                        const finalQuestions = [
+                                            ...singleChoiceQuestions.slice(0, requestedSingleChoice),
+                                            ...multipleChoiceQuestions.slice(0, requestedMultipleChoice),
+                                            ...subjectiveQuestions.slice(0, requestedSubjective)
+                                        ];
+                                        
+                                        // Check if we have enough questions of each type
+                                        const actualSingleChoice = Math.min(singleChoiceQuestions.length, requestedSingleChoice);
+                                        const actualMultipleChoice = Math.min(multipleChoiceQuestions.length, requestedMultipleChoice);
+                                        const actualSubjective = Math.min(subjectiveQuestions.length, requestedSubjective);
+                                        
+                                        // If we didn't get enough questions of any type, show a warning
+                                        if (actualSingleChoice < requestedSingleChoice || 
+                                            actualMultipleChoice < requestedMultipleChoice || 
+                                            actualSubjective < requestedSubjective) {
+                                            
+                                            let message = "The AI couldn't generate enough questions of the requested types. Generated:";
+                                            if (requestedSingleChoice > 0) {
+                                                message += ` ${actualSingleChoice}/${requestedSingleChoice} single-choice questions.`;
+                                            }
+                                            if (requestedMultipleChoice > 0) {
+                                                message += ` ${actualMultipleChoice}/${requestedMultipleChoice} multiple-choice questions.`;
+                                            }
+                                            if (requestedSubjective > 0) {
+                                                message += ` ${actualSubjective}/${requestedSubjective} subjective questions.`;
+                                            }
+                                            
+                                            showWarningMessage(message);
+                                        } else {
+                                            // Show success message only if we got all the questions we wanted
+                                            showSuccessMessage();
+                                        }
+                                        
+                                        // If we have no questions to display, show an error
+                                        if (finalQuestions.length === 0) {
+                                            showErrorMessage('No valid questions were generated. Please try again with a different document or question settings.');
+                                            return;
+                                        }
                                         
                                         // Process each question
-                                        questions.forEach((question, index) => {
+                                        finalQuestions.forEach((question, index) => {
                                             addQuestionToFormBuilder(question, index);
                                         });
                                         
                                         // Update question index value
-                                        updateQuestionIndex(questions.length);
+                                        updateQuestionIndex(finalQuestions.length);
                                         
                                         // Update marks calculation
                                         if (typeof renderMark === 'function') {
@@ -431,16 +857,8 @@
                                     // Handle different question formats
                                     addQuestionByType(question, index);
 
-                                    // Add correct answer (if applicable)
-                                    if (question.answer) {
-                                        formBuilder.actions.addField({
-                                            type: 'paragraph',
-                                            className: 'correct-answer',
-                                            label: Array.isArray(question.answer) 
-                                                ? question.answer.join(', ')
-                                                : question.answer,
-                                        });
-                                    }
+                                    // Add correct answer field with proper formatting
+                                    addCorrectAnswerField(question, index);
 
                                     // Add checkbox for marks
                                     formBuilder.actions.addField({
@@ -461,6 +879,38 @@
                                         type: 'text',
                                         className: 'feedback-text form-control',
                                         placeholder: 'Comment',
+                                    });
+                                }
+
+                                /**
+                                * Adds a correct answer field to the form builder
+                                * @param {Object} question The question object
+                                * @param {number} index The question index
+                                */
+                                function addCorrectAnswerField(question, index) {
+                                    if (!question.answer) {
+                                        return;
+                                    }
+
+                                    let answerText = '';
+                                    
+                                    // Format the answer text based on question type
+                                    if (question.type === 'single-choice') {
+                                        answerText = question.answer;
+                                    } else if (question.type === 'multiple-choice') {
+                                        // Make sure multiple-choice answers are comma-separated
+                                        answerText = Array.isArray(question.answer) 
+                                            ? question.answer.join(',')
+                                            : question.answer;
+                                    } else if (question.type === 'subjective') {
+                                        answerText = question.answer;
+                                    }
+
+                                    // Add the answer field as plain text
+                                    formBuilder.actions.addField({
+                                        type: 'paragraph',
+                                        className: 'correct-answer',
+                                        label: answerText
                                     });
                                 }
 
@@ -517,7 +967,6 @@
                                         questionIndexField.value = currentIndex + addedQuestionsCount;
                                     }
                                 }
-
                                 </script>
                                     
                                 </div>
