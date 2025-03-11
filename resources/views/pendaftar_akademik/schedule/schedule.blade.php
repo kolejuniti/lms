@@ -1744,12 +1744,23 @@ async function handleEventUpdate(event) {
                 end: newEnd
             }),
         });
-
+        
         if (response.ok) {
             const data = await response.json();
             if(data.error) {
-                showNotification(data.error, 'error');
+                // Check if the response includes conflicting students list
+                if (data.conflicting_students && data.conflicting_students.length > 0) {
+                    // Format conflicting students list
+                    let studentList = '<br><br>Conflicting students: ';
+                    studentList += data.conflicting_students.map(student => student.student_ic).join(', ');
+                    
+                    // Show notification with the error and student list
+                    showNotification(data.error + studentList, 'error', false);
+                } else {
+                    showNotification(data.error, 'error');
+                }
             } else {
+                // Update the event on the calendar
                 event.setProp('title', newTitle);
                 event.setDates(newStart, newEnd);
                 calendar.render();
