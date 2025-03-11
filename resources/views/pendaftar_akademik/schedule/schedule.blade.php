@@ -2106,7 +2106,6 @@ function toHHMM(dateObj) {
     return hh + ':' + mm;
 }
 
-// Toast notification system
 function showNotification(message, type = 'info', autoHide = true) {
     // Create toast container if it doesn't exist
     let toastContainer = document.querySelector('.toast-container');
@@ -2133,9 +2132,9 @@ function showNotification(message, type = 'info', autoHide = true) {
     toast.style.borderRadius = '8px';
     toast.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
     toast.style.display = 'flex';
-    toast.style.alignItems = 'flex-start'; // Changed to flex-start for better alignment with multi-line content
-    toast.style.maxWidth = '400px'; // Increased max width to accommodate the list
-    toast.style.wordBreak = 'break-word'; // Added to prevent overflow of long student IDs
+    toast.style.alignItems = 'flex-start';
+    toast.style.maxWidth = '400px';
+    toast.style.wordBreak = 'break-word';
     
     // Add icon based on type
     const icon = document.createElement('i');
@@ -2144,26 +2143,31 @@ function showNotification(message, type = 'info', autoHide = true) {
         type === 'error' ? 'fa-exclamation-triangle' : 
         type === 'warning' ? 'fa-exclamation-circle' : 'fa-info-circle'
     } me-2`;
-    icon.style.marginTop = '2px'; // Align icon with first line of text
+    icon.style.marginTop = '2px';
     
     // Add message
-    const messageSpan = document.createElement('div'); // Changed to div for HTML content
-    messageSpan.innerHTML = message; // Changed to innerHTML to support HTML content
+    const messageSpan = document.createElement('div');
+    messageSpan.innerHTML = message;
     messageSpan.style.flex = '1';
     
     // Add close button
     const closeButton = document.createElement('button');
     closeButton.innerHTML = '&times;';
-    closeButton.style.marginLeft = 'auto';
+    closeButton.style.marginLeft = '10px'; // Add some space between message and button
     closeButton.style.background = 'none';
     closeButton.style.border = 'none';
     closeButton.style.color = '#fff';
     closeButton.style.fontSize = '20px';
     closeButton.style.cursor = 'pointer';
+    closeButton.style.padding = '0 5px'; // Add padding to make button easier to click
+    closeButton.style.height = '24px'; // Fixed height
+    closeButton.style.lineHeight = '20px'; // Align the × vertically
+    closeButton.style.flexShrink = '0'; // Prevent button from shrinking
     
-    closeButton.addEventListener('click', () => {
+    // Fix the click event
+    closeButton.onclick = function() {
         toastContainer.removeChild(toast);
-    });
+    };
     
     // Add elements to toast
     toast.appendChild(icon);
