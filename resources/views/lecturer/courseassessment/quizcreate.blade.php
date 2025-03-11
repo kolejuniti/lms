@@ -229,10 +229,7 @@
                                     }
                                 }
 
-                                /**
-                                * Handles the generate quiz button click
-                                */
-                                // JavaScript Frontend - Updated handleGenerateQuiz function
+              // JavaScript Frontend - Updated handleGenerateQuiz function
 function handleGenerateQuiz() {
     // Create FormData from the form
     const formData = new FormData(document.getElementById('aiQuizForm'));

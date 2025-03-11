@@ -1987,81 +1987,82 @@ class QuizController extends Controller
         // }
     // }
 
-    public function generateAIQuiz(Request $request) {
+    // PHP Backend - Updated generateAIQuiz function
+public function generateAIQuiz(Request $request) {
+    try {
+        // Step 1: Validate the inputs
+        $request->validate([
+            'document' => 'required|file|mimes:pdf|max:5000',
+            'single_choice_count' => 'required|integer|min:0',
+            'multiple_choice_count' => 'required|integer|min:0',
+            'subjective_count' => 'required|integer|min:0',
+        ]);
+        
+        // Step 2: Save and parse the PDF
+        $filePath = $request->file('document')->store('documents');
+        
         try {
-            // Step 1: Validate the inputs
-            $request->validate([
-                'document' => 'required|file|mimes:pdf|max:5000',
-                'single_choice_count' => 'required|integer|min:0',
-                'multiple_choice_count' => 'required|integer|min:0',
-                'subjective_count' => 'required|integer|min:0',
-            ]);
+            $parser = new Parser();
+            $pdf = $parser->parseFile(storage_path('app/' . $filePath));
+            $text = $pdf->getText();
             
-            // Step 2: Save and parse the PDF
-            $filePath = $request->file('document')->store('documents');
-            
-            try {
-                $parser = new Parser();
-                $pdf = $parser->parseFile(storage_path('app/' . $filePath));
-                $text = $pdf->getText();
-                
-                // Check if we got enough text content to generate a quiz
-                if (empty(trim($text)) || strlen($text) < 100) {
-                    return response()->json([
-                        'success' => false,
-                        'error_type' => 'parse_error',
-                        'message' => 'The PDF could not be parsed properly or contains insufficient text content.',
-                    ], 422);
-                }
-            } catch (\Exception $e) {
-                Log::error('PDF parsing error: ' . $e->getMessage());
+            // Check if we got enough text content to generate a quiz
+            if (empty(trim($text)) || strlen($text) < 100) {
                 return response()->json([
                     'success' => false,
                     'error_type' => 'parse_error',
-                    'message' => 'Failed to parse the PDF document. Please ensure the file is not corrupted or password-protected.',
+                    'message' => 'The PDF could not be parsed properly or contains insufficient text content.',
                 ], 422);
             }
-            
-            // Step 3: Generate quiz JSON
-            $singleChoiceCount = $request->input('single_choice_count');
-            $multipleChoiceCount = $request->input('multiple_choice_count');
-            $subjectiveCount = $request->input('subjective_count');
-            
-            try {
-                $quizJSON = $this->generateFormBuilderJSON($text, $singleChoiceCount, $multipleChoiceCount, $subjectiveCount);
-            } catch (\Exception $e) {
-                Log::error('Quiz generation error: ' . $e->getMessage());
-                return response()->json([
-                    'success' => false,
-                    'error_type' => 'generation_error',
-                    'message' => 'Failed to generate quiz questions from the document content.',
-                ], 500);
-            }
-            
-            // Step 4: Return the quiz JSON
-            return response()->json([
-                'success' => true,
-                'formBuilderJSON' => $quizJSON,
-            ]);
-            
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            // Handle validation errors
-            $errors = $e->validator->errors()->first();
-            return response()->json([
-                'success' => false,
-                'error_type' => 'validation_error',
-                'message' => 'Validation error: ' . $errors,
-            ], 422);
         } catch (\Exception $e) {
-            // Handle other unexpected errors
-            Log::error('Unexpected error generating quiz: ' . $e->getMessage());
+            Log::error('PDF parsing error: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'error_type' => 'unexpected_error',
-                'message' => 'An unexpected error occurred while processing your request. Please try again later.',
+                'error_type' => 'parse_error',
+                'message' => 'Failed to parse the PDF document. Please ensure the file is not corrupted or password-protected.',
+            ], 422);
+        }
+        
+        // Step 3: Generate quiz JSON
+        $singleChoiceCount = $request->input('single_choice_count');
+        $multipleChoiceCount = $request->input('multiple_choice_count');
+        $subjectiveCount = $request->input('subjective_count');
+        
+        try {
+            $quizJSON = $this->generateFormBuilderJSON($text, $singleChoiceCount, $multipleChoiceCount, $subjectiveCount);
+        } catch (\Exception $e) {
+            Log::error('Quiz generation error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'error_type' => 'generation_error',
+                'message' => 'Failed to generate quiz questions from the document content.',
             ], 500);
         }
+        
+        // Step 4: Return the quiz JSON
+        return response()->json([
+            'success' => true,
+            'formBuilderJSON' => $quizJSON,
+        ]);
+        
+    } catch (\Illuminate\Validation\ValidationException $e) {
+        // Handle validation errors
+        $errors = $e->validator->errors()->first();
+        return response()->json([
+            'success' => false,
+            'error_type' => 'validation_error',
+            'message' => 'Validation error: ' . $errors,
+        ], 422);
+    } catch (\Exception $e) {
+        // Handle other unexpected errors
+        Log::error('Unexpected error generating quiz: ' . $e->getMessage());
+        return response()->json([
+            'success' => false,
+            'error_type' => 'unexpected_error',
+            'message' => 'An unexpected error occurred while processing your request. Please try again later.',
+        ], 500);
     }
+}
 
 
 
