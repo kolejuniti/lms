@@ -2065,36 +2065,35 @@ public function generateAIQuiz(Request $request) {
 }
 
 
-
 private function generateFormBuilderJSON($text, $singleChoiceCount, $multipleChoiceCount, $subjectiveCount)
 {
-    // In generateFormBuilderJSON(), before the API call
-Log::info('Sending request to OpenAI with text length: ' . strlen($text));
-Log::info('Single choice: ' . $singleChoiceCount . ', Multiple choice: ' . $multipleChoiceCount . ', Subjective: ' . $subjectiveCount);
-
     $apiKey = env('OPENAI_API_KEY');
+    Log::info('OpenAI API Key retrieved. Length: ' . (empty($apiKey) ? '0 (EMPTY)' : strlen($apiKey) . ' chars'));
+    
     $client = new Client();
 
     try {
         // Build the AI prompt
-        $prompt = "Create a quiz JSON structure based on the following text. The quiz should include:\n";
+        $prompt = "Create a quiz with questions based on the following text. The response must be a valid JSON object with exactly this structure: {\"quiz\":{\"questions\":[array of question objects]}}. Each question object should have: type (either 'single-choice', 'multiple-choice', or 'subjective'), question (the text of the question), options (array of possible answers for choice questions), and answer (correct option for single-choice, array of correct options for multiple-choice, or can be omitted for subjective questions). Include:\n";
         $prompt .= "- $singleChoiceCount single-choice questions\n";
         $prompt .= "- $multipleChoiceCount multiple-choice questions\n";
         $prompt .= "- $subjectiveCount subjective questions\n\n";
         $prompt .= "Here is the text:\n\n" . $text;
 
-        // Send the request to OpenAI API
-        $response = $client->post('https://api.openai.com/v1/chat/completions', [
+        // Log request details (sanitized)
+        Log::info('Preparing OpenAI request with prompt length: ' . strlen($prompt));
+        
+        $requestData = [
             'headers' => [
                 'Authorization' => 'Bearer ' . $apiKey,
                 'Content-Type' => 'application/json',
             ],
             'json' => [
-                'model' => 'gpt-3.5-turbo-1106', // Ensure this is an available model
+                'model' => 'gpt-3.5-turbo-1106', 
                 'messages' => [
                     [
                         'role' => 'system',
-                        'content' => 'You are a system designed to generate quiz questions for FormBuilder.',
+                        'content' => 'You are a system designed to generate quiz questions in valid JSON format. Always return a JSON object with the structure {"quiz":{"questions":[array of question objects]}}',
                     ],
                     [
                         'role' => 'user',
@@ -2103,19 +2102,63 @@ Log::info('Single choice: ' . $singleChoiceCount . ', Multiple choice: ' . $mult
                 ],
                 'max_tokens' => 2000,
                 'temperature' => 0.7,
+                'response_format' => ['type' => 'json_object'] // Force JSON response
             ],
-        ]);
+        ];
 
+        // Send the request to OpenAI API
+        Log::info('Sending request to OpenAI API...');
+        $response = $client->post('https://api.openai.com/v1/chat/completions', $requestData);
+
+        // Log the response status
+        Log::info('OpenAI API response received. Status code: ' . $response->getStatusCode());
+        
         // Parse the response
         $responseBody = json_decode($response->getBody(), true);
-
+        
         if (isset($responseBody['choices'][0]['message']['content'])) {
-            return $responseBody['choices'][0]['message']['content'];
+            $content = $responseBody['choices'][0]['message']['content'];
+            Log::info('Content extracted successfully. Length: ' . strlen($content));
+            
+            // Validate the JSON structure before returning
+            $decodedContent = json_decode($content, true);
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                Log::error('Invalid JSON in OpenAI response: ' . json_last_error_msg());
+                Log::error('Response content: ' . $content);
+                throw new \Exception('OpenAI returned invalid JSON: ' . json_last_error_msg());
+            }
+            
+            // Check for expected structure
+            if (!isset($decodedContent['quiz']) || !isset($decodedContent['quiz']['questions']) || !is_array($decodedContent['quiz']['questions'])) {
+                Log::error('OpenAI response missing expected quiz structure');
+                Log::error('Response content: ' . $content);
+                throw new \Exception('OpenAI response missing expected quiz structure');
+            }
+            
+            return $content; // Return the validated JSON string
         } else {
+            Log::error('Invalid OpenAI response structure: ' . json_encode($responseBody));
             throw new \Exception('Invalid AI response. No content found.');
         }
+    } catch (\GuzzleHttp\Exception\RequestException $e) {
+        // Detailed Guzzle error logging
+        Log::error('Guzzle Request Exception: ' . $e->getMessage());
+        
+        // Log the request that was sent
+        if ($e->hasRequest()) {
+            Log::error('Request: ' . $e->getRequest()->getMethod() . ' ' . $e->getRequest()->getUri());
+        }
+        
+        // Log the response if available
+        if ($e->hasResponse()) {
+            Log::error('Response status: ' . $e->getResponse()->getStatusCode());
+            Log::error('Response body: ' . $e->getResponse()->getBody());
+        }
+        
+        throw new \Exception('Error communicating with OpenAI API: ' . $e->getMessage());
     } catch (\Exception $e) {
-        Log::error('Error communicating with OpenAI: ' . $e->getMessage());
+        Log::error('Error in generateFormBuilderJSON: ' . $e->getMessage());
+        Log::error('Stack trace: ' . $e->getTraceAsString());
         throw new \Exception('Error communicating with AI: ' . $e->getMessage());
     }
 }

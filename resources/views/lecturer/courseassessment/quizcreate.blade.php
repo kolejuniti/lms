@@ -230,7 +230,7 @@
                                 }
 
               // JavaScript Frontend - Updated handleGenerateQuiz function
-              function handleGenerateQuiz() {
+function handleGenerateQuiz() {
     // Create FormData from the form
     const formData = new FormData(document.getElementById('aiQuizForm'));
     
@@ -258,29 +258,12 @@
         },
     })
     .then(response => {
-        // First check if the response is ok
         if (!response.ok) {
-            // Try to parse as JSON first
-            return response.json()
-                .then(data => {
-                    throw { status: response.status, data: data };
-                })
-                .catch(err => {
-                    // If it's not JSON, use the status text
-                    if (!err.data) {
-                        throw { 
-                            status: response.status, 
-                            data: { message: response.statusText || 'Server error occurred' } 
-                        };
-                    }
-                    throw err;
-                });
+            return response.json().then(data => {
+                throw { status: response.status, data: data };
+            });
         }
-        
-        // Response was OK, try to parse as JSON
-        return response.json().catch(err => {
-            throw { status: 200, data: { message: 'Invalid JSON in response' } };
-        });
+        return response.json();
     })
     .then(data => {
         // Close loading indicator
@@ -289,27 +272,7 @@
         // Handle the response
         if (data.success) {
             showSuccessMessage();
-            
-            try {
-                // Make sure formBuilderJSON is a proper object
-                let formData = data.formBuilderJSON;
-                
-                // If it's a string, try to parse it
-                if (typeof formData === 'string') {
-                    try {
-                        formData = JSON.parse(formData);
-                    } catch (e) {
-                        console.error('Error parsing JSON:', e);
-                        showErrorMessage('The server returned improperly formatted quiz data. Please try again.');
-                        return;
-                    }
-                }
-                
-                processQuizQuestions(formData);
-            } catch (e) {
-                console.error('Error processing quiz data:', e);
-                showErrorMessage('Failed to process the generated quiz data. Please try again.');
-            }
+            processQuizQuestions(data);
         } else {
             showErrorMessage(data.message || 'Failed to generate quiz.');
         }
@@ -338,22 +301,12 @@
         } else if (error.status === 413) {
             showErrorMessage('The uploaded file is too large. Please upload a file smaller than 5MB.');
         } else {
-            showErrorMessage(error.data?.message || 'An unexpected error occurred while generating the quiz. Please try again later.');
+            showErrorMessage('An unexpected error occurred while generating the quiz. Please try again later.');
         }
     });
 }
 
-// Success message function
-function showSuccessMessage() {
-    Swal.fire({
-        icon: 'success',
-        title: 'Quiz Generated Successfully',
-        text: 'Your quiz has been created from the document content.',
-        confirmButtonText: 'Continue'
-    });
-}
-
-// Enhanced error display function
+// Optional: Enhanced error display function
 function showErrorMessage(message) {
     Swal.fire({
         icon: 'error',
@@ -450,30 +403,61 @@ function showErrorMessage(message) {
                                 * @param {Object} data The response data from the server
                                 */
                                 function processQuizQuestions(data) {
-                                    try {
-                                        // Parse the JSON data
-                                        const quizData = JSON.parse(data.formBuilderJSON);
-                                        
-                                        // Extract questions array
-                                        const questions = quizData.quiz.questions;
-                                        
-                                        // Process each question
-                                        questions.forEach((question, index) => {
-                                            addQuestionToFormBuilder(question, index);
-                                        });
-                                        
-                                        // Update question index value
-                                        updateQuestionIndex(questions.length);
-                                        
-                                        // Update marks calculation
-                                        if (typeof renderMark === 'function') {
-                                            renderMark();
-                                        }
-                                    } catch (e) {
-                                        console.error('Error processing quiz data:', e);
-                                        showErrorMessage('Error processing the generated quiz data. Please try again.');
-                                    }
-                                }
+    try {
+        console.log("Processing quiz data:", data);
+        
+        // Try to parse the JSON data, handling different possible formats
+        let quizData;
+        
+        if (typeof data.formBuilderJSON === 'string') {
+            // If it's a string, try to parse it as JSON
+            try {
+                quizData = JSON.parse(data.formBuilderJSON);
+                console.log("Successfully parsed JSON string");
+            } catch (parseError) {
+                console.error("JSON parsing error:", parseError);
+                console.log("Raw JSON string:", data.formBuilderJSON);
+                showErrorMessage('Error parsing the generated quiz data. Invalid JSON format received.');
+                return;
+            }
+        } else if (typeof data.formBuilderJSON === 'object') {
+            // If it's already an object, use it directly
+            quizData = data.formBuilderJSON;
+            console.log("Using JSON object directly");
+        } else {
+            console.error("Unexpected data format:", typeof data.formBuilderJSON);
+            showErrorMessage('Unexpected data format received from the server.');
+            return;
+        }
+        
+        // Validate the expected structure
+        if (!quizData || !quizData.quiz || !Array.isArray(quizData.quiz.questions)) {
+            console.error("Invalid quiz data structure:", quizData);
+            showErrorMessage('The quiz data does not have the expected structure.');
+            return;
+        }
+        
+        const questions = quizData.quiz.questions;
+        console.log(`Found ${questions.length} questions to process`);
+        
+        // Process each question
+        questions.forEach((question, index) => {
+            console.log(`Processing question ${index + 1}:`, question);
+            addQuestionToFormBuilder(question, index);
+        });
+        
+        // Update question index value
+        updateQuestionIndex(questions.length);
+        
+        // Update marks calculation
+        if (typeof renderMark === 'function') {
+            renderMark();
+        }
+    } catch (e) {
+        console.error('Error processing quiz data:', e);
+        showErrorMessage('Error processing the generated quiz data. Please try again.');
+    }
+}
 
                                 /**
                                 * Adds a question to the form builder
