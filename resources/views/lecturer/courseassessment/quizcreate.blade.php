@@ -189,426 +189,334 @@
                                     
                                 <script>
                                 /**
- * AI Quiz Generator
- * 
- * This script handles the AI-powered quiz generation functionality.
- * It processes PDF documents and creates questions of different types
- * based on the document content.
- */
+                                 * AI Quiz Generator
+                                 * 
+                                 * This script handles the AI-powered quiz generation functionality.
+                                 * It processes PDF documents and creates questions of different types
+                                 * based on the document content.
+                                 */
 
-// Wait for DOM to be fully loaded before initializing
-document.addEventListener('DOMContentLoaded', function() {
-    initializeAIQuizGenerator();
-});
+                                // Wait for DOM to be fully loaded before initializing
+                                document.addEventListener('DOMContentLoaded', function() {
+                                    initializeAIQuizGenerator();
+                                });
 
-/**
- * Initializes the AI Quiz Generator functionality
- */
-function initializeAIQuizGenerator() {
-    // Get reference to the generate button
-    const generateButton = document.getElementById('generateQuizAI');
-    
-    // Add event listener to the generate button
-    if (generateButton) {
-        generateButton.addEventListener('click', handleGenerateQuiz);
-        
-        // Add a pulse animation to make the button more noticeable
-        generateButton.classList.add('pulse-animation');
-    }
-    
-    // Add file input listener to show filename when selected
-    const documentInput = document.getElementById('documentInput');
-    if (documentInput) {
-        documentInput.addEventListener('change', function(e) {
-            const fileName = e.target.files[0]?.name || 'No file selected';
-            const fileLabel = document.querySelector('label[for="documentInput"]');
-            if (fileLabel) {
-                fileLabel.innerHTML = `<strong>Document selected:</strong> ${fileName}`;
-            }
-        });
-    }
-}
+                                /**
+                                * Initializes the AI Quiz Generator functionality
+                                */
+                                function initializeAIQuizGenerator() {
+                                    // Get reference to the generate button
+                                    const generateButton = document.getElementById('generateQuizAI');
+                                    
+                                    // Add event listener to the generate button
+                                    if (generateButton) {
+                                        generateButton.addEventListener('click', handleGenerateQuiz);
+                                        
+                                        // Add a pulse animation to make the button more noticeable
+                                        generateButton.classList.add('pulse-animation');
+                                    }
+                                    
+                                    // Add file input listener to show filename when selected
+                                    const documentInput = document.getElementById('documentInput');
+                                    if (documentInput) {
+                                        documentInput.addEventListener('change', function(e) {
+                                            const fileName = e.target.files[0]?.name || 'No file selected';
+                                            const fileLabel = document.querySelector('label[for="documentInput"]');
+                                            if (fileLabel) {
+                                                fileLabel.innerHTML = `<strong>Document selected:</strong> ${fileName}`;
+                                            }
+                                        });
+                                    }
+                                }
 
-/**
- * Handles the generate quiz button click
- */
-function handleGenerateQuiz() {
-    // Create FormData from the form
-    const formData = new FormData(document.getElementById('aiQuizForm'));
-    
-    // Validate inputs before proceeding
-    if (!validateAIQuizForm()) {
-        return;
-    }
-    
-    // Show loading state
-    Swal.fire({
-        title: "Generating Quiz",
-        html: "Please wait while our AI analyzes your document and creates questions...",
-        allowOutsideClick: false,
-        didOpen: () => {
-            Swal.showLoading();
-        }
-    });
-    
-    // Send the request to the server
-    fetch(`/lecturer/quiz/${getCourseId()}/generate-ai-quiz`, {
-        method: 'POST',
-        body: formData,
-        headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-        },
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        return response.json();
-    })
-    .then(data => {
-        // Close loading indicator
-        Swal.close();
-        
-        // Handle the response
-        if (data.success) {
-            processQuizQuestions(data);
-        } else {
-            showErrorMessage(data.message || 'Failed to generate quiz.');
-        }
-    })
-    .catch(error => {
-        // Close loading indicator
-        Swal.close();
-        
-        // Show error message
-        console.error('Error:', error);
-        showErrorMessage('An error occurred while generating the quiz. Please check the document and try again.');
-    });
-}
+                                /**
+                                * Handles the generate quiz button click
+                                */
+                                function handleGenerateQuiz() {
+                                    // Create FormData from the form
+                                    const formData = new FormData(document.getElementById('aiQuizForm'));
+                                    
+                                    // Validate inputs before proceeding
+                                    if (!validateAIQuizForm()) {
+                                        return;
+                                    }
+                                    
+                                    // Show loading state
+                                    Swal.fire({
+                                        title: "Generating Quiz",
+                                        html: "Please wait while our AI analyzes your document and creates questions...",
+                                        allowOutsideClick: false,
+                                        didOpen: () => {
+                                            Swal.showLoading();
+                                        }
+                                    });
+                                    
+                                    // Send the request to the server
+                                    fetch(`/lecturer/quiz/${getCourseId()}/generate-ai-quiz`, {
+                                        method: 'POST',
+                                        body: formData,
+                                        headers: {
+                                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                                        },
+                                    })
+                                    .then(response => {
+                                        if (!response.ok) {
+                                            throw new Error(`HTTP error! Status: ${response.status}`);
+                                        }
+                                        return response.json();
+                                    })
+                                    .then(data => {
+                                        // Close loading indicator
+                                        Swal.close();
+                                        
+                                        // Handle the response
+                                        if (data.success) {
+                                            showSuccessMessage();
+                                            processQuizQuestions(data);
+                                        } else {
+                                            showErrorMessage(data.message || 'Failed to generate quiz.');
+                                        }
+                                    })
+                                    .catch(error => {
+                                        // Close loading indicator
+                                        Swal.close();
+                                        
+                                        // Show error message
+                                        console.error('Error:', error);
+                                        showErrorMessage('An error occurred while generating the quiz. Please check the document and try again.');
+                                    });
+                                }
 
-/**
- * Gets the course ID from session
- * @returns {string} The course ID
- */
-function getCourseId() {
-    return '{{ Session::get("CourseID") }}';
-}
+                                /**
+                                * Gets the course ID from session
+                                * @returns {string} The course ID
+                                */
+                                function getCourseId() {
+                                    return '{{ Session::get("CourseID") }}';
+                                }
 
-/**
- * Validates the AI Quiz form
- * @returns {boolean} Whether the form is valid
- */
-function validateAIQuizForm() {
-    const documentFile = document.getElementById('documentInput').files[0];
-    const singleChoiceCount = parseInt(document.getElementById('singleChoiceCount').value) || 0;
-    const multipleChoiceCount = parseInt(document.getElementById('multipleChoiceCount').value) || 0;
-    const subjectiveCount = parseInt(document.getElementById('subjectiveCount').value) || 0;
-    
-    // Check if a document is selected
-    if (!documentFile) {
-        showErrorMessage('Please select a PDF document.');
-        return false;
-    }
-    
-    // Check if the file is a PDF
-    if (documentFile.type !== 'application/pdf') {
-        showErrorMessage('Only PDF documents are supported.');
-        return false;
-    }
-    
-    // Check if any question count is negative
-    if (singleChoiceCount < 0 || multipleChoiceCount < 0 || subjectiveCount < 0) {
-        showErrorMessage('Question counts cannot be negative.');
-        return false;
-    }
-    
-    // Check if at least one question type has a count greater than zero
-    const totalQuestions = singleChoiceCount + multipleChoiceCount + subjectiveCount;
-    if (totalQuestions === 0) {
-        showErrorMessage('Please specify at least one question to generate.');
-        return false;
-    }
-    
-    // Check if total questions is reasonable (not too many)
-    if (totalQuestions > 50) {
-        showErrorMessage('Please generate 50 or fewer questions at once.');
-        return false;
-    }
-    
-    return true;
-}
+                                /**
+                                * Validates the AI Quiz form
+                                * @returns {boolean} Whether the form is valid
+                                */
+                                function validateAIQuizForm() {
+                                    const documentFile = document.getElementById('documentInput').files[0];
+                                    const singleChoiceCount = parseInt(document.getElementById('singleChoiceCount').value);
+                                    const multipleChoiceCount = parseInt(document.getElementById('multipleChoiceCount').value);
+                                    const subjectiveCount = parseInt(document.getElementById('subjectiveCount').value);
+                                    
+                                    // Check if a document is selected
+                                    if (!documentFile) {
+                                        showErrorMessage('Please select a PDF document.');
+                                        return false;
+                                    }
+                                    
+                                    // Check if the file is a PDF
+                                    if (documentFile.type !== 'application/pdf') {
+                                        showErrorMessage('Only PDF documents are supported.');
+                                        return false;
+                                    }
+                                    
+                                    // Check if at least one question type count is greater than zero
+                                    if (isNaN(singleChoiceCount) && isNaN(multipleChoiceCount) && isNaN(subjectiveCount)) {
+                                        showErrorMessage('Please specify the number of questions to generate.');
+                                        return false;
+                                    }
+                                    
+                                    // Check if any question count is negative
+                                    if ((singleChoiceCount < 0) || (multipleChoiceCount < 0) || (subjectiveCount < 0)) {
+                                        showErrorMessage('Question counts cannot be negative.');
+                                        return false;
+                                    }
+                                    
+                                    // Check if total questions is reasonable (not too many)
+                                    const totalQuestions = (singleChoiceCount || 0) + (multipleChoiceCount || 0) + (subjectiveCount || 0);
+                                    if (totalQuestions === 0) {
+                                        showErrorMessage('Please specify at least one question to generate.');
+                                        return false;
+                                    }
+                                    
+                                    if (totalQuestions > 50) {
+                                        showErrorMessage('Please generate 50 or fewer questions at once.');
+                                        return false;
+                                    }
+                                    
+                                    return true;
+                                }
 
-/**
- * Shows a success message using SweetAlert
- */
-function showSuccessMessage() {
-    Swal.fire({
-        title: "Success!",
-        text: "Quiz questions have been generated successfully.",
-        icon: "success",
-        confirmButtonText: "Great!"
-    });
-}
+                                /**
+                                * Shows a success message using SweetAlert
+                                */
+                                function showSuccessMessage() {
+                                    Swal.fire({
+                                        title: "Success!",
+                                        text: "Quiz questions have been generated successfully.",
+                                        icon: "success",
+                                        confirmButtonText: "Great!"
+                                    });
+                                }
 
-/**
- * Shows an error message using SweetAlert
- * @param {string} message The error message to display
- */
-function showErrorMessage(message) {
-    Swal.fire({
-        title: "Error",
-        text: message,
-        icon: "error",
-        confirmButtonText: "OK"
-    });
-}
+                                /**
+                                * Shows an error message using SweetAlert
+                                * @param {string} message The error message to display
+                                */
+                                function showErrorMessage(message) {
+                                    Swal.fire({
+                                        title: "Error",
+                                        text: message,
+                                        icon: "error",
+                                        confirmButtonText: "OK"
+                                    });
+                                }
 
-/**
- * Shows a warning message using SweetAlert
- * @param {string} message The warning message to display
- */
-function showWarningMessage(message) {
-    Swal.fire({
-        title: "Warning",
-        text: message,
-        icon: "warning",
-        confirmButtonText: "Continue Anyway"
-    });
-}
+                                /**
+                                * Processes the quiz questions returned from the server
+                                * @param {Object} data The response data from the server
+                                */
+                                function processQuizQuestions(data) {
+                                    try {
+                                        // Parse the JSON data
+                                        const quizData = JSON.parse(data.formBuilderJSON);
+                                        
+                                        // Extract questions array
+                                        const questions = quizData.quiz.questions;
+                                        
+                                        // Process each question
+                                        questions.forEach((question, index) => {
+                                            addQuestionToFormBuilder(question, index);
+                                        });
+                                        
+                                        // Update question index value
+                                        updateQuestionIndex(questions.length);
+                                        
+                                        // Update marks calculation
+                                        if (typeof renderMark === 'function') {
+                                            renderMark();
+                                        }
+                                    } catch (e) {
+                                        console.error('Error processing quiz data:', e);
+                                        showErrorMessage('Error processing the generated quiz data. Please try again.');
+                                    }
+                                }
 
-/**
- * Processes the quiz questions returned from the server
- * @param {Object} data The response data from the server
- */
-function processQuizQuestions(data) {
-    try {
-        // Parse the JSON data
-        let quizData;
-        if (typeof data.formBuilderJSON === 'string') {
-            quizData = JSON.parse(data.formBuilderJSON);
-        } else {
-            quizData = data.formBuilderJSON;
-        }
-        
-        // If no questions were received, create empty questions array
-        if (!quizData || !quizData.quiz || !quizData.quiz.questions || !Array.isArray(quizData.quiz.questions)) {
-            console.error('Invalid quiz data structure received.');
-            showErrorMessage('The AI generated an invalid quiz structure. Please try again.');
-            return;
-        }
-        
-        // Extract questions array
-        const allQuestions = quizData.quiz.questions;
-        
-        // Get the requested counts from the form
-        const requestedSingleChoice = parseInt(document.getElementById('singleChoiceCount').value) || 0;
-        const requestedMultipleChoice = parseInt(document.getElementById('multipleChoiceCount').value) || 0;
-        const requestedSubjective = parseInt(document.getElementById('subjectiveCount').value) || 0;
-        
-        // Sort questions by type
-        const singleChoiceQuestions = allQuestions.filter(q => q.type === 'single-choice');
-        const multipleChoiceQuestions = allQuestions.filter(q => q.type === 'multiple-choice');
-        const subjectiveQuestions = allQuestions.filter(q => q.type === 'subjective');
-        
-        // Create the final list of questions in the order they are requested
-        const finalQuestions = [
-            ...singleChoiceQuestions.slice(0, requestedSingleChoice),
-            ...multipleChoiceQuestions.slice(0, requestedMultipleChoice),
-            ...subjectiveQuestions.slice(0, requestedSubjective)
-        ];
-        
-        // Check if we have enough questions of each type
-        const actualSingleChoice = Math.min(singleChoiceQuestions.length, requestedSingleChoice);
-        const actualMultipleChoice = Math.min(multipleChoiceQuestions.length, requestedMultipleChoice);
-        const actualSubjective = Math.min(subjectiveQuestions.length, requestedSubjective);
-        
-        // If we didn't get enough questions of any type, show a warning
-        if (actualSingleChoice < requestedSingleChoice || 
-            actualMultipleChoice < requestedMultipleChoice || 
-            actualSubjective < requestedSubjective) {
-            
-            let message = "The AI couldn't generate enough questions of the requested types. Generated:";
-            if (requestedSingleChoice > 0) {
-                message += ` ${actualSingleChoice}/${requestedSingleChoice} single-choice questions.`;
-            }
-            if (requestedMultipleChoice > 0) {
-                message += ` ${actualMultipleChoice}/${requestedMultipleChoice} multiple-choice questions.`;
-            }
-            if (requestedSubjective > 0) {
-                message += ` ${actualSubjective}/${requestedSubjective} subjective questions.`;
-            }
-            
-            showWarningMessage(message);
-        } else {
-            // Show success message only if we got all the questions we wanted
-            showSuccessMessage();
-        }
-        
-        // If we have no questions to display, show an error
-        if (finalQuestions.length === 0) {
-            showErrorMessage('No valid questions were generated. Please try again with a different document or question settings.');
-            return;
-        }
-        
-        // Process each question
-        finalQuestions.forEach((question, index) => {
-            addQuestionToFormBuilder(question, index);
-        });
-        
-        // Update question index value
-        updateQuestionIndex(finalQuestions.length);
-        
-        // Update marks calculation
-        if (typeof renderMark === 'function') {
-            renderMark();
-        }
-    } catch (e) {
-        console.error('Error processing quiz data:', e);
-        showErrorMessage('Error processing the generated quiz data. Please try again.');
-    }
-}
+                                /**
+                                * Adds a question to the form builder
+                                * @param {Object} question The question object
+                                * @param {number} index The question index
+                                */
+                                function addQuestionToFormBuilder(question, index) {
+                                    // Add header for the question
+                                    formBuilder.actions.addField({
+                                        type: 'header',
+                                        className: 'mt-4',
+                                        label: `Question ${index + 1}`,
+                                    });
 
-/**
- * Adds a question to the form builder
- * @param {Object} question The question object
- * @param {number} index The question index
- */
-function addQuestionToFormBuilder(question, index) {
-    // Add header for the question
-    formBuilder.actions.addField({
-        type: 'header',
-        className: 'mt-4',
-        label: `Question ${index + 1}`,
-    });
+                                    // Add file upload field
+                                    formBuilder.actions.addField({
+                                        type: 'file',
+                                        className: 'form-control',
+                                        label: 'Upload Image',
+                                        description: 'Drag and drop or click to select an image file.',
+                                        name: `question_image_${index}`,
+                                    });
 
-    // Add file upload field
-    formBuilder.actions.addField({
-        type: 'file',
-        className: 'form-control',
-        label: 'Upload Image',
-        description: 'Drag and drop or click to select an image file.',
-        name: `question_image_${index}`,
-    });
+                                    // Add the question paragraph
+                                    formBuilder.actions.addField({
+                                        type: 'paragraph',
+                                        label: question.question,
+                                    });
 
-    // Add the question paragraph
-    formBuilder.actions.addField({
-        type: 'paragraph',
-        label: question.question,
-    });
+                                    // Handle different question formats
+                                    addQuestionByType(question, index);
 
-    // Handle different question formats
-    addQuestionByType(question, index);
+                                    // Add correct answer (if applicable)
+                                    if (question.answer) {
+                                        formBuilder.actions.addField({
+                                            type: 'paragraph',
+                                            className: 'correct-answer',
+                                            label: Array.isArray(question.answer) 
+                                                ? question.answer.join(', ')
+                                                : question.answer,
+                                        });
+                                    }
 
-    // Add correct answer field with proper formatting
-    addCorrectAnswerField(question, index);
+                                    // Add checkbox for marks
+                                    formBuilder.actions.addField({
+                                        type: 'checkbox-group',
+                                        className: 'collected-marks pull-right chk-col-danger',
+                                        label: '',
+                                        values: [
+                                            {
+                                                label: '1 mark',
+                                                value: '1',
+                                                selected: false,
+                                            },
+                                        ],
+                                    });
 
-    // Add checkbox for marks
-    formBuilder.actions.addField({
-        type: 'checkbox-group',
-        className: 'collected-marks pull-right chk-col-danger',
-        label: '',
-        values: [
-            {
-                label: '1 mark',
-                value: '1',
-                selected: false,
-            },
-        ],
-    });
+                                    // Add comment text field
+                                    formBuilder.actions.addField({
+                                        type: 'text',
+                                        className: 'feedback-text form-control',
+                                        placeholder: 'Comment',
+                                    });
+                                }
 
-    // Add comment text field
-    formBuilder.actions.addField({
-        type: 'text',
-        className: 'feedback-text form-control',
-        placeholder: 'Comment',
-    });
-}
+                                /**
+                                * Adds a question to the form builder based on its type
+                                * @param {Object} question The question object
+                                * @param {number} index The question index
+                                */
+                                function addQuestionByType(question, index) {
+                                    if (question.type === 'single-choice') {
+                                        // Add single-choice (radio button) question
+                                        formBuilder.actions.addField({
+                                            type: 'radio-group',
+                                            className: 'with-gap radio-col-primary',
+                                            label: '<label class="text-primary"><strong>Your Answer</strong></label>',
+                                            name: `radio_question_${index}`,
+                                            values: question.options.map((option, optionIndex) => ({
+                                                label: `${String.fromCharCode(97 + optionIndex)}) ${option}`,
+                                                value: option,
+                                            })),
+                                        });
+                                    } else if (question.type === 'multiple-choice') {
+                                        // Add multiple-choice (checkbox) question
+                                        formBuilder.actions.addField({
+                                            type: 'checkbox-group',
+                                            className: 'filled-in chk-col-warning',
+                                            label: '<label class="text-primary"><strong>Your Answer</strong></label>',
+                                            name: `checkbox_question_${index}`,
+                                            values: question.options.map((option, optionIndex) => ({
+                                                label: `${String.fromCharCode(97 + optionIndex)}) ${option}`,
+                                                value: option,
+                                            })),
+                                        });
+                                    } else if (question.type === 'subjective') {
+                                        // Add subjective (text area) question
+                                        formBuilder.actions.addField({
+                                            type: 'textarea',
+                                            rows: 5,
+                                            className: 'form-control',
+                                            placeholder: 'Your Answer',
+                                            name: `subjective_question_${index}`,
+                                        });
+                                    }
+                                }
 
-/**
- * Adds a correct answer field to the form builder
- * @param {Object} question The question object
- * @param {number} index The question index
- */
-function addCorrectAnswerField(question, index) {
-    if (!question.answer) {
-        return;
-    }
+                                /**
+                                * Updates the question index after adding new questions
+                                * @param {number} addedQuestionsCount Number of questions added
+                                */
+                                function updateQuestionIndex(addedQuestionsCount) {
+                                    const questionIndexField = document.getElementById('question-index');
+                                    if (questionIndexField) {
+                                        const currentIndex = parseInt(questionIndexField.value) || 0;
+                                        questionIndexField.value = currentIndex + addedQuestionsCount;
+                                    }
+                                }
 
-    let answerText = '';
-    
-    // Format the answer text based on question type
-    if (question.type === 'single-choice') {
-        answerText = question.answer;
-    } else if (question.type === 'multiple-choice') {
-        // Make sure multiple-choice answers are comma-separated
-        answerText = Array.isArray(question.answer) 
-            ? question.answer.join(',')
-            : question.answer;
-    } else if (question.type === 'subjective') {
-        answerText = question.answer;
-    }
-
-    // Add the answer field as plain text
-    formBuilder.actions.addField({
-        type: 'paragraph',
-        className: 'correct-answer',
-        label: answerText
-    });
-}
-
-/**
- * Adds a question to the form builder based on its type
- * @param {Object} question The question object
- * @param {number} index The question index
- */
-function addQuestionByType(question, index) {
-    if (question.type === 'single-choice') {
-        // Add single-choice (radio button) question
-        formBuilder.actions.addField({
-            type: 'radio-group',
-            className: 'with-gap radio-col-primary',
-            label: '<label class="text-primary"><strong>Your Answer</strong></label>',
-            name: `radio_question_${index}`,
-            values: question.options.map((option, optionIndex) => ({
-                label: `${String.fromCharCode(97 + optionIndex)}) ${option}`,
-                value: option,
-            })),
-        });
-    } else if (question.type === 'multiple-choice') {
-        // Add multiple-choice (checkbox) question
-        formBuilder.actions.addField({
-            type: 'checkbox-group',
-            className: 'filled-in chk-col-warning',
-            label: '<label class="text-primary"><strong>Your Answer</strong></label>',
-            name: `checkbox_question_${index}`,
-            values: question.options.map((option, optionIndex) => ({
-                label: `${String.fromCharCode(97 + optionIndex)}) ${option}`,
-                value: option,
-            })),
-        });
-    } else if (question.type === 'subjective') {
-        // Add subjective (text area) question
-        formBuilder.actions.addField({
-            type: 'textarea',
-            rows: 5,
-            className: 'form-control',
-            placeholder: 'Your Answer',
-            name: `subjective_question_${index}`,
-        });
-    }
-}
-
-/**
- * Updates the question index after adding new questions
- * @param {number} addedQuestionsCount Number of questions added
- */
-function updateQuestionIndex(addedQuestionsCount) {
-    const questionIndexField = document.getElementById('question-index');
-    if (questionIndexField) {
-        const currentIndex = parseInt(questionIndexField.value) || 0;
-        questionIndexField.value = currentIndex + addedQuestionsCount;
-    }
-}
                                 </script>
                                     
                                 </div>
