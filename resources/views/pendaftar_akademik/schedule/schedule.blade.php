@@ -1214,7 +1214,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         // Check if conflicting students list exists
                         if (data.conflicting_students && data.conflicting_students.length > 0) {
                             // Create list of student ICs
-                            const studentList = data.conflicting_students.map(student => student.student_ic).join(', ');
+                            const studentList = data.conflicting_students.map(student => student.no_matric).join(', ');
                             showNotification(`${data.error}<br><br>Conflicting students: ${studentList}`, 'error', false);
                         } else {
                             showNotification(data.error, 'error');
@@ -1750,12 +1750,9 @@ async function handleEventUpdate(event) {
             if(data.error) {
                 // Check if the response includes conflicting students list
                 if (data.conflicting_students && data.conflicting_students.length > 0) {
-                    // Format conflicting students list
-                    let studentList = '<br><br>Conflicting students: ';
-                    studentList += data.conflicting_students.map(student => student.student_ic).join(', ');
-                    
-                    // Show notification with the error and student list
-                    showNotification(data.error + studentList, 'error', false);
+                    // Create list of student ICs
+                    const studentList = data.conflicting_students.map(student => student.no_matric).join(', ');
+                    showNotification(`${data.error}<br><br>Conflicting students: ${studentList}`, 'error', false);
                 } else {
                     showNotification(data.error, 'error');
                 }
