@@ -3875,6 +3875,7 @@ class AR_Controller extends Controller
                         $join->on('tblevents.group_id', 'student_subjek.group_id')
                             ->on('tblevents.group_name', 'student_subjek.group_name');
                     })
+                    ->join('students', 'student_subjek.student_ic', 'students.ic')
                     ->where('tblevents.id', '!=', $id)
                     ->whereIn('student_subjek.student_ic', $students)
                     ->whereRaw('DAYNAME(start) = ?', [$dayOfWeek])
@@ -3894,7 +3895,7 @@ class AR_Controller extends Controller
                                     ->whereRaw('? >= TIME(end)', [$endTimeOnly]);
                         });
                     })
-                    ->select('student_subjek.student_ic')
+                    ->select('students.no_matric')
                     ->distinct()
                     ->get();
 
