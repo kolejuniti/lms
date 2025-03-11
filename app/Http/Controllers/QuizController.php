@@ -1910,57 +1910,7 @@ class QuizController extends Controller
 
     }
 
-    public function generateAIQuiz(Request $request) {
-        try {
-            // Step 1: Validate the inputs
-            $request->validate([
-                'document' => 'required|file|mimes:pdf|max:5000',
-                'single_choice_count' => 'nullable|integer|min:0',
-                'multiple_choice_count' => 'nullable|integer|min:0',
-                'subjective_count' => 'nullable|integer|min:0',
-                'language' => 'required|string|in:english,malay,mix',
-            ]);
-            
-            // Step 2: Save and parse the PDF
-            $filePath = $request->file('document')->store('documents');
-            $parser = new Parser();
-            $pdf = $parser->parseFile(storage_path('app/' . $filePath));
-            $text = $pdf->getText();
-            
-            // Step 3: Generate quiz JSON
-            $singleChoiceCount = $request->input('single_choice_count', 0);
-            $multipleChoiceCount = $request->input('multiple_choice_count', 0);
-            $subjectiveCount = $request->input('subjective_count', 0);
-            $language = $request->input('language', 'english');
-            
-            // Ensure we have at least one question
-            $totalQuestions = $singleChoiceCount + $multipleChoiceCount + $subjectiveCount;
-            if ($totalQuestions <= 0) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Please specify at least one question to generate.',
-                ], 400);
-            }
-            
-            $quizJSON = $this->generateFormBuilderJSON($text, $singleChoiceCount, $multipleChoiceCount, $subjectiveCount, $language);
-            
-            // Step 4: Return the quiz JSON
-            return response()->json([
-                'success' => true,
-                'formBuilderJSON' => $quizJSON,
-            ]);
-            
-        } catch (\Exception $e) {
-            // Handle errors gracefully
-            Log::error('Error generating quiz: ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'Error generating quiz: ' . $e->getMessage(),
-            ], 500);
-        }
-    }
-    
-    private function generateFormBuilderJSON($text, $singleChoiceCount, $multipleChoiceCount, $subjectiveCount, $language) {
+    private function generateFormBuilderJSON($text, $singleChoiceCount, $multipleChoiceCount, $subjectiveCount) {
         $apiKey = env('OPENAI_API_KEY');
         $client = new Client();
         
@@ -1986,21 +1936,6 @@ class QuizController extends Controller
                 $prompt .= "- No subjective questions\n";
             }
             
-            // Add language instruction
-            $prompt .= "\nLANGUAGE REQUIREMENT:\n";
-            switch ($language) {
-                case 'malay':
-                    $prompt .= "- Generate all questions and answers in Malay (Bahasa Malaysia) only.\n";
-                    break;
-                case 'mix':
-                    $prompt .= "- Generate a mix of questions in both English and Malay (Bahasa Malaysia).\n";
-                    $prompt .= "- Approximately half of the questions should be in English and half in Malay.\n";
-                    break;
-                default: // english
-                    $prompt .= "- Generate all questions and answers in English only.\n";
-                    break;
-            }
-            
             // Add specific formatting instructions for answers
             $prompt .= "\nANSWER FORMAT REQUIREMENTS:\n";
             $prompt .= "1. For single-choice questions, provide the correct answer as a single string without any prefixes or labels.\n";
@@ -2012,33 +1947,21 @@ class QuizController extends Controller
             $prompt .= '{"quiz":{"questions":[';
             
             if ($singleChoiceCount > 0) {
-                if ($language === 'malay') {
-                    $prompt .= '{"type":"single-choice","question":"Negeri manakah yang dikenali sebagai Negeri Bersejarah?","options":["Melaka","Pahang","Johor","Kedah"],"answer":"Melaka"}';
-                } else {
-                    $prompt .= '{"type":"single-choice","question":"Which state is known as the Historic State?","options":["Melaka","Pahang","Johor","Kedah"],"answer":"Melaka"}';
-                }
+                $prompt .= '{"type":"single-choice","question":"Which state is known as the Historic State?","options":["Melaka","Pahang","Johor","Kedah"],"answer":"Melaka"}';
                 if ($multipleChoiceCount > 0 || $subjectiveCount > 0) {
                     $prompt .= ',';
                 }
             }
             
             if ($multipleChoiceCount > 0) {
-                if ($language === 'malay') {
-                    $prompt .= '{"type":"multiple-choice","question":"Manakah antara berikut adalah negeri di Malaysia?","options":["Melaka","Singapura","Pahang","Selangor"],"answer":"Melaka,Pahang,Selangor"}';
-                } else {
-                    $prompt .= '{"type":"multiple-choice","question":"Which of the following are states in Malaysia?","options":["Melaka","Singapore","Pahang","Selangor"],"answer":"Melaka,Pahang,Selangor"}';
-                }
+                $prompt .= '{"type":"multiple-choice","question":"Which of the following are states in Malaysia?","options":["Melaka","Singapore","Pahang","Selangor"],"answer":"Melaka,Pahang,Selangor"}';
                 if ($subjectiveCount > 0) {
                     $prompt .= ',';
                 }
             }
             
             if ($subjectiveCount > 0) {
-                if ($language === 'malay') {
-                    $prompt .= '{"type":"subjective","question":"Terangkan kepentingan Melaka dalam sejarah Malaysia.","answer":"Melaka merupakan pelabuhan perdagangan penting..."}';
-                } else {
-                    $prompt .= '{"type":"subjective","question":"Explain the importance of Melaka in Malaysian history.","answer":"Melaka was an important trading port..."}';
-                }
+                $prompt .= '{"type":"subjective","question":"Explain the importance of Melaka in Malaysian history.","answer":"Melaka was an important trading port..."}';
             }
             
             $prompt .= ']}}'."\n\n";
@@ -2056,9 +1979,7 @@ class QuizController extends Controller
                     'messages' => [
                         [
                             'role' => 'system',
-                            'content' => 'You are a system designed to generate quiz questions for FormBuilder. Follow the format requirements exactly.' . 
-                                        ($language === 'malay' ? ' You are fluent in Malay (Bahasa Malaysia).' : '') .
-                                        ($language === 'mix' ? ' You are bilingual in English and Malay (Bahasa Malaysia).' : ''),
+                            'content' => 'You are a system designed to generate quiz questions for FormBuilder. Follow the format requirements exactly.',
                         ],
                         [
                             'role' => 'user',
@@ -2106,7 +2027,6 @@ class QuizController extends Controller
                 }
                 
                 Log::info("Question counts - Requested: $singleChoiceCount single, $multipleChoiceCount multiple, $subjectiveCount subjective. Received: $actualSingleChoice single, $actualMultipleChoice multiple, $actualSubjective subjective.");
-                Log::info("Language requested: $language");
                 
                 // Return the JSON string as is - let the frontend handle filtering
                 return $jsonContent;
