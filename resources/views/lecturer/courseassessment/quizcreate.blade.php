@@ -230,7 +230,7 @@
                                 }
 
               // JavaScript Frontend - Updated handleGenerateQuiz function
-function handleGenerateQuiz() {
+              function handleGenerateQuiz() {
     // Create FormData from the form
     const formData = new FormData(document.getElementById('aiQuizForm'));
     
@@ -258,12 +258,29 @@ function handleGenerateQuiz() {
         },
     })
     .then(response => {
+        // First check if the response is ok
         if (!response.ok) {
-            return response.json().then(data => {
-                throw { status: response.status, data: data };
-            });
+            // Try to parse as JSON first
+            return response.json()
+                .then(data => {
+                    throw { status: response.status, data: data };
+                })
+                .catch(err => {
+                    // If it's not JSON, use the status text
+                    if (!err.data) {
+                        throw { 
+                            status: response.status, 
+                            data: { message: response.statusText || 'Server error occurred' } 
+                        };
+                    }
+                    throw err;
+                });
         }
-        return response.json();
+        
+        // Response was OK, try to parse as JSON
+        return response.json().catch(err => {
+            throw { status: 200, data: { message: 'Invalid JSON in response' } };
+        });
     })
     .then(data => {
         // Close loading indicator
@@ -272,7 +289,27 @@ function handleGenerateQuiz() {
         // Handle the response
         if (data.success) {
             showSuccessMessage();
-            processQuizQuestions(data);
+            
+            try {
+                // Make sure formBuilderJSON is a proper object
+                let formData = data.formBuilderJSON;
+                
+                // If it's a string, try to parse it
+                if (typeof formData === 'string') {
+                    try {
+                        formData = JSON.parse(formData);
+                    } catch (e) {
+                        console.error('Error parsing JSON:', e);
+                        showErrorMessage('The server returned improperly formatted quiz data. Please try again.');
+                        return;
+                    }
+                }
+                
+                processQuizQuestions(formData);
+            } catch (e) {
+                console.error('Error processing quiz data:', e);
+                showErrorMessage('Failed to process the generated quiz data. Please try again.');
+            }
         } else {
             showErrorMessage(data.message || 'Failed to generate quiz.');
         }
@@ -301,12 +338,22 @@ function handleGenerateQuiz() {
         } else if (error.status === 413) {
             showErrorMessage('The uploaded file is too large. Please upload a file smaller than 5MB.');
         } else {
-            showErrorMessage('An unexpected error occurred while generating the quiz. Please try again later.');
+            showErrorMessage(error.data?.message || 'An unexpected error occurred while generating the quiz. Please try again later.');
         }
     });
 }
 
-// Optional: Enhanced error display function
+// Success message function
+function showSuccessMessage() {
+    Swal.fire({
+        icon: 'success',
+        title: 'Quiz Generated Successfully',
+        text: 'Your quiz has been created from the document content.',
+        confirmButtonText: 'Continue'
+    });
+}
+
+// Enhanced error display function
 function showErrorMessage(message) {
     Swal.fire({
         icon: 'error',

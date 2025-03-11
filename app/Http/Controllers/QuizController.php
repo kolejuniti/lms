@@ -2072,12 +2072,13 @@ private function generateFormBuilderJSON($text, $singleChoiceCount, $multipleCho
     $client = new Client();
 
     try {
-        // Build the AI prompt
-        $prompt = "Create a quiz JSON structure based on the following text. The quiz should include:\n";
+        // Build the AI prompt with more explicit instructions
+        $prompt = "Create a quiz based on the following text. The quiz should include:\n";
         $prompt .= "- $singleChoiceCount single-choice questions\n";
         $prompt .= "- $multipleChoiceCount multiple-choice questions\n";
         $prompt .= "- $subjectiveCount subjective questions\n\n";
-        $prompt .= "Here is the text:\n\n" . $text;
+        $prompt .= "Format your response as a valid JSON object that can be used by FormBuilder. Each question should include a unique ID, question text, type (single_choice, multiple_choice, or subjective), and answer options where applicable.\n\n";
+        $prompt .= "Here is the text:\n\n" . substr($text, 0, 15000); // Limit text length to avoid token issues
 
         // Send the request to OpenAI API
         $response = $client->post('https://api.openai.com/v1/chat/completions', [
@@ -2086,11 +2087,11 @@ private function generateFormBuilderJSON($text, $singleChoiceCount, $multipleCho
                 'Content-Type' => 'application/json',
             ],
             'json' => [
-                'model' => 'gpt-3.5-turbo-1106', // Ensure this is an available model
+                'model' => 'gpt-3.5-turbo-1106',
                 'messages' => [
                     [
                         'role' => 'system',
-                        'content' => 'You are a system designed to generate quiz questions for FormBuilder.',
+                        'content' => 'You are a system designed to generate quiz questions in valid JSON format. Output only clean, valid JSON that can be parsed by PHP json_decode without errors.',
                     ],
                     [
                         'role' => 'user',
@@ -2099,20 +2100,42 @@ private function generateFormBuilderJSON($text, $singleChoiceCount, $multipleCho
                 ],
                 'max_tokens' => 2000,
                 'temperature' => 0.7,
+                'response_format' => ['type' => 'json_object'], // Request JSON response format
             ],
         ]);
 
         // Parse the response
         $responseBody = json_decode($response->getBody(), true);
-
-        if (isset($responseBody['choices'][0]['message']['content'])) {
-            return $responseBody['choices'][0]['message']['content'];
-        } else {
+        
+        if (!isset($responseBody['choices'][0]['message']['content'])) {
             throw new \Exception('Invalid AI response. No content found.');
         }
+        
+        // Get the content string from OpenAI response
+        $jsonContent = $responseBody['choices'][0]['message']['content'];
+        
+        // Try to decode the JSON string to verify it's valid JSON
+        $decodedJson = json_decode($jsonContent, true);
+        
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            // If JSON is invalid, try to clean it up
+            $cleanedJson = preg_replace('/```json\s*|\s*```/', '', $jsonContent);
+            $decodedJson = json_decode($cleanedJson, true);
+            
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                throw new \Exception('AI generated invalid JSON: ' . json_last_error_msg());
+            }
+            
+            // Use the cleaned JSON if it's valid
+            return $cleanedJson;
+        }
+        
+        // Return the original JSON string if it's valid
+        return $jsonContent;
+        
     } catch (\Exception $e) {
         Log::error('Error communicating with OpenAI: ' . $e->getMessage());
-        throw new \Exception('Error communicating with AI: ' . $e->getMessage());
+        throw new \Exception('Error generating quiz questions: ' . $e->getMessage());
     }
 }
 
