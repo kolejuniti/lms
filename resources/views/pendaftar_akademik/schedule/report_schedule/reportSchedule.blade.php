@@ -11,16 +11,16 @@
           <h2 class="page-title fw-bold text-primary mb-2">Lecturer Schedule Overview</h2>
           <nav aria-label="breadcrumb">
             <ol class="breadcrumb bg-transparent p-0 m-0">
-              <li class="breadcrumb-item"><a href="#"><i class="fas fa-home"></i> Home</a></li>
+              <li class="breadcrumb-item"><a href="#"><i class="fa fa-home"></i> Home</a></li>
               <li class="breadcrumb-item">Dashboard</li>
               <li class="breadcrumb-item active" aria-current="page">Schedule Report</li>
             </ol>
           </nav>
         </div>
-        <div class="actions-btn">
-          <button id="print-btn" class="btn btn-primary me-2"><i class="fas fa-print me-2"></i>Print</button>
-          <button id="excel-btn" class="btn btn-success"><i class="fas fa-file-excel me-2"></i>Export to Excel</button>
-        </div>
+        {{-- <div class="actions-btn">
+          <button id="print-btn" class="btn btn-primary me-2"><i class="fa fa-print me-2"></i>Print</button>
+          <button id="excel-btn" class="btn btn-success"><i class="fa fa-file-excel me-2"></i>Export to Excel</button>
+        </div> --}}
       </div>
     </div>
 
@@ -32,7 +32,7 @@
             <div class="card shadow-sm border-0 rounded-lg overflow-hidden">
               <div class="card-header bg-gradient-primary text-white p-3">
                 <div class="d-flex justify-content-between align-items-center">
-                  <h3 class="card-title m-0 fw-bold"><i class="fas fa-calendar-alt me-2"></i>Lecturer Schedule</h3>
+                  <h3 class="card-title m-0 fw-bold"><i class="fa fa-calendar-alt me-2"></i>Lecturer Schedule</h3>
                   <div class="schedule-legend d-flex ms-4">
                     <div class="d-flex align-items-center me-3">
                       <div class="legend-box bg-success me-2"></div>
