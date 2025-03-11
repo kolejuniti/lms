@@ -2,75 +2,34 @@
 
 @section('main')
 
-
-
-<style>
-
-
-#fb-rendered-form {
-    clear:both;
-    display:none;
-    button{
-        float:right;
-    }
-}
-
-.btn.btn-default.get-data{
-    display:none;
-}
-
-.cb-wrap {
-
-}
-.form-wrap.form-builder .frmb-control li{
-    font-family: Arial, Helvetica, sans-serif !important;
-    font-weight: Bold !important;
-}
-
-div.form-actions.btn-group > button{
-    font-size:1.2em !important;
-    border-radius:0.5em !important;
-    padding:0.5em !important;
-    min-width:100px;
-    margin: 0.5em;
-}
-
-
-
-</style>
+<link rel="stylesheet" href="{{ asset('css/customCSS.css') }}">
 
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
     <div class="container-full">
-        <!-- Content Header (Page header) -->	  
-        <div class="content-header">
+        <!-- Content Header (Page header) -->
+
+        <div class="page-header">
             <div class="d-flex align-items-center">
                 <div class="me-auto">
-                    <h4 class="page-title">
-                        {{ empty($data['quiz']->title) ? "Create Quiz" : $data['quiz']->title }}
-                    </h4>
+                    <h3 class="page-title mb-1">{{ empty($data['quiz']->title) ? "Create Quiz" : $data['quiz']->title }}</h3>
                     <div class="d-inline-block align-items-center">
-                        <nav>
+                        <nav aria-label="breadcrumb">
                             <ol class="breadcrumb">
                                 <li class="breadcrumb-item"><a href="#"><i class="mdi mdi-home-outline"></i></a></li>
-                                <li class="breadcrumb-item" aria-current="page">Academics</li>
-                                <li class="breadcrumb-item" aria-current="page">Groups</li>
-                                <li class="breadcrumb-item" aria-current="page">Group List</li>
-                                <li class="breadcrumb-item" aria-current="page">Group Content</li>
-                                
-                                    @if(empty($data['quiz']->title))
-                                        <li class="breadcrumb-item active" aria-current="page">Create Quiz</li>
-                                    @else
-                                        <li class="breadcrumb-item active" aria-current="page">Quiz</li>
-                                        <li class="breadcrumb-item active" aria-current="page">{{ $data['quiz']->title }}</li>
-                                    @endif
-                                </li>
-                              
+                                <li class="breadcrumb-item">Home</li>
+                                <li class="breadcrumb-item">Course</li>
+                                <li class="breadcrumb-item">Assessment</li>
+                                @if(empty($data['quiz']->title))
+                                    <li class="breadcrumb-item active" aria-current="page">Create Quiz</li>
+                                @else
+                                    <li class="breadcrumb-item active" aria-current="page">Quiz</li>
+                                    <li class="breadcrumb-item active" aria-current="page">{{ $data['quiz']->title }}</li>
+                                @endif
                             </ol>
                         </nav>
                     </div>
                 </div>
-                
             </div>
         </div>
 
@@ -133,10 +92,11 @@ div.form-actions.btn-group > button{
                                             value="{{ empty($data['quiz']->total_mark) ? '' : $data['quiz']->total_mark }}" required>
                                     </div>
                                 </div>
+                                <!-- Group and Chapter Selection -->
                                 <div class="row col-md-12">
                                     <div class="col-md-6 mb-4">
-                                        <div class="form-group" >
-                                            <label class="form-label">Group List</label>
+                                        <div class="form-group">
+                                            <label class="form-label"><strong>Group List</strong></label>
                                             <div class="table-responsive" style="width:99.7%">
                                                 <table id="table_registerstudent" class="w-100 table text-fade table-bordered table-hover display nowrap margin-top-10 w-p100">
                                                     <thead class="thead-themed">
@@ -147,17 +107,17 @@ div.form-actions.btn-group > button{
                                                     <tbody>
                                                     @foreach ($group as $grp)
                                                         <tr>
-                                                            <td >
+                                                            <td>
                                                                 <label>{{$grp->group_name}}</label>
                                                             </td>
-                                                            <td >
+                                                            <td>
                                                                 <label>{{$grp->course_name}}</label>
                                                             </td>
-                                                            <td >
-                                                                <div class="pull-right" >
+                                                            <td>
+                                                                <div class="form-check pull-right">
                                                                     <input type="checkbox" id="chapter_checkbox_{{$grp->group_name}}"
-                                                                        class="filled-in" name="group[]" value="{{$grp->id}}|{{$grp->group_name}}" required>
-                                                                    <label for="chapter_checkbox_{{$grp->group_name}}"> </label>
+                                                                        class="form-check-input" name="group[]" value="{{$grp->id}}|{{$grp->group_name}}" required>
+                                                                    <label class="form-check-label" for="chapter_checkbox_{{$grp->group_name}}"></label>
                                                                 </div>
                                                             </td>
                                                         </tr>
@@ -167,13 +127,398 @@ div.form-actions.btn-group > button{
                                             </div>
                                         </div>
                                     </div>
+                                    
                                     <div class="col-md-6 mb-4">
-                                        <div class="form-group" >
-                                            <label class="form-label">Chapter List</label>
+                                        <div class="form-group">
+                                            <label class="form-label"><strong>Chapter List</strong></label>
                                             <div class="container mt-1" id="chapterlist">
+                                                <!-- Chapters will be loaded here -->
                                             </div>
                                         </div>
                                     </div>
+                                    
+                                    <!-- AI Generate Quiz Card -->
+                                    <div class="col-md-12">
+                                        <div class="card ai-generate-card">
+                                            <div class="card-header">
+                                                <h5><i class="fa fa-magic me-2"></i> Generate Quiz from Document</h5>
+                                            </div>
+                                            <div class="card-body">
+                                                <form id="aiQuizForm" enctype="multipart/form-data">
+                                                    <div class="row">
+                                                        <div class="col-md-12 mb-3">
+                                                            <div class="form-group">
+                                                                <label for="documentInput" class="form-label"><strong>Upload Document</strong></label>
+                                                                <input type="file" class="form-control" id="documentInput" name="document" accept=".pdf" required>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        <div class="col-md-4 mb-3">
+                                                            <div class="form-group">
+                                                                <label for="singleChoiceCount" class="form-label"><strong>Number of Single-Choice Questions</strong></label>
+                                                                <input type="number" class="form-control" id="singleChoiceCount" name="single_choice_count" min="0" required>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        <div class="col-md-4 mb-3">
+                                                            <div class="form-group">
+                                                                <label for="multipleChoiceCount" class="form-label"><strong>Number of Multiple-Choice Questions</strong></label>
+                                                                <input type="number" class="form-control" id="multipleChoiceCount" name="multiple_choice_count" min="0" required>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        <div class="col-md-4 mb-3">
+                                                            <div class="form-group">
+                                                                <label for="subjectiveCount" class="form-label"><strong>Number of Subjective Questions</strong></label>
+                                                                <input type="number" class="form-control" id="subjectiveCount" name="subjective_count" min="0" required>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        <div class="col-md-12 mt-2 text-right">
+                                                            <button type="button" id="generateQuizAI" class="btn btn-primary ai-generate-btn">
+                                                                <i class="fa fa-robot me-2"></i> AI Generate Quiz
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                    
+                                    
+                                <script>
+                                /**
+                                 * AI Quiz Generator
+                                 * 
+                                 * This script handles the AI-powered quiz generation functionality.
+                                 * It processes PDF documents and creates questions of different types
+                                 * based on the document content.
+                                 */
+
+                                // Wait for DOM to be fully loaded before initializing
+                                document.addEventListener('DOMContentLoaded', function() {
+                                    initializeAIQuizGenerator();
+                                });
+
+                                /**
+                                * Initializes the AI Quiz Generator functionality
+                                */
+                                function initializeAIQuizGenerator() {
+                                    // Get reference to the generate button
+                                    const generateButton = document.getElementById('generateQuizAI');
+                                    
+                                    // Add event listener to the generate button
+                                    if (generateButton) {
+                                        generateButton.addEventListener('click', handleGenerateQuiz);
+                                        
+                                        // Add a pulse animation to make the button more noticeable
+                                        generateButton.classList.add('pulse-animation');
+                                    }
+                                    
+                                    // Add file input listener to show filename when selected
+                                    const documentInput = document.getElementById('documentInput');
+                                    if (documentInput) {
+                                        documentInput.addEventListener('change', function(e) {
+                                            const fileName = e.target.files[0]?.name || 'No file selected';
+                                            const fileLabel = document.querySelector('label[for="documentInput"]');
+                                            if (fileLabel) {
+                                                fileLabel.innerHTML = `<strong>Document selected:</strong> ${fileName}`;
+                                            }
+                                        });
+                                    }
+                                }
+
+                                /**
+                                * Handles the generate quiz button click
+                                */
+                                function handleGenerateQuiz() {
+                                    // Create FormData from the form
+                                    const formData = new FormData(document.getElementById('aiQuizForm'));
+                                    
+                                    // Validate inputs before proceeding
+                                    if (!validateAIQuizForm()) {
+                                        return;
+                                    }
+                                    
+                                    // Show loading state
+                                    Swal.fire({
+                                        title: "Generating Quiz",
+                                        html: "Please wait while our AI analyzes your document and creates questions...",
+                                        allowOutsideClick: false,
+                                        didOpen: () => {
+                                            Swal.showLoading();
+                                        }
+                                    });
+                                    
+                                    // Send the request to the server
+                                    fetch(`/lecturer/quiz/${getCourseId()}/generate-ai-quiz`, {
+                                        method: 'POST',
+                                        body: formData,
+                                        headers: {
+                                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                                        },
+                                    })
+                                    .then(response => {
+                                        if (!response.ok) {
+                                            throw new Error(`HTTP error! Status: ${response.status}`);
+                                        }
+                                        return response.json();
+                                    })
+                                    .then(data => {
+                                        // Close loading indicator
+                                        Swal.close();
+                                        
+                                        // Handle the response
+                                        if (data.success) {
+                                            showSuccessMessage();
+                                            processQuizQuestions(data);
+                                        } else {
+                                            showErrorMessage(data.message || 'Failed to generate quiz.');
+                                        }
+                                    })
+                                    .catch(error => {
+                                        // Close loading indicator
+                                        Swal.close();
+                                        
+                                        // Show error message
+                                        console.error('Error:', error);
+                                        showErrorMessage('An error occurred while generating the quiz. Please check the document and try again.');
+                                    });
+                                }
+
+                                /**
+                                * Gets the course ID from session
+                                * @returns {string} The course ID
+                                */
+                                function getCourseId() {
+                                    return '{{ Session::get("CourseID") }}';
+                                }
+
+                                /**
+                                * Validates the AI Quiz form
+                                * @returns {boolean} Whether the form is valid
+                                */
+                                function validateAIQuizForm() {
+                                    const documentFile = document.getElementById('documentInput').files[0];
+                                    const singleChoiceCount = parseInt(document.getElementById('singleChoiceCount').value);
+                                    const multipleChoiceCount = parseInt(document.getElementById('multipleChoiceCount').value);
+                                    const subjectiveCount = parseInt(document.getElementById('subjectiveCount').value);
+                                    
+                                    // Check if a document is selected
+                                    if (!documentFile) {
+                                        showErrorMessage('Please select a PDF document.');
+                                        return false;
+                                    }
+                                    
+                                    // Check if the file is a PDF
+                                    if (documentFile.type !== 'application/pdf') {
+                                        showErrorMessage('Only PDF documents are supported.');
+                                        return false;
+                                    }
+                                    
+                                    // Check if at least one question type count is greater than zero
+                                    if (isNaN(singleChoiceCount) && isNaN(multipleChoiceCount) && isNaN(subjectiveCount)) {
+                                        showErrorMessage('Please specify the number of questions to generate.');
+                                        return false;
+                                    }
+                                    
+                                    // Check if any question count is negative
+                                    if ((singleChoiceCount < 0) || (multipleChoiceCount < 0) || (subjectiveCount < 0)) {
+                                        showErrorMessage('Question counts cannot be negative.');
+                                        return false;
+                                    }
+                                    
+                                    // Check if total questions is reasonable (not too many)
+                                    const totalQuestions = (singleChoiceCount || 0) + (multipleChoiceCount || 0) + (subjectiveCount || 0);
+                                    if (totalQuestions === 0) {
+                                        showErrorMessage('Please specify at least one question to generate.');
+                                        return false;
+                                    }
+                                    
+                                    if (totalQuestions > 50) {
+                                        showErrorMessage('Please generate 50 or fewer questions at once.');
+                                        return false;
+                                    }
+                                    
+                                    return true;
+                                }
+
+                                /**
+                                * Shows a success message using SweetAlert
+                                */
+                                function showSuccessMessage() {
+                                    Swal.fire({
+                                        title: "Success!",
+                                        text: "Quiz questions have been generated successfully.",
+                                        icon: "success",
+                                        confirmButtonText: "Great!"
+                                    });
+                                }
+
+                                /**
+                                * Shows an error message using SweetAlert
+                                * @param {string} message The error message to display
+                                */
+                                function showErrorMessage(message) {
+                                    Swal.fire({
+                                        title: "Error",
+                                        text: message,
+                                        icon: "error",
+                                        confirmButtonText: "OK"
+                                    });
+                                }
+
+                                /**
+                                * Processes the quiz questions returned from the server
+                                * @param {Object} data The response data from the server
+                                */
+                                function processQuizQuestions(data) {
+                                    try {
+                                        // Parse the JSON data
+                                        const quizData = JSON.parse(data.formBuilderJSON);
+                                        
+                                        // Extract questions array
+                                        const questions = quizData.quiz.questions;
+                                        
+                                        // Process each question
+                                        questions.forEach((question, index) => {
+                                            addQuestionToFormBuilder(question, index);
+                                        });
+                                        
+                                        // Update question index value
+                                        updateQuestionIndex(questions.length);
+                                        
+                                        // Update marks calculation
+                                        if (typeof renderMark === 'function') {
+                                            renderMark();
+                                        }
+                                    } catch (e) {
+                                        console.error('Error processing quiz data:', e);
+                                        showErrorMessage('Error processing the generated quiz data. Please try again.');
+                                    }
+                                }
+
+                                /**
+                                * Adds a question to the form builder
+                                * @param {Object} question The question object
+                                * @param {number} index The question index
+                                */
+                                function addQuestionToFormBuilder(question, index) {
+                                    // Add header for the question
+                                    formBuilder.actions.addField({
+                                        type: 'header',
+                                        className: 'mt-4',
+                                        label: `Question ${index + 1}`,
+                                    });
+
+                                    // Add file upload field
+                                    formBuilder.actions.addField({
+                                        type: 'file',
+                                        className: 'form-control',
+                                        label: 'Upload Image',
+                                        description: 'Drag and drop or click to select an image file.',
+                                        name: `question_image_${index}`,
+                                    });
+
+                                    // Add the question paragraph
+                                    formBuilder.actions.addField({
+                                        type: 'paragraph',
+                                        label: question.question,
+                                    });
+
+                                    // Handle different question formats
+                                    addQuestionByType(question, index);
+
+                                    // Add correct answer (if applicable)
+                                    if (question.answer) {
+                                        formBuilder.actions.addField({
+                                            type: 'paragraph',
+                                            className: 'correct-answer',
+                                            label: Array.isArray(question.answer) 
+                                                ? question.answer.join(', ')
+                                                : question.answer,
+                                        });
+                                    }
+
+                                    // Add checkbox for marks
+                                    formBuilder.actions.addField({
+                                        type: 'checkbox-group',
+                                        className: 'collected-marks pull-right chk-col-danger',
+                                        label: '',
+                                        values: [
+                                            {
+                                                label: '1 mark',
+                                                value: '1',
+                                                selected: false,
+                                            },
+                                        ],
+                                    });
+
+                                    // Add comment text field
+                                    formBuilder.actions.addField({
+                                        type: 'text',
+                                        className: 'feedback-text form-control',
+                                        placeholder: 'Comment',
+                                    });
+                                }
+
+                                /**
+                                * Adds a question to the form builder based on its type
+                                * @param {Object} question The question object
+                                * @param {number} index The question index
+                                */
+                                function addQuestionByType(question, index) {
+                                    if (question.type === 'single-choice') {
+                                        // Add single-choice (radio button) question
+                                        formBuilder.actions.addField({
+                                            type: 'radio-group',
+                                            className: 'with-gap radio-col-primary',
+                                            label: '<label class="text-primary"><strong>Your Answer</strong></label>',
+                                            name: `radio_question_${index}`,
+                                            values: question.options.map((option, optionIndex) => ({
+                                                label: `${String.fromCharCode(97 + optionIndex)}) ${option}`,
+                                                value: option,
+                                            })),
+                                        });
+                                    } else if (question.type === 'multiple-choice') {
+                                        // Add multiple-choice (checkbox) question
+                                        formBuilder.actions.addField({
+                                            type: 'checkbox-group',
+                                            className: 'filled-in chk-col-warning',
+                                            label: '<label class="text-primary"><strong>Your Answer</strong></label>',
+                                            name: `checkbox_question_${index}`,
+                                            values: question.options.map((option, optionIndex) => ({
+                                                label: `${String.fromCharCode(97 + optionIndex)}) ${option}`,
+                                                value: option,
+                                            })),
+                                        });
+                                    } else if (question.type === 'subjective') {
+                                        // Add subjective (text area) question
+                                        formBuilder.actions.addField({
+                                            type: 'textarea',
+                                            rows: 5,
+                                            className: 'form-control',
+                                            placeholder: 'Your Answer',
+                                            name: `subjective_question_${index}`,
+                                        });
+                                    }
+                                }
+
+                                /**
+                                * Updates the question index after adding new questions
+                                * @param {number} addedQuestionsCount Number of questions added
+                                */
+                                function updateQuestionIndex(addedQuestionsCount) {
+                                    const questionIndexField = document.getElementById('question-index');
+                                    if (questionIndexField) {
+                                        const currentIndex = parseInt(questionIndexField.value) || 0;
+                                        questionIndexField.value = currentIndex + addedQuestionsCount;
+                                    }
+                                }
+
+                                </script>
+                                    
                                 </div>
 
                                 <div id="form-div" class="hide-published-element col-md-12 mb-3">

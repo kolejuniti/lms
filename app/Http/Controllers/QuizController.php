@@ -13,6 +13,12 @@ use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
+use Smalot\PdfParser\Parser;
+use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Notification;
+use App\Notifications\MyCustomNotification;
+use App\Models\UserStudent;
 
 class QuizController extends Controller
 {
@@ -475,6 +481,29 @@ class QuizController extends Controller
             "content" => $updated_content
         ]);
 
+        $allUsers = collect();
+
+            foreach($group as $grp) {
+                $gp = explode('|', $grp);
+
+                $users = UserStudent::join('student_subjek', 'students.ic', '=', 'student_subjek.student_ic')
+                    ->where([
+                        ['student_subjek.group_id', $gp[0]],
+                        ['student_subjek.group_name', $gp[1]]
+                    ])
+                    ->select('students.*')
+                    ->get();
+
+                $allUsers = $allUsers->merge($users);
+            }
+
+        $message = "A new online quiz titled " . $title . " has been created.";
+        $url = url('/student/quiz/' . $classid . '?session=' . $sessionid);
+        $icon = "fa-puzzle-piece fa-lg";
+        $iconColor = "#8803a0"; // Example: set to a bright orange
+
+        Notification::send($allUsers, new MyCustomNotification($message, $url, $icon, $iconColor));
+
         return true;
 
     }
@@ -511,8 +540,6 @@ class QuizController extends Controller
                     ['tblclassquiz.id', request()->quiz],
                     ['tblclassquiz.addby', $user->ic]
                 ])->whereNotIn('students.status', [4,5,6,7,16])->orderBy('students.program')->get();
-        
-        
         
         //dd($quiz);
 
@@ -787,7 +814,6 @@ class QuizController extends Controller
                 }
             }
         }
-
        
         $data['quiz'] = $quizformdata;
         $data['comments'] = $quiz->comments;
@@ -813,9 +839,8 @@ class QuizController extends Controller
         $comments = $request->comments;
         //$total_mark = $request->total_mark;
         $data = $request->data;
-
       
-        $q = \DB::table('tblclassstudentquiz')
+        DB::table('tblclassstudentquiz')
             ->where('quizid', $quiz)
             ->where("userid", $participant)
             ->update([
@@ -825,6 +850,16 @@ class QuizController extends Controller
                 "comments" => $comments,
                 "status" => 3
             ]);
+
+        $message = "Lecturer has marked your quiz.";
+        $url = url('/student/quiz/' . $quiz . '/' . $participant . '/result');
+        $icon = "fa-check fa-lg";
+        $iconColor = "#2b74f3"; // Example: set to a bright orange
+
+        $participant = UserStudent::where('ic', $participant)->first();
+
+        Notification::send($participant, new MyCustomNotification($message, $url, $icon, $iconColor));
+
         
         return true;
     }
@@ -1526,6 +1561,31 @@ class QuizController extends Controller
 
             }
 
+            $allUsers = collect();
+
+            foreach($request->group as $grp) {
+                $gp = explode('|', $grp);
+
+                $users = UserStudent::join('student_subjek', 'students.ic', '=', 'student_subjek.student_ic')
+                    ->where([
+                        ['student_subjek.group_id', $gp[0]],
+                        ['student_subjek.group_name', $gp[1]]
+                    ])
+                    ->select('students.*')
+                    ->get();
+
+                $allUsers = $allUsers->merge($users);
+            }
+
+            //dd($allUsers);
+
+            $message = "A new offline quiz titled " . $title . " has been created.";
+            $url = url('/student/quiz2/' . $classid . '?session=' . $sessionid);
+            $icon = "fa-puzzle-piece fa-lg";
+            $iconColor = "#8803a0"; // Example: set to a bright orange
+
+            Notification::send($allUsers, new MyCustomNotification($message, $url, $icon, $iconColor));
+
         }else{
 
             return redirect()->back()->withErrors(['Please fill in the group and sub-chapter checkbox !']);
@@ -1745,6 +1805,11 @@ class QuizController extends Controller
        
         $upsert = [];
         foreach($marks as $key => $mrk){
+            $existingMark = DB::table('tblclassstudentquiz')
+            ->where('userid', $ics[$key])
+            ->where('quizid', $quizid)
+            ->value('final_mark');
+
             array_push($upsert, [
             'userid' => $ics[$key],
             'quizid' => $quizid,
@@ -1752,6 +1817,17 @@ class QuizController extends Controller
             'final_mark' => $mrk,
             'status' => 1
             ]);
+
+            if ($mrk != 0 && $mrk != $existingMark) {
+            $message = "Lecturer has marked your offline quiz.";
+            $url = url('/student/quiz2/' . $limitpercen->classid . '?session=' . $limitpercen->sessionid);
+            $icon = "fa-check fa-lg";
+            $iconColor = "#2b74f3"; // Example: set to a bright orange
+
+            $participant = UserStudent::where('ic', $ics[$key])->first();
+
+            Notification::send($participant, new MyCustomNotification($message, $url, $icon, $iconColor));
+            }
         }
 
         DB::table('tblclassstudentquiz')->upsert($upsert, ['userid', 'quizid']);
@@ -1833,4 +1909,176 @@ class QuizController extends Controller
         return view('student.courseassessment.quiz2', compact('data', 'chapter', 'marks'));
 
     }
+
+    // public function generateAIQuiz(Request $request)
+    // {
+    //     try {
+    //         // Step 1: Validate the uploaded file
+    //         $request->validate([
+    //             'document' => 'required|file|mimes:pdf|max:2048', // Ensure it's a valid PDF file
+    //         ]);
+
+    //         // Step 2: Save and parse the PDF
+    //         $filePath = $request->file('document')->store('documents'); // Store the file
+    //         $parser = new Parser();
+    //         $pdf = $parser->parseFile(storage_path('app/' . $filePath));
+    //         $text = $pdf->getText(); // Extract text from the PDF
+
+    //         // Step 3: Send the text to OpenAI API to generate quiz JSON
+    //         $quizJSON = $this->generateFormBuilderJSON($text);
+
+    //         // Step 4: Return a valid JSON response
+    //         return response()->json([
+    //             'success' => true,
+    //             'formBuilderJSON' => $quizJSON,
+    //         ]);
+
+    //     } catch (\Exception $e) {
+    //         // Step 5: Log the error and return an error response
+    //         Log::error('Error generating quiz: ' . $e->getMessage());
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => 'Error generating quiz: ' . $e->getMessage(),
+    //         ], 500);
+    //     }
+    // }
+
+
+    // private function generateFormBuilderJSON($text)
+    // {
+    //     $apiKey = env('OPENAI_API_KEY');
+    //     $client = new Client();
+
+        // try {
+        //     $response = $client->post('https://api.openai.com/v1/chat/completions', [
+        //         'headers' => [
+        //             'Authorization' => 'Bearer ' . $apiKey,
+        //             'Content-Type' => 'application/json',
+        //         ],
+        //         'json' => [
+        //             'model' => 'gpt-3.5-turbo-1106', // Use a model available to your API key
+        //             'messages' => [
+        //                 [
+        //                     'role' => 'system',
+        //                     'content' => 'You are a system designed to generate quiz questions for FormBuilder.',
+        //                 ],
+        //                 [
+        //                     'role' => 'user',
+        //                     'content' => "Create a quiz JSON structure based on this text:\n\n" . $text,
+        //                 ],
+        //             ],
+        //             'max_tokens' => 2000,
+        //             'temperature' => 0.7,
+        //         ],
+        //     ]);
+
+        //     $responseBody = json_decode($response->getBody(), true);
+
+        //     // Extract and return the content
+        //     if (isset($responseBody['choices'][0]['message']['content'])) {
+        //         return $responseBody['choices'][0]['message']['content'];
+        //     } else {
+        //         throw new \Exception('Invalid AI response. No content found.');
+        //     }
+
+        // } catch (\Exception $e) {
+        //     Log::error('Error communicating with OpenAI: ' . $e->getMessage());
+        //     throw new \Exception('Error communicating with AI: ' . $e->getMessage());
+        // }
+    // }
+
+    public function generateAIQuiz(Request $request)
+{
+    try {
+        // Step 1: Validate the inputs
+        $request->validate([
+            'document' => 'required|file|mimes:pdf|max:5000',
+            'single_choice_count' => 'required|integer|min:0',
+            'multiple_choice_count' => 'required|integer|min:0',
+            'subjective_count' => 'required|integer|min:0',
+        ]);
+
+        // Step 2: Save and parse the PDF
+        $filePath = $request->file('document')->store('documents');
+        $parser = new Parser();
+        $pdf = $parser->parseFile(storage_path('app/' . $filePath));
+        $text = $pdf->getText();
+
+        // Step 3: Generate quiz JSON
+        $singleChoiceCount = $request->input('single_choice_count');
+        $multipleChoiceCount = $request->input('multiple_choice_count');
+        $subjectiveCount = $request->input('subjective_count');
+
+        $quizJSON = $this->generateFormBuilderJSON($text, $singleChoiceCount, $multipleChoiceCount, $subjectiveCount);
+
+        // Step 4: Return the quiz JSON
+        return response()->json([
+            'success' => true,
+            'formBuilderJSON' => $quizJSON,
+        ]);
+
+    } catch (\Exception $e) {
+        // Handle errors gracefully
+        Log::error('Error generating quiz: ' . $e->getMessage());
+        return response()->json([
+            'success' => false,
+            'message' => 'Error generating quiz: ' . $e->getMessage(),
+        ], 500);
+    }
+}
+
+
+
+private function generateFormBuilderJSON($text, $singleChoiceCount, $multipleChoiceCount, $subjectiveCount)
+{
+    $apiKey = env('OPENAI_API_KEY');
+    $client = new Client();
+
+    try {
+        // Build the AI prompt
+        $prompt = "Create a quiz JSON structure based on the following text. The quiz should include:\n";
+        $prompt .= "- $singleChoiceCount single-choice questions\n";
+        $prompt .= "- $multipleChoiceCount multiple-choice questions\n";
+        $prompt .= "- $subjectiveCount subjective questions\n\n";
+        $prompt .= "Here is the text:\n\n" . $text;
+
+        // Send the request to OpenAI API
+        $response = $client->post('https://api.openai.com/v1/chat/completions', [
+            'headers' => [
+                'Authorization' => 'Bearer ' . $apiKey,
+                'Content-Type' => 'application/json',
+            ],
+            'json' => [
+                'model' => 'gpt-3.5-turbo-1106', // Ensure this is an available model
+                'messages' => [
+                    [
+                        'role' => 'system',
+                        'content' => 'You are a system designed to generate quiz questions for FormBuilder.',
+                    ],
+                    [
+                        'role' => 'user',
+                        'content' => $prompt,
+                    ],
+                ],
+                'max_tokens' => 2000,
+                'temperature' => 0.7,
+            ],
+        ]);
+
+        // Parse the response
+        $responseBody = json_decode($response->getBody(), true);
+
+        if (isset($responseBody['choices'][0]['message']['content'])) {
+            return $responseBody['choices'][0]['message']['content'];
+        } else {
+            throw new \Exception('Invalid AI response. No content found.');
+        }
+    } catch (\Exception $e) {
+        Log::error('Error communicating with OpenAI: ' . $e->getMessage());
+        throw new \Exception('Error communicating with AI: ' . $e->getMessage());
+    }
+}
+
+
+
 }
