@@ -1357,6 +1357,7 @@ document.addEventListener('DOMContentLoaded', function () {
     calendar.render();
 
     // Add event button
+    // Add event button
 document.getElementById('add-event').addEventListener('click', async function () {
     // Validate inputs
     const requiredInputs = ['ses', 'subject', 'group', 'room', 'event-start'];
@@ -1441,7 +1442,23 @@ document.getElementById('add-event').addEventListener('click', async function ()
                 body: JSON.stringify(eventData)
             });
 
-            const data = await response.json();
+            // Check if response is JSON before trying to parse it
+            const contentType = response.headers.get('content-type');
+            let data;
+            if (contentType && contentType.includes('application/json')) {
+                data = await response.json();
+            } else {
+                // If not JSON, get the text and create an error object
+                const textResponse = await response.text();
+                // Log the raw text for debugging
+                console.error('Non-JSON response:', textResponse);
+                
+                // Create a basic error object with the response HTML
+                data = {
+                    error: 'Server returned an invalid response. This could be due to a session timeout or server error.',
+                    html_response: textResponse.substring(0, 100) + '...' // Truncate for display
+                };
+            }
             
             if (response.ok) {
                 if(data.error) {
@@ -1498,7 +1515,6 @@ document.getElementById('add-event').addEventListener('click', async function ()
         $(this).html('<i class="fas fa-plus me-2"></i> Add to Calendar');
     }
 });
-
     // Publish schedule button
     document.getElementById('publish-schedule').addEventListener('click', async function () {
         var ic = '{{ $data['lecturerInfo']->ic }}';
