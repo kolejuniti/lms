@@ -1217,7 +1217,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             const studentList = data.conflicting_students.map(student => student.no_matric).join(', ');
                             showNotification(`${data.error}<br><br>Conflicting students: ${studentList}`, 'error', false);
                         } else {
-                            showNotification(`${data.error}<br><br>Conflicting students: ${studentList}`, 'error', false);
+                            showNotification(`NENEk<br><br>Conflicting students: ${studentList}`, 'error', false);
                         }
                     } else {
                         showNotification('Event updated successfully', 'success');
