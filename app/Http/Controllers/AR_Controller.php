@@ -3762,6 +3762,7 @@ class AR_Controller extends Controller
         if(DB::table('tblevents')
         ->where('user_ic', $event->user_ic)
         ->where('id', '!=', $id)
+        ->where('lecture_id', $event->lecture_id)
         ->whereIn('session_id', $session)
         ->whereRaw('DAYNAME(start) = ?', [$dayOfWeek])
         ->where(function ($query) use ($startTimeOnly, $endTimeOnly) {
