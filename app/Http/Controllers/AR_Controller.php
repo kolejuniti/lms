@@ -3367,7 +3367,7 @@ class AR_Controller extends Controller
                         if($conflictingStudents->count() > 0){
 
                             return response()->json([
-                                'error' => 'Students in this class are already booked with the same period in another room/classssssssss!',
+                                'error' => 'Students in this class are already booked with the same period in another room/class! 1',
                                 'conflicting_students' => $conflictingStudents
                             ]);
         
@@ -3941,7 +3941,7 @@ class AR_Controller extends Controller
                 if($conflictingStudents->count() > 0){
 
                     return response()->json([
-                        'error' => 'Students in this class are already booked with the same period in another room/class!',
+                        'error' => 'Students in this class are already booked with the same period in another room/class 2!',
                         'conflicting_students' => $conflictingStudents
                     ]);
 
@@ -4205,7 +4205,7 @@ class AR_Controller extends Controller
                 if($conflictingStudents->count() > 0){
                     
                     return response()->json([
-                        'error' => 'Students in this class are already booked with the same period in another room/class!',
+                        'error' => 'Students in this class are already booked with the same period in another room/class 3!',
                         'conflicting_students' => $conflictingStudents
                     ]);
 
