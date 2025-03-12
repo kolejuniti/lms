@@ -3782,25 +3782,8 @@ class AR_Controller extends Controller
                 $query->whereRaw('? < TIME(start)', [$startTimeOnly])
                       ->whereRaw('? > TIME(end)', [$endTimeOnly]);
             });
-            // $query->where(function ($query) use ($startTimeOnly) {
-            //     $query->whereRaw('? BETWEEN TIME(start) AND TIME(end)', [$startTimeOnly])
-            //           ->whereRaw('? != TIME(start)', [$startTimeOnly])
-            //           ->whereRaw('? != TIME(end)', [$startTimeOnly]);
-            // })
-            // ->orWhere(function ($query) use ($endTimeOnly) {
-            //     $query->whereRaw('? BETWEEN TIME(start) AND TIME(end)', [$endTimeOnly])
-            //           ->whereRaw('? != TIME(start)', [$endTimeOnly])
-            //           ->whereRaw('? != TIME(end)', [$endTimeOnly]);
-            // })
-            // ->orWhere(function ($query) use ($startTimeOnly, $endTimeOnly) {
-            //     $query->whereRaw('? <= TIME(start)', [$startTimeOnly])
-            //           ->whereRaw('? >= TIME(end)', [$endTimeOnly]);
-            // });
         })
-        ->exists() || ($startTimeOnly <= $rehat1 && $endTimeOnly >= $rehat2) ||
-        ($startTimeOnly >= $rehat1 && $endTimeOnly <= $rehat2) ||
-        ($startTimeOnly <= $rehat1 && $endTimeOnly <= $rehat2 && $endTimeOnly > $rehat1) ||
-        ($startTimeOnly >= $rehat1 && $endTimeOnly >= $rehat2 && $startTimeOnly < $rehat2))
+        ->exists())
         {
 
             return response()->json(['error' => 'Time selected is already occupied, please select another time! 3']);
@@ -3826,6 +3809,22 @@ class AR_Controller extends Controller
                     return response()->json(['error' => 'Time selected is already occupied, please select another time! 4']);
 
                 }
+
+            }elseif(($startTimeOnly <= $rehat1 && $endTimeOnly >= $rehat2) ||
+            ($startTimeOnly >= $rehat1 && $endTimeOnly <= $rehat2) ||
+            ($startTimeOnly <= $rehat1 && $endTimeOnly <= $rehat2 && $endTimeOnly > $rehat1) ||
+            ($startTimeOnly >= $rehat1 && $endTimeOnly >= $rehat2 && $startTimeOnly < $rehat2))
+            {
+
+                Log::info('Overlap detected for event on:', [
+                    'dayOfWeek' => $dayOfWeek,
+                    'startTime' => $startTime->toDateTimeString(),
+                    'endTime' => $endTime->toDateTimeString(),
+                    'overlapStart' => $rehat3,
+                    'overlapEnd' => $rehat4,
+                ]);
+    
+                return response()->json(['error' => 'Time selected is already occupied, please select another time! 7']);
 
             }
 
