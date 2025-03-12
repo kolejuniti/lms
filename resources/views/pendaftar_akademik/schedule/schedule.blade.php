@@ -1357,125 +1357,147 @@ document.addEventListener('DOMContentLoaded', function () {
     calendar.render();
 
     // Add event button
-    document.getElementById('add-event').addEventListener('click', async function () {
-        // Validate inputs
-        const requiredInputs = ['ses', 'subject', 'group', 'room', 'event-start'];
-        let isValid = true;
-        
-        requiredInputs.forEach(id => {
-            const el = document.getElementById(id);
-            if (!el.value || el.value === '-') {
-                $(el).addClass('is-invalid');
-                $(el).removeClass('is-valid');
-                isValid = false;
-            } else {
-                $(el).removeClass('is-invalid');
-                $(el).addClass('is-valid');
-            }
-        });
-        
-        if (!isValid) {
-            showNotification('Please fill in all required fields', 'warning');
-            return;
-        }
-        
-        // Prepare event data
-        var session = document.getElementById('ses').value;
-        var combinedValue = document.getElementById('subject').value;
-        var splitValues = combinedValue.split('|');
-
-        var groupId = splitValues[0]; // This will contain the id
-        var groupType = splitValues[1]; // This will contain the Type
-        var groupName = document.getElementById('group').value;
-        var roomId = document.getElementById('room').value;
-        
-        var eventStart = convertToPhpMyAdminDatetime(
-            new Date(document.getElementById('event-start').value)
-        );
-
-        const slotMinTime = '08:00:00';
-        const slotMaxTime = '18:00:00';
-        const startHour = parseInt(eventStart.slice(11, 13));
-
-        if (startHour < parseInt(slotMinTime.slice(0, 2)) || startHour > parseInt(slotMaxTime.slice(0, 2))) {
-            showNotification('Event start time must be between 08:00 and 18:00', 'error');
-            return;
-        }
-
-        // Show loading state
-        $(this).prop('disabled', true);
-        $(this).html('<i class="fas fa-spinner fa-spin me-2"></i> Adding...');
-
-        try {
-            var currentDate = convertToPhpMyAdminDatetime(calendar.getDate());
-
-            var futureDate;
-            if (document.getElementById('event-start').value) {
-                futureDate = convertToPhpMyAdminDatetime(
-                    new Date(new Date(document.getElementById('event-start').value).getTime() + 60 * 60000)
-                );
-            } else {
-                futureDate = convertToPhpMyAdminDatetime(
-                    new Date(calendar.getDate().getTime() + 60 * 60000)
-                );
-            }
-
-            var eventData = {
-                session: session,
-                groupId: groupId,
-                groupType: groupType,
-                groupName: groupName,
-                roomId: roomId,
-                start: (document.getElementById('event-start').value) ? eventStart : currentDate,
-                end: futureDate,
-                allDay: true
-            };
-
-            if(eventData.start != eventData.end) {
-                const response = await fetch('/AR/schedule/create/{{ request()->id }}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                    },
-                    body: JSON.stringify(eventData)
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    if(data.error) {
-                        showNotification(data.error, 'error');
-                    } else {
-                        // Add with animation
-                        const eventObj = {
-                            ...data.event,
-                            color: getRandomColor()
-                        };
-                        calendar.addEvent(eventObj);
-                        
-                        // Reset form fields
-                        requiredInputs.forEach(id => {
-                            const el = document.getElementById(id);
-                            $(el).val('').trigger('change');
-                            $(el).removeClass('is-valid');
-                        });
-                        
-                        showNotification('Event added successfully', 'success');
-                    }
-                } else {
-                    throw new Error('Failed to add event');
-                }
-            } else {
-                showNotification('Start and end times cannot be the same', 'warning');
-            }
-        } catch (error) {
-            showNotification('Error: ' + error.message, 'error');
-        } finally {
-            // Reset button state
-            $(this).prop('disabled', false);
-            $(this).html('<i class="fas fa-plus me-2"></i> Add to Calendar');
+document.getElementById('add-event').addEventListener('click', async function () {
+    // Validate inputs
+    const requiredInputs = ['ses', 'subject', 'group', 'room', 'event-start'];
+    let isValid = true;
+    
+    requiredInputs.forEach(id => {
+        const el = document.getElementById(id);
+        if (!el.value || el.value === '-') {
+            $(el).addClass('is-invalid');
+            $(el).removeClass('is-valid');
+            isValid = false;
+        } else {
+            $(el).removeClass('is-invalid');
+            $(el).addClass('is-valid');
         }
     });
+    
+    if (!isValid) {
+        showNotification('Please fill in all required fields', 'warning');
+        return;
+    }
+    
+    // Prepare event data
+    var session = document.getElementById('ses').value;
+    var combinedValue = document.getElementById('subject').value;
+    var splitValues = combinedValue.split('|');
+
+    var groupId = splitValues[0]; // This will contain the id
+    var groupType = splitValues[1]; // This will contain the Type
+    var groupName = document.getElementById('group').value;
+    var roomId = document.getElementById('room').value;
+    
+    var eventStart = convertToPhpMyAdminDatetime(
+        new Date(document.getElementById('event-start').value)
+    );
+
+    const slotMinTime = '08:00:00';
+    const slotMaxTime = '18:00:00';
+    const startHour = parseInt(eventStart.slice(11, 13));
+
+    if (startHour < parseInt(slotMinTime.slice(0, 2)) || startHour > parseInt(slotMaxTime.slice(0, 2))) {
+        showNotification('Event start time must be between 08:00 and 18:00', 'error');
+        return;
+    }
+
+    // Show loading state
+    $(this).prop('disabled', true);
+    $(this).html('<i class="fas fa-spinner fa-spin me-2"></i> Adding...');
+
+    try {
+        var currentDate = convertToPhpMyAdminDatetime(calendar.getDate());
+
+        var futureDate;
+        if (document.getElementById('event-start').value) {
+            futureDate = convertToPhpMyAdminDatetime(
+                new Date(new Date(document.getElementById('event-start').value).getTime() + 60 * 60000)
+            );
+        } else {
+            futureDate = convertToPhpMyAdminDatetime(
+                new Date(calendar.getDate().getTime() + 60 * 60000)
+            );
+        }
+
+        var eventData = {
+            session: session,
+            groupId: groupId,
+            groupType: groupType,
+            groupName: groupName,
+            roomId: roomId,
+            start: (document.getElementById('event-start').value) ? eventStart : currentDate,
+            end: futureDate,
+            allDay: true
+        };
+
+        if(eventData.start != eventData.end) {
+            const response = await fetch('/AR/schedule/create/{{ request()->id }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify(eventData)
+            });
+
+            const data = await response.json();
+            
+            if (response.ok) {
+                if(data.error) {
+                    showNotification(data.error, 'error');
+                } else {
+                    // Add with animation
+                    const eventObj = {
+                        ...data.event,
+                        color: getRandomColor()
+                    };
+                    calendar.addEvent(eventObj);
+                    
+                    // Reset form fields
+                    requiredInputs.forEach(id => {
+                        const el = document.getElementById(id);
+                        $(el).val('').trigger('change');
+                        $(el).removeClass('is-valid');
+                    });
+                    
+                    showNotification('Event added successfully', 'success');
+                }
+            } else {
+                // Parse the error message from the response
+                let errorMessage = 'Failed to add event';
+                
+                if (data && data.error) {
+                    errorMessage = data.error;
+                } else if (data && data.message) {
+                    errorMessage = data.message;
+                } else if (response.statusText) {
+                    errorMessage = `Failed to add event: ${response.statusText} (${response.status})`;
+                }
+                
+                // If there are conflicting students, display them
+                if (data && data.conflicting_students && data.conflicting_students.length > 0) {
+                    const studentList = data.conflicting_students
+                        .map(student => student.no_matric)
+                        .join(', ');
+                    errorMessage += `. Affected students: ${studentList}`;
+                }
+                
+                showNotification(errorMessage, 'error');
+            }
+        } else {
+            showNotification('Start and end times cannot be the same', 'warning');
+        }
+    } catch (error) {
+        // Handle any JSON parsing or network errors
+        console.error('Error details:', error);
+        showNotification('Error: ' + (error.message || 'Could not process server response'), 'error');
+    } finally {
+        // Reset button state
+        $(this).prop('disabled', false);
+        $(this).html('<i class="fas fa-plus me-2"></i> Add to Calendar');
+    }
+});
 
     // Publish schedule button
     document.getElementById('publish-schedule').addEventListener('click', async function () {
