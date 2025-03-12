@@ -183,7 +183,8 @@ function save(ic)
 
   forminput = {
     ic: ic,
-    total: $('#ptotal').val()
+    total: $('#ptotal').val(), 
+    payment_option: $('input[name="payment_option"]:checked').val() || null
   };
 
   formData.append('paymentData', JSON.stringify(forminput));

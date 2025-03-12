@@ -49,6 +49,26 @@
                         <input type="number" class="form-control" name="ptotal" id="ptotal">
                     </div>
                 </div> 
+                <div class="col-md-6">
+                    <label class="form-label" for="payment_option">Graduate Payment Type</label>
+                    <div class="d-flex mt-2">
+                        <div class="form-check me-3">
+                            <input class="form-check-input" type="checkbox" id="half" name="payment_option" value="HALF" onclick="toggleCheck(this)">
+                            <label class="form-check-label" for="half">Half</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="full" name="payment_option" value="FULL" onclick="toggleCheck(this)">
+                            <label class="form-check-label" for="full">Full</label>
+                        </div>
+                    </div>
+                    <script>
+                    function toggleCheck(clicked) {
+                        if (clicked.checked) {
+                            document.getElementById(clicked.id === 'half' ? 'full' : 'half').checked = false;
+                        }
+                    }
+                    </script>
+                </div>
             </div>
             <div class="row">
                 <div class="col-md-12 mt-3">
