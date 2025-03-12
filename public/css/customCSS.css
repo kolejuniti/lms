@@ -193,6 +193,7 @@ body {
     border: none;
     overflow: hidden;
     transition: all 0.3s ease;
+    margin-top: 25px; /* Add this line */
 }
 
 .card:hover {
