@@ -126,6 +126,10 @@ body {
     border: none;
     overflow: hidden;
     transition: all 0.3s ease;
+}
+
+/* Create a separate class for animated elements */
+.box-animated {
     transform: translateY(20px);
     opacity: 0;
     animation: fadeInUp 0.6s forwards;
@@ -255,7 +259,7 @@ select {
 /* Button styling */
 .btn {
     border-radius: 12px;
-    padding: 12px 25px;
+    /* padding: 12px 25px; */
     font-weight: 600;
     transition: all 0.3s ease;
 }
