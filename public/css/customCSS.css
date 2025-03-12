@@ -145,7 +145,6 @@ body {
 /* Form styling */
 .form-group {
     margin-bottom: 25px;
-    overflow: visible !important;
 }
 
 .form-label {
@@ -173,7 +172,9 @@ body {
     border: 2px solid #e5e7eb;
     transition: all 0.3s ease;
     box-shadow: 0 2px 5px rgba(78, 50, 50, 0.05);
+    position: relative;
     width: 100%; /* Ensures the select uses full width of its container */
+    z-index: 1050;
 }
 
 .form-select:focus {
@@ -220,10 +221,9 @@ select {
     border-radius: 16px;
     box-shadow: var(--card-shadow);
     border: none;
-    overflow: hidden;
     transition: all 0.3s ease;
-    margin-top: 25px; /* Add this line */
-    overflow: visible !important;
+    margin-top: 25px;
+    overflow: visible; /* Ensure corners aren't clipped */
 }
 
 .card:hover {
@@ -237,22 +237,17 @@ select {
     border-bottom: none;
     position: relative;
     overflow: hidden;
+    border-top-left-radius: 16px !important;
+    border-top-right-radius: 16px !important;
 }
 
-.card-header::before {
-    content: "";
-    position: absolute;
-    top: -30%;
-    right: -10%;
-    width: 60%;
-    height: 200%;
-    background: rgba(255, 255, 255, 0.1);
-    transform: rotate(30deg);
+/* Make sure any elements inside the header respect the border radius */
+.card-header * {
+    border-radius: inherit;
 }
 
 .card-body {
     padding: 30px;
-    overflow: visible !important;
 }
 
 /* Button styling */
