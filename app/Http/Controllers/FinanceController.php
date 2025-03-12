@@ -1533,11 +1533,60 @@ class FinanceController extends Controller
                 if(DB::connection('mysql2')->table('students')->where('ic', $student->ic)->exists())
                 {
 
-                    DB::connection('mysql2')->table('students')->where('ic', $student->ic)->update([
-                        'register_at' => now(),
-                        'commission' => 300,
-                        'status_id' => 20
-                    ]);
+                    // if(DB::table('tblstudent_personal')->where('student_ic', $student->ic)
+                    //    ->join('tbledu_advisor', 'tblstudent_personal.advisor_id', 'tbledu_advisor.id')->value('tbledu_advisor.ic')
+                    //   == 
+                    //   DB::connection('mysql2')->table('students')->where('ic', $student->ic)
+                    //   ->join('users', 'students.user_id', 'users.id')->value('users.ic'))
+                    // {
+
+                    //     DB::connection('mysql2')->table('students')->where('ic', $student->ic)->update([
+                    //         'register_at' => now(),
+                    //         'commission' => 300,
+                    //         'status_id' => 20
+                    //     ]);
+
+                    // }else{
+
+                    //     DB::connection('mysql2')->table('students')->where('ic', $student->ic)->update([
+                    //         'register_at' => now(),
+                    //         'commission' => 0,
+                    //         'status_id' => 22
+                    //     ]);
+
+                    // }
+
+                    // Get the advisor's IC from the first database
+                    $advisorIcFromDb1 = DB::table('tblstudent_personal')
+                    ->where('student_ic', $student->ic)
+                    ->join('tbledu_advisor', 'tblstudent_personal.advisor_id', 'tbledu_advisor.id')
+                    ->value('tbledu_advisor.ic');
+
+                    // Get the advisor's IC from the second database
+                    $advisorIcFromDb2 = DB::connection('mysql2')
+                    ->table('students')
+                    ->where('ic', $student->ic)
+                    ->join('users', 'students.user_id', 'users.id')
+                    ->value('users.ic');
+
+                    // Normalize ICs by removing dashes
+                    $normalizedIc1 = $advisorIcFromDb1 ? str_replace('-', '', $advisorIcFromDb1) : null;
+                    $normalizedIc2 = $advisorIcFromDb2 ? str_replace('-', '', $advisorIcFromDb2) : null;
+
+                    // Prepare the base update data
+                    $updateData = [
+                    'register_at' => now(),
+                    'status_id' => ($normalizedIc1 == $normalizedIc2) ? 20 : 22,
+                    'commission' => ($normalizedIc1 == $normalizedIc2) ? 300 : 0
+                    ];
+
+                    // Perform the update
+                    DB::connection('mysql2')
+                    ->table('students')
+                    ->where('ic', $student->ic)
+                    ->update($updateData);
+
+                    
 
                 }
 
