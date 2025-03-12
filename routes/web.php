@@ -789,6 +789,12 @@ Route::post('/finance/package/insentifkhas/storeInsentifkhas', [App\Http\Control
 Route::post('/finance/package/insentifkhas/getProgram3', [App\Http\Controllers\FinanceController::class, 'getProgram3']);
 Route::post('/finance/package/insentifkhas/registerPRG3', [App\Http\Controllers\FinanceController::class, 'registerPRG3']);
 Route::post('/finance/package/insentifkhas/unregisterPRG3', [App\Http\Controllers\FinanceController::class, 'unregisterPRG3']);
+Route::get('/finance/package/voucher', [App\Http\Controllers\FinanceController::class, 'voucher'])->name('finance.package.voucher');
+Route::get('/finance/package/voucher/getVoucher', [App\Http\Controllers\FinanceController::class, 'getVoucher']);
+Route::post('/finance/package/voucher/storeVoucher', [App\Http\Controllers\FinanceController::class, 'storeVoucher']);
+Route::post('/finance/package/voucher/getProgram4', [App\Http\Controllers\FinanceController::class, 'getProgram4']);
+Route::post('/finance/package/voucher/registerPRG4', [App\Http\Controllers\FinanceController::class, 'registerPRG4']);
+Route::post('/finance/package/voucher/unregisterPRG4', [App\Http\Controllers\FinanceController::class, 'unregisterPRG4']);
 Route::get('/finance/package/sponsorPackage', [App\Http\Controllers\FinanceController::class, 'sponsorPackage'])->name('finance.package.sponsorPackage');
 Route::get('/finance/package/sponsorPackage/getsponsorPackage', [App\Http\Controllers\FinanceController::class, 'getsponsorPackage']);
 Route::post('/finance/package/sponsorPackage/storeSponsorPackage', [App\Http\Controllers\FinanceController::class, 'storeSponsorPackage']);

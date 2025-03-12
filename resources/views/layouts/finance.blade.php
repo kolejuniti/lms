@@ -372,6 +372,7 @@ li a {
 					<li><a href="{{ route('finance.package.tabungkhas') }}" class="{{ (route('finance.package.tabungkhas') == Request::url()) ? 'active' : ''}}">Tabung Khas</a></li>
 					<li><a href="{{ route('finance.package.insentifkhas') }}" class="{{ (route('finance.package.insentifkhas') == Request::url()) ? 'active' : ''}}">Insentif Khas</a></li>
 					<li><a href="{{ route('finance.package.payment') }}" class="{{ (route('finance.package.payment') == Request::url()) ? 'active' : ''}}">Payment</a></li>
+					<li><a href="{{ route('finance.package.voucher') }}" class="{{ (route('finance.package.voucher') == Request::url()) ? 'active' : ''}}">Voucher</a></li>
 				</ul>
 			  </li>
 			  <li class="treeview">

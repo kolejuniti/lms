@@ -7541,6 +7541,117 @@ class FinanceController extends Controller
 
     }
 
+    public function voucher()
+    {
+        $data['package'] = DB::table('tblpackage')->get();
+
+        $data['type'] = DB::table('tblprocess_type')
+                        ->where('name', 'LIKE', '%TABUNG%')->get();
+
+        //dd($data['type']);
+
+        $data['session'] = DB::table('sessions')->orderBy('SessionID', 'desc')->get();
+
+        return view('finance.package.voucher', compact('data'));
+
+    }
+
+    public function getVoucher()
+    {
+
+        $data['voucher'] = DB::table('tblvoucher AS t1')
+                             ->join('sessions AS t2_intake', 't1.intake_id', 't2_intake.SessionID')
+                             ->join('tblpackage', 't1.package_id', 'tblpackage.id')
+                            //  ->join('tblprocess_type', 't1.process_type_id', 'tblprocess_type.id')
+                             ->select('t1.*', 't2_intake.SessionName AS intake', 'tblpackage.name AS package')
+                             ->get();
+
+        return view('finance.package.getVoucher', compact('data'));
+
+    }
+
+    public function storeVoucher(Request $request)
+    {
+
+        $data = json_decode($request->formData);
+
+        if($data->intake != null)
+        {
+
+            //$session = DB::table('sessions')
+            //           ->whereBetween('SessionID', [$data->from, $data->to])
+            //           ->get();
+
+            //foreach($session as $ses)
+            //{
+
+            //    DB::table('tblvoucher')->insert(
+            //        'session'
+            //    )
+
+            //}
+
+            DB::table('tblvoucher')->insert([
+                'intake_id' => $data->intake,
+                'package_id' => $data->package,
+                // 'process_type_id' => $data->type,
+                'amount' => $data->amount
+            ]);
+
+            return ["message"=>"Success"];
+
+        }else{
+
+            return ["message"=>"Please select all required field!"];
+
+        }
+    }
+
+    public function getProgram4(Request $request)
+    {
+
+        $data['registered'] = DB::table('tblprogramme')
+                              ->join('tblvoucher_program', 'tblprogramme.id', 'tblvoucher_program.program_id')
+                              ->where('tblvoucher_program.voucher_id', $request->id)
+                              ->select('tblprogramme.*')
+                              ->get();
+
+        $collection = collect($data['registered']);
+
+        $data['unregistered'] = DB::table('tblprogramme')
+                              ->whereNotIn('id', $collection->pluck('id'))
+                              ->get();
+
+        $data['id'] = $request->id;
+
+        return view('finance.package.getProgram', compact('data'));
+    }
+
+    public function registerPRG4(Request $request)
+    {
+   
+        DB::table('tblvoucher_program')->insert([
+            'voucher_id' => $request->id,
+            'program_id' => $request->prg
+        ]);
+
+        return response()->json($request->id);
+
+    }
+
+    public function unregisterPRG4(Request $request)
+    {
+
+        DB::table('tblvoucher_program')
+        ->where([
+            ['voucher_id', $request->id],
+            ['program_id', $request->prg]
+        ])->delete();
+
+        return response()->json($request->id);
+
+    }
+
     public function Payment()
     {
         $data['package'] = DB::table('tblpackage')->get();
