@@ -222,8 +222,11 @@ select {
     box-shadow: var(--card-shadow);
     border: none;
     transition: all 0.3s ease;
+}
+
+/* Apply margin-top when a card is inside another card */
+.card .card {
     margin-top: 25px;
-    overflow: visible; /* Ensure corners aren't clipped */
 }
 
 .card:hover {
