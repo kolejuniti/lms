@@ -2,6 +2,18 @@
 
 @section('main')
 
+<style>
+    /* Specific styles for formBuilder */
+    #fb-rendered-form {
+        clear: both;
+        display: none;
+    }
+
+    #fb-rendered-form button {
+        float: right;
+    }
+</style>
+
 <link rel="stylesheet" href="{{ asset('css/customCSS.css') }}">
 
 <!-- Content Wrapper. Contains page content -->
@@ -820,7 +832,7 @@
                                         className: 'form-control',
                                         label: 'Upload Image',
                                         description: 'Drag and drop or click to select an image file.',
-                                        name: `question_image_${index}`,
+                                        name: `uploaded_image[]`,
                                     });
 
                                     // Add the question paragraph
@@ -901,7 +913,7 @@
                                             type: 'radio-group',
                                             className: 'with-gap radio-col-primary',
                                             label: '<label class="text-primary"><strong>Your Answer</strong></label>',
-                                            name: `radio_question_${index}`,
+                                            name: `radio-question${index + 1}`,
                                             values: question.options.map((option, optionIndex) => ({
                                                 label: `${String.fromCharCode(97 + optionIndex)}) ${option}`,
                                                 value: option,
@@ -913,7 +925,7 @@
                                             type: 'checkbox-group',
                                             className: 'filled-in chk-col-warning',
                                             label: '<label class="text-primary"><strong>Your Answer</strong></label>',
-                                            name: `checkbox_question_${index}`,
+                                            name: `checkbox-question${index + 1}`,
                                             values: question.options.map((option, optionIndex) => ({
                                                 label: `${String.fromCharCode(97 + optionIndex)}) ${option}`,
                                                 value: option,
@@ -926,7 +938,7 @@
                                             rows: 5,
                                             className: 'form-control',
                                             placeholder: 'Your Answer',
-                                            name: `subjective_question_${index}`,
+                                            name: `subjective-text${index + 1}`,
                                         });
                                     }
                                 }
