@@ -3755,9 +3755,14 @@ class AR_Controller extends Controller
                 ->first();
         }
 
+        $session = DB::table('sessions')
+                   ->where('Status', 'ACTIVE')
+                   ->pluck('SessionID')->toArray();
+
         if(DB::table('tblevents')
         ->where('user_ic', $event->user_ic)
         ->where('id', '!=', $id)
+        ->whereIn('session_id', $session)
         ->whereRaw('DAYNAME(start) = ?', [$dayOfWeek])
         ->where(function ($query) use ($startTimeOnly, $endTimeOnly) {
             $query->where(function ($query) use ($startTimeOnly) {
@@ -3794,9 +3799,9 @@ class AR_Controller extends Controller
             {
 
                 if(($startTimeOnly <= $rehat3 && $endTimeOnly >= $rehat4) ||                 
-   ($startTimeOnly >= $rehat3 && $startTimeOnly < $rehat4) ||                 
-   ($endTimeOnly > $rehat3 && $endTimeOnly <= $rehat4) ||
-   ($startTimeOnly <= $rehat3 && $endTimeOnly > $rehat3 && $endTimeOnly <= $rehat4))
+                ($startTimeOnly >= $rehat3 && $startTimeOnly < $rehat4) ||                 
+                ($endTimeOnly > $rehat3 && $endTimeOnly <= $rehat4) ||
+                ($startTimeOnly <= $rehat3 && $endTimeOnly > $rehat3 && $endTimeOnly <= $rehat4))
                 {
 
                     Log::info('Overlap detected for event on:', [
