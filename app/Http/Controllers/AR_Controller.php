@@ -3042,6 +3042,10 @@ class AR_Controller extends Controller
                                 ['group_name', $event->group_name]
                             ])->pluck('student_ic');
 
+        $sessions = DB::table('sessions')
+                    ->where('Status', 'ACTIVE')
+                    ->pluck('SessionID')->toArray();
+
         $events = DB::table('tblevents')
                 ->join('student_subjek', function($join){
                     $join->on('tblevents.group_id', 'student_subjek.group_id')
@@ -3049,12 +3053,14 @@ class AR_Controller extends Controller
                 })
                 ->where('tblevents.id', '!=', $id)
                 ->whereIn('student_subjek.student_ic', $students)
+                ->WhereIn('tblevents.session_id', $sessions)
                 ->groupBy('tblevents.id')
                 ->select('tblevents.*');
 
         $events = DB::table('tblevents')
                 ->where('tblevents.id', '!=', $id)
                 ->where('tblevents.user_ic', $event->user_ic)
+                ->whereIn('tblevents.session_id', $sessions)
                 ->groupBy('tblevents.id')
                 ->unionAll($events)
                 ->select('tblevents.*')
