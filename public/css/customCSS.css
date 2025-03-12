@@ -149,6 +149,7 @@ body {
 
 .form-label {
     font-weight: 600;
+    /* color: var(--text-color); */
     margin-bottom: 10px;
 }
 
@@ -286,7 +287,7 @@ body {
 }
 
 .btn-secondary {
-    background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+    background: linear-gradient(135deg, #eaf2f9 0%, #83b2e5 100%);
     border: none;
     box-shadow: 0 4px 15px rgba(108, 117, 125, 0.15);
 }
@@ -353,16 +354,6 @@ body {
 
 .btn-app-danger:hover {
     background: rgba(239, 71, 111, 0.2);
-}
-
-/* Specific styles for formBuilder */
-#fb-rendered-form {
-    clear: both;
-    display: none;
-}
-
-#fb-rendered-form button {
-    float: right;
 }
 
 .btn.btn-default.get-data {
