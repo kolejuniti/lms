@@ -33,6 +33,8 @@
 	<script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.8.2/dist/alpine.min.js" defer></script>
 
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+	<link rel="stylesheet" href="{{ asset('css/customCSS.css') }}">
   </head>
 
 <style>
@@ -184,48 +186,59 @@
 				</label>
 			  </a>				
             </li>
-			<!--<li class="dropdown notifications-menu btn-group">
+			<li class="dropdown notifications-menu btn-group">
 				<a href="#" class="waves-effect waves-light btn-primary-light svg-bt-icon bg-transparent" data-bs-toggle="dropdown" title="Notifications">
-					<i data-feather="bell"></i>
-					<div class="pulse-wave"></div>
-			    </a>
+				  <i data-feather="bell"></i>
+				  <div class="pulse-wave"></div>
+				  @if(auth()->check() && auth()->user()->unreadNotifications->count() > 0)
+					<span class="badge badge-danger">
+						{{ auth()->user()->unreadNotifications->count() }}
+					</span>
+				  @endif
+				</a>
 				<ul class="dropdown-menu animated bounceIn">
+				  <!-- Header -->
 				  <li class="header">
 					<div class="p-20">
-						<div class="flexbox">
-							<div>
-								<h4 class="mb-0 mt-0">Notifications</h4>
-							</div>
-							<div>
-								<a href="#" class="text-danger">Clear All</a>
-							</div>
+					  <div class="flexbox">
+						<div>
+						  <h4 class="mb-0 mt-0">Notifications</h4>
 						</div>
+						<div>
+						  <!-- Clear all notifications (route defined below) -->
+						  <a href="{{ route('notifications.clear') }}" class="text-danger">Clear All</a>
+						</div>
+					  </div>
 					</div>
 				  </li>
+				  <!-- Notifications List -->
 				  <li>
 					<ul class="menu sm-scrol">
-					  <li>
-						<a href="#">
-						  <i class="fa fa-users text-info"></i> Curabitur id eros quis nunc suscipit blandit.
-						</a>
-					  </li>
-					  <li>
-						<a href="#">
-						  <i class="fa fa-warning text-warning"></i> Duis malesuada justo eu sapien elementum, in semper diam posuere.
-						</a>
-					  </li>
-					  <li>
-						<a href="#">
-						  <i class="fa fa-users text-danger"></i> Donec at nisi sit amet tortor commodo porttitor pretium a erat.
-						</a>
-					  </li>
+					  @forelse(auth()->user()->unreadNotifications as $notification)
+						<li>
+						  <a href="{{ $notification->data['url'] ?? '#' }}">
+							<!-- Optional icon from notification data -->
+							<i class="fa {{ $notification->data['icon'] ?? 'fa-info-circle' }} text-info"></i>
+							<!-- Notification message -->
+							{{ $notification->data['message'] ?? 'No message provided.' }}
+							<br>
+							<!-- Time since notification was created -->
+							<small class="text-muted">{{ $notification->created_at->diffForHumans() }}</small>
+						  </a>
+						</li>
+					  @empty
+						<li>
+						  <a href="#">No notifications</a>
+						</li>
+					  @endforelse
 					</ul>
 				  </li>
+				  <!-- Footer -->
 				  <li class="footer">
-					  <a href="#">View all</a>
+					<a href="{{ route('notifications.index') }}">View all</a>
 				  </li>
 				</ul>
-			</li>-->
+			</li>
 			
 			
 			<!-- User Account-->
@@ -431,6 +444,8 @@
 			
 <!-- Page Content overlay -->
 <!-- Vendor JS -->
+
+
 
 <script src="{{ asset('assets/src/js/vendors.min.js') }}"></script>
 
