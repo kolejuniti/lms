@@ -1322,16 +1322,19 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 if (response.ok) {
                     const data = await response.json();
-                    if (data.error) {
+                    if(data.error) {
                         info.revert();
-
-                    // Check if conflicting students list exists
-                    if (data.conflicting_students && data.conflicting_students.length > 0) {
-                        // Create list of student ICs
-                        const studentList = data.conflicting_students.map(student => student.no_matric).join(', ');
-                        showNotification(`${data.error}<br><br>Conflicting students: ${studentList}`, 'error', false);
+                        
+                        // Check if conflicting students list exists
+                        if (data.conflicting_students && data.conflicting_students.length > 0) {
+                            // Create list of student ICs
+                            const studentList = data.conflicting_students.map(student => student.no_matric).join(', ');
+                            showNotification(`${data.error}<br><br>Conflicting students: ${studentList}`, 'error', false);
+                        } else {
+                            showNotification(data.error, 'error');
+                        }
                     } else {
-                        showNotification(data.error, 'error');
+                        showNotification('Event updated successfully', 'success');
                     }
                 } else {
                     throw new Error('Failed to update event');
