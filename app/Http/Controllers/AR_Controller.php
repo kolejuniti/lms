@@ -3149,9 +3149,13 @@ class AR_Controller extends Controller
                 ->first();
         }
                        
+        $session = DB::table('sessions')
+                   ->where('Status', 'ACTIVE')
+                   ->pluck('SessionID')->toArray();
  
         if(DB::table('tblevents')
         ->where('lecture_id', $request->id)
+        ->whereIn('session_id', $session)
         ->whereRaw('DAYNAME(start) = ?', [$dayOfWeek])
         ->where(function ($query) use ($startTimeOnly, $endTimeOnly) {
             $query->where(function ($query) use ($startTimeOnly) {
@@ -3197,9 +3201,7 @@ class AR_Controller extends Controller
         // ($endTimeOnly > $rehat1 && $endTimeOnly < $rehat2))
         // {
 
-        ->exists() || ($startTimeOnly <= $rehat1 && $endTimeOnly >= $rehat2) ||
-        ($startTimeOnly >= $rehat1 && $endTimeOnly <= $rehat2) ||
-        ($startTimeOnly <= $rehat1 && $endTimeOnly <= $rehat2 && $endTimeOnly > $rehat1))
+        ->exists())
         {
 
             Log::info('Overlap detected for event on:', [
@@ -3217,9 +3219,10 @@ class AR_Controller extends Controller
             if($dayOfWeek == 'Friday')
             {
 
-                if(($startTimeOnly <= $rehat3 && $endTimeOnly >= $rehat4) ||
-                ($startTimeOnly >= $rehat3 && $endTimeOnly <= $rehat4) ||
-                ($startTimeOnly <= $rehat3 && $endTimeOnly <= $rehat4 && $endTimeOnly > $rehat3))
+                if(($startTimeOnly <= $rehat3 && $endTimeOnly >= $rehat4) ||                 
+                ($startTimeOnly >= $rehat3 && $startTimeOnly < $rehat4) ||                 
+                ($endTimeOnly > $rehat3 && $endTimeOnly <= $rehat4) ||
+                ($startTimeOnly <= $rehat3 && $endTimeOnly > $rehat3 && $endTimeOnly <= $rehat4))
                 {
 
                     Log::info('Overlap detected for event on:', [
@@ -3230,8 +3233,27 @@ class AR_Controller extends Controller
                         'overlapEnd' => $rehat4,
                     ]);
         
-                    return response()->json(['error' => 'Time selected is already occupied, please select another time! 2']);
+                    return response()->json(['error' => 'Time selected is already occupied, please select another time! 4']);
 
+                }
+
+            }else{
+
+                if(($startTimeOnly <= $rehat1 && $endTimeOnly >= $rehat2) ||
+                ($startTimeOnly >= $rehat1 && $endTimeOnly <= $rehat2) ||
+                ($startTimeOnly <= $rehat1 && $endTimeOnly <= $rehat2 && $endTimeOnly > $rehat1) ||
+                ($startTimeOnly >= $rehat1 && $endTimeOnly >= $rehat2 && $startTimeOnly < $rehat2))
+                {
+
+                    Log::info('Overlap detected for event on:', [
+                        'dayOfWeek' => $dayOfWeek,
+                        'startTime' => $startTime->toDateTimeString(),
+                        'endTime' => $endTime->toDateTimeString(),
+                        'overlapStart' => $rehat3,
+                        'overlapEnd' => $rehat4,
+                    ]);
+        
+                    return response()->json(['error' => 'Time selected is already occupied, please select another time! 7']);
                 }
 
             }
@@ -3760,7 +3782,7 @@ class AR_Controller extends Controller
                    ->pluck('SessionID')->toArray();
 
         if(DB::table('tblevents')
-        ->where('user_ic', $event->user_ic)
+        // ->where('user_ic', $event->user_ic)
         ->where('id', '!=', $id)
         ->where('lecture_id', $event->lecture_id)
         ->whereIn('session_id', $session)
@@ -3886,6 +3908,7 @@ class AR_Controller extends Controller
                     })
                     ->join('students', 'student_subjek.student_ic', 'students.ic')
                     ->where('tblevents.id', '!=', $id)
+                    ->whereIn('session_id', $session)
                     ->whereIn('student_subjek.student_ic', $students)
                     ->whereRaw('DAYNAME(start) = ?', [$dayOfWeek])
                     ->where(function ($query) use ($startTimeOnly, $endTimeOnly) {
@@ -4004,9 +4027,14 @@ class AR_Controller extends Controller
                 ->first();
         }
 
+        $session = DB::table('sessions')
+                   ->where('Status', 'ACTIVE')
+                   ->pluck('SessionID')->toArray();
+
         if(DB::table('tblevents')
-        ->where('lecture_id', $event->lecture_id)
         ->where('id', '!=', $id)
+        ->where('lecture_id', $event->lecture_id)
+        ->whereIn('session_id', $session)
         ->whereRaw('DAYNAME(start) = ?', [$dayOfWeek])
         ->where(function ($query) use ($startTimeOnly, $endTimeOnly) {
             $query->where(function ($query) use ($startTimeOnly) {
@@ -4046,10 +4074,7 @@ class AR_Controller extends Controller
             //           ->whereRaw('? >= TIME(end)', [$endTimeOnly]);
             // });
         })
-        ->exists() || ($startTimeOnly <= $rehat1 && $endTimeOnly >= $rehat2) ||
-        ($startTimeOnly >= $rehat1 && $endTimeOnly <= $rehat2) ||
-        ($startTimeOnly <= $rehat1 && $endTimeOnly <= $rehat2 && $endTimeOnly > $rehat1) ||
-        ($startTimeOnly >= $rehat1 && $endTimeOnly >= $rehat2 && $startTimeOnly < $rehat2))
+        ->exists())
         {
 
             return response()->json(['error' => 'Time selected is already occupied, please select another time! 5']);
@@ -4059,9 +4084,10 @@ class AR_Controller extends Controller
             if($dayOfWeek == 'Friday')
             {
 
-                if(($startTimeOnly <= $rehat3 && $endTimeOnly >= $rehat4) ||
-                ($startTimeOnly >= $rehat3 && $endTimeOnly <= $rehat4) ||
-                ($startTimeOnly <= $rehat3 && $endTimeOnly <= $rehat4 && $endTimeOnly > $rehat3))
+                if(($startTimeOnly <= $rehat3 && $endTimeOnly >= $rehat4) ||                 
+                ($startTimeOnly >= $rehat3 && $startTimeOnly < $rehat4) ||                 
+                ($endTimeOnly > $rehat3 && $endTimeOnly <= $rehat4) ||
+                ($startTimeOnly <= $rehat3 && $endTimeOnly > $rehat3 && $endTimeOnly <= $rehat4))
                 {
 
                     Log::info('Overlap detected for event on:', [
@@ -4072,8 +4098,27 @@ class AR_Controller extends Controller
                         'overlapEnd' => $rehat4,
                     ]);
         
-                    return response()->json(['error' => 'Time selected is already occupied, please select another time! 6']);
+                    return response()->json(['error' => 'Time selected is already occupied, please select another time! 4']);
 
+                }
+
+            }else{
+
+                if(($startTimeOnly <= $rehat1 && $endTimeOnly >= $rehat2) ||
+                ($startTimeOnly >= $rehat1 && $endTimeOnly <= $rehat2) ||
+                ($startTimeOnly <= $rehat1 && $endTimeOnly <= $rehat2 && $endTimeOnly > $rehat1) ||
+                ($startTimeOnly >= $rehat1 && $endTimeOnly >= $rehat2 && $startTimeOnly < $rehat2))
+                {
+
+                    Log::info('Overlap detected for event on:', [
+                        'dayOfWeek' => $dayOfWeek,
+                        'startTime' => $startTime->toDateTimeString(),
+                        'endTime' => $endTime->toDateTimeString(),
+                        'overlapStart' => $rehat3,
+                        'overlapEnd' => $rehat4,
+                    ]);
+        
+                    return response()->json(['error' => 'Time selected is already occupied, please select another time! 7']);
                 }
 
             }
@@ -4127,6 +4172,7 @@ class AR_Controller extends Controller
                     })
                     ->join('students', 'student_subjek.student_ic', 'students.ic')
                     ->where('tblevents.id', '!=', $id)
+                    ->whereIn('session_id', $session)
                     ->whereIn('student_subjek.student_ic', $students)
                     ->whereRaw('DAYNAME(start) = ?', [$dayOfWeek])
                     ->where(function ($query) use ($startTimeOnly, $endTimeOnly) {
