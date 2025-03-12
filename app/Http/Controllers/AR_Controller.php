@@ -3335,7 +3335,7 @@ class AR_Controller extends Controller
                                         ['group_name', $request->groupName]
                                     ])->pluck('student_ic'); 
 
-                        if(DB::table('tblevents')
+                        $conflictingStudents = DB::table('tblevents')
                         ->join('tbllecture', 'tblevents.lecture_id', 'tbllecture.id')
                         ->join('student_subjek', function($join){
                             $join->on('tblevents.group_id', 'student_subjek.group_id');
@@ -3360,11 +3360,18 @@ class AR_Controller extends Controller
                                       ->whereRaw('? >= TIME(end)', [$endTimeOnly]);
                             });
                         })
-                        ->exists()){
+                        ->select('students.no_matric')
+                        ->distinct()
+                        ->get();
+                        
+                        if($conflictingStudents->count() > 0){
 
-                            return response()->json(['error' => 'Students in this class is already booked with the same period in another room/class!']);
-
-                        }else{
+                            return response()->json([
+                                'error' => 'Students in this class are already booked with the same period in another room/class!',
+                                'conflicting_students' => $conflictingStudents
+                            ]);
+        
+                        } else {
 
                             if($startTimeOnly < $roomDetails->start || $endTimeOnly < $roomDetails->start || $startTimeOnly > $roomDetails->end || $endTimeOnly > $roomDetails->end)
                             {
@@ -3934,7 +3941,7 @@ class AR_Controller extends Controller
                 if($conflictingStudents->count() > 0){
 
                     return response()->json([
-                        'error' => 'Students in this class are already booked with the same period in another room/classssssssss!',
+                        'error' => 'Students in this class are already booked with the same period in another room/class!',
                         'conflicting_students' => $conflictingStudents
                     ]);
 
