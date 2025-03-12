@@ -1217,7 +1217,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             const studentList = data.conflicting_students.map(student => student.no_matric).join(', ');
                             showNotification(`${data.error}<br><br>Conflicting students: ${studentList}`, 'error', false);
                         } else {
-                            showNotification(`NENEk<br><br>Conflicting students: ${studentList}`, 'error', false);
+                            showNotification(data.error, 'error');
                         }
                     } else {
                         showNotification('Event updated successfully', 'success');
@@ -1324,9 +1324,14 @@ document.addEventListener('DOMContentLoaded', function () {
                     const data = await response.json();
                     if (data.error) {
                         info.revert();
-                        showNotification(data.error, 'error');
+
+                    // Check if conflicting students list exists
+                    if (data.conflicting_students && data.conflicting_students.length > 0) {
+                        // Create list of student ICs
+                        const studentList = data.conflicting_students.map(student => student.no_matric).join(', ');
+                        showNotification(`${data.error}<br><br>Conflicting students: ${studentList}`, 'error', false);
                     } else {
-                        showNotification('Event updated successfully', 'success');
+                        showNotification(data.error, 'error');
                     }
                 } else {
                     throw new Error('Failed to update event');
