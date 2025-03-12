@@ -3787,11 +3787,16 @@ class AR_Controller extends Controller
                    ->where('Status', 'ACTIVE')
                    ->pluck('SessionID')->toArray();
 
+        $onlineCls = DB::table('tbllecture_room')
+                     ->where('name','LIKE','%online class%')
+                     ->pluck('id')->toArray();
+
         if(DB::table('tblevents')
         // ->where('user_ic', $event->user_ic)
         ->where('id', '!=', $id)
         // ->where('lecture_id', $event->lecture_id)
         ->whereIn('session_id', $session)
+        ->whereNotIn('lecture_id', $onlineCls)
         ->whereRaw('DAYNAME(start) = ?', [$dayOfWeek])
         ->where(function ($query) use ($startTimeOnly, $endTimeOnly) {
             $query->where(function ($query) use ($startTimeOnly) {
