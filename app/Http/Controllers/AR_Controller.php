@@ -3810,21 +3810,24 @@ class AR_Controller extends Controller
 
                 }
 
-            }elseif(($startTimeOnly <= $rehat1 && $endTimeOnly >= $rehat2) ||
-            ($startTimeOnly >= $rehat1 && $endTimeOnly <= $rehat2) ||
-            ($startTimeOnly <= $rehat1 && $endTimeOnly <= $rehat2 && $endTimeOnly > $rehat1) ||
-            ($startTimeOnly >= $rehat1 && $endTimeOnly >= $rehat2 && $startTimeOnly < $rehat2))
-            {
+            }else{
 
-                Log::info('Overlap detected for event on:', [
-                    'dayOfWeek' => $dayOfWeek,
-                    'startTime' => $startTime->toDateTimeString(),
-                    'endTime' => $endTime->toDateTimeString(),
-                    'overlapStart' => $rehat3,
-                    'overlapEnd' => $rehat4,
-                ]);
-    
-                return response()->json(['error' => 'Time selected is already occupied, please select another time! 7']);
+                if(($startTimeOnly <= $rehat1 && $endTimeOnly >= $rehat2) ||
+                ($startTimeOnly >= $rehat1 && $endTimeOnly <= $rehat2) ||
+                ($startTimeOnly <= $rehat1 && $endTimeOnly <= $rehat2 && $endTimeOnly > $rehat1) ||
+                ($startTimeOnly >= $rehat1 && $endTimeOnly >= $rehat2 && $startTimeOnly < $rehat2))
+                {
+
+                    Log::info('Overlap detected for event on:', [
+                        'dayOfWeek' => $dayOfWeek,
+                        'startTime' => $startTime->toDateTimeString(),
+                        'endTime' => $endTime->toDateTimeString(),
+                        'overlapStart' => $rehat3,
+                        'overlapEnd' => $rehat4,
+                    ]);
+        
+                    return response()->json(['error' => 'Time selected is already occupied, please select another time! 7']);
+                }
 
             }
 
