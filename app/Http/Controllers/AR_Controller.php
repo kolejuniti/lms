@@ -3793,9 +3793,10 @@ class AR_Controller extends Controller
             if($dayOfWeek == 'Friday')
             {
 
-                if(($startTimeOnly <= $rehat3 && $endTimeOnly >= $rehat4) ||
-                ($startTimeOnly >= $rehat3 && $endTimeOnly <= $rehat4) ||
-                ($startTimeOnly <= $rehat3 && $endTimeOnly <= $rehat4 && $endTimeOnly > $rehat3))
+                if(($startTimeOnly <= $rehat3 && $endTimeOnly >= $rehat4) ||                 
+   ($startTimeOnly >= $rehat3 && $startTimeOnly < $rehat4) ||                 
+   ($endTimeOnly > $rehat3 && $endTimeOnly <= $rehat4) ||
+   ($startTimeOnly <= $rehat3 && $endTimeOnly > $rehat3 && $endTimeOnly <= $rehat4))
                 {
 
                     Log::info('Overlap detected for event on:', [
