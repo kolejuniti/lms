@@ -145,6 +145,7 @@ body {
 /* Form styling */
 .form-group {
     margin-bottom: 25px;
+    overflow: visible !important;
 }
 
 .form-label {
@@ -172,11 +173,39 @@ body {
     border: 2px solid #e5e7eb;
     transition: all 0.3s ease;
     box-shadow: 0 2px 5px rgba(78, 50, 50, 0.05);
+    width: 100%; /* Ensures the select uses full width of its container */
 }
 
 .form-select:focus {
     border-color: var(--primary-color);
     box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
+}
+
+/* Increase dropdown width for options */
+.form-select option {
+    white-space: nowrap;
+    overflow: visible;
+}
+
+/* For Bootstrap's dropdown menu (if using Bootstrap) */
+.dropdown-menu {
+    width: auto;
+    min-width: 300px; /* Adjust this value to get your desired width */
+    max-width: 500px; /* Adjust this value to get your desired maximum width */
+}
+
+/* For browser's native dropdown */
+select {
+    width: 100%;
+}
+
+/* If using a select2 or similar plugin */
+.select2-container {
+    width: 100% !important;
+}
+
+.select2-results {
+    max-width: none !important;
 }
 
 .text-danger {
@@ -194,6 +223,7 @@ body {
     overflow: hidden;
     transition: all 0.3s ease;
     margin-top: 25px; /* Add this line */
+    overflow: visible !important;
 }
 
 .card:hover {
@@ -222,6 +252,7 @@ body {
 
 .card-body {
     padding: 30px;
+    overflow: visible !important;
 }
 
 /* Button styling */
