@@ -6609,7 +6609,7 @@ class FinanceController extends Controller
 
                 }
 
-            }elseif($crg->process_type_id == 5 && $crg->process_status_id == 2 && $crg->groupid == 1 && $crg->reduction_id < 6 && $crg->status == 2)
+            }elseif($crg->process_type_id == 5 && $crg->process_status_id == 2 && $crg->groupid == 1 && $crg->reduction_id < 6 && in_array($crg->status, [2, 4]))
             {
 
                 $data['creditFeeOld'][] = $crg;
@@ -6667,7 +6667,7 @@ class FinanceController extends Controller
 
                 }
 
-            }elseif($crg->process_type_id == 5 && $crg->process_status_id == 2 && $crg->groupid != 1 && $crg->status == 2)
+            }elseif($crg->process_type_id == 5 && $crg->process_status_id == 2 && $crg->groupid != 1 && in_array($crg->status, [2, 4]))
             {
 
                 $data['creditFineOld'][] = $crg;
