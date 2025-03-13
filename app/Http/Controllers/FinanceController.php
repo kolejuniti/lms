@@ -5054,9 +5054,7 @@ class FinanceController extends Controller
         ->whereIn('tblstudentclaim.groupid', [4])
         ->select('tblpaymentdtl.id', 'tblpaymentdtl.payment_id', 'tblpaymentdtl.claim_type_id', 'tblpaymentdtl.amount',
             DB::raw('ROW_NUMBER() OVER (PARTITION BY payment_id ORDER BY id) as row_num')
-        )->get();
-
-        dd($paymentDtl);
+        );
 
         // Subquery for tblpaymentmethod with row numbers
         $paymentMethod = DB::table('tblpaymentmethod')
@@ -5101,7 +5099,7 @@ class FinanceController extends Controller
         ->leftjoin('tblstudentclaim', 'dtl.claim_type_id', '=', 'tblstudentclaim.id')
         ->leftJoin('tblpayment_bank', 'method.bank_id', '=', 'tblpayment_bank.id')
         ->leftjoin('tblpayment_method', 'method.claim_method_id', '=', 'tblpayment_method.id')
-        ->whereBetween('tblpayment.add_date', ['2024-02-01', '2024-02-01'])
+        ->whereBetween('tblpayment.add_date', ['2024-01-02', '2024-01-02'])
         ->where('tblpayment.process_status_id', 2)
         ->select(
             'tblpayment.*',
@@ -5117,7 +5115,7 @@ class FinanceController extends Controller
         ->groupBy('dtl.id')
         ->get();
 
-        // dd($other);
+        dd($other);
 
         return view('finance.report.dailyReport');
 
