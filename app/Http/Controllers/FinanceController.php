@@ -5050,6 +5050,8 @@ class FinanceController extends Controller
 
         // Subquery for tblpaymentdtl with row numbers
         $paymentDtl = DB::table('tblpaymentdtl')
+        ->join('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
+        ->whereIn('tblstudentclaim.groupid', [1, 4, 8])
         ->select('id', 'payment_id', 'claim_type_id', 'amount',
             DB::raw('ROW_NUMBER() OVER (PARTITION BY payment_id ORDER BY id) as row_num')
         );
