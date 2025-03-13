@@ -1040,7 +1040,7 @@ function setupCalendar() {
             }
             
             return { domNodes: [container] };
-        }
+        },
 
         // Event click handling
         eventClick: function (info) {
