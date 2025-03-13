@@ -5050,7 +5050,7 @@ class FinanceController extends Controller
 
         // Subquery for tblpaymentdtl with row numbers
         $paymentDtl = DB::table('tblpaymentdtl')
-        ->whereBetween('tblpayment.add_date', ['2024-01-02', '2024-01-02'])
+        ->whereBetween('tblpaymentdtl.add_date', ['2024-01-02', '2024-01-02'])
         ->get();
 
         dd($paymentDtl);
