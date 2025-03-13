@@ -1730,8 +1730,9 @@ function printScheduleTable(name, ic, staffNo, email) {
                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
                 margin: 0;
                 padding: 0;
-                color: #333;
+                color: #000000;
                 font-size: 9px;
+                font-weight: 500;
             }
             .container {
                 max-width: 100%;
@@ -1760,9 +1761,12 @@ function printScheduleTable(name, ic, staffNo, email) {
             .lecturer-info p {
                 margin: 2px 0;
                 font-size: 9px;
+                font-weight: 600;
+                color: #000000;
             }
             .lecturer-info strong {
-                color: #4361ee;
+                color: #000000;
+                font-weight: 700;
             }
             table {
                 width: 100%;
@@ -1772,43 +1776,52 @@ function printScheduleTable(name, ic, staffNo, email) {
                 font-size: 9px;
             }
             th {
-                background-color: #4361ee;
+                background-color: #1e40af;
                 color: white;
                 padding: 5px;
                 text-align: center;
-                font-weight: 600;
+                font-weight: 700;
                 font-size: 10px;
             }
+            
+            /* Style for time header in the top row */
+            th.time-column {
+                background-color: #1e40af;
+                color: white;
+                font-weight: 700;
+            }
             td {
-                border: 1px solid #e0e0e0;
+                border: 1px solid #000000;
                 padding: 4px;
                 text-align: center;
                 vertical-align: middle;
+                background-color: #f8f8f8;
             }
             .time-column {
-                background-color: #f0f0f0;
-                font-weight: 600;
-                color: #555;
+                background-color: #e0e0e0;
+                font-weight: 700;
+                color: #000000;
                 width: 70px;
             }
             .event-cell {
-                background-color: #ebf4ff;
-                border: 1px solid #c5dbff;
+                background-color: #d1e4ff;
+                border: 1.5px solid #000000;
             }
             .event-title {
-                font-weight: 600;
-                color: #2c3e50;
+                font-weight: 700;
+                color: #000000;
                 margin-bottom: 2px;
             }
             .event-description {
-                color: #7f8c8d;
+                color: #333333;
                 font-size: 8px;
+                font-weight: 500;
             }
             .rehat-cell {
-                background-color: #ffebee;
-                border: 1px solid #ffcdd2;
+                background-color: #ffcccf;
+                border: 1.5px solid #000000;
                 color: #c62828;
-                font-weight: 600;
+                font-weight: 700;
             }
             .multi-event-container {
                 display: flex;
@@ -1838,6 +1851,41 @@ function printScheduleTable(name, ic, staffNo, email) {
                 }
                 .container {
                     padding: 0;
+                }
+                /* Ensure text is dark enough for printing */
+                * {
+                    color: #000000 !important;
+                }
+                th {
+                    background-color: #1e40af !important;
+                    color: white !important;
+                    font-weight: 800 !important;
+                    border: 1px solid #000000 !important;
+                }
+                td {
+                    background-color: #f8f8f8 !important;
+                    border: 1px solid #000000 !important;
+                }
+                .time-column {
+                    background-color: #e0e0e0 !important;
+                    color: #000000 !important;
+                    font-weight: 700 !important;
+                }
+                .event-cell {
+                    background-color: #d1e4ff !important;
+                    border: 1.5px solid #000000 !important;
+                }
+                .rehat-cell {
+                    background-color: #ffcccf !important;
+                    color: #c62828 !important;
+                    font-weight: 700 !important;
+                    border: 1.5px solid #000000 !important;
+                }
+                .event-title {
+                    font-weight: 700 !important;
+                }
+                .event-description {
+                    font-weight: 600 !important;
                 }
             }
         </style>
