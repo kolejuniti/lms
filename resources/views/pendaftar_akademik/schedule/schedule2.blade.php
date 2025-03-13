@@ -908,17 +908,17 @@ function setupCalendar() {
 
         // Enhanced event styling
         // Enhanced event styling - modified to prevent duplication
-eventDidMount: function(info) {
-    // Only add special styling for REHAT events if needed
-    if (info.event.title === 'REHAT') {
-        // Apply any REHAT-specific styling here
-        info.el.style.backgroundColor = '#e63946';
-        info.el.style.color = 'white';
-    }
-    
-    // No need to add program/lecturer info here anymore
-    // since we're handling it in eventContent
-},
+        eventDidMount: function(info) {
+            // Only add special styling for REHAT events if needed
+            if (info.event.title === 'REHAT') {
+                // Apply any REHAT-specific styling here
+                info.el.style.backgroundColor = '#e63946';
+                info.el.style.color = 'white';
+            }
+            
+            // No need to add program/lecturer info here anymore
+            // since we're handling it in eventContent
+        },
 
         editable: true,
         selectable: true,
@@ -1581,6 +1581,25 @@ function printScheduleTable(name, ic, staffNo, email) {
                 font-size: 8px;
                 color: #999;
             }
+            
+            /* New classes for program and lecturer info */
+            .event-description.program-info {
+                font-weight: 600;
+                background-color: rgba(0, 0, 0, 0.05);
+                padding: 1px 3px;
+                border-radius: 2px;
+                margin-top: 2px;
+            }
+            
+            .event-description.lecturer-info {
+                font-weight: 600;
+                background-color: rgba(255, 255, 255, 0.3);
+                border: 1px solid rgba(0, 0, 0, 0.1);
+                padding: 1px 3px;
+                border-radius: 2px;
+                margin-top: 2px;
+            }
+            
             @media print {
                 body {
                     -webkit-print-color-adjust: exact;
@@ -1623,6 +1642,16 @@ function printScheduleTable(name, ic, staffNo, email) {
                 }
                 .event-description {
                     font-weight: 600 !important;
+                }
+                .event-description.program-info {
+                    background-color: rgba(0, 0, 0, 0.05) !important;
+                    font-weight: 700 !important;
+                }
+                
+                .event-description.lecturer-info {
+                    background-color: rgba(255, 255, 255, 0.3) !important;
+                    border: 1px solid rgba(0, 0, 0, 0.1) !important;
+                    font-weight: 700 !important;
                 }
             }
         </style>
@@ -1780,6 +1809,7 @@ function printScheduleTable(name, ic, staffNo, email) {
                                 html += `<div class="event-divider"></div>`;
                             }
                             
+                            // Title
                             html += `<div class="event-title">${event.title || '(No Title)'}</div>`;
                             
                             // Add description if available
@@ -1787,9 +1817,14 @@ function printScheduleTable(name, ic, staffNo, email) {
                                 html += `<div class="event-description">${event.extendedProps.description}</div>`;
                             }
                             
-                            // Add program info if available
+                            // Add program info if available (only once, with special class)
                             if (event.extendedProps && event.extendedProps.programInfo) {
-                                html += `<div class="event-description">Program: ${event.extendedProps.programInfo}</div>`;
+                                html += `<div class="event-description program-info">Program: ${event.extendedProps.programInfo}</div>`;
+                            }
+                            
+                            // Add lecturer info if available (was missing before)
+                            if (event.extendedProps && event.extendedProps.lectInfo) {
+                                html += `<div class="event-description lecturer-info">Lecturer: ${event.extendedProps.lectInfo}</div>`;
                             }
                         });
                         
