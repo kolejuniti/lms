@@ -3557,7 +3557,7 @@ class AR_Controller extends Controller
                 'overlapEnd' => $rehat2,
             ]);
 
-            return response()->json(['error' => 'Time selected is already occupied, please select another time!']);
+            return response()->json(['error' => 'Time selected is already occupied, please select another time! 1']);
 
         }else{
 
@@ -3577,7 +3577,7 @@ class AR_Controller extends Controller
                         'overlapEnd' => $rehat4,
                     ]);
         
-                    return response()->json(['error' => 'Time selected is already occupied, please select another time!']);
+                    return response()->json(['error' => 'Time selected is already occupied, please select another time! 2']);
 
                 }
 
@@ -3598,7 +3598,7 @@ class AR_Controller extends Controller
                         'overlapEnd' => $rehat4,
                     ]);
         
-                    return response()->json(['error' => 'Time selected is already occupied, please select another time!']);
+                    return response()->json(['error' => 'Time selected is already occupied, please select another time! 3']);
                 }
 
             }
