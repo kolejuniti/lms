@@ -792,7 +792,7 @@ tr:hover {
             <!-- creditFee -->
             <div class="card mb-3" id="stud_info">
                 <div class="card-header">
-                <b>Credit Note Active Student (Fee)</b>
+                <b>Credit Note Active & Withdraw Student (Fee)</b>
                 </div>
                 <div class="card-body p-0">
                 <table id="myTable" class="table table-striped projects display dataTable">
@@ -899,7 +899,7 @@ tr:hover {
                                             <thead>
                                                 <tr>
                                                     <th colspan="3" style="text-align: center">
-                                                        Credit Note Active Student (Fee)
+                                                        Credit Note Active & Withdraw Student (Fee)
                                                     </th>
                                                 </tr>
                                                 <tr>
@@ -1116,7 +1116,7 @@ tr:hover {
             <!-- creditFine -->
             <div class="card mb-3" id="stud_info">
                 <div class="card-header">
-                <b>Credit Note Active Student (Fine)</b>
+                <b>Credit Note Active & Withdraw Student (Fine)</b>
                 </div>
                 <div class="card-body p-0">
                 <table id="myTable" class="table table-striped projects display dataTable">
@@ -1223,7 +1223,7 @@ tr:hover {
                                             <thead>
                                                 <tr>
                                                     <th colspan="3" style="text-align: center">
-                                                        Credit Note Active Student (Fine)
+                                                        Credit Note Active & Withdraw Student (Fine)
                                                     </th>
                                                 </tr>
                                                 <tr>

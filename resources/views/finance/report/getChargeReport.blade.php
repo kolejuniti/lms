@@ -660,7 +660,7 @@
 <!-- creditFee -->
 <div class="card mb-3" id="stud_info">
   <div class="card-header">
-  <b>Credit Note Active Student (Fee)</b>
+  <b>Credit Note Active & Withdraw Student (Fee)</b>
   </div>
   <div class="card-body p-0">
     <table id="myTable" class="table table-striped projects display dataTable">
@@ -759,7 +759,7 @@
   <!-- pecahan -->
   <div class="card col-md-2 mb-3" id="stud_info" style="margin-right: 2%">
     <div class="card-header mx-auto">
-    <b>Credit Note Active Student (Fee)</b>
+    <b>Credit Note Active & Withdraw Student (Fee)</b>
     </div>
     <div class="card-body p-0">
       <table id="myTable" class="table table-striped projects display dataTable">
@@ -960,7 +960,7 @@
 <!-- creditFine -->
 <div class="card mb-3" id="stud_info">
   <div class="card-header">
-  <b>Credit Note Active Student (Fine)</b>
+  <b>Credit Note Active & Withdraw Student (Fine)</b>
   </div>
   <div class="card-body p-0">
     <table id="myTable" class="table table-striped projects display dataTable">
@@ -1059,7 +1059,7 @@
   <!-- pecahan -->
   <div class="card col-md-2 mb-3" id="stud_info" style="margin-right: 2%">
     <div class="card-header mx-auto">
-    <b>Credit Note Active Student (Fine)</b>
+    <b>Credit Note Active & Withdraw Student (Fine)</b>
     </div>
     <div class="card-body p-0">
       <table id="myTable" class="table table-striped projects display dataTable">
