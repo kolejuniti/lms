@@ -5054,7 +5054,9 @@ class FinanceController extends Controller
         ->whereIn('tblstudentclaim.groupid', [4])
         ->select('tblpaymentdtl.id', 'tblpaymentdtl.payment_id', 'tblpaymentdtl.claim_type_id', 'tblpaymentdtl.amount',
             DB::raw('ROW_NUMBER() OVER (PARTITION BY payment_id ORDER BY id) as row_num')
-        );
+        )->get();
+
+        dd($paymentDtl);
 
         // Subquery for tblpaymentmethod with row numbers
         $paymentMethod = DB::table('tblpaymentmethod')
