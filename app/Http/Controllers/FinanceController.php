@@ -5052,8 +5052,7 @@ class FinanceController extends Controller
         $paymentDtl = DB::table('tblpaymentdtl')
         ->join('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
         ->whereIn('tblstudentclaim.groupid', [4])
-        ->select('tblpaymentdtl.id', 'tblpaymentdtl.payment_id', 'tblpaymentdtl.claim_type_id', 'tblpaymentdtl.amount'
-        )->get();
+        ->select('tblpaymentdtl.id', 'tblpaymentdtl.payment_id', 'tblpaymentdtl.claim_type_id', 'tblpaymentdtl.amount')->get();
 
         dd($paymentDtl);
 
@@ -5116,7 +5115,7 @@ class FinanceController extends Controller
         ->groupBy('dtl.id')
         ->get();
 
-        dd($other);
+        //dd($other);
 
         return view('finance.report.dailyReport');
 
