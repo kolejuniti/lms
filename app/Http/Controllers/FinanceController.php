@@ -5168,25 +5168,25 @@ class FinanceController extends Controller
         {
 
             // Log payment details
-    \Log::info('Processing payment:', (array) $pym);
+            \Log::info('Processing payment:', (array) $pym);
 
-            $status = 0;
+                    $status = 0;
 
-            $status = DB::table('tblstudent_log')
-                    ->leftJoin('tblstudent_status', 'tblstudent_log.status_id', '=', 'tblstudent_status.id')
-                    ->where('tblstudent_log.student_ic', $pym->ic)
-                    ->where('tblstudent_log.date', '<=', $pym->add_date)
-                    ->orderBy('tblstudent_log.id', 'desc')
-                    ->select('tblstudent_status.id')
-                    ->first();
+                    $status = DB::table('tblstudent_log')
+                            ->leftJoin('tblstudent_status', 'tblstudent_log.status_id', '=', 'tblstudent_status.id')
+                            ->where('tblstudent_log.student_ic', $pym->ic)
+                            ->where('tblstudent_log.date', '<=', $pym->add_date)
+                            ->orderBy('tblstudent_log.id', 'desc')
+                            ->select('tblstudent_status.id')
+                            ->first();
 
-                    // Log status query result
-    \Log::info('Status query result:', (array) $status);
+                            // Log status query result
+            \Log::info('Status query result:', (array) $status);
 
-    if (is_null($status)) {
-        \Log::warning('No status found for student IC:', ['student_ic' => $pym->ic, 'add_date' => $pym->add_date]);
-      
-    }
+            if (is_null($status)) {
+                \Log::warning('No status found for student IC:', ['student_ic' => $pym->ic, 'add_date' => $pym->add_date]);
+            
+            }
 
             if($pym->process_type_id == 6 && $pym->process_status_id == 2)
             {
@@ -6370,7 +6370,7 @@ class FinanceController extends Controller
             {
                 $data['convo'][] = $ot;
 
-            }elseif(array_intersect([4], (array) $ot->groupid) && $ot->amount != 0)
+            }elseif(array_intersect([4], (array) $ot->groupid) && $ot->amount == 0)
             {
                 $data['fine'][] = $ot;
 
