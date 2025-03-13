@@ -1935,20 +1935,24 @@ function printScheduleTable(name, ic, staffNo, email) {
         html += `</tr>`;
     }
     
-    html += `</tbody>
+    // Change this part of your code
+    html += `
+                </tbody>
             </table>
             
             <footer>
                 © Timetable Management System
-            </footer>
+            </footer>`;
             
-            <script>
-                // Add page numbers when printing
-                window.onbeforeprint = function() {
-                    // Add a class to the document body for print-specific styling
-                    document.body.classList.add('printing');
-                };
-            </script>
+    // Add the script separately using string concatenation to avoid template literal issues
+    html += '<script>';
+    html += '// Add page numbers when printing\n';
+    html += 'window.onbeforeprint = function() {\n';
+    html += '    document.body.classList.add("printing");\n';
+    html += '};\n';
+    html += '</script>';
+
+    html += `
         </div>
     </body>
     </html>`;
