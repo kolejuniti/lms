@@ -1935,8 +1935,7 @@ function printScheduleTable(name, ic, staffNo, email) {
         html += `</tr>`;
     }
     
-    html += `
-                </tbody>
+    html += `</tbody>
             </table>
             
             <footer>
