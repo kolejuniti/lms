@@ -6340,7 +6340,7 @@ class FinanceController extends Controller
             $join->on('method.payment_id', '=', 'tblpayment.id')
                 ->on('method.row_num', '=', 'dtl.row_num');
         })
-        ->join('tblstudentclaim', 'dtl.claim_type_id', '=', 'tblstudentclaim.id')
+        ->leftjoin('tblstudentclaim', 'dtl.claim_type_id', '=', 'tblstudentclaim.id')
         ->leftJoin('tblpayment_bank', 'method.bank_id', '=', 'tblpayment_bank.id')
         ->leftjoin('tblpayment_method', 'method.claim_method_id', '=', 'tblpayment_method.id')
         ->whereBetween('tblpayment.add_date', [$request->from, $request->to])
@@ -6370,7 +6370,7 @@ class FinanceController extends Controller
             {
                 $data['convo'][] = $ot;
 
-            }elseif(array_intersect([4], (array) $ot->groupid) && $ot->amount == 0)
+            }elseif(array_intersect([4], (array) $ot->groupid) && $ot->amount != 0)
             {
                 $data['fine'][] = $ot;
 
