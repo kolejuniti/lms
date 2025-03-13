@@ -5048,54 +5048,54 @@ class FinanceController extends Controller
     public function dailyReport()
     {
 
-        // // Subquery for tblpaymentdtl with row numbers
-        // $paymentDtl = DB::table('tblpaymentdtl')
-        // ->join('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
-        // ->whereIn('tblstudentclaim.groupid', [1, 4, 8])
-        // ->select('tblpaymentdtl.id', 'tblpaymentdtl.payment_id', 'tblpaymentdtl.claim_type_id', 'tblpaymentdtl.amount',
-        //     DB::raw('ROW_NUMBER() OVER (PARTITION BY payment_id ORDER BY id) as row_num')
-        // );
-
-        // // Subquery for tblpaymentmethod with row numbers
-        // $paymentMethod = DB::table('tblpaymentmethod')
-        // ->select('id', 'payment_id', 'claim_method_id', 'bank_id', 'no_document',
-        //     DB::raw('ROW_NUMBER() OVER (PARTITION BY payment_id ORDER BY id) as row_num')
-        // );
-
-        // // Main query with join modifications
-        // $other = DB::table('tblpayment')
-        // ->joinSub($paymentDtl, 'dtl', function ($join) {
-        //     $join->on('dtl.payment_id', '=', 'tblpayment.id');
-        // })
-        // ->joinSub($paymentMethod, 'method', function ($join) {
-        //     $join->on('method.payment_id', '=', 'tblpayment.id')
-        //         ->on('method.row_num', '=', 'dtl.row_num');
-        // })
-
         // Subquery for tblpaymentdtl with row numbers
         $paymentDtl = DB::table('tblpaymentdtl')
         ->join('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
         ->whereIn('tblstudentclaim.groupid', [4])
-        ->select(
-            'tblpaymentdtl.id', 
-            'tblpaymentdtl.payment_id', 
-            'tblpaymentdtl.claim_type_id', 
-            'tblpaymentdtl.amount',
+        ->select('tblpaymentdtl.id', 'tblpaymentdtl.payment_id', 'tblpaymentdtl.claim_type_id', 'tblpaymentdtl.amount',
             DB::raw('ROW_NUMBER() OVER (PARTITION BY payment_id ORDER BY id) as row_num')
         );
 
-        // Simplified paymentMethod query without row_num
+        // Subquery for tblpaymentmethod with row numbers
         $paymentMethod = DB::table('tblpaymentmethod')
-        ->select('id', 'payment_id', 'claim_method_id', 'bank_id', 'no_document');
+        ->select('id', 'payment_id', 'claim_method_id', 'bank_id', 'no_document',
+            DB::raw('ROW_NUMBER() OVER (PARTITION BY payment_id ORDER BY id) as row_num')
+        );
 
-        // Main query with modified join
+        // Main query with join modifications
         $other = DB::table('tblpayment')
         ->joinSub($paymentDtl, 'dtl', function ($join) {
             $join->on('dtl.payment_id', '=', 'tblpayment.id');
         })
-        ->leftJoinSub($paymentMethod, 'method', function ($join) {
-            $join->on('method.payment_id', '=', 'tblpayment.id');
+        ->joinSub($paymentMethod, 'method', function ($join) {
+            $join->on('method.payment_id', '=', 'tblpayment.id')
+                ->on('method.row_num', '=', 'dtl.row_num');
         })
+
+        // Subquery for tblpaymentdtl with row numbers
+        // $paymentDtl = DB::table('tblpaymentdtl')
+        // ->join('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
+        // ->whereIn('tblstudentclaim.groupid', [4])
+        // ->select(
+        //     'tblpaymentdtl.id', 
+        //     'tblpaymentdtl.payment_id', 
+        //     'tblpaymentdtl.claim_type_id', 
+        //     'tblpaymentdtl.amount',
+        //     DB::raw('ROW_NUMBER() OVER (PARTITION BY payment_id ORDER BY id) as row_num')
+        // );
+
+        // // Simplified paymentMethod query without row_num
+        // $paymentMethod = DB::table('tblpaymentmethod')
+        // ->select('id', 'payment_id', 'claim_method_id', 'bank_id', 'no_document');
+
+        // // Main query with modified join
+        // $other = DB::table('tblpayment')
+        // ->joinSub($paymentDtl, 'dtl', function ($join) {
+        //     $join->on('dtl.payment_id', '=', 'tblpayment.id');
+        // })
+        // ->leftJoinSub($paymentMethod, 'method', function ($join) {
+        //     $join->on('method.payment_id', '=', 'tblpayment.id');
+        // })
         ->leftjoin('tblstudentclaim', 'dtl.claim_type_id', '=', 'tblstudentclaim.id')
         ->leftJoin('tblpayment_bank', 'method.bank_id', '=', 'tblpayment_bank.id')
         ->leftjoin('tblpayment_method', 'method.claim_method_id', '=', 'tblpayment_method.id')
