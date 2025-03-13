@@ -3465,11 +3465,18 @@ class AR_Controller extends Controller
     //     }
     // }
 
+    private function roundToNearestHalfHour($carbonInstance) 
+    {
+        $minute = $carbonInstance->minute;
+        $roundedMinute = $minute < 30 ? 0 : 30;
+        return $carbonInstance->setMinute($roundedMinute)->setSecond(0);
+    }
+
     public function createEvent(Request $request)
     {   
         // Parse the start and end times from the request
-        $startTime = Carbon::parse($request->start)->setMinute(0)->setSecond(0);
-        $endTime = Carbon::parse($request->end)->setMinute(0)->setSecond(0);
+        $startTime = $this->roundToNearestHalfHour(Carbon::parse($request->start));
+        $endTime = $this->roundToNearestHalfHour(Carbon::parse($request->end));
         $rehat1 = '13:30:00';
         $rehat2 = '14:00:00';
 
