@@ -5048,15 +5048,16 @@ class FinanceController extends Controller
     public function dailyReport()
     {
 
-        // Subquery for tblpaymentdtl with row numbers
-        $paymentDtl = DB::table('tblpaymentdtl')->get();
+        $payment = DB::table('tblpayment')
+                   ->join('students', 'tblpayment.student_ic', 'students.ic')
+                   ->select('tblpayment.*', 'students.name', 'students.ic', 'students.no_matric', 'students.status', 'students.program', 'students.semester', 'tblpayment.add_date')
+                   ->whereBetween('tblpayment.add_date', ['2024-01-02', '2024-01-02'])
+                   ->where('tblpayment.process_status_id', 2)
+                   ->whereNotNull('tblpayment.ref_no')
+                   ->orderByRaw('CAST(SUBSTRING(tblpayment.ref_no, 2) AS UNSIGNED) ASC')
+                   ->get();
 
-        $session = DB::table('sessions')->get();
-
-        dd($paymentDtl);
-
-
-        //dd($other);
+        dd($payment);
 
         return view('finance.report.dailyReport');
 
