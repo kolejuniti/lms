@@ -2079,7 +2079,42 @@ function printScheduleTable(name, ic, staffNo, email) {
             let eventList = scheduleData[d][t];
             
             if (eventList.length > 0) {
-                // Group events by their full time span
+                // Check if there's a REHAT event in this cell
+                let hasRehat = eventList.some(event => event.title === 'REHAT');
+                
+                // If there's a REHAT event, give it priority
+                if (hasRehat) {
+                    let rehatEvent = eventList.find(event => event.title === 'REHAT');
+                    
+                    let start = rehatEvent.start;
+                    let end = rehatEvent.end || new Date(start.getTime() + 60 * 60 * 1000);
+                    
+                    let startTimeStr = toHHMM(start);
+                    let endTimeStr = toHHMM(end);
+                    
+                    let startIndex = times.indexOf(startTimeStr);
+                    let endIndex = times.indexOf(endTimeStr);
+                    if (endIndex === -1) endIndex = times.length;
+                    
+                    let rowSpan = endIndex - startIndex;
+                    
+                    // Mark future slots to skip
+                    for (let k = 1; k < rowSpan; k++) {
+                        if (t + k < times.length) {
+                            skip[d][t + k] = true;
+                        }
+                    }
+                    
+                    // Create cell with REHAT
+                    html += `<td rowspan="${rowSpan}" class="rehat-cell">
+                                <div class="event-title">REHAT</div>
+                            </td>`;
+                    
+                    // Skip processing other events in this cell
+                    continue;
+                }
+                
+                // Group non-REHAT events by their full time span
                 let eventGroups = {};
                 
                 eventList.forEach(event => {
@@ -2130,17 +2165,11 @@ function printScheduleTable(name, ic, staffNo, email) {
                         }
                     }
                     
-                    // Check if all events are REHAT
-                    let allRehat = events.every(event => event.title === 'REHAT');
-                    let cellClass = allRehat ? 'rehat-cell' : 'event-cell';
-                    
                     // Create cell with rowspan
-                    html += `<td rowspan="${rowSpan}" class="${cellClass}">`;
+                    html += `<td rowspan="${rowSpan}" class="event-cell">`;
                     
-                    // If all events are REHAT, just show one REHAT label
-                    if (allRehat) {
-                        html += `<div class="event-title">REHAT</div>`;
-                    } else {
+                    // Now just display the events without REHAT check (handled earlier)
+                    {
                         // Start multi-event container if we have multiple events
                         if (events.length > 1) {
                             html += `<div class="multi-event-container">`;
