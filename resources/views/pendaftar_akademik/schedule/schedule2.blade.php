@@ -947,7 +947,7 @@ function setupCalendar() {
                 // Add the container to the event
                 info.el.appendChild(infoContainer);
             }
-        }
+        },
 
         editable: true,
         selectable: true,
