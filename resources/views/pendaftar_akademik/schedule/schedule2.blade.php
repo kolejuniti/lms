@@ -244,27 +244,58 @@ label {
     padding: 5px;
 }
 
+/* Remove the old positioning styles that were causing the issue */
 .fc-event .program-info {
     text-align: center;
     font-size: smaller;
     font-weight: bold;
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    padding: 5px;
-    background-color: rgba(0, 0, 0, 0.2);
-    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 2px 4px;
+    margin-top: 4px;
+    background-color: rgba(0, 0, 0, 0.1);
+    border-radius: 3px;
 }
 
 .fc-event .lecturer-info {
     text-align: center;
     font-size: smaller;
     font-weight: bold;
-    position: absolute;
-    bottom: 15px;
-    width: 100%;
-    padding: 5px;
-    background-color: rgba(0, 0, 0, 0.1);
+    padding: 2px 4px;
+    margin-top: 2px;
+    background-color: rgba(255, 255, 255, 0.25);
+    border-radius: 3px;
+}
+
+/* Improve calendar event styling */
+.fc-event {
+    overflow: visible !important;
+    display: flex;
+    flex-direction: column;
+}
+
+.fc-event-title-container {
+    flex: 1;
+}
+
+.fc-event-title {
+    font-weight: bold;
+    margin-bottom: 4px;
+}
+
+.event-program, .event-lecturer {
+    margin-top: 3px;
+    font-size: 0.75rem;
+}
+
+/* Add a bit more height to event cells to accommodate the content */
+.fc-timegrid-slot {
+    height: 65px !important;
+}
+
+/* Make sure event content is properly aligned */
+.fc-event-main {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 }
 
 .table {
@@ -879,20 +910,44 @@ function setupCalendar() {
         // Enhanced event styling
         eventDidMount: function(info) {
             if (info.event.title !== 'REHAT') {
+                // Create a container for better organization
+                var infoContainer = document.createElement('div');
+                infoContainer.classList.add('event-info-container');
+                infoContainer.style.marginTop = '8px';
+                infoContainer.style.display = 'flex';
+                infoContainer.style.flexDirection = 'column';
+                infoContainer.style.gap = '5px';
+                
                 // Add program info with better styling
                 var programDiv = document.createElement('div');
                 programDiv.classList.add('program-info');
-                programDiv.textContent = 'Programs: ' + (info.event.extendedProps.programInfo || 'N/A');
+                programDiv.style.padding = '3px';
+                programDiv.style.backgroundColor = 'rgba(0, 0, 0, 0.1)';
+                programDiv.style.borderRadius = '4px';
+                programDiv.style.fontSize = '0.75rem';
+                programDiv.style.fontWeight = 'bold';
+                programDiv.style.textAlign = 'center';
+                programDiv.textContent = 'Program: ' + (info.event.extendedProps.programInfo || 'N/A');
                 
-                // Add lecturer info
+                // Add lecturer info with distinct styling
                 var lectDiv = document.createElement('div');
                 lectDiv.classList.add('lecturer-info');
+                lectDiv.style.padding = '3px';
+                lectDiv.style.backgroundColor = 'rgba(255, 255, 255, 0.25)';
+                lectDiv.style.borderRadius = '4px';
+                lectDiv.style.fontSize = '0.75rem';
+                lectDiv.style.fontWeight = 'bold';
+                lectDiv.style.textAlign = 'center';
                 lectDiv.textContent = 'Lecturer: ' + (info.event.extendedProps.lectInfo || 'N/A');
                 
-                info.el.appendChild(programDiv);
-                info.el.appendChild(lectDiv);
+                // Add the elements to the container in the right order
+                infoContainer.appendChild(programDiv);
+                infoContainer.appendChild(lectDiv);
+                
+                // Add the container to the event
+                info.el.appendChild(infoContainer);
             }
-        },
+        }
 
         editable: true,
         selectable: true,
@@ -912,21 +967,35 @@ function setupCalendar() {
 
         // Event content customization
         eventContent: function(arg) {
+            // Create the main container
+            var container = document.createElement('div');
+            container.style.height = '100%';
+            container.style.display = 'flex';
+            container.style.flexDirection = 'column';
+            container.style.padding = '2px';
+            
+            // Time element at the top
+            var timeElement = document.createElement('div');
+            timeElement.classList.add('event-time');
+            timeElement.style.fontSize = '0.7rem';
+            timeElement.style.opacity = '0.9';
+            timeElement.style.fontWeight = 'bold';
+            timeElement.textContent = arg.timeText;
+            
+            // Title element below time
             var titleElement = document.createElement('div');
             titleElement.classList.add('event-title');
             titleElement.style.fontWeight = 'bold';
             titleElement.style.fontSize = '0.85rem';
             titleElement.style.padding = '2px 0';
+            titleElement.style.margin = '2px 0';
             titleElement.textContent = arg.event.title;
-
-            var timeElement = document.createElement('div');
-            timeElement.classList.add('event-time');
-            timeElement.style.fontSize = '0.75rem';
-            timeElement.style.opacity = '0.9';
-            timeElement.textContent = arg.timeText; 
-
-            var arrayOfDomNodes = [timeElement, titleElement];
-
+            
+            // Add elements to container
+            container.appendChild(timeElement);
+            container.appendChild(titleElement);
+            
+            // Description (if available)
             if (arg.event.extendedProps.description) {
                 var descriptionElement = document.createElement('div');
                 descriptionElement.classList.add('event-description');
@@ -934,12 +1003,44 @@ function setupCalendar() {
                 descriptionElement.style.opacity = '0.8';
                 descriptionElement.style.whiteSpace = 'normal';
                 descriptionElement.style.overflow = 'visible';
+                descriptionElement.style.marginBottom = '5px';
                 descriptionElement.textContent = arg.event.extendedProps.description;
-                arrayOfDomNodes.push(descriptionElement);
+                container.appendChild(descriptionElement);
             }
-
-            return { domNodes: arrayOfDomNodes };
-        },
+            
+            // Add program info directly in the content instead of appending later
+            if (arg.event.title !== 'REHAT' && arg.event.extendedProps) {
+                // Program info
+                if (arg.event.extendedProps.programInfo) {
+                    var programDiv = document.createElement('div');
+                    programDiv.classList.add('event-program');
+                    programDiv.style.fontSize = '0.7rem';
+                    programDiv.style.padding = '2px 4px';
+                    programDiv.style.marginTop = 'auto';
+                    programDiv.style.backgroundColor = 'rgba(0, 0, 0, 0.1)';
+                    programDiv.style.borderRadius = '3px';
+                    programDiv.style.fontWeight = 'bold';
+                    programDiv.textContent = 'Program: ' + arg.event.extendedProps.programInfo;
+                    container.appendChild(programDiv);
+                }
+                
+                // Lecturer info
+                if (arg.event.extendedProps.lectInfo) {
+                    var lectDiv = document.createElement('div');
+                    lectDiv.classList.add('event-lecturer');
+                    lectDiv.style.fontSize = '0.7rem';
+                    lectDiv.style.padding = '2px 4px';
+                    lectDiv.style.marginTop = '2px';
+                    lectDiv.style.backgroundColor = 'rgba(255, 255, 255, 0.25)';
+                    lectDiv.style.borderRadius = '3px';
+                    lectDiv.style.fontWeight = 'bold';
+                    lectDiv.textContent = 'Lecturer: ' + arg.event.extendedProps.lectInfo;
+                    container.appendChild(lectDiv);
+                }
+            }
+            
+            return { domNodes: [container] };
+        }
 
         // Event click handling
         eventClick: function (info) {
@@ -1127,341 +1228,6 @@ function setupCalendar() {
 
     // Initialize button handlers
     initializeButtonHandlers();
-}
-
-/**
- * Initialize action button handlers
- */
-function initializeButtonHandlers() {
-    // Publish schedule button
-    const publishBtn = document.getElementById('publish-schedule');
-    if (publishBtn) {
-        publishBtn.addEventListener('click', handlePublishSchedule);
-    }
-    
-    // Reset schedule button
-    const resetBtn = document.getElementById('reset-schedule');
-    if (resetBtn) {
-        resetBtn.addEventListener('click', handleResetSchedule);
-    }
-    
-    // Log schedule button
-    const logBtn = document.getElementById('log-schedule');
-    if (logBtn) {
-        logBtn.addEventListener('click', handleLogSchedule);
-    }
-}
-
-/**
- * Handle publish schedule button click
- */
-async function handlePublishSchedule() {
-    // Show loading state
-    const button = document.getElementById('publish-schedule');
-    button.disabled = true;
-    button.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Publishing...';
-    
-    try {
-        const urlParams = new URLSearchParams(window.location.search);
-        const id = window.location.pathname.split('/').pop();
-        const type = urlParams.get('type') || '';
-        
-        const response = await fetch(`/AR/schedule/publish/${id}?type=${type}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-            }
-        });
-        
-        if (response.ok) {
-            const data = await response.json();
-            if (data.error) {
-                showNotification(data.error, 'error');
-            } else {
-                showNotification(data.success || 'Timetable published successfully', 'success');
-                
-                // Update last published time
-                const now = new Date();
-                const formattedDate = now.toLocaleDateString('en-GB', {day: '2-digit', month: 'short', year: 'numeric'});
-                
-                $('.last-published').html(`
-                    <span class="badge bg-info p-2">
-                        <i class="fas fa-sync me-1"></i>
-                        Last published: ${formattedDate}
-                    </span>
-                `);
-            }
-        } else {
-            throw new Error('Failed to publish timetable');
-        }
-    } catch (error) {
-        showNotification('Error: ' + error.message, 'error');
-    } finally {
-        // Reset button state
-        button.disabled = false;
-        button.innerHTML = '<i class="fas fa-upload me-2"></i> Publish';
-    }
-}
-
-/**
- * Handle reset schedule button click
- */
-function handleResetSchedule() {
-    Swal.fire({
-        title: "Reset Timetable?",
-        text: "This action will remove all unsaved changes",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonText: '<i class="fas fa-redo me-1"></i> Yes, reset it!',
-        cancelButtonText: '<i class="fas fa-times me-1"></i> Cancel',
-        confirmButtonColor: '#f72585',
-        cancelButtonColor: '#6c757d'
-    }).then(async function (res) {
-        if (res.isConfirmed) {
-            // Show loading state
-            Swal.fire({
-                title: 'Resetting...',
-                html: '<i class="fas fa-spinner fa-spin fa-2x"></i>',
-                showConfirmButton: false,
-                allowOutsideClick: false,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
-            });
-            
-            try {
-                const urlParams = new URLSearchParams(window.location.search);
-                const id = window.location.pathname.split('/').pop();
-                const type = urlParams.get('type') || '';
-                
-                const response = await fetch(`/AR/schedule/reset/${id}?type=${type}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                    }
-                });
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data.error) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: data.error
-                        });
-                    } else {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Success',
-                            text: data.success || 'Timetable reset successfully'
-                        });
-                        
-                        // Refresh calendar
-                        calendar.refetchEvents();
-                    }
-                } else {
-                    throw new Error('Failed to reset timetable');
-                }
-            } catch (error) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Failed',
-                    text: 'Failed to reset timetable: ' + error.message
-                });
-            }
-        }
-    });
-}
-
-/**
- * Handle log schedule button click
- */
-async function handleLogSchedule() {
-    // Show loading state
-    const button = document.getElementById('log-schedule');
-    button.disabled = true;
-    button.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Logging...';
-    
-    try {
-        const urlParams = new URLSearchParams(window.location.search);
-        const id = window.location.pathname.split('/').pop();
-        const type = urlParams.get('type') || '';
-        
-        const response = await fetch(`/AR/schedule/log/${id}?type=${type}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-            }
-        });
-        
-        if (response.ok) {
-            const data = await response.json();
-            if (data.error) {
-                showNotification(data.error, 'error');
-            } else {
-                showNotification(data.success || 'Timetable logged successfully', 'success');
-                
-                // Refresh logged schedules
-                getLoggedSchedule();
-            }
-        } else {
-            throw new Error('Failed to log timetable');
-        }
-    } catch (error) {
-        showNotification('Error: ' + error.message, 'error');
-    } finally {
-        // Reset button state
-        button.disabled = false;
-        button.innerHTML = '<i class="fas fa-history me-2"></i> View Log';
-    }
-}
-
-/**
- * Fetch and display logged schedules
- */
-function getLoggedSchedule() {
-    const tableBody = document.getElementById('table');
-    if (!tableBody) return;
-    
-    // Show loading indicator
-    tableBody.innerHTML = '<tr><td colspan="3" class="text-center"><i class="fas fa-spinner fa-spin me-2"></i> Loading history...</td></tr>';
-    
-    const urlParams = new URLSearchParams(window.location.search);
-    const id = window.location.pathname.split('/').pop();
-    const type = urlParams.get('type') || '';
-    
-    $.ajax({
-        url: `/AR/schedule/log/${id}/getLoggedSchedule?type=${type}`,
-        type: "GET",
-        dataType: "json",
-        success: function(data) {
-            if ($.fn.DataTable.isDataTable('#complex_header')) {
-                $('#complex_header').DataTable().destroy();
-            }
-            
-            tableBody.innerHTML = '';
-            
-            if (data.length === 0) {
-                tableBody.innerHTML = '<tr><td colspan="3" class="text-center py-4"><i class="fas fa-info-circle me-2"></i>No logged schedules found</td></tr>';
-                return;
-            }
-            
-            let i = 1;
-            data.forEach(value => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${i}</td>
-                    <td>
-                        <div class="d-flex align-items-center">
-                            <i class="fas fa-calendar-day me-2 text-primary"></i>
-                            ${value.date}
-                        </div>
-                    </td>
-                    <td>
-                        <div class="action-buttons">
-                            <a href="/AR/schedule/log/${id}/view?idS=${value.date}&type=${type}" 
-                               class="btn btn-primary btn-sm me-2" data-toggle="tooltip" title="View Schedule">
-                               <i class="fas fa-eye me-1"></i> View
-                            </a>
-                            <a class="btn btn-danger btn-sm delete-log-btn" data-date="${value.date}" data-toggle="tooltip" title="Delete Schedule">
-                               <i class="fas fa-trash me-1"></i> Delete
-                            </a>
-                        </div>
-                    </td>
-                `;
-                tableBody.appendChild(row);
-                i++;
-            });
-            
-            // Re-initialize tooltips and event handlers
-            $('[data-toggle="tooltip"]').tooltip();
-            $('.delete-log-btn').on('click', function() {
-                const date = $(this).data('date');
-                deleteLog(date);
-            });
-            
-            // Re-initialize DataTable
-            initializeDataTables();
-        },
-        error: function(xhr, status, error) {
-            tableBody.innerHTML = `<tr><td colspan="3" class="text-center py-4 text-danger">
-                <i class="fas fa-exclamation-triangle me-2"></i> Error loading data: ${error}
-            </td></tr>`;
-            console.error("Error fetching schedule logs:", error);
-        }
-    });
-}
-
-/**
- * Delete logged schedule
- */
-function deleteLog(date) {
-    Swal.fire({
-        title: "Are you sure?",
-        text: "This action cannot be undone",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonText: '<i class="fas fa-trash me-1"></i> Yes, delete it!',
-        cancelButtonText: '<i class="fas fa-times me-1"></i> Cancel',
-        confirmButtonColor: '#e63946',
-        cancelButtonColor: '#6c757d'
-    }).then(async function (res) {
-        if (res.isConfirmed) {
-            // Show loading indicator
-            Swal.fire({
-                title: 'Deleting...',
-                html: '<i class="fas fa-spinner fa-spin fa-2x"></i>',
-                showConfirmButton: false,
-                allowOutsideClick: false,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
-            });
-            
-            try {
-                const urlParams = new URLSearchParams(window.location.search);
-                const id = window.location.pathname.split('/').pop();
-                const type = urlParams.get('type') || '';
-                
-                const response = await fetch(`/AR/schedule/log/${id}/delete?idS=${date}&type=${type}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                    },
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data.error) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: data.error
-                        });
-                    } else {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Success',
-                            text: data.success || 'Schedule log deleted successfully'
-                        });
-                        getLoggedSchedule();
-                    }
-                } else {
-                    throw new Error('Network response was not ok.');
-                }
-            } catch (error) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Failed',
-                    text: 'Failed to delete schedule log: ' + error.message
-                });
-            }
-        }
-    });
 }
 
 /**
