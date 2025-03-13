@@ -5054,7 +5054,9 @@ class FinanceController extends Controller
         ->whereIn('tblstudentclaim.groupid', [4])
         ->select('tblpaymentdtl.id', 'tblpaymentdtl.payment_id', 'tblpaymentdtl.claim_type_id', 'tblpaymentdtl.amount')->get();
 
-        dd($paymentDtl);
+        $session = DB::table('sessions')->get();
+
+        dd($session);
 
 
         //dd($other);
