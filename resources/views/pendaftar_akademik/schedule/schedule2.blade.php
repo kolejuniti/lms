@@ -907,46 +907,18 @@ function setupCalendar() {
         },
 
         // Enhanced event styling
-        eventDidMount: function(info) {
-            if (info.event.title !== 'REHAT') {
-                // Create a container for better organization
-                var infoContainer = document.createElement('div');
-                infoContainer.classList.add('event-info-container');
-                infoContainer.style.marginTop = '8px';
-                infoContainer.style.display = 'flex';
-                infoContainer.style.flexDirection = 'column';
-                infoContainer.style.gap = '5px';
-                
-                // Add program info with better styling
-                var programDiv = document.createElement('div');
-                programDiv.classList.add('program-info');
-                programDiv.style.padding = '3px';
-                programDiv.style.backgroundColor = 'rgba(0, 0, 0, 0.1)';
-                programDiv.style.borderRadius = '4px';
-                programDiv.style.fontSize = '0.75rem';
-                programDiv.style.fontWeight = 'bold';
-                programDiv.style.textAlign = 'center';
-                programDiv.textContent = 'Program: ' + (info.event.extendedProps.programInfo || 'N/A');
-                
-                // Add lecturer info with distinct styling
-                var lectDiv = document.createElement('div');
-                lectDiv.classList.add('lecturer-info');
-                lectDiv.style.padding = '3px';
-                lectDiv.style.backgroundColor = 'rgba(255, 255, 255, 0.25)';
-                lectDiv.style.borderRadius = '4px';
-                lectDiv.style.fontSize = '0.75rem';
-                lectDiv.style.fontWeight = 'bold';
-                lectDiv.style.textAlign = 'center';
-                lectDiv.textContent = 'Lecturer: ' + (info.event.extendedProps.lectInfo || 'N/A');
-                
-                // Add the elements to the container in the right order
-                infoContainer.appendChild(programDiv);
-                infoContainer.appendChild(lectDiv);
-                
-                // Add the container to the event
-                info.el.appendChild(infoContainer);
-            }
-        },
+        // Enhanced event styling - modified to prevent duplication
+eventDidMount: function(info) {
+    // Only add special styling for REHAT events if needed
+    if (info.event.title === 'REHAT') {
+        // Apply any REHAT-specific styling here
+        info.el.style.backgroundColor = '#e63946';
+        info.el.style.color = 'white';
+    }
+    
+    // No need to add program/lecturer info here anymore
+    // since we're handling it in eventContent
+},
 
         editable: true,
         selectable: true,
