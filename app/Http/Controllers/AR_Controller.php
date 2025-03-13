@@ -3051,9 +3051,6 @@ class AR_Controller extends Controller
                     $join->on('tblevents.group_id', 'student_subjek.group_id')
                          ->on('tblevents.group_name', 'student_subjek.group_name');
                 })
-                ->join('user_subjek', function($join){
-                    $join->on('tblevents.group_id', 'user_subjek.id');
-                })
                 ->where('tblevents.id', '!=', $id)
                 ->whereIn('student_subjek.student_ic', $students)
                 ->WhereIn('tblevents.session_id', $sessions)
@@ -3061,9 +3058,6 @@ class AR_Controller extends Controller
                 ->select('tblevents.*');
 
         $events = DB::table('tblevents')
-                ->join('user_subjek', function($join){
-                    $join->on('tblevents.group_id', 'user_subjek.id');
-                })
                 ->where('tblevents.id', '!=', $id)
                 ->where('tblevents.user_ic', $event->user_ic)
                 ->whereIn('tblevents.session_id', $sessions)
