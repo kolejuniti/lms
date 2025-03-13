@@ -3100,6 +3100,371 @@ class AR_Controller extends Controller
         return response()->json($formattedEvents);
     }
 
+    // public function createEvent(Request $request)
+    // {   
+    //     // Parse the start and end times from the request
+    //     $startTime = Carbon::parse($request->start)->setMinute(0)->setSecond(0);
+    //     $endTime = Carbon::parse($request->end)->setMinute(0)->setSecond(0);
+    //     $rehat1 = '13:30:00';
+    //     $rehat2 = '14:00:00';
+
+    //     $rehat3 = '12:30:00';
+    //     $rehat4 = '14:30:00';
+
+    //     // Get the day of the week (e.g., Thursday)
+    //     $dayOfWeek = $startTime->format('l');
+
+    //     // Convert startTime and endTime to only time format
+    //     $startTimeOnly = $startTime->format('H:i');
+    //     $endTimeOnly = $endTime->format('H:i');
+
+    //     $roomDetails = DB::table('tbllecture_room')
+    //                    ->where('tbllecture_room.id', $request->roomId)
+    //                    ->select('tbllecture_room.*')
+    //                    ->first();
+        
+    //     $column = null;
+
+
+    //     if($request->groupType == 'Kuliah')
+    //     {
+    //         $column = 'subjek_structure.meeting_hour AS course_credit';
+
+    //     }elseif($request->groupType == 'Amali')
+    //     {
+    //         $column = 'subjek_structure.amali_hour AS course_credit';
+    //     }
+        
+    //     // Run the query only if a valid column is selected
+    //     if ($column) {
+    //         $courseDetails = DB::table('student_subjek')
+    //             ->join('subjek', 'student_subjek.courseid', '=', 'subjek.sub_id')
+    //             ->join('subjek_structure', 'subjek.sub_id', '=', 'subjek_structure.courseID')
+    //             ->where([
+    //                 ['group_id', '=', $request->groupId],
+    //                 ['group_name', '=', $request->groupName]
+    //             ])
+    //             ->select(DB::raw($column))
+    //             ->first();
+    //     }
+                       
+    //     $session = DB::table('sessions')
+    //                ->where('Status', 'ACTIVE')
+    //                ->pluck('SessionID')->toArray();
+ 
+    //     if(DB::table('tblevents')
+    //     ->where('tblevents.lecture_id', $request->id)
+    //     ->whereIn('tblevents.session_id', $session)
+    //     ->whereRaw('DAYNAME(start) = ?', [$dayOfWeek])
+    //     ->where(function ($query) use ($startTimeOnly, $endTimeOnly) {
+    //         $query->where(function ($query) use ($startTimeOnly) {
+    //             $query->whereRaw('? BETWEEN TIME(start) AND TIME(end)', [$startTimeOnly])
+    //                   ->whereRaw('? != TIME(start)', [$startTimeOnly])
+    //                   ->whereRaw('? != TIME(end)', [$startTimeOnly]);
+    //         })
+    //         ->orWhere(function ($query) use ($endTimeOnly) {
+    //             $query->whereRaw('? BETWEEN TIME(start) AND TIME(end)', [$endTimeOnly])
+    //                   ->whereRaw('? != TIME(start)', [$endTimeOnly])
+    //                   ->whereRaw('? != TIME(end)', [$endTimeOnly]);
+    //         })
+    //         ->orWhere(function ($query) use ($startTimeOnly, $endTimeOnly) {
+    //             $query->whereRaw('? < TIME(start)', [$startTimeOnly])
+    //                   ->whereRaw('? = TIME(end)', [$endTimeOnly]);
+    //         })
+    //         ->orWhere(function ($query) use ($startTimeOnly, $endTimeOnly) {
+    //             $query->whereRaw('? = TIME(start)', [$startTimeOnly])
+    //                   ->whereRaw('? > TIME(end)', [$endTimeOnly]);
+    //         })
+    //         ->orWhere(function ($query) use ($startTimeOnly, $endTimeOnly) {
+    //             $query->whereRaw('? < TIME(start)', [$startTimeOnly])
+    //                   ->whereRaw('? > TIME(end)', [$endTimeOnly]);
+    //         });
+    //     })
+
+    //     ->exists())
+    //     {
+
+    //         Log::info('Overlap detected for event on:', [
+    //             'dayOfWeek' => $dayOfWeek,
+    //             'startTime' => $startTime->toDateTimeString(),
+    //             'endTime' => $endTime->toDateTimeString(),
+    //             'overlapStart' => $rehat1,
+    //             'overlapEnd' => $rehat2,
+    //         ]);
+
+    //         return response()->json(['error' => 'Time selected is already occupied in the same room, Please select another time! 1']);
+
+    //     }else{
+
+    //         if(DB::table('tblevents')
+    //         ->where('tblevents.user_ic', $request->id)
+    //         // ->where('tblevents.id', '!=', $id)
+    //         // ->where('lecture_id', $event->lecture_id)
+    //         ->whereIn('tblevents.session_id', $session)
+    //         ->whereRaw('DAYNAME(start) = ?', [$dayOfWeek])
+    //         ->where(function ($query) use ($startTimeOnly, $endTimeOnly) {
+    //             $query->where(function ($query) use ($startTimeOnly) {
+    //                 $query->whereRaw('? BETWEEN TIME(start) AND TIME(end)', [$startTimeOnly])
+    //                     ->whereRaw('? != TIME(start)', [$startTimeOnly])
+    //                     ->whereRaw('? != TIME(end)', [$startTimeOnly]);
+    //             })
+    //             ->orWhere(function ($query) use ($endTimeOnly) {
+    //                 $query->whereRaw('? BETWEEN TIME(start) AND TIME(end)', [$endTimeOnly])
+    //                     ->whereRaw('? != TIME(start)', [$endTimeOnly])
+    //                     ->whereRaw('? != TIME(end)', [$endTimeOnly]);
+    //             })
+    //             ->orWhere(function ($query) use ($startTimeOnly, $endTimeOnly) {
+    //                 $query->whereRaw('? < TIME(start)', [$startTimeOnly])
+    //                     ->whereRaw('? = TIME(end)', [$endTimeOnly]);
+    //             })
+    //             ->orWhere(function ($query) use ($startTimeOnly, $endTimeOnly) {
+    //                 $query->whereRaw('? = TIME(start)', [$startTimeOnly])
+    //                     ->whereRaw('? > TIME(end)', [$endTimeOnly]);
+    //             })
+    //             ->orWhere(function ($query) use ($startTimeOnly, $endTimeOnly) {
+    //                 $query->whereRaw('? < TIME(start)', [$startTimeOnly])
+    //                     ->whereRaw('? > TIME(end)', [$endTimeOnly]);
+    //             });
+    //         })
+    //         ->exists())
+    //         {
+
+    //             return response()->json(['error' => 'Time selected is already occupied by the same Lecturer, please select another time!']);
+
+    //         }else{
+
+    //             if($dayOfWeek == 'Friday')
+    //             {
+
+    //                 if(($startTimeOnly <= $rehat3 && $endTimeOnly >= $rehat4) ||                 
+    //                 ($startTimeOnly >= $rehat3 && $startTimeOnly < $rehat4) ||                 
+    //                 ($endTimeOnly > $rehat3 && $endTimeOnly <= $rehat4) ||
+    //                 ($startTimeOnly <= $rehat3 && $endTimeOnly > $rehat3 && $endTimeOnly <= $rehat4))
+    //                 {
+
+    //                     Log::info('Overlap detected for event on:', [
+    //                         'dayOfWeek' => $dayOfWeek,
+    //                         'startTime' => $startTime->toDateTimeString(),
+    //                         'endTime' => $endTime->toDateTimeString(),
+    //                         'overlapStart' => $rehat3,
+    //                         'overlapEnd' => $rehat4,
+    //                     ]);
+            
+    //                     return response()->json(['error' => 'Time selected is already occupied, please select another time! 4']);
+
+    //                 }
+
+    //             }else{
+
+    //                 if(($startTimeOnly <= $rehat1 && $endTimeOnly >= $rehat2) ||
+    //                 ($startTimeOnly >= $rehat1 && $endTimeOnly <= $rehat2) ||
+    //                 ($startTimeOnly <= $rehat1 && $endTimeOnly <= $rehat2 && $endTimeOnly > $rehat1) ||
+    //                 ($startTimeOnly >= $rehat1 && $endTimeOnly >= $rehat2 && $startTimeOnly < $rehat2))
+    //                 {
+
+    //                     Log::info('Overlap detected for event on:', [
+    //                         'dayOfWeek' => $dayOfWeek,
+    //                         'startTime' => $startTime->toDateTimeString(),
+    //                         'endTime' => $endTime->toDateTimeString(),
+    //                         'overlapStart' => $rehat3,
+    //                         'overlapEnd' => $rehat4,
+    //                     ]);
+            
+    //                     return response()->json(['error' => 'Time selected is already occupied, please select another time! 7']);
+    //                 }
+
+    //             }
+
+    //             $events = DB::table('tblevents')
+    //             ->whereRaw('DAYNAME(start) = ?', [$dayOfWeek])
+    //             ->where('lecture_id', $request->roomId)
+    //             ->select('start', 'end')
+    //             ->get();
+
+    //             $totalHours = 0;
+
+    //             foreach ($events as $event) {
+    //                 $start = Carbon::parse($event->start);
+    //                 $end = Carbon::parse($event->end);
+    //                 $hours = $end->diffInHours($start);
+    //                 $totalHours += $hours;
+    //             }
+
+    //             $start2 = Carbon::parse($request->start);
+    //             $end2 = Carbon::parse($request->end);
+    //             $hours2 = $end2->diffInHours($start2);
+
+    //             $newTotalHours = $hours2;
+
+    //             if(($totalHours + $newTotalHours) > $roomDetails->total_hour)
+    //             {
+
+    //                 return response()->json(['error' => 'Total Hour for ' . $dayOfWeek . ' already exceed ' .  $roomDetails->total_hour . '. Please clear any event and try again!']);
+
+    //             }else{
+
+    //                 $capacity = DB::table('student_subjek')->where([
+    //                                 ['group_id', $request->groupId],
+    //                                 ['group_name', $request->groupName]
+    //                             ])
+    //                             ->select(DB::raw('COUNT(student_subjek.id) AS capacity'))
+    //                             ->first();
+
+    //                 if($capacity->capacity > $roomDetails->capacity)
+    //                 {
+
+    //                     return response()->json(['error' => 'Total student is ' . $capacity->capacity . '. Capacity cannot exceed ' .  $roomDetails->capacity . ', Please try with a different class!']);
+                        
+    //                 }else{
+
+    //                     $credit_hour = DB::table('tblevents')
+    //                                     ->join('tbllecture', 'tblevents.lecture_id', 'tbllecture.id')
+    //                                     ->where([
+    //                                         ['tblevents.user_ic', $request->id],
+    //                                         ['tblevents.group_id', $request->groupId],
+    //                                         ['tblevents.group_name', $request->groupName],
+    //                                         ['tblevents.session_id', $request->session],
+    //                                         ['tblevents.title', $request->groupType]
+    //                                     ])->get();
+
+    //                     $totalCredit = 0;
+
+    //                     foreach($credit_hour as $cr)
+    //                     {
+
+    //                         $start3 = Carbon::parse($cr->start);
+    //                         $end3 = Carbon::parse($cr->end);
+    //                         $hours3 = $end3->diffInHours($start3);
+    //                         $totalCredit += $hours3;
+
+    //                     }
+
+    //                     if(($totalCredit + $newTotalHours) > $courseDetails->course_credit)
+    //                     {   
+
+    //                         return response()->json(['error' => 'Total meeting hour is already at ' . $totalCredit . ' for this subject. Trying to add ' .  $newTotalHours . ' more will exceed ' .  $courseDetails->course_credit . '!']);
+
+    //                     }else{
+
+    //                         $students = DB::table('student_subjek')
+    //                                     ->where([
+    //                                         ['group_id', $request->groupId],
+    //                                         ['group_name', $request->groupName]
+    //                                     ])->pluck('student_ic'); 
+
+    //                         if(DB::table('tblevents')
+    //                         ->join('tbllecture', 'tblevents.lecture_id', 'tbllecture.id')
+    //                         ->join('student_subjek', function($join){
+    //                             $join->on('tblevents.group_id', 'student_subjek.group_id');
+    //                             $join->on('tblevents.group_name', 'student_subjek.group_name');
+    //                         })
+    //                         ->whereIn('session_id', $session)
+    //                         ->whereIn('student_subjek.student_ic', $students)
+    //                         // ->where('tbllecture.session_id', $request->session)
+    //                         ->whereRaw('DAYNAME(start) = ?', [$dayOfWeek])
+    //                         ->where(function ($query) use ($startTimeOnly, $endTimeOnly) {
+    //                             $query->where(function ($query) use ($startTimeOnly) {
+    //                                 $query->whereRaw('? BETWEEN TIME(start) AND TIME(end)', [$startTimeOnly])
+    //                                     ->whereRaw('? != TIME(start)', [$startTimeOnly])
+    //                                     ->whereRaw('? != TIME(end)', [$startTimeOnly]);
+    //                             })
+    //                             ->orWhere(function ($query) use ($endTimeOnly) {
+    //                                 $query->whereRaw('? BETWEEN TIME(start) AND TIME(end)', [$endTimeOnly])
+    //                                     ->whereRaw('? != TIME(start)', [$endTimeOnly])
+    //                                     ->whereRaw('? != TIME(end)', [$endTimeOnly]);
+    //                             })
+    //                             ->orWhere(function ($query) use ($startTimeOnly, $endTimeOnly) {
+    //                                 $query->whereRaw('? <= TIME(start)', [$startTimeOnly])
+    //                                     ->whereRaw('? >= TIME(end)', [$endTimeOnly]);
+    //                             });
+    //                         })
+    //                         ->exists()){
+
+    //                             return response()->json(['error' => 'Students in this class is already booked with the same period in another room/class!']);
+
+    //                         }else{
+
+    //                             if($startTimeOnly < $roomDetails->start || $endTimeOnly < $roomDetails->start || $startTimeOnly > $roomDetails->end || $endTimeOnly > $roomDetails->end)
+    //                             {
+
+    //                                 return response()->json(['error' => 'Event must be created inside the room time range of ' . date('h:i A', (strtotime($roomDetails->start))) . ' - ' . date('h:i A', (strtotime($roomDetails->end)))]);
+
+    //                             }else{
+
+    //                                 $event = new Tblevent;
+    //                                 $event->lecture_id = $request->roomId;
+    //                                 $event->user_ic = $request->id;
+    //                                 $event->group_id = $request->groupId;
+    //                                 $event->group_name = $request->groupName;
+    //                                 $event->session_id = $request->session;
+    //                                 $event->title = $request->groupType;
+    //                                 $event->start = $startTime->format('Y-m-d H:i:s');
+    //                                 $event->end = $endTime->format('Y-m-d H:i:s');
+    //                                 $event->save();
+
+    //                                 $events = Tblevent::join('user_subjek', 'tblevents.group_id', 'user_subjek.id')
+    //                                         ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
+    //                                         ->join('tbllecture_room', 'tblevents.lecture_id', 'tbllecture_room.id')
+    //                                         ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+    //                                         ->where([
+    //                                             ['sessions.Status', 'ACTIVE']
+    //                                             ])
+    //                                         ->where('tblevents.id', $event->id)
+    //                                         ->groupBy('subjek.sub_id', 'tblevents.id')
+    //                                         ->select('tblevents.*', 'subjek.course_code AS code' , 'subjek.course_name AS subject', 'tbllecture_room.name AS room', 'sessions.SessionName AS session')->first();
+
+    //                                 $program = DB::table('student_subjek')
+    //                                             ->join('students', 'student_subjek.student_ic', 'students.ic')
+    //                                             ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+    //                                             ->where([
+    //                                             ['student_subjek.group_id', $events->group_id],
+    //                                             ['student_subjek.group_name', $events->group_name]
+    //                                             ])
+    //                                             ->groupBy('tblprogramme.id')
+    //                                             ->select('tblprogramme.*')
+    //                                             ->get();
+
+    //                                 // Convert program information into a string
+    //                                 $programInfo = $program->map(function($prog) {
+    //                                     return $prog->progcode; // Assuming 'progname' is the relevant field you want to display
+    //                                 })->implode(', ');
+            
+
+    //                                 $count = DB::table('student_subjek')
+    //                                         ->where([
+    //                                         ['group_id', $events->group_id],
+    //                                         ['group_name', $events->group_name]
+    //                                         ])
+    //                                         ->select(DB::raw('COUNT(student_ic) AS total_student'))
+    //                                         ->first();
+
+    //                                 return response()->json([
+
+    //                                     'event' => [
+    //                                         'id' => $events->id,
+    //                                         'title' => strtoupper($events->room) . ' (' . $events->session . ')', 
+    //                                         'description' => $events->code . ' - ' . $events->subject . ' (' . $events->group_name .') ' . '|' . ' Total Student :' . ' ' .$count->total_student,
+    //                                         'start' => $events->start,
+    //                                         'end' => $events->end,
+    //                                         'programInfo' => $programInfo // Add program info to the event object
+    //                                     ]
+
+    //                                 ]);
+                                    
+    //                             }
+
+    //                         }
+
+    //                     }
+
+    //                 }
+
+    //             }
+    //         }
+
+    //     }
+    // }
+
     public function createEvent(Request $request)
     {   
         // Parse the start and end times from the request
@@ -3125,7 +3490,6 @@ class AR_Controller extends Controller
         
         $column = null;
 
-
         if($request->groupType == 'Kuliah')
         {
             $column = 'subjek_structure.meeting_hour AS course_credit';
@@ -3147,14 +3511,15 @@ class AR_Controller extends Controller
                 ->select(DB::raw($column))
                 ->first();
         }
-                       
+
         $session = DB::table('sessions')
                    ->where('Status', 'ACTIVE')
                    ->pluck('SessionID')->toArray();
+                       
  
         if(DB::table('tblevents')
         ->join('user_subjek', 'tblevents.group_id', 'user_subjek.id')
-        ->where('tblevents.lecture_id', $request->id)
+        ->where('tblevents.lecture_id', $request->roomId)
         ->whereIn('tblevents.session_id', $session)
         ->whereRaw('DAYNAME(start) = ?', [$dayOfWeek])
         ->where(function ($query) use ($startTimeOnly, $endTimeOnly) {
@@ -3180,8 +3545,7 @@ class AR_Controller extends Controller
                 $query->whereRaw('? < TIME(start)', [$startTimeOnly])
                       ->whereRaw('? > TIME(end)', [$endTimeOnly]);
             });
-        })
-
+        })  
         ->exists())
         {
 
@@ -3193,268 +3557,227 @@ class AR_Controller extends Controller
                 'overlapEnd' => $rehat2,
             ]);
 
-            return response()->json(['error' => 'Time selected is already occupied in the same room, Please select another time! 1']);
+            return response()->json(['error' => 'Time selected is already occupied, please select another time!']);
 
         }else{
 
-            if(DB::table('tblevents')
-            ->join('user_subjek', 'tblevents.group_id', 'user_subjek.id')
-            ->where('tblevents.user_ic', $request->id)
-            // ->where('tblevents.id', '!=', $id)
-            // ->where('lecture_id', $event->lecture_id)
-            ->whereIn('tblevents.session_id', $session)
-            ->whereRaw('DAYNAME(start) = ?', [$dayOfWeek])
-            ->where(function ($query) use ($startTimeOnly, $endTimeOnly) {
-                $query->where(function ($query) use ($startTimeOnly) {
-                    $query->whereRaw('? BETWEEN TIME(start) AND TIME(end)', [$startTimeOnly])
-                        ->whereRaw('? != TIME(start)', [$startTimeOnly])
-                        ->whereRaw('? != TIME(end)', [$startTimeOnly]);
-                })
-                ->orWhere(function ($query) use ($endTimeOnly) {
-                    $query->whereRaw('? BETWEEN TIME(start) AND TIME(end)', [$endTimeOnly])
-                        ->whereRaw('? != TIME(start)', [$endTimeOnly])
-                        ->whereRaw('? != TIME(end)', [$endTimeOnly]);
-                })
-                ->orWhere(function ($query) use ($startTimeOnly, $endTimeOnly) {
-                    $query->whereRaw('? < TIME(start)', [$startTimeOnly])
-                        ->whereRaw('? = TIME(end)', [$endTimeOnly]);
-                })
-                ->orWhere(function ($query) use ($startTimeOnly, $endTimeOnly) {
-                    $query->whereRaw('? = TIME(start)', [$startTimeOnly])
-                        ->whereRaw('? > TIME(end)', [$endTimeOnly]);
-                })
-                ->orWhere(function ($query) use ($startTimeOnly, $endTimeOnly) {
-                    $query->whereRaw('? < TIME(start)', [$startTimeOnly])
-                        ->whereRaw('? > TIME(end)', [$endTimeOnly]);
-                });
-            })
-            ->exists())
+            if($dayOfWeek == 'Friday')
             {
 
-                return response()->json(['error' => 'Time selected is already occupied by the same Lecturer, please select another time!']);
+                if(($startTimeOnly <= $rehat3 && $endTimeOnly >= $rehat4) ||
+                ($startTimeOnly >= $rehat3 && $endTimeOnly <= $rehat4) ||
+                ($startTimeOnly <= $rehat3 && $endTimeOnly <= $rehat4 && $endTimeOnly > $rehat3))
+                {
+
+                    Log::info('Overlap detected for event on:', [
+                        'dayOfWeek' => $dayOfWeek,
+                        'startTime' => $startTime->toDateTimeString(),
+                        'endTime' => $endTime->toDateTimeString(),
+                        'overlapStart' => $rehat3,
+                        'overlapEnd' => $rehat4,
+                    ]);
+        
+                    return response()->json(['error' => 'Time selected is already occupied, please select another time!']);
+
+                }
 
             }else{
 
-                if($dayOfWeek == 'Friday')
+
+                if(($startTimeOnly <= $rehat1 && $endTimeOnly >= $rehat2) ||
+                ($startTimeOnly >= $rehat1 && $endTimeOnly <= $rehat2) ||
+                ($startTimeOnly <= $rehat1 && $endTimeOnly <= $rehat2 && $endTimeOnly > $rehat1) ||
+                ($startTimeOnly >= $rehat1 && $endTimeOnly >= $rehat2 && $startTimeOnly < $rehat2))
                 {
 
-                    if(($startTimeOnly <= $rehat3 && $endTimeOnly >= $rehat4) ||                 
-                    ($startTimeOnly >= $rehat3 && $startTimeOnly < $rehat4) ||                 
-                    ($endTimeOnly > $rehat3 && $endTimeOnly <= $rehat4) ||
-                    ($startTimeOnly <= $rehat3 && $endTimeOnly > $rehat3 && $endTimeOnly <= $rehat4))
+                    Log::info('Overlap detected for event on:', [
+                        'dayOfWeek' => $dayOfWeek,
+                        'startTime' => $startTime->toDateTimeString(),
+                        'endTime' => $endTime->toDateTimeString(),
+                        'overlapStart' => $rehat3,
+                        'overlapEnd' => $rehat4,
+                    ]);
+        
+                    return response()->json(['error' => 'Time selected is already occupied, please select another time!']);
+                }
+
+            }
+
+            $events = DB::table('tblevents')
+            ->whereRaw('DAYNAME(start) = ?', [$dayOfWeek])
+            ->where('lecture_id', $request->roomId)
+            ->select('start', 'end')
+            ->get();
+
+            $totalHours = 0;
+
+            foreach ($events as $event) {
+                $start = Carbon::parse($event->start);
+                $end = Carbon::parse($event->end);
+                $hours = $end->diffInHours($start);
+                $totalHours += $hours;
+            }
+
+            $start2 = Carbon::parse($request->start);
+            $end2 = Carbon::parse($request->end);
+            $hours2 = $end2->diffInHours($start2);
+
+            $newTotalHours = $hours2;
+
+            if(($totalHours + $newTotalHours) > $roomDetails->total_hour)
+            {
+
+                return response()->json(['error' => 'Total Hour for ' . $dayOfWeek . ' already exceed ' .  $roomDetails->total_hour . '. Please clear any event and try again!']);
+
+            }else{
+
+                $capacity = DB::table('student_subjek')->where([
+                                ['group_id', $request->groupId],
+                                ['group_name', $request->groupName]
+                            ])
+                            ->select(DB::raw('COUNT(student_subjek.id) AS capacity'))
+                            ->first();
+
+                if($capacity->capacity > $roomDetails->capacity)
+                {
+
+                    return response()->json(['error' => 'Total student is ' . $capacity->capacity . '. Capacity cannot exceed ' .  $roomDetails->capacity . ', Please try with a different class!']);
+                    
+                }else{
+
+                    $credit_hour = DB::table('tblevents')
+                                    ->join('tbllecture', 'tblevents.lecture_id', 'tbllecture.id')
+                                    ->where([
+                                        ['tblevents.user_ic', $request->id],
+                                        ['tblevents.group_id', $request->groupId],
+                                        ['tblevents.group_name', $request->groupName],
+                                        ['tblevents.session_id', $request->session],
+                                        ['tblevents.title', $request->groupType]
+                                    ])->get();
+
+                    $totalCredit = 0;
+
+                    foreach($credit_hour as $cr)
                     {
 
-                        Log::info('Overlap detected for event on:', [
-                            'dayOfWeek' => $dayOfWeek,
-                            'startTime' => $startTime->toDateTimeString(),
-                            'endTime' => $endTime->toDateTimeString(),
-                            'overlapStart' => $rehat3,
-                            'overlapEnd' => $rehat4,
-                        ]);
-            
-                        return response()->json(['error' => 'Time selected is already occupied, please select another time! 4']);
+                        $start3 = Carbon::parse($cr->start);
+                        $end3 = Carbon::parse($cr->end);
+                        $hours3 = $end3->diffInHours($start3);
+                        $totalCredit += $hours3;
 
                     }
 
-                }else{
-
-                    if(($startTimeOnly <= $rehat1 && $endTimeOnly >= $rehat2) ||
-                    ($startTimeOnly >= $rehat1 && $endTimeOnly <= $rehat2) ||
-                    ($startTimeOnly <= $rehat1 && $endTimeOnly <= $rehat2 && $endTimeOnly > $rehat1) ||
-                    ($startTimeOnly >= $rehat1 && $endTimeOnly >= $rehat2 && $startTimeOnly < $rehat2))
+                    if(($totalCredit + $newTotalHours) > $courseDetails->course_credit)
                     {
 
-                        Log::info('Overlap detected for event on:', [
-                            'dayOfWeek' => $dayOfWeek,
-                            'startTime' => $startTime->toDateTimeString(),
-                            'endTime' => $endTime->toDateTimeString(),
-                            'overlapStart' => $rehat3,
-                            'overlapEnd' => $rehat4,
-                        ]);
-            
-                        return response()->json(['error' => 'Time selected is already occupied, please select another time! 7']);
-                    }
+                        return response()->json(['error' => 'Total meeting hour is already at ' . $totalCredit . ' for this subject. Trying to add ' .  $newTotalHours . ' more will exceed ' .  $courseDetails->course_credit . '!']);
 
-                }
-
-                $events = DB::table('tblevents')
-                ->whereRaw('DAYNAME(start) = ?', [$dayOfWeek])
-                ->where('lecture_id', $request->roomId)
-                ->select('start', 'end')
-                ->get();
-
-                $totalHours = 0;
-
-                foreach ($events as $event) {
-                    $start = Carbon::parse($event->start);
-                    $end = Carbon::parse($event->end);
-                    $hours = $end->diffInHours($start);
-                    $totalHours += $hours;
-                }
-
-                $start2 = Carbon::parse($request->start);
-                $end2 = Carbon::parse($request->end);
-                $hours2 = $end2->diffInHours($start2);
-
-                $newTotalHours = $hours2;
-
-                if(($totalHours + $newTotalHours) > $roomDetails->total_hour)
-                {
-
-                    return response()->json(['error' => 'Total Hour for ' . $dayOfWeek . ' already exceed ' .  $roomDetails->total_hour . '. Please clear any event and try again!']);
-
-                }else{
-
-                    $capacity = DB::table('student_subjek')->where([
-                                    ['group_id', $request->groupId],
-                                    ['group_name', $request->groupName]
-                                ])
-                                ->select(DB::raw('COUNT(student_subjek.id) AS capacity'))
-                                ->first();
-
-                    if($capacity->capacity > $roomDetails->capacity)
-                    {
-
-                        return response()->json(['error' => 'Total student is ' . $capacity->capacity . '. Capacity cannot exceed ' .  $roomDetails->capacity . ', Please try with a different class!']);
-                        
                     }else{
 
-                        $credit_hour = DB::table('tblevents')
-                                        ->join('tbllecture', 'tblevents.lecture_id', 'tbllecture.id')
-                                        ->where([
-                                            ['tblevents.user_ic', $request->id],
-                                            ['tblevents.group_id', $request->groupId],
-                                            ['tblevents.group_name', $request->groupName],
-                                            ['tblevents.session_id', $request->session],
-                                            ['tblevents.title', $request->groupType]
-                                        ])->get();
+                        $students = DB::table('student_subjek')
+                                    ->where([
+                                        ['group_id', $request->groupId],
+                                        ['group_name', $request->groupName]
+                                    ])->pluck('student_ic'); 
 
-                        $totalCredit = 0;
+                        if(DB::table('tblevents')
+                        ->join('tbllecture', 'tblevents.lecture_id', 'tbllecture.id')
+                        ->join('student_subjek', function($join){
+                            $join->on('tblevents.group_id', 'student_subjek.group_id');
+                            $join->on('tblevents.group_name', 'student_subjek.group_name');
+                        })
+                        ->whereIn('student_subjek.student_ic', $students)
+                        ->where('tbllecture.session_id', $request->session)
+                        ->whereRaw('DAYNAME(start) = ?', [$dayOfWeek])
+                        ->where(function ($query) use ($startTimeOnly, $endTimeOnly) {
+                            $query->where(function ($query) use ($startTimeOnly) {
+                                $query->whereRaw('? BETWEEN TIME(start) AND TIME(end)', [$startTimeOnly])
+                                      ->whereRaw('? != TIME(start)', [$startTimeOnly])
+                                      ->whereRaw('? != TIME(end)', [$startTimeOnly]);
+                            })
+                            ->orWhere(function ($query) use ($endTimeOnly) {
+                                $query->whereRaw('? BETWEEN TIME(start) AND TIME(end)', [$endTimeOnly])
+                                      ->whereRaw('? != TIME(start)', [$endTimeOnly])
+                                      ->whereRaw('? != TIME(end)', [$endTimeOnly]);
+                            })
+                            ->orWhere(function ($query) use ($startTimeOnly, $endTimeOnly) {
+                                $query->whereRaw('? <= TIME(start)', [$startTimeOnly])
+                                      ->whereRaw('? >= TIME(end)', [$endTimeOnly]);
+                            });
+                        })
+                        ->exists()){
 
-                        foreach($credit_hour as $cr)
-                        {
-
-                            $start3 = Carbon::parse($cr->start);
-                            $end3 = Carbon::parse($cr->end);
-                            $hours3 = $end3->diffInHours($start3);
-                            $totalCredit += $hours3;
-
-                        }
-
-                        if(($totalCredit + $newTotalHours) > $courseDetails->course_credit)
-                        {   
-
-                            return response()->json(['error' => 'Total meeting hour is already at ' . $totalCredit . ' for this subject. Trying to add ' .  $newTotalHours . ' more will exceed ' .  $courseDetails->course_credit . '!']);
+                            return response()->json(['error' => 'Students in this class is already booked with the same period in another room/class!']);
 
                         }else{
 
-                            $students = DB::table('student_subjek')
-                                        ->where([
-                                            ['group_id', $request->groupId],
-                                            ['group_name', $request->groupName]
-                                        ])->pluck('student_ic'); 
+                            if($startTimeOnly < $roomDetails->start || $endTimeOnly < $roomDetails->start || $startTimeOnly > $roomDetails->end || $endTimeOnly > $roomDetails->end)
+                            {
 
-                            if(DB::table('tblevents')
-                            ->join('tbllecture', 'tblevents.lecture_id', 'tbllecture.id')
-                            ->join('student_subjek', function($join){
-                                $join->on('tblevents.group_id', 'student_subjek.group_id');
-                                $join->on('tblevents.group_name', 'student_subjek.group_name');
-                            })
-                            ->whereIn('session_id', $session)
-                            ->whereIn('student_subjek.student_ic', $students)
-                            // ->where('tbllecture.session_id', $request->session)
-                            ->whereRaw('DAYNAME(start) = ?', [$dayOfWeek])
-                            ->where(function ($query) use ($startTimeOnly, $endTimeOnly) {
-                                $query->where(function ($query) use ($startTimeOnly) {
-                                    $query->whereRaw('? BETWEEN TIME(start) AND TIME(end)', [$startTimeOnly])
-                                        ->whereRaw('? != TIME(start)', [$startTimeOnly])
-                                        ->whereRaw('? != TIME(end)', [$startTimeOnly]);
-                                })
-                                ->orWhere(function ($query) use ($endTimeOnly) {
-                                    $query->whereRaw('? BETWEEN TIME(start) AND TIME(end)', [$endTimeOnly])
-                                        ->whereRaw('? != TIME(start)', [$endTimeOnly])
-                                        ->whereRaw('? != TIME(end)', [$endTimeOnly]);
-                                })
-                                ->orWhere(function ($query) use ($startTimeOnly, $endTimeOnly) {
-                                    $query->whereRaw('? <= TIME(start)', [$startTimeOnly])
-                                        ->whereRaw('? >= TIME(end)', [$endTimeOnly]);
-                                });
-                            })
-                            ->exists()){
-
-                                return response()->json(['error' => 'Students in this class is already booked with the same period in another room/class!']);
+                                return response()->json(['error' => 'Event must be created inside the room time range of ' . date('h:i A', (strtotime($roomDetails->start))) . ' - ' . date('h:i A', (strtotime($roomDetails->end)))]);
 
                             }else{
 
-                                if($startTimeOnly < $roomDetails->start || $endTimeOnly < $roomDetails->start || $startTimeOnly > $roomDetails->end || $endTimeOnly > $roomDetails->end)
-                                {
+                                $event = new Tblevent;
+                                $event->lecture_id = $request->roomId;
+                                $event->user_ic = $request->id;
+                                $event->group_id = $request->groupId;
+                                $event->group_name = $request->groupName;
+                                $event->session_id = $request->session;
+                                $event->title = $request->groupType;
+                                $event->start = $startTime->format('Y-m-d H:i:s');
+                                $event->end = $endTime->format('Y-m-d H:i:s');
+                                $event->save();
 
-                                    return response()->json(['error' => 'Event must be created inside the room time range of ' . date('h:i A', (strtotime($roomDetails->start))) . ' - ' . date('h:i A', (strtotime($roomDetails->end)))]);
-
-                                }else{
-
-                                    $event = new Tblevent;
-                                    $event->lecture_id = $request->roomId;
-                                    $event->user_ic = $request->id;
-                                    $event->group_id = $request->groupId;
-                                    $event->group_name = $request->groupName;
-                                    $event->session_id = $request->session;
-                                    $event->title = $request->groupType;
-                                    $event->start = $startTime->format('Y-m-d H:i:s');
-                                    $event->end = $endTime->format('Y-m-d H:i:s');
-                                    $event->save();
-
-                                    $events = Tblevent::join('user_subjek', 'tblevents.group_id', 'user_subjek.id')
-                                            ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
-                                            ->join('tbllecture_room', 'tblevents.lecture_id', 'tbllecture_room.id')
-                                            ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
-                                            ->where([
-                                                ['sessions.Status', 'ACTIVE']
-                                                ])
-                                            ->where('tblevents.id', $event->id)
-                                            ->groupBy('subjek.sub_id', 'tblevents.id')
-                                            ->select('tblevents.*', 'subjek.course_code AS code' , 'subjek.course_name AS subject', 'tbllecture_room.name AS room', 'sessions.SessionName AS session')->first();
-
-                                    $program = DB::table('student_subjek')
-                                                ->join('students', 'student_subjek.student_ic', 'students.ic')
-                                                ->join('tblprogramme', 'students.program', 'tblprogramme.id')
-                                                ->where([
-                                                ['student_subjek.group_id', $events->group_id],
-                                                ['student_subjek.group_name', $events->group_name]
-                                                ])
-                                                ->groupBy('tblprogramme.id')
-                                                ->select('tblprogramme.*')
-                                                ->get();
-
-                                    // Convert program information into a string
-                                    $programInfo = $program->map(function($prog) {
-                                        return $prog->progcode; // Assuming 'progname' is the relevant field you want to display
-                                    })->implode(', ');
-            
-
-                                    $count = DB::table('student_subjek')
-                                            ->where([
-                                            ['group_id', $events->group_id],
-                                            ['group_name', $events->group_name]
+                                $events = Tblevent::join('user_subjek', 'tblevents.group_id', 'user_subjek.id')
+                                        ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
+                                        ->join('tbllecture_room', 'tblevents.lecture_id', 'tbllecture_room.id')
+                                        ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+                                        ->where([
+                                            ['sessions.Status', 'ACTIVE']
                                             ])
-                                            ->select(DB::raw('COUNT(student_ic) AS total_student'))
-                                            ->first();
+                                        ->where('tblevents.id', $event->id)
+                                        ->groupBy('subjek.sub_id', 'tblevents.id')
+                                        ->select('tblevents.*', 'subjek.course_code AS code' , 'subjek.course_name AS subject', 'tbllecture_room.name AS room', 'sessions.SessionName AS session')->first();
 
-                                    return response()->json([
+                                $program = DB::table('student_subjek')
+                                            ->join('students', 'student_subjek.student_ic', 'students.ic')
+                                            ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+                                            ->where([
+                                            ['student_subjek.group_id', $events->group_id],
+                                            ['student_subjek.group_name', $events->group_name]
+                                            ])
+                                            ->groupBy('tblprogramme.id')
+                                            ->select('tblprogramme.*')
+                                            ->get();
 
-                                        'event' => [
-                                            'id' => $events->id,
-                                            'title' => strtoupper($events->room) . ' (' . $events->session . ')', 
-                                            'description' => $events->code . ' - ' . $events->subject . ' (' . $events->group_name .') ' . '|' . ' Total Student :' . ' ' .$count->total_student,
-                                            'start' => $events->start,
-                                            'end' => $events->end,
-                                            'programInfo' => $programInfo // Add program info to the event object
-                                        ]
+                                // Convert program information into a string
+                                $programInfo = $program->map(function($prog) {
+                                    return $prog->progcode; // Assuming 'progname' is the relevant field you want to display
+                                })->implode(', ');
+        
 
-                                    ]);
-                                    
-                                }
+                                $count = DB::table('student_subjek')
+                                        ->where([
+                                        ['group_id', $events->group_id],
+                                        ['group_name', $events->group_name]
+                                        ])
+                                        ->select(DB::raw('COUNT(student_ic) AS total_student'))
+                                        ->first();
 
+                                return response()->json([
+
+                                    'event' => [
+                                        'id' => $events->id,
+                                        'title' => strtoupper($events->room) . ' (' . $events->session . ')', 
+                                        'description' => $events->code . ' - ' . $events->subject . ' (' . $events->group_name .') ' . '|' . ' Total Student :' . ' ' .$count->total_student,
+                                        'start' => $events->start,
+                                        'end' => $events->end,
+                                        'programInfo' => $programInfo // Add program info to the event object
+                                    ]
+
+                                ]);
+                                
                             }
 
                         }
@@ -3462,6 +3785,7 @@ class AR_Controller extends Controller
                     }
 
                 }
+
             }
 
         }
@@ -4311,423 +4635,423 @@ class AR_Controller extends Controller
 
     /**
  * Update an existing event in the timetable system
-    * 
-    * @param Request $request
-    * @param int $id Event ID to update
-    * @return JsonResponse
-    */
-    public function updateEvent(Request $request, $id)
-    {
-        $event = DB::table('tblevents')->where('id', $id)->first();
-        if (!$event) {
-            return response()->json(['error' => 'Event not found'], 404);
-        }
-
-        // Parse time data
-        $timeData = $this->parseTimeData($request);
-        extract($timeData); // Creates $startTime, $endTime, $dayOfWeek, $startTimeOnly, $endTimeOnly
-
-        // Check all constraints before updating
-        $constraintValidations = [
-            $this->validateRoomAvailability($id, $event->lecture_id, $dayOfWeek, $startTimeOnly, $endTimeOnly),
-            $this->validateLecturerAvailability($id, $event->user_ic, $dayOfWeek, $startTimeOnly, $endTimeOnly),
-            $this->validateBreakTimeConflict($dayOfWeek, $startTimeOnly, $endTimeOnly),
-            $this->validateCreditHourLimit($id, $event, $request->start, $request->end),
-            $this->validateStudentScheduleConflicts($id, $event, $dayOfWeek, $startTimeOnly, $endTimeOnly)
-        ];
-
-        // Check if any constraint validation returned an error
-        foreach ($constraintValidations as $validation) {
-            if ($validation !== true) {
-                return $validation; // Return the error response
-            }
-        }
-
-        // All validations passed, update the event
-        $eventModel = Tblevent::find($id);
-        $eventModel->start = $request->start;
-        $eventModel->end = $request->end;
-        $eventModel->save();
-
-        return response()->json(['message' => 'Event updated successfully']);
+ * 
+ * @param Request $request
+ * @param int $id Event ID to update
+ * @return JsonResponse
+ */
+public function updateEvent(Request $request, $id)
+{
+    $event = DB::table('tblevents')->where('id', $id)->first();
+    if (!$event) {
+        return response()->json(['error' => 'Event not found'], 404);
     }
 
-    /**
-     * Update an event with additional title modifications
-     * 
-     * @param Request $request
-     * @param int $id Event ID to update
-     * @return JsonResponse
-     */
-    public function updateEvent2(Request $request, $id)
-    {
-        $event = DB::table('tblevents')->where('id', $id)->first();
-        if (!$event) {
-            return response()->json(['error' => 'Event not found'], 404);
+    // Parse time data
+    $timeData = $this->parseTimeData($request);
+    extract($timeData); // Creates $startTime, $endTime, $dayOfWeek, $startTimeOnly, $endTimeOnly
+
+    // Check all constraints before updating
+    $constraintValidations = [
+        $this->validateRoomAvailability($id, $event->lecture_id, $dayOfWeek, $startTimeOnly, $endTimeOnly),
+        $this->validateLecturerAvailability($id, $event->user_ic, $dayOfWeek, $startTimeOnly, $endTimeOnly),
+        $this->validateBreakTimeConflict($dayOfWeek, $startTimeOnly, $endTimeOnly),
+        $this->validateCreditHourLimit($id, $event, $request->start, $request->end),
+        $this->validateStudentScheduleConflicts($id, $event, $dayOfWeek, $startTimeOnly, $endTimeOnly)
+    ];
+
+    // Check if any constraint validation returned an error
+    foreach ($constraintValidations as $validation) {
+        if ($validation !== true) {
+            return $validation; // Return the error response
         }
-
-        // Parse time data
-        $timeData = $this->parseTimeData($request);
-        extract($timeData); // Creates $startTime, $endTime, $dayOfWeek, $startTimeOnly, $endTimeOnly
-
-        // Check all constraints before updating
-        $constraintValidations = [
-            $this->validateRoomAvailability($id, $event->lecture_id, $dayOfWeek, $startTimeOnly, $endTimeOnly),
-            $this->validateLecturerAvailability($id, $event->user_ic, $dayOfWeek, $startTimeOnly, $endTimeOnly),
-            $this->validateBreakTimeConflict($dayOfWeek, $startTimeOnly, $endTimeOnly),
-            $this->validateCreditHourLimit($id, $event, $request->start, $request->end),
-            $this->validateStudentScheduleConflicts($id, $event, $dayOfWeek, $startTimeOnly, $endTimeOnly)
-        ];
-
-        // Check if any constraint validation returned an error
-        foreach ($constraintValidations as $validation) {
-            if ($validation !== true) {
-                return $validation; // Return the error response
-            }
-        }
-
-        // All validations passed, update the event with title
-        $eventModel = Tblevent::find($id);
-        $eventModel->title = $request->input('title');
-        $eventModel->start = $request->start;
-        $eventModel->end = $request->end;
-        $eventModel->save();
-
-        return response()->json(['status' => 'success']);
     }
 
-    /**
-     * Parse time-related data from the request
-     * 
-     * @param Request $request
-     * @return array
-     */
-    private function parseTimeData(Request $request)
-    {
-        $startTime = Carbon::parse($request->start);
-        $endTime = Carbon::parse($request->end);
-        $dayOfWeek = $startTime->format('l');
-        $startTimeOnly = $startTime->format('H:i:s');
-        $endTimeOnly = $endTime->format('H:i:s');
+    // All validations passed, update the event
+    $eventModel = Tblevent::find($id);
+    $eventModel->start = $request->start;
+    $eventModel->end = $request->end;
+    $eventModel->save();
 
-        return [
-            'startTime' => $startTime,
-            'endTime' => $endTime,
+    return response()->json(['message' => 'Event updated successfully']);
+}
+
+/**
+ * Update an event with additional title modifications
+ * 
+ * @param Request $request
+ * @param int $id Event ID to update
+ * @return JsonResponse
+ */
+public function updateEvent2(Request $request, $id)
+{
+    $event = DB::table('tblevents')->where('id', $id)->first();
+    if (!$event) {
+        return response()->json(['error' => 'Event not found'], 404);
+    }
+
+    // Parse time data
+    $timeData = $this->parseTimeData($request);
+    extract($timeData); // Creates $startTime, $endTime, $dayOfWeek, $startTimeOnly, $endTimeOnly
+
+    // Check all constraints before updating
+    $constraintValidations = [
+        $this->validateRoomAvailability($id, $event->lecture_id, $dayOfWeek, $startTimeOnly, $endTimeOnly),
+        $this->validateLecturerAvailability($id, $event->user_ic, $dayOfWeek, $startTimeOnly, $endTimeOnly),
+        $this->validateBreakTimeConflict($dayOfWeek, $startTimeOnly, $endTimeOnly),
+        $this->validateCreditHourLimit($id, $event, $request->start, $request->end),
+        $this->validateStudentScheduleConflicts($id, $event, $dayOfWeek, $startTimeOnly, $endTimeOnly)
+    ];
+
+    // Check if any constraint validation returned an error
+    foreach ($constraintValidations as $validation) {
+        if ($validation !== true) {
+            return $validation; // Return the error response
+        }
+    }
+
+    // All validations passed, update the event with title
+    $eventModel = Tblevent::find($id);
+    $eventModel->title = $request->input('title');
+    $eventModel->start = $request->start;
+    $eventModel->end = $request->end;
+    $eventModel->save();
+
+    return response()->json(['status' => 'success']);
+}
+
+/**
+ * Parse time-related data from the request
+ * 
+ * @param Request $request
+ * @return array
+ */
+private function parseTimeData(Request $request)
+{
+    $startTime = Carbon::parse($request->start);
+    $endTime = Carbon::parse($request->end);
+    $dayOfWeek = $startTime->format('l');
+    $startTimeOnly = $startTime->format('H:i:s');
+    $endTimeOnly = $endTime->format('H:i:s');
+
+    return [
+        'startTime' => $startTime,
+        'endTime' => $endTime,
+        'dayOfWeek' => $dayOfWeek,
+        'startTimeOnly' => $startTimeOnly,
+        'endTimeOnly' => $endTimeOnly
+    ];
+}
+
+/**
+ * Validate if the room is available at the specified time
+ * 
+ * @param int $eventId
+ * @param int $lectureId
+ * @param string $dayOfWeek
+ * @param string $startTimeOnly
+ * @param string $endTimeOnly
+ * @return bool|JsonResponse True if valid, JsonResponse with error if invalid
+ */
+private function validateRoomAvailability($eventId, $lectureId, $dayOfWeek, $startTimeOnly, $endTimeOnly)
+{
+    $session = $this->getActiveSessions();
+
+    $roomConflictExists = DB::table('tblevents')
+        ->join('user_subjek', 'tblevents.group_id', 'user_subjek.id')
+        ->where('tblevents.id', '!=', $eventId)
+        ->where('tblevents.lecture_id', $lectureId)
+        ->whereIn('tblevents.session_id', $session)
+        ->whereRaw('DAYNAME(start) = ?', [$dayOfWeek])
+        ->where(function ($query) use ($startTimeOnly, $endTimeOnly) {
+            $this->applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly);
+        })
+        ->exists();
+
+    if ($roomConflictExists) {
+        return response()->json(['error' => 'Time selected is already occupied in the same room. Please select another time!']);
+    }
+
+    return true;
+}
+
+/**
+ * Validate if the lecturer is available at the specified time
+ * 
+ * @param int $eventId
+ * @param string $lecturerIc
+ * @param string $dayOfWeek
+ * @param string $startTimeOnly
+ * @param string $endTimeOnly
+ * @return bool|JsonResponse True if valid, JsonResponse with error if invalid
+ */
+private function validateLecturerAvailability($eventId, $lecturerIc, $dayOfWeek, $startTimeOnly, $endTimeOnly)
+{
+    $session = $this->getActiveSessions();
+
+    $lecturerConflictExists = DB::table('tblevents')
+        ->join('user_subjek', 'tblevents.group_id', 'user_subjek.id')
+        ->where('tblevents.user_ic', $lecturerIc)
+        ->where('tblevents.id', '!=', $eventId)
+        ->whereIn('tblevents.session_id', $session)
+        ->whereRaw('DAYNAME(start) = ?', [$dayOfWeek])
+        ->where(function ($query) use ($startTimeOnly, $endTimeOnly) {
+            $this->applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly);
+        })
+        ->exists();
+
+    if ($lecturerConflictExists) {
+        return response()->json(['error' => 'Time selected is already occupied by the same lecturer. Please select another time!']);
+    }
+
+    return true;
+}
+
+/**
+ * Validate that the time doesn't conflict with break times
+ * 
+ * @param string $dayOfWeek
+ * @param string $startTimeOnly
+ * @param string $endTimeOnly
+ * @return bool|JsonResponse True if valid, JsonResponse with error if invalid
+ */
+private function validateBreakTimeConflict($dayOfWeek, $startTimeOnly, $endTimeOnly)
+{
+    // Define break times
+    $breakTimes = [
+        'regular' => ['start' => '13:30:00', 'end' => '14:00:00'],
+        'friday' => ['start' => '12:30:00', 'end' => '14:30:00']
+    ];
+
+    if ($dayOfWeek == 'Friday') {
+        $rehatStart = $breakTimes['friday']['start'];
+        $rehatEnd = $breakTimes['friday']['end'];
+    } else {
+        $rehatStart = $breakTimes['regular']['start'];
+        $rehatEnd = $breakTimes['regular']['end'];
+    }
+
+    $hasConflict = ($startTimeOnly <= $rehatStart && $endTimeOnly >= $rehatEnd) ||
+                   ($startTimeOnly >= $rehatStart && $startTimeOnly < $rehatEnd) ||
+                   ($endTimeOnly > $rehatStart && $endTimeOnly <= $rehatEnd) ||
+                   ($startTimeOnly <= $rehatStart && $endTimeOnly > $rehatStart && $endTimeOnly <= $rehatEnd);
+
+    if ($hasConflict) {
+        Log::info('Break time overlap detected:', [
             'dayOfWeek' => $dayOfWeek,
-            'startTimeOnly' => $startTimeOnly,
-            'endTimeOnly' => $endTimeOnly
-        ];
+            'startTime' => $startTimeOnly,
+            'endTime' => $endTimeOnly,
+            'breakStart' => $rehatStart,
+            'breakEnd' => $rehatEnd,
+        ]);
+
+        return response()->json(['error' => 'Time selected conflicts with break time. Please select another time!']);
     }
 
-    /**
-     * Validate if the room is available at the specified time
-     * 
-     * @param int $eventId
-     * @param int $lectureId
-     * @param string $dayOfWeek
-     * @param string $startTimeOnly
-     * @param string $endTimeOnly
-     * @return bool|JsonResponse True if valid, JsonResponse with error if invalid
-     */
-    private function validateRoomAvailability($eventId, $lectureId, $dayOfWeek, $startTimeOnly, $endTimeOnly)
-    {
-        $session = $this->getActiveSessions();
+    return true;
+}
 
-        $roomConflictExists = DB::table('tblevents')
-            ->join('user_subjek', 'tblevents.group_id', 'user_subjek.id')
-            ->where('tblevents.id', '!=', $eventId)
-            ->where('tblevents.lecture_id', $lectureId)
-            ->whereIn('tblevents.session_id', $session)
-            ->whereRaw('DAYNAME(start) = ?', [$dayOfWeek])
-            ->where(function ($query) use ($startTimeOnly, $endTimeOnly) {
-                $this->applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly);
-            })
-            ->exists();
-
-        if ($roomConflictExists) {
-            return response()->json(['error' => 'Time selected is already occupied in the same room. Please select another time!']);
-        }
-
+/**
+ * Validate that the credit hour limit won't be exceeded
+ * 
+ * @param int $eventId
+ * @param object $event
+ * @param string $startTime
+ * @param string $endTime
+ * @return bool|JsonResponse True if valid, JsonResponse with error if invalid
+ */
+private function validateCreditHourLimit($eventId, $event, $startTime, $endTime)
+{
+    $courseDetails = $this->getCourseDetails($event);
+    if (!$courseDetails) {
+        // If course details can't be found, we'll assume there's no credit hour limit
         return true;
     }
 
-    /**
-     * Validate if the lecturer is available at the specified time
-     * 
-     * @param int $eventId
-     * @param string $lecturerIc
-     * @param string $dayOfWeek
-     * @param string $startTimeOnly
-     * @param string $endTimeOnly
-     * @return bool|JsonResponse True if valid, JsonResponse with error if invalid
-     */
-    private function validateLecturerAvailability($eventId, $lecturerIc, $dayOfWeek, $startTimeOnly, $endTimeOnly)
-    {
-        $session = $this->getActiveSessions();
+    // Calculate total credit hours used for this course
+    $creditHours = DB::table('tblevents')
+        ->where([
+            ['tblevents.user_ic', $event->user_ic],
+            ['tblevents.group_id', $event->group_id],
+            ['tblevents.group_name', $event->group_name],
+            ['tblevents.session_id', $event->session_id],
+            ['tblevents.title', $event->title],
+            ['tblevents.id', '!=', $eventId]
+        ])->get();
 
-        $lecturerConflictExists = DB::table('tblevents')
-            ->join('user_subjek', 'tblevents.group_id', 'user_subjek.id')
-            ->where('tblevents.user_ic', $lecturerIc)
-            ->where('tblevents.id', '!=', $eventId)
-            ->whereIn('tblevents.session_id', $session)
-            ->whereRaw('DAYNAME(start) = ?', [$dayOfWeek])
-            ->where(function ($query) use ($startTimeOnly, $endTimeOnly) {
-                $this->applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly);
-            })
-            ->exists();
-
-        if ($lecturerConflictExists) {
-            return response()->json(['error' => 'Time selected is already occupied by the same lecturer. Please select another time!']);
-        }
-
-        return true;
+    $totalCredit = 0;
+    foreach ($creditHours as $credit) {
+        $creditStart = Carbon::parse($credit->start);
+        $creditEnd = Carbon::parse($credit->end);
+        $totalCredit += $creditEnd->diffInHours($creditStart);
     }
 
-    /**
-     * Validate that the time doesn't conflict with break times
-     * 
-     * @param string $dayOfWeek
-     * @param string $startTimeOnly
-     * @param string $endTimeOnly
-     * @return bool|JsonResponse True if valid, JsonResponse with error if invalid
-     */
-    private function validateBreakTimeConflict($dayOfWeek, $startTimeOnly, $endTimeOnly)
-    {
-        // Define break times
-        $breakTimes = [
-            'regular' => ['start' => '13:30:00', 'end' => '14:00:00'],
-            'friday' => ['start' => '12:30:00', 'end' => '14:30:00']
-        ];
+    // Calculate new hours being added
+    $newStart = Carbon::parse($startTime);
+    $newEnd = Carbon::parse($endTime);
+    $newHours = $newEnd->diffInHours($newStart);
 
-        if ($dayOfWeek == 'Friday') {
-            $rehatStart = $breakTimes['friday']['start'];
-            $rehatEnd = $breakTimes['friday']['end'];
-        } else {
-            $rehatStart = $breakTimes['regular']['start'];
-            $rehatEnd = $breakTimes['regular']['end'];
-        }
-
-        $hasConflict = ($startTimeOnly <= $rehatStart && $endTimeOnly >= $rehatEnd) ||
-                    ($startTimeOnly >= $rehatStart && $startTimeOnly < $rehatEnd) ||
-                    ($endTimeOnly > $rehatStart && $endTimeOnly <= $rehatEnd) ||
-                    ($startTimeOnly <= $rehatStart && $endTimeOnly > $rehatStart && $endTimeOnly <= $rehatEnd);
-
-        if ($hasConflict) {
-            Log::info('Break time overlap detected:', [
-                'dayOfWeek' => $dayOfWeek,
-                'startTime' => $startTimeOnly,
-                'endTime' => $endTimeOnly,
-                'breakStart' => $rehatStart,
-                'breakEnd' => $rehatEnd,
-            ]);
-
-            return response()->json(['error' => 'Time selected conflicts with break time. Please select another time!']);
-        }
-
-        return true;
+    // Check if total will exceed limit
+    if (($totalCredit + $newHours) > $courseDetails->course_credit) {
+        return response()->json([
+            'error' => "Total meeting hour is already at {$totalCredit} for this subject. " .
+                      "Adding {$newHours} more will exceed {$courseDetails->course_credit}!"
+        ]);
     }
 
-    /**
-     * Validate that the credit hour limit won't be exceeded
-     * 
-     * @param int $eventId
-     * @param object $event
-     * @param string $startTime
-     * @param string $endTime
-     * @return bool|JsonResponse True if valid, JsonResponse with error if invalid
-     */
-    private function validateCreditHourLimit($eventId, $event, $startTime, $endTime)
-    {
-        $courseDetails = $this->getCourseDetails($event);
-        if (!$courseDetails) {
-            // If course details can't be found, we'll assume there's no credit hour limit
-            return true;
-        }
+    return true;
+}
 
-        // Calculate total credit hours used for this course
-        $creditHours = DB::table('tblevents')
-            ->where([
-                ['tblevents.user_ic', $event->user_ic],
-                ['tblevents.group_id', $event->group_id],
-                ['tblevents.group_name', $event->group_name],
-                ['tblevents.session_id', $event->session_id],
-                ['tblevents.title', $event->title],
-                ['tblevents.id', '!=', $eventId]
-            ])->get();
+/**
+ * Validate that there are no student schedule conflicts
+ * 
+ * @param int $eventId
+ * @param object $event
+ * @param string $dayOfWeek
+ * @param string $startTimeOnly
+ * @param string $endTimeOnly
+ * @return bool|JsonResponse True if valid, JsonResponse with error if invalid
+ */
+private function validateStudentScheduleConflicts($eventId, $event, $dayOfWeek, $startTimeOnly, $endTimeOnly)
+{
+    $session = $this->getActiveSessions();
+    
+    // Get all students in this group
+    $students = DB::table('student_subjek')
+        ->where([
+            ['group_id', $event->group_id],
+            ['group_name', $event->group_name]
+        ])->pluck('student_ic');
 
-        $totalCredit = 0;
-        foreach ($creditHours as $credit) {
-            $creditStart = Carbon::parse($credit->start);
-            $creditEnd = Carbon::parse($credit->end);
-            $totalCredit += $creditEnd->diffInHours($creditStart);
-        }
+    // Check if any of these students have conflicts
+    $conflictingStudents = DB::table('tblevents')
+        ->join('student_subjek', function($join) {
+            $join->on('tblevents.group_id', 'student_subjek.group_id')
+                ->on('tblevents.group_name', 'student_subjek.group_name');
+        })
+        ->join('students', 'student_subjek.student_ic', 'students.ic')
+        ->where('tblevents.id', '!=', $eventId)
+        ->whereIn('session_id', $session)
+        ->whereIn('student_subjek.student_ic', $students)
+        ->whereRaw('DAYNAME(start) = ?', [$dayOfWeek])
+        ->where(function ($query) use ($startTimeOnly, $endTimeOnly) {
+            $this->applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly);
+        })
+        ->select('students.no_matric')
+        ->distinct()
+        ->get();
 
-        // Calculate new hours being added
-        $newStart = Carbon::parse($startTime);
-        $newEnd = Carbon::parse($endTime);
-        $newHours = $newEnd->diffInHours($newStart);
-
-        // Check if total will exceed limit
-        if (($totalCredit + $newHours) > $courseDetails->course_credit) {
-            return response()->json([
-                'error' => "Total meeting hour is already at {$totalCredit} for this subject. " .
-                        "Adding {$newHours} more will exceed {$courseDetails->course_credit}!"
-            ]);
-        }
-
-        return true;
+    if ($conflictingStudents->count() > 0) {
+        return response()->json([
+            'error' => 'Students in this class are already booked with the same period in another room/class!',
+            'conflicting_students' => $conflictingStudents
+        ]);
     }
 
-    /**
-     * Validate that there are no student schedule conflicts
-     * 
-     * @param int $eventId
-     * @param object $event
-     * @param string $dayOfWeek
-     * @param string $startTimeOnly
-     * @param string $endTimeOnly
-     * @return bool|JsonResponse True if valid, JsonResponse with error if invalid
-     */
-    private function validateStudentScheduleConflicts($eventId, $event, $dayOfWeek, $startTimeOnly, $endTimeOnly)
-    {
-        $session = $this->getActiveSessions();
-        
-        // Get all students in this group
-        $students = DB::table('student_subjek')
-            ->where([
-                ['group_id', $event->group_id],
-                ['group_name', $event->group_name]
-            ])->pluck('student_ic');
+    return true;
+}
 
-        // Check if any of these students have conflicts
-        $conflictingStudents = DB::table('tblevents')
-            ->join('student_subjek', function($join) {
-                $join->on('tblevents.group_id', 'student_subjek.group_id')
-                    ->on('tblevents.group_name', 'student_subjek.group_name');
-            })
-            ->join('students', 'student_subjek.student_ic', 'students.ic')
-            ->where('tblevents.id', '!=', $eventId)
-            ->whereIn('session_id', $session)
-            ->whereIn('student_subjek.student_ic', $students)
-            ->whereRaw('DAYNAME(start) = ?', [$dayOfWeek])
-            ->where(function ($query) use ($startTimeOnly, $endTimeOnly) {
-                $this->applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly);
-            })
-            ->select('students.no_matric')
-            ->distinct()
-            ->get();
-
-        if ($conflictingStudents->count() > 0) {
-            return response()->json([
-                'error' => 'Students in this class are already booked with the same period in another room/class!',
-                'conflicting_students' => $conflictingStudents
-            ]);
-        }
-
-        return true;
-    }
-
-    /**
-     * Get course details including credit hours
-     * 
-     * @param object $event
-     * @return object|null
-     */
-    private function getCourseDetails($event)
-    {
-        $column = $this->determineCreditHourColumn($event);
-        
-        if (!$column) {
-            return null;
-        }
-        
-        return DB::table('student_subjek')
-            ->join('subjek', 'student_subjek.courseid', '=', 'subjek.sub_id')
-            ->join('subjek_structure', 'subjek.sub_id', '=', 'subjek_structure.courseID')
-            ->where([
-                ['group_id', '=', $event->group_id],
-                ['group_name', '=', $event->group_name]
-            ])
-            ->select(DB::raw($column))
-            ->first();
-    }
-
-    /**
-     * Determine which column to use for credit hour based on event
-     * 
-     * @param object $event
-     * @return string|null
-     */
-    private function determineCreditHourColumn($event)
-    {
-        if ($event->title == null) {
-            if (DB::table('user_subjek')->where([
-                'user_ic' => $event->user_ic,
-                'id' => $event->group_id
-            ])->exists()) {
-                return 'subjek_structure.meeting_hour AS course_credit';
-            } elseif (DB::table('user_subjek')->where([
-                'amali_ic' => $event->user_ic,
-                'id' => $event->group_id
-            ])->exists()) {
-                return 'subjek_structure.amali_hour AS course_credit';
-            }
-        } else {
-            if ($event->title == 'Kuliah') {
-                return 'subjek_structure.meeting_hour AS course_credit';
-            } elseif ($event->title == 'Amali') {
-                return 'subjek_structure.amali_hour AS course_credit';
-            }
-        }
-        
+/**
+ * Get course details including credit hours
+ * 
+ * @param object $event
+ * @return object|null
+ */
+private function getCourseDetails($event)
+{
+    $column = $this->determineCreditHourColumn($event);
+    
+    if (!$column) {
         return null;
     }
+    
+    return DB::table('student_subjek')
+        ->join('subjek', 'student_subjek.courseid', '=', 'subjek.sub_id')
+        ->join('subjek_structure', 'subjek.sub_id', '=', 'subjek_structure.courseID')
+        ->where([
+            ['group_id', '=', $event->group_id],
+            ['group_name', '=', $event->group_name]
+        ])
+        ->select(DB::raw($column))
+        ->first();
+}
 
-    /**
-     * Get IDs of active sessions
-     * 
-     * @return array
-     */
-    private function getActiveSessions()
-    {
-        return DB::table('sessions')
-            ->where('Status', 'ACTIVE')
-            ->pluck('SessionID')
-            ->toArray();
+/**
+ * Determine which column to use for credit hour based on event
+ * 
+ * @param object $event
+ * @return string|null
+ */
+private function determineCreditHourColumn($event)
+{
+    if ($event->title == null) {
+        if (DB::table('user_subjek')->where([
+            'user_ic' => $event->user_ic,
+            'id' => $event->group_id
+        ])->exists()) {
+            return 'subjek_structure.meeting_hour AS course_credit';
+        } elseif (DB::table('user_subjek')->where([
+            'amali_ic' => $event->user_ic,
+            'id' => $event->group_id
+        ])->exists()) {
+            return 'subjek_structure.amali_hour AS course_credit';
+        }
+    } else {
+        if ($event->title == 'Kuliah') {
+            return 'subjek_structure.meeting_hour AS course_credit';
+        } elseif ($event->title == 'Amali') {
+            return 'subjek_structure.amali_hour AS course_credit';
+        }
     }
+    
+    return null;
+}
 
-    /**
-     * Apply time overlap conditions to a query builder
-     * 
-     * @param Builder $query
-     * @param string $startTimeOnly
-     * @param string $endTimeOnly
-     */
-    private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly)
-    {
-        $query->where(function ($query) use ($startTimeOnly) {
-            $query->whereRaw('? BETWEEN TIME(start) AND TIME(end)', [$startTimeOnly])
-                ->whereRaw('? != TIME(start)', [$startTimeOnly])
-                ->whereRaw('? != TIME(end)', [$startTimeOnly]);
-        })
-        ->orWhere(function ($query) use ($endTimeOnly) {
-            $query->whereRaw('? BETWEEN TIME(start) AND TIME(end)', [$endTimeOnly])
-                ->whereRaw('? != TIME(start)', [$endTimeOnly])
-                ->whereRaw('? != TIME(end)', [$endTimeOnly]);
-        })
-        ->orWhere(function ($query) use ($startTimeOnly, $endTimeOnly) {
-            $query->whereRaw('? < TIME(start)', [$startTimeOnly])
-                ->whereRaw('? = TIME(end)', [$endTimeOnly]);
-        })
-        ->orWhere(function ($query) use ($startTimeOnly, $endTimeOnly) {
-            $query->whereRaw('? = TIME(start)', [$startTimeOnly])
-                ->whereRaw('? > TIME(end)', [$endTimeOnly]);
-        })
-        ->orWhere(function ($query) use ($startTimeOnly, $endTimeOnly) {
-            $query->whereRaw('? < TIME(start)', [$startTimeOnly])
-                ->whereRaw('? > TIME(end)', [$endTimeOnly]);
-        });
-    }
+/**
+ * Get IDs of active sessions
+ * 
+ * @return array
+ */
+private function getActiveSessions()
+{
+    return DB::table('sessions')
+        ->where('Status', 'ACTIVE')
+        ->pluck('SessionID')
+        ->toArray();
+}
+
+/**
+ * Apply time overlap conditions to a query builder
+ * 
+ * @param Builder $query
+ * @param string $startTimeOnly
+ * @param string $endTimeOnly
+ */
+private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly)
+{
+    $query->where(function ($query) use ($startTimeOnly) {
+        $query->whereRaw('? BETWEEN TIME(start) AND TIME(end)', [$startTimeOnly])
+              ->whereRaw('? != TIME(start)', [$startTimeOnly])
+              ->whereRaw('? != TIME(end)', [$startTimeOnly]);
+    })
+    ->orWhere(function ($query) use ($endTimeOnly) {
+        $query->whereRaw('? BETWEEN TIME(start) AND TIME(end)', [$endTimeOnly])
+              ->whereRaw('? != TIME(start)', [$endTimeOnly])
+              ->whereRaw('? != TIME(end)', [$endTimeOnly]);
+    })
+    ->orWhere(function ($query) use ($startTimeOnly, $endTimeOnly) {
+        $query->whereRaw('? < TIME(start)', [$startTimeOnly])
+              ->whereRaw('? = TIME(end)', [$endTimeOnly]);
+    })
+    ->orWhere(function ($query) use ($startTimeOnly, $endTimeOnly) {
+        $query->whereRaw('? = TIME(start)', [$startTimeOnly])
+              ->whereRaw('? > TIME(end)', [$endTimeOnly]);
+    })
+    ->orWhere(function ($query) use ($startTimeOnly, $endTimeOnly) {
+        $query->whereRaw('? < TIME(start)', [$startTimeOnly])
+              ->whereRaw('? > TIME(end)', [$endTimeOnly]);
+    });
+}
 
     public function deleteEvent($id)
     {
