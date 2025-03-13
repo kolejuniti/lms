@@ -5057,7 +5057,19 @@ class FinanceController extends Controller
                    ->orderByRaw('CAST(SUBSTRING(tblpayment.ref_no, 2) AS UNSIGNED) ASC')
                    ->get();
 
-        dd($payment);
+        $details = DB::table('tblpaymentdtl')
+                   ->join('tblpayment', 'tblpaymentdtl.payment_id', 'tblpayment.id')
+                   ->join('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
+                   ->select('tblpaymentdtl.*', 'tblpayment.ref_no', 'tblstudentclaim.name')
+                   ->whereBetween('tblpayment.add_date', ['2024-01-02', '2024-01-02'])
+                   ->where('tblpayment.process_status_id', 2)
+                   ->whereNotNull('tblpayment.ref_no')
+                   ->orderByRaw('CAST(SUBSTRING(tblpayment.ref_no, 2) AS UNSIGNED) ASC')
+                   ->get();
+
+        dd($details);
+
+        
 
         return view('finance.report.dailyReport');
 
