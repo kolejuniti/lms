@@ -1453,16 +1453,27 @@ function printScheduleTable(name, ic, staffNo, email) {
         skip[d] = new Array(times.length).fill(false);
     }
 
+    // Add current date for footer
+    const currentDate = new Date().toLocaleDateString('en-GB', {
+        day: '2-digit', 
+        month: 'short', 
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+
     // Build HTML with modern styling
     let html = `
     <html>
     <head>
         <title>Timetable - ${name}</title>
         <style>
+            /* Control page breaks */
             @page {
                 size: A4 landscape;
                 margin: 0.5cm;
             }
+            
             body {
                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
                 margin: 0;
@@ -1471,23 +1482,27 @@ function printScheduleTable(name, ic, staffNo, email) {
                 font-size: 9px;
                 font-weight: 500;
             }
+            
             .container {
                 max-width: 100%;
                 margin: 0 auto;
                 padding: 10px;
             }
+            
             .header {
                 text-align: center;
                 margin-bottom: 10px;
                 padding-bottom: 5px;
                 border-bottom: 1px solid #4361ee;
             }
+            
             h1 {
                 color: #4361ee;
                 margin: 0;
                 font-size: 16px;
                 font-weight: 600;
             }
+            
             .lecturer-info {
                 background-color: #f8f9fa;
                 border-radius: 4px;
@@ -1495,30 +1510,52 @@ function printScheduleTable(name, ic, staffNo, email) {
                 margin-bottom: 10px;
                 border: 1px solid #e0e0e0;
             }
+            
             .lecturer-info p {
                 margin: 2px 0;
                 font-size: 9px;
                 font-weight: 600;
                 color: #000000;
             }
+            
             .lecturer-info strong {
                 color: #000000;
                 font-weight: 700;
             }
+            
+            /* Table layout across pages */
             table {
                 width: 100%;
                 border-collapse: collapse;
                 box-shadow: none;
                 border-radius: 0;
-                font-size: 9px;
+                font-size: 8px;
+                page-break-inside: auto;
             }
+            
+            /* Keep rows together where possible */
+            tr {
+                page-break-inside: avoid;
+                page-break-after: auto;
+            }
+            
+            /* Add table header repeat for second page */
+            thead {
+                display: table-header-group;
+            }
+            
+            /* Prevent orphaned footer */
+            tfoot {
+                display: table-footer-group;
+            }
+            
             th {
                 background-color: #1e40af;
                 color: white;
-                padding: 5px;
+                padding: 3px;
                 text-align: center;
                 font-weight: 700;
-                font-size: 10px;
+                font-size: 9px;
             }
             
             /* Style for time header in the top row */
@@ -1527,54 +1564,66 @@ function printScheduleTable(name, ic, staffNo, email) {
                 color: white;
                 font-weight: 700;
             }
+            
             td {
                 border: 1px solid #000000;
-                padding: 4px;
+                padding: 2px;
                 text-align: center;
                 vertical-align: middle;
                 background-color: #f8f8f8;
             }
+            
             .time-column {
                 background-color: #e0e0e0;
                 font-weight: 700;
                 color: #000000;
-                width: 70px;
+                width: 60px;
             }
+            
             .event-cell {
                 background-color: #d1e4ff;
                 border: 1.5px solid #000000;
             }
+            
             .event-title {
                 font-weight: 700;
                 color: #000000;
-                margin-bottom: 2px;
+                margin-bottom: 1px;
+                font-size: 8px;
             }
+            
             .event-description {
                 color: #333333;
-                font-size: 8px;
+                font-size: 7px;
                 font-weight: 500;
+                line-height: 1.2;
             }
+            
             .rehat-cell {
                 background-color: #ffcccf;
                 border: 1.5px solid #000000;
                 color: #c62828;
                 font-weight: 700;
             }
+            
             .multi-event-container {
                 display: flex;
                 flex-direction: column;
                 gap: 2px;
             }
+            
             .event-divider {
                 border-top: 1px dashed #ccc;
-                margin: 2px 0;
+                margin: 1px 0;
             }
+            
             .print-date {
                 text-align: right;
                 color: #999;
                 font-size: 8px;
                 margin-top: 5px;
             }
+            
             footer {
                 text-align: center;
                 margin-top: 5px;
@@ -1586,18 +1635,28 @@ function printScheduleTable(name, ic, staffNo, email) {
             .event-description.program-info {
                 font-weight: 600;
                 background-color: rgba(0, 0, 0, 0.05);
-                padding: 1px 3px;
+                padding: 1px 2px;
                 border-radius: 2px;
-                margin-top: 2px;
+                margin-top: 1px;
+                font-size: 7px;
             }
             
             .event-description.lecturer-info {
                 font-weight: 600;
                 background-color: rgba(255, 255, 255, 0.3);
                 border: 1px solid rgba(0, 0, 0, 0.1);
-                padding: 1px 3px;
+                padding: 1px 2px;
                 border-radius: 2px;
-                margin-top: 2px;
+                margin-top: 1px;
+                font-size: 7px;
+            }
+            
+            /* Table footer for page number */
+            .table-footer {
+                text-align: center;
+                font-size: 7px;
+                border: none !important;
+                background: transparent !important;
             }
             
             @media print {
@@ -1605,44 +1664,54 @@ function printScheduleTable(name, ic, staffNo, email) {
                     -webkit-print-color-adjust: exact;
                     print-color-adjust: exact;
                 }
+                
                 .container {
                     padding: 0;
                 }
+                
                 /* Ensure text is dark enough for printing */
                 * {
                     color: #000000 !important;
                 }
+                
                 th {
                     background-color: #1e40af !important;
                     color: white !important;
                     font-weight: 800 !important;
                     border: 1px solid #000000 !important;
                 }
+                
                 td {
                     background-color: #f8f8f8 !important;
                     border: 1px solid #000000 !important;
                 }
+                
                 .time-column {
                     background-color: #e0e0e0 !important;
                     color: #000000 !important;
                     font-weight: 700 !important;
                 }
+                
                 .event-cell {
                     background-color: #d1e4ff !important;
                     border: 1.5px solid #000000 !important;
                 }
+                
                 .rehat-cell {
                     background-color: #ffcccf !important;
                     color: #c62828 !important;
                     font-weight: 700 !important;
                     border: 1.5px solid #000000 !important;
                 }
+                
                 .event-title {
                     font-weight: 700 !important;
                 }
+                
                 .event-description {
                     font-weight: 600 !important;
                 }
+                
                 .event-description.program-info {
                     background-color: rgba(0, 0, 0, 0.05) !important;
                     font-weight: 700 !important;
@@ -1652,6 +1721,11 @@ function printScheduleTable(name, ic, staffNo, email) {
                     background-color: rgba(255, 255, 255, 0.3) !important;
                     border: 1px solid rgba(0, 0, 0, 0.1) !important;
                     font-weight: 700 !important;
+                }
+                
+                .table-footer {
+                    background: transparent !important;
+                    border: none !important;
                 }
             }
         </style>
@@ -1670,6 +1744,7 @@ function printScheduleTable(name, ic, staffNo, email) {
             </div>
             
             <table>
+                <!-- Table Header (repeats on each page) -->
                 <thead>
                     <tr>
                         <th class="time-column">Time</th>`;
@@ -1679,7 +1754,18 @@ function printScheduleTable(name, ic, staffNo, email) {
         html += `<th>${day}</th>`;
     });
 
-    html += `</tr></thead><tbody>`;
+    html += `</tr></thead>
+                
+                <!-- Table Footer (repeats on each page) -->
+                <tfoot>
+                    <tr>
+                        <td colspan="${dayNames.length + 1}" class="table-footer">
+                            ${name} - Timetable - Generated on: ${currentDate}
+                        </td>
+                    </tr>
+                </tfoot>
+                
+                <tbody>`;
 
     // For each timeslot row
     for (let t = 0; t < times.length; t++) {
@@ -1848,28 +1934,23 @@ function printScheduleTable(name, ic, staffNo, email) {
         // Close row
         html += `</tr>`;
     }
-
-    // Add current date and footer
-    const currentDate = new Date().toLocaleDateString('en-GB', {
-        day: '2-digit', 
-        month: 'short', 
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-    });
     
     html += `
-            </tbody>
-        </table>
-        
-        <div class="print-date">
-            Generated on: ${currentDate}
+                </tbody>
+            </table>
+            
+            <footer>
+                © Timetable Management System
+            </footer>
+            
+            <script>
+                // Add page numbers when printing
+                window.onbeforeprint = function() {
+                    // Add a class to the document body for print-specific styling
+                    document.body.classList.add('printing');
+                };
+            </script>
         </div>
-        
-        <footer>
-            © Timetable Management System
-        </footer>
-    </div>
     </body>
     </html>`;
 
