@@ -628,7 +628,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize data tables and fetch logged schedules
     initializeDataTables();
-    getLoggedSchedule();
     
     // Initialize calendar
     setupCalendar();
