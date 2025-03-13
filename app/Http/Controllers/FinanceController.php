@@ -5049,14 +5049,11 @@ class FinanceController extends Controller
     {
 
         // Subquery for tblpaymentdtl with row numbers
-        $paymentDtl = DB::table('tblpaymentdtl')
-        ->join('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
-        ->whereIn('tblstudentclaim.groupid', [4])
-        ->select('tblpaymentdtl.id', 'tblpaymentdtl.payment_id', 'tblpaymentdtl.claim_type_id', 'tblpaymentdtl.amount')->get();
+        $paymentDtl = DB::table('tblpaymentdtl')->get();
 
         $session = DB::table('sessions')->get();
 
-        dd($session);
+        dd($paymentDtl);
 
 
         //dd($other);
