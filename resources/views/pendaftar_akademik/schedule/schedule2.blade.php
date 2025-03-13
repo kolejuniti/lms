@@ -1945,10 +1945,10 @@ function printScheduleTable(name, ic, staffNo, email) {
             
             <script>
                 // Add page numbers when printing
-                window.onbeforeprint = function() {
+                window.onbeforeprint = function() \{
                     // Add a class to the document body for print-specific styling
                     document.body.classList.add('printing');
-                };
+                \};
             </script>
         </div>
     </body>
