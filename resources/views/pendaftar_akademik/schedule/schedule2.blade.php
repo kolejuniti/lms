@@ -1935,7 +1935,6 @@ function printScheduleTable(name, ic, staffNo, email) {
         html += `</tr>`;
     }
     
-    // Change this part of your code
     html += `
                 </tbody>
             </table>
@@ -1944,14 +1943,8 @@ function printScheduleTable(name, ic, staffNo, email) {
                 © Timetable Management System
             </footer>`;
             
-    // Add the script separately using string concatenation to avoid template literal issues
-    html += '<script>';
-    html += '// Add page numbers when printing\n';
-    html += 'window.onbeforeprint = function() {\n';
-    html += '    document.body.classList.add("printing");\n';
-    html += '};\n';
-    html += '</script>';
-
+    // Remove the script completely - it's not essential
+    // Just close the remaining HTML tags
     html += `
         </div>
     </body>
