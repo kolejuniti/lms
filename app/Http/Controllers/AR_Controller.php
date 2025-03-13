@@ -3792,10 +3792,11 @@ class AR_Controller extends Controller
                      ->pluck('id')->toArray();
 
         if(DB::table('tblevents')
+        ->join('user_subjek', 'tblevents.group_id', 'user_subjek.id')
         // ->where('user_ic', $event->user_ic)
-        ->where('id', '!=', $id)
-        ->where('lecture_id', $event->lecture_id)
-        ->whereIn('session_id', $session)
+        ->where('tblevents.id', '!=', $id)
+        ->where('tblevents.lecture_id', $event->lecture_id)
+        ->whereIn('tblevents.session_id', $session)
         ->whereRaw('DAYNAME(start) = ?', [$dayOfWeek])
         ->where(function ($query) use ($startTimeOnly, $endTimeOnly) {
             $query->where(function ($query) use ($startTimeOnly) {
@@ -3829,10 +3830,11 @@ class AR_Controller extends Controller
         }else{
 
             if(DB::table('tblevents')
-            ->where('user_ic', $event->user_ic)
-            ->where('id', '!=', $id)
+            ->join('user_subjek', 'tblevents.group_id', 'user_subjek.id')
+            ->where('tblevents.user_ic', $event->user_ic)
+            ->where('tblevents.id', '!=', $id)
             // ->where('lecture_id', $event->lecture_id)
-            ->whereIn('session_id', $session)
+            ->whereIn('tblevents.session_id', $session)
             ->whereRaw('DAYNAME(start) = ?', [$dayOfWeek])
             ->where(function ($query) use ($startTimeOnly, $endTimeOnly) {
                 $query->where(function ($query) use ($startTimeOnly) {
