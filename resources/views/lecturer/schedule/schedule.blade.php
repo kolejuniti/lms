@@ -1308,6 +1308,568 @@ function generateScheduleHTML() {
     /**
      * Print the schedule
      */
+     function printSchedule() {
+        // Show loading notification
+        showNotification('Preparing timetable for printing...', 'info');
+        
+        // Generate HTML using the extracted function
+        const html = generateScheduleHTML();
+        // Show loading notification
+        showNotification('Preparing timetable for printing...', 'info');
+        
+        // Build days array
+        const dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+        // Build half-hour time slots
+        let times = [];
+        let startHour = 7; // From 7:00 as per calendar config
+        let startMinute = 0;
+        let endHour = 20; // Until 20:00 as per calendar config
+
+        while (startHour < endHour || (startHour === endHour && startMinute === 0)) {
+            let hh = String(startHour).padStart(2, '0');
+            let mm = String(startMinute).padStart(2, '0');
+            times.push(`${hh}:${mm}`);
+            startMinute += 30;
+            if (startMinute === 60) {
+                startMinute = 0;
+                startHour++;
+            }
+        }
+
+        // Get events from FullCalendar
+        const events = calendar.getEvents();
+
+        // Build a 2D array scheduleData[dayIndex][timeIndex] = [events]
+        let scheduleData = [];
+        for (let d = 0; d < 7; d++) { // 7 days of the week
+            scheduleData[d] = [];
+            for (let t = 0; t < times.length; t++) {
+                scheduleData[d][t] = []; // Initialize with empty array
+            }
+        }
+
+        // Helper function to convert Date to "HH:MM" format
+        function toHHMM(dateObj) {
+            let hh = String(dateObj.getHours()).padStart(2, '0');
+            let mm = String(dateObj.getMinutes()).padStart(2, '0');
+            return hh + ':' + mm;
+        }
+
+        // Fill the scheduleData with events
+        events.forEach(event => {
+            let start = event.start;
+            let end = event.end || new Date(start.getTime() + 60 * 60 * 1000);
+
+            // Day of week (0=Sunday, 1=Monday, etc.)
+            let dayIndex = start.getDay(); 
+            if (dayIndex === 0) dayIndex = 6; // Move Sunday to the end (index 6)
+            else dayIndex -= 1; // Adjust other days (Monday=0, Tuesday=1, etc.)
+
+            let startTimeStr = toHHMM(start);
+            let endTimeStr = toHHMM(end);
+
+            let startIndex = times.indexOf(startTimeStr);
+            if (startIndex === -1) return;
+
+            let endIndex = times.indexOf(endTimeStr);
+            if (endIndex === -1) endIndex = times.length;
+
+            // Fill each half-hour slot with the event
+            for (let i = startIndex; i < endIndex; i++) {
+                scheduleData[dayIndex][i].push(event);
+            }
+        });
+
+        // Create processed tracking arrays
+        let processedEvents = new Set();
+        let skip = [];
+        for (let d = 0; d < 7; d++) {
+            skip[d] = new Array(times.length).fill(false);
+        }
+
+        // Add current date for footer
+        const currentDate = new Date().toLocaleDateString('en-GB', {
+            day: '2-digit', 
+            month: 'short', 
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+
+        // Build HTML with modern styling
+        let html = `
+        <html>
+        <head>
+            <title>Lecturer Schedule</title>
+            <style>
+                /* Control page breaks */
+                @page {
+                    size: A4 landscape;
+                    margin: 0.5cm;
+                }
+                
+                body {
+                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                    margin: 0;
+                    padding: 0;
+                    color: #000000;
+                    font-size: 9px;
+                    font-weight: 500;
+                }
+                
+                .container {
+                    max-width: 100%;
+                    margin: 0 auto;
+                    padding: 10px;
+                }
+                
+                .header {
+                    text-align: center;
+                    margin-bottom: 10px;
+                    padding-bottom: 5px;
+                    border-bottom: 1px solid #4361ee;
+                }
+                
+                h1 {
+                    color: #4361ee;
+                    margin: 0;
+                    font-size: 16px;
+                    font-weight: 600;
+                }
+                
+                .lecturer-info {
+                    background-color: #f8f9fa;
+                    border-radius: 4px;
+                    padding: 5px;
+                    margin-bottom: 10px;
+                    border: 1px solid #e0e0e0;
+                }
+                
+                .lecturer-info p {
+                    margin: 2px 0;
+                    font-size: 9px;
+                    font-weight: 600;
+                    color: #000000;
+                }
+                
+                /* Table styling */
+                table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    box-shadow: none;
+                    border-radius: 0;
+                    font-size: 8px;
+                    page-break-inside: auto;
+                }
+                
+                tr {
+                    page-break-inside: avoid;
+                    page-break-after: auto;
+                }
+                
+                thead {
+                    display: table-header-group;
+                }
+                
+                tfoot {
+                    display: table-footer-group;
+                }
+                
+                th {
+                    background-color: #1e40af;
+                    color: white;
+                    padding: 3px;
+                    text-align: center;
+                    font-weight: 700;
+                    font-size: 9px;
+                }
+                
+                th.time-column {
+                    background-color: #1e40af;
+                    color: white;
+                    font-weight: 700;
+                }
+                
+                td {
+                    border: 1px solid #000000;
+                    padding: 2px;
+                    text-align: center;
+                    vertical-align: middle;
+                    background-color: #f8f8f8;
+                }
+                
+                .time-column {
+                    background-color: #e0e0e0;
+                    font-weight: 700;
+                    color: #000000;
+                    width: 60px;
+                }
+                
+                .event-cell {
+                    background-color: #d1e4ff;
+                    border: 1.5px solid #000000;
+                }
+                
+                .event-title {
+                    font-weight: 700;
+                    color: #000000;
+                    margin-bottom: 1px;
+                    font-size: 8px;
+                }
+                
+                .event-description {
+                    color: #333333;
+                    font-size: 7px;
+                    font-weight: 500;
+                    line-height: 1.2;
+                }
+                
+                .rehat-cell {
+                    background-color: #ffcccf;
+                    border: 1.5px solid #000000;
+                    color: #c62828;
+                    font-weight: 700;
+                }
+                
+                .multi-event-container {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 2px;
+                }
+                
+                .event-divider {
+                    border-top: 1px dashed #ccc;
+                    margin: 1px 0;
+                }
+                
+                .print-date {
+                    text-align: right;
+                    color: #999;
+                    font-size: 8px;
+                    margin-top: 5px;
+                }
+                
+                footer {
+                    text-align: center;
+                    margin-top: 5px;
+                    font-size: 8px;
+                    color: #999;
+                }
+                
+                /* Table footer for page number */
+                .table-footer {
+                    text-align: center;
+                    font-size: 7px;
+                    border: none !important;
+                    background: transparent !important;
+                }
+                
+                @media print {
+                    body {
+                        -webkit-print-color-adjust: exact;
+                        print-color-adjust: exact;
+                    }
+                    
+                    .container {
+                        padding: 0;
+                    }
+                    
+                    /* Ensure text is dark enough for printing */
+                    * {
+                        color: #000000 !important;
+                    }
+                    
+                    th {
+                        background-color: #1e40af !important;
+                        color: white !important;
+                        font-weight: 800 !important;
+                        border: 1px solid #000000 !important;
+                    }
+                    
+                    td {
+                        background-color: #f8f8f8 !important;
+                        border: 1px solid #000000 !important;
+                    }
+                    
+                    .time-column {
+                        background-color: #e0e0e0 !important;
+                        color: #000000 !important;
+                        font-weight: 700 !important;
+                    }
+                    
+                    .event-cell {
+                        background-color: #d1e4ff !important;
+                        border: 1.5px solid #000000 !important;
+                    }
+                    
+                    .rehat-cell {
+                        background-color: #ffcccf !important;
+                        color: #c62828 !important;
+                        font-weight: 700 !important;
+                        border: 1.5px solid #000000 !important;
+                    }
+                }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="header">
+                    <h1>Lecturer Schedule</h1>
+                </div>
+                
+                <div class="lecturer-info">
+                    <p><strong>Date Generated:</strong> ${currentDate}</p>
+                </div>
+                
+                <table>
+                    <!-- Table Header (repeats on each page) -->
+                    <thead>
+                        <tr>
+                            <th class="time-column">Time</th>`;
+
+        // Column headers for days (only show days that aren't hidden)
+        const visibleDays = dayNames.filter((_, i) => !hiddenDays.includes(i));
+        visibleDays.forEach(day => {
+            html += `<th>${day}</th>`;
+        });
+
+        html += `</tr></thead>
+                    
+                    <!-- Table Footer (repeats on each page) -->
+                    <tfoot>
+                        <tr>
+                            <td colspan="${visibleDays.length + 1}" class="table-footer">
+                                Lecturer Schedule - Generated on: ${currentDate}
+                            </td>
+                        </tr>
+                    </tfoot>
+                    
+                    <tbody>`;
+
+        // For each timeslot row
+        for (let t = 0; t < times.length; t++) {
+            // Build the time label, e.g. "08:30 - 09:00"
+            let timeLabel = times[t];
+            if (t < times.length - 1) {
+                timeLabel += ' - ' + times[t + 1];
+            } else {
+                timeLabel += ' - 20:00';
+            }
+
+            // Start a row
+            html += `<tr>`;
+
+            // Left column: time label
+            html += `<td class="time-column">${timeLabel}</td>`;
+
+            // For each day column
+            for (let d = 0; d < 7; d++) {
+                // Skip if this day is hidden
+                if (hiddenDays.includes(d)) continue;
+                
+                // If this slot is marked skip => do nothing
+                if (skip[d][t]) {
+                    continue; 
+                }
+
+                let eventList = scheduleData[d][t];
+                
+                if (eventList.length > 0) {
+                    // Check if there's a REHAT event in this cell
+                    let hasRehat = eventList.some(event => event.title === 'REHAT');
+                    
+                    // If there's a REHAT event, give it priority
+                    if (hasRehat) {
+                        let rehatEvent = eventList.find(event => event.title === 'REHAT');
+                        
+                        let start = rehatEvent.start;
+                        let end = rehatEvent.end || new Date(start.getTime() + 60 * 60 * 1000);
+                        
+                        let startTimeStr = toHHMM(start);
+                        let endTimeStr = toHHMM(end);
+                        
+                        let startIndex = times.indexOf(startTimeStr);
+                        let endIndex = times.indexOf(endTimeStr);
+                        if (endIndex === -1) endIndex = times.length;
+                        
+                        let rowSpan = endIndex - startIndex;
+                        
+                        // Mark future slots to skip
+                        for (let k = 1; k < rowSpan; k++) {
+                            if (t + k < times.length) {
+                                skip[d][t + k] = true;
+                            }
+                        }
+                        
+                        // Create cell with REHAT
+                        html += `<td rowspan="${rowSpan}" class="rehat-cell">
+                                    <div class="event-title">REHAT</div>
+                                </td>`;
+                        
+                        // Skip processing other events in this cell
+                        continue;
+                    }
+                    
+                    // Group non-REHAT events by their full time span
+                    let eventGroups = {};
+                    
+                    eventList.forEach(event => {
+                        // Skip if we already processed this event
+                        if (processedEvents.has(event.id)) return;
+                        
+                        let start = event.start;
+                        let end = event.end || new Date(start.getTime() + 60 * 60 * 1000);
+                        
+                        let startTimeStr = toHHMM(start);
+                        let endTimeStr = toHHMM(end);
+                        
+                        let startIndex = times.indexOf(startTimeStr);
+                        let endIndex = times.indexOf(endTimeStr);
+                        if (endIndex === -1) endIndex = times.length;
+                        
+                        // Create a unique key for this time span
+                        let timeSpanKey = `${startIndex}-${endIndex}`;
+                        
+                        // Initialize group if not exists
+                        if (!eventGroups[timeSpanKey]) {
+                            eventGroups[timeSpanKey] = {
+                                events: [],
+                                rowSpan: endIndex - startIndex
+                            };
+                        }
+                        
+                        // Add event to the group
+                        eventGroups[timeSpanKey].events.push(event);
+                        
+                        // Mark event as processed
+                        processedEvents.add(event.id);
+                    });
+                    
+                    // Get the keys sorted by start time
+                    let timeSpanKeys = Object.keys(eventGroups).sort();
+                    
+                    // Only process if we have groups and this is the starting row for a group
+                    if (timeSpanKeys.length > 0) {
+                        let firstGroup = eventGroups[timeSpanKeys[0]];
+                        let rowSpan = firstGroup.rowSpan;
+                        let events = firstGroup.events;
+                        
+                        // Mark future slots to skip
+                        for (let k = 1; k < rowSpan; k++) {
+                            if (t + k < times.length) {
+                                skip[d][t + k] = true;
+                            }
+                        }
+                        
+                        // Create cell with rowspan
+                        html += `<td rowspan="${rowSpan}" class="event-cell">`;
+                        
+                        // Start multi-event container if we have multiple events
+                        if (events.length > 1) {
+                            html += `<div class="multi-event-container">`;
+                        }
+                        
+                        // Add each event
+                        events.forEach((event, index) => {
+                            if (index > 0) {
+                                html += `<div class="event-divider"></div>`;
+                            }
+                            
+                            // Title
+                            html += `<div class="event-title">${event.title || '(No Title)'}</div>`;
+                            
+                            // Add description if available
+                            if (event.extendedProps && event.extendedProps.description) {
+                                html += `<div class="event-description">${event.extendedProps.description}</div>`;
+                            }
+                        });
+                        
+                        // Close multi-event container if needed
+                        if (events.length > 1) {
+                            html += `</div>`;
+                        }
+                        
+                        html += `</td>`;
+                    } else {
+                        // No unprocessed events => empty cell
+                        html += `<td></td>`;
+                    }
+                } else {
+                    // No events => just a normal empty cell
+                    html += `<td></td>`;
+                }
+            }
+
+            // Close row
+            html += `</tr>`;
+        }
+        
+        html += `
+                    </tbody>
+                </table>
+                
+                <footer>
+                    © Timetable Management System
+                </footer>
+            </div>
+        </body>
+        </html>`;
+
+        // Improved print function with better error handling
+        try {
+            // Create the print window
+            let printWindow = window.open('', '_blank', 'width=1100,height=800');
+            
+            if (!printWindow) {
+                // If window.open returns null, it was likely blocked by a popup blocker
+                showNotification('Print window was blocked. Please allow popups for this site.', 'error', false);
+                return;
+            }
+            
+            // Write content to the window
+            printWindow.document.open();
+            printWindow.document.write(html);
+            printWindow.document.close();
+            
+            // Add event listener to detect when the content is fully loaded
+            printWindow.onload = function() {
+                try {
+                    // Focus on the window to bring it to front
+                    printWindow.focus();
+                    
+                    // Trigger the print dialog
+                    printWindow.print();
+                    
+                    // Show success notification
+                    showNotification('Schedule printed successfully', 'success');
+                    
+                    // Close the print window after printing (optional)
+                    // printWindow.close();
+                } catch (printError) {
+                    console.error('Print error:', printError);
+                    showNotification('Error during printing: ' + printError.message, 'error', false);
+                }
+            };
+            
+            // Fallback in case onload doesn't trigger
+            setTimeout(() => {
+                if (printWindow.document.readyState === 'complete') {
+                    if (!printWindow._printTriggered) {
+                        printWindow._printTriggered = true;
+                        printWindow.focus();
+                        printWindow.print();
+                        showNotification('Schedule printed successfully (fallback)', 'success');
+                    }
+                }
+            }, 2000);
+            
+        } catch (error) {
+            console.error('Print setup error:', error);
+            showNotification('Error setting up print: ' + error.message, 'error', false);
+        }
+    }
+
     /**
  * Print the schedule
  */
