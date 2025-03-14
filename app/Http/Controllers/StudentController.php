@@ -30,9 +30,17 @@ class StudentController extends Controller
             return redirect()->back()->withErrors(['message' => 'Student is not logged in']);
         }
 
-        $user = Session::put('StudInfo', $student);
+        Session::put('StudInfo', $student);
 
-        return view('student.dashboard');
+        $data['hostel'] = DB::connection(name: 'mysql3')->table('tblstudent_hostel')
+                  ->join('tblblock_unit', 'tblstudent_hostel.block_unit_id', 'tblblock_unit.id')
+                  ->join('tblblock', 'tblblock_unit.block_id', 'tblblock.id')
+                  ->where('tblstudent_hostel.student_ic', $student->ic)
+                  ->select('tblstudent_hostel.entry_date', 'tblstudent_hostel.exit_date', 'tblstudent_hostel.status AS student_status', 'tblblock_unit.status AS block_unit_status', 'tblblock.name', 'tblblock.location')
+                  ->orderBy('tblstudent_hostel.id', 'desc')
+                  ->first();
+
+        return view('student.dashboard', compact('data'));
     }
 
     public function index()
