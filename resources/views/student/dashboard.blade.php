@@ -338,6 +338,577 @@
           </div>
         </div>
       </div>
+
+      <!-- Add this right after the hostel status section in the HTML -->
+<div class="row flex-wrap">
+  <div class="col-xl-4 col-md-6 col-12">
+    <div class="box">
+      <div class="box-header with-border">
+        <h4 class="box-title modern-title">Cartoon Campus Companion</h4>
+      </div>
+      <div class="box-body">
+        <div id="interactive-cat-container" class="text-center">
+          <!-- 3D cat will be mounted here -->
+          <div class="cat-placeholder">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Loading your campus companion...</span>
+            </div>
+            <p class="mt-2 text-muted">Preparing your digital pet...</p>
+          </div>
+        </div>
+        <div class="text-center mt-3">
+          <p class="mb-1">Move your mouse to interact with your cartoon companion!</p>
+          <p class="text-muted small mb-0">Watch how it follows your cursor and blinks occasionally</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Move the next two statistics cards here for balance -->
+  <div class="col-xl-4 col-md-6 col-12">
+    <div class="box">
+      <div class="box-body">
+        <div class="d-flex align-items-start">
+          <div class="me-3 d-flex justify-content-center align-items-center bg-success-light rounded-circle" style="width: 50px; height: 50px;">
+            <i class="mdi mdi-account-check fs-24 text-success"></i>
+          </div>
+          <div>
+            <h4 class="mt-0 mb-0">??</h4>
+            <p class="mb-0 text-muted">Attendance Rate
+              <span class="badge bg-secondary ms-1">Available Soon</span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-xl-4 col-md-6 col-12">
+    <div class="box">
+      <div class="box-body">
+        <div class="d-flex align-items-start">
+          <div class="me-3 d-flex justify-content-center align-items-center bg-warning-light rounded-circle" style="width: 50px; height: 50px;">
+            <i class="mdi mdi-clipboard-text fs-24 text-warning"></i>
+          </div>
+          <div>
+            <h4 class="mt-0 mb-0">??</h4>
+            <p class="mb-0 text-muted">Pending Assignments
+              <span class="badge bg-secondary ms-1">Available Soon</span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add this to the end of the <style> section -->
+<style>
+  /* Cat animation container styles */
+  .cat-animation-container {
+    position: relative;
+    width: 100%;
+    height: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+  }
+  
+  .cat-animation-container:hover {
+    box-shadow: 0 8px 25px rgba(67, 97, 238, 0.15);
+    transform: translateY(-5px);
+  }
+  
+  .cat-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 200px;
+  }
+  
+  /* Simple cat loading animation */
+  @keyframes catBounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+  
+  .cat-loading {
+    font-size: 3rem;
+    animation: catBounce 1s ease infinite;
+  }
+</style>
+
+<!-- Add this script to the end of the page, before the closing </body> tag -->
+<script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Initialize the 3D cat after the page loads
+    initializeInteractiveCat();
+  });
+  
+  function initializeInteractiveCat() {
+    const container = document.getElementById('interactive-cat-container');
+    if (!container) return;
+    
+    container.innerHTML = '<div class="cat-placeholder"><span class="cat-loading">😸</span><p class="mt-2 text-muted">Loading your cartoon companion...</p></div>';
+    
+    // Scene setup
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0xf8f9fa);
+    
+    // Camera setup
+    const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
+    camera.position.z = 5;
+    camera.position.y = 0.5;
+    
+    // Renderer setup
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(250, 250);
+    
+    // Create canvas container
+    const canvasContainer = document.createElement('div');
+    canvasContainer.className = 'cat-canvas-container';
+    canvasContainer.style.width = '250px';
+    canvasContainer.style.height = '250px';
+    canvasContainer.style.margin = '0 auto';
+    canvasContainer.style.borderRadius = '12px';
+    canvasContainer.style.overflow = 'hidden';
+    canvasContainer.appendChild(renderer.domElement);
+    
+    // Replace placeholder with canvas
+    container.innerHTML = '';
+    container.appendChild(canvasContainer);
+    
+    // Create a stylized cartoon cat
+    const cat = createCuteCat();
+    scene.add(cat);
+    
+    // Lights
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+    scene.add(ambientLight);
+    
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+    directionalLight.position.set(5, 5, 5);
+    scene.add(directionalLight);
+    
+    const backLight = new THREE.DirectionalLight(0xffffff, 0.5);
+    backLight.position.set(-5, 5, -5);
+    scene.add(backLight);
+    
+    // Animation loop
+    const clock = new THREE.Clock();
+    
+    const animate = function () {
+      requestAnimationFrame(animate);
+      
+      const time = clock.getElapsedTime();
+      
+      // Gentle hovering animation
+      cat.position.y = -0.7 + Math.sin(time * 1.5) * 0.1;
+      
+      // Gentle rotation
+      cat.rotation.y = Math.PI / 4 + Math.sin(time * 0.8) * 0.2;
+      
+      // Tail animation
+      if (cat.getObjectByName('tail')) {
+        const tail = cat.getObjectByName('tail');
+        tail.rotation.z = Math.sin(time * 2) * 0.2;
+      }
+      
+      // Eye animation (occasional blink)
+      const headGroup = cat.getObjectByName('headGroup');
+      if (headGroup) {
+        const leftEye = headGroup.getObjectByName('leftEye');
+        const rightEye = headGroup.getObjectByName('rightEye');
+        
+        if (leftEye && rightEye) {
+          // Blink occasionally
+          if (Math.sin(time * 3) > 0.99) {
+            leftEye.scale.y = 0.1;
+            rightEye.scale.y = 0.1;
+          } else {
+            leftEye.scale.y = 1;
+            rightEye.scale.y = 1;
+          }
+        }
+      }
+      
+      renderer.render(scene, camera);
+    };
+    
+    animate();
+    
+    // Make it interactive - respond to mouse moves
+    document.addEventListener('mousemove', function(event) {
+      if (!canvasContainer) return;
+      
+      const rect = canvasContainer.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      
+      const mouseX = event.clientX - centerX;
+      const mouseY = event.clientY - centerY;
+      
+      // Follow the mouse with the cat's head
+      const headGroup = cat.getObjectByName('headGroup');
+      if (headGroup) {
+        // Smooth following
+        const targetRotationX = mouseY * 0.001;
+        const targetRotationY = mouseX * 0.002;
+        
+        headGroup.rotation.x = THREE.MathUtils.lerp(headGroup.rotation.x, targetRotationX, 0.1);
+        headGroup.rotation.y = THREE.MathUtils.lerp(headGroup.rotation.y, targetRotationY, 0.1);
+      }
+      
+      // Move ears
+      const leftEarGroup = headGroup ? headGroup.getObjectByName('leftEarGroup') : null;
+      const rightEarGroup = headGroup ? headGroup.getObjectByName('rightEarGroup') : null;
+      
+      if (leftEarGroup && rightEarGroup) {
+        // Ears perk up when mouse is higher
+        const earLift = Math.max(0, -mouseY * 0.001);
+        leftEarGroup.rotation.x = -Math.PI/10 - earLift;
+        rightEarGroup.rotation.x = -Math.PI/10 - earLift;
+        
+        // Ears move slightly toward mouse
+        leftEarGroup.rotation.z = -Math.PI/8 + mouseX * 0.0001;
+        rightEarGroup.rotation.z = Math.PI/8 - mouseX * 0.0001;
+      }
+    });
+  }
+  
+  // Create a stylized cartoon cat
+  function createCuteCat() {
+    const catGroup = new THREE.Group();
+    
+    // Define colors
+    const bodyColor = 0xFF9D87;      // Warm orange-pink
+    const bellyColor = 0xFFCBC1;     // Lighter belly/face
+    const earColor = 0xFF7D6B;       // Slightly darker pink for ears
+    const noseColor = 0xFF5252;      // Bright pink nose
+    const eyeColor = 0x333333;       // Dark eye color
+    const whiskerColor = 0xFFFFFF;   // White whiskers
+    
+    // Create material with proper shading for cartoon look
+    const bodyMaterial = new THREE.MeshStandardMaterial({
+      color: bodyColor,
+      roughness: 0.6,
+      metalness: 0.1,
+      flatShading: false
+    });
+    
+    const bellyMaterial = new THREE.MeshStandardMaterial({
+      color: bellyColor,
+      roughness: 0.8,
+      metalness: 0.0,
+      flatShading: false
+    });
+    
+    const earMaterial = new THREE.MeshStandardMaterial({
+      color: earColor,
+      roughness: 0.6,
+      metalness: 0.1,
+      flatShading: false
+    });
+    
+    // Helper function to create cartoon outlines
+    function createOutlineMaterial() {
+      return new THREE.MeshBasicMaterial({
+        color: 0x222222,
+        side: THREE.BackSide
+      });
+    }
+    
+    // Main body (round sphere)
+    const bodyGeometry = new THREE.SphereGeometry(1, 32, 32);
+    const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+    body.scale.set(1.0, 0.9, 0.9);
+    catGroup.add(body);
+    
+    // Body outline
+    const bodyOutline = new THREE.Mesh(bodyGeometry, createOutlineMaterial());
+    bodyOutline.scale.set(1.05, 0.95, 0.95);
+    catGroup.add(bodyOutline);
+    
+    // Belly (flattened sphere)
+    const bellyGeometry = new THREE.SphereGeometry(0.7, 32, 32, 0, Math.PI * 2, 0, Math.PI/2);
+    const belly = new THREE.Mesh(bellyGeometry, bellyMaterial);
+    belly.position.set(0, -0.3, 0.7);
+    belly.rotation.x = Math.PI/2;
+    catGroup.add(belly);
+    
+    // Create head group for animation
+    const headGroup = new THREE.Group();
+    headGroup.name = 'headGroup';
+    headGroup.position.set(0, 0.3, 0.8);
+    
+    // Head (sphere)
+    const headGeometry = new THREE.SphereGeometry(0.7, 32, 32);
+    const head = new THREE.Mesh(headGeometry, bellyMaterial);
+    headGroup.add(head);
+    
+    // Head outline
+    const headOutline = new THREE.Mesh(headGeometry, createOutlineMaterial());
+    headOutline.scale.set(1.05, 1.05, 1.05);
+    headGroup.add(headOutline);
+    
+    // Ears
+    function createEar(side) {
+      const earGroup = new THREE.Group();
+      earGroup.name = side < 0 ? 'leftEarGroup' : 'rightEarGroup';
+      
+      const earGeometry = new THREE.ConeGeometry(0.3, 0.6, 32);
+      const ear = new THREE.Mesh(earGeometry, earMaterial);
+      ear.position.set(0, 0.2, 0);
+      earGroup.add(ear);
+      
+      // Ear outline
+      const earOutline = new THREE.Mesh(earGeometry, createOutlineMaterial());
+      earOutline.position.set(0, 0.2, 0);
+      earOutline.scale.set(1.1, 1.05, 1.1);
+      earGroup.add(earOutline);
+      
+      // Inner ear
+      const innerEarGeometry = new THREE.ConeGeometry(0.2, 0.35, 32);
+      const innerEar = new THREE.Mesh(innerEarGeometry, bellyMaterial);
+      innerEar.position.set(0, 0.2, 0);
+      earGroup.add(innerEar);
+      
+      // Position the ear group
+      earGroup.position.set(side * 0.45, 0.7, 0);
+      earGroup.rotation.x = -Math.PI/10;
+      earGroup.rotation.z = side * Math.PI/8;
+      
+      return earGroup;
+    }
+    
+    const leftEar = createEar(-1);
+    headGroup.add(leftEar);
+    
+    const rightEar = createEar(1);
+    headGroup.add(rightEar);
+    
+    // Eyes
+    function createEye(side) {
+      const eyeGroup = new THREE.Group();
+      
+      // White part of eye
+      const eyeGeometry = new THREE.SphereGeometry(0.15, 32, 32);
+      const eyeMaterial = new THREE.MeshStandardMaterial({
+        color: 0xFFFFFF,
+        roughness: 0.2,
+        metalness: 0.1
+      });
+      const eye = new THREE.Mesh(eyeGeometry, eyeMaterial);
+      eye.scale.set(1, 1, 0.5);
+      eye.name = side < 0 ? 'leftEye' : 'rightEye';
+      eyeGroup.add(eye);
+      
+      // Eye outline
+      const outlineMaterial = createOutlineMaterial();
+      const eyeOutline = new THREE.Mesh(eyeGeometry, outlineMaterial);
+      eyeOutline.scale.set(1.05, 1.05, 0.55);
+      eyeGroup.add(eyeOutline);
+      
+      // Pupil
+      const pupilGeometry = new THREE.SphereGeometry(0.07, 32, 32);
+      const pupilMaterial = new THREE.MeshStandardMaterial({
+        color: 0x000000,
+        roughness: 0.1,
+        metalness: 0.1
+      });
+      const pupil = new THREE.Mesh(pupilGeometry, pupilMaterial);
+      pupil.position.z = 0.1;
+      eyeGroup.add(pupil);
+      
+      // Highlight
+      const highlightGeometry = new THREE.SphereGeometry(0.03, 16, 16);
+      const highlightMaterial = new THREE.MeshStandardMaterial({
+        color: 0xFFFFFF,
+        roughness: 0,
+        metalness: 0.2,
+        emissive: 0xFFFFFF,
+        emissiveIntensity: 0.5
+      });
+      const highlight = new THREE.Mesh(highlightGeometry, highlightMaterial);
+      highlight.position.set(0.03, 0.03, 0.15);
+      eyeGroup.add(highlight);
+      
+      // Position the eye
+      eyeGroup.position.set(side * 0.25, 0.1, 0.6);
+      return eyeGroup;
+    }
+    
+    const leftEye = createEye(-1);
+    headGroup.add(leftEye);
+    
+    const rightEye = createEye(1);
+    headGroup.add(rightEye);
+    
+    // Nose
+    const noseGeometry = new THREE.SphereGeometry(0.1, 32, 32);
+    const nose = new THREE.Mesh(noseGeometry, new THREE.MeshStandardMaterial({
+      color: noseColor,
+      roughness: 0.6,
+      metalness: 0.1
+    }));
+    nose.scale.set(1, 0.7, 0.7);
+    nose.position.set(0, -0.05, 0.65);
+    headGroup.add(nose);
+    
+    // Nose outline
+    const noseOutline = new THREE.Mesh(noseGeometry, createOutlineMaterial());
+    noseOutline.scale.set(1.05, 0.75, 0.75);
+    noseOutline.position.set(0, -0.05, 0.65);
+    headGroup.add(noseOutline);
+    
+    // Mouth
+    const smile = new THREE.Mesh(
+      new THREE.TorusGeometry(0.15, 0.02, 16, 32, Math.PI),
+      new THREE.MeshBasicMaterial({ color: 0x222222 })
+    );
+    smile.position.set(0, -0.15, 0.63);
+    smile.rotation.x = Math.PI/4;
+    smile.rotation.z = Math.PI;
+    headGroup.add(smile);
+    
+    // Whiskers
+    function createWhiskers() {
+      const whiskersGroup = new THREE.Group();
+      
+      const whiskerMaterial = new THREE.MeshStandardMaterial({
+        color: whiskerColor,
+        roughness: 0.5,
+        metalness: 0.1
+      });
+      
+      // Create 6 whiskers (3 on each side)
+      for (let side = -1; side <= 1; side += 2) {
+        for (let i = 0; i < 3; i++) {
+          const whisker = new THREE.Mesh(
+            new THREE.CylinderGeometry(0.01, 0.005, 0.6, 8),
+            whiskerMaterial
+          );
+          
+          whisker.rotation.z = Math.PI / 2;
+          whisker.rotation.y = side * (Math.PI / 12);
+          whisker.rotation.x = (i - 1) * Math.PI / 12;
+          
+          whisker.position.set(side * 0.25, -0.1 - (i - 1) * 0.05, 0.5);
+          whiskersGroup.add(whisker);
+          
+          // Whisker outline
+          const whiskerOutline = new THREE.Mesh(
+            new THREE.CylinderGeometry(0.015, 0.01, 0.62, 8),
+            createOutlineMaterial()
+          );
+          whiskerOutline.rotation.z = Math.PI / 2;
+          whiskerOutline.rotation.y = side * (Math.PI / 12);
+          whiskerOutline.rotation.x = (i - 1) * Math.PI / 12;
+          
+          whiskerOutline.position.set(side * 0.25, -0.1 - (i - 1) * 0.05, 0.5);
+          whiskersGroup.add(whiskerOutline);
+        }
+      }
+      
+      return whiskersGroup;
+    }
+    
+    const whiskers = createWhiskers();
+    headGroup.add(whiskers);
+    
+    // Add the head group to the cat
+    catGroup.add(headGroup);
+    
+    // Tail
+    function createTail() {
+      const tailGroup = new THREE.Group();
+      tailGroup.name = 'tail';
+      
+      // Create a curved path for the tail
+      const tailCurve = new THREE.CatmullRomCurve3([
+        new THREE.Vector3(0, 0, -1),
+        new THREE.Vector3(0.5, 0.5, -1.2),
+        new THREE.Vector3(0.7, 1, -0.8),
+        new THREE.Vector3(0, 1.2, -0.3)
+      ]);
+      
+      // Create tail mesh along the curve
+      const tailGeometry = new THREE.TubeGeometry(tailCurve, 32, 0.15, 16, false);
+      const tail = new THREE.Mesh(tailGeometry, bodyMaterial);
+      tailGroup.add(tail);
+      
+      // Tail outline
+      const tailOutline = new THREE.Mesh(
+        new THREE.TubeGeometry(tailCurve, 32, 0.17, 16, false),
+        createOutlineMaterial()
+      );
+      tailGroup.add(tailOutline);
+      
+      // Tail tip (small sphere at the end)
+      const tipGeometry = new THREE.SphereGeometry(0.2, 32, 32);
+      const tip = new THREE.Mesh(tipGeometry, bodyMaterial);
+      tip.position.copy(tailCurve.getPoint(1));
+      tailGroup.add(tip);
+      
+      // Tip outline
+      const tipOutline = new THREE.Mesh(tipGeometry, createOutlineMaterial());
+      tipOutline.position.copy(tailCurve.getPoint(1));
+      tipOutline.scale.set(1.1, 1.1, 1.1);
+      tailGroup.add(tipOutline);
+      
+      return tailGroup;
+    }
+    
+    const tail = createTail();
+    catGroup.add(tail);
+    
+    // Paws (front)
+    function createPaw(side, position) {
+      const pawGroup = new THREE.Group();
+      
+      // Main paw shape
+      const pawGeometry = new THREE.SphereGeometry(0.2, 32, 32);
+      const paw = new THREE.Mesh(pawGeometry, bellyMaterial);
+      paw.position.copy(position);
+      pawGroup.add(paw);
+      
+      // Paw outline
+      const pawOutline = new THREE.Mesh(pawGeometry, createOutlineMaterial());
+      pawOutline.position.copy(position);
+      pawOutline.scale.set(1.1, 1.1, 1.1);
+      pawGroup.add(pawOutline);
+      
+      return pawGroup;
+    }
+    
+    // Add paws
+    const frontLeftPaw = createPaw(-1, new THREE.Vector3(-0.6, -0.8, 0.5));
+    catGroup.add(frontLeftPaw);
+    
+    const frontRightPaw = createPaw(1, new THREE.Vector3(0.6, -0.8, 0.5));
+    catGroup.add(frontRightPaw);
+    
+    const backLeftPaw = createPaw(-1, new THREE.Vector3(-0.6, -0.8, -0.5));
+    catGroup.add(backLeftPaw);
+    
+    const backRightPaw = createPaw(1, new THREE.Vector3(0.6, -0.8, -0.5));
+    catGroup.add(backRightPaw);
+    
+    // Position and scale the entire cat
+    catGroup.scale.set(0.7, 0.7, 0.7);
+    catGroup.position.y = -0.7;
+    catGroup.rotation.y = Math.PI / 4;
+    
+    return catGroup;
+  }
+</script>
       
       <!-- Statistics Summary Cards -->
       <div class="row">
