@@ -1262,6 +1262,11 @@
                         if (event.extendedProps && event.extendedProps.description) {
                             html += `<div class="event-description">${event.extendedProps.description}</div>`;
                         }
+
+                        // Add program info if available (only once, with special class)
+                        if (event.extendedProps && event.extendedProps.programInfo) {
+                            html += `<div class="event-description program-info">Program: ${event.extendedProps.programInfo}</div>`;
+                        }
                     });
 
                     // Close multi-event container if needed
