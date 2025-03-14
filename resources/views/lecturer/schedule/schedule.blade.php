@@ -782,7 +782,7 @@
                     <p><strong>Time:</strong> ${event.start.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} - ${event.end ? event.end.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'N/A'}</p>
                     ${event.extendedProps.description ? `<p><strong>Description:</strong> ${event.extendedProps.description}</p>` : ''}
                     ${event.extendedProps.programInfo ? `<p><strong>Program:</strong> ${event.extendedProps.programInfo}</p>` : ''}
-                </div>ss
+                </div>
             `,
             icon: 'info',
             confirmButtonText: 'Close',
