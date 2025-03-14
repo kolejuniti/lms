@@ -1020,7 +1020,7 @@ Route::get('/checkout/cancel', function () {
 Route::get('/checkout/receipt/{session_id}', [App\Http\Controllers\PaymentController::class, 'showReceipt'])->name('checkout.receipt');
 
 Route::post('/securepay-checkout', [App\Http\Controllers\PaymentController::class, 'securePayCheckout'])->name('securepay.checkout');
-Route::post('/checkout/securePay/receipt', [App\Http\Controllers\PaymentController::class, 'showReceiptSecurePay'])->name('checkout.receipt');
+Route::post('/checkout/securePay/receipt', [App\Http\Controllers\PaymentController::class, 'showReceiptSecurePay'])->name('checkout.receipt2');
 
 
 Route::middleware(['preventBackHistory'])->group(function () {
