@@ -569,7 +569,7 @@ Route::post('/student/test/submittest', [App\Http\Controllers\TestController::cl
 Route::get('/student/test2/{id}', [App\Http\Controllers\TestController::class, 'studenttest2list'])->name('student.test2');
 
 Route::get('/student/test3/{id}', [App\Http\Controllers\Test2Controller::class, 'studenttestlist'])->name('student.test3');
-Route::get('/student/test3/{id}/{test}', [App\Http\Controllers\Test2Controller::class, 'studentteststatus'])->name('student.test.status');
+Route::get('/student/test3/{id}/{test}', [App\Http\Controllers\Test2Controller::class, 'studentteststatus'])->name('student.test.status3');
 Route::get('/student/test3/{id}/{test}/view', [App\Http\Controllers\Test2Controller::class, 'testview']);
 Route::get('/student/test3/{testid}/{userid}/result', [App\Http\Controllers\Test2Controller::class, 'testresultstd']);
 Route::post('/student/test3/starttest', [App\Http\Controllers\Test2Controller::class, 'starttest']);
