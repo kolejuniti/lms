@@ -677,9 +677,7 @@ class QuizController extends Controller
         $id = $request->quizid;
         $userid = $request->userid;
         $count = 1;
-
-        //dd($id);
-
+    
         $quiz = DB::table('tblclassstudentquiz')
             ->join('tblclassquiz', 'tblclassstudentquiz.quizid', 'tblclassquiz.id')
             ->leftJoin('students', 'tblclassstudentquiz.userid', 'students.ic')
@@ -697,75 +695,99 @@ class QuizController extends Controller
         $quizformdata = json_decode($quiz->content)->formData;
         $original_quizformdata = json_decode($quiz->original_content)->formData;
         
-
         $gain_mark = false;
         $correct_label = " <i style='font-size:1.5em' class='fa fa-check text-success'></i>";
         $incorrect_label = " <i style='font-size:1.5em' class='fa fa-close text-danger'></i>";
-
+    
         foreach($original_quizformdata as $index => $q){
-
-        //$radio = "radio-question".$count+1;
-        //dd($radio);
-
-            if(!empty($original_quizformdata[$index]->name) ){
-
-                if($original_quizformdata[$index]->name == "radio-question".$count){
-                    $i =0;
-                    $correct_answer = $original_quizformdata[$index + 1]->label;
-                    $correct_answer = preg_replace('/\s+/', '', $correct_answer );
-                    $correct_answer = explode(",", $correct_answer);
+            if(!empty($original_quizformdata[$index]->name)){
+                // Handle radio questions
+                if(preg_match('/^radio-question(\d+)$/', $original_quizformdata[$index]->name, $matches)){
+                    $question_number = $matches[1];
+                    $i = 0;
+                    
+                    // Get and process correct answer(s)
+                    $correct_answer_raw = $original_quizformdata[$index + 1]->label;
+                    $correct_answers = explode(",", $correct_answer_raw);
+                    
+                    // Trim whitespace from each correct answer
+                    $correct_answers = array_map('trim', $correct_answers);
                     
                     foreach($quizformdata[$index]->values as $v){
+                        $value_trimmed = trim($v->value);
                         
-                        if(in_array($v->value, $correct_answer)){
+                        if(in_array($value_trimmed, $correct_answers)){
                             $quizformdata[$index]->values[$i]->label = $original_quizformdata[$index]->values[$i]->label . $correct_label;
-                        }else{
+                        } else {
                             $quizformdata[$index]->values[$i]->label = $original_quizformdata[$index]->values[$i]->label . $incorrect_label;
                         }
                         $i++;
                     }
-
-                    $userData = !empty($quizformdata[$index]->userData[0]) ? $quizformdata[$index]->userData[0] : null;
-
-                    if(in_array($userData, $correct_answer)){
+    
+                    $userData = !empty($quizformdata[$index]->userData[0]) ? trim($quizformdata[$index]->userData[0]) : null;
+    
+                    if($userData && in_array($userData, $correct_answers)){
                         $gain_mark = true;
                     }
-                    $count++;
                     
+                    if($question_number == $count) {
+                        $count++;
+                    }
                 }
                 
-                if($original_quizformdata[$index]->name == "checkbox-question".$count){
-                    $i =0;
-                    $correct_answer = $original_quizformdata[$index + 1]->label;
-                    $correct_answer = preg_replace('/\s+/', '', $correct_answer );
-                    $correct_answer = explode(",", $correct_answer);
+                // Handle checkbox questions
+                if(preg_match('/^checkbox-question(\d+)$/', $original_quizformdata[$index]->name, $matches)){
+                    $question_number = $matches[1];
+                    $i = 0;
+                    
+                    // Get and process correct answer(s)
+                    $correct_answer_raw = $original_quizformdata[$index + 1]->label;
+                    $correct_answers = explode(",", $correct_answer_raw);
+                    
+                    // Trim whitespace from each correct answer
+                    $correct_answers = array_map('trim', $correct_answers);
                     
                     foreach($quizformdata[$index]->values as $v){
-                        if(in_array($v->value, $correct_answer)){
+                        $value_trimmed = trim($v->value);
+                        
+                        if(in_array($value_trimmed, $correct_answers)){
                             $quizformdata[$index]->values[$i]->label = $original_quizformdata[$index]->values[$i]->label . $correct_label;
-                        }else{
+                        } else {
                             $quizformdata[$index]->values[$i]->label = $original_quizformdata[$index]->values[$i]->label . $incorrect_label;
                         }
                         $i++;
                     }
                     
-                    $userData = !empty($quizformdata[$index]->userData) ? $quizformdata[$index]->userData : null;
-
-                    if( count( array_diff_assoc($correct_answer, $userData) )  == 0){
+                    $userData = !empty($quizformdata[$index]->userData) ? $quizformdata[$index]->userData : [];
+                    
+                    // Trim whitespace from user data
+                    $userData = array_map('trim', $userData);
+                    
+                    // Sort both arrays to ensure consistent comparison
+                    sort($userData);
+                    sort($correct_answers);
+                    
+                    // Compare arrays (case-insensitive)
+                    $userData_lower = array_map('strtolower', $userData);
+                    $correct_answers_lower = array_map('strtolower', $correct_answers);
+                    
+                    if($userData_lower == $correct_answers_lower){
                         $gain_mark = true;
                     }
-                    $count++;
-                
+                    
+                    if($question_number == $count) {
+                        $count++;
+                    }
                 }
             }
-
-            if(!empty($original_quizformdata[$index]->className) ){
+    
+            if(!empty($original_quizformdata[$index]->className)){
                 
                 if(str_contains($original_quizformdata[$index]->className, "feedback-text")){
                     $quizformdata[$index] = $q;
                   
                     $quizformdata[$index]->type = "paragraph";
-
+    
                     if(!empty($q->userData[0])){
                         $quizformdata[$index]->label = $q->userData[0];
                     }else{
@@ -773,28 +795,28 @@ class QuizController extends Controller
                     }
                     $quizformdata[$index]->className = "bg-red mb-4 text-danger";
                 }
-
+    
                 if(str_contains($original_quizformdata[$index]->className, "inputmark")){
                     $quizformdata[$index]->type = "number";
-
+    
                     if(!empty($q->userData[0])){
                         $quizformdata[$index]->label = $q->userData[0];
                     }else{
                         $quizformdata[$index]->label = " ";
                     }
-
+    
                     $quizformdata[$index]->className = "inputmark form-control";
                 }
-
+    
                 if(str_contains($original_quizformdata[$index]->className, "collected-marks")){
-
-                    $mark_label           = $original_quizformdata[$index]->values[0]->label;
-                    $mark                 = $original_quizformdata[$index]->values[0]->value;
+    
+                    $mark_label = $original_quizformdata[$index]->values[0]->label;
+                    $mark = $original_quizformdata[$index]->values[0]->value;
                     
                     //if result is published then use graded data
                     if($quiz->studentquizstatus == 3){
                         $graded_data = empty($quizformdata[$index]->userData[0]) ? "" : $quizformdata[$index]->userData[0];
-
+    
                         if($graded_data == $mark){
                             $quizformdata[$index]->values[0]->selected = true;
                         }else{
@@ -803,7 +825,7 @@ class QuizController extends Controller
                     }else{
                         //auto correct answer on mcq by matching user answer with original answer
                         $quizformdata[$index] = $original_quizformdata[$index];
-
+    
                         if($gain_mark){
                             $quizformdata[$index]->values[0]->selected = true;
                         }else{
@@ -829,7 +851,7 @@ class QuizController extends Controller
         $data['submittime'] = $quiz->submittime;
         $data['questionindex'] = $quiz->questionindex;
         $data['studentquizstatus'] = $quiz->studentquizstatus;
-
+    
         return view('lecturer.courseassessment.quizresult', compact('data'));
     }
 

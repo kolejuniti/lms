@@ -726,149 +726,147 @@
                                 * @param {Object} data The response data from the server
                                 */
                                 function processQuizQuestions(data) {
-                                    try {
-                                        // Parse the JSON data
-                                        let quizData;
-                                        if (typeof data.formBuilderJSON === 'string') {
-                                            quizData = JSON.parse(data.formBuilderJSON);
-                                        } else {
-                                            quizData = data.formBuilderJSON;
-                                        }
-                                        
-                                        // If no questions were received, create empty questions array
-                                        if (!quizData || !quizData.quiz || !quizData.quiz.questions || !Array.isArray(quizData.quiz.questions)) {
-                                            console.error('Invalid quiz data structure received.');
-                                            showErrorMessage('The AI generated an invalid quiz structure. Please try again.');
-                                            return;
-                                        }
-                                        
-                                        // Extract questions array
-                                        const allQuestions = quizData.quiz.questions;
-                                        
-                                        // Get the requested counts from the form
-                                        const requestedSingleChoice = parseInt(document.getElementById('singleChoiceCount').value) || 0;
-                                        const requestedMultipleChoice = parseInt(document.getElementById('multipleChoiceCount').value) || 0;
-                                        const requestedSubjective = parseInt(document.getElementById('subjectiveCount').value) || 0;
-                                        
-                                        // Sort questions by type
-                                        const singleChoiceQuestions = allQuestions.filter(q => q.type === 'single-choice');
-                                        const multipleChoiceQuestions = allQuestions.filter(q => q.type === 'multiple-choice');
-                                        const subjectiveQuestions = allQuestions.filter(q => q.type === 'subjective');
-                                        
-                                        // Create the final list of questions in the order they are requested
-                                        const finalQuestions = [
-                                            ...singleChoiceQuestions.slice(0, requestedSingleChoice),
-                                            ...multipleChoiceQuestions.slice(0, requestedMultipleChoice),
-                                            ...subjectiveQuestions.slice(0, requestedSubjective)
-                                        ];
-                                        
-                                        // Check if we have enough questions of each type
-                                        const actualSingleChoice = Math.min(singleChoiceQuestions.length, requestedSingleChoice);
-                                        const actualMultipleChoice = Math.min(multipleChoiceQuestions.length, requestedMultipleChoice);
-                                        const actualSubjective = Math.min(subjectiveQuestions.length, requestedSubjective);
-                                        
-                                        // If we didn't get enough questions of any type, show a warning
-                                        if (actualSingleChoice < requestedSingleChoice || 
-                                            actualMultipleChoice < requestedMultipleChoice || 
-                                            actualSubjective < requestedSubjective) {
-                                            
-                                            let message = "The AI couldn't generate enough questions of the requested types. Generated:";
-                                            if (requestedSingleChoice > 0) {
-                                                message += ` ${actualSingleChoice}/${requestedSingleChoice} single-choice questions.`;
-                                            }
-                                            if (requestedMultipleChoice > 0) {
-                                                message += ` ${actualMultipleChoice}/${requestedMultipleChoice} multiple-choice questions.`;
-                                            }
-                                            if (requestedSubjective > 0) {
-                                                message += ` ${actualSubjective}/${requestedSubjective} subjective questions.`;
-                                            }
-                                            
-                                            showWarningMessage(message);
-                                        } else {
-                                            // Show success message only if we got all the questions we wanted
-                                            showSuccessMessage();
-                                        }
-                                        
-                                        // If we have no questions to display, show an error
-                                        if (finalQuestions.length === 0) {
-                                            showErrorMessage('No valid questions were generated. Please try again with a different document or question settings.');
-                                            return;
-                                        }
-                                        
-                                        // Process each question
-                                        finalQuestions.forEach((question, index) => {
-                                            addQuestionToFormBuilder(question, index);
-                                        });
-                                        
-                                        // Update question index value
-                                        updateQuestionIndex(finalQuestions.length);
-                                        
-                                        // Update marks calculation
-                                        if (typeof renderMark === 'function') {
-                                            renderMark();
-                                        }
-                                    } catch (e) {
-                                        console.error('Error processing quiz data:', e);
-                                        showErrorMessage('Error processing the generated quiz data. Please try again.');
-                                    }
-                                }
-
+    try {
+        // Parse the JSON data
+        let quizData;
+        if (typeof data.formBuilderJSON === 'string') {
+            quizData = JSON.parse(data.formBuilderJSON);
+        } else {
+            quizData = data.formBuilderJSON;
+        }
+        
+        // If no questions were received, create empty questions array
+        if (!quizData || !quizData.quiz || !quizData.quiz.questions || !Array.isArray(quizData.quiz.questions)) {
+            console.error('Invalid quiz data structure received.');
+            showErrorMessage('The AI generated an invalid quiz structure. Please try again.');
+            return;
+        }
+        
+        // Extract questions array
+        const allQuestions = quizData.quiz.questions;
+        
+        // Get the requested counts from the form
+        const requestedSingleChoice = parseInt(document.getElementById('singleChoiceCount').value) || 0;
+        const requestedMultipleChoice = parseInt(document.getElementById('multipleChoiceCount').value) || 0;
+        const requestedSubjective = parseInt(document.getElementById('subjectiveCount').value) || 0;
+        
+        // Sort questions by type
+        const singleChoiceQuestions = allQuestions.filter(q => q.type === 'single-choice');
+        const multipleChoiceQuestions = allQuestions.filter(q => q.type === 'multiple-choice');
+        const subjectiveQuestions = allQuestions.filter(q => q.type === 'subjective');
+        
+        // Create the final list of questions in the order they are requested
+        const finalQuestions = [
+            ...singleChoiceQuestions.slice(0, requestedSingleChoice),
+            ...multipleChoiceQuestions.slice(0, requestedMultipleChoice),
+            ...subjectiveQuestions.slice(0, requestedSubjective)
+        ];
+        
+        // Check if we have enough questions of each type
+        const actualSingleChoice = Math.min(singleChoiceQuestions.length, requestedSingleChoice);
+        const actualMultipleChoice = Math.min(multipleChoiceQuestions.length, requestedMultipleChoice);
+        const actualSubjective = Math.min(subjectiveQuestions.length, requestedSubjective);
+        
+        // If we didn't get enough questions of any type, show a warning
+        if (actualSingleChoice < requestedSingleChoice || 
+            actualMultipleChoice < requestedMultipleChoice || 
+            actualSubjective < requestedSubjective) {
+            
+            let message = "The AI couldn't generate enough questions of the requested types. Generated:";
+            if (requestedSingleChoice > 0) {
+                message += ` ${actualSingleChoice}/${requestedSingleChoice} single-choice questions.`;
+            }
+            if (requestedMultipleChoice > 0) {
+                message += ` ${actualMultipleChoice}/${requestedMultipleChoice} multiple-choice questions.`;
+            }
+            if (requestedSubjective > 0) {
+                message += ` ${actualSubjective}/${requestedSubjective} subjective questions.`;
+            }
+            
+            showWarningMessage(message);
+        } else {
+            // Show success message only if we got all the questions we wanted
+            showSuccessMessage();
+        }
+        
+        // If we have no questions to display, show an error
+        if (finalQuestions.length === 0) {
+            showErrorMessage('No valid questions were generated. Please try again with a different document or question settings.');
+            return;
+        }
+        
+        // Get the current question index value before adding new questions
+        const currentQuestionIndex = parseInt(document.getElementById('question-index').value) || 1;
+        
+        // Process each question
+        finalQuestions.forEach((question, index) => {
+            // Use the current question index + the index of this question in the batch
+            const questionNumber = currentQuestionIndex + index;
+            addQuestionToFormBuilder(question, questionNumber);
+        });
+        
+        // Update question index value to reflect the new total
+        updateQuestionIndex(finalQuestions.length);
+    } catch (e) {
+        console.error('Error processing quiz data:', e);
+        showErrorMessage('Error processing the generated quiz data. Please try again.');
+    }
+}
                                 /**
                                 * Adds a question to the form builder
                                 * @param {Object} question The question object
                                 * @param {number} index The question index
                                 */
-                                function addQuestionToFormBuilder(question, index) {
-                                    // Add header for the question
-                                    formBuilder.actions.addField({
-                                        type: 'header',
-                                        className: 'mt-4',
-                                        label: `Question ${index + 1}`,
-                                    });
+                                function addQuestionToFormBuilder(question, questionNumber) {
+    // Add header for the question with the correct number
+    formBuilder.actions.addField({
+        type: 'header',
+        className: 'mt-4',
+        label: `Question ${questionNumber}`,
+    });
 
-                                    // Add file upload field
-                                    formBuilder.actions.addField({
-                                        type: 'file',
-                                        className: 'form-control',
-                                        label: 'Upload Image',
-                                        description: 'Drag and drop or click to select an image file.',
-                                        name: `uploaded_image[]`,
-                                    });
+    // Add file upload field
+    formBuilder.actions.addField({
+        type: 'file',
+        className: 'form-control',
+        label: 'Upload Image',
+        description: 'Drag and drop or click to select an image file.',
+        name: `uploaded_image[]`,
+    });
 
-                                    // Add the question paragraph
-                                    formBuilder.actions.addField({
-                                        type: 'paragraph',
-                                        label: question.question,
-                                    });
+    // Add the question paragraph
+    formBuilder.actions.addField({
+        type: 'paragraph',
+        label: question.question,
+    });
 
-                                    // Handle different question formats
-                                    addQuestionByType(question, index);
+    // Handle different question formats
+    addQuestionByType(question, questionNumber);
 
-                                    // Add correct answer field with proper formatting
-                                    addCorrectAnswerField(question, index);
+    // Add correct answer field with proper formatting
+    addCorrectAnswerField(question, questionNumber);
 
-                                    // Add checkbox for marks
-                                    formBuilder.actions.addField({
-                                        type: 'checkbox-group',
-                                        className: 'collected-marks pull-right chk-col-danger',
-                                        label: '',
-                                        values: [
-                                            {
-                                                label: '1 mark',
-                                                value: '1',
-                                                selected: false,
-                                            },
-                                        ],
-                                    });
+    // Add checkbox for marks
+    formBuilder.actions.addField({
+        type: 'checkbox-group',
+        className: 'collected-marks pull-right chk-col-danger',
+        label: '',
+        values: [
+            {
+                label: '1 mark',
+                value: '1',
+                selected: false,
+            },
+        ],
+    });
 
-                                    // Add comment text field
-                                    formBuilder.actions.addField({
-                                        type: 'text',
-                                        className: 'feedback-text form-control',
-                                        placeholder: 'Comment',
-                                    });
-                                }
-
+    // Add comment text field
+    formBuilder.actions.addField({
+        type: 'text',
+        className: 'feedback-text form-control',
+        placeholder: 'Comment',
+    });
+}
                                 /**
                                 * Adds a correct answer field to the form builder
                                 * @param {Object} question The question object
@@ -906,54 +904,55 @@
                                 * @param {Object} question The question object
                                 * @param {number} index The question index
                                 */
-                                function addQuestionByType(question, index) {
-                                    if (question.type === 'single-choice') {
-                                        // Add single-choice (radio button) question
-                                        formBuilder.actions.addField({
-                                            type: 'radio-group',
-                                            className: 'with-gap radio-col-primary',
-                                            label: '<label class="text-primary"><strong>Your Answer</strong></label>',
-                                            name: `radio-question${index + 1}`,
-                                            values: question.options.map((option, optionIndex) => ({
-                                                label: `${String.fromCharCode(97 + optionIndex)}) ${option}`,
-                                                value: option,
-                                            })),
-                                        });
-                                    } else if (question.type === 'multiple-choice') {
-                                        // Add multiple-choice (checkbox) question
-                                        formBuilder.actions.addField({
-                                            type: 'checkbox-group',
-                                            className: 'filled-in chk-col-warning',
-                                            label: '<label class="text-primary"><strong>Your Answer</strong></label>',
-                                            name: `checkbox-question${index + 1}`,
-                                            values: question.options.map((option, optionIndex) => ({
-                                                label: `${String.fromCharCode(97 + optionIndex)}) ${option}`,
-                                                value: option,
-                                            })),
-                                        });
-                                    } else if (question.type === 'subjective') {
-                                        // Add subjective (text area) question
-                                        formBuilder.actions.addField({
-                                            type: 'textarea',
-                                            rows: 5,
-                                            className: 'form-control',
-                                            placeholder: 'Your Answer',
-                                            name: `subjective-text${index + 1}`,
-                                        });
-                                    }
-                                }
-
+                                function addQuestionByType(question, questionNumber) {
+    if (question.type === 'single-choice') {
+        // Add single-choice (radio button) question
+        formBuilder.actions.addField({
+            type: 'radio-group',
+            className: 'with-gap radio-col-primary',
+            label: '<label class="text-primary"><strong>Your Answer</strong></label>',
+            name: `radio-question${questionNumber}`,
+            values: question.options.map((option, optionIndex) => ({
+                label: `${String.fromCharCode(97 + optionIndex)}) ${option}`,
+                value: option,
+            })),
+        });
+    } else if (question.type === 'multiple-choice') {
+        // Add multiple-choice (checkbox) question
+        formBuilder.actions.addField({
+            type: 'checkbox-group',
+            className: 'filled-in chk-col-warning',
+            label: '<label class="text-primary"><strong>Your Answer</strong></label>',
+            name: `checkbox-question${questionNumber}`,
+            values: question.options.map((option, optionIndex) => ({
+                label: `${String.fromCharCode(97 + optionIndex)}) ${option}`,
+                value: option,
+            })),
+        });
+    } else if (question.type === 'subjective') {
+        // Add subjective (text area) question
+        formBuilder.actions.addField({
+            type: 'textarea',
+            rows: 5,
+            className: 'form-control',
+            placeholder: 'Your Answer',
+            name: `subjective-text${questionNumber}`,
+        });
+    }
+}
                                 /**
                                 * Updates the question index after adding new questions
                                 * @param {number} addedQuestionsCount Number of questions added
                                 */
                                 function updateQuestionIndex(addedQuestionsCount) {
-                                    const questionIndexField = document.getElementById('question-index');
-                                    if (questionIndexField) {
-                                        const currentIndex = parseInt(questionIndexField.value) || 0;
-                                        questionIndexField.value = currentIndex + addedQuestionsCount;
-                                    }
-                                }
+    const questionIndexField = document.getElementById('question-index');
+    if (questionIndexField) {
+        const currentIndex = parseInt(questionIndexField.value) || 1;
+        questionIndexField.value = currentIndex + addedQuestionsCount;
+        // Update the global questionnum variable used by manual question addition
+        questionnum = currentIndex + addedQuestionsCount;
+    }
+}
 
                                 </script>
                                     
@@ -1292,212 +1291,209 @@ jQuery(function($) {
     }
 
     var buttons = document.getElementsByClassName('appendfield1');
-    for (i = 0; i < buttons.length; i++) {
-        buttons[i].onclick = function() {
-            var field = {
-                type: 'header',
-                className: 'mt-4',
-                label: this.dataset.label + ' '+ questionnum++
-            };
-            var index = this.dataset.index ? Number(this.dataset.index) : undefined;
+for (let j = 0; j < buttons.length; j++) {
+    buttons[j].onclick = function() {
+        // Use the current value of questionnum for the question number
+        var field = {
+            type: 'header',
+            className: 'mt-4',
+            label: this.dataset.label + ' ' + questionnum
+        };
+        var index = this.dataset.index ? Number(this.dataset.index) : undefined;
+        
+        formBuilder.actions.addField(field, index);
 
-            //alert(i);
+        field = {
+            type: 'file',
+            className: 'form-control',
+            label: 'Upload Image',
+            name: 'uploaded_image[]',
+            description: 'Drag and drop or click to select an image file.',
+            attrs: {
+                'data-subtype': 'file-' + questionnum
+            }
+        };
+        
+        formBuilder.actions.addField(field, index);
 
-            formBuilder.actions.addField(field, index);
+        field = {
+            type: 'paragraph',
+            className: '',
+            label: 'Sample of the question paragraph...'
+        };
+        
+        formBuilder.actions.addField(field, index);
 
-            field = {
-                type: 'file',
-                className: 'form-control',
-                label: 'Upload Image',
-                name: 'uploaded_image[]', // Update the name attribute to use array notation
-                description: 'Drag and drop or click to select an image file.',
-                attrs: {
-                    'data-subtype': 'file-' + i // Add a unique identifier to the data-subtype
-                }
-            };
+        field = {
+            type: 'radio-group',
+            className: 'with-gap radio-col-primary',
+            label: '<label class="mt-2 text-primary"><strong>Your Answer</strong></label>',
+            name: 'radio-question' + questionnum,
+            values: [
+                {
+                    "label": "a) ",
+                    "value": "a",
+                    "selected": false
+                },
+                {
+                    "label": "b)",
+                    "value": "b",
+                    "selected": false
+                },
+                {
+                    "label": "c)",
+                    "value": "c",
+                    "selected": false
+                },
+                {
+                    "label": "d)",
+                    "value": "d",
+                    "selected": false
+                },
+            ]
+        };
+        
+        formBuilder.actions.addField(field, index);
 
-
-            formBuilder.actions.addField(field, index);
-
-            field = {
-                type: 'paragraph',
-                className: '',
-                label: 'Sample of the question paragraph...'
-            };
-            
-            formBuilder.actions.addField(field, index);
-
-            field = {
-                type: 'radio-group',
-                className: 'with-gap radio-col-primary',
-                label: '<label class="mt-2 text-primary"><strong>Your Answer</strong></label>',
-                name: 'radio-question'+ i++,
-                values: [
-                    {
-                        "label": "a) ",
-                        "value": "a",
-                        "selected": false
-                    },
-                    {
-                        "label": "b)",
-                        "value": "b",
-                        "selected": false
-                    },
-                    {
-                        "label": "c)",
-                        "value": "c",
-                        "selected": false
-                    },
-                    {
-                        "label": "d)",
-                        "value": "d",
-                        "selected": false
-                    },
-                ]
-            };
-            
-            formBuilder.actions.addField(field, index);
-
-            field = {
-                type: 'paragraph',
-                className: 'correct-answer',
-                label: 'a'
-            };
-
-            formBuilder.actions.addField(field, index);
-
-            field = {
-                type: 'checkbox-group',
-                className: 'collected-marks pull-right chk-col-danger',
-                label: '',  
-                values: [
-                    {
-                        "label": "1 mark",
-                        "value": "1",
-                        "selected": false
-                    }
-                ]
-            };
-            
-            
-            formBuilder.actions.addField(field, index);
-
-            field = {
-                type: 'text',
-                className: 'feedback-text form-control',
-                placeholder: 'Comment',
-                label: '',
-            };
-            
-            formBuilder.actions.addField(field, index);
-            $('#question-index').val(questionnum);
-
+        field = {
+            type: 'paragraph',
+            className: 'correct-answer',
+            label: 'a'
         };
 
-    }
+        formBuilder.actions.addField(field, index);
 
-    var buttons2 = document.getElementsByClassName('appendfield2');
-    for (var i = 0; i < buttons2.length; i++) {
-        buttons2[i].onclick = function() {
-            var field = {
-                type: 'header',
-                className: 'mt-4',
-                label: this.dataset.label + ' '+ questionnum++
-            };
-            var index = this.dataset.index ? Number(this.dataset.index) : undefined;
-
-            //alert(i);
-
-            formBuilder.actions.addField(field, index);
-
-            field = {
-                type: 'file',
-                className: 'form-control',
-                label: 'Upload Image',
-                name: 'uploaded_image[]', // Update the name attribute to use array notation
-                description: 'Drag and drop or click to select an image file.',
-                attrs: {
-                    'data-subtype': 'file-' + i // Add a unique identifier to the data-subtype
+        field = {
+            type: 'checkbox-group',
+            className: 'collected-marks pull-right chk-col-danger',
+            label: '',  
+            values: [
+                {
+                    "label": "1 mark",
+                    "value": "1",
+                    "selected": false
                 }
-            };
-
-
-            formBuilder.actions.addField(field, index);
-
-            field = {
-                type: 'paragraph',
-                className: '',
-                label: 'Sample of the question paragraph...'
-            };
-            
-            formBuilder.actions.addField(field, index);
-
-            field = {
-                type: 'checkbox-group',
-                className: 'filled-in chk-col-warning',
-                label: '<label class="mt-2 text-primary"><strong>Your Answer</strong></label>',
-                name: 'checkbox-question'+ i++,
-                values: [
-                    {
-                        "label": "a)",
-                        "value": "a",
-                        "selected": false
-                    },
-                    {
-                        "label": "b)",
-                        "value": "b",
-                        "selected": false
-                    },
-                    {
-                        "label": "c)",
-                        "value": "c",
-                        "selected": false
-                    },
-                    {
-                        "label": "d)",
-                        "value": "d",
-                        "selected": false
-                    },
-                ]
-            };
-
-            formBuilder.actions.addField(field, index);
-
-            field = {
-                type: 'paragraph',
-                className: 'correct-answer',
-                label: 'a'
-            };
-            
-            formBuilder.actions.addField(field, index);
-
-            field = {
-                type: 'checkbox-group',
-                className: 'collected-marks pull-right chk-col-danger',
-                label: '',  
-                values: [
-                    {
-                        "label": "1 mark",
-                        "value": "1",
-                        "selected": false
-                    }
-                ]
-            };
-            
-            
-            formBuilder.actions.addField(field, index);
-
-            field = {
-                type: 'text',
-                className: 'feedback-text form-control',
-                placeholder: 'Comment',
-                label: '',
-            };
-            
-            formBuilder.actions.addField(field, index);
-            $('#question-index').val(questionnum);
+            ]
         };
-    }
+        
+        formBuilder.actions.addField(field, index);
+
+        field = {
+            type: 'text',
+            className: 'feedback-text form-control',
+            placeholder: 'Comment',
+            label: '',
+        };
+        
+        formBuilder.actions.addField(field, index);
+        
+        // Only increment questionnum after adding the question
+        questionnum++;
+        $('#question-index').val(questionnum);
+    };
+}
+
+var buttons2 = document.getElementsByClassName('appendfield2');
+for (let j = 0; j < buttons2.length; j++) {
+    buttons2[j].onclick = function() {
+        var field = {
+            type: 'header',
+            className: 'mt-4',
+            label: this.dataset.label + ' ' + questionnum
+        };
+        var index = this.dataset.index ? Number(this.dataset.index) : undefined;
+
+        formBuilder.actions.addField(field, index);
+
+        field = {
+            type: 'file',
+            className: 'form-control',
+            label: 'Upload Image',
+            name: 'uploaded_image[]',
+            description: 'Drag and drop or click to select an image file.',
+            attrs: {
+                'data-subtype': 'file-' + questionnum
+            }
+        };
+
+        formBuilder.actions.addField(field, index);
+
+        field = {
+            type: 'paragraph',
+            className: '',
+            label: 'Sample of the question paragraph...'
+        };
+        
+        formBuilder.actions.addField(field, index);
+
+        field = {
+            type: 'checkbox-group',
+            className: 'filled-in chk-col-warning',
+            label: '<label class="mt-2 text-primary"><strong>Your Answer</strong></label>',
+            name: 'checkbox-question' + questionnum,
+            values: [
+                {
+                    "label": "a)",
+                    "value": "a",
+                    "selected": false
+                },
+                {
+                    "label": "b)",
+                    "value": "b",
+                    "selected": false
+                },
+                {
+                    "label": "c)",
+                    "value": "c",
+                    "selected": false
+                },
+                {
+                    "label": "d)",
+                    "value": "d",
+                    "selected": false
+                },
+            ]
+        };
+
+        formBuilder.actions.addField(field, index);
+
+        field = {
+            type: 'paragraph',
+            className: 'correct-answer',
+            label: 'a'
+        };
+        
+        formBuilder.actions.addField(field, index);
+
+        field = {
+            type: 'checkbox-group',
+            className: 'collected-marks pull-right chk-col-danger',
+            label: '',  
+            values: [
+                {
+                    "label": "1 mark",
+                    "value": "1",
+                    "selected": false
+                }
+            ]
+        };
+        
+        formBuilder.actions.addField(field, index);
+
+        field = {
+            type: 'text',
+            className: 'feedback-text form-control',
+            placeholder: 'Comment',
+            label: '',
+        };
+        
+        formBuilder.actions.addField(field, index);
+        
+        // Increment after adding
+        questionnum++;
+        $('#question-index').val(questionnum);
+    };
+}
 
     var buttons3 = document.getElementsByClassName('appendfield3');
     for (var i = 0; i < buttons3.length; i++) {
@@ -1515,89 +1511,100 @@ jQuery(function($) {
     }
 
     var buttons4 = document.getElementsByClassName('appendfield4');
-    for (var i = 0; i < buttons4.length; i++) {
-        buttons4[i].onclick = function() {
-            var field = {
-                type: 'header',
-                className: 'mt-4',
-                label: this.dataset.label + ' '+ questionnum++
-            };
-            var index = this.dataset.index ? Number(this.dataset.index) : undefined;
-
-            //alert(i)
-
-            formBuilder.actions.addField(field, index);
-
-            field = {
-                type: 'file',
-                className: 'form-control',
-                label: 'Upload Image',
-                name: 'uploaded_image[]', // Update the name attribute to use array notation
-                description: 'Drag and drop or click to select an image file.',
-                attrs: {
-                    'data-subtype': 'file-' + i // Add a unique identifier to the data-subtype
-                }
-            };
-
-
-            formBuilder.actions.addField(field, index);
-
-            field = {
-                type: 'paragraph',
-                className: '',
-                label: 'Sample of the question paragraph...'
-            };
-            
-            formBuilder.actions.addField(field, index);
-
-            field = {
-                type: 'textarea',
-                rows: 10,
-                className: 'form-control',
-                placeholder: 'Your Answer',
-                label: '',
-                name: 'subjective-text'+ i++,
-            };
-            
-            formBuilder.actions.addField(field, index);
-
-            field = {
-                type: 'checkbox-group',
-                className: 'collected-marks pull-right chk-col-danger',
-                label: '',  
-                values: [
-                    {
-                        "label": "1 mark",
-                        "value": "1",
-                        "selected": false
-                    }
-                ]
-            };
-
-            formBuilder.actions.addField(field, index);
-
-            field = {
-                type: 'number',
-                className: 'inputmark form-control',
-                placeholder: 'Mark',
-                value: '0',
-                min: '0',
-                label: '',
-            };
-            
-            formBuilder.actions.addField(field, index);
-
-            field = {
-                type: 'text',
-                className: 'feedback-text form-control',
-                placeholder: 'Comment',
-                label: '',
-            };
-            
-            formBuilder.actions.addField(field, index);
-            $('#question-index').val(questionnum);  
+for (let j = 0; j < buttons4.length; j++) {
+    buttons4[j].onclick = function() {
+        var field = {
+            type: 'header',
+            className: 'mt-4',
+            label: this.dataset.label + ' ' + questionnum
         };
-    }
+        var index = this.dataset.index ? Number(this.dataset.index) : undefined;
+
+        formBuilder.actions.addField(field, index);
+
+        field = {
+            type: 'file',
+            className: 'form-control',
+            label: 'Upload Image',
+            name: 'uploaded_image[]',
+            description: 'Drag and drop or click to select an image file.',
+            attrs: {
+                'data-subtype': 'file-' + questionnum
+            }
+        };
+
+        formBuilder.actions.addField(field, index);
+
+        field = {
+            type: 'paragraph',
+            className: '',
+            label: 'Sample of the question paragraph...'
+        };
+        
+        formBuilder.actions.addField(field, index);
+
+        field = {
+            type: 'textarea',
+            rows: 10,
+            className: 'form-control',
+            placeholder: 'Your Answer',
+            label: '',
+            name: 'subjective-text' + questionnum,
+        };
+        
+        formBuilder.actions.addField(field, index);
+
+        field = {
+            type: 'checkbox-group',
+            className: 'collected-marks pull-right chk-col-danger',
+            label: '',  
+            values: [
+                {
+                    "label": "1 mark",
+                    "value": "1",
+                    "selected": false
+                }
+            ]
+        };
+
+        formBuilder.actions.addField(field, index);
+
+        field = {
+            type: 'number',
+            className: 'inputmark form-control',
+            placeholder: 'Mark',
+            value: '0',
+            min: '0',
+            label: '',
+        };
+        
+        formBuilder.actions.addField(field, index);
+
+        field = {
+            type: 'text',
+            className: 'feedback-text form-control',
+            placeholder: 'Comment',
+            label: '',
+        };
+        
+        formBuilder.actions.addField(field, index);
+        
+        // Increment after adding
+        questionnum++;
+        $('#question-index').val(questionnum);
+    };
+}
+
+// Ensure the global questionnum variable is properly initialized from question-index
+$(document).ready(function() {
+    // Make sure questionnum is initialized from the question-index input
+    questionnum = parseInt($('#question-index').val()) || 1;
+    
+    // Set up event listener to update questionnum when question-index changes
+    $(document).on('change', '#question-index', function() {
+        questionnum = parseInt($(this).val()) || 1;
+    });
+});
 
     /* On Clicks */
     $('.edit-form', $formContainer).click(function() {
