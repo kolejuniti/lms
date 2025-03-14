@@ -252,7 +252,7 @@
                             <i class="mdi mdi-home-city fs-24 text-info">{{ $data['hostel']->name }}</i>
                           </div>
                           <div>
-                            <h4 class="mb-0">{{ $data['hostel']->name }}</h4>
+                            <h4 class="mb-0">{{ $data['hostel']->no_unit }} - {{ $data['hostel']->name }}</h4>
                             <p class="mb-0 text-muted">{{ $data['hostel']->location }}</p>
                           </div>
                         </div>
