@@ -731,6 +731,23 @@
                     descriptionElement.textContent = arg.event.extendedProps.description;
                     container.appendChild(descriptionElement);
                 }
+
+                // Add program info directly in the content instead of appending later
+                if (arg.event.title !== 'REHAT' && arg.event.extendedProps) {
+                    // Program info
+                    if (arg.event.extendedProps.programInfo) {
+                        var programDiv = document.createElement('div');
+                        programDiv.classList.add('event-program');
+                        programDiv.style.fontSize = '0.7rem';
+                        programDiv.style.padding = '2px 4px';
+                        programDiv.style.marginTop = 'auto';
+                        programDiv.style.backgroundColor = 'rgba(0, 0, 0, 0.1)';
+                        programDiv.style.borderRadius = '3px';
+                        programDiv.style.fontWeight = 'bold';
+                        programDiv.textContent = 'Program: ' + arg.event.extendedProps.programInfo;
+                        container.appendChild(programDiv);
+                    }
+                }
                 
                 return { domNodes: [container] };
             },
@@ -764,6 +781,7 @@
                 <div class="event-details">
                     <p><strong>Time:</strong> ${event.start.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} - ${event.end ? event.end.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'N/A'}</p>
                     ${event.extendedProps.description ? `<p><strong>Description:</strong> ${event.extendedProps.description}</p>` : ''}
+                    ${event.extendedProps.programInfo ? `<p><strong>Program:</strong> ${event.extendedProps.programInfo}</p>` : ''}
                 </div>
             `,
             icon: 'info',
@@ -1240,13 +1258,17 @@ function generateScheduleHTML() {
                         if (index > 0) {
                             html += `<div class="event-divider"></div>`;
                         }
-
-                        // Title
+                        
                         html += `<div class="event-title">${event.title || '(No Title)'}</div>`;
-
+                        
                         // Add description if available
                         if (event.extendedProps && event.extendedProps.description) {
                             html += `<div class="event-description">${event.extendedProps.description}</div>`;
+                        }
+                        
+                        // Add program info if available
+                        if (event.extendedProps && event.extendedProps.programInfo) {
+                            html += `<div class="event-description">Program: ${event.extendedProps.programInfo}</div>`;
                         }
                     });
 
@@ -1289,65 +1311,85 @@ function generateScheduleHTML() {
     /**
  * Print the schedule
  */
-function printSchedule() {
-    // Show loading notification
-    showNotification('Preparing timetable for printing...', 'info');
-
-    // Generate HTML using the generateScheduleHTML function
-    const html = generateScheduleHTML();
-
-    // Improved print function with better error handling
-    try {
-        // Create the print window
-        let printWindow = window.open('', '_blank', 'width=1100,height=800');
-
-        if (!printWindow) {
-            // If window.open returns null, it was likely blocked by a popup blocker
-            showNotification('Print window was blocked. Please allow popups for this site.', 'error', false);
-            return;
+// Set up PDF download button
+const pdfBtn = document.getElementById('download-pdf-btn');
+if (pdfBtn) {
+    pdfBtn.addEventListener('click', function() {
+        // Show loading state in button
+        const originalText = this.innerHTML;
+        this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Generating PDF...';
+        this.disabled = true;
+        
+        try {
+            // Generate HTML using the same function that works for printing
+            const html = generateScheduleHTML();
+            
+            // Method 1: Open in a new window and use browser's print to PDF functionality
+            // This is more reliable than automated conversion libraries
+            const printWindow = window.open('', '_blank', 'width=1100,height=800');
+            
+            if (!printWindow) {
+                showNotification('Popup window was blocked. Please allow popups for this site.', 'error', false);
+                this.innerHTML = originalText;
+                this.disabled = false;
+                return;
+            }
+            
+            // Write content to the window
+            printWindow.document.open();
+            printWindow.document.write(html);
+            printWindow.document.close();
+            
+            // Add specific instructions for the user
+            printWindow.onload = function() {
+                // Add a print button at the top with instructions
+                const instructionsDiv = printWindow.document.createElement('div');
+                instructionsDiv.style.position = 'fixed';
+                instructionsDiv.style.top = '0';
+                instructionsDiv.style.left = '0';
+                instructionsDiv.style.right = '0';
+                instructionsDiv.style.backgroundColor = '#4361ee';
+                instructionsDiv.style.color = 'white';
+                instructionsDiv.style.padding = '10px';
+                instructionsDiv.style.zIndex = '9999';
+                instructionsDiv.style.textAlign = 'center';
+                instructionsDiv.style.fontFamily = 'Arial, sans-serif';
+                instructionsDiv.innerHTML = `
+                    <p style="margin: 5px 0; font-size: 14px;">To save as PDF: Press Ctrl+P (or Cmd+P on Mac), select "Save as PDF" in the destination/printer dropdown, then click Save.</p>
+                    <button id="printBtn" style="background: white; color: #4361ee; border: none; padding: 5px 15px; border-radius: 4px; cursor: pointer; margin-top: 5px; font-weight: bold;">Print/Save as PDF</button>
+                `;
+                printWindow.document.body.insertBefore(instructionsDiv, printWindow.document.body.firstChild);
+                
+                // Add click handler for the print button
+                printWindow.document.getElementById('printBtn').addEventListener('click', function() {
+                    // Hide the instructions temporarily for printing
+                    instructionsDiv.style.display = 'none';
+                    setTimeout(() => {
+                        printWindow.print();
+                        // Show instructions again after print dialog is shown
+                        setTimeout(() => {
+                            instructionsDiv.style.display = 'block';
+                        }, 1000);
+                    }, 100);
+                });
+            };
+            
+            // Restore button state
+            this.innerHTML = originalText;
+            this.disabled = false;
+            
+            // Show success notification
+            showNotification('Schedule opened in new tab. Follow instructions to save as PDF.', 'success');
+            
+        } catch (error) {
+            console.error('Download error:', error);
+            showNotification('Error generating document: ' + error.message, 'error');
+            
+            // Restore button state
+            this.innerHTML = originalText;
+            this.disabled = false;
         }
-
-        // Write content to the window
-        printWindow.document.open();
-        printWindow.document.write(html);
-        printWindow.document.close();
-
-        // Add event listener to detect when the content is fully loaded
-        printWindow.onload = function() {
-            try {
-                // Focus on the window to bring it to front
-                printWindow.focus();
-
-                // Trigger the print dialog
-                printWindow.print();
-
-                // Show success notification
-                showNotification('Schedule printed successfully', 'success');
-
-                // Close the print window after printing (optional)
-                // printWindow.close();
-            } catch (printError) {
-                console.error('Print error:', printError);
-                showNotification('Error during printing: ' + printError.message, 'error', false);
-            }
-        };
-
-        // Fallback in case onload doesn't trigger
-        setTimeout(() => {
-            if (printWindow.document.readyState === 'complete') {
-                if (!printWindow._printTriggered) {
-                    printWindow._printTriggered = true;
-                    printWindow.focus();
-                    printWindow.print();
-                    showNotification('Schedule printed successfully (fallback)', 'success');
-                }
-            }
-        }, 2000);
-
-    } catch (error) {
-        console.error('Print setup error:', error);
-        showNotification('Error setting up print: ' + error.message, 'error', false);
-    }
+    });
 }
     /**
      * Helper to convert Date -> "HH:MM"
