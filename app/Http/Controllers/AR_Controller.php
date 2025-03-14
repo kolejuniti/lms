@@ -2862,7 +2862,7 @@ class AR_Controller extends Controller
 
                     // Convert program information into a string
                     $programInfo = $program->map(function($prog) {
-                        return $prog->progname; // Assuming 'progname' is the relevant field you want to display
+                        return $prog->progcode; // Assuming 'progname' is the relevant field you want to display
                     })->implode(', ');
 
                     // Map day of the week from PHP (1 for Monday through 7 for Sunday) to FullCalendar (0 for Sunday through 6 for Saturday)
