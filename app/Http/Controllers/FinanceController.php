@@ -5178,7 +5178,7 @@ class FinanceController extends Controller
         {
 
             // Log payment details
-            \Log::info('Processing payment:', (array) $pym);
+            // \Log::info('Processing payment:', (array) $pym);
 
                     $status = 0;
 
