@@ -5047,69 +5047,69 @@ class FinanceController extends Controller
 
     public function dailyReport()
     {
-        $data['hostel'] = [];
-        $data['convo'] = [];
-        $data['fine'] = [];
+        // $data['hostel'] = [];
+        // $data['convo'] = [];
+        // $data['fine'] = [];
 
-        // Subquery for tblpaymentdtl with row numbers
-        $paymentDtl = DB::table('tblpaymentdtl')
-        ->select('id', 'payment_id', 'claim_type_id', 'amount',
-            DB::raw('ROW_NUMBER() OVER (PARTITION BY payment_id ORDER BY id) as row_num')
-        );
+        // // Subquery for tblpaymentdtl with row numbers
+        // $paymentDtl = DB::table('tblpaymentdtl')
+        // ->select('id', 'payment_id', 'claim_type_id', 'amount',
+        //     DB::raw('ROW_NUMBER() OVER (PARTITION BY payment_id ORDER BY id) as row_num')
+        // );
 
-        // Subquery for tblpaymentmethod with row numbers
-        $paymentMethod = DB::table('tblpaymentmethod')
-        ->select('id', 'payment_id', 'claim_method_id', 'bank_id', 'no_document',
-            DB::raw('ROW_NUMBER() OVER (PARTITION BY payment_id ORDER BY id) as row_num')
-        );
+        // // Subquery for tblpaymentmethod with row numbers
+        // $paymentMethod = DB::table('tblpaymentmethod')
+        // ->select('id', 'payment_id', 'claim_method_id', 'bank_id', 'no_document',
+        //     DB::raw('ROW_NUMBER() OVER (PARTITION BY payment_id ORDER BY id) as row_num')
+        // );
         
-        // Main query with join modifications
-        $other = DB::table('tblpayment')
-        ->joinSub($paymentDtl, 'dtl', function ($join) {
-            $join->on('dtl.payment_id', '=', 'tblpayment.id');
-        })
-        ->joinSub($paymentMethod, 'method', function ($join) {
-            $join->on('method.payment_id', '=', 'tblpayment.id')
-                ->on('method.row_num', '=', 'dtl.row_num');
-        })
-        ->join('tblstudentclaim', 'dtl.claim_type_id', '=', 'tblstudentclaim.id')
-        ->leftJoin('tblpayment_bank', 'method.bank_id', '=', 'tblpayment_bank.id')
-        ->join('tblpayment_method', 'method.claim_method_id', '=', 'tblpayment_method.id')
-        ->whereBetween('tblpayment.add_date', ['2024-09-30', '2024-09-30'])
-        ->where('tblpayment.process_status_id', 2)
-        ->select(
-            'tblpayment.*',
-            'tblstudentclaim.groupid',
-            'tblstudentclaim.name AS type',
-            'dtl.amount',
-            'dtl.claim_type_id',
-            'method.no_document',
-            'tblpayment_method.name AS method',
-            'tblpayment_bank.name AS bank'
-        )
-        ->orderBy('tblpayment.ref_no', 'asc')
-        ->groupBy('dtl.id')
-        ->get();
+        // // Main query with join modifications
+        // $other = DB::table('tblpayment')
+        // ->joinSub($paymentDtl, 'dtl', function ($join) {
+        //     $join->on('dtl.payment_id', '=', 'tblpayment.id');
+        // })
+        // ->joinSub($paymentMethod, 'method', function ($join) {
+        //     $join->on('method.payment_id', '=', 'tblpayment.id')
+        //         ->on('method.row_num', '=', 'dtl.row_num');
+        // })
+        // ->join('tblstudentclaim', 'dtl.claim_type_id', '=', 'tblstudentclaim.id')
+        // ->leftJoin('tblpayment_bank', 'method.bank_id', '=', 'tblpayment_bank.id')
+        // ->join('tblpayment_method', 'method.claim_method_id', '=', 'tblpayment_method.id')
+        // ->whereBetween('tblpayment.add_date', ['2024-09-30', '2024-09-30'])
+        // ->where('tblpayment.process_status_id', 2)
+        // ->select(
+        //     'tblpayment.*',
+        //     'tblstudentclaim.groupid',
+        //     'tblstudentclaim.name AS type',
+        //     'dtl.amount',
+        //     'dtl.claim_type_id',
+        //     'method.no_document',
+        //     'tblpayment_method.name AS method',
+        //     'tblpayment_bank.name AS bank'
+        // )
+        // ->orderBy('tblpayment.ref_no', 'asc')
+        // ->groupBy('dtl.id')
+        // ->get();
 
-        foreach($other as $ot)
-        {
-            if(array_intersect([8], (array) $ot->process_type_id) && array_intersect([2], (array) $ot->groupid) && $ot->amount != 0)
-            {
-                $data['hostel'][] = $ot;
+        // foreach($other as $ot)
+        // {
+        //     if(array_intersect([8], (array) $ot->process_type_id) && array_intersect([2], (array) $ot->groupid) && $ot->amount != 0)
+        //     {
+        //         $data['hostel'][] = $ot;
 
-            }elseif(array_intersect([8,1], (array) $ot->process_type_id) && array_intersect([5], (array) $ot->groupid) && $ot->amount != 0 && $ot->claim_type_id == 47)
-            {
-                $data['convo'][] = $ot;
+        //     }elseif(array_intersect([8,1], (array) $ot->process_type_id) && array_intersect([5], (array) $ot->groupid) && $ot->amount != 0 && $ot->claim_type_id == 47)
+        //     {
+        //         $data['convo'][] = $ot;
 
-            }elseif(array_intersect([4], (array) $ot->groupid) && $ot->amount != 0)
-            {
-                $data['fine'][] = $ot;
+        //     }elseif(array_intersect([4], (array) $ot->groupid) && $ot->amount != 0)
+        //     {
+        //         $data['fine'][] = $ot;
 
-            }
+        //     }
 
-        }
+        // }
 
-        dd($data['convo']);
+        // dd($data['convo']);
 
         return view('finance.report.dailyReport');
 
@@ -6383,10 +6383,9 @@ class FinanceController extends Controller
         //dd( $data['otherStudMethod']);
         
         // Subquery for tblpaymentdtl with row numbers
+        // Subquery for tblpaymentdtl with row numbers
         $paymentDtl = DB::table('tblpaymentdtl')
-        ->join('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
-        ->whereIn('tblstudentclaim.groupid', [4])
-        ->select('tblpaymentdtl.id', 'tblpaymentdtl.payment_id', 'tblpaymentdtl.claim_type_id', 'tblpaymentdtl.amount',
+        ->select('id', 'payment_id', 'claim_type_id', 'amount',
             DB::raw('ROW_NUMBER() OVER (PARTITION BY payment_id ORDER BY id) as row_num')
         );
 
@@ -6395,7 +6394,7 @@ class FinanceController extends Controller
         ->select('id', 'payment_id', 'claim_method_id', 'bank_id', 'no_document',
             DB::raw('ROW_NUMBER() OVER (PARTITION BY payment_id ORDER BY id) as row_num')
         );
-
+        
         // Main query with join modifications
         $other = DB::table('tblpayment')
         ->joinSub($paymentDtl, 'dtl', function ($join) {
@@ -6405,10 +6404,10 @@ class FinanceController extends Controller
             $join->on('method.payment_id', '=', 'tblpayment.id')
                 ->on('method.row_num', '=', 'dtl.row_num');
         })
-        ->leftjoin('tblstudentclaim', 'dtl.claim_type_id', '=', 'tblstudentclaim.id')
+        ->join('tblstudentclaim', 'dtl.claim_type_id', '=', 'tblstudentclaim.id')
         ->leftJoin('tblpayment_bank', 'method.bank_id', '=', 'tblpayment_bank.id')
-        ->leftjoin('tblpayment_method', 'method.claim_method_id', '=', 'tblpayment_method.id')
-        ->whereBetween('tblpayment.add_date', [$request->from, $request->to])
+        ->join('tblpayment_method', 'method.claim_method_id', '=', 'tblpayment_method.id')
+        ->whereBetween('tblpayment.add_date', ['2024-09-30', '2024-09-30'])
         ->where('tblpayment.process_status_id', 2)
         ->select(
             'tblpayment.*',
@@ -6423,7 +6422,6 @@ class FinanceController extends Controller
         ->orderBy('tblpayment.ref_no', 'asc')
         ->groupBy('dtl.id')
         ->get();
-
 
         foreach($other as $ot)
         {
