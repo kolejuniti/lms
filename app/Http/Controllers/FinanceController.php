@@ -5049,8 +5049,7 @@ class FinanceController extends Controller
     {
         // Subquery for tblpaymentdtl with row numbers
         $paymentDtl = DB::table('tblpaymentdtl')
-        ->select('id', 'payment_id', 'claim_type_id', 'amount',
-            DB::raw('ROW_NUMBER() OVER (PARTITION BY payment_id ORDER BY id) as row_num')
+        ->select('id', 'payment_id', 'claim_type_id', 'amount'
         )        
         ->whereBetween('tblpaymentdtl.add_date', ['2024-09-30', '2024-09-30'])
         ->get();
