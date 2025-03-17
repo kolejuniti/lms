@@ -5047,6 +5047,10 @@ class FinanceController extends Controller
 
     public function dailyReport()
     {
+        $data['hostel'] = [];
+        $data['convo'] = [];
+        $data['fine'] = [];
+
         // Subquery for tblpaymentdtl with row numbers
         $paymentDtl = DB::table('tblpaymentdtl')
         ->select('id', 'payment_id', 'claim_type_id', 'amount',
@@ -5087,7 +5091,25 @@ class FinanceController extends Controller
         ->groupBy('dtl.id')
         ->get();
 
-        dd($other);
+        foreach($other as $ot)
+        {
+            if(array_intersect([8], (array) $ot->process_type_id) && array_intersect([2], (array) $ot->groupid) && $ot->amount != 0)
+            {
+                $data['hostel'][] = $ot;
+
+            }elseif(array_intersect([8,1], (array) $ot->process_type_id) && array_intersect([5], (array) $ot->groupid) && $ot->amount != 0 && $ot->claim_type_id == 47)
+            {
+                $data['convo'][] = $ot;
+
+            }elseif(array_intersect([4], (array) $ot->groupid) && $ot->amount != 0)
+            {
+                $data['fine'][] = $ot;
+
+            }
+
+        }
+
+        dd($data['convo']);
 
         return view('finance.report.dailyReport');
 
