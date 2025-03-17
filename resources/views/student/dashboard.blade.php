@@ -211,9 +211,9 @@
                       <a href="#today-classes" class="appendfield1 waves-effect waves-light btn btn-app btn-info-light">
                         <i class="mdi mdi-calendar-today me-1"></i> Today's Classes
                       </a>
-                      <a href="#weekly-schedule" class="appendfield2 waves-effect waves-light btn btn-app btn-warning-light">
+                      {{-- <a href="#weekly-schedule" class="appendfield2 waves-effect waves-light btn btn-app btn-warning-light">
                         <i class="mdi mdi-calendar-week me-1"></i> View Full Schedule
-                      </a>
+                      </a> --}}
                     </div>
                   </div>
                 </div>
@@ -357,7 +357,7 @@
           </div>
         </div>
         <div class="text-center mt-3">
-          <p class="mb-1">Move your mouse to interact with your cartoon companion!</p>
+          <p class="mb-1">Click and drag to rotate your cartoon companion!</p>
           <p class="text-muted small mb-0">Watch how it follows your cursor and blinks occasionally</p>
         </div>
       </div>
@@ -479,6 +479,7 @@
     canvasContainer.style.margin = '0 auto';
     canvasContainer.style.borderRadius = '12px';
     canvasContainer.style.overflow = 'hidden';
+    canvasContainer.style.cursor = 'grab'; // Add cursor style to indicate draggable
     canvasContainer.appendChild(renderer.domElement);
     
     // Replace placeholder with canvas
@@ -504,6 +505,15 @@
     // Animation loop
     const clock = new THREE.Clock();
     
+    // Variables for rotation control
+    let isDragging = false;
+    let previousMousePosition = {
+      x: 0,
+      y: 0
+    };
+    let rotationSpeed = 0.01;
+    let autoRotate = true;
+    
     const animate = function () {
       requestAnimationFrame(animate);
       
@@ -512,8 +522,10 @@
       // Gentle hovering animation
       cat.position.y = -0.7 + Math.sin(time * 1.5) * 0.1;
       
-      // Gentle rotation
-      cat.rotation.y = Math.PI / 4 + Math.sin(time * 0.8) * 0.2;
+      // Auto-rotate when not being dragged
+      // if (autoRotate && !isDragging) {
+      //   cat.rotation.y += rotationSpeed;
+      // }
       
       // Tail animation
       if (cat.getObjectByName('tail')) {
@@ -544,6 +556,89 @@
     
     animate();
     
+    // Mouse down event
+    canvasContainer.addEventListener('mousedown', function(event) {
+      isDragging = true;
+      autoRotate = false;
+      previousMousePosition = {
+        x: event.clientX,
+        y: event.clientY
+      };
+      canvasContainer.style.cursor = 'grabbing';
+    });
+    
+    // Mouse move event
+    document.addEventListener('mousemove', function(event) {
+      if (!canvasContainer) return;
+      
+      const rect = canvasContainer.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      
+      const mouseX = event.clientX - centerX;
+      const mouseY = event.clientY - centerY;
+      
+      // Follow the mouse with the cat's head when not dragging
+      const headGroup = cat.getObjectByName('headGroup');
+      if (headGroup && !isDragging) {
+        // Smooth following
+        const targetRotationX = mouseY * 0.001;
+        const targetRotationY = mouseX * 0.002;
+        
+        headGroup.rotation.x = THREE.MathUtils.lerp(headGroup.rotation.x, targetRotationX, 0.1);
+        headGroup.rotation.y = THREE.MathUtils.lerp(headGroup.rotation.y, targetRotationY, 0.1);
+      }
+      
+      // Move ears when not dragging
+      if (!isDragging) {
+        const leftEarGroup = headGroup ? headGroup.getObjectByName('leftEarGroup') : null;
+        const rightEarGroup = headGroup ? headGroup.getObjectByName('rightEarGroup') : null;
+        
+        if (leftEarGroup && rightEarGroup) {
+          // Ears perk up when mouse is higher
+          const earLift = Math.max(0, -mouseY * 0.001);
+          leftEarGroup.rotation.x = -Math.PI/10 - earLift;
+          rightEarGroup.rotation.x = -Math.PI/10 - earLift;
+          
+          // Ears move slightly toward mouse
+          leftEarGroup.rotation.z = -Math.PI/8 + mouseX * 0.0001;
+          rightEarGroup.rotation.z = Math.PI/8 - mouseX * 0.0001;
+        }
+      }
+      
+      // Rotate cat when dragging
+      if (isDragging) {
+        const deltaMove = {
+          x: event.clientX - previousMousePosition.x,
+          y: event.clientY - previousMousePosition.y
+        };
+        
+        // Rotate the cat based on mouse movement
+        cat.rotation.y += deltaMove.x * 0.01;
+        cat.rotation.x += deltaMove.y * 0.01;
+        
+        previousMousePosition = {
+          x: event.clientX,
+          y: event.clientY
+        };
+      }
+    });
+    
+    // Mouse up event
+    document.addEventListener('mouseup', function() {
+      isDragging = false;
+      canvasContainer.style.cursor = 'grab';
+      // Resume auto-rotation after a short delay
+      setTimeout(() => {
+        autoRotate = true;
+      }, 2000);
+    });
+    
+    // Mouse leave event
+    canvasContainer.addEventListener('mouseleave', function() {
+      isDragging = false;
+      canvasContainer.style.cursor = 'grab';
+    });
     // Make it interactive - respond to mouse moves
     document.addEventListener('mousemove', function(event) {
       if (!canvasContainer) return;
@@ -1017,7 +1112,7 @@
       </div>
       
       <!-- Weekly Schedule -->
-      <div class="row" id="weekly-schedule">
+      {{-- <div class="row" id="weekly-schedule">
         <div class="col-12">
           <div class="box">
             <div class="box-header with-border">
@@ -1041,7 +1136,7 @@
             </div>
           </div>
         </div>
-      </div>
+      </div> --}}
       
       <!-- Upcoming Deadlines -->
       <div class="row">
@@ -1513,7 +1608,7 @@ background: linear-gradient(135deg, #0ba360 0%, #3cba92 100%);
   loadTodayClasses();
   
   // Initialize Weekly Schedule with FullCalendar
-  initializeWeeklySchedule();
+  //initializeWeeklySchedule();
 });
 
 // Update current date in header
@@ -1728,186 +1823,186 @@ function showClassDetails(id, title, startTime, endTime, lecturer, program) {
 }
 
 // Initialize Weekly Schedule using FullCalendar
-function initializeWeeklySchedule() {
-  const scheduleContainer = document.getElementById('weekly-schedule-container');
-  if (!scheduleContainer) return;
+// function initializeWeeklySchedule() {
+//   const scheduleContainer = document.getElementById('weekly-schedule-container');
+//   if (!scheduleContainer) return;
   
-  // Show loading state
-  scheduleContainer.innerHTML = `
-    <div class="text-center p-5">
-      <div class="spinner-border text-primary" role="status">
-        <span class="visually-hidden">Loading...</span>
-      </div>
-      <p class="mt-2 text-muted">Loading your schedule...</p>
-    </div>
-  `;
+//   // Show loading state
+//   scheduleContainer.innerHTML = `
+//     <div class="text-center p-5">
+//       <div class="spinner-border text-primary" role="status">
+//         <span class="visually-hidden">Loading...</span>
+//       </div>
+//       <p class="mt-2 text-muted">Loading your schedule...</p>
+//     </div>
+//   `;
   
   // Create a div element for the calendar
-  const calendarDiv = document.createElement('div');
-  calendarDiv.id = 'dashboard-calendar';
-  calendarDiv.style.height = '600px'; // Set height for the calendar
-  scheduleContainer.innerHTML = '';
-  scheduleContainer.appendChild(calendarDiv);
+//   const calendarDiv = document.createElement('div');
+//   calendarDiv.id = 'dashboard-calendar';
+//   calendarDiv.style.height = '600px'; // Set height for the calendar
+//   scheduleContainer.innerHTML = '';
+//   scheduleContainer.appendChild(calendarDiv);
   
-  // Initialize FullCalendar
-  const calendar = new FullCalendar.Calendar(calendarDiv, {
-    initialView: 'timeGridWeek',
-    headerToolbar: {
-      left: 'prev,next today',
-      center: 'title',
-      right: 'timeGridWeek,timeGridDay'
-    },
-    hiddenDays: [0, 6], // Hide Sunday(0) & Saturday(6)
-    slotMinTime: '08:30:00',
-    slotMaxTime: '18:00:00', 
-    slotDuration: '00:30:00',
-    height: 'auto',
-    allDaySlot: false,
-    nowIndicator: true,
-    weekNumbers: false,
-    dayHeaderFormat: { weekday: 'long', day: 'numeric' },
+//   // Initialize FullCalendar
+//   const calendar = new FullCalendar.Calendar(calendarDiv, {
+//     initialView: 'timeGridWeek',
+//     headerToolbar: {
+//       left: 'prev,next today',
+//       center: 'title',
+//       right: 'timeGridWeek,timeGridDay'
+//     },
+//     hiddenDays: [0, 6], // Hide Sunday(0) & Saturday(6)
+//     slotMinTime: '08:30:00',
+//     slotMaxTime: '18:00:00', 
+//     slotDuration: '00:30:00',
+//     height: 'auto',
+//     allDaySlot: false,
+//     nowIndicator: true,
+//     weekNumbers: false,
+//     dayHeaderFormat: { weekday: 'long', day: 'numeric' },
     
-    // Events fetching (REHAT + dynamic events)
-    events: function(fetchInfo, successCallback, failureCallback) {
-      // 1) Generate "REHAT" events
-      const rehatEvents = [];
-      let date = new Date(fetchInfo.start);
+//     // Events fetching (REHAT + dynamic events)
+//     events: function(fetchInfo, successCallback, failureCallback) {
+//       // 1) Generate "REHAT" events
+//       const rehatEvents = [];
+//       let date = new Date(fetchInfo.start);
       
-      while (date < fetchInfo.end) {
-        const dayOfWeek = date.getDay(); 
+//       while (date < fetchInfo.end) {
+//         const dayOfWeek = date.getDay(); 
         
-        if (dayOfWeek >= 1 && dayOfWeek <= 4) {
-          // Monday-Thursday => 13:30 to 14:00
-          rehatEvents.push({
-            id: 'rehat-' + date.toISOString(),
-            title: 'REHAT',
-            start: new Date(date.getFullYear(), date.getMonth(), date.getDate(), 13, 30),
-            end: new Date(date.getFullYear(), date.getMonth(), date.getDate(), 14, 0),
-            color: '#e63946',
-            borderColor: '#e63946',
-            textColor: '#ffffff'
-          });
-        } else if (dayOfWeek === 5) {
-          // Friday => 12:30 to 14:30
-          rehatEvents.push({
-            id: 'rehat-' + date.toISOString(),
-            title: 'REHAT',
-            start: new Date(date.getFullYear(), date.getMonth(), date.getDate(), 12, 30),
-            end: new Date(date.getFullYear(), date.getMonth(), date.getDate(), 14, 30),
-            color: '#e63946',
-            borderColor: '#e63946',
-            textColor: '#ffffff'
-          });
-        }
+//         if (dayOfWeek >= 1 && dayOfWeek <= 4) {
+//           // Monday-Thursday => 13:30 to 14:00
+//           rehatEvents.push({
+//             id: 'rehat-' + date.toISOString(),
+//             title: 'REHAT',
+//             start: new Date(date.getFullYear(), date.getMonth(), date.getDate(), 13, 30),
+//             end: new Date(date.getFullYear(), date.getMonth(), date.getDate(), 14, 0),
+//             color: '#e63946',
+//             borderColor: '#e63946',
+//             textColor: '#ffffff'
+//           });
+//         } else if (dayOfWeek === 5) {
+//           // Friday => 12:30 to 14:30
+//           rehatEvents.push({
+//             id: 'rehat-' + date.toISOString(),
+//             title: 'REHAT',
+//             start: new Date(date.getFullYear(), date.getMonth(), date.getDate(), 12, 30),
+//             end: new Date(date.getFullYear(), date.getMonth(), date.getDate(), 14, 30),
+//             color: '#e63946',
+//             borderColor: '#e63946',
+//             textColor: '#ffffff'
+//           });
+//         }
         
-        // Move to next day
-        date.setDate(date.getDate() + 1);
-      }
+//         // Move to next day
+//         date.setDate(date.getDate() + 1);
+//       }
       
-      // 2) Fetch dynamic events
-      fetch(`/AR/schedule/fetch/{{ Session::get('User')->ic ?? '0' }}?type=std`)
-        .then(response => response.json())
-        .then(data => {
-          const formattedEvents = data.map(event => {
-            // Create events for each day of the week
-            if (event.daysOfWeek && event.startTime && event.endTime) {
-              // Get the specific day of the week from daysOfWeek
-              const dayOfWeek = event.daysOfWeek[0]; // 1 = Monday, 5 = Friday
+//       // 2) Fetch dynamic events
+//       fetch(`/AR/schedule/fetch/{{ Session::get('User')->ic ?? '0' }}?type=std`)
+//         .then(response => response.json())
+//         .then(data => {
+//           const formattedEvents = data.map(event => {
+//             // Create events for each day of the week
+//             if (event.daysOfWeek && event.startTime && event.endTime) {
+//               // Get the specific day of the week from daysOfWeek
+//               const dayOfWeek = event.daysOfWeek[0]; // 1 = Monday, 5 = Friday
               
-              // Generate a unique color based on the event title
-              const color = getEventColor(event.title);
+//               // Generate a unique color based on the event title
+//               const color = getEventColor(event.title);
               
-              // We need to create actual Date objects for the event
-              // Get the week start and find the corresponding day
-              const weekStart = new Date(fetchInfo.start);
-              const targetDay = new Date(weekStart);
+//               // We need to create actual Date objects for the event
+//               // Get the week start and find the corresponding day
+//               const weekStart = new Date(fetchInfo.start);
+//               const targetDay = new Date(weekStart);
               
-              // Adjust to the correct day of the week
-              const daysToAdd = (dayOfWeek - weekStart.getDay() + 7) % 7;
-              targetDay.setDate(weekStart.getDate() + daysToAdd);
+//               // Adjust to the correct day of the week
+//               const daysToAdd = (dayOfWeek - weekStart.getDay() + 7) % 7;
+//               targetDay.setDate(weekStart.getDate() + daysToAdd);
               
-              // Parse start and end times
-              const [startHour, startMinute] = event.startTime.split(':').map(Number);
-              const [endHour, endMinute] = event.endTime.split(':').map(Number);
+//               // Parse start and end times
+//               const [startHour, startMinute] = event.startTime.split(':').map(Number);
+//               const [endHour, endMinute] = event.endTime.split(':').map(Number);
               
-              // Create Date objects for start and end
-              const startDate = new Date(targetDay);
-              startDate.setHours(startHour, startMinute, 0);
+//               // Create Date objects for start and end
+//               const startDate = new Date(targetDay);
+//               startDate.setHours(startHour, startMinute, 0);
               
-              const endDate = new Date(targetDay);
-              endDate.setHours(endHour, endMinute, 0);
+//               const endDate = new Date(targetDay);
+//               endDate.setHours(endHour, endMinute, 0);
               
-              return {
-                id: event.id,
-                title: event.title,
-                start: startDate,
-                end: endDate,
-                extendedProps: {
-                  programInfo: event.programInfo || '',
-                  lectInfo: event.lectInfo || '',
-                  description: event.description || ''
-                },
-                backgroundColor: color.bg,
-                borderColor: color.border,
-                textColor: color.text
-              };
-            }
-            return null;
-          }).filter(event => event !== null);
+//               return {
+//                 id: event.id,
+//                 title: event.title,
+//                 start: startDate,
+//                 end: endDate,
+//                 extendedProps: {
+//                   programInfo: event.programInfo || '',
+//                   lectInfo: event.lectInfo || '',
+//                   description: event.description || ''
+//                 },
+//                 backgroundColor: color.bg,
+//                 borderColor: color.border,
+//                 textColor: color.text
+//               };
+//             }
+//             return null;
+//           }).filter(event => event !== null);
           
-          // Combine REHAT events with regular events
-          successCallback([...rehatEvents, ...formattedEvents]);
-        })
-        .catch(error => {
-          console.error('Error fetching events:', error);
-          failureCallback(error);
-        });
-    },
+//           // Combine REHAT events with regular events
+//           successCallback([...rehatEvents, ...formattedEvents]);
+//         })
+//         .catch(error => {
+//           console.error('Error fetching events:', error);
+//           failureCallback(error);
+//         });
+//     },
     
-    // Event content formatting
-    eventContent: function(arg) {
-      // For REHAT events, use a simplified display
-      if (arg.event.title === 'REHAT') {
-        return { 
-          html: `<div class="fc-event-title-container">
-                  <div class="fc-event-title fc-sticky">${arg.event.title}</div>
-                </div>` 
-        };
-      }
+//     // Event content formatting
+//     eventContent: function(arg) {
+//       // For REHAT events, use a simplified display
+//       if (arg.event.title === 'REHAT') {
+//         return { 
+//           html: `<div class="fc-event-title-container">
+//                   <div class="fc-event-title fc-sticky">${arg.event.title}</div>
+//                 </div>` 
+//         };
+//       }
       
-      // For regular classes, show more information
-      const timeText = arg.timeText;
-      const title = arg.event.title;
-      const lectInfo = arg.event.extendedProps.lectInfo || '';
-      const programInfo = arg.event.extendedProps.programInfo || '';
+//       // For regular classes, show more information
+//       const timeText = arg.timeText;
+//       const title = arg.event.title;
+//       const lectInfo = arg.event.extendedProps.lectInfo || '';
+//       const programInfo = arg.event.extendedProps.programInfo || '';
       
-      return { 
-        html: `<div class="fc-event-title-container">
-                <div class="fc-event-time">${timeText}</div>
-                <div class="fc-event-title fc-sticky">${title}</div>
-                ${programInfo ? '<div class="event-program"><small>Program: ' + programInfo + '</small></div>' : ''}
-                ${lectInfo ? '<div class="event-lecturer"><small>Lecturer: ' + lectInfo + '</small></div>' : ''}
-              </div>` 
-      };
-    },
+//       return { 
+//         html: `<div class="fc-event-title-container">
+//                 <div class="fc-event-time">${timeText}</div>
+//                 <div class="fc-event-title fc-sticky">${title}</div>
+//                 ${programInfo ? '<div class="event-program"><small>Program: ' + programInfo + '</small></div>' : ''}
+//                 ${lectInfo ? '<div class="event-lecturer"><small>Lecturer: ' + lectInfo + '</small></div>' : ''}
+//               </div>` 
+//       };
+//     },
     
-    // When clicking an event
-    eventClick: function(info) {
-      // Show event details in modal
-      showClassDetails(
-        info.event.id,
-        info.event.title, 
-        info.event.start.toTimeString().substring(0, 5), 
-        info.event.end.toTimeString().substring(0, 5),
-        info.event.extendedProps.lectInfo || '',
-        info.event.extendedProps.programInfo || ''
-      );
-    }
-  });
+//     // When clicking an event
+//     eventClick: function(info) {
+//       // Show event details in modal
+//       showClassDetails(
+//         info.event.id,
+//         info.event.title, 
+//         info.event.start.toTimeString().substring(0, 5), 
+//         info.event.end.toTimeString().substring(0, 5),
+//         info.event.extendedProps.lectInfo || '',
+//         info.event.extendedProps.programInfo || ''
+//       );
+//     }
+//   });
   
-  // Render the calendar
-  calendar.render();
-}
+//   // Render the calendar
+//   calendar.render();
+// }
 
 // Function to update the date display in the modern format
 function updateCurrentDateDisplay() {

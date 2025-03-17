@@ -2798,376 +2798,314 @@ class AR_Controller extends Controller
 
     public function fetchEvents()
     {
-        if(isset(request()->type))
+        $formattedEvents = [];
+        
+        if(isset(request()->type) && request()->type == 'std')
         {
-
-            if(request()->type == 'std')
-            {
-                if(isset(Auth::guard('student')->user()->ic))
-                {
-
-                    // $events = Tblevent2::join('student_subjek', function($join){
-                    //         $join->on('tblevents_second.group_id', 'student_subjek.group_id');
-                    //         $join->on('tblevents_second.group_name', 'student_subjek.group_name');
-                    //     })
-                    //     ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
-                    //     ->join('tbllecture_room', 'tblevents_second.lecture_id', 'tbllecture_room.id')
-                    //     ->join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
-                    //     ->join('users', 'tblevents_second.user_ic', 'users.ic')
-                    //     ->where([
-                    //     ['sessions.Status', 'ACTIVE']
-                    //     ])
-                    //     ->where('student_subjek.student_ic', request()->id)
-                    //     ->groupBy('subjek.sub_id', 'tblevents_second.id')
-                    //     ->select('tblevents_second.*','users.name AS lecturer' ,'subjek.course_code AS code' , 'subjek.course_name AS subject', 'tbllecture_room.name AS room', 'sessions.SessionName AS session')->get();
-
-                }else{
-
-                    $events = Tblevent::join('student_subjek', function($join){
-                            $join->on('tblevents.group_id', 'student_subjek.group_id');
-                            $join->on('tblevents.group_name', 'student_subjek.group_name');
-                        })
-                        ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
-                        ->join('tbllecture_room', 'tblevents.lecture_id', 'tbllecture_room.id')
-                        ->join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
-                        ->join('users', 'tblevents.user_ic', 'users.ic')
-                        ->where([
-                        ['sessions.Status', 'ACTIVE']
-                        ])
-                        ->where('student_subjek.student_ic', request()->id)
-                        ->groupBy('subjek.sub_id', 'tblevents.id')
-                        ->select('tblevents.*','users.name AS lecturer' ,'subjek.course_code AS code' , 'subjek.course_name AS subject', 'tbllecture_room.name AS room', 'sessions.SessionName AS session')->get();
-
-                }
-
-                $formattedEvents = $events->map(function ($event) {
-
-                    $count = DB::table('student_subjek')
-                                        ->where([
-                                        ['group_id', $event->group_id],
-                                        ['group_name', $event->group_name]
-                                        ])
-                                        ->select(DB::raw('COUNT(student_ic) AS total_student'))
-                                        ->first();
-
-                    $program = DB::table('student_subjek')
-                                        ->join('students', 'student_subjek.student_ic', 'students.ic')
-                                        ->join('tblprogramme', 'students.program', 'tblprogramme.id')
-                                        ->where([
-                                        ['student_subjek.group_id', $event->group_id],
-                                        ['student_subjek.group_name', $event->group_name]
-                                        ])
-                                        ->groupBy('tblprogramme.id')
-                                        ->select('tblprogramme.*')
-                                        ->get();
-
-                    // Convert program information into a string
-                    $programInfo = $program->map(function($prog) {
-                        return $prog->progcode; // Assuming 'progname' is the relevant field you want to display
-                    })->implode(', ');
-
-                    // Map day of the week from PHP (1 for Monday through 7 for Sunday) to FullCalendar (0 for Sunday through 6 for Saturday)
-                    $dayOfWeekMap = [
-                        1 => 1, // Monday
-                        2 => 2, // Tuesday
-                        3 => 3, // Wednesday
-                        4 => 4, // Thursday
-                        5 => 5, // Friday
-                        6 => 6, // Saturday
-                        7 => 0  // Sunday
-                    ];
-
-                    $dayOfWeek = date('N', strtotime($event->start));
-                    $fullCalendarDayOfWeek = $dayOfWeekMap[$dayOfWeek];
-
-                    return [
-                        'id' => $event->id,
-                        'title' => strtoupper($event->room) . ' (' . $event->session . ')',
-                        'description' => $event->code . ' - ' . $event->subject . ' (' . $event->group_name . ') | Total Student: ' . $count->total_student . ' | Programs: ' . $programInfo,
-                        'startTime' => date('H:i', strtotime($event->start)),
-                        'endTime' => date('H:i', strtotime($event->end)),
-                        'duration' => gmdate('H:i', strtotime($event->end) - strtotime($event->start)),
-                        'daysOfWeek' => [$fullCalendarDayOfWeek], // Recurring on the same day of the week
-                        'programInfo' => $programInfo, // Add program info to the event object
-                        'lectInfo' => $event->lecturer
-                    ];
-                });
-
-
-            }else{
-
-                $events = Tblevent::join('user_subjek', 'tblevents.group_id', 'user_subjek.id')
-                        ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
-                        ->join('tbllecture_room', 'tblevents.lecture_id', 'tbllecture_room.id')
-                        ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
-                        ->join('users', 'tblevents.user_ic', 'users.ic')
-                        ->where([
-                            ['sessions.Status', 'ACTIVE']
-                            ])
-                        ->where('tblevents.lecture_id', request()->id)
-                        ->groupBy('subjek.sub_id', 'tblevents.id')
-                        ->select('tblevents.*','users.name AS lecturer' , 'subjek.course_code AS code' , 'subjek.course_name AS subject', 'tbllecture_room.name AS room', 'sessions.SessionName AS session')->get();
-
-                $formattedEvents = $events->map(function ($event) {
-
-                    $count = DB::table('student_subjek')
-                                        ->where([
-                                        ['group_id', $event->group_id],
-                                        ['group_name', $event->group_name]
-                                        ])
-                                        ->select(DB::raw('COUNT(student_ic) AS total_student'))
-                                        ->first();
-
-                    $program = DB::table('student_subjek')
-                                        ->join('students', 'student_subjek.student_ic', 'students.ic')
-                                        ->join('tblprogramme', 'students.program', 'tblprogramme.id')
-                                        ->where([
-                                        ['student_subjek.group_id', $event->group_id],
-                                        ['student_subjek.group_name', $event->group_name]
-                                        ])
-                                        ->groupBy('tblprogramme.id')
-                                        ->select('tblprogramme.*')
-                                        ->get();
+            // Student schedule
+            $query = null;
             
-                    // Convert program information into a string
-                    $programInfo = $program->map(function($prog) {
-                        return $prog->progcode; // Assuming 'progname' is the relevant field you want to display
-                    })->implode(', ');
-
-                    // Map day of the week from PHP (1 for Monday through 7 for Sunday) to FullCalendar (0 for Sunday through 6 for Saturday)
-                    $dayOfWeekMap = [
-                        1 => 1, // Monday
-                        2 => 2, // Tuesday
-                        3 => 3, // Wednesday
-                        4 => 4, // Thursday
-                        5 => 5, // Friday
-                        6 => 6, // Saturday
-                        7 => 0  // Sunday
-                    ];
-
-                    $dayOfWeek = date('N', strtotime($event->start));
-                    $fullCalendarDayOfWeek = $dayOfWeekMap[$dayOfWeek];
-
-                    return [
-                        'id' => $event->id,
-                        'title' => strtoupper($event->room) . ' (' . $event->session . ')',
-                        'description' => $event->code. ' - ' . $event->subject . ' (' . $event->group_name .') ' . '|' . ' Total Student :' . ' ' .$count->total_student,
-                        'startTime' => date('H:i', strtotime($event->start)),
-                        'endTime' => date('H:i', strtotime($event->end)),
-                        'duration' => gmdate('H:i', strtotime($event->end) - strtotime($event->start)),
-                        'daysOfWeek' => [$fullCalendarDayOfWeek], // Recurring on the same day of the week
-                        'programInfo' => $programInfo, // Add program info to the event object
-                        'lectInfo' => $event->lecturer
-                    ];
-                });
-
+            if(isset(Auth::guard('student')->user()->ic))
+            {
+                // Using tblevents_second table
+                $query = Tblevent2::join('student_subjek', function($join){
+                        $join->on('tblevents_second.group_id', 'student_subjek.group_id');
+                        $join->on('tblevents_second.group_name', 'student_subjek.group_name');
+                    })
+                    ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
+                    ->join('tbllecture_room', 'tblevents_second.lecture_id', 'tbllecture_room.id')
+                    ->join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
+                    ->join('users', 'tblevents_second.user_ic', 'users.ic')
+                    ->where('sessions.Status', 'ACTIVE')
+                    ->where('student_subjek.student_ic', request()->id)
+                    ->groupBy('subjek.sub_id', 'tblevents_second.id')
+                    ->select(
+                        'tblevents_second.id',
+                        'tblevents_second.start',
+                        'tblevents_second.end',
+                        'tblevents_second.group_id',
+                        'tblevents_second.group_name',
+                        'users.name AS lecturer',
+                        'subjek.course_code AS code',
+                        'subjek.course_name AS subject',
+                        'tbllecture_room.name AS room',
+                        'sessions.SessionName AS session'
+                    );
             }
-
-        }else{
-
-            $events = Tblevent::join('user_subjek', 'tblevents.group_id', 'user_subjek.id')
-                    ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
+            else
+            {
+                // Using tblevents table
+                $query = Tblevent::join('student_subjek', function($join){
+                        $join->on('tblevents.group_id', 'student_subjek.group_id');
+                        $join->on('tblevents.group_name', 'student_subjek.group_name');
+                    })
+                    ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
                     ->join('tbllecture_room', 'tblevents.lecture_id', 'tbllecture_room.id')
-                    ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
-                    ->where([
-                        ['sessions.Status', 'ACTIVE']
-                        ])
-                    ->where('tblevents.user_ic', request()->id)
+                    ->join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
+                    ->join('users', 'tblevents.user_ic', 'users.ic')
+                    ->where('sessions.Status', 'ACTIVE')
+                    ->where('student_subjek.student_ic', request()->id)
                     ->groupBy('subjek.sub_id', 'tblevents.id')
-                    ->select('tblevents.*', 'subjek.course_code AS code' , 'subjek.course_name AS subject', 'tbllecture_room.name AS room', 'sessions.SessionName AS session')->get();
-
-            $formattedEvents = $events->map(function ($event) {
-
-                $count = DB::table('student_subjek')
-                        ->where([
-                        ['group_id', $event->group_id],
-                        ['group_name', $event->group_name]
-                        ])
-                        ->select(DB::raw('COUNT(student_ic) AS total_student'))
-                        ->first();
-
-                $program = DB::table('student_subjek')
-                            ->join('students', 'student_subjek.student_ic', 'students.ic')
-                            ->join('tblprogramme', 'students.program', 'tblprogramme.id')
-                            ->where([
-                            ['student_subjek.group_id', $event->group_id],
-                            ['student_subjek.group_name', $event->group_name]
-                            ])
-                            ->groupBy('tblprogramme.id')
-                            ->select('tblprogramme.*')
-                            ->get();
-
-                // Convert program information into a string
-                $programInfo = $program->map(function($prog) {
-                    return $prog->progcode; // Assuming 'progname' is the relevant field you want to display
-                })->implode(', ');
-
-                // Map day of the week from PHP (1 for Monday through 7 for Sunday) to FullCalendar (0 for Sunday through 6 for Saturday)
-                $dayOfWeekMap = [
-                    1 => 1, // Monday
-                    2 => 2, // Tuesday
-                    3 => 3, // Wednesday
-                    4 => 4, // Thursday
-                    5 => 5, // Friday
-                    6 => 6, // Saturday
-                    7 => 0  // Sunday
-                ];
-
+                    ->select(
+                        'tblevents.id',
+                        'tblevents.start',
+                        'tblevents.end',
+                        'tblevents.group_id',
+                        'tblevents.group_name',
+                        'users.name AS lecturer',
+                        'subjek.course_code AS code',
+                        'subjek.course_name AS subject',
+                        'tbllecture_room.name AS room',
+                        'sessions.SessionName AS session'
+                    );
+            }
+            
+            $events = $query->get();
+            
+            // Preload student counts and program info for all events at once
+            $groupIds = $events->pluck('group_id')->toArray();
+            $groupNames = $events->pluck('group_name')->toArray();
+            
+            // Get student counts for all groups at once
+            $studentCounts = DB::table('student_subjek')
+                ->whereIn('group_id', $groupIds)
+                ->whereIn('group_name', $groupNames)
+                ->groupBy('group_id', 'group_name')
+                ->select(
+                    'group_id', 
+                    'group_name', 
+                    DB::raw('COUNT(student_ic) AS total_student')
+                )
+                ->get()
+                ->keyBy(function($item) {
+                    return $item->group_id . '-' . $item->group_name;
+                });
+                
+            // Get program info for all groups at once
+            $programInfo = DB::table('student_subjek')
+                ->join('students', 'student_subjek.student_ic', 'students.ic')
+                ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+                ->whereIn('student_subjek.group_id', $groupIds)
+                ->whereIn('student_subjek.group_name', $groupNames)
+                ->groupBy('student_subjek.group_id', 'student_subjek.group_name', 'tblprogramme.id', 'tblprogramme.progcode')
+                ->select(
+                    'student_subjek.group_id',
+                    'student_subjek.group_name',
+                    'tblprogramme.progcode'
+                )
+                ->get();
+                
+            // Organize program info by group
+            $programsByGroup = [];
+            foreach ($programInfo as $program) {
+                $key = $program->group_id . '-' . $program->group_name;
+                if (!isset($programsByGroup[$key])) {
+                    $programsByGroup[$key] = [];
+                }
+                $programsByGroup[$key][] = $program->progcode;
+            }
+            
+            // Day of week mapping
+            $dayOfWeekMap = [1 => 1, 2 => 2, 3 => 3, 4 => 4, 5 => 5, 6 => 6, 7 => 0];
+            
+            // Format events
+            $formattedEvents = $events->map(function ($event) use ($studentCounts, $programsByGroup, $dayOfWeekMap) {
+                $key = $event->group_id . '-' . $event->group_name;
+                $count = isset($studentCounts[$key]) ? $studentCounts[$key]->total_student : 0;
+                $programs = isset($programsByGroup[$key]) ? implode(', ', $programsByGroup[$key]) : '';
+                
                 $dayOfWeek = date('N', strtotime($event->start));
                 $fullCalendarDayOfWeek = $dayOfWeekMap[$dayOfWeek];
-
+                
                 return [
                     'id' => $event->id,
                     'title' => strtoupper($event->room) . ' (' . $event->session . ')',
-                    'description' => $event->code . ' - ' . $event->subject . ' (' . $event->group_name . ') | Total Student: ' . $count->total_student,
+                    'description' => $event->code . ' - ' . $event->subject . ' (' . $event->group_name . ') | Total Student: ' . $count . ' | Programs: ' . $programs,
                     'startTime' => date('H:i', strtotime($event->start)),
                     'endTime' => date('H:i', strtotime($event->end)),
                     'duration' => gmdate('H:i', strtotime($event->end) - strtotime($event->start)),
                     'daysOfWeek' => [$fullCalendarDayOfWeek],
-                    'programInfo' => $programInfo // Add program info to the event object
+                    'programInfo' => $programs,
+                    'lectInfo' => $event->lecturer
                 ];
             });
-
+        }
+        elseif(isset(request()->type))
+        {
+            // Lecture room schedule
+            $events = Tblevent::join('user_subjek', 'tblevents.group_id', 'user_subjek.id')
+                ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
+                ->join('tbllecture_room', 'tblevents.lecture_id', 'tbllecture_room.id')
+                ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+                ->join('users', 'tblevents.user_ic', 'users.ic')
+                ->where('sessions.Status', 'ACTIVE')
+                ->where('tblevents.lecture_id', request()->id)
+                ->groupBy('subjek.sub_id', 'tblevents.id')
+                ->select(
+                    'tblevents.id',
+                    'tblevents.start',
+                    'tblevents.end',
+                    'tblevents.group_id',
+                    'tblevents.group_name',
+                    'users.name AS lecturer',
+                    'subjek.course_code AS code',
+                    'subjek.course_name AS subject',
+                    'tbllecture_room.name AS room',
+                    'sessions.SessionName AS session'
+                )
+                ->get();
+                
+            // Process events similar to student schedule
+            $groupIds = $events->pluck('group_id')->toArray();
+            $groupNames = $events->pluck('group_name')->toArray();
+            
+            $studentCounts = DB::table('student_subjek')
+                ->whereIn('group_id', $groupIds)
+                ->whereIn('group_name', $groupNames)
+                ->groupBy('group_id', 'group_name')
+                ->select(
+                    'group_id', 
+                    'group_name', 
+                    DB::raw('COUNT(student_ic) AS total_student')
+                )
+                ->get()
+                ->keyBy(function($item) {
+                    return $item->group_id . '-' . $item->group_name;
+                });
+                
+            $programInfo = DB::table('student_subjek')
+                ->join('students', 'student_subjek.student_ic', 'students.ic')
+                ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+                ->whereIn('student_subjek.group_id', $groupIds)
+                ->whereIn('student_subjek.group_name', $groupNames)
+                ->groupBy('student_subjek.group_id', 'student_subjek.group_name', 'tblprogramme.id', 'tblprogramme.progcode')
+                ->select(
+                    'student_subjek.group_id',
+                    'student_subjek.group_name',
+                    'tblprogramme.progcode'
+                )
+                ->get();
+                
+            $programsByGroup = [];
+            foreach ($programInfo as $program) {
+                $key = $program->group_id . '-' . $program->group_name;
+                if (!isset($programsByGroup[$key])) {
+                    $programsByGroup[$key] = [];
+                }
+                $programsByGroup[$key][] = $program->progcode;
+            }
+            
+            $dayOfWeekMap = [1 => 1, 2 => 2, 3 => 3, 4 => 4, 5 => 5, 6 => 6, 7 => 0];
+            
+            $formattedEvents = $events->map(function ($event) use ($studentCounts, $programsByGroup, $dayOfWeekMap) {
+                $key = $event->group_id . '-' . $event->group_name;
+                $count = isset($studentCounts[$key]) ? $studentCounts[$key]->total_student : 0;
+                $programs = isset($programsByGroup[$key]) ? implode(', ', $programsByGroup[$key]) : '';
+                
+                $dayOfWeek = date('N', strtotime($event->start));
+                $fullCalendarDayOfWeek = $dayOfWeekMap[$dayOfWeek];
+                
+                return [
+                    'id' => $event->id,
+                    'title' => strtoupper($event->room) . ' (' . $event->session . ')',
+                    'description' => $event->code . ' - ' . $event->subject . ' (' . $event->group_name . ') | Total Student: ' . $count,
+                    'startTime' => date('H:i', strtotime($event->start)),
+                    'endTime' => date('H:i', strtotime($event->end)),
+                    'duration' => gmdate('H:i', strtotime($event->end) - strtotime($event->start)),
+                    'daysOfWeek' => [$fullCalendarDayOfWeek],
+                    'programInfo' => $programs,
+                    'lectInfo' => $event->lecturer
+                ];
+            });
+        }
+        else
+        {
+            // Default schedule (lecturer's schedule)
+            $events = Tblevent::join('user_subjek', 'tblevents.group_id', 'user_subjek.id')
+                ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
+                ->join('tbllecture_room', 'tblevents.lecture_id', 'tbllecture_room.id')
+                ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+                ->where('sessions.Status', 'ACTIVE')
+                ->where('tblevents.user_ic', request()->id)
+                ->groupBy('subjek.sub_id', 'tblevents.id')
+                ->select(
+                    'tblevents.id',
+                    'tblevents.start',
+                    'tblevents.end',
+                    'tblevents.group_id',
+                    'tblevents.group_name',
+                    'subjek.course_code AS code',
+                    'subjek.course_name AS subject',
+                    'tbllecture_room.name AS room',
+                    'sessions.SessionName AS session'
+                )
+                ->get();
+                
+            // Process events similar to other schedules
+            $groupIds = $events->pluck('group_id')->toArray();
+            $groupNames = $events->pluck('group_name')->toArray();
+            
+            $studentCounts = DB::table('student_subjek')
+                ->whereIn('group_id', $groupIds)
+                ->whereIn('group_name', $groupNames)
+                ->groupBy('group_id', 'group_name')
+                ->select(
+                    'group_id', 
+                    'group_name', 
+                    DB::raw('COUNT(student_ic) AS total_student')
+                )
+                ->get()
+                ->keyBy(function($item) {
+                    return $item->group_id . '-' . $item->group_name;
+                });
+                
+            $programInfo = DB::table('student_subjek')
+                ->join('students', 'student_subjek.student_ic', 'students.ic')
+                ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+                ->whereIn('student_subjek.group_id', $groupIds)
+                ->whereIn('student_subjek.group_name', $groupNames)
+                ->groupBy('student_subjek.group_id', 'student_subjek.group_name', 'tblprogramme.id', 'tblprogramme.progcode')
+                ->select(
+                    'student_subjek.group_id',
+                    'student_subjek.group_name',
+                    'tblprogramme.progcode'
+                )
+                ->get();
+                
+            $programsByGroup = [];
+            foreach ($programInfo as $program) {
+                $key = $program->group_id . '-' . $program->group_name;
+                if (!isset($programsByGroup[$key])) {
+                    $programsByGroup[$key] = [];
+                }
+                $programsByGroup[$key][] = $program->progcode;
+            }
+            
+            $dayOfWeekMap = [1 => 1, 2 => 2, 3 => 3, 4 => 4, 5 => 5, 6 => 6, 7 => 0];
+            
+            $formattedEvents = $events->map(function ($event) use ($studentCounts, $programsByGroup, $dayOfWeekMap) {
+                $key = $event->group_id . '-' . $event->group_name;
+                $count = isset($studentCounts[$key]) ? $studentCounts[$key]->total_student : 0;
+                $programs = isset($programsByGroup[$key]) ? implode(', ', $programsByGroup[$key]) : '';
+                
+                $dayOfWeek = date('N', strtotime($event->start));
+                $fullCalendarDayOfWeek = $dayOfWeekMap[$dayOfWeek];
+                
+                return [
+                    'id' => $event->id,
+                    'title' => strtoupper($event->room) . ' (' . $event->session . ')',
+                    'description' => $event->code . ' - ' . $event->subject . ' (' . $event->group_name . ') | Total Student: ' . $count,
+                    'startTime' => date('H:i', strtotime($event->start)),
+                    'endTime' => date('H:i', strtotime($event->end)),
+                    'duration' => gmdate('H:i', strtotime($event->end) - strtotime($event->start)),
+                    'daysOfWeek' => [$fullCalendarDayOfWeek],
+                    'programInfo' => $programs
+                ];
+            });
         }
 
         return response()->json($formattedEvents);
     }
-
-    // public function fetchEvents()
-    // {
-    //     // Use caching to prevent database hits on every request
-    //     $cacheKey = 'events_' . request()->type . '_' . (request()->id ?? Auth::guard('student')->user()->ic ?? 'guest');
-    //     $cacheDuration = 30; // Cache for 30 minutes (in minutes)
-        
-    //     // Return cached result if available
-    //     if (Cache::has($cacheKey)) {
-    //         return response()->json(Cache::get($cacheKey));
-    //     }
-        
-    //     $events = [];
-        
-    //     if(request()->type == 'std')
-    //     {
-    //         if(isset(Auth::guard('student')->user()->ic))
-    //         {
-    //             // Retrieve limited data with better indexing
-    //             $events = DB::table('tblevents_second')
-    //                 ->join('student_subjek', function($join){
-    //                     $join->on('tblevents_second.group_id', 'student_subjek.group_id');
-    //                     $join->on('tblevents_second.group_name', 'student_subjek.group_name');
-    //                 })
-    //                 ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
-    //                 ->join('tbllecture_room', 'tblevents_second.lecture_id', 'tbllecture_room.id')
-    //                 ->join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
-    //                 ->join('users', 'tblevents_second.user_ic', 'users.ic')
-    //                 ->where('sessions.Status', 'ACTIVE')
-    //                 ->where('student_subjek.student_ic', request()->id)
-    //                 ->select(
-    //                     'tblevents_second.id',
-    //                     'tblevents_second.group_id',
-    //                     'tblevents_second.group_name',
-    //                     'tblevents_second.start',
-    //                     'tblevents_second.end',
-    //                     'users.name AS lecturer',
-    //                     'subjek.course_code AS code',
-    //                     'subjek.course_name AS subject',
-    //                     'tbllecture_room.name AS room'
-    //                 )
-    //                 ->distinct()
-    //                 ->limit(30) // Limit results to reduce load
-    //                 ->get();
-    //         } else {
-    //             // Retrieve limited data with better indexing
-    //             $events = DB::table('tblevents')
-    //                 ->join('student_subjek', function($join){
-    //                     $join->on('tblevents.group_id', 'student_subjek.group_id');
-    //                     $join->on('tblevents.group_name', 'student_subjek.group_name');
-    //                 })
-    //                 ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
-    //                 ->join('tbllecture_room', 'tblevents.lecture_id', 'tbllecture_room.id')
-    //                 ->join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
-    //                 ->join('users', 'tblevents.user_ic', 'users.ic')
-    //                 ->where('sessions.Status', 'ACTIVE')
-    //                 ->where('student_subjek.student_ic', request()->id)
-    //                 ->select(
-    //                     'tblevents.id',
-    //                     'tblevents.group_id', 
-    //                     'tblevents.group_name',
-    //                     'tblevents.start',
-    //                     'tblevents.end',
-    //                     'users.name AS lecturer',
-    //                     'subjek.course_code AS code',
-    //                     'subjek.course_name AS subject',
-    //                     'tbllecture_room.name AS room'
-    //                 )
-    //                 ->distinct()
-    //                 ->limit(30) // Limit results to reduce load
-    //                 ->get();
-    //         }
-
-    //         // Only proceed if events were found
-    //         if ($events->isEmpty()) {
-    //             return response()->json([]);
-    //         }
-            
-    //         // Extract group IDs and names for efficient counting
-    //         $groupIds = $events->pluck('group_id')->unique()->toArray();
-    //         $groupNames = $events->pluck('group_name')->unique()->toArray();
-            
-    //         // Get student counts in a single query instead of per-event
-    //         $studentCounts = DB::table('student_subjek')
-    //             ->whereIn('group_id', $groupIds)
-    //             ->whereIn('group_name', $groupNames)
-    //             ->select(
-    //                 'group_id',
-    //                 'group_name',
-    //                 DB::raw('COUNT(student_ic) AS total_student')
-    //             )
-    //             ->groupBy('group_id', 'group_name')
-    //             ->get()
-    //             ->keyBy(function($item) {
-    //                 return $item->group_id . '|' . $item->group_name;
-    //             });
-
-    //         // Map day of week once (reused for all events)
-    //         $dayOfWeekMap = [
-    //             1 => 1, // Monday
-    //             2 => 2, // Tuesday
-    //             3 => 3, // Wednesday
-    //             4 => 4, // Thursday
-    //             5 => 5, // Friday
-    //             6 => 6, // Saturday
-    //             7 => 0  // Sunday
-    //         ];
-
-    //         // Format events more efficiently
-    //         $formattedEvents = $events->map(function ($event) use ($studentCounts, $dayOfWeekMap) {
-    //             $key = $event->group_id . '|' . $event->group_name;
-    //             $studentCount = isset($studentCounts[$key]) ? $studentCounts[$key]->total_student : 0;
-                
-    //             $dayOfWeek = date('N', strtotime($event->start));
-    //             $fullCalendarDayOfWeek = $dayOfWeekMap[$dayOfWeek];
-
-    //             return [
-    //                 'id' => $event->id,
-    //                 'title' => $event->lecturer,
-    //                 'description' => $event->code . ' - ' . $event->subject . ' (' . $event->group_name .') ' . '|' . ' Total Student: ' . $studentCount,
-    //                 'startTime' => date('H:i', strtotime($event->start)),
-    //                 'endTime' => date('H:i', strtotime($event->end)),
-    //                 'duration' => gmdate('H:i', strtotime($event->end) - strtotime($event->start)),
-    //                 'daysOfWeek' => [$fullCalendarDayOfWeek]
-    //             ];
-    //         });
-            
-    //         // Store in cache for future requests
-    //         Cache::put($cacheKey, $formattedEvents, $cacheDuration);
-            
-    //         return response()->json($formattedEvents);
-    //     }
-        
-    //     // Return empty for other cases
-    //     return response()->json([]);
-    // }
 
     public function fetchExistEvent(Request $request, $id)
     {
