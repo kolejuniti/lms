@@ -2,7 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
@@ -194,7 +193,7 @@ Route::post('/AR/schedule/createLectureRoom', [App\Http\Controllers\AR_Controlle
 Route::get('/AR/schedule/scheduleTable/{id}', [App\Http\Controllers\AR_Controller::class, 'scheduleTable']);
 Route::get('/AR/schedule/scheduleTable/{id}/getSubjectSchedule', [App\Http\Controllers\AR_Controller::class, 'getSubjectSchedule']);
 Route::get('/AR/schedule/scheduleTable/{id}/getGroupSchedule', [App\Http\Controllers\AR_Controller::class, 'getGroupSchedule']);
-Route::get('/AR/schedule/fetch/{id}', [App\Http\Controllers\OptimizedController::class, 'fetchEvents']);
+Route::get('/AR/schedule/fetch/{id}', [App\Http\Controllers\AR_Controller::class, 'fetchEvents']);
 Route::get('/AR/schedule/fetch/{id}/fetchExistEvent', [App\Http\Controllers\AR_Controller::class, 'fetchExistEvent']);
 // Route::get('/AR/schedule/index/old', [App\Http\Controllers\AR_Controller::class, 'scheduleIndex'])->name('pendaftar_akademik.schedule.old');
 // Route::post('/AR/schedule/store', [App\Http\Controllers\AR_Controller::class, 'dropzoneStore'])->name('pendaftar_akademik.schedule.store');
