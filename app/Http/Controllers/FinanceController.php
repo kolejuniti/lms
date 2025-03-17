@@ -6407,7 +6407,7 @@ class FinanceController extends Controller
         ->join('tblstudentclaim', 'dtl.claim_type_id', '=', 'tblstudentclaim.id')
         ->leftJoin('tblpayment_bank', 'method.bank_id', '=', 'tblpayment_bank.id')
         ->join('tblpayment_method', 'method.claim_method_id', '=', 'tblpayment_method.id')
-        ->whereBetween('tblpayment.add_date', ['2024-09-30', '2024-09-30'])
+        ->whereBetween('tblpayment.add_date', [$request->from, $request->to])
         ->where('tblpayment.process_status_id', 2)
         ->select(
             'tblpayment.*',
