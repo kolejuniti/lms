@@ -5051,8 +5051,7 @@ class FinanceController extends Controller
         $paymentDtl = DB::table('tblpaymentdtl')
         ->select('id', 'payment_id', 'claim_type_id', 'amount'
         )        
-        ->whereBetween('tblpaymentdtl.add_date', ['2024-09-30', '2024-09-30'])
-        ->get();
+        ->whereBetween('tblpaymentdtl.add_date', ['2024-09-30 00:00:00', '2024-09-30 23:59:59'])        ->get();
 
         dd($paymentDtl);
 
