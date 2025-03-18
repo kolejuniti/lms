@@ -262,5 +262,30 @@ function unRegister(prg,id)
 
 }
 
+function updateStartAt(id) {
+  var start_at = $('#start_at').val();
+  
+  $.ajax({
+      headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
+      url: "{{ url('/finance/package/insentifkhas/updateStartAt3') }}",
+      method: 'POST',
+      data: {
+          id: id,
+          start_at: start_at
+      },
+      error: function(err) {
+          alert("Error");
+          console.log(err);
+      },
+      success: function(data) {
+          if(data.message === "Success") {
+              alert("Start At semester has been updated successfully!");
+          } else {
+              alert(data.message || "Error updating Start At semester");
+          }
+      }
+  });
+}
+
 </script>
 @endsection

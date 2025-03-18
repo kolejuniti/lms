@@ -6492,7 +6492,6 @@ class FinanceController extends Controller
 
         $data['fine'] = [];
         $data['fineTotal'] = [];
-
         
         $data['other'] = [];
         $data['otherDetail'] = [];
@@ -7382,6 +7381,20 @@ class FinanceController extends Controller
 
     }
 
+    public function updateStartAt(Request $request)
+    {
+        try {
+            // Update the start_at field in tbltabungkhas
+            DB::table('tblincentive')
+                ->where('id', $request->id)
+                ->update(['start_at' => $request->start_at]);
+
+            return response()->json(['message' => 'Success']);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Error: ' . $e->getMessage()], 500);
+        }
+    }
+
     public function tabungkhas()
     {
         $data['package'] = DB::table('tblpackage')->get();
@@ -7465,6 +7478,12 @@ class FinanceController extends Controller
 
         $data['id'] = $request->id;
 
+        // Get the tabungkhas data including start_at
+        $data['tabungkhas'] = DB::table('tbltabungkhas')
+                              ->where('id', $request->id)
+                              ->select('start_at')
+                              ->first();
+
         return view('finance.package.getProgram', compact('data'));
     }
 
@@ -7491,6 +7510,20 @@ class FinanceController extends Controller
 
         return response()->json($request->id);
 
+    }
+
+    public function updateStartAt2(Request $request)
+    {
+        try {
+            // Update the start_at field in tbltabungkhas
+            DB::table('tbltabungkhas')
+                ->where('id', $request->id)
+                ->update(['start_at' => $request->start_at]);
+
+            return response()->json(['message' => 'Success']);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Error: ' . $e->getMessage()], 500);
+        }
     }
 
     public function insentifkhas()
@@ -7604,6 +7637,20 @@ class FinanceController extends Controller
 
     }
 
+    public function updateStartAt3(Request $request)
+    {
+        try {
+            // Update the start_at field in tbltabungkhas
+            DB::table('tblinsentifkhas')
+                ->where('id', $request->id)
+                ->update(['start_at' => $request->start_at]);
+
+            return response()->json(['message' => 'Success']);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Error: ' . $e->getMessage()], 500);
+        }
+    }
+
     public function voucher()
     {
         $data['package'] = DB::table('tblpackage')->get();
@@ -7713,6 +7760,20 @@ class FinanceController extends Controller
 
         return response()->json($request->id);
 
+    }
+
+    public function updateStartAt4(Request $request)
+    {
+        try {
+            // Update the start_at field in tbltabungkhas
+            DB::table('tblvoucher')
+                ->where('id', $request->id)
+                ->update(['start_at' => $request->start_at]);
+
+            return response()->json(['message' => 'Success']);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Error: ' . $e->getMessage()], 500);
+        }
     }
 
     public function Payment()
