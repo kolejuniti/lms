@@ -1,4 +1,18 @@
-@extends(isset(Auth::user()->usrtype) ? ((Auth::user()->usrtype == "AR") ? 'layouts.pendaftar_akademik' : ((Auth::user()->usrtype == "LCT") ? 'layouts.ketua_program' : ((Auth::user()->usrtype == "PL") ? 'layouts.ketua_program' : ''))) : 'layouts.student')
+@php
+    $layoutMap = [
+        'AR' => 'layouts.pendaftar_akademik',
+        'LCT' => 'layouts.ketua_program',
+        'PL' => 'layouts.ketua_program'
+    ];
+    
+    $layout = 'layouts.student';
+    
+    if (isset(Auth::user()->usrtype) && array_key_exists(Auth::user()->usrtype, $layoutMap)) {
+        $layout = $layoutMap[Auth::user()->usrtype];
+    }
+@endphp
+
+@extends($layout)
 
 @section('main')
 
@@ -1018,7 +1032,12 @@ function setupCalendar() {
             const eventElement = info.el;
             if (eventElement.getAttribute('data-clicked') === 'true') {
                 if('{{ request()->type }}' == 'lcr') {
-                    openEditEventModal(info.event, calendar);
+                    if('{{ Auth::user()->usrtype }}' == 'AR') {
+                        openEditEventModal(info.event, calendar);
+                    }else{
+                        // Show event details in a modal or tooltip
+                        showEventDetails(info.event);
+                    }
                 }else{
                     // Show event details in a modal or tooltip
                     showEventDetails(info.event);
