@@ -1,4 +1,4 @@
-@extends(isset(Auth::user()->usrtype) ? ((Auth::user()->usrtype == "AR") ? 'layouts.pendaftar_akademik' : ((Auth::user()->usrtype == "LCT") ? 'layouts.ketua_program' : '')) : 'layouts.student')
+@extends(isset(Auth::user()->usrtype) ? ((Auth::user()->usrtype == "AR") ? 'layouts.pendaftar_akademik' : ((Auth::user()->usrtype == "LCT") ? 'layouts.ketua_program' : ((Auth::user()->usrtype == "PL") ? 'layouts.ketua_program' : ''))) : 'layouts.student')
 
 @section('main')
 
