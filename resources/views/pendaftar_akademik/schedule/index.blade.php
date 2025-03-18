@@ -229,7 +229,15 @@
                           <td>
                             <div class="d-flex align-items-center">
                               <div class="avatar avatar-md bg-gradient-primary text-white rounded-circle me-3">
-                                <span>{{ substr($lct->name, 0, 1) }}</span>
+                                @php
+                                  $nameParts = explode(' ', $lct->name);
+                                  if(count($nameParts) >= 2) {
+                                    $initials = strtoupper(substr($nameParts[0], 0, 1) . substr($nameParts[count($nameParts)-1], 0, 1));
+                                  } else {
+                                    $initials = strtoupper(substr($lct->name, 0, 2));
+                                  }
+                                @endphp
+                                <span>{{ $initials }}</span>
                               </div>
                               <div>
                                 <h6 class="mb-0 fw-semibold">{{ $lct->name }}</h6>
@@ -304,7 +312,15 @@
                           <td>
                             <div class="d-flex align-items-center">
                               <div class="avatar avatar-md bg-gradient-info text-white rounded-circle me-3">
-                                <span>{{ substr($std->name, 0, 1) }}</span>
+                                @php
+                                  $nameParts = explode(' ', $std->name);
+                                  if(count($nameParts) >= 2) {
+                                    $initials = strtoupper(substr($nameParts[0], 0, 1) . substr($nameParts[count($nameParts)-1], 0, 1));
+                                  } else {
+                                    $initials = strtoupper(substr($std->name, 0, 2));
+                                  }
+                                @endphp
+                                <span>{{ $initials }}</span>
                               </div>
                               <div>
                                 <h6 class="mb-0 fw-semibold">{{ $std->name }}</h6>
@@ -384,7 +400,19 @@
                           <td>
                             <div class="d-flex align-items-center">
                               <div class="avatar avatar-md bg-gradient-warning text-white rounded-circle me-3">
-                                <i class="fa fa-door-open"></i>
+                                @if(is_string($rm->name) && !empty($rm->name))
+                                  @php
+                                    $nameParts = explode(' ', $rm->name);
+                                    if(count($nameParts) >= 2) {
+                                      $initials = strtoupper(substr($nameParts[0], 0, 1) . substr($nameParts[count($nameParts)-1], 0, 1));
+                                    } else {
+                                      $initials = strtoupper(substr($rm->name, 0, 2));
+                                    }
+                                  @endphp
+                                  {{ $initials }}
+                                @else
+                                  <i class="fa fa-door-open"></i>
+                                @endif
                               </div>
                               <div>
                                 <h6 class="mb-0 fw-semibold">{{ $rm->name }}</h6>
@@ -468,7 +496,7 @@
                             <div class="position-absolute top-0 end-0 m-3">
                               <div class="dropdown">
                                 <button class="btn btn-sm btn-icon btn-light-secondary rounded-circle" data-bs-toggle="dropdown">
-                                  <i class="ti-more-alt"></i>
+                                  <i class="ti-more-alt">{{ substr($lct->name, 0, 1) }}</i>
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-end">
                                   <li><a class="dropdown-item d-flex align-items-center" href="#"><i class="ti-pencil me-2"></i>Edit</a></li>
@@ -478,7 +506,15 @@
                             </div>
                             <div class="text-center mb-5">
                               <div class="avatar avatar-xl bg-gradient-primary text-white mx-auto mb-4 rounded-circle d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
-                                <span class="fs-3">{{ substr($lct->name, 0, 1) }}</span>
+                                @php
+                                  $nameParts = explode(' ', $lct->name);
+                                  if(count($nameParts) >= 2) {
+                                    $initials = strtoupper(substr($nameParts[0], 0, 1) . substr($nameParts[count($nameParts)-1], 0, 1));
+                                  } else {
+                                    $initials = strtoupper(substr($lct->name, 0, 2));
+                                  }
+                                @endphp
+                                <span class="fs-3">{{ $initials }}</span>
                               </div>
                               <h5 class="fw-bold mb-2">{{ $lct->name }}</h5>
                               <span class="badge bg-primary-light text-primary rounded-pill px-3 py-2 mt-2 d-inline-block">Lecturer</span>
@@ -531,7 +567,15 @@
                             </div>
                             <div class="text-center mb-5">
                               <div class="avatar avatar-xl bg-gradient-info text-white mx-auto mb-4 rounded-circle d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
-                                <span class="fs-3">{{ substr($std->name, 0, 1) }}</span>
+                                @php
+                                  $nameParts = explode(' ', $std->name);
+                                  if(count($nameParts) >= 2) {
+                                    $initials = strtoupper(substr($nameParts[0], 0, 1) . substr($nameParts[count($nameParts)-1], 0, 1));
+                                  } else {
+                                    $initials = strtoupper(substr($std->name, 0, 2));
+                                  }
+                                @endphp
+                                <span class="fs-3">{{ $initials }}</span>
                               </div>
                               <h5 class="fw-bold mb-2">{{ $std->name }}</h5>
                               <span class="badge bg-primary-light text-primary rounded-pill px-3 py-2 mt-2 d-inline-block">{{ $std->progcode }}</span>
@@ -584,7 +628,19 @@
                             </div>
                             <div class="text-center mb-5">
                               <div class="avatar avatar-xl bg-gradient-warning text-white mx-auto mb-4 rounded-circle d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
-                                <i class="fa fa-door-open fs-3"></i>
+                                @if(is_string($rm->name) && !empty($rm->name))
+                                  @php
+                                    $nameParts = explode(' ', $rm->name);
+                                    if(count($nameParts) >= 2) {
+                                      $initials = strtoupper(substr($nameParts[0], 0, 1) . substr($nameParts[count($nameParts)-1], 0, 1));
+                                    } else {
+                                      $initials = strtoupper(substr($rm->name, 0, 2));
+                                    }
+                                  @endphp
+                                  {{ $initials }}
+                                @else
+                                  <i class="fa fa-door-open"></i>
+                                @endif
                               </div>
                               <h5 class="fw-bold mb-2">{{ $rm->name }}</h5>
                               <span class="badge bg-warning-light text-warning rounded-pill px-3 py-2 mt-2 d-inline-block">{{ $rm->total_hour }} hours/day</span>
@@ -660,7 +716,15 @@
                             </div>
                           </div>
                           <div class="avatar avatar-xl bg-gradient-primary text-white mx-auto mb-3 rounded-circle">
-                            <span class="fs-4">{{ substr($lct->name, 0, 1) }}</span>
+                            @php
+                              $nameParts = explode(' ', $lct->name);
+                              if(count($nameParts) >= 2) {
+                                $initials = strtoupper(substr($nameParts[0], 0, 1) . substr($nameParts[count($nameParts)-1], 0, 1));
+                              } else {
+                                $initials = strtoupper(substr($lct->name, 0, 2));
+                              }
+                            @endphp
+                            <span class="fs-4">{{ $initials }}</span>
                           </div>
                           <h6 class="fw-bold mb-1 text-truncate">{{ $lct->name }}</h6>
                           <p class="small text-muted mb-2">{{ $lct->ic }}</p>
@@ -694,7 +758,15 @@
                             </div>
                           </div>
                           <div class="avatar avatar-xl bg-gradient-info text-white mx-auto mb-3 rounded-circle">
-                            <span class="fs-4">{{ substr($std->name, 0, 1) }}</span>
+                            @php
+                              $nameParts = explode(' ', $std->name);
+                              if(count($nameParts) >= 2) {
+                                $initials = strtoupper(substr($nameParts[0], 0, 1) . substr($nameParts[count($nameParts)-1], 0, 1));
+                              } else {
+                                $initials = strtoupper(substr($std->name, 0, 2));
+                              }
+                            @endphp
+                            <span class="fs-4">{{ $initials }}</span>
                           </div>
                           <h6 class="fw-bold mb-1 text-truncate">{{ $std->name }}</h6>
                           <p class="small text-muted mb-0">{{ $std->ic }}</p>
@@ -729,7 +801,19 @@
                             </div>
                           </div>
                           <div class="avatar avatar-xl bg-gradient-warning text-white mx-auto mb-3 rounded-circle">
-                            <i class="fa fa-door-open fs-4"></i>
+                            @if(is_string($rm->name) && !empty($rm->name))
+                              @php
+                                $nameParts = explode(' ', $rm->name);
+                                if(count($nameParts) >= 2) {
+                                  $initials = strtoupper(substr($nameParts[0], 0, 1) . substr($nameParts[count($nameParts)-1], 0, 1));
+                                } else {
+                                  $initials = strtoupper(substr($rm->name, 0, 2));
+                                }
+                              @endphp
+                              <span class="fs-4">{{ $initials }}</span>
+                            @else
+                              <i class="fa fa-door-open fs-4"></i>
+                            @endif
                           </div>
                           <h6 class="fw-bold mb-1 text-truncate">{{ $rm->name }}</h6>
                           <p class="small text-muted mb-0">{{ $rm->capacity }} seats</p>
@@ -770,23 +854,6 @@
               {{ request()->type == 'std' ? count($data['student'] ?? []) : (request()->type == 'lct' ? count($data['lecturer'] ?? []) : count($data['room'] ?? [])) }}
             </span> entries
           </div>
-          <nav aria-label="Page navigation">
-            <ul class="pagination pagination-circle mb-0">
-              <li class="page-item disabled">
-                <a class="page-link border-0 rounded-circle mx-1 bg-light-primary" href="#" aria-label="Previous">
-                  <i class="ti-angle-left"></i>
-                </a>
-              </li>
-              <li class="page-item active"><a class="page-link border-0 rounded-circle mx-1 bg-primary" href="#">1</a></li>
-              <li class="page-item"><a class="page-link border-0 rounded-circle mx-1 bg-light-primary" href="#">2</a></li>
-              <li class="page-item"><a class="page-link border-0 rounded-circle mx-1 bg-light-primary" href="#">3</a></li>
-              <li class="page-item">
-                <a class="page-link border-0 rounded-circle mx-1 bg-light-primary" href="#" aria-label="Next">
-                  <i class="ti-angle-right"></i>
-                </a>
-              </li>
-            </ul>
-          </nav>
         </div>
       </div>
     </section>
@@ -1055,7 +1122,7 @@
             <div class="row g-0">
               <div class="col-md-4 bg-gradient-primary text-white p-4 d-flex flex-column justify-content-center align-items-center">
                 <div class="avatar avatar-xxl bg-white text-primary rounded-circle mb-3">
-                  <span class="fs-2">S</span>
+                  <span class="fs-2">ST</span>
                 </div>
                 <h4 class="mb-1">Student Name</h4>
                 <p class="mb-0">990101-01-1234</p>
@@ -1164,7 +1231,7 @@
             <div class="row g-0">
               <div class="col-md-4 bg-gradient-primary text-white p-4 d-flex flex-column justify-content-center align-items-center">
                 <div class="avatar avatar-xxl bg-white text-primary rounded-circle mb-3">
-                  <span class="fs-2">L</span>
+                  <span class="fs-2">LC</span>
                 </div>
                 <h4 class="mb-1">Lecturer Name</h4>
                 <p class="mb-0">780505-01-4321</p>
@@ -1276,7 +1343,7 @@
             <div class="row g-0">
               <div class="col-md-4 bg-gradient-warning text-white p-4 d-flex flex-column justify-content-center align-items-center">
                 <div class="avatar avatar-xxl bg-white text-warning rounded-circle mb-3">
-                  <i class="fa fa-door-open fs-2"></i>
+                  <span class="fs-2">RM</span>
                 </div>
                 <h4 class="mb-1">Room Name</h4>
                 <p class="mb-2">Building Block A</p>
