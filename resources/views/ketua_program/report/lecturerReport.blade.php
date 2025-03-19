@@ -34,8 +34,8 @@
     --card-bg: #ffffff;
     --bg-light: #f8fafc;
     --bg-dark: #0f172a;
-    --text-color: #334155;
-    --text-light: #94a3b8;
+    --text-color: #000000 !important;
+    --text-light: #000000 !important;
     --text-white: #f8fafc;
     
     /* Shadows and effects */
@@ -514,6 +514,7 @@ body {
     text-overflow: ellipsis;
     max-width: 100%;
     min-width: 0;
+    color: #000000 !important;
 }
 
 .faculty-item .tree-label {
@@ -526,6 +527,7 @@ body {
     max-width: calc(100% - 50px); /* Ensure there's always space for the status badge */
     overflow: hidden;
     text-overflow: ellipsis;
+    color: #000000 !important;
 }
 
 .course-item .tree-label {
@@ -799,6 +801,7 @@ body {
     font-weight: 600;
     margin-bottom: 4px;
     transition: all var(--transition-medium) cubic-bezier(0.22, 1, 0.36, 1);
+    color: #000000 !important;
 }
 
 .material-item:hover .material-title {
@@ -810,6 +813,8 @@ body {
     color: var(--text-light);
     display: flex;
     align-items: center;
+    color: #000000 !important;
+    opacity: 0.8;
 }
 
 .material-meta i {
@@ -910,6 +915,7 @@ body {
     color: var(--text-color);
     font-weight: 500;
     position: relative;
+    color: #000000 !important;
 }
 
 .loading-text::after {
@@ -1381,6 +1387,27 @@ body {
     .skeleton {
         background: linear-gradient(90deg, #334155 25%, #1e293b 50%, #334155 75%);
     }
+}
+
+/* Add text color overrides */
+.tree-label,
+.material-title,
+.material-meta,
+.preview-title,
+.preview-placeholder h5,
+.preview-placeholder p,
+.loading-text,
+.faculty-item,
+.lecturer-item,
+.course-item,
+.material-item {
+    color: #000000 !important;
+}
+
+.material-meta,
+.text-muted {
+    color: #000000 !important;
+    opacity: 0.8;
 }
 </style>
 <!-- Content Wrapper -->
