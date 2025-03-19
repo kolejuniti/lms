@@ -1032,7 +1032,7 @@ function setupCalendar() {
             const eventElement = info.el;
             if (eventElement.getAttribute('data-clicked') === 'true') {
                 if('{{ request()->type }}' == 'lcr') {
-                    if('{{ Auth::user()->usrtype }}' == 'AR') {
+                    if({{ Auth::check() ? 'true' : 'false' }} && '{{ Auth::check() ? Auth::user()->usrtype : "" }}' == 'AR') {
                         openEditEventModal(info.event, calendar);
                     }else{
                         // Show event details in a modal or tooltip
