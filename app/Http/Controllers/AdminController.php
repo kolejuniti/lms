@@ -328,32 +328,37 @@ class AdminController extends Controller
     
     public function getReportLecturer()
     {
-
         $faculty = DB::table('tblfaculty')->get();
-
+        
         foreach($faculty as $key => $fcl)
         {
-            $lecturer[] = DB::table('users')->where('status', 'ACTIVE')->where('faculty', $fcl->id)->whereIn('usrtype', ['LCT','PL'])->pluck('ic');
-
-        //     //dd($lecturer);
-
+            $lecturer[] = DB::table('users')
+                ->where('status', 'ACTIVE')
+                ->where('faculty', $fcl->id)
+                ->whereIn('usrtype', ['LCT','PL'])
+                ->select('ic', 'name', 'lastLogin')
+                ->get();
+            
             foreach($lecturer[$key] as $key1 => $lct)
             {
                 $course[$key][$key1] = DB::table('user_subjek')
                     ->join('subjek', 'user_subjek.course_id','=','subjek.sub_id')
                     ->join('sessions', 'user_subjek.session_id','sessions.SessionID')
-                    ->where('user_subjek.user_ic', $lct)
-                    ->select('user_subjek.id AS ids', 'subjek.id AS subject_id','sessions.SessionID')
+                    ->where('user_subjek.user_ic', $lct->ic)
+                    ->select(
+                        'user_subjek.id AS ids', 
+                        'subjek.id AS subject_id',
+                        'sessions.SessionID',
+                        'subjek.course_name', // Add this to select course name
+                        'subjek.course_code', // Add this to select course code
+                        'sessions.SessionName'        // Add this to select session name
+                    )
                     ->groupBy('subjek.sub_id', 'user_subjek.session_id')
                     ->get();
-
             }
         }
-
-        //dd($course);
-
+        
         return view('admin.lecturerReport', compact('faculty', 'lecturer', 'course'));
-
     }
 
     public function getReportLecturerList()
