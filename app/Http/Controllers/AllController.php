@@ -246,7 +246,7 @@ class AllController extends Controller
                     ->join('sessions', 'students.session', 'sessions.SessionID')
                     ->join('sessions AS b', 'students.intake', 'b.SessionID')
                     ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
-                    ->whereIn('students.status', [2,6])
+                    // ->whereIn('students.status', [2,6])
                     ->select('students.*', 'sessions.SessionName', 'tblstudent_status.name AS status');
 
         if($request->program != '')
