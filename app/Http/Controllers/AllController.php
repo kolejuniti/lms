@@ -244,14 +244,9 @@ class AllController extends Controller
 
         $query = DB::table('students')
                     ->join('sessions', 'students.session', 'sessions.SessionID')
+                    ->join('sessions AS b', 'students.intake', 'b.SessionID')
                     ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
-                    ->join(DB::raw('(SELECT student_ic, session_id, MAX(id) as max_id FROM tblstudent_log GROUP BY student_ic) as latest_log'), function($join) {
-                        $join->on('students.ic', '=', 'latest_log.student_ic');
-                    })
-                    ->join('tblstudent_log', function($join) {
-                        $join->on('latest_log.max_id', '=', 'tblstudent_log.id');
-                    })
-                    ->join('sessions AS b', 'tblstudent_log.session_id', 'b.SessionID')
+                    // ->whereIn('students.status', [2,6])
                     ->select('students.*', 'sessions.SessionName', 'tblstudent_status.name AS status');
 
         if($request->program != '')
