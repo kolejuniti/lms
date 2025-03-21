@@ -246,18 +246,27 @@ class AllController extends Controller
                     ->join('sessions', 'students.session', 'sessions.SessionID')
                     ->join('sessions AS b', 'students.intake', 'b.SessionID')
                     ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
+                    ->join(DB::raw('(SELECT student_ic, MAX(date) as latest_date FROM tblstudent_log GROUP BY student_ic) as latest_log'), function($join) {
+                        $join->on('students.ic', '=', 'latest_log.student_ic');
+                    })
+                    ->join('tblstudent_log', function($join) {
+                        $join->on('students.ic', '=', 'tblstudent_log.student_ic')
+                             ->on('tblstudent_log.date', '=', 'latest_log.latest_date');
+                    })
                     // ->whereIn('students.status', [2,6])
                     ->select('students.*', 'sessions.SessionName', 'tblstudent_status.name AS status');
 
         if($request->program != '')
         {
+            
             $query->where('students.program', $request->program);
 
         }
 
         if($request->year != '')
         {
-            $query->where('sessions.Year', $request->year);
+            // $query->where('sessions.Year', $request->year);
+            $query->whereYear('tblstudent_log.date', $request->year);
 
         }
 
