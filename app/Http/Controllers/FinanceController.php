@@ -10500,7 +10500,7 @@ class FinanceController extends Controller
 
         foreach ($students as $student) {
             $status = DB::table('tblstudent_log')
-                        ->join('tblstudent_status', 'tblstudent_log.status_id', '=', 'tblstudent_log.status_id')
+                        ->join('tblstudent_status', 'tblstudent_log.status_id', '=', 'tblstudent_status.id')
                         ->where('tblstudent_log.student_ic', $student->ic)
                         ->where('tblstudent_log.date', '<=', $student->add_date)
                         ->orderBy('tblstudent_log.id', 'desc')
