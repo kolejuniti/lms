@@ -25,6 +25,8 @@ class StudentController extends Controller
 
         $student = auth()->guard('student')->user();
 
+        // dd($student);
+
         if (!$student) {
             // handle the error, e.g., redirect back with an error message
             return redirect()->back()->withErrors(['message' => 'Student is not logged in']);
@@ -1244,12 +1246,21 @@ class StudentController extends Controller
 
             $semester_column = 'semester_' . $data['student']->semester; // e.g., this will be 'semester_2' if $user->semester is 2
 
-            if (isset($data['package']->$semester_column)) {
-                $data['value'] = $data['sum3'] - $data['package']->$semester_column;
-                // Do something with $semester_value
-            } else {
-                $data['value'] = 0;
-                // Handle case where the column is not set
+            if($data['student']->status == 'TARIK DIRI')
+            {
+
+                $data['value'] = $data['sum3'];
+
+            }else{
+
+                if (isset($data['package']->$semester_column)) {
+                    $data['value'] = $data['sum3'] - $data['package']->$semester_column;
+                    // Do something with $semester_value
+                } else {
+                    $data['value'] = 0;
+                    // Handle case where the column is not set
+                }
+                
             }
 
         }else{
