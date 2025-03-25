@@ -4806,7 +4806,7 @@ class FinanceController extends Controller
 
             $semester_column = 'semester_' . $data['student']->semester; // e.g., this will be 'semester_2' if $user->semester is 2
 
-            if($data['student']->status == 4)
+            if($data['student']->status == 'TARIK DIRI')
             {
 
                 $data['value'] = $data['sum3'];
