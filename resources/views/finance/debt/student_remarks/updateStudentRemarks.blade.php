@@ -33,7 +33,7 @@
                             class="form-select" id="categories" name="categories" required>
                             <option value="" selected disabled>-</option>
                             @foreach ($data['category'] as $cat)
-                            <option value="{{ $cat->id }}">
+                            <option value="{{ $cat->id }}" {{ !empty($data['remark']) && $data['remark']->category_id == $cat->id ? 'selected' : '' }}>
                                 {{ $cat->name }}
                             </option>
                             @endforeach
@@ -45,19 +45,19 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <label class="form-label" for="correction">Correction Amount</label>
-                        <input type="float" class="form-control" id="correction" name="correction" required>
+                        <input type="float" class="form-control" id="correction" name="correction" value="{{ !empty($data['remark']) ? $data['remark']->correction_amount : '' }}" required>
                     </div>
                 </div>          
                 <div class="col-md-6">
                     <div class="form-group">
                         <label class="form-label" for="current">Current Amount</label>
-                        <input type="float" class="form-control" id="current" name="current" required>
+                        <input type="float" class="form-control" id="current" name="current" value="{{ !empty($data['remark']) ? $data['remark']->latest_balance : '' }}" required>
                     </div>
                 </div>
                 <div class="col-md-12 mt-3">
                     <div class="form-group">
                         <label class="form-label">Comment</label>
-                        <textarea class="form-control" id="comment" name="comment" class="mt-2" rows="10" cols="80" onkeyup="this.value = this.value.toUpperCase();" required></textarea>
+                        <textarea class="form-control" id="comment" name="comment" class="mt-2" rows="10" cols="80" onkeyup="this.value = this.value.toUpperCase();" required>{{ !empty($data['remark']) ? $data['remark']->notes : '' }}</textarea>
                     </div>   
                   </div>
             </div>
