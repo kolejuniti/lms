@@ -5087,7 +5087,7 @@ class FinanceController extends Controller
                           ->first();
 
         if ($data['remark']) {
-            $data['remark']->latest_balance = $data['sum3'] - $data['remark']->correction_amount;
+            $data['remark']->latest_balance = number_format($data['sum3'] - $data['remark']->correction_amount, 2, '.', '');
         }
 
         if(isset($request->print))
