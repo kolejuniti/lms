@@ -229,9 +229,9 @@
             <div class="box-header with-border">
               <h4 class="box-title modern-title">Hostel Information</h4>
               <div class="box-controls pull-right">
-                {{-- <a href="#" class="btn btn-sm btn-info">
-                  <i class="mdi mdi-home-map-marker me-1"></i> View Map
-                </a> --}}
+                <a href="/student/printStudentSlip/{{ Auth::guard('student')->user()->ic }}" class="btn btn-sm btn-info">
+                  <i class="mdi mdi-printer me-1"></i> Print Slip
+                </a>
               </div>
             </div>
             <div class="box-body p-0">
