@@ -229,7 +229,7 @@
             <div class="box-header with-border">
               <h4 class="box-title modern-title">Hostel Information</h4>
               <div class="box-controls pull-right">
-                <a href="/student/printStudentSlip/{{ Auth::guard('student')->user()->ic }}" class="btn btn-sm btn-info">
+                <a href="/student/printStudentSlip/{{ Auth::guard('student')->user()->ic }}" class="btn btn-sm btn-info" target="_blank">
                   <i class="mdi mdi-printer me-1"></i> Print Slip
                 </a>
               </div>
