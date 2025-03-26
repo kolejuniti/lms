@@ -5086,6 +5086,10 @@ class FinanceController extends Controller
                           ->select('student_remarks.*', 'categories.name')
                           ->first();
 
+        if ($data['remark']) {
+            $data['remark']->latest_balance = $data['sum3'] - $data['remark']->correction_amount;
+        }
+
         if(isset($request->print))
         {
 
