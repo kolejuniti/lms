@@ -47,6 +47,45 @@ class StudentController extends Controller
         return view('student.dashboard', compact('data'));
     }
 
+    public function printStudentSlip($student)
+    {
+        // Get student information
+        $data['student'] = DB::table('students')
+                ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
+                ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+                ->join('sessions AS t1', 'students.intake', 't1.SessionID')
+                ->join('sessions AS t2', 'students.session', 't2.SessionID')
+                ->select('students.*', 'tblstudent_status.name AS statusName', 'tblprogramme.progname AS program', 
+                         'tblprogramme.progcode AS program_code', 'students.program AS progid', 
+                         't1.SessionName AS intake_name', 't2.SessionName AS session_name')
+                ->where('ic', $student)->first();
+
+        // Get hostel information
+        $data['hostel'] = DB::connection(name: 'mysql3')->table('tblstudent_hostel')
+            ->join('tblblock_unit', 'tblstudent_hostel.block_unit_id', '=', 'tblblock_unit.id')
+            ->join('tblblock', 'tblblock_unit.block_id', '=', 'tblblock.id')
+            ->where([
+                ['tblstudent_hostel.student_ic', $student],
+                ['tblstudent_hostel.status', 'IN']
+            ])
+            ->select('tblstudent_hostel.id', 'tblblock.name', 'tblblock.location', 'tblblock_unit.no_unit', 
+                    'tblstudent_hostel.entry_date', 'tblstudent_hostel.exit_date')
+            ->first();
+
+        if (!$data['hostel']) {
+            // If the student has been checked out, get the most recent record
+            $data['hostel'] = DB::connection(name: 'mysql3')->table('tblstudent_hostel')
+                ->join('tblblock_unit', 'tblstudent_hostel.block_unit_id', '=', 'tblblock_unit.id')
+                ->join('tblblock', 'tblblock_unit.block_id', '=', 'tblblock.id')
+                ->where('tblstudent_hostel.student_ic', $student)
+                ->orderBy('tblstudent_hostel.exit_date', 'desc')
+                ->select('tblstudent_hostel.id', 'tblblock.name', 'tblblock.location', 'tblblock_unit.no_unit', 
+                        'tblstudent_hostel.entry_date', 'tblstudent_hostel.exit_date')
+                ->first();
+        }
+
+        return view('student.printStudentSlip', compact('data'));
+    }
     public function index()
     {
 

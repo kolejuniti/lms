@@ -521,11 +521,14 @@ Route::post('/lecturer/forum/{id}/insert', [App\Http\Controllers\ForumController
 Route::post('/lecturer/forum/{id}/topic/insert', [App\Http\Controllers\ForumController::class, 'insertForum']);
 
 
-Route::get('/studentDashboard', [App\Http\Controllers\StudentController::class, 'dashboard'])->name('studentDashboard');
+Route::get('/studentDashboard', [App\Http\Controllers\StudentController::class, 'dashboard'])
+    ->middleware('auth:student')
+    ->name('studentDashboard');
 Route::get('/student', [App\Http\Controllers\StudentController::class, 'index'])->name('student');
 Route::get('/student/setting', [App\Http\Controllers\StudentController::class, 'setting'])->name('student.setting');
 Route::post('/student/update', [App\Http\Controllers\StudentController::class, 'updateSetting']);
 Route::post('/student/course/filter', [App\Http\Controllers\StudentController::class, 'getCourseList']);
+Route::get('/student/printStudentSlip/{student}', [App\Http\Controllers\StudentController::class, 'printStudentSlip'])->name('student.printSlip');
 Route::get('/student/{id}', [App\Http\Controllers\StudentController::class, 'courseSummary'])->name('student.summary');
 Route::get('/student/content/{id}', [App\Http\Controllers\StudentController::class, 'courseContent'])->name('student.content');
 Route::get('/student/content/material/{dir}', [App\Http\Controllers\StudentController::class, 'courseDirectory'])->name('student.directory');
@@ -1025,6 +1028,8 @@ Route::get('/checkout/receipt/{session_id}', [App\Http\Controllers\PaymentContro
 
 Route::post('/securepay-checkout', [App\Http\Controllers\PaymentController::class, 'securePayCheckout'])->name('securepay.checkout');
 Route::post('/checkout/securePay/receipt', [App\Http\Controllers\PaymentController::class, 'showReceiptSecurePay'])->name('checkout.receipt2');
+Route::get('/checkout/securePay/cancel', [App\Http\Controllers\PaymentController::class, 'handleSecurePayCancel'])->name('checkout.securepay.cancel');
+Route::get('/checkout/receipt/success/{id}', [App\Http\Controllers\PaymentController::class, 'showReceiptSuccess'])->name('checkout.receipt.success');
 
 
 Route::middleware(['preventBackHistory'])->group(function () {
