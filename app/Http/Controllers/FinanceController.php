@@ -10833,7 +10833,21 @@ class FinanceController extends Controller
 
             //TUNGGAKAN KESELURUHAN
 
-            $data['total_balance'][$key] = $data['sum3'];
+            //REMARk
+
+            $data['remark'] = DB::table('student_remarks')
+                ->join('categories', 'student_remarks.category_id', 'categories.id')
+                ->where('student_remarks.student_ic', $std->ic)
+                ->select('student_remarks.*', 'categories.name')
+                ->first();
+
+            if ($data['remark']) {
+                $data['total_balance'][$key] = number_format($data['sum3'] - $data['remark']->correction_amount, 2, '.', '');
+            } else {
+                $data['total_balance'][$key] = $data['sum3'];
+            }
+
+            // $data['total_balance'][$key] = $data['sum3'];
 
             // $data['amount'] = DB::
 
