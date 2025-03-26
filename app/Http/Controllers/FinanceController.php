@@ -6432,7 +6432,7 @@ class FinanceController extends Controller
         foreach($sponsor as $key => $spn)
         {
 
-            if($spn->status == 2 && $spn->sponsor_id != null && $spn->semester == 1)
+            if($spn->sponsor_id != null && $spn->semester == 1)
             {
 
                 //newsponsor
@@ -6483,7 +6483,7 @@ class FinanceController extends Controller
                     }
                 }
 
-            }elseif($spn->status == 2 && $spn->sponsor_id != null && $spn->semester != 1)
+            }elseif($spn->sponsor_id != null && $spn->semester != 1)
             {
 
                 //oldsponsor
