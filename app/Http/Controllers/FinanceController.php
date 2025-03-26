@@ -12793,7 +12793,15 @@ class FinanceController extends Controller
                         'add_staffID' => Auth::user()->ic
                     ]);
                 } else {
-                    return ["message" => "Remark already exists"];
+                    DB::table('student_remarks')
+                        ->where('student_ic', $student->ic)
+                        ->update([
+                            'category_id' => $student->categories,
+                            'correction_amount' => $student->correction,
+                            'latest_balance' => $student->current,
+                            'notes' => $student->comment,
+                            'add_staffID' => Auth::user()->ic
+                        ]);
                 }
 
                 $std_rem = DB::table('student_remarks')
