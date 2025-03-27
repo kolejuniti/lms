@@ -164,6 +164,11 @@
                                         </div>
                                     </div>
                                     @if(!empty($data['remark']))
+                                    @php
+
+                                    $data['remark']->latest_balance = number_format($data['sum3'] - $data['remark']->correction_amount, 2, '.', '')
+                                    
+                                    @endphp
                                         <div class="card border-danger mb-3">
                                             <div class="card-header bg-danger text-white">
                                                 Remark Details
