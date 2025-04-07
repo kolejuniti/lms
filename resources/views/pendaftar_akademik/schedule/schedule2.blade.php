@@ -934,10 +934,10 @@ function setupCalendar() {
             // since we're handling it in eventContent
         },
 
-        editable: {{ Auth::user()->usrtype === 'AR' ? 'true' : 'false' }},
-        selectable: {{ Auth::user()->usrtype === 'AR' ? 'true' : 'false' }},
-        eventResizableFromStart: {{ Auth::user()->usrtype === 'AR' ? 'true' : 'false' }},
-        durationEditable: {{ Auth::user()->usrtype === 'AR' ? 'true' : 'false' }},
+        editable: {{ Auth::check() ? (Auth::user()->usrtype === 'AR' ? 'true' : 'false') : 'false' }},
+        selectable: {{ Auth::check() ? (Auth::user()->usrtype === 'AR' ? 'true' : 'false') : 'false' }},
+        eventResizableFromStart: {{ Auth::check() ? (Auth::user()->usrtype === 'AR' ? 'true' : 'false') : 'false' }},
+        durationEditable: {{ Auth::check() ? (Auth::user()->usrtype === 'AR' ? 'true' : 'false') : 'false' }},
         
         titleFormat: {
             year: 'numeric',
