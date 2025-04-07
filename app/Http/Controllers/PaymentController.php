@@ -87,7 +87,7 @@ class PaymentController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return ["message"=>"Field Error", "error" => $validator->messages()->get('*')];
+            return ["message"=>"Field Error", "error" => $validator->errors()->all()];
         }
 
       
@@ -354,93 +354,86 @@ class PaymentController extends Controller
 
     public function securePayCheckout(Request $request)
     {
-
         //Author: amir@p.my, amir@securepay.my
         //Org   : SecurePay
         //We need more contribution on sample codes. Email me.
 
-       
         //Change with your token	
         $uid = env('SECUREPAY_UID');
         $checksum_token = env('SECUREPAY_CHECKSUM_TOKEN');
         $auth_token = env('SECUREPAY_AUTH_TOKEN');
         $url = 'https://securepay.my/api/v1/payments';
 
-        #$request->order_number = '20200425132755';
-        #$request->buyer_name = 'AHMAD AMSYAR MOHD ALI';
-        #$request->buyer_email = 'amsyar@gmail.com';
-        #$request->buyer_phone = '+60123121678';
-        #$request->transaction_amount = '10.00';
-        #$request->product_description = 'Payment for order no 20200425132755';
-        #$request->callback_url = "";
-        #$request->redirect_url = "";
-        #$request->token = $auth_token;
-        #$request->redirect_post = "true";
-
+        // Get current authenticated user with no_matric field
         $user = DB::table('students')
                     ->leftjoin('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
                     ->where('students.ic', Auth::guard('student')->user()->ic)
                     ->first();
 
-        $order_number = rand(1111111111,9999999999);;
+        // Create a secure token for this payment session
+        $payment_auth_token = bin2hex(random_bytes(32));
+        
+        // Store token in session and database with expiry (24 hours)
+        $expiry = now()->addHours(24);
+        session(['payment_auth_token' => $payment_auth_token]);
+        
+        // Store in database for more persistence
+        DB::table('password_resets')->insert([
+            'email' => $user->email,
+            'token' => $payment_auth_token,
+            'created_at' => now()
+        ]);
+        
+        // Store proper login credentials in session - matric number is the login field, NOT IC
+        session(['student_no_matric' => $user->no_matric]);  // Store matric number for regular login
+        session(['payment_in_progress' => true]);
+        
+        // Also store the authenticated user in the User session key
+        session(['User' => Auth::guard('student')->user()]);
+
+        $order_number = rand(1111111111,9999999999);
         $buyer_name = $user->name;
         $buyer_phone = $user->no_tel;
         $buyer_email = $user->email;
         $product_description = 'Payment for order no. ' . $order_number;
         $transaction_amount = $request->amount;
         $callback_url = $request->callback_url ?? '';
-        $redirect_url = 'http://127.0.0.1:8000/checkout/securePay/receipt?id=' . $request->id;
+        
+        // Add our auth token to the redirect URL
+        $redirect_url = url('/checkout/securePay/receipt?id=' . $request->id . '&auth_token=' . $payment_auth_token);
+        
+        // Add cancel URL to handle payment cancellations
+        $cancel_url = url('/checkout/securePay/cancel?id=' . $request->id . '&auth_token=' . $payment_auth_token);
+        
         $redirect_post = "true";
         if(isset($request->buyer_bank_code)) { 
             $buyer_bank_code = $request->buyer_bank_code; 
         }
 
-
-
-
         //buyer_email|buyer_name|buyer_phone|callback_url|order_number|product_description|redirect_url|transaction_amount|uid 
-
         $string = $buyer_email."|".$buyer_name."|".$buyer_phone."|".$callback_url."|".$order_number."|".$product_description."|".$redirect_url ."|".$transaction_amount."|".$uid;
-
-
-        
-        #echo $string . "\n";
-        #string = "amsyar@gmail.com|AHMAD AMSYAR MOHD ALI|+60123121678||20200425132755|Payment for order no 20200425132755||1540.40|5d80cc30-1a42-4f9f-9d6b-a69db5d26b01​"
-
-
-        #$string = "amsyar@gmail.com|AHMAD AMSYAR MOHD ALI|0123121678||20200425132755|Payment for order no 20200425132755||1540.40|2aaa1633-e63f-4371-9b85-91d936aa56a1​";
-        #$checksum_token = "159026b3b7348e2390e5a2e7a1c8466073db239c1e6800b8c27e36946b1f8713​";
 
         $sign = hash_hmac('sha256', $string, $checksum_token);
 
-        #echo $sign . "\n";
-
-        //
-        //echo $sign
-
-        //$hashed_string = hash_hmac($checksum_token.urldecode($_POST['product_description']).urldecode($_POST['transaction_amount']).urldecode($_POST['order_number']));
-
         if(isset($request->buyer_bank_code)) {  
-
-        $post_data = "buyer_name=".urlencode($buyer_name)."&token=". urlencode($auth_token) 
-        ."&callback_url=".urlencode($callback_url)."&redirect_url=". urlencode($redirect_url) . 
-        "&order_number=".urlencode($order_number)."&buyer_email=".urlencode($buyer_email).
-        "&buyer_phone=".urlencode($buyer_phone)."&transaction_amount=".urlencode($transaction_amount).
-        "&product_description=".urlencode($product_description)."&redirect_post=".urlencode($redirect_post).
-        "&checksum=".urlencode($sign)."&buyer_bank_code=".urlencode($buyer_bank_code);
+            $post_data = "buyer_name=".urlencode($buyer_name)."&token=". urlencode($auth_token) 
+            ."&callback_url=".urlencode($callback_url)."&redirect_url=". urlencode($redirect_url) . 
+            "&order_number=".urlencode($order_number)."&buyer_email=".urlencode($buyer_email).
+            "&buyer_phone=".urlencode($buyer_phone)."&transaction_amount=".urlencode($transaction_amount).
+            "&product_description=".urlencode($product_description)."&redirect_post=".urlencode($redirect_post).
+            "&checksum=".urlencode($sign)."&buyer_bank_code=".urlencode($buyer_bank_code).
+            "&cancel_url=".urlencode($cancel_url);
         }
         else
         {
-        $post_data = "buyer_name=".urlencode($buyer_name)."&token=". urlencode($auth_token) 
-        ."&callback_url=".urlencode($callback_url)."&redirect_url=". urlencode($redirect_url) . 
-        "&order_number=".urlencode($order_number)."&buyer_email=".urlencode($buyer_email).
-        "&buyer_phone=".urlencode($buyer_phone)."&transaction_amount=".urlencode($transaction_amount).
-        "&product_description=".urlencode($product_description)."&redirect_post=".urlencode($redirect_post).
-        "&checksum=".urlencode($sign);	
+            $post_data = "buyer_name=".urlencode($buyer_name)."&token=". urlencode($auth_token) 
+            ."&callback_url=".urlencode($callback_url)."&redirect_url=". urlencode($redirect_url) . 
+            "&order_number=".urlencode($order_number)."&buyer_email=".urlencode($buyer_email).
+            "&buyer_phone=".urlencode($buyer_phone)."&transaction_amount=".urlencode($transaction_amount).
+            "&product_description=".urlencode($product_description)."&redirect_post=".urlencode($redirect_post).
+            "&checksum=".urlencode($sign).
+            "&cancel_url=".urlencode($cancel_url);	
         }
-
-
-        #echo $post_data. "\n";
 
         // Generated by curl-to-PHP: http://incarnate.github.io/curl-to-php/
         $ch = curl_init();
@@ -455,25 +448,201 @@ class PaymentController extends Controller
             echo 'Curl error: ' . curl_error($ch);
         }
 
-        
-
         echo $output;
+    }
 
-     
+    /**
+     * Handle payment cancellation from SecurePay
+     */
+    public function handleSecurePayCancel(Request $request)
+    {
+        // First try to restore authentication using the token
+        $auth_token = $request->auth_token;
+        
+        // Similar authentication logic as in showReceiptSecurePay
+        if (!Auth::guard('student')->check() && $auth_token) {
+            // Find token in database
+            $token_record = DB::table('password_resets')
+                                ->where('token', $auth_token)
+                                ->where('created_at', '>=', now()->subHours(24))
+                                ->first();
+                                
+            if ($token_record) {
+                // Find the user by email
+                $student = DB::table('students')
+                             ->where('students.email', $token_record->email)
+                             ->first();
+
+                if ($student) {
+                    // Use loginUsingId to authenticate the user
+                    Auth::guard('student')->loginUsingId($student->id, true); // true for remember me
+                    session(['session_restored' => true]);
+                    session(['payment_token_used' => true]);
+                    session(['User' => Auth::guard('student')->user()]);
+                    session(['student_no_matric' => $student->no_matric]); // Store matric number
+                }
+            }
+        }
+        
+        // If still not authenticated, try to directly log in using stored matric number
+        if (!Auth::guard('student')->check() && session()->has('student_no_matric')) {
+            $student = DB::table('students')
+                        ->where('no_matric', session('student_no_matric'))
+                        ->first();
+            
+            if ($student) {
+                Auth::guard('student')->loginUsingId($student->id, true);
+                session(['session_restored' => true]);
+                session(['User' => Auth::guard('student')->user()]);
+            }
+        }
+        
+        // If we still couldn't restore the session, redirect to login
+        if (!Auth::guard('student')->check()) {
+            return redirect()->route('login')
+                ->with('error', 'Your session has expired. Please log in again.')
+                ->with('payment_id', $request->id);
+        }
+        
+        // Mark payment as cancelled in the database if the ID was provided
+        if ($request->id) {
+            // Update payment status and add cancellation details
+            DB::table('tblpayment')->where('id', $request->id)->update([
+                'process_status_id' => 3, // Use appropriate status code for cancelled
+                'termination_reason' => 'Payment cancelled by user through SecurePay gateway',
+                'termination_date' => now(),
+                'termination_staffID' => Auth::guard('student')->user()->ic ?? null,
+                'mod_staffID' => Auth::guard('student')->user()->ic ?? null,
+                'mod_date' => now()
+            ]);
+        }
+        
+        // Reset payment_in_progress flag
+        session(['payment_in_progress' => false]);
+        
+        // Clean up any other session variables related to payment
+        session()->forget(['payment_auth_token', 'payment_token_used', 'session_restored']);
+        
+        // Redirect to payment page with cancellation message
+        return redirect()->route('yuran-pengajian')
+            ->with('warning', 'Your payment was cancelled. No charges were made to your account.');
     }
 
     public function showReceiptSecurePay(Request $request)
     {
+        // First try to restore authentication using the token
+        $auth_token = $request->auth_token;
+        
+        if (!Auth::guard('student')->check() && $auth_token) {
+            // Find token in database
+            $token_record = DB::table('password_resets')
+                                ->where('token', $auth_token)
+                                ->where('created_at', '>=', now()->subHours(24))
+                                ->first();
+                                
+            if ($token_record) {
+                // Find the user by email
+                $student = DB::table('students')
+                             ->where('students.email', $token_record->email)
+                             ->first();
+
+                if ($student) {
+                    // Use no_matric and password for authentication
+                    $credentials = [
+                        'no_matric' => $student->no_matric,
+                        'password' => $student->password // This won't work directly as password is hashed
+                    ];
+                    
+                    // Instead of directly using the hashed password, we'll use loginUsingId
+                    // but store proper information in the session
+                    Auth::guard('student')->loginUsingId($student->id, true); // true for remember me
+                    session(['session_restored' => true]);
+                    session(['payment_token_used' => true]);
+                    session(['User' => Auth::guard('student')->user()]);
+                    session(['student_no_matric' => $student->no_matric]); // Store matric number
+                    
+                    // Remove used token
+                    DB::table('password_resets')
+                        ->where('token', $auth_token)
+                        ->delete();
+                }
+            }
+        }
+        
+        // If still not authenticated, try to directly log in using stored matric number
+        if (!Auth::guard('student')->check() && session()->has('student_no_matric')) {
+            $student = DB::table('students')
+                        ->where('no_matric', session('student_no_matric'))
+                        ->first();
+            
+            if ($student) {
+                Auth::guard('student')->loginUsingId($student->id, true);
+                session(['session_restored' => true]);
+                session(['User' => Auth::guard('student')->user()]);
+            }
+        }
+
+        // If we still couldn't restore the session, redirect to login
+        if (!Auth::guard('student')->check()) {
+            return redirect()->route('login')
+                ->with('error', 'Your session has expired. Please log in again to view your receipt.')
+                ->with('payment_id', $request->id); // Pass payment ID to be able to retrieve it after login
+        }
 
         $data = $request->all();
         ksort($data);
+        
+        // Check for payment status - SecurePay only uses payment_status (boolean true/false)
+        $payment_status = isset($data['payment_status']) ? $data['payment_status'] : null;
 
-        $merchant_reference_number = $data['merchant_reference_number'];
+        // Convert string representation of boolean to actual boolean if needed
+        if ($payment_status === 'true') {
+            $payment_status = true;
+        } elseif ($payment_status === 'false') {
+            $payment_status = false;
+        }
+
+        // If payment_status is false or not set, treat as failed/cancelled
+        if ($payment_status === false) {
+            // Mark payment as cancelled in the database
+            if ($request->id) {
+                DB::table('tblpayment')->where('id', $request->id)->update([
+                    'process_status_id' => 3, // Use appropriate status code for cancelled
+                    'termination_reason' => 'Payment failed or cancelled',
+                    'termination_date' => now(),
+                    'termination_staffID' => Auth::guard('student')->user()->ic ?? null,
+                    'mod_staffID' => Auth::guard('student')->user()->ic ?? null,
+                    'mod_date' => now()
+                ]);
+            }
+            
+            // Reset payment_in_progress flag
+            session(['payment_in_progress' => false]);
+            
+            return redirect()->route('yuran-pengajian')
+                ->with('warning', 'Your payment was not successful. Please try again.');
+        }
+
+        // Only proceed if payment_status is explicitly true
+        if ($payment_status !== true) {
+            return redirect()->route('yuran-pengajian')
+                ->with('warning', 'Invalid payment status received. Please try again or contact support.');
+        }
+
+        $merchant_reference_number = $data['merchant_reference_number'] ?? null;
+
+        if (!$merchant_reference_number) {
+            return redirect()->route('yuran-pengajian')->with('error', 'Payment reference number is missing.');
+        }
 
         $ref_no = DB::table('tblref_no')
                     ->join('tblpayment', 'tblref_no.process_type_id', 'tblpayment.process_type_id')
                     ->where('tblpayment.id', $request->id)
                     ->select('tblref_no.*','tblpayment.student_ic')->first();
+
+        if (!$ref_no) {
+            return redirect()->route('yuran-pengajian')->with('error', 'Reference number not found.');
+        }
 
         DB::table('tblref_no')->where('id', $ref_no->id)->update([
             'ref_no' => $ref_no->ref_no + 1
@@ -481,17 +650,84 @@ class PaymentController extends Controller
 
         DB::table('tblpayment')->where('id', $request->id)->update([
             'process_status_id' => 2,
-            'ref_no' => $ref_no->code . $ref_no->ref_no + 1
+            'ref_no' => $ref_no->code . ($ref_no->ref_no + 1)
         ]);
 
         DB::table('tblpaymentmethod')->where('payment_id', $request->id)->update([
             'no_document' => $merchant_reference_number
         ]);
 
-        // dd($merchant_reference_number);
+        // Reset payment_in_progress flag since we're done
+        session(['payment_in_progress' => false]);
 
-        return back();
+        // Make sure the user is stored in the session
+        session(['User' => Auth::guard('student')->user()]);
 
+        // Redirect to the receipt page after updating the payment status
+        return redirect()->route('checkout.receipt.success', ['id' => $request->id]);
+    }
+
+    public function showReceiptSuccess(Request $request)
+    {
+        // If we're not authenticated, check if we need to redirect to login
+        if (!Auth::guard('student')->check()) {
+            // If payment_in_progress is not set, don't try session restoration here
+            // as we likely navigated to this page directly without payment
+            if (!session('payment_in_progress')) {
+                return redirect()->route('login')
+                    ->with('error', 'Please log in to view your receipt.')
+                    ->with('payment_id', $request->id);
+            }
+            
+            // Try to restore session using ID
+            if (session()->has('student_no_matric')) {
+                $student = DB::table('students')
+                           ->where('no_matric', session('student_no_matric'))
+                           ->first();
+                
+                if ($student) {
+                    // We can't use passwords here since they're hashed in the DB
+                    // Log in directly using ID
+                    Auth::guard('student')->loginUsingId($student->id, true); // true for remember me
+                    session(['session_restored' => true]);
+                    session(['User' => Auth::guard('student')->user()]);
+                }
+            }
+            
+            // If still not authenticated, redirect to login
+            if (!Auth::guard('student')->check()) {
+                return redirect()->route('login')
+                    ->with('error', 'Your session has expired. Please log in again to view your receipt.')
+                    ->with('payment_id', $request->id);
+            }
+        }
+        
+        // Get the payment details
+        $data['payment'] = DB::table('tblpayment')->where('id', $request->id)->first();
+
+        if(!$data['payment']) {
+            return redirect()->route('yuran-pengajian')->with('error', 'Payment not found.');
+        }
+
+        // Get payment method details
+        $data['method'] = DB::table('tblpaymentmethod')
+                ->join('tblpayment_method', 'tblpaymentmethod.claim_method_id', 'tblpayment_method.id')
+                ->where('tblpaymentmethod.payment_id', $request->id)
+                ->select('tblpaymentmethod.*', 'tblpayment_method.name AS claim_method_id')->first();
+
+        // Get payment details
+        $data['details'] = DB::table('tblpaymentdtl')
+               ->join('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
+               ->where('payment_id', $request->id)
+               ->get();
+           
+        // Make sure the user is stored in the session
+        session(['User' => Auth::guard('student')->user()]);
+        
+        // Clean up payment session variables after displaying receipt
+        session()->forget(['payment_in_progress', 'student_no_matric', 'payment_token_used', 'session_restored']);
+
+        return view('student.payment.receipt', compact('data'));
     }
 
 }
