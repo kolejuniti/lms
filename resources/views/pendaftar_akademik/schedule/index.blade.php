@@ -1,4 +1,4 @@
-@extends(Auth::user()->usrtype == 'AR' ? 'layouts.pendaftar_akademik' : 'layouts.ketua_program');
+@extends(Auth::user()->usrtype == 'AR' ? 'layouts.pendaftar_akademik' : (Auth::user()->usrtype == 'OTR' ? 'layouts.other_user' : 'layouts.ketua_program'));
 
 @section('main')
 <!-- Content Wrapper -->

@@ -1,4 +1,4 @@
-@extends('layouts.pendaftar_akademik')
+@extends(Auth::user()->usrtype == 'AR' ? 'layouts.pendaftar_akademik' : (Auth::user()->usrtype == 'OTR' ? 'layouts.other_user' : 'layouts.ketua_program'));
 
 @section('main')
 
@@ -443,6 +443,7 @@
                         </div>
                     </div>
                     
+                    @if(Auth::user()->usrtype == 'AR')
                     <!-- Event Creator Form -->
                     <div class="box mb-4" id="event-creator">
                         <div class="box-body">
@@ -519,6 +520,7 @@
                             </div>
                         </div>
                     </div>
+                    @endif
                     
                     <!-- Calendar Box -->
                     <div class="box mb-4">
@@ -537,6 +539,7 @@
                             <div id='calendar' style="width: 100%;"></div>
                             
                             <div class="action-buttons">
+                                @if(Auth::user()->usrtype == 'AR')
                                 <button type="button" class="btn btn-primary" id="publish-schedule">
                                     <i class="fas fa-upload me-2"></i> Publish
                                 </button>
@@ -548,6 +551,7 @@
                                 <button type="button" class="btn btn-info" id="log-schedule">
                                     <i class="fas fa-history me-2"></i> View Log
                                 </button>
+                                @endif
                                 
                                 <button type="button" id="print-schedule-btn" class="btn btn-secondary" 
                                         onclick="printScheduleTable(
@@ -565,6 +569,7 @@
             </div>
             
             <!-- Logged schedule table -->
+            @if(Auth::user()->usrtype == 'AR')
             <div class="row">
                 <div class="col-md-12">
                     <div class="box">
@@ -591,6 +596,7 @@
                     </div>
                 </div>
             </div>
+            @endif
         </section>
         <!-- /.content -->
 
@@ -1125,10 +1131,10 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         },
 
-        editable: true,
-        selectable: true,
-        eventResizableFromStart: true,
-        durationEditable: true,
+        editable: {{ Auth::user()->usrtype == 'AR' ? 'true' : 'false' }},
+        selectable: {{ Auth::user()->usrtype == 'AR' ? 'true' : 'false' }},
+        eventResizableFromStart: {{ Auth::user()->usrtype == 'AR' ? 'true' : 'false' }},
+        durationEditable: {{ Auth::user()->usrtype == 'AR' ? 'true' : 'false' }},
         
         titleFormat: {
             year: 'numeric',
@@ -1174,15 +1180,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Event click handling
         eventClick: function (info) {
-            const eventElement = info.el;
-            if (eventElement.getAttribute('data-clicked') === 'true') {
-                openEditEventModal(info.event);
-            } else {
-                eventElement.setAttribute('data-clicked', 'true');
-                setTimeout(() => {
-                    eventElement.removeAttribute('data-clicked');
-                }, 300);
-            }
+            @if(Auth::user()->usrtype == 'AR')
+                const eventElement = info.el;
+                if (eventElement.getAttribute('data-clicked') === 'true') {
+                    openEditEventModal(info.event);
+                } else {
+                    eventElement.setAttribute('data-clicked', 'true');
+                    setTimeout(() => {
+                        eventElement.removeAttribute('data-clicked');
+                    }, 300);
+                }
+            @endif
         },
 
         // Event resize handling
