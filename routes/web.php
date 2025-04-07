@@ -1041,3 +1041,5 @@ Route::middleware(['preventBackHistory'])->group(function () {
 Route::get('/send-announcement', [App\Http\Controllers\AnnouncementStudentController::class, 'sendAnnouncement']);
 
 Route::post("/logout/custom",[App\Http\Controllers\LogoutController::class,"store"])->name('custom_logout');
+
+Route::get('/weather/current', 'App\Http\Controllers\WeatherController@getCurrentWeather');
