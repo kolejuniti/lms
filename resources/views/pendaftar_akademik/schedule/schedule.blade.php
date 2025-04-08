@@ -1180,17 +1180,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Event click handling
         eventClick: function (info) {
-            @if(Auth::user()->usrtype == 'AR')
-                const eventElement = info.el;
-                if (eventElement.getAttribute('data-clicked') === 'true') {
-                    openEditEventModal(info.event);
-                } else {
-                    eventElement.setAttribute('data-clicked', 'true');
-                    setTimeout(() => {
-                        eventElement.removeAttribute('data-clicked');
-                    }, 300);
-                }
-            @endif
+            const eventElement = info.el;
+            if (eventElement.getAttribute('data-clicked') === 'true') {
+                openEditEventModal(info.event);
+            } else {
+                eventElement.setAttribute('data-clicked', 'true');
+                setTimeout(() => {
+                    eventElement.removeAttribute('data-clicked');
+                }, 300);
+            }
         },
 
         // Event resize handling
