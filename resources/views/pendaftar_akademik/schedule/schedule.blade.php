@@ -1182,7 +1182,11 @@ document.addEventListener('DOMContentLoaded', function () {
         eventClick: function (info) {
             const eventElement = info.el;
             if (eventElement.getAttribute('data-clicked') === 'true') {
-                openEditEventModal(info.event);
+                if ({{ Auth::user()->usrtype }} === 'AR') {
+                    openEditEventModal(info.event);
+                } else {
+                    showEventDetails(info.event);
+                }
             } else {
                 eventElement.setAttribute('data-clicked', 'true');
                 setTimeout(() => {
@@ -1755,6 +1759,26 @@ function openEditEventModal(event) {
 
 function closeModal() {
     $('#edit-event-modal').modal('hide');
+}
+
+/**
+ * Show event details in a modal or tooltip
+ */
+function showEventDetails(event) {
+    // Create custom tooltip or use SweetAlert for a nice modal
+    Swal.fire({
+        title: event.title,
+        html: `
+            <div class="event-details">
+                <p><strong>Time:</strong> ${event.start.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} - ${event.end ? event.end.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'N/A'}</p>
+                ${event.extendedProps.description ? `<p><strong>Description:</strong> ${event.extendedProps.description}</p>` : ''}
+                ${event.extendedProps.programInfo ? `<p><strong>Program:</strong> ${event.extendedProps.programInfo}</p>` : ''}
+            </div>
+        `,
+        icon: 'info',
+        confirmButtonText: 'Close',
+        confirmButtonColor: '#4361ee'
+    });
 }
 
 async function handleEventUpdate(event) {
