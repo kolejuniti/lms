@@ -1182,7 +1182,7 @@ document.addEventListener('DOMContentLoaded', function () {
         eventClick: function (info) {
             const eventElement = info.el;
             if (eventElement.getAttribute('data-clicked') === 'true') {
-                if ({{ Auth::user()->usrtype }} === 'AR') {
+                if ("{{ Auth::user()->usrtype }}" === 'AR') {
                     openEditEventModal(info.event);
                 } else {
                     showEventDetails(info.event);
