@@ -17,6 +17,9 @@
                                 IC / Passport No.
                             </th>
                             <th>
+                                Program
+                            </th>
+                            <th>
                                 Email
                             </th>
                             <th>
@@ -92,6 +95,9 @@
                                 </td>
                                 <td>
                                     {{ $std->ic }}
+                                </td>
+                                <td>
+                                    {{ $std->program }}
                                 </td>
                                 <td>
                                     {{ $std->email }}

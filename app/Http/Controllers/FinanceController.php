@@ -10665,6 +10665,7 @@ class FinanceController extends Controller
 
             $data['student'] = DB::table('students')
             ->join('sessions', 'students.session', 'sessions.SessionID')
+            ->join('tblprogramme', 'students.program', 'tblprogramme.id')
             ->where('students.program', $request->program)
             ->whereIn('students.status', [8])
             ->whereBetween('sessions.Year', [$request->from, $request->to])
@@ -10672,7 +10673,7 @@ class FinanceController extends Controller
                 return $query->whereNotIn('students.ic', $filterStd);
             })
 
-            ->select('students.*', 'sessions.Year AS graduate', 'sessions.SessionName AS session')
+            ->select('students.*', 'sessions.Year AS graduate', 'sessions.SessionName AS session', 'tblprogramme.progcode AS program')
             ->get();
 
         }else{
@@ -10680,6 +10681,7 @@ class FinanceController extends Controller
 
             $data['student'] = DB::table('students')
             ->join('sessions', 'students.session', 'sessions.SessionID')
+            ->join('tblprogramme', 'students.program', 'tblprogramme.id')
             ->where('students.program', '!=', 30)
             ->whereIn('students.status', [8])
             ->whereBetween('sessions.Year', [$request->from, $request->to])
@@ -10687,7 +10689,7 @@ class FinanceController extends Controller
                 return $query->whereNotIn('students.ic', $filterStd);
             })
 
-            ->select('students.*', 'sessions.Year AS graduate', 'sessions.SessionName AS session')
+            ->select('students.*', 'sessions.Year AS graduate', 'sessions.SessionName AS session', 'tblprogramme.progcode AS program')
             ->get();
 
         }
