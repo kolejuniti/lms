@@ -2,7 +2,8 @@
     $layoutMap = [
         'AR' => 'layouts.pendaftar_akademik',
         'LCT' => 'layouts.ketua_program',
-        'PL' => 'layouts.ketua_program'
+        'PL' => 'layouts.ketua_program',
+        'AO' => 'layouts.ketua_program'
     ];
     
     $layout = 'layouts.student';
