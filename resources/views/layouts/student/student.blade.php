@@ -29,10 +29,9 @@
 
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.8.2/dist/alpine.min.js" defer></script>
-	
-
-
   </head>
+  
+<link rel="stylesheet" href="{{ asset('css/customCSS.css') }}">
 
 <style>
 	
@@ -102,6 +101,164 @@
 	}
 </style>
 
+<style>
+	/* test */
+
+	/* notifications.css */
+
+/* Container for the entire dropdown */
+.notification-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+/* The bell icon button */
+.notification-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    position: relative;
+    padding: 0.5rem;
+    transition: background-color 0.2s;
+}
+.notification-btn:hover {
+    background-color: rgba(0,0,0,0.05);
+    border-radius: 50%;
+}
+
+/* The feather icon (bell) */
+.notification-btn i {
+    font-size: 1.5rem; /* Adjust if using Font Awesome or a different icon library */
+    color: #4f81c7;     /* Adjust color to match your theme */
+}
+
+/* Optional wave effect behind the bell */
+.pulse-wave {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 10px;
+    height: 10px;
+    background: rgba(79,129,199,0.4);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    animation: pulse 2s infinite;
+}
+@keyframes pulse {
+    0% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(2);
+        opacity: 0;
+    }
+}
+
+/* The unread badge */
+.notification-btn .badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    transform: translate(25%, -25%);
+    background-color: #f44336; /* red */
+    color: #fff;
+    border-radius: 50%;
+    padding: 0.2rem 0.5rem;
+    font-size: 0.75rem;
+}
+
+/* The dropdown panel */
+.notification-dropdown-content {
+    display: none; /* Hidden by default */
+    position: absolute;
+    right: 0;
+    margin-top: 0.5rem;
+    background: #fff;
+    width: 250px;
+    border-radius: 8px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    z-index: 9999;
+
+    /* Start in an invisible/mini state for the pop-up animation */
+    opacity: 0;
+    transform: translateY(-10px) scale(0.95);
+}
+
+/* Keyframes for pop-up animation */
+@keyframes dropdownPopUp {
+    0% {
+        opacity: 0;
+        transform: translateY(-10px) scale(0.95);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Show the dropdown with animation when active */
+.notification-dropdown-content.active {
+    display: block; /* Make it visible */
+    animation: dropdownPopUp 0.3s ease forwards;
+}
+
+/* Header styling */
+.notification-dropdown-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+}
+.notification-dropdown-header h4 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+}
+.notification-dropdown-header .clear-all {
+    color: #f44336; /* red */
+    text-decoration: none;
+    font-size: 14px;
+}
+
+/* Notification list area */
+.notification-dropdown-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    max-height: 200px; /* scroll if too long */
+    overflow-y: auto;
+}
+.notification-dropdown-list li {
+    border-bottom: 1px solid #f2f2f2;
+}
+.notification-dropdown-list li a {
+    display: block;
+    padding: 10px 15px;
+    color: #333;
+    text-decoration: none;
+    font-size: 14px;
+}
+.notification-dropdown-list li a:hover {
+    background-color: #f5f5f5;
+}
+
+/* Footer styling */
+.notification-dropdown-footer {
+    padding: 10px;
+    text-align: center;
+    border-top: 1px solid #eee;
+}
+.notification-dropdown-footer a {
+    color: #4f81c7;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 14px;
+}
+</style>
 
 
 <div class='custom-progress'>
@@ -169,7 +326,54 @@
 				</label>
 			  </a>				
             </li>
-			<!--<li class="dropdown notifications-menu btn-group">
+			<li class="notification-dropdown mt-3">
+				<!-- Notification button -->
+				<button class="notification-btn" onclick="toggleNotificationDropdown()">
+				  <i data-feather="bell" style="color: #4f81c7; font-size: 5rem;"></i>
+				  <div class="pulse-wave"></div>
+				  @if(auth()->guard('student')->check() && auth()->guard('student')->user()->unreadNotifications->count() > 0)
+					<span class="badge">
+					  {{ auth()->guard('student')->user()->unreadNotifications->count() }}
+					</span>
+				  @endif
+				</button>
+				
+				<!-- Dropdown panel -->
+				<div class="notification-dropdown-content" id="notificationDropdown">
+				  <!-- Header -->
+				  <div class="notification-dropdown-header">
+					<h4>Notifications</h4>
+					<a href="{{ route('notifications.clear') }}" class="clear-all">Clear All</a>
+				  </div>
+				
+				  <!-- Notification List -->
+				  <ul class="notification-dropdown-list">
+					@forelse(auth()->guard('student')->user()->unreadNotifications as $notification)
+					  <li>
+						<a href="{{ $notification->data['url'] ?? '#' }}"
+						   onclick="markNotificationAndRedirect('{{ $notification->id }}', '{{ $notification->data['url'] ?? '#' }}'); return false;">
+						  <!-- Use inline style to set the icon's color dynamically -->
+						  <i class="fa {{ $notification->data['icon'] ?? 'fa-info-circle' }}"
+							 style="color: {{ $notification->data['icon_color'] ?? '#4f81c7' }};"></i>
+						  {{ $notification->data['message'] ?? 'No message provided.' }}
+						  <br>
+						  <small class="text-muted">{{ $notification->created_at->diffForHumans() }}</small>
+						</a>
+					  </li>
+					@empty
+					  <li>
+						<a href="#">No notifications</a>
+					  </li>
+					@endforelse
+				  </ul>
+				
+				  <!-- Footer -->
+				  <div class="notification-dropdown-footer">
+					<a href="{{ route('notifications.index') }}">View all</a>
+				  </div>
+				</div>
+			</li>
+			{{-- <li class="dropdown notifications-menu btn-group">
 				<a href="#" class="waves-effect waves-light btn-primary-light svg-bt-icon bg-transparent" data-bs-toggle="dropdown" title="Notifications">
 					<i data-feather="bell"></i>
 					<div class="pulse-wave"></div>
@@ -211,7 +415,7 @@
 					  <a href="#">View all</a>
 				  </li>
 				</ul>
-			</li>-->
+			</li> --}}
 			
 			
 			<!-- User Account-->
@@ -287,14 +491,14 @@
 						<li><a href="/student/assign2/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Offline</a></li>
 						</ul>
 					</li>
-					<!--<li><a href="/student/test/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Test</a></li>
+					{{-- <li><a href="/student/test/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Test</a></li>
 					<li><a href="/student/assign/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Assignment</a></li>
 					<li><a href="/student/midterm/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Midterm</a></li>
 					<li><a href="/student/final/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Final</a></li>
-					<li><a href="/student/paperwork/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Paperwork</a></li>
+					<li><a href="/student/paperwork/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Paperwork</a></li> --}}
 					<li><a href="/student/practical/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Practical</a></li>
-					<li><a href="/student/other/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Lain-Lain</a></li>-->
-					{{-- <li><a href="/student/report/{{ Session::get('CourseID') }}" class="">Report</a></li> --}}
+					{{-- <li><a href="/student/other/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Lain-Lain</a></li>
+					<li><a href="/student/report/{{ Session::get('CourseID') }}" class="">Report</a></li> --}}
 				</ul>
           </li>
           <li class="treeview">
@@ -435,6 +639,45 @@
 <!-- Page Content overlay -->
 <!-- Vendor JS -->
 
+<script>
+	function toggleNotificationDropdown() {
+	  const dropdown = document.getElementById('notificationDropdown');
+	  dropdown.classList.toggle('active');
+	}
+  
+	// (Optional) Close the dropdown if the user clicks outside
+	document.addEventListener('click', function(event) {
+	  const dropdown = document.getElementById('notificationDropdown');
+	  const button = document.querySelector('.notification-btn');
+  
+	  // If the click is not on the button or inside the dropdown, close it
+	  if (!button.contains(event.target) && !dropdown.contains(event.target)) {
+		dropdown.classList.remove('active');
+	  }
+	});
+
+	function markNotificationAndRedirect(notificationId, redirectUrl) {
+	// Send AJAX request to mark the notification as read
+	fetch('/notifications/mark-read/' + notificationId, {
+		method: 'POST',
+		headers: {
+		'Content-Type': 'application/json',
+		'X-CSRF-TOKEN': '{{ csrf_token() }}'
+		}
+	})
+	.then(response => {
+		// After marking as read, redirect the user to the intended URL
+		window.location.href = redirectUrl;
+	})
+	.catch(error => {
+		console.error('Error marking notification as read:', error);
+		// If there's an error, still navigate to the URL
+		window.location.href = redirectUrl;
+	});
+	}
+
+  </script>
+
 <script src="{{ asset('assets/src/js/vendors.min.js') }}"></script>
 
 
@@ -497,7 +740,6 @@
 	
 <script src="{{ asset('assets/src/js/pages/component-animations-css3.js')}}"></script>
 	
-
 {{-- 
 <script src="{{ asset('assets/src/js/datagrid/datatables/datatables.bundle.js') }}"></script>
 <script src="{{ asset('assets/src/js/datagrid/datatables/datatables.export.js') }}"></script> 
