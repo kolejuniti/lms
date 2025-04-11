@@ -109,7 +109,7 @@
               <button class="notification-btn" onclick="toggleNotificationDropdown()">
                 <i data-feather="bell" style="color: #4f81c7;"></i>
                 <div class="pulse-wave"></div>
-                @if(auth()->guard('student')->check() && auth()->guard('student')->user()->unreadNotifications->count() > 0)
+                @if(auth()->guard('student')->check() && auth()->guard('student')->user()->unreadNotifications && auth()->guard('student')->user()->unreadNotifications->count() > 0)
                   <span class="badge">
                     {{ auth()->guard('student')->user()->unreadNotifications->count() }}
                   </span>
@@ -121,32 +121,44 @@
                 <!-- Header -->
                 <div class="notification-dropdown-header">
                   <h4>Notifications</h4>
-                  <a href="{{ route('notifications.clear') }}" class="clear-all">Clear All</a>
+                  @if(auth()->guard('student')->check())
+                    <a href="{{ route('notifications.clear') }}" class="clear-all">Clear All</a>
+                  @endif
                 </div>
                 
                 <!-- Notification List -->
                 <ul class="notification-dropdown-list">
-                  @forelse(auth()->guard('student')->user()->unreadNotifications as $notification)
+                  @if(auth()->guard('student')->check() && auth()->guard('student')->user()->unreadNotifications)
+                    @forelse(auth()->guard('student')->user()->unreadNotifications as $notification)
+                      <li>
+                        <a href="{{ $notification->data['url'] ?? '#' }}"
+                          onclick="markNotificationAndRedirect('{{ $notification->id }}', '{{ $notification->data['url'] ?? '#' }}'); return false;">
+                          <i class="fa {{ $notification->data['icon'] ?? 'fa-info-circle' }}"
+                            style="color: {{ $notification->data['icon_color'] ?? '#4f81c7' }};"></i>
+                          {{ $notification->data['message'] ?? 'No message provided.' }}
+                          <br>
+                          <small class="text-muted">{{ $notification->created_at->diffForHumans() }}</small>
+                        </a>
+                      </li>
+                    @empty
+                      <li>
+                        <a href="#">No new notifications</a>
+                      </li>
+                    @endforelse
+                  @else
                     <li>
-                      <a href="{{ $notification->data['url'] ?? '#' }}"
-                        onclick="markNotificationAndRedirect('{{ $notification->id }}', '{{ $notification->data['url'] ?? '#' }}'); return false;">
-                        <i class="fa {{ $notification->data['icon'] ?? 'fa-info-circle' }}"
-                          style="color: {{ $notification->data['icon_color'] ?? '#4f81c7' }};"></i>
-                        {{ $notification->data['message'] ?? 'No message provided.' }}
-                        <br>
-                        <small class="text-muted">{{ $notification->created_at->diffForHumans() }}</small>
-                      </a>
+                      <a href="#">No notifications available</a>
                     </li>
-                  @empty
-                    <li>
-                      <a href="#">No new notifications</a>
-                    </li>
-                  @endforelse
+                  @endif
                 </ul>
                 
                 <!-- Footer -->
                 <div class="notification-dropdown-footer">
-                  <a href="{{ route('notifications.index') }}">View all notifications</a>
+                  @if(auth()->guard('student')->check())
+                    <a href="{{ route('notifications.index') }}">View all notifications</a>
+                  @else
+                    <a href="{{ route('login') }}">Login to view notifications</a>
+                  @endif
                 </div>
               </div>
             </li>
