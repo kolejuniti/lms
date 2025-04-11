@@ -2242,29 +2242,63 @@ class AR_Controller extends Controller
         }
         elseif(isset(request()->type))
         {
-            // Lecture room schedule - optimize with better joins and indexing
-            $events = Tblevent::join('user_subjek', 'tblevents.group_id', 'user_subjek.id')
-                ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
-                ->join('tbllecture_room', 'tblevents.lecture_id', 'tbllecture_room.id')
-                ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
-                ->join('users', 'tblevents.user_ic', 'users.ic')
-                ->where('sessions.Status', 'ACTIVE')
-                ->where('tblevents.lecture_id', request()->id)
-                ->select(
-                    'tblevents.id',
-                    'tblevents.start',
-                    'tblevents.end',
-                    'tblevents.group_id',
-                    'tblevents.group_name',
-                    'users.name AS lecturer',
-                    'subjek.course_code AS code',
-                    'subjek.course_name AS subject',
-                    'tbllecture_room.name AS room',
-                    'sessions.SessionName AS session'
-                )
-                ->limit(100) // Add limit to prevent excessive data
-                ->get();
+            switch(Auth::user()->usrtype) 
+            {
+                case 'AR':
+                    // Lecture room schedule - optimize with better joins and indexing
+                    $events = Tblevent::join('user_subjek', 'tblevents.group_id', 'user_subjek.id')
+                        ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
+                        ->join('tbllecture_room', 'tblevents.lecture_id', 'tbllecture_room.id')
+                        ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+                        ->join('users', 'tblevents.user_ic', 'users.ic')
+                        ->where('sessions.Status', 'ACTIVE')
+                        ->where('tblevents.lecture_id', request()->id)
+                        ->select(
+                            'tblevents.id',
+                            'tblevents.start',
+                            'tblevents.end',
+                            'tblevents.group_id',
+                            'tblevents.group_name',
+                            'users.name AS lecturer',
+                            'subjek.course_code AS code',
+                            'subjek.course_name AS subject',
+                            'tbllecture_room.name AS room',
+                            'sessions.SessionName AS session'
+                        )
+                        ->limit(100) // Add limit to prevent excessive data
+                        ->get();
+                    break;
                 
+                case 'LCT':
+                    // Lecture room schedule - optimize with better joins and indexing
+                    $events = Tblevent2::join('user_subjek', 'tblevents.group_id', 'user_subjek.id')
+                        ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
+                        ->join('tbllecture_room', 'tblevents.lecture_id', 'tbllecture_room.id')
+                        ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+                        ->join('users', 'tblevents.user_ic', 'users.ic')
+                        ->where('sessions.Status', 'ACTIVE')
+                        ->where('tblevents.lecture_id', request()->id)
+                        ->select(
+                            'tblevents.id',
+                            'tblevents.start',
+                            'tblevents.end',
+                            'tblevents.group_id',
+                            'tblevents.group_name',
+                            'users.name AS lecturer',
+                            'subjek.course_code AS code',
+                            'subjek.course_name AS subject',
+                            'tbllecture_room.name AS room',
+                            'sessions.SessionName AS session'
+                        )
+                        ->limit(100) // Add limit to prevent excessive data
+                        ->get();
+                    break;
+                    
+                default:
+                    $events = collect([]);
+                    break;
+            }
+            
             if ($events->isEmpty()) {
                 return response()->json([]);
             }
