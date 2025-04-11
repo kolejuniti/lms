@@ -38,14 +38,12 @@
           </div>
         </div>
       </div>
-      @if(Auth::user()->usrtype == "RGS")
+      {{-- @if(Auth::user()->usrtype == "RGS")
       <div class="row">
         <div class="col-md-12">
-          {{-- <div class="col-md-6"> --}}
-            <div class="container">
-              <canvas id="studentYearChart"></canvas>
-            </div>
-          {{-- </div> --}}
+          <div class="container">
+            <canvas id="studentYearChart"></canvas>
+          </div>
         </div>
       </div>
       <div class="row mt-4">
@@ -180,7 +178,7 @@
             });
         });
       </script>
-      @endif
+      @endif --}}
     </section>
     <!-- /.content -->
   </div>
