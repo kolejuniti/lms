@@ -268,6 +268,7 @@
 					</a>
 					<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
 						<li><a href="/AR/schedule/lecturer?type=lct" class="{{ (route('pendaftar_akademik.schedule.lecturer') == Request::url()) ? 'active' : ''}}">Lecturer Schedule</a></li>
+						<li><a href="/AR/schedule/lecture?type=lcr" class="{{ (route('pendaftar_akademik.schedule.lecture') == Request::url()) ? 'active' : ''}}">Lecture Room Schedule</a></li>
 					</ul>
 				</li>
 				<li>
