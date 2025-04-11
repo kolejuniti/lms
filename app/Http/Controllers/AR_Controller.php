@@ -2382,8 +2382,6 @@ class AR_Controller extends Controller
         {
             // Default schedule (lecturer's schedule) - optimize with better joins and indexing
             // Determine which query to use based on user type
-            if(Auth::user()->usrtype == 'AR') {
-                // AR users - use tblevents table
                 $events = Tblevent::join('user_subjek', 'tblevents.group_id', 'user_subjek.id')
                         ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
                         ->join('tbllecture_room', 'tblevents.lecture_id', 'tbllecture_room.id')
@@ -2403,28 +2401,6 @@ class AR_Controller extends Controller
                         )
                         ->limit(100) // Add limit to prevent excessive data
                         ->get();
-            } else {
-                // All other user types - use tblevents_second table
-                $events = Tblevent2::join('user_subjek', 'tblevents_second.group_id', 'user_subjek.id')
-                        ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
-                        ->join('tbllecture_room', 'tblevents_second.lecture_id', 'tbllecture_room.id')
-                        ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
-                        ->where('sessions.Status', 'ACTIVE')
-                        ->where('tblevents_second.user_ic', request()->id)
-                        ->select(
-                            'tblevents_second.id',
-                            'tblevents_second.start',
-                            'tblevents_second.end',
-                            'tblevents_second.group_id',
-                            'tblevents_second.group_name',
-                            'subjek.course_code AS code',
-                            'subjek.course_name AS subject',
-                            'tbllecture_room.name AS room',
-                            'sessions.SessionName AS session'
-                        )
-                        ->limit(100) // Add limit to prevent excessive data
-                        ->get();
-            }
                 
             if ($events->isEmpty()) {
                 return response()->json([]);
