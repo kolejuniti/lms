@@ -4,7 +4,8 @@
         'LCT' => 'layouts.ketua_program',
         'PL' => 'layouts.ketua_program',
         'AO' => 'layouts.ketua_program',
-        'OTR' => 'layouts.other_user'
+        'OTR' => 'layouts.other_user',
+        'ADM' => 'layouts.admin'
     ];
     
     $layout = 'layouts.student';
