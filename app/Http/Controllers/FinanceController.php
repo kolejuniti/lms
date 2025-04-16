@@ -12284,6 +12284,11 @@ class FinanceController extends Controller
                             </thead>
                             <tbody id="table">';
                             
+                // Initialize total variables
+                $totalFee = 0;
+                $totalPayment = 0;
+                $totalBalance = 0;
+                
                 foreach($data['student'] as $key => $std){
                     //$registered = ($std->status == 'ACTIVE') ? 'checked' : '';
 
@@ -12345,6 +12350,10 @@ class FinanceController extends Controller
             $content .= '</td>';
                         foreach($data['balance'][$key] as $blc)
                         {
+                            // Add to totals
+                            $totalFee += $blc->total_claim;
+                            $totalPayment += $blc->total_payment;
+                            $totalBalance += $blc->balance;
 
                             $content .= '<td>
                                             '. $blc->total_claim .'
@@ -12359,6 +12368,14 @@ class FinanceController extends Controller
                         }
         $content .='</tr>';
                     }
+                
+                // Add totals row
+                $content .= '<tr class="font-weight-bold bg-light">
+                    <td colspan="11" class="text-right"><strong>TOTAL</strong></td>
+                    <td><strong>'. number_format($totalFee, 2) .'</strong></td>
+                    <td><strong>'. number_format($totalPayment, 2) .'</strong></td>
+                    <td><strong>'. number_format($totalBalance, 2) .'</strong></td>
+                </tr>';
 
                 $content .= '</tbody>';
 
