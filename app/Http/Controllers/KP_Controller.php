@@ -114,6 +114,7 @@ class KP_Controller extends Controller
        $assessment = array(
         "quiz" => "quiz",
         "test" => "test",
+        "test2" => "test2",
         "assignment" => "assignment",
         "midterm" => "midterm",
         "final" => "final",
