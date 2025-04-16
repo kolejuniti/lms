@@ -3569,7 +3569,8 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
 
         $data['lecturer'] = DB::table('users')
                             ->join('user_subjek', 'users.ic', 'user_subjek.user_ic')
-                            ->where([['users.usrtype', 'LCT'], ['users.status', 'ACTIVE']])
+                            ->where([['users.status', 'ACTIVE']])
+                            ->whereIn('users.usrtype', ['LCT', 'PL', 'AO'])
                             ->whereIn('user_subjek.session_id', $session)
                             ->groupBy('users.ic')
                             ->get();
