@@ -12369,7 +12369,13 @@ class FinanceController extends Controller
         $content .='</tr>';
                     }
                 
-           
+                // Add totals row
+                $content .= '<tr>
+                    <td colspan="11" class="text-right"><strong>TOTAL</strong></td>
+                    <td><strong>'. number_format($totalFee, 2) .'</strong></td>
+                    <td><strong>'. number_format($totalPayment, 2) .'</strong></td>
+                    <td><strong>'. number_format($totalBalance, 2) .'</strong></td>
+                </tr>';
 
                 $content .= '</tbody>';
 
