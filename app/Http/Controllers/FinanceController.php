@@ -1796,8 +1796,10 @@ class FinanceController extends Controller
             $balance = DB::table('tblpaymentdtl')
             ->join('tblpayment', 'tblpaymentdtl.payment_id', 'tblpayment.id')
             ->join('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
+            ->join('tblclaimdtl', 'tblpaymentdtl.claimDtl_id', 'tblclaimdtl.id')
+            ->join('tblclaim', 'tblclaimdtl.claim_id', 'tblclaim.id')
             ->where([
-                ['tblpayment.semester_id', $tsy->semester_id],
+                ['tblclaim.semester_id', $tsy->semester_id],
                 ['tblpayment.student_ic', $request->student],
                 ['tblpaymentdtl.claim_type_id', $tsy->claim_package_id],
                 ['tblpayment.program_id', $data['student']->progid],
@@ -2353,8 +2355,10 @@ class FinanceController extends Controller
             $balance = DB::table('tblpaymentdtl')
             ->join('tblpayment', 'tblpaymentdtl.payment_id', 'tblpayment.id')
             ->join('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
+            ->join('tblclaimdtl', 'tblpaymentdtl.claimDtl_id', 'tblclaimdtl.id')
+            ->join('tblclaim', 'tblclaimdtl.claim_id', 'tblclaim.id')
             ->where([
-                ['tblpayment.semester_id', $tsy->semester_id],
+                ['tblclaim.semester_id', $tsy->semester_id],
                 ['tblpayment.student_ic', $request->student],
                 ['tblpaymentdtl.claim_type_id', $tsy->claim_package_id],
                 ['tblpayment.program_id', $data['student']->progid],
@@ -2891,8 +2895,10 @@ class FinanceController extends Controller
             $balance = DB::table('tblpaymentdtl')
             ->join('tblpayment', 'tblpaymentdtl.payment_id', 'tblpayment.id')
             ->join('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
+            ->join('tblclaimdtl', 'tblpaymentdtl.claimDtl_id', 'tblclaimdtl.id')
+            ->join('tblclaim', 'tblclaimdtl.claim_id', 'tblclaim.id')
             ->where([
-                ['tblpayment.semester_id', $tsy->semester_id],
+                ['tblclaim.semester_id', $tsy->semester_id],
                 ['tblpayment.student_ic', $request->student],
                 ['tblpaymentdtl.claim_type_id', $tsy->claim_package_id],
                 ['tblpayment.program_id', $data['student']->progid],
@@ -4477,8 +4483,10 @@ class FinanceController extends Controller
             $balance = DB::table('tblpaymentdtl')
             ->join('tblpayment', 'tblpaymentdtl.payment_id', 'tblpayment.id')
             ->join('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
+            ->join('tblclaimdtl', 'tblpaymentdtl.claimDtl_id', 'tblclaimdtl.id')
+            ->join('tblclaim', 'tblclaimdtl.claim_id', 'tblclaim.id')
             ->where([
-                ['tblpayment.semester_id', $tsy->semester_id],
+                ['tblclaim.semester_id', $tsy->semester_id],
                 ['tblpayment.student_ic', $request->student],
                 ['tblpaymentdtl.claim_type_id', $tsy->claim_package_id],
                 ['tblpayment.program_id', $data['student']->progid],

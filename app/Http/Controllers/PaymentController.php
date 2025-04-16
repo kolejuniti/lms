@@ -48,12 +48,14 @@ class PaymentController extends Controller
             $balance = DB::table('tblpaymentdtl')
             ->join('tblpayment', 'tblpaymentdtl.payment_id', 'tblpayment.id')
             ->join('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
+            ->join('tblclaimdtl', 'tblpaymentdtl.claimDtl_id', 'tblclaimdtl.id')
+            ->join('tblclaim', 'tblclaimdtl.claim_id', 'tblclaim.id')
             ->where([
                 ['tblpaymentdtl.claimDtl_id', $tsy->id],
                 ['tblpayment.student_ic', Auth::guard('student')->user()->ic],
                 ['tblpaymentdtl.claim_type_id', $tsy->claim_package_id],
                 ['tblpayment.session_id', $tsy->session_id],
-                ['tblpayment.semester_id', $tsy->semester_id],
+                ['tblclaim.semester_id', $tsy->semester_id],
                 ['tblpayment.program_id', $data['student']->progid],
                 ['tblpayment.process_status_id', 2]
             ]);
