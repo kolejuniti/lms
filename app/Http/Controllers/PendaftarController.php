@@ -1792,8 +1792,10 @@ class PendaftarController extends Controller
 
                 $student = DB::table('students')->where('ic', $ref_no->student_ic)->first();
 
+                $status = (in_array($student->program, [7, 8]) && in_array($student->semester, [6, 7, 8])) || (!in_array($student->program, [7, 8]) && in_array($student->semester, [7, 8])) ? 1 : 2;
+
                 DB::table('students')->where('ic', $student->ic)->update([
-                    'status' => 2,
+                    'status' => $status,
                     'campus_id' => 1
                 ]);
 
@@ -1802,7 +1804,7 @@ class PendaftarController extends Controller
                     'session_id' => $student->session,
                     'semester_id' => $student->semester,
                     'status_id' => 2,
-                    'kuliah_id' => 1,
+                    'kuliah_id' => $student->student_status,
                     'campus_id' => 1,
                     'date' => date("Y-m-d H:i:s"),
                     'remark' => null,
