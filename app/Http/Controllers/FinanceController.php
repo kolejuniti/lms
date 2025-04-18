@@ -5216,9 +5216,9 @@ class FinanceController extends Controller
 
     public function dailyReport()
     {
-        // $data['hostel'] = [];
-        // $data['convo'] = [];
-        // $data['fine'] = [];
+        $data['hostel'] = [];
+        $data['convo'] = [];
+        $data['fine'] = [];
 
         // // Subquery for tblpaymentdtl with row numbers
         // $paymentDtl = DB::table('tblpaymentdtl')
