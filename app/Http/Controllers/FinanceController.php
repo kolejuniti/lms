@@ -5338,7 +5338,7 @@ class FinanceController extends Controller
 
         }
 
-        dd($data['convo']);
+        dd($other);
 
         return view('finance.report.dailyReport');
 
