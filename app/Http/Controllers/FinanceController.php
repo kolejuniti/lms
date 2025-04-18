@@ -5257,6 +5257,7 @@ class FinanceController extends Controller
             'tblpayment_bank.name AS bank'
         )
         ->orderBy('tblpayment.ref_no', 'asc')
+        ->groupBy('dtl.id')
         ->get();
 
         foreach($other as $ot)
