@@ -5280,6 +5280,66 @@ class FinanceController extends Controller
 
         // dd($data['convo']);
 
+        // Subquery for tblpaymentdtl with row numbers
+        $paymentDtl = DB::table('tblpaymentdtl')
+        ->select('id', 'payment_id', 'claim_type_id', 'amount',
+            DB::raw('ROW_NUMBER() OVER (PARTITION BY payment_id ORDER BY id) as row_num')
+        );
+
+        // Subquery for tblpaymentmethod with row numbers
+        $paymentMethod = DB::table('tblpaymentmethod')
+        ->select('id', 'payment_id', 'claim_method_id', 'bank_id', 'no_document',
+            DB::raw('ROW_NUMBER() OVER (PARTITION BY payment_id ORDER BY id) as row_num')
+        );
+        
+        // Main query with join modifications
+        $other = DB::table('tblpayment')
+        ->joinSub($paymentDtl, 'dtl', function ($join) {
+            $join->on('dtl.payment_id', '=', 'tblpayment.id');
+        })
+        ->joinSub($paymentMethod, 'method', function ($join) {
+            $join->on('method.payment_id', '=', 'tblpayment.id')
+                ->on('method.row_num', '=', 'dtl.row_num');
+        })
+        ->join('tblstudentclaim', 'dtl.claim_type_id', '=', 'tblstudentclaim.id')
+        ->leftJoin('tblpayment_bank', 'method.bank_id', '=', 'tblpayment_bank.id')
+        ->join('tblpayment_method', 'method.claim_method_id', '=', 'tblpayment_method.id')
+        ->whereBetween('tblpayment.add_date', ['2024-11-28', '2024-11-28'])
+        ->where('tblpayment.process_status_id', 2)
+        ->select(
+            'tblpayment.*',
+            'tblstudentclaim.groupid',
+            'tblstudentclaim.name AS type',
+            'dtl.amount',
+            'dtl.claim_type_id',
+            'method.no_document',
+            'tblpayment_method.name AS method',
+            'tblpayment_bank.name AS bank'
+        )
+        ->orderBy('tblpayment.ref_no', 'asc')
+        ->groupBy('dtl.id')
+        ->get();
+
+        foreach($other as $ot)
+        {
+            if(array_intersect([8], (array) $ot->process_type_id) && array_intersect([2], (array) $ot->groupid) && $ot->amount != 0)
+            {
+                $data['hostel'][] = $ot;
+
+            }elseif(array_intersect([8,1], (array) $ot->process_type_id) && array_intersect([5], (array) $ot->groupid) && $ot->amount != 0 && $ot->claim_type_id == 47)
+            {
+                $data['convo'][] = $ot;
+
+            }elseif(array_intersect([4], (array) $ot->groupid) && $ot->amount != 0)
+            {
+                $data['fine'][] = $ot;
+
+            }
+
+        }
+
+        dd($data['convo']);
+
         return view('finance.report.dailyReport');
 
     }
