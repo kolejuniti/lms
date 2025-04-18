@@ -5222,25 +5222,16 @@ class FinanceController extends Controller
 
         // Subquery for tblpaymentdtl with row numbers
         $paymentDtl = DB::table('tblpaymentdtl')
-        ->select('id', 'payment_id', 'claim_type_id', 'amount',
-            DB::raw('ROW_NUMBER() OVER (PARTITION BY payment_id ORDER BY id) as row_num')
-        );
+        ->select('id', 'payment_id', 'claim_type_id', 'amount');
 
         // Subquery for tblpaymentmethod with row numbers
         $paymentMethod = DB::table('tblpaymentmethod')
-        ->select('id', 'payment_id', 'claim_method_id', 'bank_id', 'no_document',
-            DB::raw('ROW_NUMBER() OVER (PARTITION BY payment_id ORDER BY id) as row_num')
-        );
+        ->select('id', 'payment_id', 'claim_method_id', 'bank_id', 'no_document');
         
         // Main query with join modifications
         $other = DB::table('tblpayment')
-        ->joinSub($paymentDtl, 'dtl', function ($join) {
-            $join->on('dtl.payment_id', '=', 'tblpayment.id');
-        })
-        ->joinSub($paymentMethod, 'method', function ($join) {
-            $join->on('method.payment_id', '=', 'tblpayment.id')
-                ->on('method.row_num', '=', 'dtl.row_num');
-        })
+        ->join('tblpaymentdtl as dtl', 'dtl.payment_id', '=', 'tblpayment.id')
+        ->join('tblpaymentmethod as method', 'method.payment_id', '=', 'tblpayment.id')
         ->join('tblstudentclaim', 'dtl.claim_type_id', '=', 'tblstudentclaim.id')
         ->leftJoin('tblpayment_bank', 'method.bank_id', '=', 'tblpayment_bank.id')
         ->join('tblpayment_method', 'method.claim_method_id', '=', 'tblpayment_method.id')
@@ -5252,6 +5243,7 @@ class FinanceController extends Controller
             'tblstudentclaim.name AS type',
             'dtl.amount',
             'dtl.claim_type_id',
+            'dtl.id AS dtl_id',
             'method.no_document',
             'tblpayment_method.name AS method',
             'tblpayment_bank.name AS bank'
