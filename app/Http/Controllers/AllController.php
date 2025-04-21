@@ -289,11 +289,11 @@ class AllController extends Controller
             $data['spm'][$key] = $firstFour->merge($randomSubjects);
 
 
-            // Check if the fetched data is less than 10
+            // Check if the fetched data is less than 11
             $fetchedDataCount = count($data['spm'][$key]);
-            if ($fetchedDataCount < 10) {
+            if ($fetchedDataCount < 11) {
                 // Fill the remaining elements with null
-                for ($i = $fetchedDataCount; $i < 10; $i++) {
+                for ($i = $fetchedDataCount; $i < 11; $i++) {
                     $data['spm'][$key][] = null;
                 }
             }
