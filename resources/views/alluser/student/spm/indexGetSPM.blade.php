@@ -11,6 +11,7 @@
             <th style="text-align: center" colspan="20">SPM RESULT</th>
             <th style="text-align: center">TOTAL CREDIT</th>
             <th style="text-align: center">TOTAL GRADE</th>
+            <th style="text-align: center">TOTAL GRADE OVERALL</th>
         </tr>
     </thead>
     <tbody>
@@ -33,6 +34,7 @@
             @endforeach
             <td style="text-align: center">{{ $data['result'][$key] }}</td>
             <td style="text-align: center">{{ $data['total_grade'][$key] }}</td>
+            <td style="text-align: center">{{ $data['total_grade_overall'][$key] }}</td>
         </tr>
         @endforeach
     </tbody>

@@ -329,6 +329,16 @@ class AllController extends Controller
             ->select(DB::raw('SUM(tblgrade_spm.grade_value) AS total_grade_value'))
             ->value('total_grade_value');
 
+            $data['total_grade_overall'][$key] = DB::table('tblspm_dtl')
+            ->join('tblgrade_spm', 'tblspm_dtl.grade_spm_id', 'tblgrade_spm.id')
+            ->join('tblsubject_spm', 'tblspm_dtl.subject_spm_id', 'tblsubject_spm.id')
+            ->where('tblspm_dtl.student_spm_ic', $std->ic)
+            ->whereNotNull('tblgrade_spm.grade_value')
+            ->orderBy('tblgrade_spm.grade_value', 'asc')
+            ->limit(3)
+            ->pluck('tblgrade_spm.grade_value')
+            ->sum();
+
 
             $data['spmv'][$key] = DB::table('tblstudent_spmv')
                                   ->where('student_ic', $std->ic)
