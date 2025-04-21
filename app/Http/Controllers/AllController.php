@@ -321,6 +321,14 @@ class AllController extends Controller
             // Sum the two counts to get the final result
             $data['result'][$key] = $firstFourCount + $randomCount;
 
+            $data['total_grade'][$key] = DB::table('tblspm_dtl')
+            ->join('tblgrade_spm', 'tblspm_dtl.grade_spm_id', 'tblgrade_spm.id')
+            ->join('tblsubject_spm', 'tblspm_dtl.subject_spm_id', 'tblsubject_spm.id')
+            ->where('tblspm_dtl.student_spm_ic', $std->ic)
+            ->whereNotNull('tblgrade_spm.grade_value')
+            ->select(DB::raw('SUM(tblgrade_spm.grade_value) AS total_grade_value'))
+            ->value('total_grade_value');
+
 
             $data['spmv'][$key] = DB::table('tblstudent_spmv')
                                   ->where('student_ic', $std->ic)
