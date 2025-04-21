@@ -327,7 +327,7 @@ class AllController extends Controller
             ->where('tblspm_dtl.student_spm_ic', $std->ic)
             ->whereNotNull('tblgrade_spm.grade_value')
             ->select(DB::raw('SUM(tblgrade_spm.grade_value) AS total_grade_value'))
-            ->value('total_grade_value');
+            ->value('total_grade_value') ?? 0;
 
             $data['total_grade_overall'][$key] = DB::table('tblspm_dtl')
             ->join('tblgrade_spm', 'tblspm_dtl.grade_spm_id', 'tblgrade_spm.id')
