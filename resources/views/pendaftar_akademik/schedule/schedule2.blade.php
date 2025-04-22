@@ -519,7 +519,7 @@ label {
                     <div class="box mb-4">
                         <div class="box-body">
                             <div class="d-flex justify-content-between align-items-center mb-4">
-                                <h4 class="box-title mb-0 fw-700">Timetable Schedule</h4>
+                                <h4 class="box-title mb-0 fw-700">Timetable</h4>
                                 <div class="last-published">
                                     <span class="badge bg-info p-2">
                                         <i class="fas fa-sync me-1"></i>
@@ -576,7 +576,7 @@ label {
                 <div class="modal-content" id="getModal">
                     <div class="modal-header d-flex justify-content-between align-items-center">
                         <h5 class="modal-title text-white">
-                            <i class="fas fa-edit me-2"></i> Edit Schedule
+                            <i class="fas fa-edit me-2"></i> Edit Timetable
                         </h5>
                         <button type="button" class="btn-close btn-close-white" id="close-edit-event-modal" data-dismiss="modal" aria-label="Close"></button>
                     </div>

@@ -201,12 +201,12 @@
               </li>
               <li>
                 <a href="{{ Storage::disk('linode')->url('classschedule/index.htm') }}" target="_blank">
-                  <i data-feather="layout"></i><span>Old Schedule</span>
+                  <i data-feather="layout"></i><span>Old Timetable</span>
                 </a>
               </li>
               <li>
                 <a href="AR/schedule/scheduleTable/{{ Auth::guard('student')->user()->ic }}?type=std" target="_blank">
-                  <i data-feather="calendar"></i><span>Schedule</span>
+                  <i data-feather="calendar"></i><span>Timetable</span>
                 </a>
               </li>
               
@@ -290,7 +290,7 @@
               </li>
               <li>
                 <a href="{{ asset('storage/finals_schedule/Jadual Pengawasan Peperiksaan Akhir UNITI Intake September 20242025-I.pdf') }}" target="_blank">
-                  <i data-feather="file-text"></i><span>Finals Schedule</span>
+                  <i data-feather="file-text"></i><span>Finals Timetable</span>
                 </a>
               </li>
             </ul>

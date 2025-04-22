@@ -395,20 +395,20 @@ li a {
 					</ul>
 				</li>
 				<li class="treeview">
-					<a href="#"><i data-feather="video"></i><span>Schedule</span>
+					<a href="#"><i data-feather="video"></i><span>Timetable</span>
 						<span class="pull-right-container">
 							<i class="fa fa-angle-left pull-right"></i>
 						</span>
 					</a>
 					<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
 						<li><a href="/AR/schedule/room" class="{{ (route('pendaftar_akademik.roomIndex') == Request::url()) ? 'active' : ''}}">Room list</a></li>
-						<li><a href="/AR/schedule/lecturer?type=lct" class="{{ (route('pendaftar_akademik.schedule.lecturer') == Request::url()) ? 'active' : ''}}">Lecturer Schedule</a></li>
-						<li><a href="/AR/schedule/student?type=std" class="{{ (route('pendaftar_akademik.schedule.student') == Request::url()) ? 'active' : ''}}">Student Schedule</a></li>
-						<li><a href="/AR/schedule/lecture?type=lcr" class="{{ (route('pendaftar_akademik.schedule.lecture') == Request::url()) ? 'active' : ''}}">Lecture Room Schedule</a></li>
+						<li><a href="/AR/schedule/lecturer?type=lct" class="{{ (route('pendaftar_akademik.schedule.lecturer') == Request::url()) ? 'active' : ''}}">Lecturer Timetable</a></li>
+						<li><a href="/AR/schedule/student?type=std" class="{{ (route('pendaftar_akademik.schedule.student') == Request::url()) ? 'active' : ''}}">Student Timetable</a></li>
+						<li><a href="/AR/schedule/lecture?type=lcr" class="{{ (route('pendaftar_akademik.schedule.lecture') == Request::url()) ? 'active' : ''}}">Lecture Room Timetable</a></li>
 						{{-- <li><a href="/AR/schedule2" class="{{ (route('pendaftar_akademik.schedule2') == Request::url()) ? 'active' : ''}}">Create</a></li> --}}
 						<li><a href="{{ Storage::disk('linode')->url('classschedule/index.htm') }}" target="_blank" class="">View</a></li>
-						<li><a href="/AR/schedule/scheduleReport" class="{{ (route('pendaftar_akademik.schedule.report') == Request::url()) ? 'active' : ''}}">Schedule Report</a></li>
-						<li><a href="/AR/schedule/scheduleReport2" class="{{ (route('pendaftar_akademik.schedule.report2') == Request::url()) ? 'active' : ''}}">Schedule Report 2</a></li>
+						<li><a href="/AR/schedule/scheduleReport" class="{{ (route('pendaftar_akademik.schedule.report') == Request::url()) ? 'active' : ''}}">Timetable Report</a></li>
+						<li><a href="/AR/schedule/scheduleReport2" class="{{ (route('pendaftar_akademik.schedule.report2') == Request::url()) ? 'active' : ''}}">Timetable Report 2</a></li>
 						{{-- <li><a href="/AR/schedule/index" class="{{ (route('pendaftar_akademik.schedule.old') == Request::url()) ? 'active' : ''}}">Upload</a></li> --}}
 					</ul>
 				</li>

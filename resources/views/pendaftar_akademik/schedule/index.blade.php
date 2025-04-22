@@ -250,7 +250,7 @@
                           <td><span class="badge bg-success-light text-success rounded-pill px-3">Active</span></td>
                           <td>
                             <div class="d-flex gap-2 justify-content-end">
-                              <a class="btn btn-sm btn-icon btn-primary rounded-circle" href="/AR/schedule/scheduleTable/{{ $lct->ic }}?type={{ request()->type }}" data-bs-toggle="tooltip" title="View Schedule">
+                              <a class="btn btn-sm btn-icon btn-primary rounded-circle" href="/AR/schedule/scheduleTable/{{ $lct->ic }}?type={{ request()->type }}" data-bs-toggle="tooltip" title="View Timetable">
                                 <i class="ti-calendar"></i>
                               </a>
                               <button class="btn btn-sm btn-icon btn-light-primary rounded-circle view-details" data-id="{{ $lct->ic }}" data-bs-toggle="tooltip" title="View Details">
@@ -338,7 +338,7 @@
                           <td><span class="badge bg-success-light text-success rounded-pill px-3">Active</span></td>
                           <td>
                             <div class="d-flex gap-2 justify-content-end">
-                              <a class="btn btn-sm btn-icon btn-primary rounded-circle" href="/AR/schedule/scheduleTable/{{ $std->ic }}?type={{ request()->type }}" data-bs-toggle="tooltip" title="View Schedule">
+                              <a class="btn btn-sm btn-icon btn-primary rounded-circle" href="/AR/schedule/scheduleTable/{{ $std->ic }}?type={{ request()->type }}" data-bs-toggle="tooltip" title="View Timetable">
                                 <i class="ti-calendar"></i>
                               </a>
                               <button class="btn btn-sm btn-icon btn-light-primary rounded-circle view-details" data-id="{{ $std->ic }}" data-bs-toggle="tooltip" title="View Details">
@@ -446,7 +446,7 @@
                           </td>
                           <td>
                             <div class="d-flex gap-2 justify-content-end">
-                              <a class="btn btn-sm btn-icon btn-primary rounded-circle" href="/AR/schedule/scheduleTable/{{ $rm->id }}?type={{ request()->type }}" data-bs-toggle="tooltip" title="View Schedule">
+                              <a class="btn btn-sm btn-icon btn-primary rounded-circle" href="/AR/schedule/scheduleTable/{{ $rm->id }}?type={{ request()->type }}" data-bs-toggle="tooltip" title="View Timetable">
                                 <i class="ti-calendar"></i>
                               </a>
                               <button class="btn btn-sm btn-icon btn-light-primary rounded-circle view-details" data-id="{{ $rm->id }}" data-bs-toggle="tooltip" title="View Details">
@@ -537,7 +537,7 @@
                           <div class="card-footer border-top-dashed bg-light-primary rounded-bottom-xl p-4">
                             <div class="d-flex justify-content-between">
                               <a href="/AR/schedule/scheduleTable/{{ $lct->ic }}?type={{ request()->type }}" class="btn btn-primary btn-sm rounded-pill px-3">
-                                <i class="ti-calendar me-1"></i> Schedule
+                                <i class="ti-calendar me-1"></i> Timetable
                               </a>
                               <button class="btn btn-light-primary btn-sm rounded-pill px-3 view-details" data-id="{{ $lct->ic }}">
                                 <i class="ti-eye me-1"></i> Details
@@ -598,7 +598,7 @@
                           <div class="card-footer border-top-dashed bg-light-primary rounded-bottom-xl p-4">
                             <div class="d-flex justify-content-between">
                               <a href="/AR/schedule/scheduleTable/{{ $std->ic }}?type={{ request()->type }}" class="btn btn-primary btn-sm rounded-pill px-3">
-                                <i class="ti-calendar me-1"></i> Schedule
+                                <i class="ti-calendar me-1"></i> Timetable
                               </a>
                               <button class="btn btn-light-primary btn-sm rounded-pill px-3 view-details" data-id="{{ $std->ic }}">
                                 <i class="ti-eye me-1"></i> Details
@@ -670,7 +670,7 @@
                           <div class="card-footer border-top-dashed bg-light-primary rounded-bottom-xl p-4">
                             <div class="d-flex justify-content-between">
                               <a href="/AR/schedule/scheduleTable/{{ $rm->id }}?type={{ request()->type }}" class="btn btn-primary btn-sm rounded-pill px-3">
-                                <i class="ti-calendar me-1"></i> Schedule
+                                <i class="ti-calendar me-1"></i> Timetable
                               </a>
                               <button class="btn btn-light-primary btn-sm rounded-pill px-3 view-details" data-id="{{ $rm->id }}">
                                 <i class="ti-eye me-1"></i> Details
@@ -710,7 +710,7 @@
                               </button>
                               <ul class="dropdown-menu dropdown-menu-end">
                                 <li><a class="dropdown-item d-flex align-items-center" href="#"><i class="ti-eye me-2"></i>View Details</a></li>
-                                <li><a class="dropdown-item d-flex align-items-center" href="#"><i class="ti-calendar me-2"></i>Schedule</a></li>
+                                <li><a class="dropdown-item d-flex align-items-center" href="#"><i class="ti-calendar me-2"></i>Timetable</a></li>
                                 <li><a class="dropdown-item d-flex align-items-center" href="#"><i class="ti-pencil me-2"></i>Edit</a></li>
                               </ul>
                             </div>
@@ -729,7 +729,7 @@
                           <h6 class="fw-bold mb-1 text-truncate">{{ $lct->name }}</h6>
                           <p class="small text-muted mb-2">{{ $lct->ic }}</p>
                           <div class="d-flex justify-content-center gap-1 mt-3">
-                            <a href="/AR/schedule/scheduleTable/{{ $lct->ic }}?type={{ request()->type }}" class="btn btn-xs btn-icon btn-primary rounded-circle" data-bs-toggle="tooltip" title="View Schedule">
+                            <a href="/AR/schedule/scheduleTable/{{ $lct->ic }}?type={{ request()->type }}" class="btn btn-xs btn-icon btn-primary rounded-circle" data-bs-toggle="tooltip" title="View Timetable">
                               <i class="ti-calendar"></i>
                             </a>
                             <button class="btn btn-xs btn-icon btn-light-primary rounded-circle view-details" data-id="{{ $lct->ic }}" data-bs-toggle="tooltip" title="View Details">
@@ -752,7 +752,7 @@
                               </button>
                               <ul class="dropdown-menu dropdown-menu-end">
                                 <li><a class="dropdown-item d-flex align-items-center" href="#"><i class="ti-eye me-2"></i>View Details</a></li>
-                                <li><a class="dropdown-item d-flex align-items-center" href="#"><i class="ti-calendar me-2"></i>Schedule</a></li>
+                                <li><a class="dropdown-item d-flex align-items-center" href="#"><i class="ti-calendar me-2"></i>Timetable</a></li>
                                 <li><a class="dropdown-item d-flex align-items-center" href="#"><i class="ti-pencil me-2"></i>Edit</a></li>
                               </ul>
                             </div>
@@ -772,7 +772,7 @@
                           <p class="small text-muted mb-0">{{ $std->ic }}</p>
                           <span class="badge bg-primary-light text-primary rounded-pill px-2 mb-2">{{ $std->progcode }}</span>
                           <div class="d-flex justify-content-center gap-1 mt-3">
-                            <a href="/AR/schedule/scheduleTable/{{ $std->ic }}?type={{ request()->type }}" class="btn btn-xs btn-icon btn-primary rounded-circle" data-bs-toggle="tooltip" title="View Schedule">
+                            <a href="/AR/schedule/scheduleTable/{{ $std->ic }}?type={{ request()->type }}" class="btn btn-xs btn-icon btn-primary rounded-circle" data-bs-toggle="tooltip" title="View Timetable">
                               <i class="ti-calendar"></i>
                             </a>
                             <button class="btn btn-xs btn-icon btn-light-primary rounded-circle view-details" data-id="{{ $std->ic }}" data-bs-toggle="tooltip" title="View Details">
@@ -795,7 +795,7 @@
                               </button>
                               <ul class="dropdown-menu dropdown-menu-end">
                                 <li><a class="dropdown-item d-flex align-items-center" href="#"><i class="ti-eye me-2"></i>View Details</a></li>
-                                <li><a class="dropdown-item d-flex align-items-center" href="#"><i class="ti-calendar me-2"></i>Schedule</a></li>
+                                <li><a class="dropdown-item d-flex align-items-center" href="#"><i class="ti-calendar me-2"></i>Timetable</a></li>
                                 <li><a class="dropdown-item d-flex align-items-center" href="#"><i class="ti-pencil me-2"></i>Edit</a></li>
                               </ul>
                             </div>
@@ -819,7 +819,7 @@
                           <p class="small text-muted mb-0">{{ $rm->capacity }} seats</p>
                           <span class="badge bg-warning-light text-warning rounded-pill px-2 mb-2">{{ (new DateTime($rm->start))->format('h:i A') }}</span>
                           <div class="d-flex justify-content-center gap-1 mt-3">
-                            <a href="/AR/schedule/scheduleTable/{{ $rm->id }}?type={{ request()->type }}" class="btn btn-xs btn-icon btn-primary rounded-circle" data-bs-toggle="tooltip" title="View Schedule">
+                            <a href="/AR/schedule/scheduleTable/{{ $rm->id }}?type={{ request()->type }}" class="btn btn-xs btn-icon btn-primary rounded-circle" data-bs-toggle="tooltip" title="View Timetable">
                               <i class="ti-calendar"></i>
                             </a>
                             <button class="btn btn-xs btn-icon btn-light-primary rounded-circle view-details" data-id="{{ $rm->id }}" data-bs-toggle="tooltip" title="View Details">
@@ -886,7 +886,7 @@
       <div class="modal-footer bg-light border-top-0">
         <button type="button" class="btn btn-light-secondary rounded-pill px-4" data-bs-dismiss="modal">Close</button>
         <a href="#" id="schedule-link" class="btn btn-primary rounded-pill px-4">
-          <i class="ti-calendar me-1"></i> View Schedule
+          <i class="ti-calendar me-1"></i> View Timetable
         </a>
       </div>
     </div>
@@ -1357,7 +1357,7 @@
                     <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#room-info">Room Info</button>
                   </li>
                   <li class="nav-item">
-                    <button class="nav-link" data-bs-toggle="pill" data-bs-target="#room-schedule">Schedule</button>
+                    <button class="nav-link" data-bs-toggle="pill" data-bs-target="#room-schedule">Timetable</button>
                   </li>
                 </ul>
                 
@@ -1417,10 +1417,10 @@
                   <div class="tab-pane fade" id="room-schedule">
                     <div class="text-center py-4">
                       <i class="fa fa-calendar-alt fa-3x text-light-warning mb-3"></i>
-                      <h5>Weekly Schedule</h5>
+                      <h5>Weekly Timetable</h5>
                       <p class="text-muted">Click the button below to view detailed schedule for this room.</p>
                       <a href="#" id="schedule-link-tab" class="btn btn-warning rounded-pill px-4">
-                        <i class="ti-calendar me-1"></i> View Full Schedule
+                        <i class="ti-calendar me-1"></i> View Full Timetable
                       </a>
                     </div>
                   </div>

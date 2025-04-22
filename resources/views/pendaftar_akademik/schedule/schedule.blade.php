@@ -448,7 +448,7 @@
                     <div class="box mb-4" id="event-creator">
                         <div class="box-body">
                             <h5 class="box-title">
-                                <i class="fas fa-plus-circle me-2"></i> Add New Schedule
+                                <i class="fas fa-plus-circle me-2"></i> Add New Timetable
                             </h5>
                             <div class="row">
                                 <div class="col-md-4 mb-3">
@@ -526,7 +526,7 @@
                     <div class="box mb-4">
                         <div class="box-body">
                             <div class="d-flex justify-content-between align-items-center mb-4">
-                                <h4 class="box-title mb-0 fw-700">Timetable Schedule</h4>
+                                <h4 class="box-title mb-0 fw-700">Timetable</h4>
                                 <div class="last-published">
                                     <span class="badge bg-info p-2">
                                         <i class="fas fa-sync me-1"></i>
@@ -607,7 +607,7 @@
                 <div class="modal-content" id="getModal">
                     <div class="modal-header d-flex justify-content-between align-items-center">
                         <h5 class="modal-title text-white">
-                            <i class="fas fa-edit me-2"></i> Edit Schedule
+                            <i class="fas fa-edit me-2"></i> Edit Timetable
                         </h5>
                         <button type="button" class="btn-close btn-close-white" id="close-edit-event-modal" data-dismiss="modal" aria-label="Close"></button>
                     </div>
@@ -806,11 +806,11 @@ function getLoggedSchedule() {
                         <td>
                             <div class="action-buttons">
                                 <a href="/AR/schedule/log/{{ request()->id }}/view?idS=${value.date}" 
-                                   class="btn btn-primary btn-sm me-2" data-toggle="tooltip" title="View Schedule">
+                                   class="btn btn-primary btn-sm me-2" data-toggle="tooltip" title="View Timetable">
                                    <i class="fas fa-eye me-1"></i> View
                                 </a>
                                 <a onClick="deleteLog('${value.date}')" 
-                                   class="btn btn-danger btn-sm" data-toggle="tooltip" title="Delete Schedule">
+                                   class="btn btn-danger btn-sm" data-toggle="tooltip" title="Delete Timetable">
                                    <i class="fas fa-trash me-1"></i> Delete
                                 </a>
                             </div>

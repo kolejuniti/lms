@@ -283,14 +283,14 @@
 				</li>
 				
 				<li class="treeview">
-					<a href="#"><i data-feather="video"></i><span>Schedule</span>
+					<a href="#"><i data-feather="video"></i><span>Timetable</span>
 						<span class="pull-right-container">
 							<i class="fa fa-angle-left pull-right"></i>
 						</span>
 					</a>
 					<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
-						<li><a href="/AR/schedule/lecturer?type=lct" class="{{ (route('pendaftar_akademik.schedule.lecturer') == Request::url()) ? 'active' : ''}}">Lecturer Schedule</a></li>
-						<li><a href="/AR/schedule/lecture?type=lcr" class="{{ (route('pendaftar_akademik.schedule.lecture') == Request::url()) ? 'active' : ''}}">Lecture Room Schedule</a></li>
+						<li><a href="/AR/schedule/lecturer?type=lct" class="{{ (route('pendaftar_akademik.schedule.lecturer') == Request::url()) ? 'active' : ''}}">Lecturer Timetable</a></li>
+						<li><a href="/AR/schedule/lecture?type=lcr" class="{{ (route('pendaftar_akademik.schedule.lecture') == Request::url()) ? 'active' : ''}}">Lecture Room Timetable</a></li>
 					</ul>
 				</li>
 
@@ -311,7 +311,7 @@
 				</li> 
 
 				<li>
-					<a href="{{ Storage::disk('linode')->url('classschedule/index.htm') }}" target="_blank"><i data-feather="layout"></i><span>Schedule</span></a>
+					<a href="{{ Storage::disk('linode')->url('classschedule/index.htm') }}" target="_blank"><i data-feather="layout"></i><span>Timetable</span></a>
 				</li> 
 
 				<!--<li>
