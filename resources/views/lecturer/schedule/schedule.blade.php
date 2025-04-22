@@ -249,12 +249,12 @@
         <div class="content-header">
             <div class="d-flex align-items-center">
                 <div class="me-auto">
-                    <h4 class="page-title">Schedule</h4>
+                    <h4 class="page-title">Timetable</h4>
                     <div class="d-inline-block align-items-center">
                         <nav>
                             <ol class="breadcrumb">
                                 <li class="breadcrumb-item"><a href="#"><i class="fas fa-home"></i> Home</a></li>
-                                <li class="breadcrumb-item" aria-current="page">Schedule</li>
+                                <li class="breadcrumb-item" aria-current="page">Timetable</li>
                             </ol>
                         </nav>
                     </div>
@@ -274,7 +274,7 @@
                         <div class="profile-content">
                             <div class="row">
                                 <div class="col-12 col-xl-6">
-                                    <h1 class="mb-2 fw-700">Lecturer Schedule</h1>
+                                    <h1 class="mb-2 fw-700">Lecturer Timetable</h1>
                                     <p class="mb-0 fs-16">View your weekly class timetable</p>
                                 </div>
                                 <div class="col-12 col-xl-6 mt-4 mt-xl-0 d-flex justify-content-xl-end align-items-center">
@@ -301,7 +301,7 @@
                             
                             <div class="action-buttons">
                                 <button id="print-schedule-btn" class="btn btn-secondary">
-                                    <i class="fas fa-print me-2"></i> Print Schedule
+                                    <i class="fas fa-print me-2"></i> Print Timetable
                                 </button>
                                 <button id="download-pdf-btn" class="btn btn-primary ms-2">
                                     <i class="fas fa-file-pdf me-2"></i> Download PDF
@@ -880,7 +880,7 @@
     let html = `
         <html>
         <head>
-            <title>Lecturer Schedule</title>
+            <title>Lecturer Timetable</title>
             <style>
                 /* Control page breaks */
                 @page {
@@ -1094,7 +1094,7 @@
         <body>
             <div class="container">
                 <div class="header">
-                    <h1>Lecturer Schedule</h1>
+                    <h1>Lecturer Timetable</h1>
                 </div>
 
                 <div class="lecturer-info">
@@ -1119,7 +1119,7 @@
                     <tfoot>
                         <tr>
                             <td colspan="${visibleDays.length + 1}" class="table-footer">
-                                Lecturer Schedule - Generated on: ${currentDate}
+                                Lecturer Timetable - Generated on: ${currentDate}
                             </td>
                         </tr>
                     </tfoot>
@@ -1339,7 +1339,7 @@
                     printWindow.print();
                     
                     // Show success notification
-                    showNotification('Schedule printed successfully', 'success');
+                    showNotification('Timetable printed successfully', 'success');
                     
                     // Close the print window after printing (optional)
                     // printWindow.close();
@@ -1356,7 +1356,7 @@
                         printWindow._printTriggered = true;
                         printWindow.focus();
                         printWindow.print();
-                        showNotification('Schedule printed successfully (fallback)', 'success');
+                        showNotification('Timetable printed successfully (fallback)', 'success');
                     }
                 }
             }, 2000);
