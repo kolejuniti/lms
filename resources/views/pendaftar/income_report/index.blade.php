@@ -219,7 +219,8 @@
 
                     $('#complex_header').DataTable({
                       dom: 'lBfrtip', // if you remove this line you will see the show entries dropdown
-                      
+                      scrollX: true,
+                      scrollCollapse: true,
                       buttons: [
                           'copy', 'csv', 'excel', 'pdf', 'print'
                       ],
