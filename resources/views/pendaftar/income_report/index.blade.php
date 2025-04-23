@@ -119,6 +119,24 @@
                         Dependant
                     </th>
                     <th>
+                        Waris Name
+                    </th>
+                    <th>
+                        Waris IC
+                    </th>
+                    <th>
+                        Waris Status
+                    </th>
+                    <th>
+                        Waris 2 Name
+                    </th>
+                    <th>
+                        Waris 2 IC
+                    </th>
+                    <th>
+                        Waris 2 Status
+                    </th>
+                    <th>
                         Family Income (RM)
                     </th>
                 </tr>
