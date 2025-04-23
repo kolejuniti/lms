@@ -4071,13 +4071,12 @@ class PendaftarController extends Controller
 
         foreach($data['students'] as $key => $student)
         {
-
             $data['waris'][$key] = DB::table('tblstudent_waris')
-            ->join('tblwaris_status', 'tblstudent_waris.status', 'tblwaris_status.id')
-            ->where('student_ic', $student->ic)
-            ->select('tblstudent_waris.*', 'tblwaris_status.name AS status')
-            ->get()->limit(2);
-
+                ->join('tblwaris_status', 'tblstudent_waris.status', 'tblwaris_status.id')
+                ->where('student_ic', $student->ic)
+                ->select('tblstudent_waris.*', 'tblwaris_status.name AS status')
+                ->limit(2)
+                ->get();
         }
 
         // // Return the data as part of the response
