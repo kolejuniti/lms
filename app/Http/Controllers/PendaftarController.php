@@ -4069,6 +4069,17 @@ class PendaftarController extends Controller
 
         $data['students'] = $query->get();
 
+        foreach($data['students'] as $key => $student)
+        {
+
+            $data['waris'][$key] = DB::table('tblstudent_waris')
+            ->join('tblwaris_status', 'tblstudent_waris.status', 'tblwaris_status.id')
+            ->where('student_ic', $student->ic)
+            ->select('tblstudent_waris.*', 'tblwaris_status.name AS status')
+            ->get()->limit(2);
+
+        }
+
         // // Return the data as part of the response
         // return response()->json([
         //     'data' => $data['result'],
