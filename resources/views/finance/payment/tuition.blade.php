@@ -333,9 +333,14 @@ function deletedtl(dtl,id)
 
 }
 
+let isSubmitting = false; // Add flag to track submission status
 
 function confirm()
 {
+  // Prevent multiple submissions
+  if (isSubmitting) {
+    return;
+  }
 
   var id = $('#idpayment').val();
   var sum = $('#sum').val();
@@ -343,93 +348,105 @@ function confirm()
 
   if(sum != '' && sum2 != '')
   {
-
     if(parseInt(sum2) == parseInt(sum))
     {
+      // Set flag and disable button
+      isSubmitting = true;
+      const confirmBtn = $('button[onclick="confirm()"]');
+      confirmBtn.prop('disabled', true);
+      confirmBtn.html('Processing...'); // Show processing state
 
-    var forminput = [];
-    var formData = new FormData();
+      var forminput = [];
+      var formData = new FormData();
 
-    var input = [];
-    var input2 = [];
+      var input = [];
+      var input2 = [];
 
-    forminput = {
-      id: id,
-      sum: sum,
-      sum2: sum2,
-    };
+      forminput = {
+        id: id,
+        sum: sum,
+        sum2: sum2,
+      };
 
-    formData.append('paymentDetail', JSON.stringify(forminput));
-    
-    $('input[id="phyid[]"]').each(function() {
-      input.push({
-            id : $(this).val()
-        });
-    });
-
-    $('input[id="payment[]"]').each(function() {
-      input2.push({
-            payment : $(this).val()
-        });
-    });
-
-    formData.append('paymentinput', JSON.stringify(input));
-    formData.append('paymentinput2', JSON.stringify(input2));
-
-    $.ajax({
-          headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
-          url: '{{ url('/finance/payment/tuition/confirmTuition') }}',
-          type: 'POST',
-          data: formData,
-          cache : false,
-          processData: false,
-          contentType: false,
-          error:function(err){
-              console.log(err);
-          },
-          success:function(res){
-              try{
-                  if(res.message == "Success"){
-                      alert("Success! Payment Details has been added!");
-                      if(res.alert != null)
-                      {
-                        alert(res.alert);
-                      }
-                      window.open('/finance/sponsorship/payment/getReceipt?id=' + res.id, '_blank');
-                      window.location.reload();
-                  }else{
-                      $('.error-field').html('');
-                      if(res.message == "Field Error"){
-                          for (f in res.error) {
-                              $('#'+f+'_error').html(res.error[f]);
-                          }
-                      }
-                      else if(res.message == "Please fill all required field!"){
-                          alert(res.message);
-                      }
-                      else{
-                          alert(res.message);
-                      }
-                      $("html, body").animate({ scrollTop: 0 }, "fast");
-                  }
-              }catch(err){
-                  alert("Ops sorry, there is an errorzz");
-              }
-          }
+      formData.append('paymentDetail', JSON.stringify(forminput));
+      
+      $('input[id="phyid[]"]').each(function() {
+        input.push({
+              id : $(this).val()
+          });
       });
 
+      $('input[id="payment[]"]').each(function() {
+        input2.push({
+              payment : $(this).val()
+          });
+      });
+
+      formData.append('paymentinput', JSON.stringify(input));
+      formData.append('paymentinput2', JSON.stringify(input2));
+
+      $.ajax({
+            headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
+            url: '{{ url('/finance/payment/tuition/confirmTuition') }}',
+            type: 'POST',
+            data: formData,
+            cache : false,
+            processData: false,
+            contentType: false,
+            error:function(err){
+                console.log(err);
+                // Reset submission state on error
+                isSubmitting = false;
+                confirmBtn.prop('disabled', false);
+                confirmBtn.html('Confirm');
+            },
+            success:function(res){
+                try{
+                    if(res.message == "Success"){
+                        alert("Success! Payment Details has been added!");
+                        if(res.alert != null)
+                        {
+                          alert(res.alert);
+                        }
+                        window.open('/finance/sponsorship/payment/getReceipt?id=' + res.id, '_blank');
+                        window.location.reload();
+                    }else{
+                        // Reset submission state on validation error
+                        isSubmitting = false;
+                        confirmBtn.prop('disabled', false);
+                        confirmBtn.html('Confirm');
+                        
+                        $('.error-field').html('');
+                        if(res.message == "Field Error"){
+                            for (f in res.error) {
+                                $('#'+f+'_error').html(res.error[f]);
+                            }
+                        }
+                        else if(res.message == "Please fill all required field!"){
+                            alert(res.message);
+                        }
+                        else{
+                            alert(res.message);
+                        }
+                        $("html, body").animate({ scrollTop: 0 }, "fast");
+                    }
+                }catch(err){
+                    // Reset submission state on error
+                    isSubmitting = false;
+                    confirmBtn.prop('disabled', false);
+                    confirmBtn.html('Confirm');
+                    alert("Ops sorry, there is an error");
+                }
+            }
+        });
+
     }else{
-
       alert('Please make sure total of payment method equal to total of student due list!')
-
     }
 
   }else{
-
     alert('Please submit & fill payment details first!');
-
   }
-
 }
 
 
