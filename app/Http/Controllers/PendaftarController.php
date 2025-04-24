@@ -4052,16 +4052,12 @@ class PendaftarController extends Controller
 
         if($data['b40'])
         {
-
-            $query = $query->havingRaw('SUM(tblstudent_waris.kasar) <= 4850');
-
+            $query = $query->where('waris_summary.total_kasar', '<=', 4850);
         }
 
         if($data['value'])
         {
-
             $query = $query->whereIn('tblstudent_address.state_id', $data['value']);
-
         }
 
         $data['students'] = $query->get();
