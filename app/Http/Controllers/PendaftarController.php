@@ -3981,7 +3981,7 @@ class PendaftarController extends Controller
     {
         $loop = 20;
 
-        for($i = 16; $i <= $loop; $i++)
+        for($i = 18; $i <= $loop; $i++)
         {
 
             $stateNot[] = $i;
