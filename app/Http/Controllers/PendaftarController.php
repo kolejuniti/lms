@@ -4019,15 +4019,23 @@ class PendaftarController extends Controller
         ->leftjoin('tblstudent_status', 'students.status', 'tblstudent_status.id')
         ->leftjoin('tblstudent_address', 'students.ic', 'tblstudent_address.student_ic')
         ->leftjoin('tblstate', 'tblstudent_address.state_id', 'tblstate.id')
-        ->leftjoin('tblstudent_waris', 'students.ic', 'tblstudent_waris.student_ic')
+        ->leftJoinSub(
+            DB::table('tblstudent_waris')
+                ->select('student_ic')
+                ->selectRaw('MIN(dependent_no) as dependent_no')
+                ->selectRaw('SUM(kasar) as total_kasar')
+                ->where('status', '!=', 2)
+                ->groupBy('student_ic'),
+            'waris_summary',
+            function($join) {
+                $join->on('students.ic', '=', 'waris_summary.student_ic');
+            }
+        )
         ->where([
             ['students.status', 2],
             ['students.campus_id', 1],
-            ['tblstudent_waris.status', '!=', 2],
         ])
         ->whereIn('students.student_status', [1, 2, 4])
-        ->groupBy('students.ic')
-        ->orderBy('students.name')
         ->select(
             'students.*',
             'tblsex.code',
@@ -4036,21 +4044,10 @@ class PendaftarController extends Controller
             'tblstudent_status.name AS status',
             'tblstudent_personal.no_tel',
             DB::raw('CONCAT_WS(", ", tblstudent_address.address1, tblstudent_address.address2, tblstudent_address.address3, tblstudent_address.city, tblstudent_address.postcode, tblstate.state_name) AS full_address'),
-            'tblstudent_waris.dependent_no',
-            DB::raw('SUM(tblstudent_waris.kasar) AS gajikasar')
+            'waris_summary.dependent_no',
+            'waris_summary.total_kasar as gajikasar'
         )
-        ->where(function ($query) {
-            $query->where('tblstudent_waris.dependent_no', '!=', 0)
-                ->orWhere(function ($query) {
-                    $query->where('tblstudent_waris.dependent_no', '=', 0)
-                            ->whereNotExists(function ($subquery) {
-                                $subquery->select(DB::raw(1))
-                                    ->from('tblstudent_waris as inner_waris')
-                                    ->whereColumn('inner_waris.student_ic', 'tblstudent_waris.student_ic')
-                                    ->where('inner_waris.dependent_no', '!=', 0);
-                            });
-                });
-        });
+        ->orderBy('students.name');
 
 
         if($data['b40'])
