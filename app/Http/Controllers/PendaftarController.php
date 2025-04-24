@@ -3979,9 +3979,9 @@ class PendaftarController extends Controller
 
     public function incomeReport()
     {
-        $loop = 21;
+        $loop = 20;
 
-        for($i = 15; $i <= $loop; $i++)
+        for($i = 16; $i <= $loop; $i++)
         {
 
             $stateNot[] = $i;
