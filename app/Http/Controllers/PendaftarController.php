@@ -4022,7 +4022,7 @@ class PendaftarController extends Controller
         ->leftJoinSub(
             DB::table('tblstudent_waris')
                 ->select('student_ic')
-                ->selectRaw('MIN(dependent_no) as dependent_no')
+                ->selectRaw('SUM(dependent_no) as total_dependent')
                 ->selectRaw('SUM(kasar) as total_kasar')
                 ->where('status', '!=', 2)
                 ->groupBy('student_ic'),
@@ -4044,7 +4044,7 @@ class PendaftarController extends Controller
             'tblstudent_status.name AS status',
             'tblstudent_personal.no_tel',
             DB::raw('CONCAT_WS(", ", tblstudent_address.address1, tblstudent_address.address2, tblstudent_address.address3, tblstudent_address.city, tblstudent_address.postcode, tblstate.state_name) AS full_address'),
-            'waris_summary.dependent_no',
+            'waris_summary.total_dependent as dependent_no',
             'waris_summary.total_kasar as gajikasar'
         )
         ->orderBy('students.name');
