@@ -2912,27 +2912,28 @@ class AR_Controller extends Controller
 
     public function resetEvent(Request $request)
     {
+        $data = json_decode($request->getContent(), true);
 
         try{
 
-            DB::table('tblevents')->where('user_ic', $request->id)->delete();
+            DB::table('tblevents')->where('user_ic', $data['ic'])->delete();
 
-            $event = Tblevent2::where('user_ic', $request->id)->get();
+            // $event = Tblevent2::where('user_ic', $request->id)->get();
     
-            foreach($event as $ev)
-            {
+            // foreach($event as $ev)
+            // {
     
-                $events = new Tblevent;
-                $events->lecture_id = $ev->lecture_id;
-                $events->user_ic = $ev->user_ic;
-                $events->group_id = $ev->group_id;
-                $events->group_name = $ev->group_name;
-                $events->session_id = $ev->session_id;
-                $events->start = $ev->start;
-                $events->end = $ev->end;
-                $events->save();
+            //     $events = new Tblevent;
+            //     $events->lecture_id = $ev->lecture_id;
+            //     $events->user_ic = $ev->user_ic;
+            //     $events->group_id = $ev->group_id;
+            //     $events->group_name = $ev->group_name;
+            //     $events->session_id = $ev->session_id;
+            //     $events->start = $ev->start;
+            //     $events->end = $ev->end;
+            //     $events->save();
     
-            }
+            // }
     
             return response()->json(['success' => 'Event has been resetted successfully!']);
 
