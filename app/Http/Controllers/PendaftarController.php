@@ -4179,6 +4179,7 @@ class PendaftarController extends Controller
         return DB::table('students')
         ->leftjoin('tblstudent_log', 'students.ic', 'tblstudent_log.student_ic')
         ->leftjoin('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
+        ->leftjoin('tblnationality', 'tblstudent_personal.nationality_id', 'tblnationality.id')
         ->leftjoin('tblsex', 'tblstudent_personal.sex_id', 'tblsex.id')
         ->leftjoin('tblprogramme', 'students.program', 'tblprogramme.id')
         ->leftjoin('sessions', 'tblstudent_log.session_id', 'sessions.SessionID')
@@ -4197,7 +4198,7 @@ class PendaftarController extends Controller
         ->select('students.name', 'students.ic', 'students.no_matric', 'tblstudent_log.kuliah_id AS student_status', 'tblsex.code as gender', 
                 'tblprogramme.progcode', 'sessions.SessionName AS session', 
                 'tblstudent_log.semester_id AS semester', 'tblstudent_log.date', 
-                'tblstudent_log.remark', 'tblstudent_status.name AS status')
+                'tblstudent_log.remark', 'tblstudent_status.name AS status', 'tblnationality.name AS race')
         ->get();
 
         $data['student2'] = ($baseQuery)()
@@ -4208,7 +4209,7 @@ class PendaftarController extends Controller
         ->where('tblstudent_log.semester_id', '>', 1)
         ->select('students.name', 'students.ic', 'students.no_matric', 'tblstudent_log.kuliah_id AS student_status', 'tblsex.code as gender', 'tblprogramme.progcode',
                 'sessions.SessionName AS session', 'tblstudent_log.semester_id AS semester', 'tblstudent_log.date', 'tblstudent_log.remark',
-                'tblstudent_status.name AS status')
+                'tblstudent_status.name AS status', 'tblnationality.name AS race')
         ->get();
 
         return view('pendaftar.report.annual_student_report.getStudent', compact('data'));

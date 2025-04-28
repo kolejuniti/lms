@@ -19,6 +19,9 @@
                   Gender
               </th>
               <th style="width: 5%">
+                  Race
+              </th>
+              <th style="width: 5%">
                   Program
               </th>
               <th style="width: 5%">
@@ -59,6 +62,9 @@
           </td>
           <td>
           {{ $std->gender }}
+          </td>
+          <td>
+          {{ $std->race }}
           </td>
           <td>
           {{ $std->progcode }}
@@ -141,6 +147,9 @@
                     Gender
                 </th>
                 <th style="width: 5%">
+                    Race
+                </th>
+                <th style="width: 5%">
                     Program
                 </th>
                 <th style="width: 5%">
@@ -181,6 +190,9 @@
             </td>
             <td>
             {{ $std->gender }}
+            </td>
+            <td>
+            {{ $std->race }}
             </td>
             <td>
             {{ $std->progcode }}
