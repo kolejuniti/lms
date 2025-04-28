@@ -8101,7 +8101,6 @@ class FinanceController extends Controller
                                   ->leftjoin('sessions', 'students.intake', 'sessions.SessionID')
                                   ->join('tblpackage', 'tblpackage_sponsorship.package_id', 'tblpackage.id')
                                   ->join('tblpayment_type', 'tblpackage_sponsorship.payment_type_id', 'tblpayment_type.id')
-                                  ->where('students.status', 2)
                                   ->select('tblpackage_sponsorship.*', 'tblpackage.name AS package', 'tblpayment_type.name AS type', 
                                            'students.name AS student', 'students.ic', 'students.semester','tblprogramme.progcode', 'sessions.SessionName')
                                   ->get();
