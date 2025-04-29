@@ -1448,8 +1448,16 @@ class AR_Controller extends Controller
                         'add_staffID' => Auth::user()->ic
                     ]);
 
+                    if($request->withheld != 1)
+                    {
 
-                    $alert = $this->getRegisterClaim($student->ic);
+                        $alert = $this->getRegisterClaim($student->ic);
+
+                    }else{
+
+                        return ['message' => 'Success! Not charged for on hold student!'];
+
+                    }
 
                 }else{
 

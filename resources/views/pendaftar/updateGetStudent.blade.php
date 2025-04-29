@@ -129,7 +129,7 @@
                 </i>
                 Slip Exam
             </a>
-            @if(Auth::user()->usrtype != 'FN' && Auth::user()->usrtype != 'OTR')
+            @if(Auth::user()->usrtype != 'OTR')
             <button type="submit" class="btn btn-primary pull-right mb-3" onclick="submitForm('{{ $data['student']->ic }}')">Submit</button>
             @endif
         </div>
