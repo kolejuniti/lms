@@ -161,6 +161,33 @@
                               @if(!isset($guess))
                               <tfoot>
                                 <tr>
+                                  <th colspan="5" style="text-align: right">
+                                    Total Hours:
+                                  </th>
+                                  @php
+                                    $totalHours = 0;
+                                  @endphp
+                                  @foreach ($list[$ky] as $key=>$ls)
+                                    @php
+                                      $start = \Carbon\Carbon::parse($ls->classdate);
+                                      $end = \Carbon\Carbon::parse($ls->classend);
+                                      $diffInHours = $end->diffInHours($start);
+                                      $totalHours += $diffInHours;
+                                    @endphp
+                                    <th style="text-align: center">
+                                      {{ $diffInHours }} hrs
+                                    </th>
+                                  @endforeach
+                                </tr>
+                                <tr>
+                                  <th colspan="5" style="text-align: right">
+                                    Overall Total Hours:
+                                  </th>
+                                  <th colspan="{{ count($list[$ky]) }}" style="text-align: center">
+                                    {{ $totalHours }} hrs
+                                  </th>
+                                </tr>
+                                <tr>
                                   <th>
                                     
                                   </th>
