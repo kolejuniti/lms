@@ -150,7 +150,8 @@
                         <tr>
                           <td style="text-align: center; border: 1px solid black;">
                           {{ $prg->facultycode }} <br>
-                          {{ $data['sum'][$key] }}
+                          {{ $data['sum'][$key] }} (ACTIVE)<br>
+                          {{ $data['sum2'][$key] }} (TOTAL ALL)
                           </td>
                           <td style="text-align: center; border: 1px solid black;">
                           {{ $prg->progcode }}

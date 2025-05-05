@@ -2228,11 +2228,19 @@ class PendaftarController extends Controller
         foreach($data['program'] as $key => $prg)
         {
 
-            $data['sum'][$key] = count(DB::table('students')
-                                       ->join('tblprogramme', 'students.program', 'tblprogramme.id')
-                                       ->join('tblfaculty', 'tblprogramme.facultyid', 'tblfaculty.id')
-                                       ->where('tblfaculty.id', $prg->facultyid)
-                                       ->get());
+            // Create base query to avoid duplication
+            $baseQuery = DB::table('students')
+                          ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+                          ->join('tblfaculty', 'tblprogramme.facultyid', 'tblfaculty.id')
+                          ->where('tblfaculty.id', $prg->facultyid);
+
+            // Get count of active students (status=2)
+            $data['sum'][$key] = $baseQuery->clone()
+                                         ->where('students.status', 2)
+                                         ->count();
+
+            // Get total count of all students
+            $data['sum2'][$key] = $baseQuery->count();
 
             $data['holding_m1'][$key] = count(DB::table('students')
                                        ->join('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
