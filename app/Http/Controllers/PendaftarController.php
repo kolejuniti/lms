@@ -2237,6 +2237,7 @@ class PendaftarController extends Controller
             // Get count of active students (status=2)
             $data['sum'][$key] = $baseQuery->clone()
                                          ->where('students.status', 2)
+                                         ->where('students.campus_id', 1)
                                          ->count();
 
             // Get total count of all students
