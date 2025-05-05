@@ -4116,7 +4116,7 @@ class PendaftarController extends Controller
         ->whereIn('tblstudent_log.student_ic', function($query){
           $query->select('students.ic')
                 ->from('students')
-                ->where('students.no_matric', '!=', null)
+                // ->where('students.no_matric', '!=', null)
                 ->where('students.status', '<>', 9);
         })
         ->where('sessions.Year', $request->year)
