@@ -130,10 +130,10 @@
                   EA
               </th>
               <th style="width: 5%">
-                  Amount
+                  Type
               </th>
               <th style="width: 5%">
-                  Type
+                  Amount
               </th>
           </tr>
       </thead>
