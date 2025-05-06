@@ -3757,9 +3757,19 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
                                ->leftjoin('sessions', 'students.intake', 'sessions.SessionID')
                                ->leftjoin('tblprogramme', 'students.program', 'tblprogramme.id')
                                ->leftjoin('tbledu_advisor', 'tblstudent_personal.advisor_id', 'tbledu_advisor.id')
-                            //    ->where('students.status', 1)
-                               ->where('students.semester', 1)
-                               ->whereBetween('students.date_add', [$request->from, $request->to])
+                               ->joinSub(
+                                   DB::table('tblstudent_log')
+                                     ->select('student_ic', 'status_id', 'semester_id', 'date')
+                                     ->where('status_id', 1)
+                                     ->where('semester_id', 1)
+                                     ->whereBetween('date', [$request->from, $request->to])
+                                     ->orderBy('date', 'asc')
+                                     ->groupBy('student_ic'),
+                                   'student_log',
+                                   function($join) {
+                                       $join->on('students.ic', '=', 'student_log.student_ic');
+                                   }
+                               )
                                ->when($request->session != '', function ($query) use ($request){
                                     return $query->where('students.intake', $request->session);
                                })
@@ -3775,7 +3785,6 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
                                 ->where('tblpayment.student_ic', $student->ic)
                                 ->where('tblpayment.process_status_id', 2)
                                 ->whereNotIn('tblpayment.process_type_id', [8])
-                                ->whereNotIn('tblstudentclaim.groupid', [4,5])
                                 ->select(
                                     'tblpayment.*',
                                     'tblpaymentdtl.amount',
