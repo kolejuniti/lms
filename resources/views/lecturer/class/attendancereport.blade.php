@@ -38,8 +38,50 @@
         </div>
     </div>
 
+
+
       <!-- Main content -->
       <section class="content">
+
+        @if(Auth::user()->usrtype == "ADM")
+        <div class="row">
+          <div class="col-12">
+            <div class="box">
+              <div class="box-body">
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="card">
+                      <div class="card-body">
+                        <div class="row">
+                          <div class="col-md-12">
+                            <div class="form-group">
+                              <label>Lecturer Name</label>
+                              <p>: {{ $details->lecturer_name }}</p>
+                            </div>
+                            <div class="form-group">
+                              <label>Course Name</label>
+                              <p>: {{ $details->course_name }}</p>
+                            </div>
+                            <div class="form-group">
+                              <label>Course Code</label>
+                              <p>: {{ $details->course_code }}</p>
+                            </div>
+                            <div class="form-group">
+                              <label>Session</label>
+                              <p>: {{ $details->SessionName }}</p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        @endif
+
         <div class="row">
           <div class="col-12">
             @if(count($groups) > 0)

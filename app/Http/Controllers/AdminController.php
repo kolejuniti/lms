@@ -466,6 +466,18 @@ class AdminController extends Controller
         $list = [];
         $status = [];
 
+        $details = DB::table('user_subjek')
+        ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+        ->join('users', 'user_subjek.user_ic', 'users.ic')
+        ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
+        ->where([
+            ['user_subjek.user_ic', $user],
+            ['user_subjek.session_id', Session::get('SessionID')],
+            ['subjek.id', $courseid]
+        ])
+        ->select('users.name as lecturer_name', 'subjek.course_name', 'subjek.course_code', 'sessions.SessionName')
+        ->first();
+
         $groups = DB::table('user_subjek')
                   ->join('users', 'user_subjek.user_ic', 'users.ic')
                   ->join('student_subjek', 'user_subjek.id', 'student_subjek.group_id')
@@ -560,7 +572,7 @@ class AdminController extends Controller
 
         //dd($status[$ky][$key]);
 
-        return view('lecturer.class.attendancereport', compact('groups', 'students', 'list', 'status', 'guess'));
+        return view('lecturer.class.attendancereport', compact('groups', 'students', 'list', 'status', 'guess', 'details'));
 
     }
 
