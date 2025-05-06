@@ -236,10 +236,15 @@
                               // Convert main table to worksheet
                               var mainWs = XLSX.utils.aoa_to_sheet([
                                   mainTableData.header,
-                                  ...mainTableData.body,
-                                  // Add the footer total row
-                                  ["TOTAL STUDENTS", "", "", "", "", "", "", "", "", "", "", "", "{{ $data['student']->count() }}"]
+                                  ...mainTableData.body
                               ]);
+                              
+                              // Get the total student count from the rendered table footer
+                              var studentCount = $('#myTable tfoot td:last').text().trim();
+                              
+                              // Add total row
+                              XLSX.utils.sheet_add_aoa(mainWs, [["TOTAL STUDENTS", "", "", "", "", "", "", "", "", "", "", "", studentCount]], 
+                                  { origin: mainTableData.body.length + 1 });
                               
                               // Create aging report data
                               var agingTitle = [["Student Aging Report"]];
