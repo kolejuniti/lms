@@ -51,24 +51,24 @@
                 <div>
                   <table>
                     <tr>
-                      <td style="width: 150px;"><strong>Lecturer Name</strong></td>
-                      <td>:</td>
-                      <td>{{ $details->lecturer_name }}</td>
+                      <td style="width: 50px;"><strong>Lecturer Name</strong></td>
+                      <td style="width: 50px;">:</td>
+                      <td style="width: 50px;">{{ $details->lecturer_name }}</td>
                     </tr>
                     <tr>
-                      <td style="width: 150px;"><strong>Course Name</strong></td>
-                      <td>:</td>
-                      <td>{{ $details->course_name }}</td>
+                      <td style="width: 50px;"><strong>Course Name</strong></td>
+                      <td style="width: 50px;">:</td>
+                      <td style="width: 50px;">{{ $details->course_name }}</td>
                     </tr>
                     <tr>
-                      <td style="width: 150px;"><strong>Course Code</strong></td>
-                      <td>:</td>
-                      <td>{{ $details->course_code }}</td>
+                      <td style="width: 50px;"><strong>Course Code</strong></td>
+                      <td style="width: 50px;">:</td>
+                      <td style="width: 50px;">{{ $details->course_code }}</td>
                     </tr>
                     <tr>
-                      <td style="width: 150px;"><strong>Session</strong></td>
-                      <td>:</td>
-                      <td>{{ $details->SessionName }}</td>
+                      <td style="width: 50px;"><strong>Session</strong></td>
+                      <td style="width: 50px;">:</td>
+                      <td style="width: 50px;">{{ $details->SessionName }}</td>
                     </tr>
                   </table>
                 </div>
