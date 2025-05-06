@@ -219,21 +219,44 @@
                               columns: ':visible'
                           },
                           customize: function(xlsx) {
+                              // Get sheet
                               var sheet = xlsx.xl.worksheets['sheet1.xml'];
-                              var firstTableRows = $('table#myTable tbody tr').length + 2;
                               
-                              var agingData = $('#aging_report table tbody tr').map(function(index) {
-                                  var rowNum = firstTableRows + 4 + index;
-                                  return '<row r="' + rowNum + '">' +
-                                      '<c t="inlineStr"><is><t>' + $(this).find('td:first').text() + '</t></is></c>' +
-                                      '<c t="inlineStr"><is><t>' + $(this).find('td:last').text() + '</t></is></c>' +
+                              // Find the last row number
+                              var lastRow = 0;
+                              $('row', sheet).each(function() {
+                                  var rowNum = parseInt($(this).attr('r'));
+                                  if (rowNum > lastRow) lastRow = rowNum;
+                              });
+                              
+                              // Add a few rows of spacing
+                              lastRow += 2;
+                              
+                              // Add the title for aging report
+                              var titleRowXml = '<row r="' + (lastRow) + '"><c t="inlineStr" r="A' + (lastRow) + '"><is><t>Student Aging Report</t></is></c></row>';
+                              
+                              // Add header row
+                              var headerRowXml = '<row r="' + (lastRow+1) + '">' + 
+                                  '<c t="inlineStr" r="A' + (lastRow+1) + '"><is><t>Days Range</t></is></c>' + 
+                                  '<c t="inlineStr" r="B' + (lastRow+1) + '"><is><t>Number of Students</t></is></c>' + 
+                                  '</row>';
+                              
+                              // Add the aging data rows
+                              var agingRowsXml = '';
+                              $('#aging_report table tbody tr').each(function(index) {
+                                  var rowNum = lastRow + 2 + index;
+                                  var daysRange = $(this).find('td:first').text();
+                                  var numStudents = $(this).find('td:last').text();
+                                  
+                                  agingRowsXml += '<row r="' + rowNum + '">' + 
+                                      '<c t="inlineStr" r="A' + rowNum + '"><is><t>' + daysRange + '</t></is></c>' + 
+                                      '<c t="inlineStr" r="B' + rowNum + '"><is><t>' + numStudents + '</t></is></c>' + 
                                       '</row>';
-                              }).get().join('');
+                              });
                               
-                              var titleRow = '<row r="' + (firstTableRows + 2) + '">' +
-                                  '<c t="inlineStr"><is><t>Student Aging Report</t></is></c></row>';
-                              
-                              sheet.getElementsByTagName('sheetData')[0].innerHTML += titleRow + agingData;
+                              // Append the new XML before the worksheet close tag
+                              var sheetData = $('sheetData', sheet);
+                              sheetData.append(titleRowXml + headerRowXml + agingRowsXml);
                           }
                       },
                       {
