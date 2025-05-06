@@ -54,12 +54,18 @@
                       <td><strong>Lecturer Name</strong></td>
                       <td>:</td>
                       <td>{{ $details->lecturer_name }}</td>
+                    </tr>
+                    <tr>
                       <td><strong>Course Name</strong></td>
                       <td>:</td>
                       <td>{{ $details->course_name }}</td>
+                    </tr>
+                    <tr>
                       <td><strong>Course Code</strong></td>
                       <td>:</td>
                       <td>{{ $details->course_code }}</td>
+                    </tr>
+                    <tr>
                       <td><strong>Session</strong></td>
                       <td>:</td>
                       <td>{{ $details->SessionName }}</td>
