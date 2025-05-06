@@ -3793,7 +3793,7 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
                                         WHEN IFNULL(tblpaymentdtl.amount, 0) >= 250 THEN "R1"
                                     END AS group_alias')
                                 )
-                                ->orderBy('tblpayment.id')
+                                ->orderBy('tblpayment.id', 'asc')
                                 ->first();
 
                 $data['qua'][$key] = DB::table('tblqualification_std')->where('id', $student->qualification)->value('name');
