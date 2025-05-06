@@ -197,3 +197,53 @@
   </div>
   <!-- /.card-body -->
 </div>
+
+<!-- Student Aging Report Card -->
+<div class="card mb-3" id="aging_report">
+  <div class="card-header">
+    <b>Student Aging Report</b>
+  </div>
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th style="width: 50%">Days Range</th>
+            <th style="width: 50%">Number of Students</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>&lt;5 days</td>
+            <td>{{ $data['below5'] }}</td>
+          </tr>
+          <tr>
+            <td>5-9 days</td>
+            <td>{{ $data['below10'] }}</td>
+          </tr>
+          <tr>
+            <td>10-14 days</td>
+            <td>{{ $data['below15'] }}</td>
+          </tr>
+          <tr>
+            <td>15-19 days</td>
+            <td>{{ $data['below20'] }}</td>
+          </tr>
+          <tr>
+            <td>20-24 days</td>
+            <td>{{ $data['below25'] }}</td>
+          </tr>
+          <tr>
+            <td>25-29 days</td>
+            <td>{{ $data['below30'] }}</td>
+          </tr>
+          <tr>
+            <td>≥30 days</td>
+            <td>{{ $data['above30'] }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+

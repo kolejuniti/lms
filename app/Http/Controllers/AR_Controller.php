@@ -3778,8 +3778,47 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
                                ->groupBy('students.ic')
                                ->get();
 
+            $data['below5'] = 0;
+            $data['below10'] = 0;
+            $data['below15'] = 0;
+            $data['below20'] = 0;
+            $data['below25'] = 0;
+            $data['below30'] = 0;
+            $data['above30'] = 0;
+
             foreach($data['student'] as $key => $student)
             {
+
+                $daysDiff = Carbon::parse($student->date_add)->diffInDays(now() );
+
+                if($daysDiff < 5)
+                {
+                    $data['below5']++;
+                }
+                elseif($daysDiff < 10)
+                {
+                    $data['below10']++;
+                }
+                elseif($daysDiff < 15)
+                {
+                    $data['below15']++;
+                }
+                elseif($daysDiff < 20)
+                {
+                    $data['below20']++;
+                }
+                elseif($daysDiff < 25)
+                {
+                    $data['below25']++;
+                }
+                elseif($daysDiff < 30)
+                {
+                    $data['below30']++;
+                }
+                else
+                {
+                    $data['above30']++;
+                }
 
                 $payment_query = DB::table('tblpayment')
                                 ->leftjoin('tblpaymentdtl', 'tblpayment.id', 'tblpaymentdtl.payment_id')
