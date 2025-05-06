@@ -51,22 +51,22 @@
                 <div>
                   <table>
                     <tr>
-                      <td style="width: 100px;"><strong>Lecturer Name</strong></td>
+                      <td style="width: 150px;"><strong>Lecturer Name</strong></td>
                       <td >:</td>
                       <td>{{ $details->lecturer_name }}</td>
                     </tr>
                     <tr>
-                      <td style="width: 100px;"><strong>Course Name</strong></td>
+                      <td style="width: 150px;"><strong>Course Name</strong></td>
                       <td>:</td>
                       <td>{{ $details->course_name }}</td>
                     </tr>
                     <tr>
-                      <td style="width: 100px;"><strong>Course Code</strong></td>
+                      <td style="width: 150px;"><strong>Course Code</strong></td>
                       <td>:</td>
                       <td>{{ $details->course_code }}</td>
                     </tr>
                     <tr>
-                      <td style="width: 100px;"><strong>Session</strong></td>
+                      <td style="width: 150px;"><strong>Session</strong></td>
                       <td>:</td>
                       <td>{{ $details->SessionName }}</td>
                     </tr>
