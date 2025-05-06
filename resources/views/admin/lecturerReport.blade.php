@@ -1857,6 +1857,19 @@ function applyFilters() {
     const sessionValue = $("#sessionFilter").val();
     const statusValue = $("#statusFilter").val();
     
+    // Reset state - show all faculty groups
+    $('.faculty-group').show();
+    
+    if (sessionValue === 'all' && statusValue === 'all') {
+        // If no filters are applied, reset to initial state
+        $('.faculty-group').show();
+        $('.lecturer-group').show();
+        $('.faculty-children, .lecturer-children').hide();
+        $('.tree-toggle').removeClass('open');
+        $('.faculty-item, .lecturer-item, .course-item').removeClass('active');
+        return;
+    }
+    
     // First hide all courses
     $('.course-item').hide();
     
@@ -1870,40 +1883,59 @@ function applyFilters() {
         
         if (sessionMatch && statusMatch) {
             $(this).show();
-        }
-    });
-    
-    // Show/hide lecturers based on whether they have visible courses
-    $('.lecturer-children').each(function() {
-        const visibleCourses = $(this).find('.course-item:visible').length;
-        const lecturerId = $(this).attr('id');
-        
-        if (visibleCourses > 0) {
+            
+            // Show parent lecturer group
+            const lecturerContainer = $(this).closest('.lecturer-children');
+            lecturerContainer.show();
+            
+            // Show and activate parent lecturer item
+            const lecturerId = lecturerContainer.attr('id');
             $('[data-toggle="' + lecturerId + '"]').parent().show();
-        } else {
-            $('[data-toggle="' + lecturerId + '"]').parent().hide();
-        }
-    });
-    
-    // Show/hide faculties based on whether they have visible lecturers
-    $('.faculty-children').each(function() {
-        const visibleLecturers = $(this).find('.lecturer-group:visible').length;
-        const facultyId = $(this).attr('id');
-        
-        if (visibleLecturers > 0) {
+            $('[data-toggle="' + lecturerId + '"]').addClass('active');
+            $('[data-toggle="' + lecturerId + '"]').find('.tree-toggle').addClass('open');
+            
+            // Show parent faculty container
+            const facultyContainer = lecturerContainer.closest('.faculty-children');
+            facultyContainer.show();
+            
+            // Show and activate parent faculty item
+            const facultyId = facultyContainer.attr('id');
             $('[data-toggle="' + facultyId + '"]').parent().show();
-        } else {
-            $('[data-toggle="' + facultyId + '"]').parent().hide();
-        }
-    });
-    
-    // Expand any faculty or lecturer with visible children
-    $('.faculty-group:visible').each(function() {
-        const facultyId = $(this).find('.faculty-item').data('toggle');
-        if ($(this).find('.lecturer-group:visible').length > 0) {
-            $('#' + facultyId).show();
             $('[data-toggle="' + facultyId + '"]').addClass('active');
             $('[data-toggle="' + facultyId + '"]').find('.tree-toggle').addClass('open');
+        }
+    });
+    
+    // Hide lecturer groups with no visible courses
+    $('.lecturer-children').each(function() {
+        const visibleCourses = $(this).find('.course-item:visible').length;
+        if (visibleCourses === 0) {
+            $(this).hide();
+            const lecturerId = $(this).attr('id');
+            $('[data-toggle="' + lecturerId + '"]').removeClass('active');
+            $('[data-toggle="' + lecturerId + '"]').find('.tree-toggle').removeClass('open');
+        }
+    });
+    
+    // Hide lecturer items with no visible courses
+    $('.lecturer-group').each(function() {
+        const lecturerId = $(this).find('.lecturer-item').data('toggle');
+        const visibleCourses = $('#' + lecturerId).find('.course-item:visible').length;
+        if (visibleCourses === 0) {
+            $(this).hide();
+        } else {
+            $(this).show();
+        }
+    });
+    
+    // Hide faculty items with no visible lecturers
+    $('.faculty-group').each(function() {
+        const facultyId = $(this).find('.faculty-item').data('toggle');
+        const visibleLecturers = $('#' + facultyId).find('.lecturer-group:visible').length;
+        if (visibleLecturers === 0) {
+            $(this).hide();
+        } else {
+            $(this).show();
         }
     });
 }
