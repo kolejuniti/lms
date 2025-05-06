@@ -3757,7 +3757,7 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
                                ->leftjoin('sessions', 'students.intake', 'sessions.SessionID')
                                ->leftjoin('tblprogramme', 'students.program', 'tblprogramme.id')
                                ->leftjoin('tbledu_advisor', 'tblstudent_personal.advisor_id', 'tbledu_advisor.id')
-                               ->where('students.status', 1)
+                            //    ->where('students.status', 1)
                                ->where('students.semester', 1)
                                ->whereBetween('students.date_add', [$request->from, $request->to])
                                ->when($request->session != '', function ($query) use ($request){
@@ -3777,12 +3777,15 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
                                 ->whereNotIn('tblpayment.process_type_id', [8])
                                 ->whereNotIn('tblstudentclaim.groupid', [4,5])
                                 ->select(
+                                    'tblpayment.*',
+                                    'tblpaymentdtl.amount',
                                     DB::raw('CASE
-                                                WHEN IFNULL(SUM(tblpaymentdtl.amount), 0) < 250 THEN "R"
-                                                WHEN IFNULL(SUM(tblpaymentdtl.amount), 0) >= 250 THEN "R1"
-                                            END AS group_alias'),
-                                    DB::raw('IFNULL(SUM(tblpaymentdtl.amount), 0) AS amount')
-                                )->first();
+                                        WHEN IFNULL(tblpaymentdtl.amount, 0) < 250 THEN "R"
+                                        WHEN IFNULL(tblpaymentdtl.amount, 0) >= 250 THEN "R1"
+                                    END AS group_alias')
+                                )
+                                ->orderBy('tblpayment.id')
+                                ->first();
 
                 $data['qua'][$key] = DB::table('tblqualification_std')->where('id', $student->qualification)->value('name');
 
