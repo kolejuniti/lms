@@ -3779,12 +3779,13 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
             foreach($data['student'] as $key => $student)
             {
 
-                $data['result'][] = DB::table('tblpayment')
+                $payment_query = DB::table('tblpayment')
                                 ->leftjoin('tblpaymentdtl', 'tblpayment.id', 'tblpaymentdtl.payment_id')
                                 ->leftjoin('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
                                 ->where('tblpayment.student_ic', $student->ic)
                                 ->where('tblpayment.process_status_id', 2)
                                 ->whereNotIn('tblpayment.process_type_id', [8])
+                                ->whereNotIn('tblstudentclaim.groupid', [4,5])
                                 ->select(
                                     'tblpayment.*',
                                     'tblpaymentdtl.amount',
@@ -3797,6 +3798,13 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
                                 )
                                 ->orderBy('tblpayment.id', 'asc')
                                 ->first();
+
+                $data['result'][] = $payment_query ?? (object)[
+                    'id' => null,
+                    'amount' => null,
+                    'group_alias' => null,
+                    // Add any other fields that the blade view might be accessing
+                ];
 
                 $data['qua'][$key] = DB::table('tblqualification_std')->where('id', $student->qualification)->value('name');
 
