@@ -1726,6 +1726,9 @@ $(document).ready(function() {
     
     // Setup session filtering
     setupFilters();
+    
+    // Debug: Check data attributes
+    checkDataAttributes();
 });
 
 function initAnimations() {
@@ -1840,6 +1843,11 @@ function setupSearch() {
 }
 
 function setupFilters() {
+    // Add debug log for session dropdown
+    $("#sessionFilter").on('change', function() {
+        console.log("Session dropdown changed to:", $(this).val());
+    });
+    
     // Apply session filters
     $("#sessionFilter, #statusFilter").on("change", function() {
         applyFilters();
@@ -1851,11 +1859,22 @@ function setupFilters() {
         $("#statusFilter").val("all");
         applyFilters();
     });
+    
+    // Initial filter check
+    setTimeout(function() {
+        console.log("Initial session value:", $("#sessionFilter").val());
+        // Force 'all' value on page load to ensure proper initialization
+        $("#sessionFilter").val("all");
+        $("#statusFilter").val("all");
+    }, 500);
 }
 
 function applyFilters() {
     const sessionValue = $("#sessionFilter").val();
     const statusValue = $("#statusFilter").val();
+    
+    console.log("Selected Session:", sessionValue);
+    console.log("Selected Status:", statusValue);
     
     // Reset state - show all faculty groups
     $('.faculty-group').show();
@@ -1873,16 +1892,29 @@ function applyFilters() {
     // First hide all courses
     $('.course-item').hide();
     
+    // Debug: Count total courses
+    console.log("Total courses:", $('.course-item').length);
+    
+    let matchCount = 0;
+    
     // Show courses matching the filter criteria
     $('.course-item').each(function() {
         const courseSessionId = $(this).data('session');
         const courseStatus = $(this).data('status');
         
-        const sessionMatch = sessionValue === 'all' || courseSessionId.toString() === sessionValue;
-        const statusMatch = statusValue === 'all' || courseStatus === statusValue;
+        console.log("Course:", $(this).find('.tree-label').text(), "Session:", courseSessionId, "Status:", courseStatus);
+        
+        // Convert both to strings for comparison to handle numeric/string type differences
+        const sessionMatch = sessionValue === 'all' || 
+                             (Number(courseSessionId) === Number(sessionValue));
+        const statusMatch = statusValue === 'all' || 
+                            String(courseStatus) === String(statusValue);
+        
+        console.log("Session match:", sessionMatch, "Status match:", statusMatch);
         
         if (sessionMatch && statusMatch) {
             $(this).show();
+            matchCount++;
             
             // Show parent lecturer group
             const lecturerContainer = $(this).closest('.lecturer-children');
@@ -1905,6 +1937,8 @@ function applyFilters() {
             $('[data-toggle="' + facultyId + '"]').find('.tree-toggle').addClass('open');
         }
     });
+    
+    console.log("Matching courses:", matchCount);
     
     // Hide lecturer groups with no visible courses
     $('.lecturer-children').each(function() {
@@ -2290,6 +2324,17 @@ $(document).on('click', '.ripple', function(e) {
 function showNotification(message, type) {
     // Add notification display logic if needed
     console.log(`[${type}] ${message}`);
+}
+
+// Add this new function
+function checkDataAttributes() {
+    console.log("Checking course data attributes...");
+    $('.course-item').each(function(index) {
+        const courseText = $(this).find('.tree-label').text().trim();
+        const sessionId = $(this).data('session');
+        const status = $(this).data('status');
+        console.log(`Course ${index+1}: "${courseText}" - Session: ${sessionId}, Status: ${status}`);
+    });
 }
 </script>
 @endsection
