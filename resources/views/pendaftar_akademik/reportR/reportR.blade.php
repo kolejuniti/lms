@@ -95,6 +95,9 @@
 <script src="../../plugins/datatables-buttons/js/buttons.print.min.js"></script>
 <script src="../../plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
 
+<!-- SheetJS (XLSX) -->
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
 <!-- Page specific script -->
 <script src="{{ asset('assets/src/js/pages/data-table.js') }}"></script>
 
@@ -218,45 +221,50 @@
                           exportOptions: {
                               columns: ':visible'
                           },
-                          customize: function(xlsx) {
-                              // Get sheet
-                              var sheet = xlsx.xl.worksheets['sheet1.xml'];
+                          action: function(e, dt, button, config) {
+                              // Prevent default action
+                              e.preventDefault();
                               
-                              // Find the last row number
-                              var lastRow = 0;
-                              $('row', sheet).each(function() {
-                                  var rowNum = parseInt($(this).attr('r'));
-                                  if (rowNum > lastRow) lastRow = rowNum;
+                              // Get the main table data
+                              var mainTableData = dt.buttons.exportData({
+                                  columns: ':visible'
                               });
                               
-                              // Add a few rows of spacing
-                              lastRow += 2;
+                              // Create a new workbook and worksheet
+                              var wb = XLSX.utils.book_new();
                               
-                              // Add the title for aging report
-                              var titleRowXml = '<row r="' + (lastRow) + '"><c t="inlineStr" r="A' + (lastRow) + '"><is><t>Student Aging Report</t></is></c></row>';
+                              // Convert main table to worksheet
+                              var mainWs = XLSX.utils.aoa_to_sheet([
+                                  mainTableData.header,
+                                  ...mainTableData.body,
+                                  // Add the footer total row
+                                  ["TOTAL STUDENTS", "", "", "", "", "", "", "", "", "", "", "", "{{ $data['student']->count() }}"]
+                              ]);
                               
-                              // Add header row
-                              var headerRowXml = '<row r="' + (lastRow+1) + '">' + 
-                                  '<c t="inlineStr" r="A' + (lastRow+1) + '"><is><t>Days Range</t></is></c>' + 
-                                  '<c t="inlineStr" r="B' + (lastRow+1) + '"><is><t>Number of Students</t></is></c>' + 
-                                  '</row>';
+                              // Create aging report data
+                              var agingTitle = [["Student Aging Report"]];
+                              var agingHeader = [["Days Range", "Number of Students"]];
+                              var agingData = Array.from($('#aging_report table tbody tr').map(function() {
+                                  return [
+                                      $(this).find('td:first').text(),
+                                      $(this).find('td:last').text()
+                                  ];
+                              }));
                               
-                              // Add the aging data rows
-                              var agingRowsXml = '';
-                              $('#aging_report table tbody tr').each(function(index) {
-                                  var rowNum = lastRow + 2 + index;
-                                  var daysRange = $(this).find('td:first').text();
-                                  var numStudents = $(this).find('td:last').text();
-                                  
-                                  agingRowsXml += '<row r="' + rowNum + '">' + 
-                                      '<c t="inlineStr" r="A' + rowNum + '"><is><t>' + daysRange + '</t></is></c>' + 
-                                      '<c t="inlineStr" r="B' + rowNum + '"><is><t>' + numStudents + '</t></is></c>' + 
-                                      '</row>';
-                              });
+                              // Calculate the row where aging report starts (main table + 3 rows spacing)
+                              var agingStartRow = mainTableData.body.length + 4;
                               
-                              // Append the new XML before the worksheet close tag
-                              var sheetData = $('sheetData', sheet);
-                              sheetData.append(titleRowXml + headerRowXml + agingRowsXml);
+                              // Merge main worksheet with aging report
+                              XLSX.utils.sheet_add_aoa(mainWs, [[""], [""]], { origin: agingStartRow - 2 });
+                              XLSX.utils.sheet_add_aoa(mainWs, agingTitle, { origin: agingStartRow });
+                              XLSX.utils.sheet_add_aoa(mainWs, agingHeader, { origin: agingStartRow + 1 });
+                              XLSX.utils.sheet_add_aoa(mainWs, agingData, { origin: agingStartRow + 2 });
+                              
+                              // Add the worksheet to workbook
+                              XLSX.utils.book_append_sheet(wb, mainWs, 'Student Report');
+                              
+                              // Generate Excel file and trigger download
+                              XLSX.writeFile(wb, 'Student_Report_R.xlsx');
                           }
                       },
                       {
