@@ -328,7 +328,7 @@ class AdminController extends Controller
     
     public function getReportLecturer()
     {
-        $session = DB::table('sessions')->get();
+        $session = DB::table('sessions')->orderBy('SessionID', 'desc')->get();
 
         $faculty = DB::table('tblfaculty')->get();
         
