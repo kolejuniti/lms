@@ -4,26 +4,26 @@
   </div>
   <div class="card-body">
     <div class="mb-3">
-      <h6>Toggle Column Visibility:</h6>
+      <h6>Column Visibility Options:</h6>
       <div class="form-group column-toggles">
         <div class="mb-2">
-          <button id="select-all-columns" class="btn btn-primary btn-sm">Select All</button>
-          <button id="deselect-all-columns" class="btn btn-secondary btn-sm">Deselect All</button>
+          <button type="button" id="show-all-columns" class="btn btn-primary btn-sm">Show All Columns</button>
+          <button type="button" id="hide-all-columns" class="btn btn-secondary btn-sm">Hide All Columns</button>
         </div>
         <div class="row">
-          <div class="col-md-3 mb-1"><input type="checkbox" class="toggle-column" data-column="0" checked> No.</div>
-          <div class="col-md-3 mb-1"><input type="checkbox" class="toggle-column" data-column="1" checked> Name</div>
-          <div class="col-md-3 mb-1"><input type="checkbox" class="toggle-column" data-column="2" checked> No. IC</div>
-          <div class="col-md-3 mb-1"><input type="checkbox" class="toggle-column" data-column="3" checked> No. Matric</div>
-          <div class="col-md-3 mb-1"><input type="checkbox" class="toggle-column" data-column="4" checked> Phone No.</div>
-          <div class="col-md-3 mb-1"><input type="checkbox" class="toggle-column" data-column="5" checked> Intake Session</div>
-          <div class="col-md-3 mb-1"><input type="checkbox" class="toggle-column" data-column="6" checked> Date Offer</div>
-          <div class="col-md-3 mb-1"><input type="checkbox" class="toggle-column" data-column="7" checked> Program</div>
-          <div class="col-md-3 mb-1"><input type="checkbox" class="toggle-column" data-column="8" checked> Qualification</div>
-          <div class="col-md-3 mb-1"><input type="checkbox" class="toggle-column" data-column="9" checked> Gender</div>
-          <div class="col-md-3 mb-1"><input type="checkbox" class="toggle-column" data-column="10" checked> EA</div>
-          <div class="col-md-3 mb-1"><input type="checkbox" class="toggle-column" data-column="11" checked> Amount</div>
-          <div class="col-md-3 mb-1"><input type="checkbox" class="toggle-column" data-column="12" checked> Type</div>
+          <div class="col-md-3 mb-1"><label><input type="checkbox" class="toggle-column" data-column="0" checked> Show No.</label></div>
+          <div class="col-md-3 mb-1"><label><input type="checkbox" class="toggle-column" data-column="1" checked> Show Name</label></div>
+          <div class="col-md-3 mb-1"><label><input type="checkbox" class="toggle-column" data-column="2" checked> Show No. IC</label></div>
+          <div class="col-md-3 mb-1"><label><input type="checkbox" class="toggle-column" data-column="3" checked> Show No. Matric</label></div>
+          <div class="col-md-3 mb-1"><label><input type="checkbox" class="toggle-column" data-column="4" checked> Show Phone No.</label></div>
+          <div class="col-md-3 mb-1"><label><input type="checkbox" class="toggle-column" data-column="5" checked> Show Intake Session</label></div>
+          <div class="col-md-3 mb-1"><label><input type="checkbox" class="toggle-column" data-column="6" checked> Show Date Offer</label></div>
+          <div class="col-md-3 mb-1"><label><input type="checkbox" class="toggle-column" data-column="7" checked> Show Program</label></div>
+          <div class="col-md-3 mb-1"><label><input type="checkbox" class="toggle-column" data-column="8" checked> Show Qualification</label></div>
+          <div class="col-md-3 mb-1"><label><input type="checkbox" class="toggle-column" data-column="9" checked> Show Gender</label></div>
+          <div class="col-md-3 mb-1"><label><input type="checkbox" class="toggle-column" data-column="10" checked> Show EA</label></div>
+          <div class="col-md-3 mb-1"><label><input type="checkbox" class="toggle-column" data-column="11" checked> Show Amount</label></div>
+          <div class="col-md-3 mb-1"><label><input type="checkbox" class="toggle-column" data-column="12" checked> Show Type</label></div>
         </div>
       </div>
     </div>

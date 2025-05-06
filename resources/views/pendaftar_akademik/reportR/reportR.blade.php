@@ -114,45 +114,64 @@
     var from = '';
     var to = '';
     var session = '';
+    var dataTable = null;
+
+    // Document ready function
+    $(function() {
+      console.log("Document ready - initializing event handlers");
+    });
 
     $(document).on('change', '#from', function(e){
       from = $(e.target).val();
-
-       getStudent(from,to,session);
+      getStudent(from,to,session);
     });
 
     $(document).on('change', '#to', function(e){
       to = $(e.target).val();
-
-       getStudent(from,to,session);
+      getStudent(from,to,session);
     });
 
     $(document).on('change', '#session', function(e){
       session = $(e.target).val();
-
-       getStudent(from,to,session);
+      getStudent(from,to,session);
     });
     
-    // Column visibility toggle functionality
+    // Column visibility toggle functionality - use direct binding for dynamically loaded content
     $(document).on('change', '.toggle-column', function() {
       var column = parseInt($(this).attr('data-column'));
       var visible = $(this).prop('checked');
+      console.log("Column toggle: ", column, visible);
       
-      // Get the DataTable instance
-      var table = $('#myTable').DataTable();
-      
-      // Toggle column visibility
-      table.column(column).visible(visible);
+      // Make sure dataTable is initialized
+      if (dataTable) {
+        dataTable.column(column).visible(visible);
+      }
     });
     
-    // Handle Select All button
-    $(document).on('click', '#select-all-columns', function() {
-      $('.toggle-column').prop('checked', true).trigger('change');
+    // Handle Show All button
+    $(document).on('click', '#show-all-columns', function() {
+      console.log("Show all columns clicked");
+      $('.toggle-column').prop('checked', true);
+      
+      // Make sure dataTable is initialized
+      if (dataTable) {
+        for (var i = 0; i < 13; i++) { // We have 13 columns (0-12)
+          dataTable.column(i).visible(true);
+        }
+      }
     });
     
-    // Handle Deselect All button
-    $(document).on('click', '#deselect-all-columns', function() {
-      $('.toggle-column').prop('checked', false).trigger('change');
+    // Handle Hide All button
+    $(document).on('click', '#hide-all-columns', function() {
+      console.log("Hide all columns clicked");
+      $('.toggle-column').prop('checked', false);
+      
+      // Make sure dataTable is initialized
+      if (dataTable) {
+        for (var i = 0; i < 13; i++) { // We have 13 columns (0-12)
+          dataTable.column(i).visible(false);
+        }
+      }
     });
 
   function getStudent(from,to,session)
@@ -173,16 +192,47 @@
                 if ($.fn.DataTable.isDataTable('#myTable')) {
                   $('#myTable').DataTable().destroy();
                 }
-
-                $('#myTable').DataTable({
-                  dom: 'lBfrtip', // if you remove this line you will see the show entries dropdown
-                  
+                
+                // Initialize new DataTable
+                dataTable = $('#myTable').DataTable({
+                  dom: 'lBfrtip', 
                   buttons: [
-                      'copy', 'csv', 'excel', 'pdf', 'print'
+                      {
+                          extend: 'copy',
+                          exportOptions: {
+                              columns: ':visible'
+                          }
+                      },
+                      {
+                          extend: 'csv',
+                          exportOptions: {
+                              columns: ':visible'
+                          }
+                      },
+                      {
+                          extend: 'excel',
+                          exportOptions: {
+                              columns: ':visible'
+                          }
+                      },
+                      {
+                          extend: 'pdf',
+                          exportOptions: {
+                              columns: ':visible'
+                          }
+                      },
+                      {
+                          extend: 'print',
+                          exportOptions: {
+                              columns: ':visible'
+                          }
+                      }
                   ],
-                  // Initialize column visibility based on checkbox states
-                  initComplete: function() {
+                  // Apply column visibility based on checkbox states
+                  "initComplete": function() {
                     var table = this.api();
+                    
+                    // Set column visibility based on checkboxes
                     $('.toggle-column').each(function() {
                       var column = parseInt($(this).attr('data-column'));
                       var visible = $(this).prop('checked');
@@ -190,16 +240,8 @@
                     });
                   }
                 });
-                
-                // Re-attach event handlers for column toggles after AJAX load
-                $('.toggle-column').on('change', function() {
-                  var column = parseInt($(this).attr('data-column'));
-                  var visible = $(this).prop('checked');
-                  $('#myTable').DataTable().column(column).visible(visible);
-                });
             }
         });
-
   }
   
   $(document).ready(function() {
