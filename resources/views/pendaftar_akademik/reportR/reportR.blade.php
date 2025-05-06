@@ -201,30 +201,86 @@
                           extend: 'copy',
                           exportOptions: {
                               columns: ':visible'
-                          }
-                      },
-                      {
-                          extend: 'csv',
-                          exportOptions: {
-                              columns: ':visible'
+                          },
+                          action: function(e, dt, button, config) {
+                              var mainTableData = dt.buttons.exportData(config.exportOptions);
+                              var agingData = Array.from($('#aging_report table tbody tr').map(function() {
+                                  return [$(this).find('td:first').text(), $(this).find('td:last').text()];
+                              }));
+                              
+                              var combinedBody = [...mainTableData.body, [''], ['Student Aging Report'], [''], ...agingData];
+                              config.exportOptions.body = combinedBody;
+                              $.fn.dataTable.ext.buttons.copyHtml5.action(e, dt, button, config);
                           }
                       },
                       {
                           extend: 'excel',
                           exportOptions: {
                               columns: ':visible'
+                          },
+                          customize: function(xlsx) {
+                              var sheet = xlsx.xl.worksheets['sheet1.xml'];
+                              var firstTableRows = $('table#myTable tbody tr').length + 2;
+                              
+                              var agingData = $('#aging_report table tbody tr').map(function(index) {
+                                  var rowNum = firstTableRows + 4 + index;
+                                  return '<row r="' + rowNum + '">' +
+                                      '<c t="inlineStr"><is><t>' + $(this).find('td:first').text() + '</t></is></c>' +
+                                      '<c t="inlineStr"><is><t>' + $(this).find('td:last').text() + '</t></is></c>' +
+                                      '</row>';
+                              }).get().join('');
+                              
+                              var titleRow = '<row r="' + (firstTableRows + 2) + '">' +
+                                  '<c t="inlineStr"><is><t>Student Aging Report</t></is></c></row>';
+                              
+                              sheet.getElementsByTagName('sheetData')[0].innerHTML += titleRow + agingData;
                           }
                       },
                       {
                           extend: 'pdf',
                           exportOptions: {
                               columns: ':visible'
+                          },
+                          customize: function(doc) {
+                              doc.content.push(
+                                  { text: '\n\nStudent Aging Report', style: 'subheader' },
+                                  {
+                                      table: {
+                                          headerRows: 1,
+                                          body: [
+                                              ['Days Range', 'Number of Students'],
+                                              ...Array.from($('#aging_report table tbody tr').map(function() {
+                                                  return [$(this).find('td:first').text(), $(this).find('td:last').text()];
+                                              }))
+                                          ]
+                                      }
+                                  }
+                              );
+                          }
+                      },
+                      {
+                          extend: 'csv',
+                          exportOptions: {
+                              columns: ':visible'
+                          },
+                          customize: function(csv) {
+                              var agingData = '\n\nStudent Aging Report\n' +
+                                  Array.from($('#aging_report table tbody tr').map(function() {
+                                      return $(this).find('td:first').text() + ',' + $(this).find('td:last').text();
+                                  })).join('\n');
+                              return csv + agingData;
                           }
                       },
                       {
                           extend: 'print',
                           exportOptions: {
                               columns: ':visible'
+                          },
+                          customize: function(win) {
+                              $(win.document.body).append(
+                                  $('<h2>Student Aging Report</h2>')
+                                  .add($('#aging_report table').clone())
+                              );
                           }
                       }
                   ],
