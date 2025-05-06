@@ -3788,10 +3788,12 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
                                 ->select(
                                     'tblpayment.*',
                                     'tblpaymentdtl.amount',
-                                    DB::raw('CASE
-                                        WHEN IFNULL(tblpaymentdtl.amount, 0) < 250 THEN "R"
-                                        WHEN IFNULL(tblpaymentdtl.amount, 0) >= 250 THEN "R1"
-                                    END AS group_alias')
+                                    DB::raw('IF(tblpayment.id IS NOT NULL, 
+                                        CASE
+                                            WHEN IFNULL(tblpaymentdtl.amount, 0) < 250 THEN "R"
+                                            WHEN IFNULL(tblpaymentdtl.amount, 0) >= 250 THEN "R1"
+                                        END,
+                                        NULL) AS group_alias')
                                 )
                                 ->orderBy('tblpayment.id', 'asc')
                                 ->first();
