@@ -1488,7 +1488,7 @@ body {
                 <div class="col-md-4">
                   <div class="form-group">
                     <label class="form-label">Academic Session</label>
-                    <select id="sessionFilter" class="form-control">
+                    <select id="sessionFilter" class="form-control Select">
                       <option value="all">All Sessions</option>
                       @foreach ($session as $ses)
                         <option value="{{ $ses->SessionID }}">{{ $ses->SessionName }} ({{ $ses->Year }})</option>
