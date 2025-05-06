@@ -46,7 +46,7 @@
         @if(Auth::user()->usrtype == "ADM")
         <div class="row">
           <div class="col-12">
-            <div class="box">
+            <div class="box bg-light-success">
               <div class="box-body">
                 <div>
                   <table>
