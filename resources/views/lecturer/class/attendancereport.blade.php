@@ -48,33 +48,23 @@
           <div class="col-12">
             <div class="box">
               <div class="box-body">
-                <div class="row">
-                  <div class="col-md-12">
-                    <div class="card">
-                      <div class="card-body">
-                        <div class="row">
-                          <div class="col-md-12">
-                            <div class="form-group">
-                              <label>Lecturer Name</label>
-                              <p>: {{ $details->lecturer_name }}</p>
-                            </div>
-                            <div class="form-group">
-                              <label>Course Name</label>
-                              <p>: {{ $details->course_name }}</p>
-                            </div>
-                            <div class="form-group">
-                              <label>Course Code</label>
-                              <p>: {{ $details->course_code }}</p>
-                            </div>
-                            <div class="form-group">
-                              <label>Session</label>
-                              <p>: {{ $details->SessionName }}</p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                <div class="table-responsive">
+                  <table class="table">
+                    <tr>
+                      <td><strong>Lecturer Name</strong></td>
+                      <td>:</td>
+                      <td>{{ $details->lecturer_name }}</td>
+                      <td><strong>Course Name</strong></td>
+                      <td>:</td>
+                      <td>{{ $details->course_name }}</td>
+                      <td><strong>Course Code</strong></td>
+                      <td>:</td>
+                      <td>{{ $details->course_code }}</td>
+                      <td><strong>Session</strong></td>
+                      <td>:</td>
+                      <td>{{ $details->SessionName }}</td>
+                    </tr>
+                  </table>
                 </div>
               </div>
             </div>
