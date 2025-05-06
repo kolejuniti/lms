@@ -3757,6 +3757,7 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
                                ->leftjoin('sessions', 'students.intake', 'sessions.SessionID')
                                ->leftjoin('tblprogramme', 'students.program', 'tblprogramme.id')
                                ->leftjoin('tbledu_advisor', 'tblstudent_personal.advisor_id', 'tbledu_advisor.id')
+                               ->join('tblpayment', 'students.ic', '=', 'tblpayment.student_ic')
                                ->joinSub(
                                    DB::table('tblstudent_log')
                                      ->select('student_ic', 'status_id', 'semester_id', 'date')
@@ -3774,6 +3775,7 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
                                     return $query->where('students.intake', $request->session);
                                })
                                ->select('students.*', 'tblstudent_personal.no_tel','tblstudent_personal.qualification', 'tblsex.code AS sex', 'sessions.SessionName', 'tblprogramme.progcode', 'tbledu_advisor.name AS ea')
+                               ->groupBy('students.ic')
                                ->get();
 
             foreach($data['student'] as $key => $student)
