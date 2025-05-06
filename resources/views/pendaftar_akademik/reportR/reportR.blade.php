@@ -242,19 +242,30 @@
                               // Get the total student count from the rendered table footer
                               var studentCount = $('#myTable tfoot td:last').text().trim();
                               
+                              // Convert total row to proper array of arrays format
+                              var totalRow = ["TOTAL STUDENTS"];
+                              // Fill empty cells for all columns except last
+                              for (var i = 1; i < mainTableData.header.length - 1; i++) {
+                                  totalRow.push("");
+                              }
+                              totalRow.push(studentCount);
+                              
                               // Add total row
-                              XLSX.utils.sheet_add_aoa(mainWs, [["TOTAL STUDENTS", "", "", "", "", "", "", "", "", "", "", "", studentCount]], 
+                              XLSX.utils.sheet_add_aoa(mainWs, [totalRow], 
                                   { origin: mainTableData.body.length + 1 });
                               
                               // Create aging report data
                               var agingTitle = [["Student Aging Report"]];
                               var agingHeader = [["Days Range", "Number of Students"]];
-                              var agingData = Array.from($('#aging_report table tbody tr').map(function() {
-                                  return [
-                                      $(this).find('td:first').text(),
-                                      $(this).find('td:last').text()
-                                  ];
-                              }));
+                              
+                              // Properly convert aging data to array of arrays
+                              var agingData = [];
+                              $('#aging_report table tbody tr').each(function() {
+                                  agingData.push([
+                                      $(this).find('td:first').text().trim(),
+                                      $(this).find('td:last').text().trim()
+                                  ]);
+                              });
                               
                               // Calculate the row where aging report starts (main table + 3 rows spacing)
                               var agingStartRow = mainTableData.body.length + 4;
