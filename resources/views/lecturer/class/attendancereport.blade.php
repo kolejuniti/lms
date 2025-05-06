@@ -48,8 +48,8 @@
           <div class="col-12">
             <div class="box">
               <div class="box-body">
-                <div class="table-responsive">
-                  <table class="table">
+                <div>
+                  <table>
                     <tr>
                       <td><strong>Lecturer Name</strong></td>
                       <td>:</td>
