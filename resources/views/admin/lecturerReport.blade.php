@@ -1474,6 +1474,48 @@ body {
     <!-- Main content -->
     <section class="content">
       <div class="row">
+        <div class="col-lg-12 mb-4">
+          <!-- Session Filter Card -->
+          <div class="material-card">
+            <div class="card-header">
+              <div class="card-title mb-0">
+                <i class="ti-filter"></i>
+                Filter Options
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="row align-items-center">
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label class="form-label">Academic Session</label>
+                    <select id="sessionFilter" class="form-control">
+                      <option value="all">All Sessions</option>
+                      @foreach ($session as $ses)
+                        <option value="{{ $ses->SessionID }}">{{ $ses->SessionName }} ({{ $ses->Year }})</option>
+                      @endforeach
+                    </select>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label class="form-label">Status</label>
+                    <select id="statusFilter" class="form-control">
+                      <option value="all">All Status</option>
+                      <option value="NOTACTIVE">Not Active</option>
+                      <option value="ACTIVE">Active</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                  <button type="button" id="resetFilters" class="btn btn-light-secondary">
+                    <i class="ti-reload"></i> Reset Filters
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
         <div class="col-lg-12">
           <div class="material-card">
             <div class="card-header">
@@ -1534,6 +1576,8 @@ body {
                             <div class="course-item ripple hover-lift" 
                                 data-filter-item 
                                 data-filter-name="{{ strtolower($crs->course_name) }} {{ strtolower($crs->course_code) }}"
+                                data-session="{{ $crs->SessionID }}"
+                                data-status="{{ isset($crs->Status) ? $crs->Status : 'NOTACTIVE' }}"
                                 onclick="tryerr0('{{ $crs->subject_id }}','{{ $lct->ic }}','{{ $crs->SessionID }}')">
                               <span class="tree-icon course-icon">
                                 <i class="ti-folder"></i>
@@ -1679,6 +1723,9 @@ $(document).ready(function() {
     
     // Add tooltips
     $('[title]').tooltip();
+    
+    // Setup session filtering
+    setupFilters();
 });
 
 function initAnimations() {
@@ -1788,6 +1835,75 @@ function setupSearch() {
             $('.faculty-children, .lecturer-children').hide();
             $('.tree-toggle').removeClass('open');
             $('.faculty-item, .lecturer-item, .course-item').removeClass('active');
+        }
+    });
+}
+
+function setupFilters() {
+    // Apply session filters
+    $("#sessionFilter, #statusFilter").on("change", function() {
+        applyFilters();
+    });
+    
+    // Reset filters
+    $("#resetFilters").click(function() {
+        $("#sessionFilter").val("all");
+        $("#statusFilter").val("all");
+        applyFilters();
+    });
+}
+
+function applyFilters() {
+    const sessionValue = $("#sessionFilter").val();
+    const statusValue = $("#statusFilter").val();
+    
+    // First hide all courses
+    $('.course-item').hide();
+    
+    // Show courses matching the filter criteria
+    $('.course-item').each(function() {
+        const courseSessionId = $(this).data('session');
+        const courseStatus = $(this).data('status');
+        
+        const sessionMatch = sessionValue === 'all' || courseSessionId.toString() === sessionValue;
+        const statusMatch = statusValue === 'all' || courseStatus === statusValue;
+        
+        if (sessionMatch && statusMatch) {
+            $(this).show();
+        }
+    });
+    
+    // Show/hide lecturers based on whether they have visible courses
+    $('.lecturer-children').each(function() {
+        const visibleCourses = $(this).find('.course-item:visible').length;
+        const lecturerId = $(this).attr('id');
+        
+        if (visibleCourses > 0) {
+            $('[data-toggle="' + lecturerId + '"]').parent().show();
+        } else {
+            $('[data-toggle="' + lecturerId + '"]').parent().hide();
+        }
+    });
+    
+    // Show/hide faculties based on whether they have visible lecturers
+    $('.faculty-children').each(function() {
+        const visibleLecturers = $(this).find('.lecturer-group:visible').length;
+        const facultyId = $(this).attr('id');
+        
+        if (visibleLecturers > 0) {
+            $('[data-toggle="' + facultyId + '"]').parent().show();
+        } else {
+            $('[data-toggle="' + facultyId + '"]').parent().hide();
+        }
+    });
+    
+    // Expand any faculty or lecturer with visible children
+    $('.faculty-group:visible').each(function() {
+        const facultyId = $(this).find('.faculty-item').data('toggle');
+        if ($(this).find('.lecturer-group:visible').length > 0) {
+            $('#' + facultyId).show();
+            $('[data-toggle="' + facultyId + '"]').addClass('active');
+            $('[data-toggle="' + facultyId + '"]').find('.tree-toggle').addClass('open');
         }
     });
 }

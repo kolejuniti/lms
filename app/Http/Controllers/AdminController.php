@@ -328,6 +328,8 @@ class AdminController extends Controller
     
     public function getReportLecturer()
     {
+        $session = DB::table('sessions')->get();
+
         $faculty = DB::table('tblfaculty')->get();
         
         foreach($faculty as $key => $fcl)
@@ -358,7 +360,7 @@ class AdminController extends Controller
             }
         }
         
-        return view('admin.lecturerReport', compact('faculty', 'lecturer', 'course'));
+        return view('admin.lecturerReport', compact('faculty', 'lecturer', 'course', 'session'));
     }
 
     public function getReportLecturerList()
