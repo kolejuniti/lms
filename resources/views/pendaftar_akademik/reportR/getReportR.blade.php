@@ -2,8 +2,33 @@
   <div class="card-header">
   <b>Students Report</b>
   </div>
-  <div class="card-body p-0">
-    <table id="myTable" class="table table-striped projects display dataTable">
+  <div class="card-body">
+    <div class="mb-3">
+      <h6>Toggle Column Visibility:</h6>
+      <div class="form-group column-toggles">
+        <div class="mb-2">
+          <button id="select-all-columns" class="btn btn-primary btn-sm">Select All</button>
+          <button id="deselect-all-columns" class="btn btn-secondary btn-sm">Deselect All</button>
+        </div>
+        <div class="row">
+          <div class="col-md-3 mb-1"><input type="checkbox" class="toggle-column" data-column="0" checked> No.</div>
+          <div class="col-md-3 mb-1"><input type="checkbox" class="toggle-column" data-column="1" checked> Name</div>
+          <div class="col-md-3 mb-1"><input type="checkbox" class="toggle-column" data-column="2" checked> No. IC</div>
+          <div class="col-md-3 mb-1"><input type="checkbox" class="toggle-column" data-column="3" checked> No. Matric</div>
+          <div class="col-md-3 mb-1"><input type="checkbox" class="toggle-column" data-column="4" checked> Phone No.</div>
+          <div class="col-md-3 mb-1"><input type="checkbox" class="toggle-column" data-column="5" checked> Intake Session</div>
+          <div class="col-md-3 mb-1"><input type="checkbox" class="toggle-column" data-column="6" checked> Date Offer</div>
+          <div class="col-md-3 mb-1"><input type="checkbox" class="toggle-column" data-column="7" checked> Program</div>
+          <div class="col-md-3 mb-1"><input type="checkbox" class="toggle-column" data-column="8" checked> Qualification</div>
+          <div class="col-md-3 mb-1"><input type="checkbox" class="toggle-column" data-column="9" checked> Gender</div>
+          <div class="col-md-3 mb-1"><input type="checkbox" class="toggle-column" data-column="10" checked> EA</div>
+          <div class="col-md-3 mb-1"><input type="checkbox" class="toggle-column" data-column="11" checked> Amount</div>
+          <div class="col-md-3 mb-1"><input type="checkbox" class="toggle-column" data-column="12" checked> Type</div>
+        </div>
+      </div>
+    </div>
+    <div class="table-responsive">
+      <table id="myTable" class="table table-striped projects display dataTable">
       <thead>
           <tr>
               <th style="width: 1%">
@@ -103,6 +128,7 @@
             </tr> --}}
       </tfoot>
     </table>
+    </div>
   </div>
   <!-- /.card-body -->
 </div>

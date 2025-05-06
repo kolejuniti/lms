@@ -132,6 +132,28 @@
 
        getStudent(from,to,session);
     });
+    
+    // Column visibility toggle functionality
+    $(document).on('change', '.toggle-column', function() {
+      var column = parseInt($(this).attr('data-column'));
+      var visible = $(this).prop('checked');
+      
+      // Get the DataTable instance
+      var table = $('#myTable').DataTable();
+      
+      // Toggle column visibility
+      table.column(column).visible(visible);
+    });
+    
+    // Handle Select All button
+    $(document).on('click', '#select-all-columns', function() {
+      $('.toggle-column').prop('checked', true).trigger('change');
+    });
+    
+    // Handle Deselect All button
+    $(document).on('click', '#deselect-all-columns', function() {
+      $('.toggle-column').prop('checked', false).trigger('change');
+    });
 
   function getStudent(from,to,session)
   {
@@ -147,12 +169,33 @@
             success  : function(data){
                 $('#form-student').html(data);
 
+                // Destroy existing DataTable if it exists
+                if ($.fn.DataTable.isDataTable('#myTable')) {
+                  $('#myTable').DataTable().destroy();
+                }
+
                 $('#myTable').DataTable({
                   dom: 'lBfrtip', // if you remove this line you will see the show entries dropdown
                   
                   buttons: [
                       'copy', 'csv', 'excel', 'pdf', 'print'
                   ],
+                  // Initialize column visibility based on checkbox states
+                  initComplete: function() {
+                    var table = this.api();
+                    $('.toggle-column').each(function() {
+                      var column = parseInt($(this).attr('data-column'));
+                      var visible = $(this).prop('checked');
+                      table.column(column).visible(visible);
+                    });
+                  }
+                });
+                
+                // Re-attach event handlers for column toggles after AJAX load
+                $('.toggle-column').on('change', function() {
+                  var column = parseInt($(this).attr('data-column'));
+                  var visible = $(this).prop('checked');
+                  $('#myTable').DataTable().column(column).visible(visible);
                 });
             }
         });
