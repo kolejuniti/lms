@@ -80,13 +80,13 @@
           <div class="col-md-3 mb-1">
             <div class="form-check">
               <input type="checkbox" class="form-check-input toggle-column" id="col-11" data-column="11" checked>
-              <label class="form-check-label" for="col-11">Show Amount</label>
+              <label class="form-check-label" for="col-11">Show Type</label>
             </div>
           </div>
           <div class="col-md-3 mb-1">
             <div class="form-check">
               <input type="checkbox" class="form-check-input toggle-column" id="col-12" data-column="12" checked>
-              <label class="form-check-label" for="col-12">Show Type</label>
+              <label class="form-check-label" for="col-12">Show Amount</label>
             </div>
           </div>
         </div>
