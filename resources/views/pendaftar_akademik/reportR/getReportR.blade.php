@@ -183,14 +183,14 @@
       @endforeach
       </tbody>
       <tfoot>
-          {{-- <tr>
-              <td colspan="9" style="text-align: center">
-                  TOTAL
+          <tr>
+              <td colspan="13" style="text-align: center">
+                  TOTAL STUDENTS
               </td>
               <td>
-                  {{  number_format($totalPreALL, 2) }}
+                  {{ $data['student']->count() }}
               </td>
-            </tr> --}}
+            </tr>
       </tfoot>
     </table>
     </div>
