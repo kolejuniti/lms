@@ -14,7 +14,7 @@
 <div class="content-wrapper">
     <div class="container-full">
     <!-- Content Header (Page header) -->	  
-    <div class="content-header">
+    <div class="page-header">
         <div class="d-flex align-items-center">
             <div class="me-auto">
                 <h4 class="page-title">Test</h4>
@@ -169,7 +169,7 @@ $(document).ready( function () {
     if (res.isConfirmed){
               $.ajax({
                   headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
-                  url      : "{{ url('lecturer/test/deletetest') }}",
+                  url      : "{{ url('lecturer/test3/deletetest') }}",
                   method   : 'POST',
                   data 	 : {id:id},
                   error:function(err){
