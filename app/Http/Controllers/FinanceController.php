@@ -812,6 +812,43 @@ class FinanceController extends Controller
     public function studentClaim()
     {
 
+        if(DB::connection('mysql2')->table('students')->where('ic', '071224100317')->exists())
+        {
+
+            // Get the advisor's IC from the first database
+            $advisorIcFromDb1 = DB::table('tblstudent_personal')
+            ->where('student_ic', '071224100317')
+            ->join('tbledu_advisor', 'tblstudent_personal.advisor_id', 'tbledu_advisor.id')
+            ->value('tbledu_advisor.ic');
+
+            // Get the advisor's IC from the second database
+            $advisorIcFromDb2 = DB::connection('mysql2')
+            ->table('students')
+            ->where('ic', '071224100317')
+            ->join('users', 'students.user_id', 'users.id')
+            ->value('users.ic');
+
+            // Normalize ICs by removing dashes
+            $normalizedIc1 = $advisorIcFromDb1 ? str_replace('-', '', $advisorIcFromDb1) : null;
+            $normalizedIc2 = $advisorIcFromDb2 ? str_replace('-', '', $advisorIcFromDb2) : null;
+
+            dd($normalizedIc1, $normalizedIc2);
+
+            // Prepare the base update data
+            $updateData = [
+            'register_at' => now(),
+            'status_id' => ($normalizedIc1 == $normalizedIc2) ? 20 : 22,
+            'commission' => ($normalizedIc1 == $normalizedIc2) ? 300 : 0
+            ];
+
+            // Perform the update
+            DB::connection('mysql2')
+            ->table('students')
+            ->where('ic', '071224100317')
+            ->update($updateData);
+
+        }
+
         return view('finance.payment.claim');
 
     }
