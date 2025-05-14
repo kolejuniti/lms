@@ -826,7 +826,7 @@ class FinanceController extends Controller
             ->table('students')
             ->where('ic', '071224100317')
             ->join('users', 'students.user_id', 'users.id')
-            ->value('users.ic');
+            ->value('ic');
 
             // Normalize ICs by removing dashes
             $normalizedIc1 = $advisorIcFromDb1 ? str_replace('-', '', $advisorIcFromDb1) : null;
