@@ -824,9 +824,9 @@ class FinanceController extends Controller
             // Get the advisor's IC from the second database
             $advisorIcFromDb2 = DB::connection('mysql2')
             ->table('students')
-            ->where('ic', '071224100317')
+            ->where('students.ic', '071224100317')
             ->join('users', 'students.user_id', 'users.id')
-            ->value('ic');
+            ->value('users.ic');
 
             // Normalize ICs by removing dashes
             $normalizedIc1 = $advisorIcFromDb1 ? str_replace('-', '', $advisorIcFromDb1) : null;
