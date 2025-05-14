@@ -1721,8 +1721,6 @@ class FinanceController extends Controller
                     $normalizedIc1 = $advisorIcFromDb1 ? trim(str_replace('-', '', $advisorIcFromDb1)) : null;
                     $normalizedIc2 = $advisorIcFromDb2 ? trim(str_replace('-', '', $advisorIcFromDb2)) : null;
 
-                    dd($normalizedIc1, $normalizedIc2);
-
                     // Prepare the base update data
                     $updateData = [
                     'register_at' => now(),
