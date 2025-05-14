@@ -828,9 +828,9 @@ class FinanceController extends Controller
             ->join('users', 'students.user_id', 'users.id')
             ->value('users.ic');
 
-            // Normalize ICs by removing dashes
-            $normalizedIc1 = $advisorIcFromDb1 ? str_replace('-', '', $advisorIcFromDb1) : null;
-            $normalizedIc2 = $advisorIcFromDb2 ? str_replace('-', '', $advisorIcFromDb2) : null;
+            // Normalize ICs by removing dashes and trimming spaces
+            $normalizedIc1 = $advisorIcFromDb1 ? trim(str_replace('-', '', $advisorIcFromDb1)) : null;
+            $normalizedIc2 = $advisorIcFromDb2 ? trim(str_replace('-', '', $advisorIcFromDb2)) : null;
 
             dd($normalizedIc1, $normalizedIc2);
 
