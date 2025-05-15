@@ -14,7 +14,7 @@
 <div class="content-wrapper">
     <div class="container-full">
     <!-- Content Header (Page header) -->	  
-    <div class="content-header">
+    <div class="page-header">
         <div class="d-flex align-items-center">
             <div class="me-auto">
                 <h4 class="page-title">Assignment</h4>

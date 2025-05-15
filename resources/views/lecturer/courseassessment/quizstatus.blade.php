@@ -14,7 +14,7 @@
 <div class="content-wrapper">
     <div class="container-full">
     <!-- Content Header (Page header) -->	  
-    <div class="content-header">
+    <div class="page-header">
         <div class="d-flex align-items-center">
             <div class="me-auto">
                 <h4 class="page-title">Quiz</h4>
@@ -124,14 +124,19 @@
                                     <td>
                                           {{ empty($sts) ? '-' : $sts->final_mark }} / {{ $qz->total_mark }}
                                     </td>
+                                    @php
+              
+                                      $period = DB::table('tblassessment_period')->first();
+
+                                    @endphp
                                     <td class="project-actions text-center" >
-                                      <a class="btn btn-success btn-sm mr-2" href="/lecturer/quiz/{{ request()->quiz }}/{{ $sts->userid }}/result">
+                                      <a class="btn btn-success btn-sm mr-2" href="/lecturer/quiz/{{ request()->quiz }}/{{ $sts->userid }}/result" {{ !empty($period) ? ($period && \Carbon\Carbon::parse(now())->format('Y-m-d') >= \Carbon\Carbon::parse($period->Start)->format('Y-m-d') && \Carbon\Carbon::parse(now())->format('Y-m-d') <= \Carbon\Carbon::parse($period->End)->format('Y-m-d') && in_array(auth()->user()->ic, json_decode($period->user_ic)) && in_array(Session::get('SessionID'), json_decode($period->session)) ? '' : 'hidden') : ''}}>
                                           <i class="ti-pencil-alt">
                                           </i>
                                           Answer
                                       </a>
                                       @if(date('Y-m-d H:i:s') >= $qz->date_from && date('Y-m-d H:i:s') <= $qz->date_to)
-                                      <a class="btn btn-danger btn-sm mr-2" onclick="deleteStdQuiz('{{ $sts->id }}')">
+                                      <a class="btn btn-danger btn-sm mr-2" onclick="deleteStdQuiz('{{ $sts->id }}')" {{ !empty($period) ? ($period && \Carbon\Carbon::parse(now())->format('Y-m-d') >= \Carbon\Carbon::parse($period->Start)->format('Y-m-d') && \Carbon\Carbon::parse(now())->format('Y-m-d') <= \Carbon\Carbon::parse($period->End)->format('Y-m-d') && in_array(auth()->user()->ic, json_decode($period->user_ic)) && in_array(Session::get('SessionID'), json_decode($period->session)) ? '' : 'hidden') : ''}}>
                                           <i class="ti-trash">
                                           </i>
                                           Delete

@@ -19,7 +19,7 @@
 <div class="content-wrapper">
     <div class="container-full">
     <!-- Content Header (Page header) -->	  
-    <div class="content-header">
+    <div class="page-header">
         <div class="d-flex align-items-center">
             <div class="me-auto">
                 <h4 class="page-title">Extra</h4>
@@ -141,11 +141,16 @@
                   </div>
                 </div>
               </div>
-              <div class="box-footer">
+              @php
+              
+              $period = DB::table('tblassessment_period')->first();
+
+              @endphp
+              <div class="box-footer" {{ !empty($period) ? ($period && \Carbon\Carbon::parse(now())->format('Y-m-d') >= \Carbon\Carbon::parse($period->Start)->format('Y-m-d') && \Carbon\Carbon::parse(now())->format('Y-m-d') <= \Carbon\Carbon::parse($period->End)->format('Y-m-d') && in_array(auth()->user()->ic, json_decode($period->user_ic)) && in_array(Session::get('SessionID'), json_decode($period->session)) ? '' : 'hidden') : ''}}>
                 <div class="pull-right">
                     <button id="savebtn" class="btn btn-primary"><i class="ti-trash"></i> Save</button>
                 </div>
-            </div>
+              </div>
             </div>
           </div>
         </div>

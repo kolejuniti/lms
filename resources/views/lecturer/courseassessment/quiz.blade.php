@@ -3,18 +3,13 @@
 
 @section('main')
 
-<style>
-    .cke_chrome{
-        border:1px solid #eee;
-        box-shadow: 0 0 0 #eee;
-    }
-</style>
+<link rel="stylesheet" href="{{ asset('css/customCSS.css') }}">
 
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
     <div class="container-full">
     <!-- Content Header (Page header) -->	  
-    <div class="content-header">
+    <div class="page-header">
         <div class="d-flex align-items-center">
             <div class="me-auto">
                 <h4 class="page-title">Quiz</h4>
