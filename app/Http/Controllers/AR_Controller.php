@@ -5407,4 +5407,31 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
 
     }
 
+    public function assessmentFilter()
+    {
+        $data = [
+            'session' => DB::table('sessions')->get(),
+            'lecturer' => DB::table('users')->whereIn('usrtype', ['LCT', 'AO', 'PL'])->get(),
+            'period' => DB::table('tblassessment_period')->first()
+        ];
+
+        return view('pendaftar_akademik.student.assessment_filter.assessmentFilter', compact('data'));
+    }
+
+    public function assessmentFilterSubmit(Request $request)
+    {
+        $data = json_decode($request->submitData);
+
+        DB::table('tblassessment_period')->upsert([
+            'id' => 1,
+            'Start' => $data->from,
+            'END' => $data->to,
+            'session' => json_encode($data->session),
+            'user_ic' => json_encode($data->lecturer)
+        ],['id']);
+
+        return response()->json(['success' => 'Data has been updated successfully!']);
+
+    }
+
 }

@@ -241,6 +241,8 @@ Route::post('/AR/student/miniTranscript/printStudentMiniTranscript', [App\Http\C
 // Route::get('/AR/student/groupTable', [App\Http\Controllers\AR_Controller::class, 'groupTable'])->name('pendaftar_akademik.groupTable');
 Route::get('/AR/student/resultOverall', [App\Http\Controllers\AR_Controller::class, 'resultOverall'])->name('pendaftar_akademik.resultOverall');
 Route::post('/AR/student/resultOverall/submit', [App\Http\Controllers\AR_Controller::class, 'resultOverallSubmit']);
+Route::get('/AR/student/assessmentFilter', [App\Http\Controllers\AR_Controller::class, 'assessmentFilter'])->name('pendaftar_akademik.assessmentFilter');
+Route::post('/AR/student/assessmentFilter/submit', [App\Http\Controllers\AR_Controller::class, 'assessmentFilterSubmit']);
 
 Route::get('/HEA', [App\Http\Controllers\HEA_Controller::class, 'index'])->name('HEA');
 

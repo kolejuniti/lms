@@ -381,6 +381,7 @@ li a {
 						<li><a href="{{ route('pendaftar_akademik.transcript') }}" class="{{ (route('pendaftar_akademik.transcript') == Request::url()) ? 'active' : ''}}">Transcript</a></li>
 						<li><a href="{{ route('pendaftar_akademik.miniTranscript') }}" class="{{ (route('pendaftar_akademik.miniTranscript') == Request::url()) ? 'active' : ''}}">Mini Transcript</a></li>
 						<li><a href="{{ route('pendaftar_akademik.resultOverall') }}" class="{{ (route('pendaftar_akademik.resultOverall') == Request::url()) ? 'active' : ''}}">Result Filter</a></li>
+						<li><a href="{{ route('pendaftar_akademik.assessmentFilter') }}" class="{{ (route('pendaftar_akademik.assessmentFilter') == Request::url()) ? 'active' : ''}}">Assessment Filter</a></li>
 					</ul>
 				</li>
 				<li class="treeview">
