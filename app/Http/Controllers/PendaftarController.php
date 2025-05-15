@@ -3516,10 +3516,11 @@ class PendaftarController extends Controller
                                     ->whereNotIn('tblstudentclaim.groupid', [4,5])
                                     ->select(
 
-                                    DB::raw('CASE
-                                                WHEN IFNULL(SUM(tblpaymentdtl.amount), 0) < 250 THEN "R"
-                                                WHEN IFNULL(SUM(tblpaymentdtl.amount), 0) >= 250 THEN "R1"
-                                                END AS group_alias'),
+                                    // DB::raw('CASE
+                                    //             WHEN IFNULL(SUM(tblpaymentdtl.amount), 0) < 250 THEN "R"
+                                    //             WHEN IFNULL(SUM(tblpaymentdtl.amount), 0) >= 250 THEN "R1"
+                                    //             END AS group_alias'),
+                                    DB::raw('"R2" AS group_alias'),
                                     DB::raw('IFNULL(SUM(tblpaymentdtl.amount), 0) AS amount')
 
                                     )->first();
