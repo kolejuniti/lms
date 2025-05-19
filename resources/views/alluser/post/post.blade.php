@@ -94,6 +94,9 @@
                   <a type="button" class="waves-effect waves-light btn btn-info btn-sm" data-toggle="modal" data-target="#uploadModal">
                       <i class="fa fa-plus"></i> <i class="fa fa-object-group"></i> &nbsp Add Post
                   </a>
+                  <a href="/posting/fix-images-visibility" class="waves-effect waves-light btn btn-warning btn-sm ms-2">
+                      <i class="fa fa-image"></i> <i class="fa fa-refresh"></i> &nbsp Fix Images Visibility
+                  </a>
               </div>
             </div>
         </div>
@@ -142,6 +145,9 @@
                       <th>
                           Total Save / Bookmark
                       </th>
+                      <th>
+                          Image
+                      </th>
                       {{-- <th>
                       </th> --}}
                       <th>
@@ -189,6 +195,13 @@
                   </td>
                   <td>
                     <span id="save-{{ $pst->id }}">{{ $pst->total_save }}</span>
+                  </td>
+                  <td>
+                    @if($pst->image)
+                      <img src="{{ Storage::disk('linode')->temporaryUrl($pst->image, now()->addMinutes(5)) }}" class="img-thumbnail" style="max-height: 50px;" alt="Post Image">
+                    @else
+                      <span class="text-muted">No image</span>
+                    @endif
                   </td>
                   {{-- <td>
                     <button type="button" class="btn btn-sm btn-info refresh-metrics" 
@@ -260,6 +273,7 @@
                                 <option value="twitter">Twitter</option>
                                 <option value="tiktok">Tiktok</option>
                                 <option value="youtube">Youtube</option>
+                                <option value="whatsapp">Whatsapp</option>
                               </select>
                           </div>
                         </div>
@@ -272,7 +286,7 @@
                         <div>
                           <div class="form-group">
                             <label>Link</label>
-                            <input type="url" name="link" id="link" class="form-control" required>
+                            <input type="url" name="link" id="link" class="form-control">
                           </div>
                         </div>
                         <div>
@@ -325,6 +339,13 @@
                           <div class="form-group">
                             <label>Total Save</label>
                             <input type="number" name="save" id="save" class="form-control" value="0" required>
+                          </div>
+                        </div>
+                        <div>
+                          <div class="form-group mb-3">
+                            <label>Post Image</label>
+                            <input type="file" name="image" id="image" class="form-control" accept="image/*">
+                            <small class="text-muted">Upload an image for your post (optional)</small>
                           </div>
                         </div>
                       </div>

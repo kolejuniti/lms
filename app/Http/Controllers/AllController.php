@@ -43,9 +43,41 @@ class AllController extends Controller
 
     public function postingCreate(Request $request)
     {
+        // Handle image upload if provided
+        $imagePath = null;
+        
+        if ($request->hasFile('image') && $request->file('image')->isValid()) {
+            // Check if posting directory exists, if not create it
+            if (!Storage::disk('linode')->exists('posting')) {
+                Storage::disk('linode')->makeDirectory('posting', 'public');
+            }
+            
+            // Get the file and generate a unique name
+            $file = $request->file('image');
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            
+            // Store the file with public visibility
+            $path = $file->storeAs('posting', $fileName, [
+                'disk' => 'linode',
+                'visibility' => 'public'
+            ]);
+            $imagePath = $path;
+        }
 
         if(isset($request->idS))
         {
+            // Get current post to check if it has an image
+            $currentPost = DB::table('tblposting')->where('id', $request->idS)->first();
+            
+            // If there's a new image and the post already has an image, delete the old one
+            if ($imagePath && $currentPost->image) {
+                Storage::disk('linode')->delete($currentPost->image);
+            }
+            
+            // If no new image was uploaded, keep the existing image path
+            if (!$imagePath && $currentPost->image) {
+                $imagePath = $currentPost->image;
+            }
 
             DB::table('tblposting')->where('id', $request->idS)->update([
                 'date' => date('Y-m-d'),
@@ -64,7 +96,8 @@ class AllController extends Controller
                 'update_comment' => date('Y-m-d'),
                 'update_like' => date('Y-m-d'),
                 'update_share' => date('Y-m-d'),
-                'update_save' => date('Y-m-d')
+                'update_save' => date('Y-m-d'),
+                'image' => $imagePath
             ]);
 
             DB::table('tblposting_history')->insert([
@@ -94,7 +127,8 @@ class AllController extends Controller
                 'total_comment' => $request->comment,
                 'total_like' => $request->like,
                 'total_share' => $request->share,
-                'total_save' => $request->save
+                'total_save' => $request->save,
+                'image' => $imagePath
             ]);
 
             $alert =  'Post successfully added!';
@@ -102,16 +136,21 @@ class AllController extends Controller
         }
 
         return back()->with('success', $alert);
-
     }
 
     public function postingDelete(Request $request)
     {
+        // Get the post details to check if it has an image
+        $post = DB::table('tblposting')->where('id', $request->id)->first();
+        
+        // If the post has an image, delete it from storage
+        if ($post && $post->image) {
+            Storage::disk('linode')->delete($post->image);
+        }
 
         DB::table('tblposting')->where('id', $request->id)->delete();
 
         return back()->with('deleted', 'Post successfully deleted!');
-
     }
 
     public function postingUpdate(Request $request)
@@ -921,6 +960,19 @@ class AllController extends Controller
 
 
         return response()->json($announcements);
+    }
+
+    public function fixImagesVisibility()
+    {
+        $posts = DB::table('tblposting')->whereNotNull('image')->get();
+        
+        foreach($posts as $post) {
+            if (Storage::disk('linode')->exists($post->image)) {
+                Storage::disk('linode')->setVisibility($post->image, 'public');
+            }
+        }
+        
+        return back()->with('success', 'Images visibility updated successfully!');
     }
 
 }

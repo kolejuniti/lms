@@ -26,6 +26,7 @@
                 <option value="twitter" {{ ($data['post']->channel == 'twitter') ? 'selected' : '' }}>Twitter</option>
                 <option value="tiktok" {{ ($data['post']->channel == 'tiktok') ? 'selected' : '' }}>Tiktok</option>
                 <option value="youtube" {{ ($data['post']->channel == 'youtube') ? 'selected' : '' }}>Youtube</option>
+                <option value="whatsapp" {{ ($data['post']->channel == 'whatsapp') ? 'selected' : '' }}>Whatsapp</option>
               </select>
           </div>
         </div>
@@ -93,6 +94,21 @@
           <div class="form-group">
             <label>Total Save</label>
             <input type="number" name="save" id="save" class="form-control"  value="{{ $data['post']->total_save }}" required>
+          </div>
+        </div>
+        <div>
+          <div class="form-group mb-3">
+            <label>Post Image</label>
+            <input type="file" name="image" id="image" class="form-control" accept="image/*">
+            <small class="text-muted">Upload a new image for your post (optional)</small>
+            @if($data['post']->image)
+              <div class="mt-2">
+                <label>Current Image:</label>
+                <div class="mt-1">
+                  <img src="{{ Storage::disk('linode')->temporaryUrl($data['post']->image, now()->addMinutes(5)) }}" class="img-fluid" style="max-height: 200px;" alt="Current Post Image">
+                </div>
+              </div>
+            @endif
           </div>
         </div>
       </div>
