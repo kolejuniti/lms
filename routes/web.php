@@ -994,6 +994,8 @@ Route::post('/posting/staff/update', [App\Http\Controllers\AllController::class,
 Route::get('/posting/admin', [App\Http\Controllers\AllController::class, 'adminPosting'])->name('posting.admin');
 Route::post('/posting/admin/listStaff', [App\Http\Controllers\AllController::class, 'getStaffList']);
 Route::post('/posting/admin/getStaffPost', [App\Http\Controllers\AllController::class, 'getStaffPost']);
+Route::get('/posting/admin/postingReport', [App\Http\Controllers\AllController::class, 'postingReport'])->name('posting.admin.postingReport');
+Route::get('/posting/admin/report/getPostingReport', [App\Http\Controllers\AllController::class, 'getPostingReport'])->name('posting.admin.report.getPostingReport');
 Route::get('/all/student/spm/report', [App\Http\Controllers\AllController::class, 'studentSPM'])->name('all.student.spm.report');
 Route::post('/all/student/spm/report/getStudentSPM', [App\Http\Controllers\AllController::class, 'getStudentSPM']);
 

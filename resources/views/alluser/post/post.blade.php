@@ -99,123 +99,123 @@
         </div>
         </div>
         <div class="card-body p-0">
-          <table id="myTable" class="table table-striped projects display dataTable">
-            <thead>
+          <div class="table-responsive">
+            <table id="myTable" class="table table-striped projects display dataTable">
+              <thead>
+                  <tr>
+                      <th style="width: 1%">
+                          No.
+                      </th>
+                      <th>
+                          Date Key-in
+                      </th>
+                      <th>
+                          Date Posting
+                      </th>
+                      <th>
+                          Channel
+                      </th>
+                      <th>
+                          Title
+                      </th>
+                      <th style="width: 10%">
+                          Link
+                      </th>
+                      <th>
+                          Type
+                      </th>
+                      <th>
+                          Status
+                      </th>
+                      <th>
+                          Total View / Reach
+                      </th>
+                      <th>
+                          Total Comment
+                      </th>
+                      <th>
+                          Total Like
+                      </th>
+                      <th>
+                          Total Share
+                      </th>
+                      <th>
+                          Total Save / Bookmark
+                      </th>
+                      {{-- <th>
+                      </th> --}}
+                      <th>
+                      </th>
+                  </tr>
+              </thead>
+              <tbody id="table">
+              @foreach ($data['post'] as $key => $pst)
                 <tr>
-                    <th style="width: 1%">
-                        No.
-                    </th>
-                    <th>
-                        Date Key-in
-                    </th>
-                    <th>
-                        Date Posting
-                    </th>
-                    <th>
-                        Channel
-                    </th>
-                    <th>
-                        Title
-                    </th>
-                    <th style="width: 10%">
-                        Link
-                    </th>
-                    <th>
-                        Type
-                    </th>
-                    <th>
-                        Status
-                    </th>
-                    <th>
-                        Total View / Reach
-                    </th>
-                    <th>
-                        Total Comment
-                    </th>
-                    <th>
-                        Total Like
-                    </th>
-                    <th>
-                        Total Share
-                    </th>
-                    <th>
-                        Total Save / Bookmark
-                    </th>
-                    <th>
-                    </th>
-                </tr>
-            </thead>
-            <tbody id="table">
-            @foreach ($data['post'] as $key => $pst)
-              <tr>
-                <td style="width: 1%">
-                  {{ $key+1 }}
-                </td>
-                <td>
-                  {{ $pst->date }}
-                </td>
-                <td>
-                  {{ $pst->post_date }}
-                </td>
-                <td>
-                  {{ $pst->channel }}
-                </td>
-                <td>
-                  {{ $pst->title }}
-                </td>
-                <td class="compact-cell">
-                  <a href="{{ $pst->link }}" target="_blank" class="short-link">{{ $pst->link }}</a>
-                </td>
-                <td>
-                  {{ $pst->channel_type }}
-                </td>
-                <td>
-                  {{ $pst->status }}
-                </td>
-                <td>
-                  {{ $pst->total_view }}
-                </td>
-                {{-- @if(isset($data['history'][$key]))
-                  @foreach($data['history'][$key] as $key2 => $history)
-                  <td>
-                    {{ $history->total_view }}
+                  <td style="width: 1%">
+                    {{ $key+1 }}
                   </td>
-                  @endforeach
-                @endif --}}
-                <td>
-                  {{ $pst->total_comment }}
-                </td>
-                <td>
-                  {{ $pst->total_like }}
-                </td>
-                <td>
-                  {{ $pst->total_share }}
-                </td>
-                <td>
-                  {{ $pst->total_save }}
-                </td>
-                <td class="project-actions text-right" style="text-align: center;">
-                  {{-- <button class="btn btn-info btn-sm btn-sm mr-2" data-toggle="modal" data-target="#fbModal">
-                      <i class="ti-layout-media-center">
-                      </i>
-                      View
-                  </button>
-                  --}}
-                  <a class="btn btn-info btn-sm btn-sm mr-2" href="#" onclick="updatePost('{{ $pst->id }}')">
-                      <i class="ti-pencil-alt">
-                      </i>
-                      Edit
-                  </a>
-                  <a class="btn btn-danger btn-sm mt-2" href="#" onclick="deletePost('{{ $pst->id }}')">
-                      <i class="ti-trash">
-                      </i>
-                      Delete
-                  </a>
-                </td>
-              </tr>
-            @endforeach
-            </tbody>
-          </table>
+                  <td>
+                    {{ $pst->date }}
+                  </td>
+                  <td>
+                    {{ $pst->post_date }}
+                  </td>
+                  <td>
+                    {{ $pst->channel }}
+                  </td>
+                  <td>
+                    {{ $pst->title }}
+                  </td>
+                  <td class="compact-cell">
+                    <a href="{{ $pst->link }}" target="_blank" class="short-link">{{ $pst->link }}</a>
+                  </td>
+                  <td>
+                    {{ $pst->channel_type }}
+                  </td>
+                  <td>
+                    {{ $pst->status }}
+                  </td>
+                  <td>
+                    <span id="view-{{ $pst->id }}">{{ $pst->total_view }}</span>
+                  </td>
+                  <td>
+                    <span id="comment-{{ $pst->id }}">{{ $pst->total_comment }}</span>
+                  </td>
+                  <td>
+                    <span id="like-{{ $pst->id }}">{{ $pst->total_like }}</span>
+                  </td>
+                  <td>
+                    <span id="share-{{ $pst->id }}">{{ $pst->total_share }}</span>
+                  </td>
+                  <td>
+                    <span id="save-{{ $pst->id }}">{{ $pst->total_save }}</span>
+                  </td>
+                  {{-- <td>
+                    <button type="button" class="btn btn-sm btn-info refresh-metrics" 
+                      data-id="{{ $pst->id }}" 
+                      data-url="{{ $pst->link }}"
+                      data-channel="{{ $pst->channel }}">
+                      <i class="fa fa-refresh"></i> Live Metrics
+                    </button>
+                    <span id="status-{{ $pst->id }}"></span>
+                  </td> --}}
+                  <td class="project-actions text-right" style="text-align: center;">
+                    <a class="btn btn-info btn-sm btn-sm mr-2" href="#" onclick="updatePost('{{ $pst->id }}')">
+                        <i class="ti-pencil-alt">
+                        </i>
+                        Edit
+                    </a>
+                    <a class="btn btn-danger btn-sm mt-2" href="#" onclick="deletePost('{{ $pst->id }}')">
+                        <i class="ti-trash">
+                        </i>
+                        Delete
+                    </a>
+                  </td>
+                </tr>
+              @endforeach
+              </tbody>
+            </table>
+          </div>
         </div>
         <!-- /.card-body -->
         <!-- This is the modal -->
@@ -401,12 +401,52 @@
 </script>
 
 <script>
+    // Function to detect channel from URL
+    $(document).ready(function() {
+        $('#link').on('input', function() {
+            var url = $(this).val();
+            if(url) {
+                var channel = '';
+                
+                // Extract domain from URL
+                try {
+                    var urlObj = new URL(url);
+                    var domain = urlObj.hostname.toLowerCase();
+                    
+                    // Check which platform the URL belongs to
+                    if(domain.includes('facebook.com') || domain.includes('fb.com')) {
+                        channel = 'facebook';
+                    } else if(domain.includes('instagram.com') || domain.includes('ig.com')) {
+                        channel = 'instagram';
+                    } else if(domain.includes('twitter.com') || domain.includes('x.com')) {
+                        channel = 'twitter';
+                    } else if(domain.includes('tiktok.com') || domain.includes('vm.tiktok.com')) {
+                        channel = 'tiktok';
+                    } else if(domain.includes('youtube.com') || domain.includes('youtu.be')) {
+                        channel = 'youtube';
+                    }
+                    
+                    // Set the channel dropdown value if detected
+                    if(channel) {
+                        $('#channel').val(channel);
+                    }
+                } catch(e) {
+                    // Invalid URL, do nothing
+                    console.log("Invalid URL format");
+                }
+            }
+        });
+    });
+</script>
+
+<script>
      $(document).ready( function () {
         $('#myTable').DataTable({
                     // Set the DOM structure: 'l' for length changing input, 'B' for buttons, 'f' for filtering input, 'r' for processing display, 't' for the table, 'i' for table info, 'p' for pagination control
                     dom: 'lBfrtip',
                     // Set 'paging' to false to disable pagination
                     paging: false,
+                    scrollX: true,
                     // Define buttons to add to the table
                     buttons: [
                         // Copy button with footer enabled
@@ -452,4 +492,87 @@
   
 
   </script>
+
+  <script>
+$(document).ready(function() {
+    // Listen for click events on refresh metrics buttons
+    $('.refresh-metrics').on('click', function() {
+        const button = $(this);
+        const postId = button.data('id');
+        const url = button.data('url');
+        const channel = button.data('channel');
+        
+        if (!url || !channel) {
+            $(`#status-${postId}`).html('<small class="text-danger">Missing URL or channel</small>');
+            return;
+        }
+        
+        button.attr('disabled', true);
+        $(`#status-${postId}`).html('<small class="text-info">Fetching...</small>');
+        
+        // Make AJAX request to fetch the metrics
+        $.ajax({
+            url: '/api/fetch-social-metrics',
+            method: 'POST',
+            data: {
+                url: url,
+                channel: channel,
+                _token: '{{ csrf_token() }}'
+            },
+            success: function(response) {
+                if (response.success) {
+                    // Update the metrics in the table
+                    $(`#view-${postId}`).text(response.data.views || 0);
+                    $(`#comment-${postId}`).text(response.data.comments || 0);
+                    $(`#like-${postId}`).text(response.data.likes || 0);
+                    $(`#share-${postId}`).text(response.data.shares || 0);
+                    $(`#save-${postId}`).text(response.data.saves || 0);
+                    
+                    // Add a visual indication that the data was updated
+                    $(`#view-${postId}, #comment-${postId}, #like-${postId}, #share-${postId}, #save-${postId}`).addClass('text-success font-weight-bold');
+                    setTimeout(function() {
+                        $(`#view-${postId}, #comment-${postId}, #like-${postId}, #share-${postId}, #save-${postId}`).removeClass('text-success font-weight-bold');
+                    }, 3000);
+                    
+                    $(`#status-${postId}`).html('<small class="text-success">Updated!</small>');
+                    
+                    // Also update the database with new metrics
+                    updateDatabaseMetrics(postId, response.data);
+                } else {
+                    $(`#status-${postId}`).html(`<small class="text-danger">${response.message}</small>`);
+                }
+            },
+            error: function(xhr) {
+                $(`#status-${postId}`).html(`<small class="text-danger">Error: ${xhr.responseJSON?.message || 'Unknown error'}</small>`);
+            },
+            complete: function() {
+                button.attr('disabled', false);
+                // Clear status message after 5 seconds
+                setTimeout(function() {
+                    $(`#status-${postId}`).html('');
+                }, 5000);
+            }
+        });
+    });
+    
+    // Function to update the database with new metrics
+    function updateDatabaseMetrics(postId, metricsData) {
+        $.ajax({
+            url: `/api/update-post-metrics/${postId}`,
+            method: 'POST',
+            data: {
+                views: metricsData.views || 0,
+                comments: metricsData.comments || 0,
+                likes: metricsData.likes || 0,
+                shares: metricsData.shares || 0,
+                saves: metricsData.saves || 0,
+                _token: '{{ csrf_token() }}'
+            },
+            error: function(xhr) {
+                console.error('Failed to update database:', xhr.responseText);
+            }
+        });
+    }
+});
+</script>
 @endsection

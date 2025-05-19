@@ -39,6 +39,8 @@
           <div class="form-group">
             <label>Link</label>
             <input type="url" name="link" id="link" class="form-control" value="{{ $data['post']->link }}" required>
+            <button type="button" id="fetchMetrics" class="btn btn-sm btn-info mt-2">Fetch Metrics</button>
+            <span id="fetchStatus" class="ml-2"></span>
           </div>
         </div>
         <div>
@@ -109,4 +111,84 @@
     $('#uploadModal2').modal('hide');
 
   }
+</script>
+
+<script>
+    // Function to detect channel from URL
+    $(document).ready(function() {
+        $('#link').on('input', function() {
+            var url = $(this).val();
+            if(url) {
+                var channel = '';
+                
+                // Extract domain from URL
+                try {
+                    var urlObj = new URL(url);
+                    var domain = urlObj.hostname.toLowerCase();
+                    
+                    // Check which platform the URL belongs to
+                    if(domain.includes('facebook.com') || domain.includes('fb.com')) {
+                        channel = 'facebook';
+                    } else if(domain.includes('instagram.com') || domain.includes('ig.com')) {
+                        channel = 'instagram';
+                    } else if(domain.includes('twitter.com') || domain.includes('x.com')) {
+                        channel = 'twitter';
+                    } else if(domain.includes('tiktok.com') || domain.includes('vm.tiktok.com')) {
+                        channel = 'tiktok';
+                    } else if(domain.includes('youtube.com') || domain.includes('youtu.be')) {
+                        channel = 'youtube';
+                    }
+                    
+                    // Set the channel dropdown value if detected
+                    if(channel) {
+                        $('#channel').val(channel);
+                    }
+                } catch(e) {
+                    // Invalid URL, do nothing
+                    console.log("Invalid URL format");
+                }
+            }
+        });
+
+        // Add event listener for the fetch metrics button
+        $('#fetchMetrics').on('click', function() {
+            var url = $('#link').val();
+            var channel = $('#channel').val();
+            
+            if (!url || !channel || channel === '-') {
+                $('#fetchStatus').html('<span class="text-danger">Please enter a valid URL and select a channel</span>');
+                return;
+            }
+
+            $('#fetchStatus').html('<span class="text-info">Fetching data...</span>');
+            
+            // Make AJAX request to fetch metrics
+            $.ajax({
+                url: '/api/fetch-social-metrics',
+                method: 'POST',
+                data: {
+                    url: url,
+                    channel: channel,
+                    _token: $('input[name="_token"]').val()
+                },
+                success: function(response) {
+                    if (response.success) {
+                        // Update form fields with fetched data
+                        $('#view').val(response.data.views || 0);
+                        $('#comment').val(response.data.comments || 0);
+                        $('#like').val(response.data.likes || 0);
+                        $('#share').val(response.data.shares || 0);
+                        $('#save').val(response.data.saves || 0);
+                        
+                        $('#fetchStatus').html('<span class="text-success">Data fetched successfully</span>');
+                    } else {
+                        $('#fetchStatus').html('<span class="text-danger">' + response.message + '</span>');
+                    }
+                },
+                error: function(xhr) {
+                    $('#fetchStatus').html('<span class="text-danger">Error fetching data: ' + (xhr.responseJSON?.message || 'Unknown error') + '</span>');
+                }
+            });
+        });
+    });
 </script>

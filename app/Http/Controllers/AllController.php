@@ -226,6 +226,71 @@ class AllController extends Controller
 
     }
 
+    public function postingReport()
+    {
+
+        return view('alluser.post.report');
+
+    }
+
+    public function getPostingReport(Request $request)
+    {
+        $from = $request->from;
+        $to = $request->to;
+
+        $data['staff'] = DB::table('users')->get();
+
+        foreach($data['staff'] as $key => $staff)
+        {
+            $data['post'][$key] = DB::table('tblposting')
+            ->whereBetween('post_date', [$from, $to])
+            ->where('staff_ic', $staff->ic)->get();
+
+            // Initialize counters before the loop
+            $facebookCount = 0;
+            $twitterCount = 0;
+            $instagramCount = 0;
+            $youtubeCount = 0;
+            $tiktokCount = 0;
+            $whatsappCount = 0;
+            $totalCount = 0;
+            
+            foreach($data['post'][$key] as $key2 => $post)
+            {
+                if ($post->channel == 'facebook') {
+                    $facebookCount++;
+                }
+                if ($post->channel == 'twitter') {
+                    $twitterCount++;
+                }
+                if ($post->channel == 'instagram') {
+                    $instagramCount++;
+                }
+                if ($post->channel == 'youtube') {
+                    $youtubeCount++;
+                }
+                if ($post->channel == 'tiktok') {
+                    $tiktokCount++;
+                }
+                if ($post->channel == 'whatsapp') {
+                    $whatsappCount++;
+                }
+                $totalCount++;
+            }
+
+            // Store the counts in $data for this $key
+            $data['facebook'][$key] = $facebookCount;
+            $data['twitter'][$key] = $twitterCount;
+            $data['instagram'][$key] = $instagramCount;
+            $data['youtube'][$key] = $youtubeCount;
+            $data['tiktok'][$key] = $tiktokCount;
+            $data['whatsapp'][$key] = $whatsappCount;
+            $data['total'][$key] = $totalCount;
+        }
+
+        return response()->json($data);
+    }
+
     public function studentSPM()
     {
 
