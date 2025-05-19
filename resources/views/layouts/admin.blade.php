@@ -303,6 +303,7 @@
 					<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
 						<li><a href="{{ route('posting.admin') }}">Report Posting</a></li>
 						<li><a href="{{ route('posting.staff') }}">Share Posting</a></li>
+						<li><a href="{{ route('posting.admin.postingReport') }}">Posting Report</a></li>
 					</ul>
 				</li> 
 
