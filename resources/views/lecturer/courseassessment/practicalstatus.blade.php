@@ -147,6 +147,11 @@
                                         </i>
                                         Students
                                     </a>
+                                    <a class="btn btn-danger btn-sm mr-2" onclick="deleteStdAssign('{{ $sts->id }}')" {{ !empty($period) ? ($period && \Carbon\Carbon::parse(now())->format('Y-m-d') >= \Carbon\Carbon::parse($period->Start)->format('Y-m-d') && \Carbon\Carbon::parse(now())->format('Y-m-d') <= \Carbon\Carbon::parse($period->End)->format('Y-m-d') && in_array(auth()->user()->ic, json_decode($period->user_ic)) && in_array(Session::get('SessionID'), json_decode($period->session)) ? '' : 'hidden') : ''}}>
+                                      <i class="ti-trash">
+                                      </i>
+                                      Delete
+                                    </a>
                                   </td>                                               
                                   @endforeach
                                 @else
@@ -230,6 +235,33 @@
             }
         });
 
+    }
+
+    function deleteStdAssign(id){     
+      Swal.fire({
+    title: "Are you sure?",
+    text: "This will be permanent",
+    showCancelButton: true,
+    confirmButtonText: "Yes, delete it!"
+    }).then(function(res){
+      
+      if (res.isConfirmed){
+                $.ajax({
+                    headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
+                    url      : "{{ url('lecturer/practical/status/delete') }}",
+                    method   : 'DELETE',
+                    data 	 : {id:id},
+                    error:function(err){
+                        alert("Error");
+                        console.log(err);
+                    },
+                    success  : function(data){
+                        window.location.reload();
+                        alert("success");
+                    }
+                });
+            }
+        });
     }
 
 </script>

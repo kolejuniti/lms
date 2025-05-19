@@ -467,9 +467,10 @@ Route::post('/lecturer/practical/insert', [App\Http\Controllers\PracticalControl
 Route::post('/lecturer/practical/getStatus', [App\Http\Controllers\PracticalController::class, 'getStatus']);
 Route::post('/lecturer/practical/updatepracticalresult', [App\Http\Controllers\PracticalController::class, 'updatepracticalresult']);
 Route::get('/lecturer/practical/{id}/{practical}', [App\Http\Controllers\PracticalController::class, 'lecturerpracticalstatus'])->name('lecturer.practical.status');
+Route::delete('/lecturer/practical/status/delete', [App\Http\Controllers\PracticalController::class, 'deletepracticalstatus']);
 Route::get('/lecturer/practical/{practicalid}/{userid}/result', [App\Http\Controllers\PracticalController::class, 'practicalresult']);
 Route::post('/lecturer/practical/getChapters', [App\Http\Controllers\PracticalController::class, 'getChapters']);
-
+Route::post('/lecturer/practical/deletepractical', [App\Http\Controllers\PracticalController::class, 'deletepractical']);
 
 Route::get('/lecturer/other/{id}', [App\Http\Controllers\OtherController::class, 'otherlist'])->name('lecturer.other');
 Route::get('/lecturer/other/{id}/create', [App\Http\Controllers\OtherController::class, 'othercreate'])->name('lecturer.other.create');

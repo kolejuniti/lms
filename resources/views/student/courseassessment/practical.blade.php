@@ -106,16 +106,6 @@
                                     </i>
                                     Students
                                 </a>
-                                <a class="btn btn-info btn-sm btn-sm mr-2" href="#">
-                                    <i class="ti-pencil-alt">
-                                    </i>
-                                    Edit
-                                </a>
-                                <a class="btn btn-danger btn-sm" href="#">
-                                    <i class="ti-trash">
-                                    </i>
-                                    Delete
-                                </a>
                               </td>
                             </tr>                            
                             @endforeach

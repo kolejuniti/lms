@@ -56,6 +56,33 @@ class PracticalController extends Controller
         return view('lecturer.courseassessment.practical', compact('data', 'group', 'chapter'));
     }
 
+    public function deletepractical(Request $request)
+    {
+
+        try {
+
+            $practical = DB::table('tblclasspractical')->where('id', $request->id)->first();
+
+            if($practical->status != 3)
+            {
+            DB::table('tblclasspractical')->where('id', $request->id)->update([
+                'status' => 3
+            ]);
+
+            return true;
+
+            }else{
+
+                die;
+
+            }
+          
+          } catch (\Exception $e) {
+          
+              return $e->getMessage();
+          }
+    }
+
     public function practicalcreate()
     {
         $user = Auth::user();
@@ -247,6 +274,20 @@ class PracticalController extends Controller
 
         return view('lecturer.courseassessment.practicalstatus', compact('practical', 'status', 'group'));
 
+    }
+
+    public function deletepracticalstatus(Request $request)
+    {
+        $data = DB::table('tblclassstudentpractical')->where('id', $request->id)->first();
+
+        Storage::disk('linode')->delete($data->content);
+
+        Storage::disk('linode')->delete($data->return_content);
+
+        DB::table('tblclassstudentpractical')->where('id', $request->id)->delete();
+
+        return true;
+        
     }
 
     public function practicalresult(Request $request){
