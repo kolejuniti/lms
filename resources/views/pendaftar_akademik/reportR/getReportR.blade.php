@@ -92,107 +92,114 @@
         </div>
       </div>
     </div>
-    <div class="table-responsive">
-      <table id="myTable" class="table table-striped projects display dataTable">
-      <thead>
-          <tr>
-              <th style="width: 1%">
-                  No.
-              </th>
-              <th style="width: 15%">
-                  Name
-              </th>
-              <th style="width: 5%">
-                  No. IC
-              </th>
-              <th style="width: 5%">
-                  No.Matric
-              </th>
-              <th style="width: 5%">
-                  Phone No.
-              </th>
-              <th style="width: 5%">
-                  Intake Session
-              </th>
-              <th style="width: 5%">
-                  Date Offer
-              </th>
-              <th style="width: 5%">
-                  Program
-              </th>
-              <th style="width: 5%">
-                  Qualification
-              </th>
-              <th style="width: 5%">
-                  Gender
-              </th>
-              <th style="width: 5%">
-                  EA
-              </th>
-              <th style="width: 5%">
-                  Type
-              </th>
-              <th style="width: 5%">
-                  Amount
-              </th>
-          </tr>
-      </thead>
-      <tbody id="table">
-      @foreach ($data['student'] as $key => $rgs)
-        <tr>
-          <td>
-          {{ $key+1 }}
-          </td>
-          <td>
-          {{ $rgs->name }}
-          </td>
-          <td>
-          {{ $rgs->ic }}
-          </td>
-          <td>
-          {{ $rgs->no_matric }}
-          </td>
-          <td>
-          {{ $rgs->no_tel }}
-          </td>
-          <td>
-          {{ $rgs->SessionName }}
-          </td>
-          <td>
-          {{ $rgs->date_offer }}
-          </td>
-          <td>
-          {{ $rgs->progcode }}
-          </td>
-          <td>
-          {{ $data['qua'][$key] }}
-          </td>
-          <td>
-          {{ $rgs->sex }}
-          </td>
-          <td>
-          {{ $rgs->ea }}
-          </td>
-          <td>
-          {{ $data['result'][$key]->group_alias }}
-          </td>
-          <td>
-          {{ $data['result'][$key]->amount }}
-          </td>
-        </tr>
-      @endforeach
-      </tbody>
-      <tfoot>
-          <tr>
-              <td colspan="12" style="text-align: center">
-                  TOTAL STUDENTS
-              </td>
-              <td>
-                  {{ $data['student']->count() }}
-              </td>
+    <div class="table-container" id="students-table-container">
+      <div class="individual-export-buttons mb-2">
+        <button class="btn btn-sm btn-info export-excel" data-table="myTable"><i class="fa fa-file-excel-o"></i> Excel</button>
+        <button class="btn btn-sm btn-danger export-pdf" data-table="myTable"><i class="fa fa-file-pdf-o"></i> PDF</button>
+        <button class="btn btn-sm btn-secondary export-print" data-table="myTable"><i class="fa fa-print"></i> Print</button>
+      </div>
+      <div class="table-responsive">
+        <table id="myTable" class="table table-striped projects display dataTable">
+        <thead>
+            <tr>
+                <th style="width: 1%">
+                    No.
+                </th>
+                <th style="width: 15%">
+                    Name
+                </th>
+                <th style="width: 5%">
+                    No. IC
+                </th>
+                <th style="width: 5%">
+                    No.Matric
+                </th>
+                <th style="width: 5%">
+                    Phone No.
+                </th>
+                <th style="width: 5%">
+                    Intake Session
+                </th>
+                <th style="width: 5%">
+                    Date Offer
+                </th>
+                <th style="width: 5%">
+                    Program
+                </th>
+                <th style="width: 5%">
+                    Qualification
+                </th>
+                <th style="width: 5%">
+                    Gender
+                </th>
+                <th style="width: 5%">
+                    EA
+                </th>
+                <th style="width: 5%">
+                    Type
+                </th>
+                <th style="width: 5%">
+                    Amount
+                </th>
             </tr>
-      </tfoot>
-    </table>
+        </thead>
+        <tbody id="table">
+        @foreach ($data['student'] as $key => $rgs)
+          <tr>
+            <td>
+            {{ $key+1 }}
+            </td>
+            <td>
+            {{ $rgs->name }}
+            </td>
+            <td>
+            {{ $rgs->ic }}
+            </td>
+            <td>
+            {{ $rgs->no_matric }}
+            </td>
+            <td>
+            {{ $rgs->no_tel }}
+            </td>
+            <td>
+            {{ $rgs->SessionName }}
+            </td>
+            <td>
+            {{ $rgs->date_offer }}
+            </td>
+            <td>
+            {{ $rgs->progcode }}
+            </td>
+            <td>
+            {{ $data['qua'][$key] }}
+            </td>
+            <td>
+            {{ $rgs->sex }}
+            </td>
+            <td>
+            {{ $rgs->ea }}
+            </td>
+            <td>
+            {{ $data['result'][$key]->group_alias }}
+            </td>
+            <td>
+            {{ $data['result'][$key]->amount }}
+            </td>
+          </tr>
+        @endforeach
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="12" style="text-align: center">
+                    TOTAL STUDENTS
+                </td>
+                <td>
+                    {{ $data['student']->count() }}
+                </td>
+              </tr>
+        </tfoot>
+      </table>
+      </div>
     </div>
   </div>
   <!-- /.card-body -->
@@ -204,54 +211,62 @@
     <b>Student Aging Report</b>
   </div>
   <div class="card-body">
-    <div class="table-responsive">
-      <table class="table table-striped">
-        <thead>
-          <tr>
-            <th style="width: 50%">Days Range</th>
-            <th style="width: 50%">Number of Students</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>&lt;5 days</td>
-            <td>{{ $data['below5'] }}</td>
-          </tr>
-          <tr>
-            <td>5-9 days</td>
-            <td>{{ $data['below10'] }}</td>
-          </tr>
-          <tr>
-            <td>10-14 days</td>
-            <td>{{ $data['below15'] }}</td>
-          </tr>
-          <tr>
-            <td>15-19 days</td>
-            <td>{{ $data['below20'] }}</td>
-          </tr>
-          <tr>
-            <td>20-24 days</td>
-            <td>{{ $data['below25'] }}</td>
-          </tr>
-          <tr>
-            <td>25-29 days</td>
-            <td>{{ $data['below30'] }}</td>
-          </tr>
-          <tr>
-            <td>≥30 days</td>
-            <td>{{ $data['above30'] }}</td>
-          </tr>
-        </tbody>
-        <tfoot>
-          <tr>
-            <td style="text-align: center">
-              TOTAL STUDENTS
-            </td>
-            <td>{{ $data['student']->count() }}</td>
-          </tr>
-        </tfoot>
-      </table>
+    <div class="table-container" id="aging-table-container">
+      <div class="individual-export-buttons mb-2">
+        <button class="btn btn-sm btn-info export-excel" data-table="aging-table"><i class="fa fa-file-excel-o"></i> Excel</button>
+        <button class="btn btn-sm btn-danger export-pdf" data-table="aging-table"><i class="fa fa-file-pdf-o"></i> PDF</button>
+        <button class="btn btn-sm btn-secondary export-print" data-table="aging-table"><i class="fa fa-print"></i> Print</button>
+      </div>
+      <div class="table-responsive">
+        <table id="aging-table" class="table table-striped">
+          <thead>
+            <tr>
+              <th style="width: 50%">Days Range</th>
+              <th style="width: 50%">Number of Students</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>&lt;5 days</td>
+              <td>{{ $data['below5'] }}</td>
+            </tr>
+            <tr>
+              <td>5-9 days</td>
+              <td>{{ $data['below10'] }}</td>
+            </tr>
+            <tr>
+              <td>10-14 days</td>
+              <td>{{ $data['below15'] }}</td>
+            </tr>
+            <tr>
+              <td>15-19 days</td>
+              <td>{{ $data['below20'] }}</td>
+            </tr>
+            <tr>
+              <td>20-24 days</td>
+              <td>{{ $data['below25'] }}</td>
+            </tr>
+            <tr>
+              <td>25-29 days</td>
+              <td>{{ $data['below30'] }}</td>
+            </tr>
+            <tr>
+              <td>≥30 days</td>
+              <td>{{ $data['above30'] }}</td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td style="text-align: center">
+                TOTAL STUDENTS
+              </td>
+              <td>{{ $data['student']->count() }}</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
     </div>
   </div>
+  <!-- /.card-body -->
 </div>
 
