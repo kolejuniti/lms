@@ -3741,6 +3741,8 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
 
         $data['session'] = DB::table('sessions')->get();
 
+        $data['EA'] = DB::table('tbledu_advisor')->get();
+
         return view('pendaftar_akademik.reportR.reportR', compact('data'));
 
     }
@@ -3773,6 +3775,9 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
                                )
                                ->when($request->session != '', function ($query) use ($request){
                                     return $query->where('students.intake', $request->session);
+                               })
+                               ->when($request->EA != '', function ($query) use ($request){
+                                    return $query->where('tblstudent_personal.advisor_id', $request->EA);
                                })
                                ->select('students.*', 'tblstudent_personal.no_tel','tblstudent_personal.qualification', 'tblsex.code AS sex', 'sessions.SessionName', 'tblprogramme.progcode', 'tbledu_advisor.name AS ea')
                                ->groupBy('students.ic')

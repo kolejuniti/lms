@@ -68,7 +68,18 @@
                 </select>
               </div>
             </div>
-        </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label class="form-label" for="EA">EA</label>
+                <select class="form-select" id="EA" name="EA">
+                  <option value="-" selected disabled>-</option>
+                  @foreach($data['EA'] as $ea)
+                  <option value="{{ $ea->id }}">{{ $ea->name }}</option>
+                  @endforeach
+                </select>
+              </div>
+            </div>
+          </div>
           <div id="form-student">
             <!-- Combined export buttons will be added after data is loaded -->
           </div>
@@ -116,6 +127,7 @@
     var from = '';
     var to = '';
     var session = '';
+    var EA = '';
     var dataTable = null;
 
     // Document ready function
@@ -126,18 +138,23 @@
     $(document).on('change', '#from', function(e){
       from = $(e.target).val();
       updateCombinedExportButtons();
-      getStudent(from,to,session);
+      getStudent(from,to,session,EA);
     });
 
     $(document).on('change', '#to', function(e){
       to = $(e.target).val();
       updateCombinedExportButtons();
-      getStudent(from,to,session);
+      getStudent(from,to,session,EA);
     });
 
     $(document).on('change', '#session', function(e){
       session = $(e.target).val();
-      getStudent(from,to,session);
+      getStudent(from,to,session,EA);
+    });
+
+    $(document).on('change', '#EA', function(e){
+      EA = $(e.target).val();
+      getStudent(from,to,session,EA);
     });
     
     // Column visibility toggle functionality - use direct binding for dynamically loaded content
@@ -203,13 +220,13 @@
       }
     }
 
-  function getStudent(from,to,session)
+  function getStudent(from,to,session,EA)
   {
     return $.ajax({
             headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
             url      : "{{ url('/AR/reportR/getStudentReportR') }}",
             method   : 'GET',
-            data 	 : {from: from, to: to, session: session},
+            data 	 : {from: from, to: to, session: session, EA: EA},
             error:function(err){
                 alert("Error");
                 console.log(err);
