@@ -244,7 +244,7 @@
         </tbody>
         <tfoot>
           <tr>
-            <td colspan="2" style="text-align: center">
+            <td style="text-align: center">
               TOTAL STUDENTS
             </td>
             <td>{{ $data['student']->count() }}</td>
