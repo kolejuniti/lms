@@ -242,6 +242,14 @@
             <td>{{ $data['above30'] }}</td>
           </tr>
         </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="2" style="text-align: center">
+              TOTAL STUDENTS
+            </td>
+            <td>{{ $data['student']->count() }}</td>
+          </tr>
+        </tfoot>
       </table>
     </div>
   </div>
