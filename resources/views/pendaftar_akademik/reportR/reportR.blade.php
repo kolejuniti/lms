@@ -1,7 +1,10 @@
 @extends((Auth::user()->usrtype == "RGS") ? 'layouts.pendaftar' : (Auth::user()->usrtype == "UR" ? 'layouts.ur' : ''))
 
-
 @section('main')
+
+<!-- Add Select2 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
 
 <!-- Content Header (Page header) -->
 <div class="content-wrapper" style="min-height: 695.8px;">
@@ -71,7 +74,7 @@
             <div class="col-md-6">
               <div class="form-group">
                 <label class="form-label" for="EA">EA</label>
-                <select class="form-select" id="EA" name="EA">
+                <select class="form-select select2" id="EA" name="EA" style="width: 100%">
                   <option value="-" selected disabled>-</option>
                   @foreach($data['EA'] as $ea)
                   <option value="{{ $ea->id }}">{{ $ea->name }}</option>
@@ -110,6 +113,9 @@
 
 <!-- Page specific script -->
 <script src="{{ asset('assets/src/js/pages/data-table.js') }}"></script>
+
+<!-- Add Select2 JS after jQuery -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 <script>
      $(document).ready( function () {
@@ -473,6 +479,26 @@
     $('#printButton').on('click', function(e) {
       e.preventDefault();
       printReport();
+    });
+
+    // Initialize Select2
+    $('.select2').select2({
+      theme: 'bootstrap-5',
+      width: '100%',
+      placeholder: 'Search EA...',
+      allowClear: true
+    });
+
+    // Handle Select2 change event
+    $('#EA').on('select2:select', function (e) {
+      EA = $(this).val();
+      getStudent(from,to,session,EA);
+    });
+
+    // Handle Select2 clear event
+    $('#EA').on('select2:clear', function (e) {
+      EA = '-';
+      getStudent(from,to,session,EA);
     });
   });
 
