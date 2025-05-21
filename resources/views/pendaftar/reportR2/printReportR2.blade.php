@@ -1,4 +1,3 @@
-
 <head>
     <meta charset="utf-8">
    <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -124,7 +123,7 @@ tr:hover {
             <!-- Students -->
             <div class="card mb-3" id="stud_info">
                 <div class="card-header">
-                <b>Jumlah Bayaran Per Bulan</b>
+                <b>Jumlah Bayaran Per Minggu</b>
                 </div>
                 <div class="card-body p-0">
                 <table class="w-100 table table-bordered display margin-top-10 w-p100">
@@ -137,13 +136,25 @@ tr:hover {
                                 Bulan
                             </th>
                             <th style="width: 15%">
-                                Jumlah
+                                Jumlah Minggu
+                            </th>
+                            <th style="width: 15%">
+                                Jumlah Kumulatif
+                            </th>
+                            <th style="width: 15%">
+                                Jumlah Ditukar
+                            </th>
+                            <th style="width: 15%">
+                                Baki Pelajar
                             </th>
                         </tr>
                     </thead>
                     <tbody id="table">
                     @php
                     $total_allW = 0;
+                    $total_allC = 0;
+                    $total_allC2 = 0;
+                    $total_allB = 0;
                     @endphp
                     @foreach ($data['dateRange'] as $key => $week)
                         <tr>
@@ -156,9 +167,21 @@ tr:hover {
                         <td>
                         {{ $data['totalWeek'][$key]->total_week }}
                         </td>
+                        <td>
+                        {{ $data['countedPerWeek'][$key] }}
+                        </td>
+                        <td>
+                        {{ $data['totalConvert'][$key] }}
+                        </td>
+                        <td>
+                        {{ $data['totalWeek'][$key]->total_week - $data['totalConvert'][$key] }}
+                        </td>
                         </tr>
                         @php
                         $total_allW += $data['totalWeek'][$key]->total_week;
+                        $total_allC += $data['countedPerWeek'][$key];
+                        $total_allC2 += $data['totalConvert'][$key];
+                        $total_allB += $data['totalWeek'][$key]->total_week - $data['totalConvert'][$key];
                         @endphp
                     @endforeach
                     </tbody>
@@ -168,9 +191,18 @@ tr:hover {
                                 JUMLAH SEMUA
                             </td>
                             <td>
-                                {{  number_format($total_allW, 2) }}
+                                {{ $total_allW }}
                             </td>
-                          </tr>
+                            <td>
+                                {{ $total_allC }}
+                            </td>
+                            <td>
+                                {{ $total_allC2 }}
+                            </td>
+                            <td>
+                                {{ $total_allB }}
+                            </td>
+                        </tr>
                     </tfoot>
                 </table>
                 </div>
@@ -190,13 +222,25 @@ tr:hover {
                                 Tarikh
                             </th>
                             <th style="width: 15%">
-                                Jumlah
+                                Jumlah Hari
+                            </th>
+                            <th style="width: 15%">
+                                Jumlah Kumulatif
+                            </th>
+                            <th style="width: 15%">
+                                Jumlah Ditukar
+                            </th>
+                            <th style="width: 15%">
+                                Baki Pelajar
                             </th>
                         </tr>
                     </thead>
                     <tbody id="table">
                     @php
                     $total_allD = 0;
+                    $total_allQ = 0;
+                    $total_allZ = 0;
+                    $total_allB = 0;
                     @endphp
                     @foreach ($data['dateRange'] as $key => $week)
                     @foreach ($data['week'][$key] as $key2 => $day)
@@ -207,9 +251,21 @@ tr:hover {
                         <td>
                         {{ $data['totalDay'][$key][$key2]->total_day }}
                         </td>
+                        <td>
+                        {{ $data['countedPerDay'][$key][$key2] }}
+                        </td>
+                        <td>
+                        {{ $data['totalConvert2'][$key][$key2] }}
+                        </td>
+                        <td>
+                        {{ $data['totalDay'][$key][$key2]->total_day - $data['totalConvert2'][$key][$key2] }}
+                        </td>
                     </tr>
                     @php
                         $total_allD += $data['totalDay'][$key][$key2]->total_day;
+                        $total_allQ += $data['countedPerDay'][$key][$key2];
+                        $total_allZ += $data['totalConvert2'][$key][$key2];
+                        $total_allB += $data['totalDay'][$key][$key2]->total_day - $data['totalConvert2'][$key][$key2];
                     @endphp
                     @endforeach
                     @endforeach
@@ -220,9 +276,18 @@ tr:hover {
                                 JUMLAH SEMUA
                             </td>
                             <td>
-                                {{  number_format($total_allD, 2) }}
+                                {{ $total_allD }}
                             </td>
-                            </tr>
+                            <td>
+                                {{ $total_allQ }}
+                            </td>
+                            <td>
+                                {{ $total_allZ }}
+                            </td>
+                            <td>
+                                {{ $total_allB }}
+                            </td>
+                        </tr>
                     </tfoot>
                 </table>
                 </div>
