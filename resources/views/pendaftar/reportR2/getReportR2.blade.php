@@ -141,6 +141,7 @@
         $total_allQ = 0;
         $total_allZ = 0;
         $total_allB = 0;
+        $final_cumulative = 0;
         @endphp
         @foreach ($data['dateRange'] as $key => $week)
         @foreach ($data['week'][$key] as $key2 => $day)
@@ -163,7 +164,7 @@
         </tr>
         @php
           $total_allD += $data['totalDay'][$key][$key2]->total_day;
-          $total_allQ += $data['countedPerDay'][$key][$key2];
+          $final_cumulative = $data['countedPerDay'][$key][$key2];
           $total_allZ += $data['totalConvert2'][$key][$key2];
           $total_allB += $data['totalDay'][$key][$key2]->total_day - $data['totalConvert2'][$key][$key2];
         @endphp
@@ -179,7 +180,7 @@
                     {{  $total_allD }}
                 </td>
                 <td>
-                    {{  $total_allQ }}
+                    {{  $final_cumulative }}
                 </td>
                 <td>
                     {{  $total_allZ }}
