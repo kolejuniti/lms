@@ -138,8 +138,8 @@
         <tbody id="table">
         @php
         $total_allD = 0;
-        $total_allC = 0;
-        $total_allC2 = 0;
+        $total_allQ = 0;
+        $total_allZ = 0;
         $total_allB = 0;
         @endphp
         @foreach ($data['dateRange'] as $key => $week)
@@ -163,8 +163,8 @@
         </tr>
         @php
           $total_allD += $data['totalDay'][$key][$key2]->total_day;
-          $total_allC += $data['countedPerDay'][$key][$key2];
-          $total_allC2 += $data['totalConvert2'][$key][$key2];
+          $total_allQ += $data['countedPerDay'][$key][$key2];
+          $total_allZ += $data['totalConvert2'][$key][$key2];
           $total_allB += $data['totalDay'][$key][$key2]->total_day - $data['totalConvert2'][$key][$key2];
         @endphp
         @endforeach
@@ -179,10 +179,10 @@
                     {{  $total_allD }}
                 </td>
                 <td>
-                    {{  $total_allC }}
+                    {{  $total_allQ }}
                 </td>
                 <td>
-                    {{  $total_allC2 }}
+                    {{  $total_allZ }}
                 </td>
                 <td>
                     {{  $total_allB }}
