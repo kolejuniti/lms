@@ -3819,17 +3819,22 @@ class PendaftarController extends Controller
                     $endDate = end($week['days']);     // Get the last date of the week
                 
                     // Fetch the student_ic values for the current week, excluding already counted ones
-                    $currentWeekStudents = DB::table('tblpayment')
-                                            ->join('students', 'tblpayment.student_ic', '=', 'students.ic')
+                    $currentWeekStudents = DB::table('tblpayment as p1')
+                                            ->join('students', 'p1.student_ic', '=', 'students.ic')
+                                            ->join(DB::raw('(SELECT student_ic, MIN(date) as first_payment_date 
+                                                    FROM tblpayment 
+                                                    GROUP BY student_ic) as p2'), function($join) {
+                                                $join->on('p1.student_ic', '=', 'p2.student_ic')
+                                                     ->on('p1.date', '=', 'p2.first_payment_date');
+                                            })
                                             ->where([
-                                                ['tblpayment.process_status_id', 2],
-                                                ['tblpayment.process_type_id', 1], 
-                                                ['tblpayment.semester_id', 1]
+                                                ['p1.process_status_id', 2],
+                                                ['p1.process_type_id', 1], 
+                                                ['p1.semester_id', 1]
                                             ])
-                                            ->whereColumn('tblpayment.date', '=', 'students.date_add')  // Use whereColumn for comparing two columns
-                                            ->whereBetween('tblpayment.add_date', [$startDate, $endDate])
-                                            ->whereNotIn('tblpayment.student_ic', $alreadyCountedStudents)
-                                            ->pluck('tblpayment.student_ic')
+                                            ->whereBetween('p1.add_date', [$startDate, $endDate])
+                                            ->whereNotIn('p1.student_ic', $alreadyCountedStudents)
+                                            ->pluck('p1.student_ic')
                                             ->unique()
                                             ->toArray();
 
@@ -3850,31 +3855,41 @@ class PendaftarController extends Controller
                     foreach($data['week'][$key] AS $key2 => $day)
                     {
 
-                        $data['totalDay'][$key][$key2] = count(DB::table('tblpayment')
-                                                        ->join('students', 'tblpayment.student_ic', '=', 'students.ic')
+                        $data['totalDay'][$key][$key2] = count(DB::table('tblpayment as p1')
+                                                        ->join('students', 'p1.student_ic', '=', 'students.ic')
+                                                        ->join(DB::raw('(SELECT student_ic, MIN(date) as first_payment_date 
+                                                                FROM tblpayment 
+                                                                GROUP BY student_ic) as p2'), function($join) {
+                                                            $join->on('p1.student_ic', '=', 'p2.student_ic')
+                                                                 ->on('p1.date', '=', 'p2.first_payment_date');
+                                                        })
                                                         ->where([
-                                                            ['tblpayment.process_status_id', 2],
-                                                            ['tblpayment.process_type_id', 1], 
-                                                            ['tblpayment.semester_id', 1]
+                                                            ['p1.process_status_id', 2],
+                                                            ['p1.process_type_id', 1], 
+                                                            ['p1.semester_id', 1]
                                                         ])
-                                                        ->whereColumn('tblpayment.date', '=', 'students.date_add')  // Use whereColumn for comparing two columns
-                                                        ->where('tblpayment.date', $day)
-                                                        ->select('tblpayment.id')
-                                                        ->groupBy('tblpayment.student_ic')
+                                                        ->where('p1.date', $day)
+                                                        ->select('p1.id')
+                                                        ->groupBy('p1.student_ic')
                                                         ->get());
 
                         // Fetch the student_ic values for the current week, excluding already counted ones
-                        $currentWeekStudents2 = DB::table('tblpayment')
-                                        ->join('students', 'tblpayment.student_ic', '=', 'students.ic')
+                        $currentWeekStudents2 = DB::table('tblpayment as p1')
+                                        ->join('students', 'p1.student_ic', '=', 'students.ic')
+                                        ->join(DB::raw('(SELECT student_ic, MIN(date) as first_payment_date 
+                                                FROM tblpayment 
+                                                GROUP BY student_ic) as p2'), function($join) {
+                                            $join->on('p1.student_ic', '=', 'p2.student_ic')
+                                                 ->on('p1.date', '=', 'p2.first_payment_date');
+                                        })
                                         ->where([
-                                            ['tblpayment.process_status_id', 2],
-                                            ['tblpayment.process_type_id', 1], 
-                                            ['tblpayment.semester_id', 1]
+                                            ['p1.process_status_id', 2],
+                                            ['p1.process_type_id', 1], 
+                                            ['p1.semester_id', 1]
                                         ])
-                                        ->whereColumn('tblpayment.date', '=', 'students.date_add')  // Use whereColumn for comparing two columns
-                                        ->where('tblpayment.date', $day)
-                                        ->whereNotIn('tblpayment.student_ic', $alreadyCountedStudents2)
-                                        ->pluck('tblpayment.student_ic')
+                                        ->where('p1.date', $day)
+                                        ->whereNotIn('p1.student_ic', $alreadyCountedStudents2)
+                                        ->pluck('p1.student_ic')
                                         ->unique()
                                         ->toArray();
 
