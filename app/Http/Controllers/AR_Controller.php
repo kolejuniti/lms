@@ -3784,12 +3784,32 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
                                ->get();
 
             $data['below5'] = 0;
+            $data['below5willregister'] = 0;
+            $data['below5KIV'] = 0;
+
             $data['below10'] = 0;
+            $data['below10willregister'] = 0;
+            $data['below10KIV'] = 0;
+
             $data['below15'] = 0;
+            $data['below15willregister'] = 0;
+            $data['below15KIV'] = 0;
+
             $data['below20'] = 0;
+            $data['below20willregister'] = 0;
+            $data['below20KIV'] = 0;
+
             $data['below25'] = 0;
+            $data['below25willregister'] = 0;
+            $data['below25KIV'] = 0;
+
             $data['below30'] = 0;
+            $data['below30willregister'] = 0;
+            $data['below30KIV'] = 0;
+
             $data['above30'] = 0;
+            $data['above30willregister'] = 0;
+            $data['above30KIV'] = 0;
 
             foreach($data['student'] as $key => $student)
             {
@@ -3799,30 +3819,80 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
                 if($daysDiff < 5)
                 {
                     $data['below5']++;
+
+                    if(now() > $student->date_offer)
+                    {
+                        $data['below5KIV']++;
+                    }
+                    else
+                    {
+                        $data['below5willregister']++;
+                    }
                 }
                 elseif($daysDiff < 10)
                 {
                     $data['below10']++;
-                }
-                elseif($daysDiff < 15)
-                {
-                    $data['below15']++;
+
+                    if(now() > $student->date_offer)
+                    {
+                        $data['below10KIV']++;
+                    }
+                    else
+                    {
+                        $data['below10willregister']++;
+                    }
                 }
                 elseif($daysDiff < 20)
                 {
                     $data['below20']++;
+
+                    if(now() > $student->date_offer)
+                    {
+                        $data['below20KIV']++;
+                    }
+                    else
+                    {
+                        $data['below20willregister']++;
+                    }
                 }
                 elseif($daysDiff < 25)
                 {
                     $data['below25']++;
+
+                    if(now() > $student->date_offer)
+                    {
+                        $data['below25KIV']++;
+                    }
+                    else
+                    {
+                        $data['below25willregister']++;
+                    }
                 }
                 elseif($daysDiff < 30)
                 {
                     $data['below30']++;
+
+                    if(now() > $student->date_offer)
+                    {
+                        $data['below30KIV']++;
+                    }
+                    else
+                    {
+                        $data['below30willregister']++;
+                    }
                 }
                 else
                 {
                     $data['above30']++;
+
+                    if(now() > $student->date_offer)
+                    {
+                        $data['above30KIV']++;
+                    }
+                    else
+                    {
+                        $data['above30willregister']++;
+                    }
                 }
 
                 $payment_query = DB::table('tblpayment')

@@ -83,6 +83,14 @@
               </div>
             </div>
           </div>
+          <div class="row">
+            <div class="form-check">
+              <label class="form-check-label">
+                <input type="checkbox" class="form-check-input" name="confirmed" id="confirmed" value="checkedValue" checked>
+                Include Student Confirmed
+              </label>
+            </div>
+          </div>
           <div id="form-student">
             <!-- Combined export buttons will be added after data is loaded -->
           </div>

@@ -223,36 +223,52 @@
             <tr>
               <th style="width: 50%">Days Range</th>
               <th style="width: 50%">Number of Students</th>
+              <th style="width: 50%">Number of Students Will Register</th>
+              <th style="width: 50%">Number of Students KIV</th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td>&lt;5 days</td>
               <td>{{ $data['below5'] }}</td>
+              <td>{{ $data['below5willregister'] }}</td>
+              <td>{{ $data['below5KIV'] }}</td>
             </tr>
             <tr>
               <td>5-9 days</td>
               <td>{{ $data['below10'] }}</td>
+              <td>{{ $data['below10willregister'] }}</td>
+              <td>{{ $data['below10KIV'] }}</td>
             </tr>
             <tr>
               <td>10-14 days</td>
               <td>{{ $data['below15'] }}</td>
+              <td>{{ $data['below15willregister'] }}</td>
+              <td>{{ $data['below15KIV'] }}</td>
             </tr>
             <tr>
               <td>15-19 days</td>
               <td>{{ $data['below20'] }}</td>
+              <td>{{ $data['below20willregister'] }}</td>
+              <td>{{ $data['below20KIV'] }}</td>
             </tr>
             <tr>
               <td>20-24 days</td>
               <td>{{ $data['below25'] }}</td>
+              <td>{{ $data['below25willregister'] }}</td>
+              <td>{{ $data['below25KIV'] }}</td>
             </tr>
             <tr>
               <td>25-29 days</td>
               <td>{{ $data['below30'] }}</td>
+              <td>{{ $data['below30willregister'] }}</td>
+              <td>{{ $data['below30KIV'] }}</td>
             </tr>
             <tr>
               <td>≥30 days</td>
               <td>{{ $data['above30'] }}</td>
+              <td>{{ $data['above30willregister'] }}</td>
+              <td>{{ $data['above30KIV'] }}</td>
             </tr>
           </tbody>
           <tfoot>
