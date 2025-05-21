@@ -3845,7 +3845,7 @@ class PendaftarController extends Controller
                     $data['totalWeek'][$key] = (object) ['total_week' => $totalWeekCount];
                     $data['week'][$key] = $week['days'];
 
-                    $data['countedPerWeek'][$key] = (object) ['total_commulative' => $alreadyCountedStudents];
+                    $data['countedPerWeek'][$key] = count($alreadyCountedStudents);
 
                     // $totalStudentCount2 = $data['totalWeek'][$key] ? $data['totalWeek'][$key] : 0;
                     // $data['totalWeek'][$key] = (object) ['total_week' => $totalStudentCount2];
