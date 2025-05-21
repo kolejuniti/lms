@@ -3761,7 +3761,10 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
                                ->leftjoin('tblprogramme', 'students.program', 'tblprogramme.id')
                                ->leftjoin('tbledu_advisor', 'tblstudent_personal.advisor_id', 'tbledu_advisor.id')
                                ->join('tblpayment', 'students.ic', '=', 'tblpayment.student_ic')
-                            
+                               ->where([
+                                ['students.status', 1],
+                                ['students.semester', 1]
+                               ])
                                ->whereBetween('students.date_add', [$request->from, $request->to])
                                ->orderBy('students.date_add', 'asc')
                                ->groupBy('students.ic')

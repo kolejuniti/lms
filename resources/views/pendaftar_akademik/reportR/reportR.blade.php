@@ -86,7 +86,7 @@
           <div class="row">
             <div class="col-md-3 mb-1">
               <div class="form-check">
-                <input type="checkbox" class="form-check-input toggle-column" id="convert" value="convert" checked>
+                <input type="checkbox" class="form-check-input" id="convert" value="convert" checked>
                 <label class="form-check-label" for="convert">Include Student Convert</label>
               </div>
             </div>
