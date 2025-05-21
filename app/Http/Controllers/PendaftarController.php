@@ -3725,269 +3725,281 @@ class PendaftarController extends Controller
 
     public function getStudentReportR2(Request $request)
     {
-        if (!$request->from || !$request->to) {
-            return;
-        }
 
-        $start = Carbon::parse($request->from);
-        $end = Carbon::parse($request->to);
-        $endOfMonth = $start->copy()->endOfMonth();
+        if($request->from && $request->to)
+        {
+    
+            $start = Carbon::parse($request->from);
+            $end = Carbon::parse($request->to);
+            $end2 = $start->copy()->endOfMonth();
 
-        if ($end > $endOfMonth) {
-            return response()->json([
-                'error' => 'The end date cannot exceed the from date\'s month'
-            ]);
-        }
+            if($end <= $end2)
+            {
 
-        // Get all necessary data in single query for totalAll
-        $studentCountQuery = DB::table('tblpayment as p1')
-            ->join('students', 'p1.student_ic', '=', 'students.ic')
-            ->join(DB::raw('(SELECT student_ic, MIN(date) as first_payment_date 
-                    FROM tblpayment 
-                    GROUP BY student_ic) as p2'), function($join) {
-                $join->on('p1.student_ic', '=', 'p2.student_ic')
-                     ->on('p1.date', '=', 'p2.first_payment_date');
-            })
-            ->where([
-                ['p1.process_status_id', '=', 2],
-                ['p1.process_type_id', '=', 1],
-                ['p1.semester_id', '=', 1]
-            ])
-            ->whereBetween('p1.date', [$request->from, $request->to])
-            ->select('p1.student_ic')
-            ->distinct();
+                $data['totalAll'] = DB::table('tblpayment as p1')
+                                    ->join('students', 'p1.student_ic', '=', 'students.ic')
+                                    ->join(DB::raw('(SELECT student_ic, MIN(date) as first_payment_date 
+                                            FROM tblpayment 
+                                            GROUP BY student_ic) as p2'), function($join) {
+                                        $join->on('p1.student_ic', '=', 'p2.student_ic')
+                                             ->on('p1.date', '=', 'p2.first_payment_date');
+                                    })
+                                    ->where([
+                                        ['p1.process_status_id', '=', 2],
+                                        ['p1.process_type_id', '=', 1],
+                                        ['p1.semester_id', '=', 1]
+                                    ])
+                                    ->whereBetween('p1.date', [$start, $end])
+                                    ->select('p1.id')
+                                    ->groupBy('p1.student_ic')
+                                    ->get()
+                                    ->count();
 
-        $totalStudentCount = $studentCountQuery->count('p1.student_ic');
-        $data['totalAll'] = (object)['total_student' => $totalStudentCount];
 
-        // Prepare date ranges efficiently
-        $dateRanges = $this->prepareDateRanges($request->from, $request->to);
-        $data['dateRange'] = $dateRanges['dateRange'];
+                $totalStudentCount = $data['totalAll'] ? $data['totalAll'] : 0;
+                $data['totalAll'] = (object) ['total_student' => $totalStudentCount];
 
-        // Gather all student payment data at once to minimize DB hits
-        $allPayments = DB::table('tblpayment as p1')
-            ->join('students', 'p1.student_ic', '=', 'students.ic')
-            ->join(DB::raw('(SELECT student_ic, MIN(date) as first_payment_date 
-                    FROM tblpayment 
-                    GROUP BY student_ic) as p2'), function($join) {
-                $join->on('p1.student_ic', '=', 'p2.student_ic')
-                     ->on('p1.date', '=', 'p2.first_payment_date');
-            })
-            ->where([
-                ['p1.process_status_id', '=', 2],
-                ['p1.process_type_id', '=', 1],
-                ['p1.semester_id', '=', 1]
-            ])
-            ->whereBetween('p1.date', [$request->from, $request->to])
-            ->select('p1.student_ic', 'p1.date', 'p1.add_date')
-            ->get();
-
-        // Pre-process data for efficient lookups
-        $studentsByDate = [];
-        $studentsByAddDate = [];
         
-        foreach ($allPayments as $payment) {
-            $date = $payment->date;
-            if (!isset($studentsByDate[$date])) {
-                $studentsByDate[$date] = [];
-            }
-            $studentsByDate[$date][] = $payment->student_ic;
-            
-            $addDate = $payment->add_date;
-            if (!isset($studentsByAddDate[$addDate])) {
-                $studentsByAddDate[$addDate] = [];
-            }
-            $studentsByAddDate[$addDate][] = $payment->student_ic;
-        }
+                $data['dateRange'] = [];
+                $currentWeek = [];
+                $currentMonth = $start->month;
+                $currentMonthStart = $start->copy()->startOfMonth();
+                $currentWeekNumber = $start->diffInWeeks($currentMonthStart) + 1;
+                $alreadyCountedStudents = [];
+                $alreadyCountedStudents2 = [];
 
-        // Calculate totals for weeks and days
-        $alreadyCountedStudents = [];
-        $alreadyCountedStudents2 = [];
-        
-        foreach ($dateRanges['dateRange'] as $key => $week) {
-            $startDate = reset($week['days']);
-            $endDate = end($week['days']);
-            
-            // Calculate weekly totals
-            $weekStudents = [];
-            foreach ($week['days'] as $day) {
-                if (isset($studentsByAddDate[$day])) {
-                    $weekStudents = array_merge($weekStudents, $studentsByAddDate[$day]);
+                while ($start <= $end) {
+                    // Check if the current date is in a new month
+                    if ($start->month != $currentMonth) {
+                        // If there are days collected for the previous month, add them to the dateRange
+                        if (!empty($currentWeek)) {
+                            $data['dateRange'][] = [
+                                'week' => $currentWeekNumber,
+                                'month' => $currentMonth,
+                                'days' => $currentWeek
+                            ];
+                        }
+                        // Reset for the new month
+                        $currentWeek = [];
+                        $currentMonth = $start->month;
+                        $currentMonthStart = $start->copy()->startOfMonth();
+                        $currentWeekNumber = $start->diffInWeeks($currentMonthStart) + 1;
+                    }
+
+                    $currentWeek[] = $start->format('Y-m-d');
+
+                    // Check if the end of the week or the end of the range is reached
+                    if ($start->dayOfWeek == Carbon::SATURDAY || $start == $end) {
+                        $data['dateRange'][] = [
+                            'week' => $currentWeekNumber,
+                            'month' => $currentMonth,
+                            'days' => $currentWeek
+                        ];
+                        $currentWeek = [];
+                        $currentWeekNumber++;
+                    }
+
+                    $start->addDay();
                 }
-            }
-            
-            // Filter out already counted students
-            $weekStudents = array_unique($weekStudents);
-            $newWeekStudents = array_diff($weekStudents, $alreadyCountedStudents);
-            $totalWeekCount = count($newWeekStudents);
-            
-            $alreadyCountedStudents = array_merge($alreadyCountedStudents, $newWeekStudents);
-            $data['totalWeek'][$key] = (object)['total_week' => $totalWeekCount];
-            $data['week'][$key] = $week['days'];
-            
-            // Calculate daily totals
-            foreach ($week['days'] as $dayKey => $day) {
-                $dayStudents = isset($studentsByDate[$day]) ? $studentsByDate[$day] : [];
-                $dayStudents = array_unique($dayStudents);
-                $newDayStudents = array_diff($dayStudents, $alreadyCountedStudents2);
-                $totalDayCount = count($newDayStudents);
-                
-                $alreadyCountedStudents2 = array_merge($alreadyCountedStudents2, $newDayStudents);
-                $data['totalDay'][$key][$dayKey] = (object)['total_day' => $totalDayCount];
-            }
-        }
 
-        if (isset($request->print)) {
-            $data['from'] = Carbon::parse($request->from)->translatedFormat('d F Y');
-            $data['to'] = Carbon::parse($request->to)->translatedFormat('d F Y');
-            return view('pendaftar.reportR2.printReportR2', compact('data'));
-        } elseif (isset($request->excel)) {
-            return $this->exportToExcel($data);
-        } else {
-            return view('pendaftar.reportR2.getReportR2', compact('data'));
-        }
-    }
-
-    /**
-     * Helper function to prepare date ranges
-     */
-    private function prepareDateRanges($fromDate, $toDate)
-    {
-        $start = Carbon::parse($fromDate);
-        $end = Carbon::parse($toDate);
-        
-        $dateRange = [];
-        $currentWeek = [];
-        $currentMonth = $start->month;
-        $currentMonthStart = $start->copy()->startOfMonth();
-        $currentWeekNumber = $start->diffInWeeks($currentMonthStart) + 1;
-        
-        $current = $start->copy();
-        
-        while ($current <= $end) {
-            // Check if the current date is in a new month
-            if ($current->month != $currentMonth) {
-                // If there are days collected for the previous month, add them to the dateRange
+                // If the last week isn't already added (for cases where $end doesn't fall on a Saturday)
                 if (!empty($currentWeek)) {
-                    $dateRange[] = [
+                    $data['dateRange'][] = [
                         'week' => $currentWeekNumber,
                         'month' => $currentMonth,
                         'days' => $currentWeek
                     ];
                 }
-                // Reset for the new month
-                $currentWeek = [];
-                $currentMonth = $current->month;
-                $currentMonthStart = $current->copy()->startOfMonth();
-                $currentWeekNumber = $current->diffInWeeks($currentMonthStart) + 1;
+
+                foreach($data['dateRange'] as $key => $week) {
+                    $startDate = reset($week['days']); // Get the first date of the week
+                    $endDate = end($week['days']);     // Get the last date of the week
+                
+                    // Fetch the student_ic values for the current week, excluding already counted ones
+                    $currentWeekStudents = DB::table('tblpayment as p1')
+                                            ->join('students', 'p1.student_ic', '=', 'students.ic')
+                                            ->join(DB::raw('(SELECT student_ic, MIN(date) as first_payment_date 
+                                                    FROM tblpayment 
+                                                    GROUP BY student_ic) as p2'), function($join) {
+                                                $join->on('p1.student_ic', '=', 'p2.student_ic')
+                                                     ->on('p1.date', '=', 'p2.first_payment_date');
+                                            })
+                                            ->where([
+                                                ['p1.process_status_id', 2],
+                                                ['p1.process_type_id', 1], 
+                                                ['p1.semester_id', 1]
+                                            ])
+                                            ->whereBetween('p1.add_date', [$startDate, $endDate])
+                                            ->whereNotIn('p1.student_ic', $alreadyCountedStudents)
+                                            ->pluck('p1.student_ic')
+                                            ->unique()
+                                            ->toArray();
+
+                    // Count the number of unique student_ic values for the current week
+                    $totalWeekCount = count($currentWeekStudents);
+
+                    // Update the already counted students set
+                    $alreadyCountedStudents = array_merge($alreadyCountedStudents, $currentWeekStudents);
+
+                    $data['totalWeek'][$key] = (object) ['total_week' => $totalWeekCount];
+                    $data['week'][$key] = $week['days'];
+
+                    // $totalStudentCount2 = $data['totalWeek'][$key] ? $data['totalWeek'][$key] : 0;
+                    // $data['totalWeek'][$key] = (object) ['total_week' => $totalStudentCount2];
+                    
+                    $data['week'][$key] = $week['days'];
+
+                    foreach($data['week'][$key] AS $key2 => $day)
+                    {
+
+                        $data['totalDay'][$key][$key2] = count(DB::table('tblpayment as p1')
+                                                        ->join('students', 'p1.student_ic', '=', 'students.ic')
+                                                        ->join(DB::raw('(SELECT student_ic, MIN(date) as first_payment_date 
+                                                                FROM tblpayment 
+                                                                GROUP BY student_ic) as p2'), function($join) {
+                                                            $join->on('p1.student_ic', '=', 'p2.student_ic')
+                                                                 ->on('p1.date', '=', 'p2.first_payment_date');
+                                                        })
+                                                        ->where([
+                                                            ['p1.process_status_id', 2],
+                                                            ['p1.process_type_id', 1], 
+                                                            ['p1.semester_id', 1]
+                                                        ])
+                                                        ->where('p1.date', $day)
+                                                        ->select('p1.id')
+                                                        ->groupBy('p1.student_ic')
+                                                        ->get());
+
+                        // Fetch the student_ic values for the current week, excluding already counted ones
+                        $currentWeekStudents2 = DB::table('tblpayment as p1')
+                                        ->join('students', 'p1.student_ic', '=', 'students.ic')
+                                        ->join(DB::raw('(SELECT student_ic, MIN(date) as first_payment_date 
+                                                FROM tblpayment 
+                                                GROUP BY student_ic) as p2'), function($join) {
+                                            $join->on('p1.student_ic', '=', 'p2.student_ic')
+                                                 ->on('p1.date', '=', 'p2.first_payment_date');
+                                        })
+                                        ->where([
+                                            ['p1.process_status_id', 2],
+                                            ['p1.process_type_id', 1], 
+                                            ['p1.semester_id', 1]
+                                        ])
+                                        ->where('p1.date', $day)
+                                        ->whereNotIn('p1.student_ic', $alreadyCountedStudents2)
+                                        ->pluck('p1.student_ic')
+                                        ->unique()
+                                        ->toArray();
+
+                        // Count the number of unique student_ic values for the current week
+                        $totalDaysCount = count($currentWeekStudents2);
+
+                        // Update the already counted students set
+                        $alreadyCountedStudents2 = array_merge($alreadyCountedStudents2, $currentWeekStudents2);
+
+                        $data['totalDay'][$key][$key2] = (object) ['total_day' => $totalDaysCount];                        
+
+                        // $totalStudentCount3 = $data['totalDay'][$key][$key2] ? $data['totalDay'][$key][$key2] : 0;
+                        // $data['totalDay'][$key][$key2] = (object) ['total_day' => $totalStudentCount3];
+
+                    }
+                }
+
+
+                if(isset($request->print))
+                {
+                    
+                    $data['from'] = Carbon::createFromFormat('Y-m-d', $request->from)->translatedFormat('d F Y'); ;
+                    $data['to'] = Carbon::createFromFormat('Y-m-d', $request->to)->translatedFormat('d F Y');
+
+                    return view('pendaftar.reportR2.printReportR2', compact('data'));
+
+                } elseif (isset($request->excel)) {
+
+                    return $this->exportToExcel($data);
+
+                }else{
+
+                    return view('pendaftar.reportR2.getReportR2', compact('data'));
+                    
+                }
+
+            }else{
+
+                return response()->json([
+                    'error' => 'The end date cannot exceed the from date\'s month'
+                ]);
+
             }
 
-            $currentWeek[] = $current->format('Y-m-d');
-
-            // Check if the end of the week or the end of the range is reached
-            if ($current->dayOfWeek == Carbon::SATURDAY || $current->isSameDay($end)) {
-                $dateRange[] = [
-                    'week' => $currentWeekNumber,
-                    'month' => $currentMonth,
-                    'days' => $currentWeek
-                ];
-                $currentWeek = [];
-                $currentWeekNumber++;
-            }
-
-            $current->addDay();
         }
 
-        // If the last week isn't already added (for cases where $end doesn't fall on a Saturday)
-        if (!empty($currentWeek)) {
-            $dateRange[] = [
-                'week' => $currentWeekNumber,
-                'month' => $currentMonth,
-                'days' => $currentWeek
-            ];
-        }
-        
-        return ['dateRange' => $dateRange];
     }
 
     private function exportToExcel($data)
     {
-        try {
-            $spreadsheet = new Spreadsheet();
-            $sheet = $spreadsheet->getActiveSheet();
-            
-            // Add headers with styling
-            $sheet->setCellValue('A1', 'Week');
-            $sheet->setCellValue('B1', 'Month');
-            $sheet->setCellValue('C1', 'Total');
-            
-            // Style header row
-            $headerStyle = $sheet->getStyle('A1:C1');
-            $headerStyle->getFont()->setBold(true);
-            
-            // Add weekly data
-            $row = 2;
-            $total_allW = 0;
-            
-            foreach ($data['dateRange'] as $key => $week) {
-                $sheet->setCellValue('A' . $row, $week['week']);
-                $sheet->setCellValue('B' . $row, $week['month']);
-                $sheet->setCellValue('C' . $row, $data['totalWeek'][$key]->total_week);
-                $total_allW += $data['totalWeek'][$key]->total_week;
+        Log::info('exportToExcel function called');
+    
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+    
+        // Add Total Payment By Weeks data
+        $sheet->setCellValue('A1', 'Week');
+        $sheet->setCellValue('B1', 'Month');
+        $sheet->setCellValue('C1', 'Total');
+    
+        $row = 2;
+        $total_allW = 0;
+        foreach ($data['dateRange'] as $key => $week) {
+            $sheet->setCellValue('A' . $row, $week['week']);
+            $sheet->setCellValue('B' . $row, $week['month']);
+            $sheet->setCellValue('C' . $row, $data['totalWeek'][$key]->total_week);
+            $total_allW += $data['totalWeek'][$key]->total_week;
+            $row++;
+        }
+    
+        $sheet->setCellValue('A' . $row, 'TOTAL');
+        $sheet->setCellValue('C' . $row, number_format($total_allW, 2));
+    
+        // Add Total Payment By Days data
+        $row += 2; // Add some space between tables
+        $sheet->setCellValue('A' . $row, 'Date');
+        $sheet->setCellValue('B' . $row, 'Total');
+    
+        $row++;
+        $total_allD = 0;
+        foreach ($data['dateRange'] as $key => $week) {
+            foreach ($data['week'][$key] as $key2 => $day) {
+                $sheet->setCellValue('A' . $row, $day);
+                $sheet->setCellValue('B' . $row, $data['totalDay'][$key][$key2]->total_day);
+                $total_allD += $data['totalDay'][$key][$key2]->total_day;
                 $row++;
             }
-            
-            // Add total row with styling
-            $sheet->setCellValue('A' . $row, 'TOTAL');
-            $sheet->setCellValue('C' . $row, number_format($total_allW, 2));
-            $sheet->getStyle('A' . $row . ':C' . $row)->getFont()->setBold(true);
-            
-            // Add daily data with spacing
-            $row += 2;
-            $sheet->setCellValue('A' . $row, 'Date');
-            $sheet->setCellValue('B' . $row, 'Total');
-            $sheet->getStyle('A' . $row . ':B' . $row)->getFont()->setBold(true);
-            
-            $row++;
-            $total_allD = 0;
-            
-            foreach ($data['dateRange'] as $key => $week) {
-                foreach ($data['week'][$key] as $key2 => $day) {
-                    $sheet->setCellValue('A' . $row, $day);
-                    $sheet->setCellValue('B' . $row, $data['totalDay'][$key][$key2]->total_day);
-                    $total_allD += $data['totalDay'][$key][$key2]->total_day;
-                    $row++;
-                }
-            }
-            
-            // Add total row with styling
-            $sheet->setCellValue('A' . $row, 'TOTAL');
-            $sheet->setCellValue('B' . $row, number_format($total_allD, 2));
-            $sheet->getStyle('A' . $row . ':B' . $row)->getFont()->setBold(true);
-            
-            // Auto-size columns for better readability
-            foreach (range('A', 'C') as $col) {
-                $sheet->getColumnDimension($col)->setAutoSize(true);
-            }
-            
-            // Write to file
-            $writer = new Xlsx($spreadsheet);
-            $fileName = 'student_report_' . date('Ymd_His') . '.xlsx';
-            $filePath = 'reports/' . $fileName;
-            
-            // Use output buffering to capture the file content
-            // Save to a temporary file and send it as download
-            $tempFile = tempnam(sys_get_temp_dir(), 'report_');
-            $writer->save($tempFile);
-            
-            // Return the file as a download response
-            return response()->download($tempFile, $fileName, [
-                'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-            ])->deleteFileAfterSend(true);
-            
-        } catch (\Exception $e) {
-            Log::error('Excel export error: ' . $e->getMessage());
-            abort(500, 'Error generating Excel report');
+        }
+    
+        $sheet->setCellValue('A' . $row, 'TOTAL');
+        $sheet->setCellValue('B' . $row, number_format($total_allD, 2));
+    
+        $writer = new Xlsx($spreadsheet);
+        $fileName = 'report.xlsx';
+        $filePath = 'reports/' . $fileName;
+    
+        ob_start();
+        $writer->save('php://output');
+        $fileContents = ob_get_clean();
+        Storage::disk('linode')->put($filePath, $fileContents);
+    
+        Log::info('File saved to Linode storage at: ' . $filePath);
+    
+        if (Storage::disk('linode')->exists($filePath)) {
+            Log::info('File exists on Linode storage, preparing to generate URL');
+    
+            // Generate a temporary URL valid for 1 hour
+            $url = Storage::disk('linode')->temporaryUrl($filePath, now()->addHour());
+    
+            return redirect($url);
+        } else {
+            Log::error('File not created on Linode storage');
+            abort(500, 'File not created');
         }
     }
 
