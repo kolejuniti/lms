@@ -3739,19 +3739,24 @@ class PendaftarController extends Controller
             if($end <= $end2)
             {
 
-                $data['totalAll'] = DB::table('tblpayment')
-                                    ->join('students', 'tblpayment.student_ic', '=', 'students.ic')
+                $data['totalAll'] = DB::table('tblpayment as p1')
+                                    ->join('students', 'p1.student_ic', '=', 'students.ic')
+                                    ->join(DB::raw('(SELECT student_ic, MIN(date) as first_payment_date 
+                                            FROM tblpayment 
+                                            GROUP BY student_ic) as p2'), function($join) {
+                                        $join->on('p1.student_ic', '=', 'p2.student_ic')
+                                             ->on('p1.date', '=', 'p2.first_payment_date');
+                                    })
                                     ->where([
-                                        ['tblpayment.process_status_id', '=', 2],
-                                        ['tblpayment.process_type_id', '=', 1],
-                                        ['tblpayment.semester_id', '=', 1]
+                                        ['p1.process_status_id', '=', 2],
+                                        ['p1.process_type_id', '=', 1],
+                                        ['p1.semester_id', '=', 1]
                                     ])
-                                    ->whereColumn('tblpayment.date', '=', 'students.date_add')  // Use whereColumn for comparing two columns
-                                    ->whereBetween('tblpayment.date', [$start, $end])
-                                    ->select('tblpayment.id')
-                                    ->groupBy('tblpayment.student_ic')
+                                    ->whereBetween('p1.date', [$start, $end])
+                                    ->select('p1.id')
+                                    ->groupBy('p1.student_ic')
                                     ->get()
-                                    ->count();  // Use count() to get the count directly
+                                    ->count();
 
 
                 $totalStudentCount = $data['totalAll'] ? $data['totalAll'] : 0;
