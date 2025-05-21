@@ -3970,16 +3970,40 @@ class PendaftarController extends Controller
     
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
+        
+        // Add title and report information
+        $sheet->setCellValue('A1', 'JADUAL REPORT PENCAPAIAN R BAGI TEMPOH ' . $data['from'] . ' HINGGA ' . $data['to']);
+        $sheet->mergeCells('A1:F1');
+        $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(14);
+        $sheet->getStyle('A1')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+        
+        // Report Information
+        $row = 3;
+        $sheet->setCellValue('A' . $row, 'Report Information');
+        $sheet->mergeCells('A' . $row . ':F' . $row);
+        $sheet->getStyle('A' . $row)->getFont()->setBold(true);
+        
+        $row++;
+        $sheet->setCellValue('A' . $row, 'Total Student By Month:');
+        $sheet->setCellValue('C' . $row, $data['totalAll']->total_student);
+        
+        // Total Payment By Weeks header
+        $row += 2;
+        $sheet->setCellValue('A' . $row, 'Total Payment By Weeks');
+        $sheet->mergeCells('A' . $row . ':F' . $row);
+        $sheet->getStyle('A' . $row)->getFont()->setBold(true);
+        
+        // Table headers
+        $row++;
+        $sheet->setCellValue('A' . $row, 'Week');
+        $sheet->setCellValue('B' . $row, 'Month');
+        $sheet->setCellValue('C' . $row, 'Total By Weeks');
+        $sheet->setCellValue('D' . $row, 'Total by Cumulative');
+        $sheet->setCellValue('E' . $row, 'Total by Convert');
+        $sheet->setCellValue('F' . $row, 'Balance Student');
+        $sheet->getStyle('A' . $row . ':F' . $row)->getFont()->setBold(true);
     
-        // Add Total Payment By Weeks data
-        $sheet->setCellValue('A1', 'Week');
-        $sheet->setCellValue('B1', 'Month');
-        $sheet->setCellValue('C1', 'Total By Weeks');
-        $sheet->setCellValue('D1', 'Total by Cumulative');
-        $sheet->setCellValue('E1', 'Total by Convert');
-        $sheet->setCellValue('F1', 'Balance Student');
-    
-        $row = 2;
+        $row++;
         $total_allW = 0;
         $total_allC = 0;
         $total_allC2 = 0;
@@ -3999,20 +4023,30 @@ class PendaftarController extends Controller
             $row++;
         }
     
+        // Totals row
         $sheet->setCellValue('A' . $row, 'TOTAL');
-        $sheet->setCellValue('B' . $row, '');
+        $sheet->mergeCells('A' . $row . ':B' . $row);
+        $sheet->getStyle('A' . $row)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('A' . $row . ':F' . $row)->getFont()->setBold(true);
         $sheet->setCellValue('C' . $row, $total_allW);
         $sheet->setCellValue('D' . $row, $total_allC);
         $sheet->setCellValue('E' . $row, $total_allC2);
         $sheet->setCellValue('F' . $row, $total_allB);
-    
-        // Add Total Payment By Days data
-        $row += 2; // Add some space between tables
+        
+        // Total Payment By Days header
+        $row += 2;
+        $sheet->setCellValue('A' . $row, 'Total Payment By Days');
+        $sheet->mergeCells('A' . $row . ':E' . $row);
+        $sheet->getStyle('A' . $row)->getFont()->setBold(true);
+        
+        // Table headers
+        $row++;
         $sheet->setCellValue('A' . $row, 'Date');
         $sheet->setCellValue('B' . $row, 'Total By Days');
         $sheet->setCellValue('C' . $row, 'Total by Cumulative');
         $sheet->setCellValue('D' . $row, 'Total by Convert');
         $sheet->setCellValue('E' . $row, 'Balance Student');
+        $sheet->getStyle('A' . $row . ':E' . $row)->getFont()->setBold(true);
     
         $row++;
         $total_allD = 0;
@@ -4035,14 +4069,22 @@ class PendaftarController extends Controller
             }
         }
     
+        // Totals row
         $sheet->setCellValue('A' . $row, 'TOTAL');
+        $sheet->getStyle('A' . $row)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('A' . $row . ':E' . $row)->getFont()->setBold(true);
         $sheet->setCellValue('B' . $row, $total_allD);
         $sheet->setCellValue('C' . $row, $total_allQ);
         $sheet->setCellValue('D' . $row, $total_allZ);
         $sheet->setCellValue('E' . $row, $total_allB);
+        
+        // Set columns to auto width
+        foreach(range('A', 'F') as $column) {
+            $sheet->getColumnDimension($column)->setAutoSize(true);
+        }
     
         $writer = new Xlsx($spreadsheet);
-        $fileName = 'report.xlsx';
+        $fileName = 'report_' . date('Y-m-d') . '.xlsx';
         $filePath = 'reports/' . $fileName;
     
         ob_start();
