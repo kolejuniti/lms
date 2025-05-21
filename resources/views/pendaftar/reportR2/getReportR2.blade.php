@@ -122,13 +122,25 @@
                     Date
                 </th>
                 <th style="width: 15%">
-                    Total
+                    Total By Days
+                </th>
+                <th style="width: 15%">
+                    Total by Cumulative
+                </th>
+                <th style="width: 15%">
+                    Total by Convert
+                </th>
+                <th style="width: 15%">
+                    Balance Student
                 </th>
             </tr>
         </thead>
         <tbody id="table">
         @php
         $total_allD = 0;
+        $total_allC = 0;
+        $total_allC2 = 0;
+        $total_allB = 0;
         @endphp
         @foreach ($data['dateRange'] as $key => $week)
         @foreach ($data['week'][$key] as $key2 => $day)
@@ -139,9 +151,21 @@
           <td>
             {{ $data['totalDay'][$key][$key2]->total_day }}
           </td>
+          <td>
+            {{ $data['countedPerDay'][$key][$key2] }}
+          </td>
+          <td>
+            {{ $data['totalConvert2'][$key][$key2] }}
+          </td>
+          <td>
+            {{ $data['totalDay'][$key][$key2]->total_day - $data['totalConvert2'][$key][$key2] }}
+          </td>
         </tr>
         @php
           $total_allD += $data['totalDay'][$key][$key2]->total_day;
+          $total_allC += $data['countedPerDay'][$key][$key2];
+          $total_allC2 += $data['totalConvert2'][$key][$key2];
+          $total_allB += $data['totalDay'][$key][$key2]->total_day - $data['totalConvert2'][$key][$key2];
         @endphp
         @endforeach
         @endforeach
@@ -153,6 +177,15 @@
                 </td>
                 <td>
                     {{  $total_allD }}
+                </td>
+                <td>
+                    {{  $total_allC }}
+                </td>
+                <td>
+                    {{  $total_allC2 }}
+                </td>
+                <td>
+                    {{  $total_allB }}
                 </td>
               </tr>
         </tfoot>

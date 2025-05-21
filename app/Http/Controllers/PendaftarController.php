@@ -3770,6 +3770,9 @@ class PendaftarController extends Controller
                 $data['countedPerWeek'] = [];
                 $data['totalConvert'] = [];
 
+                $data['countedPerDay'] = [];
+                $data['totalConvert2'] = [];
+
                 while ($start <= $end) {
                     // Check if the current date is in a new month
                     if ($start->month != $currentMonth) {
@@ -3886,8 +3889,12 @@ class PendaftarController extends Controller
                                                         ->groupBy('p1.student_ic')
                                                         ->get());
 
-                        // Fetch the student_ic values for the current week, excluding already counted ones
-                        $currentWeekStudents2 = DB::table('tblpayment as p1')
+                        // Fetch the student data for the current day
+                        $dailyStudents = DB::table('tblpayment as p1')
+                                        ->select([
+                                            'p1.student_ic',
+                                            'students.status'
+                                        ])
                                         ->join('students', 'p1.student_ic', '=', 'students.ic')
                                         ->join(DB::raw('(SELECT student_ic, MIN(date) as first_payment_date 
                                                 FROM tblpayment 
@@ -3902,21 +3909,27 @@ class PendaftarController extends Controller
                                         ])
                                         ->where('p1.date', $day)
                                         ->whereNotIn('p1.student_ic', $alreadyCountedStudents2)
-                                        ->pluck('p1.student_ic')
-                                        ->unique()
-                                        ->toArray();
+                                        ->get();
 
-                        // Count the number of unique student_ic values for the current week
-                        $totalDaysCount = count($currentWeekStudents2);
+                        // Process results for converted students
+                        $currentDayStudents = $dailyStudents->pluck('student_ic')->unique()->values()->toArray();
+                        $currentDayConvertStudents = $dailyStudents->where('status', '!=', 1)
+                            ->pluck('student_ic')
+                            ->unique()
+                            ->values()
+                            ->toArray();
+
+                        // Update converted students count for this day
+                        $data['totalConvert2'][$key][$key2] = count($currentDayConvertStudents);
+
+                        // Count the number of unique student_ic values for the current day
+                        $totalDaysCount = count($currentDayStudents);
 
                         // Update the already counted students set
-                        $alreadyCountedStudents2 = array_merge($alreadyCountedStudents2, $currentWeekStudents2);
+                        $alreadyCountedStudents2 = array_merge($alreadyCountedStudents2, $currentDayStudents);
+                        $data['countedPerDay'][$key][$key2] = count($alreadyCountedStudents2);
 
                         $data['totalDay'][$key][$key2] = (object) ['total_day' => $totalDaysCount];                        
-
-                        // $totalStudentCount3 = $data['totalDay'][$key][$key2] ? $data['totalDay'][$key][$key2] : 0;
-                        // $data['totalDay'][$key][$key2] = (object) ['total_day' => $totalStudentCount3];
-
                     }
                 }
 
