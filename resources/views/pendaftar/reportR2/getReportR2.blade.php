@@ -42,6 +42,9 @@
                 <th style="width: 15%">
                     Total by Cumulative
                 </th>
+                <th style="width: 15%">
+                    Total by Convert
+                </th>
             </tr>
         </thead>
         <tbody id="table">
@@ -63,10 +66,14 @@
             <td>
             {{ $data['countedPerWeek'][$key] }}
             </td>
+            <td>
+            {{ $data['totalConvert'][$key] }}
+            </td>
           </tr>
           @php
           $total_allW += $data['totalWeek'][$key]->total_week;
           $total_allC += $data['countedPerWeek'][$key];
+          $total_allC2 += $data['totalConvert'][$key];
           @endphp
         @endforeach
         </tbody>
@@ -80,6 +87,9 @@
                 </td>
                 <td>
                     {{  $total_allC }}
+                </td>
+                <td>
+                    {{  $total_allC2 }}
                 </td>
               </tr>
         </tfoot>

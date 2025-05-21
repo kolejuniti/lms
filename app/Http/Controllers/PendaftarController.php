@@ -3768,6 +3768,7 @@ class PendaftarController extends Controller
                 $alreadyCountedStudents = [];
                 $alreadyCountedStudents2 = [];
                 $data['countedPerWeek'] = [];
+                $data['totalConvert'] = [];
 
                 while ($start <= $end) {
                     // Check if the current date is in a new month
@@ -3846,6 +3847,29 @@ class PendaftarController extends Controller
                     $data['week'][$key] = $week['days'];
 
                     $data['countedPerWeek'][$key] = count($alreadyCountedStudents);
+
+                    // Fetch the student_ic values for the current week, excluding already counted ones
+                    $currentConvertStudents = DB::table('tblpayment as p1')
+                                            ->join('students', 'p1.student_ic', '=', 'students.ic')
+                                            ->join(DB::raw('(SELECT student_ic, MIN(date) as first_payment_date 
+                                                    FROM tblpayment 
+                                                    GROUP BY student_ic) as p2'), function($join) {
+                                                $join->on('p1.student_ic', '=', 'p2.student_ic')
+                                                     ->on('p1.date', '=', 'p2.first_payment_date');
+                                            })
+                                            ->where([
+                                                ['p1.process_status_id', 2],
+                                                ['p1.process_type_id', 1], 
+                                                ['p1.semester_id', 1]
+                                            ])
+                                            ->where('students.status', '!=', 1)
+                                            ->whereBetween('p1.add_date', [$startDate, $endDate])
+                                            ->whereNotIn('p1.student_ic', $alreadyCountedStudents)
+                                            ->pluck('p1.student_ic')
+                                            ->unique()
+                                            ->toArray();
+
+                    $data['totalConvert'][$key] = count($currentConvertStudents);
 
                     // $totalStudentCount2 = $data['totalWeek'][$key] ? $data['totalWeek'][$key] : 0;
                     // $data['totalWeek'][$key] = (object) ['total_week' => $totalStudentCount2];
