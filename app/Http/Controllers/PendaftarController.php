@@ -3767,6 +3767,7 @@ class PendaftarController extends Controller
                 $currentWeekNumber = $start->diffInWeeks($currentMonthStart) + 1;
                 $alreadyCountedStudents = [];
                 $alreadyCountedStudents2 = [];
+                $data['countedPerWeek'] = [];
 
                 while ($start <= $end) {
                     // Check if the current date is in a new month
@@ -3843,6 +3844,8 @@ class PendaftarController extends Controller
 
                     $data['totalWeek'][$key] = (object) ['total_week' => $totalWeekCount];
                     $data['week'][$key] = $week['days'];
+
+                    $data['countedPerWeek'][$key] = (object) ['total_commulative' => $alreadyCountedStudents];
 
                     // $totalStudentCount2 = $data['totalWeek'][$key] ? $data['totalWeek'][$key] : 0;
                     // $data['totalWeek'][$key] = (object) ['total_week' => $totalStudentCount2];

@@ -37,13 +37,17 @@
                     Month
                 </th>
                 <th style="width: 15%">
-                    Total
+                    Total By Weeks
+                </th>
+                <th style="width: 15%">
+                    Total by Cumulative
                 </th>
             </tr>
         </thead>
         <tbody id="table">
         @php
         $total_allW = 0;
+        $total_allC = 0;
         @endphp
         @foreach ($data['dateRange'] as $key => $week)
           <tr>
@@ -56,9 +60,13 @@
             <td>
             {{ $data['totalWeek'][$key]->total_week }}
             </td>
+            <td>
+            {{ $data['countedPerWeek'][$key]->total_commulative }}
+            </td>
           </tr>
           @php
           $total_allW += $data['totalWeek'][$key]->total_week;
+          $total_allC += $data['countedPerWeek'][$key]->total_commulative;
           @endphp
         @endforeach
         </tbody>
@@ -69,6 +77,9 @@
                 </td>
                 <td>
                     {{  $total_allW }}
+                </td>
+                <td>
+                    {{  $total_allC }}
                 </td>
               </tr>
         </tfoot>
