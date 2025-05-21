@@ -3751,8 +3751,22 @@ class PendaftarController extends Controller
                     ->whereBetween('p1.date', [$start, $end])
                     ->get();
 
-                // Calculate total all students
-                $data['totalAll'] = (object) ['total_student' => $firstPayments->count()];
+                // Calculate total all students - using original logic
+                $totalAll = DB::table('tblpayment')
+                    ->join('students', 'tblpayment.student_ic', '=', 'students.ic')
+                    ->where([
+                        ['tblpayment.process_status_id', '=', 2],
+                        ['tblpayment.process_type_id', '=', 1],
+                        ['tblpayment.semester_id', '=', 1]
+                    ])
+                    ->whereColumn('tblpayment.date', '=', 'students.date_add')
+                    ->whereBetween('tblpayment.date', [$start, $end])
+                    ->select('tblpayment.id')
+                    ->groupBy('tblpayment.student_ic')
+                    ->get()
+                    ->count();
+
+                $data['totalAll'] = (object) ['total_student' => $totalAll];
 
                 // Prepare date ranges
                 $data['dateRange'] = [];
@@ -3808,30 +3822,45 @@ class PendaftarController extends Controller
                     $startDate = reset($week['days']);
                     $endDate = end($week['days']);
                     
-                    // Weekly counts
-                    $weekStudents = $firstPayments
-                        ->where('add_date', '>=', $startDate)
-                        ->where('add_date', '<=', $endDate)
-                        ->whereNotIn('student_ic', $alreadyCountedStudents)
-                        ->pluck('student_ic')
-                        ->unique();
+                    // Weekly counts using original logic
+                    $currentWeekStudents = DB::table('tblpayment')
+                        ->join('students', 'tblpayment.student_ic', '=', 'students.ic')
+                        ->where([
+                            ['tblpayment.process_status_id', 2],
+                            ['tblpayment.process_type_id', 1], 
+                            ['tblpayment.semester_id', 1]
+                        ])
+                        ->whereColumn('tblpayment.date', '=', 'students.date_add')
+                        ->whereBetween('tblpayment.add_date', [$startDate, $endDate])
+                        ->whereNotIn('tblpayment.student_ic', $alreadyCountedStudents)
+                        ->pluck('tblpayment.student_ic')
+                        ->unique()
+                        ->toArray();
 
-                    $totalWeekCount = $weekStudents->count();
-                    $alreadyCountedStudents = array_merge($alreadyCountedStudents, $weekStudents->toArray());
+                    $totalWeekCount = count($currentWeekStudents);
+                    $alreadyCountedStudents = array_merge($alreadyCountedStudents, $currentWeekStudents);
 
                     $data['totalWeek'][$key] = (object) ['total_week' => $totalWeekCount];
                     $data['week'][$key] = $week['days'];
 
-                    // Daily counts
+                    // Daily counts using original logic
                     foreach($week['days'] as $key2 => $day) {
-                        $dayStudents = $firstPayments
-                            ->where('date', $day)
-                            ->whereNotIn('student_ic', $alreadyCountedStudents2)
-                            ->pluck('student_ic')
-                            ->unique();
+                        $currentWeekStudents2 = DB::table('tblpayment')
+                            ->join('students', 'tblpayment.student_ic', '=', 'students.ic')
+                            ->where([
+                                ['tblpayment.process_status_id', 2],
+                                ['tblpayment.process_type_id', 1], 
+                                ['tblpayment.semester_id', 1]
+                            ])
+                            ->whereColumn('tblpayment.date', '=', 'students.date_add')
+                            ->where('tblpayment.date', $day)
+                            ->whereNotIn('tblpayment.student_ic', $alreadyCountedStudents2)
+                            ->pluck('tblpayment.student_ic')
+                            ->unique()
+                            ->toArray();
 
-                        $totalDaysCount = $dayStudents->count();
-                        $alreadyCountedStudents2 = array_merge($alreadyCountedStudents2, $dayStudents->toArray());
+                        $totalDaysCount = count($currentWeekStudents2);
+                        $alreadyCountedStudents2 = array_merge($alreadyCountedStudents2, $currentWeekStudents2);
 
                         $data['totalDay'][$key][$key2] = (object) ['total_day' => $totalDaysCount];
                     }
