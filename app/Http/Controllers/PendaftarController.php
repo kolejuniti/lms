@@ -3840,14 +3840,6 @@ class PendaftarController extends Controller
                     // Count the number of unique student_ic values for the current week
                     $totalWeekCount = count($currentWeekStudents);
 
-                    // Update the already counted students set
-                    $alreadyCountedStudents = array_merge($alreadyCountedStudents, $currentWeekStudents);
-
-                    $data['totalWeek'][$key] = (object) ['total_week' => $totalWeekCount];
-                    $data['week'][$key] = $week['days'];
-
-                    $data['countedPerWeek'][$key] = count($alreadyCountedStudents);
-
                     // Fetch the student_ic values for the current week, excluding already counted ones
                     $currentConvertStudents = DB::table('tblpayment as p1')
                                             ->join('students', 'p1.student_ic', '=', 'students.ic')
@@ -3870,6 +3862,14 @@ class PendaftarController extends Controller
                                             ->toArray();
 
                     $data['totalConvert'][$key] = count($currentConvertStudents);
+
+                    // Update the already counted students set
+                    $alreadyCountedStudents = array_merge($alreadyCountedStudents, $currentWeekStudents);
+
+                    $data['totalWeek'][$key] = (object) ['total_week' => $totalWeekCount];
+                    $data['week'][$key] = $week['days'];
+
+                    $data['countedPerWeek'][$key] = count($alreadyCountedStudents);
 
                     // $totalStudentCount2 = $data['totalWeek'][$key] ? $data['totalWeek'][$key] : 0;
                     // $data['totalWeek'][$key] = (object) ['total_week' => $totalStudentCount2];
