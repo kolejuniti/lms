@@ -537,47 +537,93 @@
     // Create a new workbook and worksheet
     var wb = XLSX.utils.book_new();
     
-    // Get table data
-    var ws = XLSX.utils.table_to_sheet(table[0]);
+    // Check if it's a DataTable
+    var isDataTable = $.fn.DataTable.isDataTable('#' + tableId);
+    var ws;
     
-    // Add title and date range at the top (3 rows above the table)
-    // Get the ref area to determine where to add the header
-    var ref = XLSX.utils.decode_range(ws['!ref']);
-    
-    // Shift all existing content down by 3 rows
-    var newRef = {
-      s: { r: ref.s.r + 3, c: ref.s.c },
-      e: { r: ref.e.r + 3, c: ref.e.c }
-    };
-    
-    // Move all cells down by 3 rows
-    var cells = {};
-    for (var R = ref.s.r; R <= ref.e.r; ++R) {
-      for (var C = ref.s.c; C <= ref.e.c; ++C) {
-        var cell_address = XLSX.utils.encode_cell({ r: R, c: C });
-        var new_address = XLSX.utils.encode_cell({ r: R + 3, c: C });
-        if (ws[cell_address]) {
-          cells[new_address] = ws[cell_address];
+    if (isDataTable) {
+      // Get all data from DataTable API (not just visible page)
+      var dt = $('#' + tableId).DataTable();
+      
+      // Get headers
+      var headers = [];
+      table.find('thead th').each(function() {
+        headers.push($(this).text().trim() || '');
+      });
+      
+      // Get all rows from DataTable API (across all pages)
+      var allData = dt.rows().data().toArray();
+      
+      // Convert to array format suitable for XLSX
+      var xlsxData = [headers];
+      allData.forEach(function(row) {
+        var rowData = [];
+        for (var i = 0; i < row.length; i++) {
+          // Handle HTML content by extracting text
+          var cellText = row[i];
+          if (typeof cellText === 'string' && cellText.includes('<')) {
+            var temp = document.createElement('div');
+            temp.innerHTML = cellText;
+            cellText = temp.textContent || temp.innerText || '';
+          }
+          rowData.push(cellText);
+        }
+        xlsxData.push(rowData);
+      });
+      
+      // Get footer if exists
+      var footer = [];
+      table.find('tfoot tr td').each(function() {
+        footer.push($(this).text().trim() || '');
+      });
+      if (footer.length > 0) {
+        xlsxData.push(footer);
+      }
+      
+      // Add title and date range at the beginning
+      xlsxData.unshift([''], [dateRangeText], [title]);
+      
+      ws = XLSX.utils.aoa_to_sheet(xlsxData);
+    } else {
+      // Fallback to get from DOM for non-DataTable
+      ws = XLSX.utils.table_to_sheet(table[0]);
+      
+      // Add title and date range at the top
+      var ref = XLSX.utils.decode_range(ws['!ref']);
+      var newRef = {
+        s: { r: ref.s.r + 3, c: ref.s.c },
+        e: { r: ref.e.r + 3, c: ref.e.c }
+      };
+      
+      // Move all cells down by 3 rows
+      var cells = {};
+      for (var R = ref.s.r; R <= ref.e.r; ++R) {
+        for (var C = ref.s.c; C <= ref.e.c; ++C) {
+          var cell_address = XLSX.utils.encode_cell({ r: R, c: C });
+          var new_address = XLSX.utils.encode_cell({ r: R + 3, c: C });
+          if (ws[cell_address]) {
+            cells[new_address] = ws[cell_address];
+          }
         }
       }
+      
+      // Clear existing cells and add the shifted ones
+      for (var key in ws) {
+        if (key[0] === '!') continue; // Skip special properties
+        delete ws[key];
+      }
+      for (var key in cells) {
+        ws[key] = cells[key];
+      }
+      
+      // Update the reference
+      ws['!ref'] = XLSX.utils.encode_range(newRef);
+      
+      // Add title and date range at the top
+      XLSX.utils.sheet_add_aoa(ws, [[title]], { origin: { r: 0, c: 0 } });
+      XLSX.utils.sheet_add_aoa(ws, [[dateRangeText]], { origin: { r: 1, c: 0 } });
+      XLSX.utils.sheet_add_aoa(ws, [['']], { origin: { r: 2, c: 0 } });
     }
-    
-    // Clear existing cells and add the shifted ones
-    for (var key in ws) {
-      if (key[0] === '!') continue; // Skip special properties
-      delete ws[key];
-    }
-    for (var key in cells) {
-      ws[key] = cells[key];
-    }
-    
-    // Update the reference
-    ws['!ref'] = XLSX.utils.encode_range(newRef);
-    
-    // Add title and date range at the top
-    XLSX.utils.sheet_add_aoa(ws, [[title]], { origin: { r: 0, c: 0 } });
-    XLSX.utils.sheet_add_aoa(ws, [[dateRangeText]], { origin: { r: 1, c: 0 } });
-    XLSX.utils.sheet_add_aoa(ws, [['']], { origin: { r: 2, c: 0 } }); // Empty row for spacing
     
     // Add worksheet to workbook
     var fileName = tableId + '_export.xlsx';
@@ -598,6 +644,50 @@
     var toDate = $('#to').val() || 'N/A';
     var dateRangeText = 'Date Range: ' + fromDate + ' to ' + toDate;
     
+    // Get table data - handle DataTable if available
+    var tableData = [];
+    if ($.fn.DataTable.isDataTable('#' + tableId)) {
+      var dt = $('#' + tableId).DataTable();
+      
+      // Get headers
+      var headerRow = [];
+      table.find('thead th').each(function() {
+        headerRow.push($(this).text().trim() || '');
+      });
+      tableData.push(headerRow);
+      
+      // Get all rows from DataTable API (across all pages)
+      var allData = dt.rows().data().toArray();
+      allData.forEach(function(row) {
+        var rowData = [];
+        for (var i = 0; i < row.length; i++) {
+          // Handle HTML content by extracting text
+          var cellText = row[i];
+          if (typeof cellText === 'string' && cellText.includes('<')) {
+            var temp = document.createElement('div');
+            temp.innerHTML = cellText;
+            cellText = temp.textContent || temp.innerText || '';
+          }
+          rowData.push(cellText);
+        }
+        tableData.push(rowData);
+      });
+      
+      // Get footer if exists
+      table.find('tfoot tr').each(function() {
+        var row = [];
+        $(this).find('td').each(function() {
+          row.push($(this).text().trim() || '');
+        });
+        if (row.length > 0) {
+          tableData.push(row);
+        }
+      });
+    } else {
+      // Fallback to using DOM for non-DataTable
+      tableData = getTableData(table);
+    }
+    
     // Create document definition
     var docDefinition = {
       content: [
@@ -607,7 +697,7 @@
         {
           table: {
             headerRows: 1,
-            body: getTableData(table)
+            body: tableData
           }
         }
       ],
@@ -663,14 +753,60 @@
     printWindow.document.write('<h2>' + title + '</h2>');
     printWindow.document.write('<div class="date-range">' + dateRangeText + '</div>');
     
-    // Clone the table and modify for printing
-    var clonedTable = table.clone();
-    
-    // Remove any fixed width constraints on columns
-    clonedTable.find('th, td').css('width', 'auto');
-    
-    // Write the modified table to the print window
-    printWindow.document.write(clonedTable[0].outerHTML);
+    // Get table data with all pages if it's a DataTable
+    if ($.fn.DataTable.isDataTable('#' + tableId)) {
+      var dt = $('#' + tableId).DataTable();
+      
+      // Create new table for printing with all data
+      printWindow.document.write('<table>');
+      
+      // Add header
+      printWindow.document.write('<thead><tr>');
+      table.find('thead th').each(function() {
+        printWindow.document.write('<th>' + $(this).text().trim() + '</th>');
+      });
+      printWindow.document.write('</tr></thead>');
+      
+      // Add body with all rows from DataTable API
+      printWindow.document.write('<tbody>');
+      var allData = dt.rows().data().toArray();
+      allData.forEach(function(row) {
+        printWindow.document.write('<tr>');
+        for (var i = 0; i < row.length; i++) {
+          // Handle HTML content by extracting text
+          var cellText = row[i];
+          if (typeof cellText === 'string' && cellText.includes('<')) {
+            var temp = document.createElement('div');
+            temp.innerHTML = cellText;
+            cellText = temp.textContent || temp.innerText || '';
+          }
+          printWindow.document.write('<td>' + cellText + '</td>');
+        }
+        printWindow.document.write('</tr>');
+      });
+      printWindow.document.write('</tbody>');
+      
+      // Add footer if exists
+      if (table.find('tfoot').length > 0) {
+        printWindow.document.write('<tfoot>');
+        table.find('tfoot tr').each(function() {
+          printWindow.document.write('<tr>');
+          $(this).find('td').each(function() {
+            var colspan = $(this).attr('colspan') || 1;
+            printWindow.document.write('<td colspan="' + colspan + '">' + $(this).text().trim() + '</td>');
+          });
+          printWindow.document.write('</tr>');
+        });
+        printWindow.document.write('</tfoot>');
+      }
+      
+      printWindow.document.write('</table>');
+    } else {
+      // Fallback to clone for non-DataTable
+      var clonedTable = table.clone();
+      clonedTable.find('th, td').css('width', 'auto');
+      printWindow.document.write(clonedTable[0].outerHTML);
+    }
     
     printWindow.document.write('</body></html>');
     printWindow.document.close();
@@ -692,7 +828,7 @@
     // Extract header row
     var headerRow = [];
     table.find('thead th').each(function() {
-      headerRow.push($(this).text().trim() || '');  // Use empty string if text is undefined
+      headerRow.push($(this).text().trim() || '');
     });
     data.push(headerRow);
     
@@ -700,7 +836,7 @@
     table.find('tbody tr').each(function() {
       var row = [];
       $(this).find('td').each(function() {
-        row.push($(this).text().trim() || '');  // Use empty string if text is undefined
+        row.push($(this).text().trim() || '');
       });
       // Only add rows that have at least one non-empty cell
       if (row.some(cell => cell !== '')) {
@@ -712,7 +848,7 @@
     table.find('tfoot tr').each(function() {
       var row = [];
       $(this).find('td').each(function() {
-        row.push($(this).text().trim() || '');  // Use empty string if text is undefined
+        row.push($(this).text().trim() || '');
       });
       if (row.length > 0) {
         data.push(row);
@@ -728,15 +864,9 @@
     var studentsTable = $('#myTable');
     var agingTable = $('#aging-table');
     
-    // Check if both tables exist and have rows
+    // Check if both tables exist
     if (studentsTable.length === 0 || agingTable.length === 0) {
       alert('Tables not found or data not loaded yet');
-      return;
-    }
-    
-    // Check if there's data in the tables
-    if (studentsTable.find('tbody tr').length === 0 || agingTable.find('tbody tr').length === 0) {
-      alert('No data available for export');
       return;
     }
     
@@ -764,14 +894,35 @@
       });
       studentsData.push(headerRow);
       
-      // Get data rows
-      studentsTable.find('tbody tr').each(function() {
-        var row = [];
-        $(this).find('td').each(function() {
-          row.push($(this).text().trim() || '');
+      // Check if it's a DataTable and get all data
+      if ($.fn.DataTable.isDataTable('#myTable')) {
+        var dt = $('#myTable').DataTable();
+        var allData = dt.rows().data().toArray();
+        
+        allData.forEach(function(row) {
+          var rowData = [];
+          for (var i = 0; i < row.length; i++) {
+            // Handle HTML content by extracting text
+            var cellText = row[i];
+            if (typeof cellText === 'string' && cellText.includes('<')) {
+              var temp = document.createElement('div');
+              temp.innerHTML = cellText;
+              cellText = temp.textContent || temp.innerText || '';
+            }
+            rowData.push(cellText);
+          }
+          studentsData.push(rowData);
         });
-        studentsData.push(row);
-      });
+      } else {
+        // Fallback to using DOM for non-DataTable
+        studentsTable.find('tbody tr').each(function() {
+          var row = [];
+          $(this).find('td').each(function() {
+            row.push($(this).text().trim() || '');
+          });
+          studentsData.push(row);
+        });
+      }
       
       // Add footer row
       studentsTable.find('tfoot tr').each(function() {
@@ -801,14 +952,35 @@
       });
       agingData.push(agingHeaderRow);
       
-      // Get data rows
-      agingTable.find('tbody tr').each(function() {
-        var row = [];
-        $(this).find('td').each(function() {
-          row.push($(this).text().trim() || '');
+      // Check if it's a DataTable and get all data
+      if ($.fn.DataTable.isDataTable('#aging-table')) {
+        var agingDt = $('#aging-table').DataTable();
+        var agingAllData = agingDt.rows().data().toArray();
+        
+        agingAllData.forEach(function(row) {
+          var rowData = [];
+          for (var i = 0; i < row.length; i++) {
+            // Handle HTML content by extracting text
+            var cellText = row[i];
+            if (typeof cellText === 'string' && cellText.includes('<')) {
+              var temp = document.createElement('div');
+              temp.innerHTML = cellText;
+              cellText = temp.textContent || temp.innerText || '';
+            }
+            rowData.push(cellText);
+          }
+          agingData.push(rowData);
         });
-        agingData.push(row);
-      });
+      } else {
+        // Fallback to using DOM for non-DataTable
+        agingTable.find('tbody tr').each(function() {
+          var row = [];
+          $(this).find('td').each(function() {
+            row.push($(this).text().trim() || '');
+          });
+          agingData.push(row);
+        });
+      }
       
       // Add footer row
       agingTable.find('tfoot tr').each(function() {
@@ -849,7 +1021,95 @@
       var toDate = $('#to').val() || 'N/A';
       var dateRangeText = 'Date Range: ' + fromDate + ' to ' + toDate;
       
-      // Create a simplified document structure with minimal table formatting
+      // Get students table data for PDF using DataTable API if available
+      var studentsTableData = [];
+      if ($.fn.DataTable.isDataTable('#myTable')) {
+        var dt = $('#myTable').DataTable();
+        
+        // Get headers
+        var headerRow = [];
+        studentsTable.find('thead th').each(function() {
+          headerRow.push($(this).text().trim() || '');
+        });
+        studentsTableData.push(headerRow);
+        
+        // Get all rows from DataTable API
+        var allData = dt.rows().data().toArray();
+        allData.forEach(function(row) {
+          var rowData = [];
+          for (var i = 0; i < row.length; i++) {
+            // Handle HTML content by extracting text
+            var cellText = row[i];
+            if (typeof cellText === 'string' && cellText.includes('<')) {
+              var temp = document.createElement('div');
+              temp.innerHTML = cellText;
+              cellText = temp.textContent || temp.innerText || '';
+            }
+            rowData.push(cellText);
+          }
+          studentsTableData.push(rowData);
+        });
+        
+        // Get footer if exists
+        studentsTable.find('tfoot tr').each(function() {
+          var row = [];
+          $(this).find('td').each(function() {
+            row.push($(this).text().trim() || '');
+          });
+          if (row.length > 0) {
+            studentsTableData.push(row);
+          }
+        });
+      } else {
+        // Fallback to DOM
+        studentsTableData = getTableData(studentsTable);
+      }
+      
+      // Get aging table data for PDF
+      var agingTableData = [];
+      if ($.fn.DataTable.isDataTable('#aging-table')) {
+        var agingDt = $('#aging-table').DataTable();
+        
+        // Get headers
+        var agingHeaderRow = [];
+        agingTable.find('thead th').each(function() {
+          agingHeaderRow.push($(this).text().trim() || '');
+        });
+        agingTableData.push(agingHeaderRow);
+        
+        // Get all rows from DataTable API
+        var agingAllData = agingDt.rows().data().toArray();
+        agingAllData.forEach(function(row) {
+          var rowData = [];
+          for (var i = 0; i < row.length; i++) {
+            // Handle HTML content by extracting text
+            var cellText = row[i];
+            if (typeof cellText === 'string' && cellText.includes('<')) {
+              var temp = document.createElement('div');
+              temp.innerHTML = cellText;
+              cellText = temp.textContent || temp.innerText || '';
+            }
+            rowData.push(cellText);
+          }
+          agingTableData.push(rowData);
+        });
+        
+        // Get footer if exists
+        agingTable.find('tfoot tr').each(function() {
+          var row = [];
+          $(this).find('td').each(function() {
+            row.push($(this).text().trim() || '');
+          });
+          if (row.length > 0) {
+            agingTableData.push(row);
+          }
+        });
+      } else {
+        // Fallback to DOM
+        agingTableData = getTableData(agingTable);
+      }
+      
+      // Create a simplified document structure
       var docDefinition = {
         pageOrientation: 'landscape',
         content: [
@@ -857,10 +1117,32 @@
           { text: dateRangeText, style: 'subheader' },
           { text: '\n' },
           { text: 'Students Information', style: 'tableHeader' },
-          createSimplifiedTableForPdf(studentsTable),
+          {
+            table: {
+              headerRows: 1,
+              body: studentsTableData,
+              widths: Array(studentsTableData[0].length).fill('*')
+            },
+            layout: {
+              fillColor: function(rowIndex) {
+                return (rowIndex === 0) ? '#f2f2f2' : null;
+              }
+            }
+          },
           { text: '\n\n' },
           { text: 'Student Aging Report', style: 'tableHeader' },
-          createSimplifiedTableForPdf(agingTable)
+          {
+            table: {
+              headerRows: 1,
+              body: agingTableData,
+              widths: Array(agingTableData[0].length).fill('*')
+            },
+            layout: {
+              fillColor: function(rowIndex) {
+                return (rowIndex === 0) ? '#f2f2f2' : null;
+              }
+            }
+          }
         ],
         styles: {
           header: {
@@ -892,103 +1174,15 @@
     }
   }
   
-  // Helper function to create a simplified table for PDF with strict validation
-  function createSimplifiedTableForPdf(table) {
-    // Safely get table data with extensive validation
-    var headers = [];
-    var numColumns = 0;
-    
-    // Get headers and count columns
-    table.find('thead th').each(function() {
-      var headerText = $(this).text().trim() || ' ';
-      headers.push(headerText);
-      numColumns++;
-    });
-    
-    // If no columns found, use a default
-    if (numColumns === 0) {
-      numColumns = 1;
-      headers = [' '];
-    }
-    
-    // Get rows with validation
-    var rows = [];
-    table.find('tbody tr').each(function() {
-      var rowData = [];
-      
-      // Fill each cell in the row
-      for (var i = 0; i < numColumns; i++) {
-        var cell = $(this).find('td').eq(i);
-        if (cell.length > 0) {
-          rowData.push(cell.text().trim() || ' ');
-        } else {
-          // Add empty cell if missing
-          rowData.push(' ');
-        }
-      }
-      
-      // Only add rows that have at least one non-empty cell
-      if (rowData.some(function(cell) { return cell.trim() !== ''; })) {
-        rows.push(rowData);
-      }
-    });
-    
-    // Handle empty rows case
-    if (rows.length === 0) {
-      rows = [Array(numColumns).fill('No data available')];
-    }
-    
-    // Add footer rows with validation
-    table.find('tfoot tr').each(function() {
-      var footerRow = [];
-      
-      // Process each cell in the footer row
-      for (var i = 0; i < numColumns; i++) {
-        var cell = $(this).find('td').eq(i);
-        if (cell.length > 0) {
-          footerRow.push(cell.text().trim() || ' ');
-        } else {
-          // Add empty cell if missing
-          footerRow.push(' ');
-        }
-      }
-      
-      // Only add footer row if it contains data
-      if (footerRow.length > 0) {
-        rows.push(footerRow);
-      }
-    });
-    
-    // Create the table definition with auto-widths and ensured consistency
-    return {
-      table: {
-        headerRows: 1,
-        body: [headers].concat(rows),
-        widths: Array(numColumns).fill('*')
-      },
-      layout: {
-        fillColor: function(rowIndex) {
-          return (rowIndex === 0) ? '#f2f2f2' : null;
-        }
-      }
-    };
-  }
-  
   // Function to print combined tables
   function printCombinedTables() {
     // Get tables
     var studentsTable = $('#myTable');
     var agingTable = $('#aging-table');
     
-    // Check if both tables exist and have rows
+    // Check if both tables exist
     if (studentsTable.length === 0 || agingTable.length === 0) {
       alert('Tables not found or data not loaded yet');
-      return;
-    }
-    
-    // Check if there's data in the tables
-    if (studentsTable.find('tbody tr').length === 0 || agingTable.find('tbody tr').length === 0) {
-      alert('No data available for export');
       return;
     }
     
@@ -1001,7 +1195,7 @@
     var printWindow = window.open('', '_blank');
     printWindow.document.write('<html><head><title>Student Report R</title>');
     
-    // Add necessary styles with improved print styling
+    // Add necessary styles
     printWindow.document.write('<style>');
     printWindow.document.write('@media print {');
     printWindow.document.write('  @page { size: landscape; margin: 10mm; }');
@@ -1020,17 +1214,117 @@
     printWindow.document.write('<h1>Student Report R</h1>');
     printWindow.document.write('<div class="date-range">' + dateRangeText + '</div>');
     
-    // Clone and add students table
-    var studentsClone = studentsTable.clone();
-    studentsClone.find('th, td').css('width', 'auto');
+    // Add students table with all data if it's a DataTable
     printWindow.document.write('<h2>Students Information</h2>');
-    printWindow.document.write(studentsClone[0].outerHTML);
+    if ($.fn.DataTable.isDataTable('#myTable')) {
+      var dt = $('#myTable').DataTable();
+      
+      // Create new table for printing with all data
+      printWindow.document.write('<table>');
+      
+      // Add header
+      printWindow.document.write('<thead><tr>');
+      studentsTable.find('thead th').each(function() {
+        printWindow.document.write('<th>' + $(this).text().trim() + '</th>');
+      });
+      printWindow.document.write('</tr></thead>');
+      
+      // Add body with all rows from DataTable API
+      printWindow.document.write('<tbody>');
+      var allData = dt.rows().data().toArray();
+      allData.forEach(function(row) {
+        printWindow.document.write('<tr>');
+        for (var i = 0; i < row.length; i++) {
+          // Handle HTML content by extracting text
+          var cellText = row[i];
+          if (typeof cellText === 'string' && cellText.includes('<')) {
+            var temp = document.createElement('div');
+            temp.innerHTML = cellText;
+            cellText = temp.textContent || temp.innerText || '';
+          }
+          printWindow.document.write('<td>' + cellText + '</td>');
+        }
+        printWindow.document.write('</tr>');
+      });
+      printWindow.document.write('</tbody>');
+      
+      // Add footer if exists
+      if (studentsTable.find('tfoot').length > 0) {
+        printWindow.document.write('<tfoot>');
+        studentsTable.find('tfoot tr').each(function() {
+          printWindow.document.write('<tr>');
+          $(this).find('td').each(function() {
+            var colspan = $(this).attr('colspan') || 1;
+            printWindow.document.write('<td colspan="' + colspan + '">' + $(this).text().trim() + '</td>');
+          });
+          printWindow.document.write('</tr>');
+        });
+        printWindow.document.write('</tfoot>');
+      }
+      
+      printWindow.document.write('</table>');
+    } else {
+      // Fallback to clone for non-DataTable
+      var studentsClone = studentsTable.clone();
+      studentsClone.find('th, td').css('width', 'auto');
+      printWindow.document.write(studentsClone[0].outerHTML);
+    }
     
-    // Clone and add aging table
-    var agingClone = agingTable.clone();
-    agingClone.find('th, td').css('width', 'auto');
+    // Add aging table with all data if it's a DataTable
     printWindow.document.write('<h2>Student Aging Report</h2>');
-    printWindow.document.write(agingClone[0].outerHTML);
+    if ($.fn.DataTable.isDataTable('#aging-table')) {
+      var agingDt = $('#aging-table').DataTable();
+      
+      // Create new table for printing with all data
+      printWindow.document.write('<table>');
+      
+      // Add header
+      printWindow.document.write('<thead><tr>');
+      agingTable.find('thead th').each(function() {
+        printWindow.document.write('<th>' + $(this).text().trim() + '</th>');
+      });
+      printWindow.document.write('</tr></thead>');
+      
+      // Add body with all rows from DataTable API
+      printWindow.document.write('<tbody>');
+      var agingAllData = agingDt.rows().data().toArray();
+      agingAllData.forEach(function(row) {
+        printWindow.document.write('<tr>');
+        for (var i = 0; i < row.length; i++) {
+          // Handle HTML content by extracting text
+          var cellText = row[i];
+          if (typeof cellText === 'string' && cellText.includes('<')) {
+            var temp = document.createElement('div');
+            temp.innerHTML = cellText;
+            cellText = temp.textContent || temp.innerText || '';
+          }
+          printWindow.document.write('<td>' + cellText + '</td>');
+        }
+        printWindow.document.write('</tr>');
+      });
+      printWindow.document.write('</tbody>');
+      
+      // Add footer if exists
+      if (agingTable.find('tfoot').length > 0) {
+        printWindow.document.write('<tfoot>');
+        agingTable.find('tfoot tr').each(function() {
+          printWindow.document.write('<tr>');
+          $(this).find('td').each(function() {
+            var colspan = $(this).attr('colspan') || 1;
+            printWindow.document.write('<td colspan="' + colspan + '">' + $(this).text().trim() + '</td>');
+          });
+          printWindow.document.write('</tr>');
+        });
+        printWindow.document.write('</tfoot>');
+      }
+      
+      printWindow.document.write('</table>');
+    } else {
+      // Fallback to clone for non-DataTable
+      var agingClone = agingTable.clone();
+      agingClone.find('th, td').css('width', 'auto');
+      printWindow.document.write(agingClone[0].outerHTML);
+    }
     
     printWindow.document.write('</body></html>');
     printWindow.document.close();
