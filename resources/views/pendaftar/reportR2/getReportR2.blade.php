@@ -45,6 +45,9 @@
                 <th style="width: 15%">
                     Total by Convert
                 </th>
+                <th style="width: 15%">
+                    Balance Student
+                </th>
             </tr>
         </thead>
         <tbody id="table">
@@ -70,11 +73,15 @@
             <td>
             {{ $data['totalConvert'][$key] }}
             </td>
+            <td>
+            {{ $data['totalWeek'][$key]->total_week - $data['totalConvert'][$key] }}
+            </td>
           </tr>
           @php
           $total_allW += $data['totalWeek'][$key]->total_week;
           $total_allC += $data['countedPerWeek'][$key];
           $total_allC2 += $data['totalConvert'][$key];
+          $total_allB += $data['totalWeek'][$key]->total_week - $data['totalConvert'][$key];
           @endphp
         @endforeach
         </tbody>
@@ -91,6 +98,9 @@
                 </td>
                 <td>
                     {{  $total_allC2 }}
+                </td>
+                <td>
+                    {{  $total_allB }}
                 </td>
               </tr>
         </tfoot>
