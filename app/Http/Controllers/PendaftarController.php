@@ -3975,38 +3975,48 @@ class PendaftarController extends Controller
         $sheet->setCellValue('A1', 'Week');
         $sheet->setCellValue('B1', 'Month');
         $sheet->setCellValue('C1', 'Total');
+        $sheet->setCellValue('D1', 'Converted');
     
         $row = 2;
         $total_allW = 0;
+        $total_converted = 0;
         foreach ($data['dateRange'] as $key => $week) {
             $sheet->setCellValue('A' . $row, $week['week']);
             $sheet->setCellValue('B' . $row, $week['month']);
             $sheet->setCellValue('C' . $row, $data['totalWeek'][$key]->total_week);
+            $sheet->setCellValue('D' . $row, $data['totalConvert'][$key]);
             $total_allW += $data['totalWeek'][$key]->total_week;
+            $total_converted += $data['totalConvert'][$key];
             $row++;
         }
     
         $sheet->setCellValue('A' . $row, 'TOTAL');
         $sheet->setCellValue('C' . $row, number_format($total_allW, 2));
+        $sheet->setCellValue('D' . $row, number_format($total_converted, 2));
     
         // Add Total Payment By Days data
         $row += 2; // Add some space between tables
         $sheet->setCellValue('A' . $row, 'Date');
         $sheet->setCellValue('B' . $row, 'Total');
+        $sheet->setCellValue('C' . $row, 'Converted');
     
         $row++;
         $total_allD = 0;
+        $total_convertedD = 0;
         foreach ($data['dateRange'] as $key => $week) {
             foreach ($data['week'][$key] as $key2 => $day) {
                 $sheet->setCellValue('A' . $row, $day);
                 $sheet->setCellValue('B' . $row, $data['totalDay'][$key][$key2]->total_day);
+                $sheet->setCellValue('C' . $row, $data['totalConvert2'][$key][$key2]);
                 $total_allD += $data['totalDay'][$key][$key2]->total_day;
+                $total_convertedD += $data['totalConvert2'][$key][$key2];
                 $row++;
             }
         }
     
         $sheet->setCellValue('A' . $row, 'TOTAL');
         $sheet->setCellValue('B' . $row, number_format($total_allD, 2));
+        $sheet->setCellValue('C' . $row, number_format($total_convertedD, 2));
     
         $writer = new Xlsx($spreadsheet);
         $fileName = 'report.xlsx';
