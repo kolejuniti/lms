@@ -3944,6 +3944,10 @@ class PendaftarController extends Controller
 
                 } elseif (isset($request->excel)) {
 
+                    $data['from'] = Carbon::createFromFormat('Y-m-d', $request->from)->translatedFormat('d F Y'); ;
+                    $data['to'] = Carbon::createFromFormat('Y-m-d', $request->to)->translatedFormat('d F Y');
+
+
                     return $this->exportToExcel($data);
 
                 }else{
