@@ -55,6 +55,7 @@
         $total_allW = 0;
         $total_allC = 0;
         $total_allC2 = 0;
+        $total_allB = 0;
         @endphp
         @foreach ($data['dateRange'] as $key => $week)
           <tr>
