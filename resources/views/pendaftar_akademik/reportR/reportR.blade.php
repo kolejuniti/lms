@@ -174,7 +174,8 @@
 
     $(document).on('change', '#convert', function(e){
       convert = $(e.target).prop('checked');
-      getStudent(from,to,session,EA,convert);
+      // Send as string "true" or "false" to match PHP's expected format
+      getStudent(from,to,session,EA,convert.toString());
     });
     
     // Column visibility toggle functionality - use direct binding for dynamically loaded content

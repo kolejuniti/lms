@@ -3752,8 +3752,8 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
 
         if($request->from && $request->to)
         {
-            if($request->has('convert') && $request->convert == false) {
-
+            if(!$request->has('convert') || $request->convert == "false") {
+                // This block will run when the checkbox is unchecked
                 $data['student'] = DB::table('students')
                                ->leftjoin('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
                                ->leftjoin('tblsex', 'tblstudent_personal.sex_id', '=', 'tblsex.id')
