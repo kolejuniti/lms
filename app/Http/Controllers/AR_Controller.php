@@ -3754,29 +3754,61 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
         {
             if(!$request->has('convert') || $request->convert == "false") {
                 // This block will run when the checkbox is unchecked
-                $data['student'] = DB::table('students')
-                               ->leftjoin('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
-                               ->leftjoin('tblsex', 'tblstudent_personal.sex_id', '=', 'tblsex.id')
-                               ->leftjoin('sessions', 'students.intake', 'sessions.SessionID')
-                               ->leftjoin('tblprogramme', 'students.program', 'tblprogramme.id')
-                               ->leftjoin('tbledu_advisor', 'tblstudent_personal.advisor_id', 'tbledu_advisor.id')
-                               ->join('tblpayment', 'students.ic', '=', 'tblpayment.student_ic')
-                               ->where([
-                                ['students.status', 1],
-                                ['students.semester', 1]
-                               ])
-                               ->whereBetween('students.date_add', [$request->from, $request->to])
-                               ->orderBy('students.date_add', 'asc')
-                               ->groupBy('students.ic')
-                               ->when($request->session != '', function ($query) use ($request){
-                                    return $query->where('students.intake', $request->session);
-                               })
-                               ->when($request->EA != '', function ($query) use ($request){
-                                    return $query->where('tblstudent_personal.advisor_id', $request->EA);
-                               })
-                               ->select('students.*', 'tblstudent_personal.no_tel','tblstudent_personal.qualification', 'tblsex.code AS sex', 'sessions.SessionName', 'tblprogramme.progcode', 'tbledu_advisor.name AS ea')
-                               ->groupBy('students.ic')
-                               ->get();
+                // $data['student'] = DB::table('students')
+                //                ->leftjoin('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
+                //                ->leftjoin('tblsex', 'tblstudent_personal.sex_id', '=', 'tblsex.id')
+                //                ->leftjoin('sessions', 'students.intake', 'sessions.SessionID')
+                //                ->leftjoin('tblprogramme', 'students.program', 'tblprogramme.id')
+                //                ->leftjoin('tbledu_advisor', 'tblstudent_personal.advisor_id', 'tbledu_advisor.id')
+                //                ->join('tblpayment', 'students.ic', '=', 'tblpayment.student_ic')
+                //                ->where([
+                //                 ['students.status', 1],
+                //                 ['students.semester', 1]
+                //                ])
+                //                ->whereBetween('students.date_add', [$request->from, $request->to])
+                //                ->orderBy('students.date_add', 'asc')
+                //                ->groupBy('students.ic')
+                //                ->when($request->session != '', function ($query) use ($request){
+                //                     return $query->where('students.intake', $request->session);
+                //                })
+                //                ->when($request->EA != '', function ($query) use ($request){
+                //                     return $query->where('tblstudent_personal.advisor_id', $request->EA);
+                //                })
+                //                ->select('students.*', 'tblstudent_personal.no_tel','tblstudent_personal.qualification', 'tblsex.code AS sex', 'sessions.SessionName', 'tblprogramme.progcode', 'tbledu_advisor.name AS ea')
+                //                ->groupBy('students.ic')
+                //                ->get();
+
+                $data['student'] = DB::table('tblpayment as p1')
+                                    ->join('students', 'p1.student_ic', '=', 'students.ic')
+                                    ->leftjoin('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
+                                    ->leftjoin('tblsex', 'tblstudent_personal.sex_id', '=', 'tblsex.id')
+                                    ->leftjoin('sessions', 'students.intake', 'sessions.SessionID')
+                                    ->leftjoin('tblprogramme', 'students.program', 'tblprogramme.id')
+                                    ->leftjoin('tbledu_advisor', 'tblstudent_personal.advisor_id', 'tbledu_advisor.id')
+                                    ->join(DB::raw('(SELECT student_ic, MIN(date) as first_payment_date 
+                                            FROM tblpayment 
+                                            GROUP BY student_ic) as p2'), function($join) {
+                                        $join->on('p1.student_ic', '=', 'p2.student_ic')
+                                             ->on('p1.date', '=', 'p2.first_payment_date');
+                                    })
+                                    ->where([
+                                        ['p1.process_status_id', '=', 2],
+                                        ['p1.process_type_id', '=', 1],
+                                        ['p1.semester_id', '=', 1],
+                                        ['students.status', '=', 1],
+                                        ['students.semester', '=', 1]
+                                    ])
+                                    ->when($request->session != '', function ($query) use ($request){
+                                        return $query->where('students.intake', $request->session);
+                                    })
+                                    ->when($request->EA != '', function ($query) use ($request){
+                                            return $query->where('tblstudent_personal.advisor_id', $request->EA);
+                                    })
+                                    ->whereBetween('p1.date', [$request->from, $request->to])
+                                    ->select('p1.id')
+                                    ->groupBy('p1.student_ic')
+                                    ->select('students.*', 'tblstudent_personal.no_tel','tblstudent_personal.qualification', 'tblsex.code AS sex', 'sessions.SessionName', 'tblprogramme.progcode', 'tbledu_advisor.name AS ea')
+                                    ->get();
 
             }
             else
@@ -3840,7 +3872,7 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
                                     ->groupBy('p1.student_ic')
                                     ->select('students.*', 'tblstudent_personal.no_tel','tblstudent_personal.qualification', 'tblsex.code AS sex', 'sessions.SessionName', 'tblprogramme.progcode', 'tbledu_advisor.name AS ea')
                                     ->get();
-                                    
+
             }
 
             
