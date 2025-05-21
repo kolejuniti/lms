@@ -3817,63 +3817,52 @@ class PendaftarController extends Controller
                     $startDate = reset($week['days']); // Get the first date of the week
                     $endDate = end($week['days']);     // Get the last date of the week
                 
-                    // Fetch the student_ic values for the current week, excluding already counted ones
-                    $currentWeekStudents = DB::table('tblpayment as p1')
-                                            ->join('students', 'p1.student_ic', '=', 'students.ic')
-                                            ->join(DB::raw('(SELECT student_ic, MIN(date) as first_payment_date 
-                                                    FROM tblpayment 
-                                                    GROUP BY student_ic) as p2'), function($join) {
-                                                $join->on('p1.student_ic', '=', 'p2.student_ic')
-                                                     ->on('p1.date', '=', 'p2.first_payment_date');
-                                            })
-                                            ->where([
-                                                ['p1.process_status_id', 2],
-                                                ['p1.process_type_id', 1], 
-                                                ['p1.semester_id', 1]
-                                            ])
-                                            ->whereBetween('p1.add_date', [$startDate, $endDate])
-                                            ->whereNotIn('p1.student_ic', $alreadyCountedStudents)
-                                            ->pluck('p1.student_ic')
-                                            ->unique()
-                                            ->toArray();
+                    // Combined query to fetch both total and converted students in one go
+                    $weeklyStudents = DB::table('tblpayment as p1')
+                        ->select([
+                            'p1.student_ic',
+                            'students.status'
+                        ])
+                        ->join('students', 'p1.student_ic', '=', 'students.ic')
+                        ->join(DB::raw('(
+                            SELECT student_ic, MIN(date) as first_payment_date 
+                            FROM tblpayment 
+                            WHERE process_status_id = 2 
+                            AND process_type_id = 1 
+                            AND semester_id = 1
+                            GROUP BY student_ic
+                        ) as p2'), function($join) {
+                            $join->on('p1.student_ic', '=', 'p2.student_ic')
+                                 ->on('p1.date', '=', 'p2.first_payment_date');
+                        })
+                        ->where([
+                            ['p1.process_status_id', 2],
+                            ['p1.process_type_id', 1], 
+                            ['p1.semester_id', 1]
+                        ])
+                        ->whereBetween('p1.add_date', [$startDate, $endDate])
+                        ->whereNotIn('p1.student_ic', $alreadyCountedStudents)
+                        ->get();
 
-                    // Count the number of unique student_ic values for the current week
+                    // Process results in memory instead of making separate queries
+                    $currentWeekStudents = $weeklyStudents->pluck('student_ic')->unique()->values()->toArray();
+                    $currentConvertStudents = $weeklyStudents->where('status', '!=', 1)
+                        ->pluck('student_ic')
+                        ->unique()
+                        ->values()
+                        ->toArray();
+
                     $totalWeekCount = count($currentWeekStudents);
-
-                    // Fetch the student_ic values for the current week, excluding already counted ones
-                    $currentConvertStudents = DB::table('tblpayment as p1')
-                                            ->join('students', 'p1.student_ic', '=', 'students.ic')
-                                            ->join(DB::raw('(SELECT student_ic, MIN(date) as first_payment_date 
-                                                    FROM tblpayment 
-                                                    GROUP BY student_ic) as p2'), function($join) {
-                                                $join->on('p1.student_ic', '=', 'p2.student_ic')
-                                                     ->on('p1.date', '=', 'p2.first_payment_date');
-                                            })
-                                            ->where([
-                                                ['p1.process_status_id', 2],
-                                                ['p1.process_type_id', 1], 
-                                                ['p1.semester_id', 1]
-                                            ])
-                                            ->where('students.status', '!=', 1)
-                                            ->whereBetween('p1.add_date', [$startDate, $endDate])
-                                            ->whereNotIn('p1.student_ic', $alreadyCountedStudents)
-                                            ->pluck('p1.student_ic')
-                                            ->unique()
-                                            ->toArray();
-
+                    
+                    // Update data arrays
                     $data['totalConvert'][$key] = count($currentConvertStudents);
-
-                    // Update the already counted students set
-                    $alreadyCountedStudents = array_merge($alreadyCountedStudents, $currentWeekStudents);
-
                     $data['totalWeek'][$key] = (object) ['total_week' => $totalWeekCount];
                     $data['week'][$key] = $week['days'];
-
+                    
+                    // Update already counted students
+                    $alreadyCountedStudents = array_merge($alreadyCountedStudents, $currentWeekStudents);
                     $data['countedPerWeek'][$key] = count($alreadyCountedStudents);
 
-                    // $totalStudentCount2 = $data['totalWeek'][$key] ? $data['totalWeek'][$key] : 0;
-                    // $data['totalWeek'][$key] = (object) ['total_week' => $totalStudentCount2];
-                    
                     $data['week'][$key] = $week['days'];
 
                     foreach($data['week'][$key] AS $key2 => $day)
