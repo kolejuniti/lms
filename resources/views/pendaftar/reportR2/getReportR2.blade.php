@@ -153,7 +153,6 @@
           </td>
           <td>
             {{ $data['countedPerDay'][$key][$key2] }}
-            {{$total_allQ}}
           </td>
           <td>
             {{ $data['totalConvert2'][$key][$key2] }}
