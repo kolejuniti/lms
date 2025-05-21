@@ -84,11 +84,11 @@
             </div>
           </div>
           <div class="row">
-            <div class="form-check">
-              <label class="form-check-label">
-                <input type="checkbox" class="form-check-input" name="confirmed" id="confirmed" value="checkedValue" checked>
-                Include Student Confirmed
-              </label>
+            <div class="col-md-3 mb-1">
+              <div class="form-check">
+                <input type="checkbox" class="form-check-input toggle-column" id="convert" value="convert" checked>
+                <label class="form-check-label" for="convert">Include Student Convert</label>
+              </div>
             </div>
           </div>
           <div id="form-student">
@@ -142,6 +142,7 @@
     var to = '';
     var session = '';
     var EA = '';
+    var convert = true; // Initialize as true since checkbox is checked by default
     var dataTable = null;
 
     // Document ready function
@@ -152,23 +153,28 @@
     $(document).on('change', '#from', function(e){
       from = $(e.target).val();
       updateCombinedExportButtons();
-      getStudent(from,to,session,EA);
+      getStudent(from,to,session,EA,convert);
     });
 
     $(document).on('change', '#to', function(e){
       to = $(e.target).val();
       updateCombinedExportButtons();
-      getStudent(from,to,session,EA);
+      getStudent(from,to,session,EA,convert);
     });
 
     $(document).on('change', '#session', function(e){
       session = $(e.target).val();
-      getStudent(from,to,session,EA);
+      getStudent(from,to,session,EA,convert);
     });
 
     $(document).on('change', '#EA', function(e){
       EA = $(e.target).val();
-      getStudent(from,to,session,EA);
+      getStudent(from,to,session,EA,convert);
+    });
+
+    $(document).on('change', '#convert', function(e){
+      convert = $(e.target).prop('checked');
+      getStudent(from,to,session,EA,convert);
     });
     
     // Column visibility toggle functionality - use direct binding for dynamically loaded content
@@ -234,13 +240,13 @@
       }
     }
 
-  function getStudent(from,to,session,EA)
+  function getStudent(from,to,session,EA,convert)
   {
     return $.ajax({
             headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
             url      : "{{ url('/AR/reportR/getStudentReportR') }}",
             method   : 'GET',
-            data 	 : {from: from, to: to, session: session, EA: EA},
+            data 	 : {from: from, to: to, session: session, EA: EA, convert: convert},
             error:function(err){
                 alert("Error");
                 console.log(err);
@@ -500,13 +506,13 @@
     // Handle Select2 change event
     $('#EA').on('select2:select', function (e) {
       EA = $(this).val();
-      getStudent(from,to,session,EA);
+      getStudent(from,to,session,EA,convert);
     });
 
     // Handle Select2 clear event
     $('#EA').on('select2:clear', function (e) {
       EA = '-';
-      getStudent(from,to,session,EA);
+      getStudent(from,to,session,EA,convert);
     });
   });
 

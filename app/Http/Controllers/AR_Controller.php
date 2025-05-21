@@ -3752,8 +3752,36 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
 
         if($request->from && $request->to)
         {
+            if($request->has('convert') && $request->convert == false) {
 
-            $data['student'] = DB::table('students')
+                $data['student'] = DB::table('students')
+                               ->leftjoin('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
+                               ->leftjoin('tblsex', 'tblstudent_personal.sex_id', '=', 'tblsex.id')
+                               ->leftjoin('sessions', 'students.intake', 'sessions.SessionID')
+                               ->leftjoin('tblprogramme', 'students.program', 'tblprogramme.id')
+                               ->leftjoin('tbledu_advisor', 'tblstudent_personal.advisor_id', 'tbledu_advisor.id')
+                               ->join('tblpayment', 'students.ic', '=', 'tblpayment.student_ic')
+                               ->where([
+                                ['students.status', 1],
+                                ['students.semester', 1]
+                               ])
+                               ->whereBetween('students.date_add', [$request->from, $request->to])
+                               ->orderBy('students.date_add', 'asc')
+                               ->groupBy('students.ic')
+                               ->when($request->session != '', function ($query) use ($request){
+                                    return $query->where('students.intake', $request->session);
+                               })
+                               ->when($request->EA != '', function ($query) use ($request){
+                                    return $query->where('tblstudent_personal.advisor_id', $request->EA);
+                               })
+                               ->select('students.*', 'tblstudent_personal.no_tel','tblstudent_personal.qualification', 'tblsex.code AS sex', 'sessions.SessionName', 'tblprogramme.progcode', 'tbledu_advisor.name AS ea')
+                               ->groupBy('students.ic')
+                               ->get();
+
+            }
+            else
+            {
+                $data['student'] = DB::table('students')
                                ->leftjoin('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
                                ->leftjoin('tblsex', 'tblstudent_personal.sex_id', '=', 'tblsex.id')
                                ->leftjoin('sessions', 'students.intake', 'sessions.SessionID')
@@ -3782,6 +3810,9 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
                                ->select('students.*', 'tblstudent_personal.no_tel','tblstudent_personal.qualification', 'tblsex.code AS sex', 'sessions.SessionName', 'tblprogramme.progcode', 'tbledu_advisor.name AS ea')
                                ->groupBy('students.ic')
                                ->get();
+            }
+
+            
 
             $data['below5'] = 0;
             $data['below5willregister'] = 0;
