@@ -1028,8 +1028,10 @@
         
         // Get headers
         var headerRow = [];
+        var headerCount = 0;
         studentsTable.find('thead th').each(function() {
           headerRow.push($(this).text().trim() || '');
+          headerCount++;
         });
         studentsTableData.push(headerRow);
         
@@ -1037,15 +1039,20 @@
         var allData = dt.rows().data().toArray();
         allData.forEach(function(row) {
           var rowData = [];
-          for (var i = 0; i < row.length; i++) {
+          // Ensure each row has the same number of cells as the header
+          for (var i = 0; i < headerCount; i++) {
             // Handle HTML content by extracting text
-            var cellText = row[i];
-            if (typeof cellText === 'string' && cellText.includes('<')) {
-              var temp = document.createElement('div');
-              temp.innerHTML = cellText;
-              cellText = temp.textContent || temp.innerText || '';
+            var cellText = '';
+            if (i < row.length) {
+              cellText = row[i];
+              if (typeof cellText === 'string' && cellText.includes('<')) {
+                var temp = document.createElement('div');
+                temp.innerHTML = cellText;
+                cellText = temp.textContent || temp.innerText || '';
+              }
             }
-            rowData.push(cellText);
+            // Make sure the cell has a valid value
+            rowData.push(cellText || '');
           }
           studentsTableData.push(rowData);
         });
@@ -1053,16 +1060,18 @@
         // Get footer if exists
         studentsTable.find('tfoot tr').each(function() {
           var row = [];
-          $(this).find('td').each(function() {
-            row.push($(this).text().trim() || '');
-          });
+          // Ensure the footer row has the same number of cells as the header
+          for (var i = 0; i < headerCount; i++) {
+            var cell = $(this).find('td').eq(i);
+            row.push(cell.length > 0 ? (cell.text().trim() || '') : '');
+          }
           if (row.length > 0) {
             studentsTableData.push(row);
           }
         });
       } else {
         // Fallback to DOM
-        studentsTableData = getTableData(studentsTable);
+        studentsTableData = getTableDataSafe(studentsTable);
       }
       
       // Get aging table data for PDF
@@ -1072,8 +1081,10 @@
         
         // Get headers
         var agingHeaderRow = [];
+        var agingHeaderCount = 0;
         agingTable.find('thead th').each(function() {
           agingHeaderRow.push($(this).text().trim() || '');
+          agingHeaderCount++;
         });
         agingTableData.push(agingHeaderRow);
         
@@ -1081,15 +1092,20 @@
         var agingAllData = agingDt.rows().data().toArray();
         agingAllData.forEach(function(row) {
           var rowData = [];
-          for (var i = 0; i < row.length; i++) {
+          // Ensure each row has the same number of cells as the header
+          for (var i = 0; i < agingHeaderCount; i++) {
             // Handle HTML content by extracting text
-            var cellText = row[i];
-            if (typeof cellText === 'string' && cellText.includes('<')) {
-              var temp = document.createElement('div');
-              temp.innerHTML = cellText;
-              cellText = temp.textContent || temp.innerText || '';
+            var cellText = '';
+            if (i < row.length) {
+              cellText = row[i];
+              if (typeof cellText === 'string' && cellText.includes('<')) {
+                var temp = document.createElement('div');
+                temp.innerHTML = cellText;
+                cellText = temp.textContent || temp.innerText || '';
+              }
             }
-            rowData.push(cellText);
+            // Make sure the cell has a valid value
+            rowData.push(cellText || '');
           }
           agingTableData.push(rowData);
         });
@@ -1097,17 +1113,29 @@
         // Get footer if exists
         agingTable.find('tfoot tr').each(function() {
           var row = [];
-          $(this).find('td').each(function() {
-            row.push($(this).text().trim() || '');
-          });
+          // Ensure the footer row has the same number of cells as the header
+          for (var i = 0; i < agingHeaderCount; i++) {
+            var cell = $(this).find('td').eq(i);
+            row.push(cell.length > 0 ? (cell.text().trim() || '') : '');
+          }
           if (row.length > 0) {
             agingTableData.push(row);
           }
         });
       } else {
         // Fallback to DOM
-        agingTableData = getTableData(agingTable);
+        agingTableData = getTableDataSafe(agingTable);
       }
+      
+      // Verify that all tables have data and consistent structure
+      if (studentsTableData.length < 1 || agingTableData.length < 1) {
+        alert('No data available for export');
+        return;
+      }
+      
+      // Ensure all rows have consistent cell count
+      var studentsColCount = studentsTableData[0].length;
+      var agingColCount = agingTableData[0].length;
       
       // Create a simplified document structure
       var docDefinition = {
@@ -1121,7 +1149,7 @@
             table: {
               headerRows: 1,
               body: studentsTableData,
-              widths: Array(studentsTableData[0].length).fill('*')
+              widths: Array(studentsColCount).fill('*')
             },
             layout: {
               fillColor: function(rowIndex) {
@@ -1135,7 +1163,7 @@
             table: {
               headerRows: 1,
               body: agingTableData,
-              widths: Array(agingTableData[0].length).fill('*')
+              widths: Array(agingColCount).fill('*')
             },
             layout: {
               fillColor: function(rowIndex) {
@@ -1170,8 +1198,53 @@
       pdfMake.createPdf(docDefinition).download('Student_Report_R_Combined.pdf');
     } catch (error) {
       console.error('PDF generation error:', error);
-      alert('Error generating PDF: ' + error.message);
+      alert('Error generating PDF: ' + (error.message || 'Unknown error'));
     }
+  }
+  
+  // Helper function to safely extract table data with consistent structure
+  function getTableDataSafe(table) {
+    var data = [];
+    
+    // Extract header row
+    var headerRow = [];
+    var colCount = 0;
+    table.find('thead th').each(function() {
+      headerRow.push($(this).text().trim() || '');
+      colCount++;
+    });
+    data.push(headerRow);
+    
+    // Extract body rows
+    table.find('tbody tr').each(function() {
+      var row = [];
+      // Ensure each row has the same number of cells
+      for (var i = 0; i < colCount; i++) {
+        var cell = $(this).find('td').eq(i);
+        var cellText = cell.length > 0 ? (cell.text().trim() || '') : '';
+        row.push(cellText);
+      }
+      // Only add rows that have at least one non-empty cell
+      if (row.some(function(cell) { return cell !== ''; })) {
+        data.push(row);
+      }
+    });
+    
+    // Add footer row if exists
+    table.find('tfoot tr').each(function() {
+      var row = [];
+      // Ensure each row has the same number of cells
+      for (var i = 0; i < colCount; i++) {
+        var cell = $(this).find('td').eq(i);
+        var cellText = cell.length > 0 ? (cell.text().trim() || '') : '';
+        row.push(cellText);
+      }
+      if (row.length > 0) {
+        data.push(row);
+      }
+    });
+    
+    return data;
   }
   
   // Function to print combined tables
