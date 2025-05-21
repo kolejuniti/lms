@@ -3738,9 +3738,6 @@ class PendaftarController extends Controller
                     ->select('p1.student_ic', 'p1.date', 'p1.id', 'p1.add_date')
                     ->join(DB::raw('(SELECT student_ic, MIN(date) as first_payment_date 
                             FROM tblpayment 
-                            WHERE process_status_id = 2 
-                            AND process_type_id = 1 
-                            AND semester_id = 1
                             GROUP BY student_ic) as p2'), function($join) {
                         $join->on('p1.student_ic', '=', 'p2.student_ic')
                              ->on('p1.date', '=', 'p2.first_payment_date');
