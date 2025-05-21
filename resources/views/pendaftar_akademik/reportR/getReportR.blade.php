@@ -277,6 +277,8 @@
                 TOTAL STUDENTS
               </td>
               <td>{{ $data['student']->count() }}</td>
+              <td>{{ $data['below5willregister'] + $data['below10willregister'] + $data['below15willregister'] + $data['below20willregister'] + $data['below25willregister'] + $data['below30willregister'] + $data['above30willregister'] }}</td>
+              <td>{{ $data['below5KIV'] + $data['below10KIV'] + $data['below15KIV'] + $data['below20KIV'] + $data['below25KIV'] + $data['below30KIV'] + $data['above30KIV'] }}</td>
             </tr>
           </tfoot>
         </table>
