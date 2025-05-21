@@ -61,12 +61,12 @@
             {{ $data['totalWeek'][$key]->total_week }}
             </td>
             <td>
-            {{ $data['countedPerWeek'][$key]->total_commulative }}
+            {{ $data['countedPerWeek'][$key] }}
             </td>
           </tr>
           @php
           $total_allW += $data['totalWeek'][$key]->total_week;
-          $total_allC += $data['countedPerWeek'][$key]->total_commulative;
+          $total_allC += $data['countedPerWeek'][$key];
           @endphp
         @endforeach
         </tbody>
