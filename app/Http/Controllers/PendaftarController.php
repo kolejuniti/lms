@@ -3927,7 +3927,25 @@ class PendaftarController extends Controller
 
                         // Update the already counted students set
                         $alreadyCountedStudents2 = array_merge($alreadyCountedStudents2, $currentDayStudents);
-                        $data['countedPerDay'][$key][$key2] = count($alreadyCountedStudents2);
+                        
+                        // Store the actual daily cumulative value, not the running total
+                        $data['countedPerDay'][$key][$key2] = DB::table('tblpayment as p1')
+                            ->join('students', 'p1.student_ic', '=', 'students.ic')
+                            ->join(DB::raw('(SELECT student_ic, MIN(date) as first_payment_date 
+                                    FROM tblpayment 
+                                    GROUP BY student_ic) as p2'), function($join) {
+                                $join->on('p1.student_ic', '=', 'p2.student_ic')
+                                     ->on('p1.date', '=', 'p2.first_payment_date');
+                            })
+                            ->where([
+                                ['p1.process_status_id', 2],
+                                ['p1.process_type_id', 1], 
+                                ['p1.semester_id', 1]
+                            ])
+                            ->where('p1.date', '<=', $day)  // Get all records up to this day
+                            ->select('p1.student_ic')
+                            ->distinct()
+                            ->count();
 
                         $data['totalDay'][$key][$key2] = (object) ['total_day' => $totalDaysCount];                        
                     }
