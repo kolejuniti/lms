@@ -148,7 +148,7 @@ tr:hover {
                                 Baki Pelajar
                             </th>
                             <th style="width: 15%">
-                                Pelajar Didaftarkan
+                                Pelajar Aktif
                             </th>
                             <th style="width: 15%">
                                 Pelajar Ditolak
@@ -278,7 +278,7 @@ tr:hover {
                                 Baki Pelajar
                             </th>
                             <th style="width: 15%">
-                                Pelajar Didaftarkan
+                                Pelajar Aktif
                             </th>
                             <th style="width: 15%">
                                 Pelajar Ditolak
