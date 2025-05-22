@@ -225,6 +225,7 @@
               <th style="width: 50%">Number of Students</th>
               <th style="width: 50%">Number of Students Will Register</th>
               <th style="width: 50%">Number of Students KIV</th>
+              <th style="width: 50%">Number of Students Offered</th>
               <th style="width: 50%">Number of Students Active</th>
               <th style="width: 50%">Number of Students Rejected</th>
             </tr>
@@ -235,6 +236,7 @@
               <td>{{ $data['below5'] }}</td>
               <td>{{ $data['below5willregister'] }}</td>
               <td>{{ $data['below5KIV'] }}</td>
+              <td>{{ $data['below5offered'] }}</td>
               <td>{{ $data['below5active'] }}</td>
               <td>{{ $data['below5rejected'] }}</td>
             </tr>
@@ -243,6 +245,7 @@
               <td>{{ $data['below10'] }}</td>
               <td>{{ $data['below10willregister'] }}</td>
               <td>{{ $data['below10KIV'] }}</td>
+              <td>{{ $data['below10offered'] }}</td>
               <td>{{ $data['below10active'] }}</td>
               <td>{{ $data['below10rejected'] }}</td>
             </tr>
@@ -251,6 +254,7 @@
               <td>{{ $data['below15'] }}</td>
               <td>{{ $data['below15willregister'] }}</td>
               <td>{{ $data['below15KIV'] }}</td>
+              <td>{{ $data['below15offered'] }}</td>
               <td>{{ $data['below15active'] }}</td>
               <td>{{ $data['below15rejected'] }}</td>
             </tr>
@@ -259,6 +263,7 @@
               <td>{{ $data['below20'] }}</td>
               <td>{{ $data['below20willregister'] }}</td>
               <td>{{ $data['below20KIV'] }}</td>
+              <td>{{ $data['below20offered'] }}</td>
               <td>{{ $data['below20active'] }}</td>
               <td>{{ $data['below20rejected'] }}</td>
             </tr>
@@ -267,6 +272,7 @@
               <td>{{ $data['below25'] }}</td>
               <td>{{ $data['below25willregister'] }}</td>
               <td>{{ $data['below25KIV'] }}</td>
+              <td>{{ $data['below25offered'] }}</td>
               <td>{{ $data['below25active'] }}</td>
               <td>{{ $data['below25rejected'] }}</td>
             </tr>
@@ -275,6 +281,7 @@
               <td>{{ $data['below30'] }}</td>
               <td>{{ $data['below30willregister'] }}</td>
               <td>{{ $data['below30KIV'] }}</td>
+              <td>{{ $data['below30offered'] }}</td>
               <td>{{ $data['below30active'] }}</td>
               <td>{{ $data['below30rejected'] }}</td>
             </tr>
@@ -283,6 +290,7 @@
               <td>{{ $data['above30'] }}</td>
               <td>{{ $data['above30willregister'] }}</td>
               <td>{{ $data['above30KIV'] }}</td>
+              <td>{{ $data['above30offered'] }}</td>
               <td>{{ $data['above30active'] }}</td>
               <td>{{ $data['above30rejected'] }}</td>
             </tr>
@@ -294,6 +302,7 @@
               </td>
               <td>{{ $data['student']->count() }}</td>
               <td>{{ $data['below5willregister'] + $data['below10willregister'] + $data['below15willregister'] + $data['below20willregister'] + $data['below25willregister'] + $data['below30willregister'] + $data['above30willregister'] }}</td>
+              <td>{{ $data['below5offered'] + $data['below10offered'] + $data['below15offered'] + $data['below20offered'] + $data['below25offered'] + $data['below30offered'] + $data['above30offered'] }}</td>
               <td>{{ $data['below5KIV'] + $data['below10KIV'] + $data['below15KIV'] + $data['below20KIV'] + $data['below25KIV'] + $data['below30KIV'] + $data['above30KIV'] }}</td>
               <td>{{ $data['below5active'] + $data['below10active'] + $data['below15active'] + $data['below20active'] + $data['below25active'] + $data['below30active'] + $data['above30active'] }}</td>
               <td>{{ $data['below5rejected'] + $data['below10rejected'] + $data['below15rejected'] + $data['below20rejected'] + $data['below25rejected'] + $data['below30rejected'] + $data['above30rejected'] }}</td>
