@@ -3881,7 +3881,8 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
                     {
                         $data['below5rejected']++;
                     }
-                    elseif($student->status != 1)
+
+                    if($student->status != 1)
                     {
                         $data['below5convert']++;
                     }
@@ -3907,7 +3908,8 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
                     {
                         $data['below10rejected']++;
                     }
-                    elseif($student->status != 1)
+
+                    if($student->status != 1)
                     {
                         $data['below10convert']++;
                     }
@@ -3933,7 +3935,8 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
                     {
                         $data['below20rejected']++;
                     }
-                    elseif($student->status != 1)
+
+                    if($student->status != 1)
                     {
                         $data['below20convert']++;
                     }
@@ -3959,7 +3962,8 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
                     {
                         $data['below25rejected']++;
                     }
-                    elseif($student->status != 1)
+
+                    if($student->status != 1)
                     {
                         $data['below25convert']++;
                     }
@@ -3985,7 +3989,8 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
                     {
                         $data['below30rejected']++;
                     }
-                    elseif($student->status != 1)
+
+                    if($student->status != 1)
                     {
                         $data['below30convert']++;
                     }
@@ -4011,7 +4016,8 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
                     {
                         $data['above30rejected']++;
                     }
-                    elseif($student->status != 1)
+                    
+                    if($student->status != 1)
                     {
                         $data['above30convert']++;
                     }
