@@ -76,7 +76,7 @@
         @foreach ($data['dateRange'] as $key => $week)
           <tr>
             <td>
-            {{ $week['week'] }} ({{ reset($week['days']) }} - {{ end($week['days']) }})
+            {{ $week['week'] }} ({{ \Carbon\Carbon::parse(reset($week['days']))->format('j F Y') }} - {{ \Carbon\Carbon::parse(end($week['days']))->format('j F Y') }})
             </td>
             <td>
             {{ $week['month'] }}
