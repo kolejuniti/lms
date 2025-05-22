@@ -3931,7 +3931,8 @@ class PendaftarController extends Controller
                         $dailyStudents = DB::table('tblpayment as p1')
                                         ->select([
                                             'p1.student_ic',
-                                            'students.status'
+                                            'students.status',
+                                            'students.date_offer'
                                         ])
                                         ->join('students', 'p1.student_ic', '=', 'students.ic')
                                         ->join(DB::raw('(SELECT student_ic, MIN(date) as first_payment_date 
@@ -3970,14 +3971,14 @@ class PendaftarController extends Controller
                             ->toArray();
 
                         $currentDayOfferedStudents = $dailyStudents->where('status', 1)
-                            ->where('date_offer', '<=', now())
+                            ->where('date_offer', '<=', DB::raw('CURDATE()'))
                             ->pluck('student_ic')
                             ->unique()
                             ->values()
                             ->toArray();
 
                         $currentDayKIVStudents = $dailyStudents->where('status', 1)
-                            ->where('date_offer', '>', now())
+                            ->where('date_offer', '>', DB::raw('CURDATE()'))
                             ->pluck('student_ic')
                             ->unique()
                             ->values()
