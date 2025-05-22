@@ -14,7 +14,7 @@
         <div class="row mb-5">
             <div class="col-md-6">
                 <div class="form-group">
-                    <p>Total Student By Month &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ $data['totalAll']->total_student }}</p>
+                    <p>Total Student R By Month &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ $data['totalAll']->total_student }}</p>
                 </div>
             </div>
         </div>
@@ -24,7 +24,7 @@
 
 <div class="card mb-3" id="stud_info">
     <div class="card-header">
-    <b>Total Payment By Weeks</b>
+    <b>Total Student R By Weeks</b>
     </div>
     <div class="small text-muted px-3 py-2">
         Note: Weeks shown follow the calendar date per week (Sunday to Saturday)
@@ -52,7 +52,7 @@
                     Balance Student
                 </th>
                 <th style="width: 15%">
-                    Student Registered
+                    Student Active
                 </th>
                 <th style="width: 15%">
                     Student Rejected
@@ -159,7 +159,7 @@
 
 <div class="card mb-3" id="stud_info">
     <div class="card-header">
-    <b>Total Payment By Days</b>
+    <b>Total Student R By Days</b>
     </div>
     <div class="card-body p-0">
       <table id="myTable2" class="table table-striped projects display dataTable">
@@ -181,7 +181,7 @@
                     Balance Student
                 </th>
                 <th style="width: 15%">
-                    Student Registered
+                    Student Active
                 </th>
                 <th style="width: 15%">
                     Student Rejected

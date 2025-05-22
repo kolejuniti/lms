@@ -4067,12 +4067,12 @@ class PendaftarController extends Controller
         $sheet->getStyle('A' . $row)->getFont()->setBold(true);
         
         $row++;
-        $sheet->setCellValue('A' . $row, 'Total Student By Month:');
+        $sheet->setCellValue('A' . $row, 'Total Student R By Month:');
         $sheet->setCellValue('C' . $row, $data['totalAll']->total_student);
         
         // Total Payment By Weeks header
         $row += 2;
-        $sheet->setCellValue('A' . $row, 'Total Payment By Weeks');
+        $sheet->setCellValue('A' . $row, 'Total Student R By Weeks');
         $sheet->mergeCells('A' . $row . ':J' . $row);
         $sheet->getStyle('A' . $row)->getFont()->setBold(true);
         
@@ -4090,7 +4090,7 @@ class PendaftarController extends Controller
         $sheet->setCellValue('D' . $row, 'Total by Cumulative');
         $sheet->setCellValue('E' . $row, 'Total by Convert');
         $sheet->setCellValue('F' . $row, 'Balance Student');
-        $sheet->setCellValue('G' . $row, 'Student Registered');
+        $sheet->setCellValue('G' . $row, 'Student Active');
         $sheet->setCellValue('H' . $row, 'Student Rejected');
         $sheet->setCellValue('I' . $row, 'Student Offered');
         $sheet->setCellValue('J' . $row, 'Student KIV');
@@ -4146,7 +4146,7 @@ class PendaftarController extends Controller
         
         // Total Payment By Days header
         $row += 2;
-        $sheet->setCellValue('A' . $row, 'Total Payment By Days');
+        $sheet->setCellValue('A' . $row, 'Total Student R By Days');
         $sheet->mergeCells('A' . $row . ':I' . $row);
         $sheet->getStyle('A' . $row)->getFont()->setBold(true);
         
@@ -4157,7 +4157,7 @@ class PendaftarController extends Controller
         $sheet->setCellValue('C' . $row, 'Total by Cumulative');
         $sheet->setCellValue('D' . $row, 'Total by Convert');
         $sheet->setCellValue('E' . $row, 'Balance Student');
-        $sheet->setCellValue('F' . $row, 'Student Registered');
+        $sheet->setCellValue('F' . $row, 'Student Active');
         $sheet->setCellValue('G' . $row, 'Student Rejected');
         $sheet->setCellValue('H' . $row, 'Student Offered');
         $sheet->setCellValue('I' . $row, 'Student KIV');

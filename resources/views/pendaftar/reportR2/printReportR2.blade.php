@@ -112,7 +112,7 @@ tr:hover {
                     <div class="row mb-5">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <p>Jumlah Pelajar Per Bulan &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ $data['totalAll']->total_student }}</p>
+                                <p>Jumlah Pelajar R Per Bulan &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ $data['totalAll']->total_student }}</p>
                             </div>
                         </div>
                     </div>
@@ -123,7 +123,7 @@ tr:hover {
             <!-- Students -->
             <div class="card mb-3" id="stud_info">
                 <div class="card-header">
-                <b>Jumlah Bayaran Per Minggu</b>
+                <b>Jumlah Pelajar R Per Minggu</b>
                 </div>
                 <div class="card-body p-0">
                 <table class="w-100 table table-bordered display margin-top-10 w-p100">
@@ -256,7 +256,7 @@ tr:hover {
             <!-- Students -->
             <div class="card mb-3" id="stud_info">
                 <div class="card-header">
-                <b>Jumlah Bayaran Per Hari</b>
+                <b>Jumlah Pelajar R Per Hari</b>
                 </div>
                 <div class="card-body p-0">
                 <table class="w-100 table table-bordered display margin-top-10 w-p100">
