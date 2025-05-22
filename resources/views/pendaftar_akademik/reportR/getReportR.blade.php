@@ -225,7 +225,7 @@
               <th style="width: 50%">Number of Students</th>
               <th style="width: 50%">Number of Students Will Register</th>
               <th style="width: 50%">Number of Students KIV</th>
-              <th style="width: 50%">Number of Students Offered</th>
+              <th style="width: 50%">Number of Students Convert</th>
               <th style="width: 50%">Number of Students Active</th>
               <th style="width: 50%">Number of Students Rejected</th>
             </tr>
