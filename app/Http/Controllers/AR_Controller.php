@@ -3788,17 +3788,17 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
                     // Or you could return an error message instead
                 } 
                 else if($request->convert == "false") {
-                    $query->where('students.status', '!=', 1);
+                    $query->where('students.status', '=', 1);
                 }
                 else if($request->offered == "false") {
-                    $query->where('students.status', '=', 1);
+                    $query->where('students.status', '!=', 1);
                 }
             }
             else if($request->has('convert') && $request->convert == "false") {
-                $query->where('students.status', '!=', 1);
+                $query->where('students.status', '=', 1);
             }
             else if($request->has('offered') && $request->offered == "false") {
-                $query->where('students.status', '=', 1);
+                $query->where('students.status', '!=', 1);
             }
 
             // Always filter for semester 1 students
