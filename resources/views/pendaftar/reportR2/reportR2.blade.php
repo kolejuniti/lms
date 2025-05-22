@@ -4,6 +4,30 @@
 @section('main')
 
 <!-- Content Header (Page header) -->
+<style>
+  #loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.8);
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.3s ease;
+  }
+  
+  .loading-spinner {
+    text-align: center;
+    padding: 20px;
+    border-radius: 8px;
+    background-color: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+</style>
+
 <div class="content-wrapper" style="min-height: 695.8px;">
   <div class="container-full">
     <!-- Content Header (Page header) -->	  
@@ -33,6 +57,16 @@
 
     <!-- Main content -->
     <section class="content">
+      <!-- Loading Overlay -->
+      <div id="loading-overlay" class="d-none">
+        <div class="loading-spinner">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <p class="mt-2">Loading data...</p>
+        </div>
+      </div>
+      
       <!-- /.card-header -->
       <div class="card card-primary">
         <div class="card-header">
@@ -104,12 +138,14 @@
     $(document).on('change', '#from', async function(e){
       from = $(e.target).val();
 
+      $('#loading-overlay').removeClass('d-none');
       await getStudent(from,to);
     });
 
     $(document).on('change', '#to', async function(e){
       to = $(e.target).val();
 
+      $('#loading-overlay').removeClass('d-none');
       await getStudent(from,to);
     });
 
@@ -121,18 +157,20 @@
             url      : "{{ url('/pendaftar/student/reportR2/getStudentReportR2') }}",
             method   : 'GET',
             data 	 : {from: from, to: to},
+            beforeSend: function() {
+                $('#loading-overlay').removeClass('d-none');
+            },
             error:function(err){
+                $('#loading-overlay').addClass('d-none');
                 alert("Error");
                 console.log(err);
             },
             success  : function(data){
+            $('#loading-overlay').addClass('d-none');
             if(data.error)
             {
-
               alert(data.error);
-
             }else{
-
                 $('#form-student').html(data);
 
                 $('#myTable').DataTable({
@@ -160,6 +198,7 @@
   $(document).ready(function() {
     $('#printButton').on('click', function(e) {
       e.preventDefault();
+      $('#loading-overlay').removeClass('d-none');
       printReport();
     });
   });
@@ -173,11 +212,16 @@
       url: "{{ url('pendaftar/student/reportR2/getStudentReportR2?print=true') }}",
       method: 'GET',
       data: { from: from, to: to },
+      beforeSend: function() {
+          $('#loading-overlay').removeClass('d-none');
+      },
       error: function(err) {
+        $('#loading-overlay').addClass('d-none');
         alert("Error");
         console.log(err);
       },
       success: function(data) {
+        $('#loading-overlay').addClass('d-none');
         var newWindow = window.open();
         newWindow.document.write(data);
         newWindow.document.close();
