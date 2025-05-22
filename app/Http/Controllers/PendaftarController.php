@@ -3875,7 +3875,7 @@ class PendaftarController extends Controller
                         ->toArray();
                     $currentOfferedStudents = $weeklyStudents->where('status', 1)
                         ->filter(function($student) {
-                            return \Carbon\Carbon::parse($student->date_offer)->startOfDay()->lte(now()->startOfDay());
+                            return \Carbon\Carbon::parse($student->date_offer)->startOfDay()->lt(now()->startOfDay());
                         })
                         ->pluck('student_ic')
                         ->unique()
