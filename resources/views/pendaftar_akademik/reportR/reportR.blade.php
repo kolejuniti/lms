@@ -90,6 +90,12 @@
                 <label class="form-check-label" for="convert">Include Student Convert</label>
               </div>
             </div>
+            <div class="col-md-3 mb-1">
+              <div class="form-check">
+                <input type="checkbox" class="form-check-input" id="offered" value="offered" checked>
+                <label class="form-check-label" for="offered">Include Student Offered (Tawaran)</label>
+              </div>
+            </div>
           </div>
           <div id="form-student">
             <!-- Combined export buttons will be added after data is loaded -->
@@ -144,6 +150,7 @@
     var EA = '';
     var convert = true; // Initialize as true since checkbox is checked by default
     var dataTable = null;
+    var offered = true;
 
     // Document ready function
     $(function() {
@@ -153,29 +160,34 @@
     $(document).on('change', '#from', function(e){
       from = $(e.target).val();
       updateCombinedExportButtons();
-      getStudent(from,to,session,EA,convert);
+      getStudent(from,to,session,EA,convert,offered);
     });
 
     $(document).on('change', '#to', function(e){
       to = $(e.target).val();
       updateCombinedExportButtons();
-      getStudent(from,to,session,EA,convert);
+      getStudent(from,to,session,EA,convert,offered);
     });
 
     $(document).on('change', '#session', function(e){
       session = $(e.target).val();
-      getStudent(from,to,session,EA,convert);
+      getStudent(from,to,session,EA,convert,offered);
     });
 
     $(document).on('change', '#EA', function(e){
       EA = $(e.target).val();
-      getStudent(from,to,session,EA,convert);
+      getStudent(from,to,session,EA,convert,offered);
     });
 
     $(document).on('change', '#convert', function(e){
       convert = $(e.target).prop('checked');
       // Send as string "true" or "false" to match PHP's expected format
-      getStudent(from,to,session,EA,convert.toString());
+      getStudent(from,to,session,EA,convert.toString(),offered);
+    });
+
+    $(document).on('change', '#offered', function(e){
+      offered = $(e.target).prop('checked');
+      getStudent(from,to,session,EA,convert,offered.toString());
     });
     
     // Column visibility toggle functionality - use direct binding for dynamically loaded content
@@ -241,13 +253,13 @@
       }
     }
 
-  function getStudent(from,to,session,EA,convert)
+  function getStudent(from,to,session,EA,convert,offered)
   {
     return $.ajax({
             headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
             url      : "{{ url('/AR/reportR/getStudentReportR') }}",
             method   : 'GET',
-            data 	 : {from: from, to: to, session: session, EA: EA, convert: convert},
+            data 	 : {from: from, to: to, session: session, EA: EA, convert: convert, offered: offered},
             error:function(err){
                 alert("Error");
                 console.log(err);
