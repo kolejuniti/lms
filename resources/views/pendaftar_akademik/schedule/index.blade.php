@@ -1,4 +1,22 @@
-@extends(Auth::user()->usrtype == 'AR' ? 'layouts.pendaftar_akademik' : (Auth::user()->usrtype == 'OTR' ? 'layouts.other_user' : (Auth::user()->usrtype == 'ADM' ? 'layouts.admin' : 'layouts.ketua_program')));
+@php
+    $layoutMap = [
+        'AR' => 'layouts.pendaftar_akademik',
+        'LCT' => 'layouts.ketua_program',
+        'PL' => 'layouts.ketua_program',
+        'AO' => 'layouts.ketua_program',
+        'OTR' => 'layouts.other_user',
+        'ADM' => 'layouts.admin',
+        'HEA' => 'layouts.hea'
+    ];
+    
+    $layout = 'layouts.student';
+    
+    if (isset(Auth::user()->usrtype) && array_key_exists(Auth::user()->usrtype, $layoutMap)) {
+        $layout = $layoutMap[Auth::user()->usrtype];
+    }
+@endphp
+
+@extends($layout)
 
 @section('main')
 <!-- Content Wrapper -->

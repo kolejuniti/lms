@@ -319,6 +319,18 @@
 						<li><a href="{{ route('treasurer.payment.debit') }}" class="{{ (route('treasurer.payment.debit') == Request::url()) ? 'active' : ''}}">Debit Note</a></li>
 					</ul>
 				</li>
+				<li class="treeview">
+					<a href="#"><i data-feather="video"></i><span>Schedule</span>
+						<span class="pull-right-container">
+							<i class="fa fa-angle-left pull-right"></i>
+						</span>
+					</a>
+					<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
+						<li><a href="/AR/schedule/lecturer?type=lct" class="{{ (route('pendaftar_akademik.schedule.lecturer') == Request::url()) ? 'active' : ''}}">Lecturer Schedule</a></li>
+						<li><a href="/AR/schedule/lecture?type=lcr" class="{{ (route('pendaftar_akademik.schedule.lecture') == Request::url()) ? 'active' : ''}}">Lecture Room Schedule</a></li>
+						<li><a href="/AR/schedule/student?type=std" class="{{ (route('pendaftar_akademik.schedule.student') == Request::url()) ? 'active' : ''}}">Student Timetable</a></li>
+					</ul>
+				</li>
 				<li>
 					<a href="{{ route('posting.staff') }}" class="{{ (route('posting.staff') == Request::url()) ? 'active' : ''}}"><i data-feather="tv"></i><span>Posting</span></a>
 				</li> 

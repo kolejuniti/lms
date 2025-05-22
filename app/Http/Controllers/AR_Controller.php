@@ -2141,8 +2141,9 @@ class AR_Controller extends Controller
             }
             else
             {
-                // Using tblevents table - optimize with better joins
-                $query = Tblevent::join('student_subjek', function($join){
+                if(Auth::user()->usrtype === 'AR') {
+                    // Using tblevents table - optimize with better joins
+                    $query = Tblevent::join('student_subjek', function($join){
                         $join->on('tblevents.group_id', 'student_subjek.group_id');
                         $join->on('tblevents.group_name', 'student_subjek.group_name');
                     })
@@ -2164,6 +2165,32 @@ class AR_Controller extends Controller
                         'tbllecture_room.name AS room',
                         'sessions.SessionName AS session'
                     );
+                    
+                }else{
+
+                    $query = Tblevent2::join('student_subjek', function($join){
+                        $join->on('tblevents_second.group_id', 'student_subjek.group_id');
+                        $join->on('tblevents_second.group_name', 'student_subjek.group_name');
+                    })
+                    ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
+                    ->join('tbllecture_room', 'tblevents_second.lecture_id', 'tbllecture_room.id')
+                    ->join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
+                    ->join('users', 'tblevents_second.user_ic', 'users.ic')
+                    ->where('sessions.Status', 'ACTIVE')
+                    ->where('student_subjek.student_ic', request()->id)
+                    ->select(
+                        'tblevents_second.id',
+                        'tblevents_second.start',
+                        'tblevents_second.end',
+                        'tblevents_second.group_id',
+                        'tblevents_second.group_name',
+                        'users.name AS lecturer',
+                        'subjek.course_code AS code',
+                        'subjek.course_name AS subject',
+                        'tbllecture_room.name AS room',
+                        'sessions.SessionName AS session'
+                    );
+                }
             }
             
             // Retrieve events with a limit to improve performance
