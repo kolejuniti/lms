@@ -61,7 +61,7 @@
                     Student Offered
                 </th>
                 <th style="width: 15%">
-                    Student KIV
+                    Student KIV <i class="fas fa-info-circle text-info" data-toggle="tooltip" data-placement="top" title="Students whose current date has passed their offered date"></i>
                 </th>
             </tr>
         </thead>
@@ -190,7 +190,7 @@
                     Student Offered
                 </th>
                 <th style="width: 15%">
-                    Student KIV
+                    Student KIV <i class="fas fa-info-circle text-info" data-toggle="tooltip" data-placement="top" title="Students whose current date has passed their offered date"></i>
                 </th>
             </tr>
         </thead>
@@ -288,6 +288,9 @@
 <script>
 
   $(document).ready(function() {
+    // Initialize tooltips
+    $('[data-toggle="tooltip"]').tooltip();
+    
     $('#exportBtn').on('click', function(e) {
       e.preventDefault();
       printReport2();
