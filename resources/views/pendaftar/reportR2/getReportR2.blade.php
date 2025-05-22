@@ -26,6 +26,9 @@
     <div class="card-header">
     <b>Total Payment By Weeks</b>
     </div>
+    <div class="small text-muted px-3 py-2">
+        Note: Weeks shown follow the calendar date per week (Sunday to Saturday)
+    </div>
     <div class="card-body p-0">
       <table id="myTable" class="table table-striped projects display dataTable">
         <thead>
