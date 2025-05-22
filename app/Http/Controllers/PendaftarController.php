@@ -3873,19 +3873,22 @@ class PendaftarController extends Controller
                         ->unique()
                         ->values()
                         ->toArray();
-                        $currentKIVStudents = $weeklyStudents->where('status', 1)
-                        ->where('date_offer', '>', DB::raw('CURDATE()'))
-                        ->pluck('student_ic')
-                        ->unique()
-                        ->values()
-                        ->toArray();
                     $currentOfferedStudents = $weeklyStudents->where('status', 1)
-                        ->where('date_offer', '<=', DB::raw('CURDATE()'))
+                        ->filter(function($student) {
+                            return \Carbon\Carbon::parse($student->date_offer)->startOfDay()->lte(now()->startOfDay());
+                        })
                         ->pluck('student_ic')
                         ->unique()
                         ->values()
                         ->toArray();
-                    
+                    $currentKIVStudents = $weeklyStudents->where('status', 1)
+                        ->filter(function($student) {
+                            return \Carbon\Carbon::parse($student->date_offer)->startOfDay()->gt(now()->startOfDay());
+                        })
+                        ->pluck('student_ic')
+                        ->unique()
+                        ->values()
+                        ->toArray();
                         
                         
 
