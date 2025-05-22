@@ -48,6 +48,18 @@
                 <th style="width: 15%">
                     Balance Student
                 </th>
+                <th style="width: 15%">
+                    Registered
+                </th>
+                <th style="width: 15%">
+                    Rejected
+                </th>
+                <th style="width: 15%">
+                    Offered
+                </th>
+                <th style="width: 15%">
+                    KIV
+                </th>
             </tr>
         </thead>
         <tbody id="table">
@@ -56,6 +68,10 @@
         $total_allC = 0;
         $total_allC2 = 0;
         $total_allB = 0;
+        $total_allR = 0;
+        $total_allO = 0;
+        $total_allK = 0;
+        $total_allT = 0;
         @endphp
         @foreach ($data['dateRange'] as $key => $week)
           <tr>
@@ -77,12 +93,28 @@
             <td>
             {{ $data['totalWeek'][$key]->total_week - $data['totalConvert'][$key] }}
             </td>
+            <td>
+            {{ $data['registeredPerWeek'][$key] }}
+            </td>
+            <td>
+            {{ $data['rejectedPerWeek'][$key] }}
+            </td>
+            <td>
+            {{ $data['offeredPerWeek'][$key] }}
+            </td>
+            <td>
+            {{ $data['KIVPerWeek'][$key] }}
+            </td>
           </tr>
           @php
           $total_allW += $data['totalWeek'][$key]->total_week;
           $total_allC += $data['countedPerWeek'][$key];
           $total_allC2 += $data['totalConvert'][$key];
           $total_allB += $data['totalWeek'][$key]->total_week - $data['totalConvert'][$key];
+          $total_allR += $data['registeredPerWeek'][$key];
+          $total_allO += $data['rejectedPerWeek'][$key];
+          $total_allK += $data['offeredPerWeek'][$key];
+          $total_allT += $data['KIVPerWeek'][$key];
           @endphp
         @endforeach
         </tbody>
@@ -102,6 +134,18 @@
                 </td>
                 <td>
                     {{  $total_allB }}
+                </td>
+                <td>
+                    {{  $total_allR }}
+                </td>
+                <td>
+                    {{  $total_allO }}
+                </td>
+                <td>
+                    {{  $total_allK }}
+                </td>
+                <td>
+                    {{  $total_allT }}
                 </td>
               </tr>
         </tfoot>
@@ -133,6 +177,18 @@
                 <th style="width: 15%">
                     Balance Student
                 </th>
+                <th style="width: 15%">
+                    Registered
+                </th>
+                <th style="width: 15%">
+                    Rejected
+                </th>
+                <th style="width: 15%">
+                    Offered
+                </th>
+                <th style="width: 15%">
+                    KIV
+                </th>
             </tr>
         </thead>
         <tbody id="table">
@@ -141,6 +197,10 @@
         $total_allQ = 0;
         $total_allZ = 0;
         $total_allB = 0;
+        $total_allR = 0;
+        $total_allO = 0;
+        $total_allK = 0;
+        $total_allT = 0;
         @endphp
         @foreach ($data['dateRange'] as $key => $week)
         @foreach ($data['week'][$key] as $key2 => $day)
@@ -160,12 +220,28 @@
           <td>
             {{ $data['totalDay'][$key][$key2]->total_day - $data['totalConvert2'][$key][$key2] }}
           </td>
+          <td>
+            {{ $data['registeredPerDay'][$key][$key2] }}
+          </td>
+          <td>
+            {{ $data['rejectedPerDay'][$key][$key2] }}
+          </td>
+          <td>
+            {{ $data['offeredPerDay'][$key][$key2] }}
+          </td>
+          <td>
+            {{ $data['KIVPerDay'][$key][$key2] }}
+          </td>
         </tr>
         @php
           $total_allD += $data['totalDay'][$key][$key2]->total_day;
           $total_allQ += $data['countedPerDay'][$key][$key2];
           $total_allZ += $data['totalConvert2'][$key][$key2];
           $total_allB += $data['totalDay'][$key][$key2]->total_day - $data['totalConvert2'][$key][$key2];
+          $total_allR += $data['registeredPerDay'][$key][$key2];
+          $total_allO += $data['rejectedPerDay'][$key][$key2];
+          $total_allK += $data['offeredPerDay'][$key][$key2];
+          $total_allT += $data['KIVPerDay'][$key][$key2];
         @endphp
         @endforeach
         @endforeach
@@ -186,6 +262,18 @@
                 </td>
                 <td>
                     {{  $total_allB }}
+                </td>
+                <td>
+                    {{  $total_allR }}
+                </td>
+                <td>
+                    {{  $total_allO }}
+                </td>
+                <td>
+                    {{  $total_allK }}
+                </td>
+                <td>
+                    {{  $total_allT }}
                 </td>
               </tr>
         </tfoot>

@@ -3769,9 +3769,17 @@ class PendaftarController extends Controller
                 $alreadyCountedStudents2 = [];
                 $data['countedPerWeek'] = [];
                 $data['totalConvert'] = [];
+                $data['registeredPerWeek'] = [];
+                $data['rejectedPerWeek'] = [];
+                $data['offeredPerWeek'] = [];
+                $data['KIVPerWeek'] = [];
 
                 $data['countedPerDay'] = [];
                 $data['totalConvert2'] = [];
+                $data['registeredPerDay'] = [];
+                $data['rejectedPerDay'] = [];
+                $data['offeredPerDay'] = [];
+                $data['KIVPerDay'] = [];
 
                 while ($start <= $end) {
                     // Check if the current date is in a new month
@@ -3854,6 +3862,30 @@ class PendaftarController extends Controller
                         ->unique()
                         ->values()
                         ->toArray();
+                    $currentRegisteredStudents = $weeklyStudents->where('status', 2)
+                        ->pluck('student_ic')
+                        ->unique()
+                        ->values()
+                        ->toArray();
+                    $currentRejectedStudents = $weeklyStudents->where('status', 14)
+                        ->pluck('student_ic')
+                        ->unique()
+                        ->values()
+                        ->toArray();
+                    $currentOfferedStudents = $weeklyStudents->where('status', 1)
+                        ->where('date_offer', '<=', now())
+                        ->pluck('student_ic')
+                        ->unique()
+                        ->values()
+                        ->toArray();
+                    $currentKIVStudents = $weeklyStudents->where('status', 1)
+                        ->where('date_offer', '>', now())
+                        ->pluck('student_ic')
+                        ->unique()
+                        ->values()
+                        ->toArray();
+                        
+                        
 
                     $totalWeekCount = count($currentWeekStudents);
                     
@@ -3865,6 +3897,11 @@ class PendaftarController extends Controller
                     // Update already counted students
                     $alreadyCountedStudents = array_merge($alreadyCountedStudents, $currentWeekStudents);
                     $data['countedPerWeek'][$key] = count($alreadyCountedStudents);
+
+                    $data['registeredPerWeek'][$key] = count($currentRegisteredStudents);
+                    $data['rejectedPerWeek'][$key] = count($currentRejectedStudents);
+                    $data['offeredPerWeek'][$key] = count($currentOfferedStudents);
+                    $data['KIVPerWeek'][$key] = count($currentKIVStudents);
 
                     $data['week'][$key] = $week['days'];
 
@@ -3919,6 +3956,32 @@ class PendaftarController extends Controller
                             ->values()
                             ->toArray();
 
+                        $currentDayRegisteredStudents = $dailyStudents->where('status', 2)
+                            ->pluck('student_ic')
+                            ->unique()
+                            ->values()
+                            ->toArray();
+
+                        $currentDayRejectedStudents = $dailyStudents->where('status', 14)
+                            ->pluck('student_ic')
+                            ->unique()
+                            ->values()
+                            ->toArray();
+
+                        $currentDayOfferedStudents = $dailyStudents->where('status', 1)
+                            ->where('date_offer', '<=', now())
+                            ->pluck('student_ic')
+                            ->unique()
+                            ->values()
+                            ->toArray();
+
+                        $currentDayKIVStudents = $dailyStudents->where('status', 1)
+                            ->where('date_offer', '>', now())
+                            ->pluck('student_ic')
+                            ->unique()
+                            ->values()
+                            ->toArray();
+                            
                         // Update converted students count for this day
                         $data['totalConvert2'][$key][$key2] = count($currentDayConvertStudents);
 
@@ -3928,6 +3991,11 @@ class PendaftarController extends Controller
                         // Update the already counted students set
                         $alreadyCountedStudents2 = array_merge($alreadyCountedStudents2, $currentDayStudents);
                         $data['countedPerDay'][$key][$key2] = count($alreadyCountedStudents2);
+
+                        $data['registeredPerDay'][$key][$key2] = count($currentDayRegisteredStudents);
+                        $data['rejectedPerDay'][$key][$key2] = count($currentDayRejectedStudents);
+                        $data['offeredPerDay'][$key][$key2] = count($currentDayOfferedStudents);
+                        $data['KIVPerDay'][$key][$key2] = count($currentDayKIVStudents);
 
                         $data['totalDay'][$key][$key2] = (object) ['total_day' => $totalDaysCount];                        
                     }
