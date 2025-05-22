@@ -1,12 +1,4 @@
 <div class="row mt-3 d-flex">
-  <!-- Loading Overlay -->
-  <div id="loading-overlay" class="position-fixed w-100 h-100 d-flex justify-content-center align-items-center" style="top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(255,255,255,0.8); z-index: 9999;">
-    <div class="text-center">
-      <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;"></div>
-      <p class="mt-2">Loading data...</p>
-    </div>
-  </div>
-  
   <div class="col-md-12 mb-3">
     <div class="pull-right">
       <button id="exportBtn" class="btn btn-success">Export to Excel</button>
@@ -296,16 +288,11 @@
 <script>
 
   $(document).ready(function() {
-    // Hide loading spinner when page is ready
-    $("#loading-overlay").fadeOut(500);
-    
     // Initialize tooltips
     $('[data-toggle="tooltip"]').tooltip();
     
     $('#exportBtn').on('click', function(e) {
       e.preventDefault();
-      // Show loading spinner when exporting
-      $("#loading-overlay").fadeIn(300);
       printReport2();
     });
   });
@@ -316,9 +303,5 @@
     var url = "{{ url('pendaftar/student/reportR2/getStudentReportR2?excel=true') }}";
 
     window.location.href = `${url}&from=${from}&to=${to}`;
-    // Hide loading after a short delay since we're changing pages
-    setTimeout(function() {
-      $("#loading-overlay").fadeOut(300);
-    }, 500);
   }
   </script>
