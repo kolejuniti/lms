@@ -30,7 +30,7 @@
       <table id="myTable" class="table table-striped projects display dataTable">
         <thead>
             <tr>
-                <th style="width: 15%">
+                <th style="width: 20%">
                     Week (Date Range)
                 </th>
                 <th style="width: 15%">
@@ -76,7 +76,7 @@
         @foreach ($data['dateRange'] as $key => $week)
           <tr>
             <td>
-            {{ $week['week'] }} ({{ \Carbon\Carbon::parse(reset($week['days']))->format('j F Y') }} - {{ \Carbon\Carbon::parse(end($week['days']))->format('j F Y') }})
+              <b>{{ $week['week'] }}</b> ({{ \Carbon\Carbon::parse(reset($week['days']))->format('j F Y') }} - {{ \Carbon\Carbon::parse(end($week['days']))->format('j F Y') }})
             </td>
             <td>
             {{ $week['month'] }}
