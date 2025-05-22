@@ -3876,7 +3876,6 @@ class PendaftarController extends Controller
                         ->toArray();
                     $currentOfferedStudents = $weeklyStudents->where('status', 1)
                         ->filter(function($student) {
-                            // return \Carbon\Carbon::parse($student->date_offer)->lte(now());
                             return \Carbon\Carbon::parse($student->date_offer)->gt(now());
                         })
                         ->pluck('student_ic')
@@ -3885,7 +3884,6 @@ class PendaftarController extends Controller
                         ->toArray();
                     $currentKIVStudents = $weeklyStudents->where('status', 1)
                         ->filter(function($student) {
-                            // return \Carbon\Carbon::parse($student->date_offer)->gt(now());
                             return \Carbon\Carbon::parse($student->date_offer)->lte(now());
                         })
                         ->pluck('student_ic')
@@ -3978,14 +3976,18 @@ class PendaftarController extends Controller
                             ->toArray();
 
                         $currentDayOfferedStudents = $dailyStudents->where('status', 1)
-                            ->where('date_offer', '<=', DB::raw('CURDATE()'))
+                            ->filter(function($student) {
+                                return \Carbon\Carbon::parse($student->date_offer)->gt(now());
+                            })
                             ->pluck('student_ic')
                             ->unique()
                             ->values()
                             ->toArray();
 
                         $currentDayKIVStudents = $dailyStudents->where('status', 1)
-                            ->where('date_offer', '>', DB::raw('CURDATE()'))
+                            ->filter(function($student) {
+                                return \Carbon\Carbon::parse($student->date_offer)->lte(now());
+                            })
                             ->pluck('student_ic')
                             ->unique()
                             ->values()
