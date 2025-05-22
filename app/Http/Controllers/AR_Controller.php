@@ -3780,20 +3780,29 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
             ->groupBy('p1.student_ic')
             ->select('students.*', 'tblstudent_personal.no_tel','tblstudent_personal.qualification', 'tblsex.code AS sex', 'sessions.SessionName', 'tblprogramme.progcode', 'tbledu_advisor.name AS ea');
 
-            if($request->has('convert') && $request->convert == "false")
-            {
-                $query->where([
-                    ['students.status', '!=', 1]
-                ]);
+            // By default, include all statuses (combined)
+            // Handle the filter logic based on convert and offered parameters
+            if($request->has('convert') && $request->has('offered')) {
+                if($request->convert == "false" && $request->offered == "false") {
+                    // This would be contradictory (no results), so we'll default to showing all
+                    // Or you could return an error message instead
+                } 
+                else if($request->convert == "false") {
+                    $query->where('students.status', '!=', 1);
+                }
+                else if($request->offered == "false") {
+                    $query->where('students.status', '=', 1);
+                }
             }
-            
-            // if($request->has('offered') && $request->offered == "false")
-            // {
-            //     $query->where([
-            //         ['students.status', '!=', 1],
-            //         ['students.semester', '!=', 1]
-            //     ]);
-            // }
+            else if($request->has('convert') && $request->convert == "false") {
+                $query->where('students.status', '!=', 1);
+            }
+            else if($request->has('offered') && $request->offered == "false") {
+                $query->where('students.status', '=', 1);
+            }
+
+            // Always filter for semester 1 students
+            $query->where('students.semester', '=', 1);
 
             $data['student'] = $query->get();
             
@@ -3987,7 +3996,6 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
                                 ->where('tblpayment.student_ic', $student->ic)
                                 ->where('tblpayment.process_status_id', 2)
                                 ->whereNotIn('tblpayment.process_type_id', [8])
-                                ->whereNotIn('tblstudentclaim.groupid', [4,5])
                                 ->select(
                                     'tblpayment.*',
                                     'tblpaymentdtl.amount',
