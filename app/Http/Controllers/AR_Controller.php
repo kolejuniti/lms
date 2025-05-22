@@ -3783,8 +3783,7 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
             if($request->has('convert') && $request->convert == "false")
             {
                 $query->where([
-                    ['students.status', '!=', 1],
-                    ['students.semester', '!=', 1]
+                    ['students.status', '!=', 1]
                 ]);
             }
             
