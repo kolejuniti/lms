@@ -3833,7 +3833,8 @@ class PendaftarController extends Controller
                         ->select([
                             'p1.student_ic',
                             'students.status',
-                            'students.date_offer'
+                            'students.date_offer',
+                            'students.semester'
                         ])
                         ->join('students', 'p1.student_ic', '=', 'students.ic')
                         ->join(DB::raw('(
@@ -3875,7 +3876,7 @@ class PendaftarController extends Controller
                         ->toArray();
                     $currentOfferedStudents = $weeklyStudents->where('status', 1)
                         ->filter(function($student) {
-                            return \Carbon\Carbon::parse($student->date_offer)->startOfDay()->lt(now()->startOfDay());
+                            return \Carbon\Carbon::parse($student->date_offer)->startOfDay()->lte(now()->startOfDay());
                         })
                         ->pluck('student_ic')
                         ->unique()
