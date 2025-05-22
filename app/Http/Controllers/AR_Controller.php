@@ -3806,105 +3806,47 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
 
             $data['student'] = $query->get();
             
-            // if(!$request->has('convert') || $request->convert == "false") {
-
-            //     $data['student'] = DB::table('tblpayment as p1')
-            //                         ->join('students', 'p1.student_ic', '=', 'students.ic')
-            //                         ->leftjoin('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
-            //                         ->leftjoin('tblsex', 'tblstudent_personal.sex_id', '=', 'tblsex.id')
-            //                         ->leftjoin('sessions', 'students.intake', 'sessions.SessionID')
-            //                         ->leftjoin('tblprogramme', 'students.program', 'tblprogramme.id')
-            //                         ->leftjoin('tbledu_advisor', 'tblstudent_personal.advisor_id', 'tbledu_advisor.id')
-            //                         ->join(DB::raw('(SELECT student_ic, MIN(date) as first_payment_date 
-            //                                 FROM tblpayment 
-            //                                 GROUP BY student_ic) as p2'), function($join) {
-            //                             $join->on('p1.student_ic', '=', 'p2.student_ic')
-            //                                  ->on('p1.date', '=', 'p2.first_payment_date');
-            //                         })
-            //                         ->where([
-            //                             ['p1.process_status_id', '=', 2],
-            //                             ['p1.process_type_id', '=', 1],
-            //                             ['p1.semester_id', '=', 1],
-            //                             ['students.status', '=', 1],
-            //                             ['students.semester', '=', 1]
-            //                         ])
-            //                         ->when($request->session != '', function ($query) use ($request){
-            //                             return $query->where('students.intake', $request->session);
-            //                         })
-            //                         ->when($request->EA != '', function ($query) use ($request){
-            //                                 return $query->where('tblstudent_personal.advisor_id', $request->EA);
-            //                         })
-            //                         ->whereBetween('p1.date', [$request->from, $request->to])
-            //                         ->select('p1.id')
-            //                         ->groupBy('p1.student_ic')
-            //                         ->select('students.*', 'tblstudent_personal.no_tel','tblstudent_personal.qualification', 'tblsex.code AS sex', 'sessions.SessionName', 'tblprogramme.progcode', 'tbledu_advisor.name AS ea')
-            //                         ->get();
-
-            // }
-            // else
-            // {
-
-            //     $data['student'] = DB::table('tblpayment as p1')
-            //                         ->join('students', 'p1.student_ic', '=', 'students.ic')
-            //                         ->leftjoin('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
-            //                         ->leftjoin('tblsex', 'tblstudent_personal.sex_id', '=', 'tblsex.id')
-            //                         ->leftjoin('sessions', 'students.intake', 'sessions.SessionID')
-            //                         ->leftjoin('tblprogramme', 'students.program', 'tblprogramme.id')
-            //                         ->leftjoin('tbledu_advisor', 'tblstudent_personal.advisor_id', 'tbledu_advisor.id')
-            //                         ->join(DB::raw('(SELECT student_ic, MIN(date) as first_payment_date 
-            //                                 FROM tblpayment 
-            //                                 GROUP BY student_ic) as p2'), function($join) {
-            //                             $join->on('p1.student_ic', '=', 'p2.student_ic')
-            //                                  ->on('p1.date', '=', 'p2.first_payment_date');
-            //                         })
-            //                         ->where([
-            //                             ['p1.process_status_id', '=', 2],
-            //                             ['p1.process_type_id', '=', 1],
-            //                             ['p1.semester_id', '=', 1]
-            //                         ])
-            //                         ->when($request->session != '', function ($query) use ($request){
-            //                             return $query->where('students.intake', $request->session);
-            //                         })
-            //                         ->when($request->EA != '', function ($query) use ($request){
-            //                                 return $query->where('tblstudent_personal.advisor_id', $request->EA);
-            //                         })
-            //                         ->whereBetween('p1.date', [$request->from, $request->to])
-            //                         ->select('p1.id')
-            //                         ->groupBy('p1.student_ic')
-            //                         ->select('students.*', 'tblstudent_personal.no_tel','tblstudent_personal.qualification', 'tblsex.code AS sex', 'sessions.SessionName', 'tblprogramme.progcode', 'tbledu_advisor.name AS ea')
-            //                         ->get();
-
-            // }
-
-            
-
             $data['below5'] = 0;
             $data['below5willregister'] = 0;
             $data['below5KIV'] = 0;
+            $data['below5active'] = 0;
+            $data['below5rejected'] = 0;
 
             $data['below10'] = 0;
             $data['below10willregister'] = 0;
             $data['below10KIV'] = 0;
+            $data['below10active'] = 0;
+            $data['below10rejected'] = 0;
 
             $data['below15'] = 0;
             $data['below15willregister'] = 0;
             $data['below15KIV'] = 0;
+            $data['below15active'] = 0;
+            $data['below15rejected'] = 0;
 
             $data['below20'] = 0;
             $data['below20willregister'] = 0;
             $data['below20KIV'] = 0;
+            $data['below20active'] = 0;
+            $data['below20rejected'] = 0;
 
             $data['below25'] = 0;
             $data['below25willregister'] = 0;
             $data['below25KIV'] = 0;
+            $data['below25active'] = 0;
+            $data['below25rejected'] = 0;
 
             $data['below30'] = 0;
             $data['below30willregister'] = 0;
             $data['below30KIV'] = 0;
+            $data['below30active'] = 0;
+            $data['below30rejected'] = 0;
 
             $data['above30'] = 0;
             $data['above30willregister'] = 0;
             $data['above30KIV'] = 0;
+            $data['above30active'] = 0;
+            $data['above30rejected'] = 0;
 
             foreach($data['student'] as $key => $student)
             {
@@ -3923,6 +3865,15 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
                     {
                         $data['below5willregister']++;
                     }
+
+                    if($student->status == 2)
+                    {
+                        $data['below5active']++;
+                    }
+                    elseif($student->status == 14)
+                    {
+                        $data['below5rejected']++;
+                    }
                 }
                 elseif($daysDiff < 10)
                 {
@@ -3935,6 +3886,15 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
                     else
                     {
                         $data['below10willregister']++;
+                    }
+
+                    if($student->status == 2)
+                    {
+                        $data['below10active']++;
+                    }
+                    elseif($student->status == 14)
+                    {
+                        $data['below10rejected']++;
                     }
                 }
                 elseif($daysDiff < 20)
@@ -3949,6 +3909,15 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
                     {
                         $data['below20willregister']++;
                     }
+
+                    if($student->status == 2)
+                    {
+                        $data['below20active']++;
+                    }
+                    elseif($student->status == 14)
+                    {
+                        $data['below20rejected']++;
+                    }
                 }
                 elseif($daysDiff < 25)
                 {
@@ -3961,6 +3930,15 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
                     else
                     {
                         $data['below25willregister']++;
+                    }
+
+                    if($student->status == 2)
+                    {
+                        $data['below25active']++;
+                    }
+                    elseif($student->status == 14)
+                    {
+                        $data['below25rejected']++;
                     }
                 }
                 elseif($daysDiff < 30)
@@ -3975,6 +3953,15 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
                     {
                         $data['below30willregister']++;
                     }
+
+                    if($student->status == 2)
+                    {
+                        $data['below30active']++;
+                    }
+                    elseif($student->status == 14)
+                    {
+                        $data['below30rejected']++;
+                    }
                 }
                 else
                 {
@@ -3987,6 +3974,15 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
                     else
                     {
                         $data['above30willregister']++;
+                    }
+
+                    if($student->status == 2)
+                    {
+                        $data['above30active']++;
+                    }
+                    elseif($student->status == 14)
+                    {
+                        $data['above30rejected']++;
                     }
                 }
 
