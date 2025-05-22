@@ -49,16 +49,16 @@
                     Balance Student
                 </th>
                 <th style="width: 15%">
-                    Registered
+                    Student Registered
                 </th>
                 <th style="width: 15%">
-                    Rejected
+                    Student Rejected
                 </th>
                 <th style="width: 15%">
-                    Offered
+                    Student Offered
                 </th>
                 <th style="width: 15%">
-                    KIV
+                    Student KIV
                 </th>
             </tr>
         </thead>
@@ -108,7 +108,7 @@
           </tr>
           @php
           $total_allW += $data['totalWeek'][$key]->total_week;
-          $total_allC += $data['countedPerWeek'][$key];
+          $total_allC = $data['countedPerWeek'][$key];
           $total_allC2 += $data['totalConvert'][$key];
           $total_allB += $data['totalWeek'][$key]->total_week - $data['totalConvert'][$key];
           $total_allR += $data['registeredPerWeek'][$key];
@@ -178,16 +178,16 @@
                     Balance Student
                 </th>
                 <th style="width: 15%">
-                    Registered
+                    Student Registered
                 </th>
                 <th style="width: 15%">
-                    Rejected
+                    Student Rejected
                 </th>
                 <th style="width: 15%">
-                    Offered
+                    Student Offered
                 </th>
                 <th style="width: 15%">
-                    KIV
+                    Student KIV
                 </th>
             </tr>
         </thead>
@@ -235,7 +235,7 @@
         </tr>
         @php
           $total_allD += $data['totalDay'][$key][$key2]->total_day;
-          $total_allQ += $data['countedPerDay'][$key][$key2];
+          $total_allQ = $data['countedPerDay'][$key][$key2];
           $total_allZ += $data['totalConvert2'][$key][$key2];
           $total_allB += $data['totalDay'][$key][$key2]->total_day - $data['totalConvert2'][$key][$key2];
           $total_allR += $data['registeredPerDay'][$key][$key2];
