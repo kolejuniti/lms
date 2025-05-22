@@ -61,7 +61,7 @@
                     Student Offered
                 </th>
                 <th style="width: 15%">
-                    Student KIV <i class="fas fa-info-circle text-info" data-toggle="tooltip" data-placement="top" title="Students whose current date has passed their offered date"></i>
+                    Student KIV <i class="fa fa-info-circle text-info" data-toggle="tooltip" data-placement="top" title="Students whose current date has passed their offered date"></i>
                 </th>
             </tr>
         </thead>
@@ -190,7 +190,7 @@
                     Student Offered
                 </th>
                 <th style="width: 15%">
-                    Student KIV <i class="fas fa-info-circle text-info" data-toggle="tooltip" data-placement="top" title="Students whose current date has passed their offered date"></i>
+                    Student KIV <i class="fa fa-info-circle text-info" data-toggle="tooltip" data-placement="top" title="Students whose current date has passed their offered date"></i>
                 </th>
             </tr>
         </thead>
