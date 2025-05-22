@@ -3874,13 +3874,13 @@ class PendaftarController extends Controller
                         ->values()
                         ->toArray();
                     $currentOfferedStudents = $weeklyStudents->where('status', 1)
-                        ->where('date_offer', '<=', DB::raw('CURDATE()'))
+                        ->where('date_offer', '>', DB::raw('CURDATE()'))
                         ->pluck('student_ic')
                         ->unique()
                         ->values()
                         ->toArray();
                     $currentKIVStudents = $weeklyStudents->where('status', 1)
-                        ->where('date_offer', '>', DB::raw('CURDATE()'))
+                        ->where('date_offer', '<=', DB::raw('CURDATE()'))
                         ->pluck('student_ic')
                         ->unique()
                         ->values()
