@@ -3809,49 +3809,49 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
             $data['below5'] = 0;
             $data['below5willregister'] = 0;
             $data['below5KIV'] = 0;
-            $data['below5offered'] = 0;
+            $data['below5convert'] = 0;
             $data['below5active'] = 0;
             $data['below5rejected'] = 0;
 
             $data['below10'] = 0;
             $data['below10willregister'] = 0;
             $data['below10KIV'] = 0;
-            $data['below10offered'] = 0;
+            $data['below10convert'] = 0;
             $data['below10active'] = 0;
             $data['below10rejected'] = 0;
 
             $data['below15'] = 0;
             $data['below15willregister'] = 0;
             $data['below15KIV'] = 0;
-            $data['below15offered'] = 0;
+            $data['below15convert'] = 0;
             $data['below15active'] = 0;
             $data['below15rejected'] = 0;
 
             $data['below20'] = 0;
             $data['below20willregister'] = 0;
             $data['below20KIV'] = 0;
-            $data['below20offered'] = 0;
+            $data['below20convert'] = 0;
             $data['below20active'] = 0;
             $data['below20rejected'] = 0;
 
             $data['below25'] = 0;
             $data['below25willregister'] = 0;
             $data['below25KIV'] = 0;
-            $data['below25offered'] = 0;
+            $data['below25convert'] = 0;
             $data['below25active'] = 0;
             $data['below25rejected'] = 0;
 
             $data['below30'] = 0;
             $data['below30willregister'] = 0;
             $data['below30KIV'] = 0;
-            $data['below30offered'] = 0;
+            $data['below30convert'] = 0;
             $data['below30active'] = 0;
             $data['below30rejected'] = 0;
 
             $data['above30'] = 0;
             $data['above30willregister'] = 0;
             $data['above30KIV'] = 0;
-            $data['above30offered'] = 0;
+            $data['above30convert'] = 0;
             $data['above30active'] = 0;
             $data['above30rejected'] = 0;
 
@@ -3881,9 +3881,9 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
                     {
                         $data['below5rejected']++;
                     }
-                    elseif(now() <= $student->date_offer &&$student->status == 1)
+                    elseif($student->status != 1)
                     {
-                        $data['below5offered']++;
+                        $data['below5convert']++;
                     }
                 }
                 elseif($daysDiff < 10)
@@ -3907,9 +3907,9 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
                     {
                         $data['below10rejected']++;
                     }
-                    elseif(now() <= $student->date_offer &&$student->status == 1)
+                    elseif($student->status != 1)
                     {
-                        $data['below10offered']++;
+                        $data['below10convert']++;
                     }
                 }
                 elseif($daysDiff < 20)
@@ -3933,9 +3933,9 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
                     {
                         $data['below20rejected']++;
                     }
-                    elseif(now() <= $student->date_offer &&$student->status == 1)
+                    elseif($student->status != 1)
                     {
-                        $data['below20offered']++;
+                        $data['below20convert']++;
                     }
                 }
                 elseif($daysDiff < 25)
@@ -3959,9 +3959,9 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
                     {
                         $data['below25rejected']++;
                     }
-                    elseif(now() <= $student->date_offer &&$student->status == 1)
+                    elseif($student->status != 1)
                     {
-                        $data['below25offered']++;
+                        $data['below25convert']++;
                     }
                 }
                 elseif($daysDiff < 30)
@@ -3985,9 +3985,9 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
                     {
                         $data['below30rejected']++;
                     }
-                    elseif(now() <= $student->date_offer &&$student->status == 1)
+                    elseif($student->status != 1)
                     {
-                        $data['below30offered']++;
+                        $data['below30convert']++;
                     }
                 }
                 else
@@ -4011,9 +4011,9 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
                     {
                         $data['above30rejected']++;
                     }
-                    elseif(now() <= $student->date_offer &&$student->status == 1)
+                    elseif($student->status != 1)
                     {
-                        $data['above30offered']++;
+                        $data['above30convert']++;
                     }
                 }
 
