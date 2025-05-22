@@ -3769,7 +3769,16 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
                 ['p1.process_status_id', '=', 2],
                 ['p1.process_type_id', '=', 1],
                 ['p1.semester_id', '=', 1],
-            ]);
+            ])->when($request->session != '', function ($query) use ($request){
+                return $query->where('students.intake', $request->session);
+            })
+            ->when($request->EA != '', function ($query) use ($request){
+                    return $query->where('tblstudent_personal.advisor_id', $request->EA);
+            })
+            ->whereBetween('p1.date', [$request->from, $request->to])
+            ->select('p1.id')
+            ->groupBy('p1.student_ic')
+            ->select('students.*', 'tblstudent_personal.no_tel','tblstudent_personal.qualification', 'tblsex.code AS sex', 'sessions.SessionName', 'tblprogramme.progcode', 'tbledu_advisor.name AS ea');
 
             if($request->has('convert') && $request->convert == "false")
             {
