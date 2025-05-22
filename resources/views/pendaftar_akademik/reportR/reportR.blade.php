@@ -160,34 +160,35 @@
     $(document).on('change', '#from', function(e){
       from = $(e.target).val();
       updateCombinedExportButtons();
-      getStudent(from,to,session,EA,convert,offered);
+      getStudent(from,to,session,EA,convert.toString(),offered.toString());
     });
 
     $(document).on('change', '#to', function(e){
       to = $(e.target).val();
       updateCombinedExportButtons();
-      getStudent(from,to,session,EA,convert,offered);
+      getStudent(from,to,session,EA,convert.toString(),offered.toString());
     });
 
     $(document).on('change', '#session', function(e){
       session = $(e.target).val();
-      getStudent(from,to,session,EA,convert,offered);
+      getStudent(from,to,session,EA,convert.toString(),offered.toString());
     });
 
     $(document).on('change', '#EA', function(e){
       EA = $(e.target).val();
-      getStudent(from,to,session,EA,convert,offered);
+      getStudent(from,to,session,EA,convert.toString(),offered.toString());
     });
 
     $(document).on('change', '#convert', function(e){
       convert = $(e.target).prop('checked');
-      // Send as string "true" or "false" to match PHP's expected format
-      getStudent(from,to,session,EA,convert.toString(),offered);
+      // Convert to string "true" or "false" to match PHP's expected format
+      getStudent(from,to,session,EA,convert.toString(),offered.toString());
     });
 
     $(document).on('change', '#offered', function(e){
       offered = $(e.target).prop('checked');
-      getStudent(from,to,session,EA,convert,offered.toString());
+      // Convert to string "true" or "false" to match PHP's expected format
+      getStudent(from,to,session,EA,convert.toString(),offered.toString());
     });
     
     // Column visibility toggle functionality - use direct binding for dynamically loaded content
@@ -519,13 +520,13 @@
     // Handle Select2 change event
     $('#EA').on('select2:select', function (e) {
       EA = $(this).val();
-      getStudent(from,to,session,EA,convert);
+      getStudent(from,to,session,EA,convert.toString(),offered.toString());
     });
 
     // Handle Select2 clear event
     $('#EA').on('select2:clear', function (e) {
       EA = '-';
-      getStudent(from,to,session,EA,convert);
+      getStudent(from,to,session,EA,convert.toString(),offered.toString());
     });
   });
 

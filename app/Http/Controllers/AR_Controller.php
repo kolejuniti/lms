@@ -3780,7 +3780,13 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
             ->groupBy('p1.student_ic')
             ->select('students.*', 'tblstudent_personal.no_tel','tblstudent_personal.qualification', 'tblsex.code AS sex', 'sessions.SessionName', 'tblprogramme.progcode', 'tbledu_advisor.name AS ea');
 
-          
+            if($request->has('convert') && $request->convert == "false")
+            {
+                $query->where([
+                    ['students.status', '=', 1],
+                    ['students.semester', '=', 1]
+                ]);
+            }
             
             if($request->has('offered') && $request->offered == "false")
             {
