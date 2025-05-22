@@ -31,7 +31,7 @@
         <thead>
             <tr>
                 <th style="width: 15%">
-                    Week
+                    Week (Date Range)
                 </th>
                 <th style="width: 15%">
                     Month
@@ -60,7 +60,7 @@
         @foreach ($data['dateRange'] as $key => $week)
           <tr>
             <td>
-            {{ $week['week'] }}
+            {{ $week['week'] }} ({{ reset($week['days']) }} - {{ end($week['days']) }})
             </td>
             <td>
             {{ $week['month'] }}
