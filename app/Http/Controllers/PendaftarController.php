@@ -3872,7 +3872,7 @@ class PendaftarController extends Controller
                         ->unique()
                         ->values()
                         ->toArray();
-                    $currentOfferedStudents = $weeklyStudents->where('status', 1)
+                    $currentOfferedStudents = $weeklyStudents->where('status','!=', 1)
                         ->where('date_offer', '<=', now())
                         ->pluck('student_ic')
                         ->unique()
@@ -3968,7 +3968,7 @@ class PendaftarController extends Controller
                             ->values()
                             ->toArray();
 
-                        $currentDayOfferedStudents = $dailyStudents->where('status', 1)
+                        $currentDayOfferedStudents = $dailyStudents->where('status','!=', 1)
                             ->where('date_offer', '<=', now())
                             ->pluck('student_ic')
                             ->unique()
