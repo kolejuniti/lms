@@ -2,6 +2,25 @@
   <div class="col-md-12 mb-3">
     <div class="pull-right">
       <button id="exportBtn" class="btn btn-success">Export to Excel</button>
+      <button id="analyseBtn" class="btn btn-primary ml-2">
+        <i class="fa fa-chart-line"></i> Analyse Data
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Analysis Results Section -->
+<div id="analysisSection" class="card mb-3" style="display: none;">
+  <div class="card-header bg-info text-white">
+    <h5><i class="fa fa-chart-line"></i> AI Data Analysis Report</h5>
+  </div>
+  <div class="card-body">
+    <div id="analysisLoading" class="text-center" style="display: none;">
+      <i class="fa fa-spinner fa-spin fa-2x"></i>
+      <p class="mt-2">Analyzing data with AI...</p>
+    </div>
+    <div id="analysisResult">
+      <textarea id="analysisTextarea" class="form-control" rows="15" readonly style="background-color: #f8f9fa; border: 1px solid #dee2e6; font-family: Arial, sans-serif; font-size: 14px; line-height: 1.6;"></textarea>
     </div>
   </div>
 </div>
@@ -145,6 +164,11 @@
       e.preventDefault();
       printReport2();
     });
+
+    $('#analyseBtn').on('click', function(e) {
+      e.preventDefault();
+      analyseData();
+    });
   });
 
   function printReport2() {
@@ -189,6 +213,85 @@
 
       window.location.href = `${url}&from=${from}&to=${to}`;
     }
+  }
+
+  function analyseData() {
+    // Show analysis section and loading
+    $('#analysisSection').show();
+    $('#analysisLoading').show();
+    $('#analysisResult').hide();
+    
+    // Collect table data
+    const tableData = collectTableData();
+    
+    // Send data to backend for AI analysis
+    $.ajax({
+      url: "{{ url('pendaftar/student/reportRA/analyseData') }}",
+      method: 'POST',
+      data: {
+        _token: $('meta[name="csrf-token"]').attr('content'),
+        tableData: JSON.stringify(tableData)
+      },
+      success: function(response) {
+        $('#analysisLoading').hide();
+        $('#analysisResult').show();
+        
+        if (response.success) {
+          $('#analysisTextarea').val(response.analysis);
+        } else {
+          $('#analysisTextarea').val('Error: ' + response.message);
+        }
+      },
+      error: function(xhr, status, error) {
+        $('#analysisLoading').hide();
+        $('#analysisResult').show();
+        $('#analysisTextarea').val('Error occurred while analyzing data: ' + error);
+      }
+    });
+  }
+  
+  function collectTableData() {
+    const data = {};
+    
+    @if(isset($data['tableLabels']) && is_array($data['tableLabels']))
+      // Multiple tables
+      data.type = 'multiple';
+      data.tables = {};
+      data.labels = @json($data['tableLabels']);
+      
+      @foreach($data['tableLabels'] as $key => $label)
+        data.tables[{{ $key }}] = {
+          label: "{{ $label }}",
+          totalStudentR: {{ $data['allStudents'][$key] }},
+          totalConvert: {{ $data['totalConvert'][$key] }},
+          balanceStudent: {{ $data['total'][$key]->total_ - $data['totalConvert'][$key] }},
+          studentActive: {{ $data['registered'][$key] }},
+          studentRejected: {{ $data['rejected'][$key] }},
+          studentOffered: {{ $data['offered'][$key] }},
+          studentKIV: {{ $data['KIV'][$key] }},
+          studentOthers: {{ $data['others'][$key] }}
+        };
+      @endforeach
+    @else
+      // Single table
+      data.type = 'single';
+      @php
+      $total_all = $data['allStudents'] + $data['totalConvert'] + $data['registered'] + $data['rejected'] + $data['offered'] + $data['KIV'] + $data['others'];
+      @endphp
+      data.table = {
+        label: "Total Student R Analysis",
+        totalStudentR: {{ $data['allStudents'] }},
+        totalConvert: {{ $data['totalConvert'] }},
+        balanceStudent: {{ $total_all - $data['totalConvert'] }},
+        studentActive: {{ $data['registered'] }},
+        studentRejected: {{ $data['rejected'] }},
+        studentOffered: {{ $data['offered'] }},
+        studentKIV: {{ $data['KIV'] }},
+        studentOthers: {{ $data['others'] }}
+      };
+    @endif
+    
+    return data;
   }
 
   // Helper function to collect date ranges (should be available from parent page)

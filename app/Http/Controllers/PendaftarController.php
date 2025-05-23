@@ -18,6 +18,7 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use GuzzleHttp\Client;
 
 class PendaftarController extends Controller
 {
@@ -4858,5 +4859,154 @@ class PendaftarController extends Controller
             'date_ranges' => $dateRanges,
             'sample_payments' => $samplePayments
         ]);
+    }
+
+    public function analyseData(Request $request)
+    {
+        try {
+            // Get the table data from the request
+            $tableData = json_decode($request->tableData, true);
+            
+            if (!$tableData) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid table data provided.'
+                ], 400);
+            }
+            
+            // Generate AI analysis
+            $analysis = $this->generateAIAnalysis($tableData);
+            
+            return response()->json([
+                'success' => true,
+                'analysis' => $analysis
+            ]);
+            
+        } catch (\Exception $e) {
+            Log::error('Error in analyseData: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Error analyzing data: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+    
+    private function generateAIAnalysis($tableData)
+    {
+        $apiKey = env('OPENAI_API_KEY');
+        
+        if (!$apiKey) {
+            throw new \Exception('OpenAI API key is not configured.');
+        }
+        
+        $client = new \GuzzleHttp\Client();
+        
+        try {
+            // Build the analysis prompt
+            $prompt = $this->buildAnalysisPrompt($tableData);
+            
+            // Send request to OpenAI API
+            $response = $client->post('https://api.openai.com/v1/chat/completions', [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $apiKey,
+                    'Content-Type' => 'application/json',
+                ],
+                'json' => [
+                    'model' => 'gpt-3.5-turbo-1106',
+                    'messages' => [
+                        [
+                            'role' => 'system',
+                            'content' => 'You are an expert educational data analyst specializing in student registration and enrollment analytics. Your role is to provide comprehensive, actionable insights from student registration data to help educational institutions improve their enrollment processes and student success outcomes.'
+                        ],
+                        [
+                            'role' => 'user',
+                            'content' => $prompt
+                        ]
+                    ],
+                    'max_tokens' => 1500,
+                    'temperature' => 0.7,
+                ]
+            ]);
+            
+            $responseBody = json_decode($response->getBody(), true);
+            
+            if (isset($responseBody['choices'][0]['message']['content'])) {
+                return $responseBody['choices'][0]['message']['content'];
+            } else {
+                throw new \Exception('Invalid AI response received.');
+            }
+            
+        } catch (\Exception $e) {
+            Log::error('Error communicating with OpenAI: ' . $e->getMessage());
+            throw new \Exception('Error generating AI analysis: ' . $e->getMessage());
+        }
+    }
+    
+    private function buildAnalysisPrompt($tableData)
+    {
+        $prompt = "Please analyze the following student registration data and provide comprehensive insights:\n\n";
+        
+        if ($tableData['type'] === 'multiple') {
+            $prompt .= "MULTIPLE TABLES ANALYSIS:\n";
+            $prompt .= "We have " . count($tableData['tables']) . " different data sets to compare:\n\n";
+            
+            foreach ($tableData['tables'] as $index => $table) {
+                $prompt .= "TABLE " . ($index + 1) . " - " . $table['label'] . ":\n";
+                $prompt .= "- Total Student R (Registered): " . $table['totalStudentR'] . "\n";
+                $prompt .= "- Total by Convert: " . $table['totalConvert'] . "\n";
+                $prompt .= "- Balance Student: " . $table['balanceStudent'] . "\n";
+                $prompt .= "- Student Active: " . $table['studentActive'] . "\n";
+                $prompt .= "- Student Rejected: " . $table['studentRejected'] . "\n";
+                $prompt .= "- Student Offered: " . $table['studentOffered'] . "\n";
+                $prompt .= "- Student KIV (past offered date): " . $table['studentKIV'] . "\n";
+                $prompt .= "- Student Others: " . $table['studentOthers'] . "\n\n";
+            }
+            
+        } else {
+            $prompt .= "SINGLE TABLE ANALYSIS:\n";
+            $table = $tableData['table'];
+            $prompt .= "- Total Student R (Registered): " . $table['totalStudentR'] . "\n";
+            $prompt .= "- Total by Convert: " . $table['totalConvert'] . "\n";
+            $prompt .= "- Balance Student: " . $table['balanceStudent'] . "\n";
+            $prompt .= "- Student Active: " . $table['studentActive'] . "\n";
+            $prompt .= "- Student Rejected: " . $table['studentRejected'] . "\n";
+            $prompt .= "- Student Offered: " . $table['studentOffered'] . "\n";
+            $prompt .= "- Student KIV (past offered date): " . $table['studentKIV'] . "\n";
+            $prompt .= "- Student Others: " . $table['studentOthers'] . "\n\n";
+        }
+        
+        $prompt .= "ANALYSIS REQUIREMENTS:\n";
+        $prompt .= "Please provide a detailed analysis covering these key areas:\n\n";
+        
+        $prompt .= "1. PERFORMANCE COMPARISON:\n";
+        if ($tableData['type'] === 'multiple') {
+            $prompt .= "   - Which table/period shows the highest performance in Total Student R?\n";
+            $prompt .= "   - Which table/period has the most students actually registered (Student Active)?\n";
+            $prompt .= "   - Compare conversion rates across different periods\n\n";
+        } else {
+            $prompt .= "   - Evaluate the overall registration performance\n";
+            $prompt .= "   - Assess the conversion rate from offered to active students\n\n";
+        }
+        
+        $prompt .= "2. CRITICAL FOCUS AREAS:\n";
+        $prompt .= "   - Which area has the most 'Student Offered' that need attention for conversion?\n";
+        $prompt .= "   - Analyze the 'Student KIV' numbers (students past their offered registration date)\n";
+        $prompt .= "   - Identify potential bottlenecks in the registration process\n\n";
+        
+        $prompt .= "3. ACTIONABLE RECOMMENDATIONS:\n";
+        $prompt .= "   - Specific strategies to improve conversion from 'offered' to 'active' status\n";
+        $prompt .= "   - How to reduce KIV students and prevent deadline oversights\n";
+        $prompt .= "   - Process improvements for better registration outcomes\n\n";
+        
+        $prompt .= "4. TREND INSIGHTS:\n";
+        if ($tableData['type'] === 'multiple') {
+            $prompt .= "   - Identify patterns across different periods\n";
+            $prompt .= "   - Highlight best and worst performing periods\n";
+        }
+        $prompt .= "   - Calculate key performance indicators and conversion rates\n\n";
+        
+        $prompt .= "Please format your response in a clear, professional manner with headings and bullet points for easy reading. Focus on actionable insights that can help improve student enrollment and registration processes.";
+        
+        return $prompt;
     }
 }
