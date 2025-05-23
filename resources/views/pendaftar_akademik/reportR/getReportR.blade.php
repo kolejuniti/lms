@@ -176,7 +176,18 @@
             <td>
             {{ $rgs->date_offer }}
             </td>
-            <td>
+            <td
+            @if($rgs->status == 1 && $rgs->date_offer)
+                @php
+                    $days = Carbon\Carbon::parse($rgs->date_offer)->diffInDays(now());
+                @endphp
+                @if($days <= 10)
+                    style="background-color: #fff3cd; color: #856404;"
+                @elseif($days > 30)
+                    style="background-color: #f8d7da; color: #721c24;"
+                @endif
+            @endif
+            >
             {{ ($rgs->status == 1 && $rgs->date_offer) ? Carbon\Carbon::parse($rgs->date_offer)->diffInDays(now()) : 'Registered' }}
             </td>
             <td>
