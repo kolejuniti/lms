@@ -20,6 +20,7 @@
       <table class="table table-striped projects display dataTable">
         <thead>
             <tr>
+                <th style="width: 15%">Total Student R</th>
                 <th style="width: 15%">Total by Convert</th>
                 <th style="width: 15%">Balance Student</th>
                 <th style="width: 15%">Student Active</th>
@@ -31,6 +32,7 @@
         </thead>
         <tbody>
           <tr>
+            <td>{{ $data['allStudents'][$key] }}</td>
             <td>{{ $data['totalConvert'][$key] }}</td>
             <td>{{ $data['total'][$key]->total_ - $data['totalConvert'][$key] }}</td>
             <td>{{ $data['registered'][$key] }}</td>
@@ -55,6 +57,7 @@
       <table id="myTable" class="table table-striped projects display dataTable">
         <thead>
             <tr>
+                <th style="width: 15%">Total Student R</th>
                 <th style="width: 15%">Total by Convert</th>
                 <th style="width: 15%">Balance Student</th>
                 <th style="width: 15%">Student Active</th>
@@ -67,6 +70,7 @@
         <tbody>
           <tr>
             @php
+            $total_all = array_sum($data['allStudents']);
             $total_convert = array_sum($data['totalConvert']);
             $total_registered = array_sum($data['registered']);
             $total_rejected = array_sum($data['rejected']);
@@ -75,6 +79,7 @@
             $total_others = array_sum($data['others']);
             $grand_total = $total_convert + $total_registered + $total_rejected + $total_offered + $total_kiv + $total_others;
             @endphp
+            <td>{{ $total_all }}</td>
             <td>{{ $total_convert }}</td>
             <td>{{ $grand_total - $total_convert }}</td>
             <td>{{ $total_registered }}</td>
@@ -96,11 +101,12 @@
     </div>
     <div class="small text-muted px-3 py-2">
         Note: Data shown follows the calendar date (Sunday to Saturday)
-    </div>
+    </div>  
     <div class="card-body p-0">
       <table id="myTable" class="table table-striped projects display dataTable">
         <thead>
             <tr>
+                <th style="width: 15%">Total Student R</th>
                 <th style="width: 15%">Total by Convert</th>
                 <th style="width: 15%">Balance Student</th>
                 <th style="width: 15%">Student Active</th>
@@ -113,8 +119,9 @@
         <tbody>
           <tr>
             @php
-            $total_all = $data['totalConvert'] + $data['registered'] + $data['rejected'] + $data['offered'] + $data['KIV'] + $data['others'];
+            $total_all = $data['allStudents'] + $data['totalConvert'] + $data['registered'] + $data['rejected'] + $data['offered'] + $data['KIV'] + $data['others'];
             @endphp
+            <td>{{ $data['allStudents'] }}</td>
             <td>{{ $data['totalConvert'] }}</td>
             <td>{{ $total_all - $data['totalConvert'] }}</td>
             <td>{{ $data['registered'] }}</td>
