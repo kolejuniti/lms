@@ -3898,11 +3898,11 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
                 {
                     $data['below5']++;
 
-                    if(now() > $student->date_offer)
+                    if(now() > $student->date_offer && $student->status == 1)
                     {
                         $data['below5KIV']++;
                     }
-                    else
+                    elseif(now() <= $student->date_offer && $student->status == 1)
                     {
                         $data['below5willregister']++;
                     }
@@ -3931,11 +3931,11 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
                 {
                     $data['below10']++;
 
-                    if(now() > $student->date_offer)
+                    if(now() > $student->date_offer && $student->status == 1)
                     {
                         $data['below10KIV']++;
                     }
-                    else
+                    elseif(now() <= $student->date_offer && $student->status == 1)
                     {
                         $data['below10willregister']++;
                     }
@@ -3964,11 +3964,11 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
                 {
                     $data['below15']++;
 
-                    if(now() > $student->date_offer)
+                    if(now() > $student->date_offer && $student->status == 1)
                     {
                         $data['below15KIV']++;
                     }
-                    else
+                    elseif(now() <= $student->date_offer && $student->status == 1)
                     {
                         $data['below15willregister']++;
                     }
@@ -3997,11 +3997,11 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
                 {
                     $data['below20']++;
 
-                    if(now() > $student->date_offer)
+                    if(now() > $student->date_offer && $student->status == 1)
                     {
                         $data['below20KIV']++;
                     }
-                    else
+                    elseif(now() <= $student->date_offer && $student->status == 1)
                     {
                         $data['below20willregister']++;
                     }
@@ -4030,11 +4030,11 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
                 {
                     $data['below25']++;
 
-                    if(now() > $student->date_offer)
+                    if(now() > $student->date_offer && $student->status == 1)
                     {
                         $data['below25KIV']++;
                     }
-                    else
+                    elseif(now() <= $student->date_offer && $student->status == 1)
                     {
                         $data['below25willregister']++;
                     }
@@ -4063,11 +4063,11 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
                 {
                     $data['below30']++;
 
-                    if(now() > $student->date_offer)
+                    if(now() > $student->date_offer && $student->status == 1)
                     {
                         $data['below30KIV']++;
                     }
-                    else
+                    elseif(now() <= $student->date_offer && $student->status == 1)
                     {
                         $data['below30willregister']++;
                     }
@@ -4096,11 +4096,11 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
                 {
                     $data['above30']++;
 
-                    if(now() > $student->date_offer)
+                    if(now() > $student->date_offer && $student->status == 1)
                     {
                         $data['above30KIV']++;
                     }
-                    else
+                    elseif(now() <= $student->date_offer && $student->status == 1)
                     {
                         $data['above30willregister']++;
                     }
@@ -4123,7 +4123,7 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
                     {
                         $data['above30others']++;
                     }
-                    
+
                 }
 
                 $payment_query = DB::table('tblpayment')
