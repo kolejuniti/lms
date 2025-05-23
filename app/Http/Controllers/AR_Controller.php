@@ -3805,7 +3805,7 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
             ->whereBetween('p1.date', [$request->from, $request->to])
             ->select('p1.id')
             ->groupBy('p1.student_ic')
-            ->select('students.*', 'tblstudent_personal.no_tel','tblstudent_personal.qualification', 'tblsex.code AS sex', 'sessions.SessionName', 'tblprogramme.progcode', 'tbledu_advisor.name AS ea');
+            ->select('students.*', 'tblstudent_personal.no_tel','tblstudent_personal.qualification', 'tblsex.code AS sex', 'sessions.SessionName', 'tblprogramme.progcode', 'tbledu_advisor.name AS ea', 'p1.date as date_register');
 
             // By default, include all statuses (combined)
             // Handle the filter logic based on convert and offered parameters

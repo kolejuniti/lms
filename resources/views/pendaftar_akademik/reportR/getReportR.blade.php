@@ -121,6 +121,9 @@
                     Intake Session
                 </th>
                 <th style="width: 5%">
+                    Date Register
+                </th>
+                <th style="width: 5%">
                     Date Offer
                 </th>
                 <th style="width: 5%">
@@ -163,6 +166,9 @@
             </td>
             <td>
             {{ $rgs->SessionName }}
+            </td>
+            <td>
+            {{ $rgs->date_register }}
             </td>
             <td>
             {{ $rgs->date_offer }}
