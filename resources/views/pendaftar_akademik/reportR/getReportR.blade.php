@@ -232,7 +232,7 @@
           </thead>
           <tbody>
             <tr>
-              <td>&lt;5 days</td>
+              <td>&lt;5 days<br><small class="text-muted">({{ $data['dateRanges']['below5']['start'] }} - {{ $data['dateRanges']['below5']['end'] }})</small></td>
               <td>{{ $data['below5'] }}</td>
               <td>{{ $data['below5willregister'] }}</td>
               <td>{{ $data['below5KIV'] }}</td>
@@ -241,7 +241,7 @@
               <td>{{ $data['below5rejected'] }}</td>
             </tr>
             <tr>
-              <td>5-9 days</td>
+              <td>5-9 days<br><small class="text-muted">({{ $data['dateRanges']['below10']['start'] }} - {{ $data['dateRanges']['below10']['end'] }})</small></td>
               <td>{{ $data['below10'] }}</td>
               <td>{{ $data['below10willregister'] }}</td>
               <td>{{ $data['below10KIV'] }}</td>
@@ -250,7 +250,7 @@
               <td>{{ $data['below10rejected'] }}</td>
             </tr>
             <tr>
-              <td>10-14 days</td>
+              <td>10-14 days<br><small class="text-muted">({{ $data['dateRanges']['below15']['start'] }} - {{ $data['dateRanges']['below15']['end'] }})</small></td>
               <td>{{ $data['below15'] }}</td>
               <td>{{ $data['below15willregister'] }}</td>
               <td>{{ $data['below15KIV'] }}</td>
@@ -259,7 +259,7 @@
               <td>{{ $data['below15rejected'] }}</td>
             </tr>
             <tr>
-              <td>15-19 days</td>
+              <td>15-19 days<br><small class="text-muted">({{ $data['dateRanges']['below20']['start'] }} - {{ $data['dateRanges']['below20']['end'] }})</small></td>
               <td>{{ $data['below20'] }}</td>
               <td>{{ $data['below20willregister'] }}</td>
               <td>{{ $data['below20KIV'] }}</td>
@@ -268,7 +268,7 @@
               <td>{{ $data['below20rejected'] }}</td>
             </tr>
             <tr>
-              <td>20-24 days</td>
+              <td>20-24 days<br><small class="text-muted">({{ $data['dateRanges']['below25']['start'] }} - {{ $data['dateRanges']['below25']['end'] }})</small></td>
               <td>{{ $data['below25'] }}</td>
               <td>{{ $data['below25willregister'] }}</td>
               <td>{{ $data['below25KIV'] }}</td>
@@ -277,7 +277,7 @@
               <td>{{ $data['below25rejected'] }}</td>
             </tr>
             <tr>
-              <td>25-29 days</td>
+              <td>25-29 days<br><small class="text-muted">({{ $data['dateRanges']['below30']['start'] }} - {{ $data['dateRanges']['below30']['end'] }})</small></td>
               <td>{{ $data['below30'] }}</td>
               <td>{{ $data['below30willregister'] }}</td>
               <td>{{ $data['below30KIV'] }}</td>
@@ -286,7 +286,7 @@
               <td>{{ $data['below30rejected'] }}</td>
             </tr>
             <tr>
-              <td>≥30 days</td>
+              <td>≥30 days<br><small class="text-muted">({{ $data['dateRanges']['above30']['start'] }})</small></td>
               <td>{{ $data['above30'] }}</td>
               <td>{{ $data['above30willregister'] }}</td>
               <td>{{ $data['above30KIV'] }}</td>

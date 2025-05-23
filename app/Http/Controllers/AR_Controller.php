@@ -3941,6 +3941,33 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
                         $data['below10convert']++;
                     }
                 }
+                elseif($daysDiff < 15)
+                {
+                    $data['below15']++;
+
+                    if(now() > $student->date_offer)
+                    {
+                        $data['below15KIV']++;
+                    }
+                    else
+                    {
+                        $data['below15willregister']++;
+                    }
+
+                    if($student->status == 2)
+                    {
+                        $data['below15active']++;
+                    }
+                    elseif($student->status == 14)
+                    {
+                        $data['below15rejected']++;
+                    }
+
+                    if($student->status != 1)
+                    {
+                        $data['below15convert']++;
+                    }
+                }
                 elseif($daysDiff < 20)
                 {
                     $data['below20']++;
@@ -4079,6 +4106,39 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
                 $data['qua'][$key] = DB::table('tblqualification_std')->where('id', $student->qualification)->value('name');
 
             }
+
+            // Calculate date ranges for aging report
+            $today = now();
+            $data['dateRanges'] = [
+                'below5' => [
+                    'start' => $today->copy()->subDays(4)->format('j M Y'),
+                    'end' => $today->format('j M Y')
+                ],
+                'below10' => [
+                    'start' => $today->copy()->subDays(9)->format('j M Y'),
+                    'end' => $today->copy()->subDays(5)->format('j M Y')
+                ],
+                'below15' => [
+                    'start' => $today->copy()->subDays(14)->format('j M Y'),
+                    'end' => $today->copy()->subDays(10)->format('j M Y')
+                ],
+                'below20' => [
+                    'start' => $today->copy()->subDays(19)->format('j M Y'),
+                    'end' => $today->copy()->subDays(15)->format('j M Y')
+                ],
+                'below25' => [
+                    'start' => $today->copy()->subDays(24)->format('j M Y'),
+                    'end' => $today->copy()->subDays(20)->format('j M Y')
+                ],
+                'below30' => [
+                    'start' => $today->copy()->subDays(29)->format('j M Y'),
+                    'end' => $today->copy()->subDays(25)->format('j M Y')
+                ],
+                'above30' => [
+                    'start' => '> ' . $today->copy()->subDays(30)->format('j M Y'),
+                    'end' => ''
+                ]
+            ];
 
             return view('pendaftar_akademik.reportR.getReportR', compact('data'));
 
