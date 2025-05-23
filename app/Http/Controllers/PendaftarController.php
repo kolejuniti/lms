@@ -4314,6 +4314,7 @@ class PendaftarController extends Controller
         $data = [];
         
         // Initialize arrays for multiple tables
+        $data['allStudents'] = [];
         $data['totalConvert'] = [];
         $data['registered'] = [];
         $data['rejected'] = [];
@@ -4338,13 +4339,14 @@ class PendaftarController extends Controller
             $tableData = $this->processSingleDateRange($range['from'], $range['to']);
             
             // Store data for each table
+            $data['allStudents'][$index] = $tableData['allStudents'];
             $data['totalConvert'][$index] = $tableData['totalConvert'];
             $data['registered'][$index] = $tableData['registered'];
             $data['rejected'][$index] = $tableData['rejected'];
             $data['offered'][$index] = $tableData['offered'];
             $data['KIV'][$index] = $tableData['KIV'];
             $data['others'][$index] = $tableData['others'];
-            $data['total'][$index] = (object) ['total_' => $tableData['totalConvert'] + $tableData['registered'] + $tableData['rejected'] + $tableData['offered'] + $tableData['KIV'] + $tableData['others']];
+            $data['total'][$index] = (object) ['total_' => $tableData['allStudents'] + $tableData['totalConvert'] + $tableData['registered'] + $tableData['rejected'] + $tableData['offered'] + $tableData['KIV'] + $tableData['others']];
             $data['tableLabels'][$index] = "Table {$range['table']} ({$range['from']} to {$range['to']})";
         }
 
