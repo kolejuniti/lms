@@ -159,6 +159,9 @@ tr:hover {
                             <th style="width: 15%">
                                 Pelajar KIV
                             </th>
+                            <th style="width: 15%">
+                                Pelajar Lain-lain
+                            </th>
                         </tr>
                     </thead>
                     <tbody id="table">
@@ -171,6 +174,7 @@ tr:hover {
                     $total_allO = 0;
                     $total_allK = 0;
                     $total_allT = 0;
+                    $total_allL = 0;
                     @endphp
                     @foreach ($data['dateRange'] as $key => $week)
                         <tr>
@@ -204,6 +208,9 @@ tr:hover {
                         <td>
                         {{ $data['KIVPerWeek'][$key] }}
                         </td>
+                        <td>
+                        {{ $data['othersPerWeek'][$key] }}
+                        </td>
                         </tr>
                         @php
                         $total_allW += $data['totalWeek'][$key]->total_week;
@@ -214,6 +221,7 @@ tr:hover {
                         $total_allO += $data['rejectedPerWeek'][$key];
                         $total_allK += $data['offeredPerWeek'][$key];
                         $total_allT += $data['KIVPerWeek'][$key];
+                        $total_allL += $data['othersPerWeek'][$key];
                         @endphp
                     @endforeach
                     </tbody>
@@ -245,6 +253,9 @@ tr:hover {
                             </td>
                             <td>
                                 {{ $total_allT }}
+                            </td>
+                            <td>
+                                {{ $total_allL }}
                             </td>
                         </tr>
                     </tfoot>
@@ -289,6 +300,9 @@ tr:hover {
                             <th style="width: 15%">
                                 Pelajar KIV
                             </th>
+                            <th style="width: 15%">
+                                Pelajar Lain-lain
+                            </th>
                         </tr>
                     </thead>
                     <tbody id="table">
@@ -301,6 +315,7 @@ tr:hover {
                     $total_allO = 0;
                     $total_allK = 0;
                     $total_allT = 0;
+                    $total_allL = 0;
                     @endphp
                     @foreach ($data['dateRange'] as $key => $week)
                     @foreach ($data['week'][$key] as $key2 => $day)
@@ -332,6 +347,9 @@ tr:hover {
                         <td>
                         {{ $data['KIVPerDay'][$key][$key2] }}
                         </td>
+                        <td>
+                        {{ $data['othersPerDay'][$key][$key2] }}
+                        </td>
                     </tr>
                     @php
                         $total_allD += $data['totalDay'][$key][$key2]->total_day;
@@ -342,6 +360,7 @@ tr:hover {
                         $total_allO += $data['rejectedPerDay'][$key][$key2];
                         $total_allK += $data['offeredPerDay'][$key][$key2];
                         $total_allT += $data['KIVPerDay'][$key][$key2];
+                        $total_allL += $data['othersPerDay'][$key][$key2];
                     @endphp
                     @endforeach
                     @endforeach
@@ -374,6 +393,9 @@ tr:hover {
                             </td>
                             <td>
                                 {{ $total_allT }}
+                            </td>
+                            <td>
+                                {{ $total_allL }}
                             </td>
                         </tr>
                     </tfoot>
