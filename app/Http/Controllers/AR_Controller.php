@@ -3828,8 +3828,8 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
                 $query->where('students.status', '!=', 1);
             }
 
-            // Always filter for semester 1 students
-            $query->where('students.semester', '=', 1);
+            // // Always filter for semester 1 students
+            // $query->where('students.semester', '=', 1);
 
             $data['student'] = $query->get();
             
