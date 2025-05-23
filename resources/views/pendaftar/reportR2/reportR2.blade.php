@@ -174,19 +174,12 @@
                 $('#form-student').html(data);
 
                 $('#myTable').DataTable({
-                  dom: 'lBfrtip', // if you remove this line you will see the show entries dropdown
-                  ordering: false, // Disable ordering
-                  buttons: [
-                      'copy', 'csv', 'excel', 'pdf', 'print'
-                  ],
+                  dom: 'lfrtip', // Removed B for buttons
+                  ordering: false // Disable ordering
                 });
 
                 $('#myTable2').DataTable({
-                  dom: 'lBfrtip', // if you remove this line you will see the show entries dropdown
-                  
-                  buttons: [
-                      'copy', 'csv', 'excel', 'pdf', 'print'
-                  ],
+                  dom: 'lfrtip' // Removed B for buttons
                 });
                 
               }
