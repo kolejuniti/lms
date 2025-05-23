@@ -182,9 +182,11 @@
                     $days = Carbon\Carbon::parse($rgs->date_offer)->diffInDays(now());
                 @endphp
                 @if($days <= 10)
-                    style="background-color: #fff3cd; color: #856404;"
+                    style="background-color: #28a745; color: #fff;"
+                @elseif($days > 10 && $days <= 30)
+                    style="background-color: #ffc107; color: #000;"
                 @elseif($days > 30)
-                    style="background-color: #f8d7da; color: #721c24;"
+                    style="background-color: #dc3545; color: #fff;"
                 @endif
             @endif
             >
