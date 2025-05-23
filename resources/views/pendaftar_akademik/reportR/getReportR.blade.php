@@ -127,6 +127,9 @@
                     Date Offer
                 </th>
                 <th style="width: 5%">
+                    Time Lapse After Offer
+                </th>
+                <th style="width: 5%">
                     Program
                 </th>
                 <th style="width: 5%">
@@ -172,6 +175,9 @@
             </td>
             <td>
             {{ $rgs->date_offer }}
+            </td>
+            <td>
+            {{ ($rgs->status == 1) ? $rgs->date_offer->diffInDays(now()) : 'Registered' }}
             </td>
             <td>
             {{ $rgs->progcode }}
