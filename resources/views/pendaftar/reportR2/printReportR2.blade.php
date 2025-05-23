@@ -130,7 +130,7 @@ tr:hover {
                     <thead>
                         <tr>
                             <th style="width: 15%">
-                                Minggu
+                                Minggu (Julat Tarikh)
                             </th>
                             <th style="width: 15%">
                                 Bulan
@@ -175,7 +175,7 @@ tr:hover {
                     @foreach ($data['dateRange'] as $key => $week)
                         <tr>
                         <td>
-                        {{ $week['week'] }}
+                        {{ $week['week'] }} ({{ \Carbon\Carbon::parse(reset($week['days']))->format('j F Y') }} - {{ \Carbon\Carbon::parse(end($week['days']))->format('j F Y') }})
                         </td>
                         <td>
                         {{ $week['month'] }}
