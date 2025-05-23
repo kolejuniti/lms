@@ -3773,6 +3773,7 @@ class PendaftarController extends Controller
                 $data['rejectedPerWeek'] = [];
                 $data['offeredPerWeek'] = [];
                 $data['KIVPerWeek'] = [];
+                $data['othersPerWeek'] = [];
 
                 $data['countedPerDay'] = [];
                 $data['totalConvert2'] = [];
@@ -3780,6 +3781,7 @@ class PendaftarController extends Controller
                 $data['rejectedPerDay'] = [];
                 $data['offeredPerDay'] = [];
                 $data['KIVPerDay'] = [];
+                $data['othersPerDay'] = [];
 
                 while ($start <= $end) {
                     // Check if the current date is in a new month
@@ -3890,6 +3892,14 @@ class PendaftarController extends Controller
                         ->unique()
                         ->values()
                         ->toArray();
+
+                    $currentOthersStudents = $weeklyStudents->where('status', '!=', 1)
+                        ->where('status', '!=', 2)
+                        ->where('status', '!=', 14)
+                        ->pluck('student_ic')
+                        ->unique()
+                        ->values()
+                        ->toArray();
                         
                         
 
@@ -3908,6 +3918,7 @@ class PendaftarController extends Controller
                     $data['rejectedPerWeek'][$key] = count($currentRejectedStudents);
                     $data['offeredPerWeek'][$key] = count($currentOfferedStudents);
                     $data['KIVPerWeek'][$key] = count($currentKIVStudents);
+                    $data['othersPerWeek'][$key] = count($currentOthersStudents);
 
                     $data['week'][$key] = $week['days'];
 
@@ -3992,6 +4003,14 @@ class PendaftarController extends Controller
                             ->unique()
                             ->values()
                             ->toArray();
+
+                        $currentDayOthersStudents = $dailyStudents->where('status', '!=', 1)
+                            ->where('status', '!=', 2)
+                            ->where('status', '!=', 14)
+                            ->pluck('student_ic')
+                            ->unique()
+                            ->values()
+                            ->toArray();
                             
                         // Update converted students count for this day
                         $data['totalConvert2'][$key][$key2] = count($currentDayConvertStudents);
@@ -4007,7 +4026,8 @@ class PendaftarController extends Controller
                         $data['rejectedPerDay'][$key][$key2] = count($currentDayRejectedStudents);
                         $data['offeredPerDay'][$key][$key2] = count($currentDayOfferedStudents);
                         $data['KIVPerDay'][$key][$key2] = count($currentDayKIVStudents);
-
+                        $data['othersPerDay'][$key][$key2] = count($currentDayOthersStudents);
+                        
                         $data['totalDay'][$key][$key2] = (object) ['total_day' => $totalDaysCount];                        
                     }
                 }

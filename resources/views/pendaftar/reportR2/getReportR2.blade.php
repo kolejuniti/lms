@@ -63,6 +63,9 @@
                 <th style="width: 15%">
                     Student KIV <i class="fa fa-info-circle text-info" data-toggle="tooltip" data-placement="top" title="Students whose current date has passed their offered date"></i>
                 </th>
+                <th style="width: 15%">
+                    Student Others <i class="fa fa-info-circle text-info" data-toggle="tooltip" data-placement="top" title="Includes: GAGAL BERHENTI, TARIK DIRI, MENINGGAL DUNIA, TANGGUH, DIBERHENTIKAN, TAMAT PENGAJIAN, TUKAR PROGRAM, GANTUNG, TUKAR KE KUKB, PINDAH KOLEJ, TIDAK TAMAT PENGAJIAN, TAMAT PENGAJIAN (MENINGGAL DUNIA)"></i>
+                </th>
             </tr>
         </thead>
         <tbody id="table">
@@ -75,6 +78,7 @@
         $total_allO = 0;
         $total_allK = 0;
         $total_allT = 0;
+        $total_allOthers = 0;
         @endphp
         @foreach ($data['dateRange'] as $key => $week)
           <tr>
@@ -108,6 +112,9 @@
             <td>
             {{ $data['KIVPerWeek'][$key] }}
             </td>
+            <td>
+            {{ $data['othersPerWeek'][$key] }}
+            </td>
           </tr>
           @php
           $total_allW += $data['totalWeek'][$key]->total_week;
@@ -118,6 +125,7 @@
           $total_allO += $data['rejectedPerWeek'][$key];
           $total_allK += $data['offeredPerWeek'][$key];
           $total_allT += $data['KIVPerWeek'][$key];
+          $total_allOthers += $data['othersPerWeek'][$key];
           @endphp
         @endforeach
         </tbody>
@@ -149,6 +157,9 @@
                 </td>
                 <td>
                     {{  $total_allT }}
+                </td>
+                <td>
+                    {{  $total_allOthers }}
                 </td>
               </tr>
         </tfoot>
@@ -192,6 +203,9 @@
                 <th style="width: 15%">
                     Student KIV <i class="fa fa-info-circle text-info" data-toggle="tooltip" data-placement="top" title="Students whose current date has passed their offered date"></i>
                 </th>
+                <th style="width: 15%">
+                    Student Others <i class="fa fa-info-circle text-info" data-toggle="tooltip" data-placement="top" title="Includes: GAGAL BERHENTI, TARIK DIRI, MENINGGAL DUNIA, TANGGUH, DIBERHENTIKAN, TAMAT PENGAJIAN, TUKAR PROGRAM, GANTUNG, TUKAR KE KUKB, PINDAH KOLEJ, TIDAK TAMAT PENGAJIAN, TAMAT PENGAJIAN (MENINGGAL DUNIA)"></i>
+                </th>
             </tr>
         </thead>
         <tbody id="table">
@@ -204,6 +218,7 @@
         $total_allO = 0;
         $total_allK = 0;
         $total_allT = 0;
+        $total_allOthers = 0;
         @endphp
         @foreach ($data['dateRange'] as $key => $week)
         @foreach ($data['week'][$key] as $key2 => $day)
@@ -235,6 +250,9 @@
           <td>
             {{ $data['KIVPerDay'][$key][$key2] }}
           </td>
+          <td>
+            {{ $data['othersPerDay'][$key][$key2] }}
+          </td>
         </tr>
         @php
           $total_allD += $data['totalDay'][$key][$key2]->total_day;
@@ -245,6 +263,7 @@
           $total_allO += $data['rejectedPerDay'][$key][$key2];
           $total_allK += $data['offeredPerDay'][$key][$key2];
           $total_allT += $data['KIVPerDay'][$key][$key2];
+          $total_allOthers += $data['othersPerDay'][$key][$key2];
         @endphp
         @endforeach
         @endforeach
@@ -277,6 +296,9 @@
                 </td>
                 <td>
                     {{  $total_allT }}
+                </td>
+                <td>
+                    {{  $total_allOthers }}
                 </td>
               </tr>
         </tfoot>
