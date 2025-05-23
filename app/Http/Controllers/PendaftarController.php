@@ -4363,6 +4363,7 @@ class PendaftarController extends Controller
     private function processSingleDateRange($from, $to)
     {
         $data = [
+            'allStudents' => 0,
             'totalConvert' => 0,
             'registered' => 0,
             'rejected' => 0,
@@ -4376,121 +4377,6 @@ class PendaftarController extends Controller
             $totalPaymentsCount = DB::table('tblpayment')
                                    ->whereBetween('add_date', [$from, $to])
                                    ->count();
-            
-            // // If no data in the selected range, let's check what date ranges exist
-            // if ($totalPaymentsCount === 0) {
-            //     $availableDates = DB::table('tblpayment')
-            //                        ->selectRaw('MIN(add_date) as min_date, MAX(add_date) as max_date, COUNT(*) as total')
-            //                        ->first();
-                
-            //     // For testing purposes, if no data found in future dates, 
-            //     // let's return some test data so you can see the UI working
-            //     if ($availableDates->total > 0) {
-            //         // Use the actual available date range for testing
-            //         $testFrom = $availableDates->min_date;
-            //         $testTo = $availableDates->max_date;
-                    
-            //         // Try with available dates
-            //         $students = DB::table('tblpayment as p1')
-            //                         ->select([
-            //                             'p1.student_ic',
-            //                             'students.status',
-            //                             'students.date_offer',
-            //                             'students.semester'
-            //                         ])
-            //                         ->join('students', 'p1.student_ic', '=', 'students.ic')
-            //                         ->join(DB::raw('(
-            //                             SELECT student_ic, MIN(date) as first_payment_date 
-            //                             FROM tblpayment 
-            //                             WHERE process_status_id = 2 
-            //                             AND process_type_id = 1 
-            //                             AND semester_id = 1
-            //                             GROUP BY student_ic
-            //                         ) as p2'), function($join) {
-            //                             $join->on('p1.student_ic', '=', 'p2.student_ic')
-            //                                  ->on('p1.date', '=', 'p2.first_payment_date');
-            //                         })
-            //                         ->where([
-            //                             ['p1.process_status_id', 2],
-            //                             ['p1.process_type_id', 1], 
-            //                             ['p1.semester_id', 1]
-            //                         ])
-            //                         ->whereBetween('p1.add_date', [$testFrom, $testTo])
-            //                         ->get();
-                    
-            //         if ($students->count() > 0) {
-            //             // Process the actual data
-            //             $currentConvertStudents = $students->where('status', '!=', 1)
-            //                 ->pluck('student_ic')
-            //                 ->unique()
-            //                 ->values()
-            //                 ->toArray();
-            //             $currentRegisteredStudents = $students->where('status', 2)
-            //                 ->pluck('student_ic')
-            //                 ->unique()
-            //                 ->values()
-            //                 ->toArray();
-            //             $currentRejectedStudents = $students->where('status', 14)
-            //                 ->pluck('student_ic')
-            //                 ->unique()
-            //                 ->values()
-            //                 ->toArray();
-            //             $currentOfferedStudents = $students->where('status', 1)
-            //                 ->filter(function($student) {
-            //                     return \Carbon\Carbon::parse($student->date_offer)->gt(now());
-            //                 })
-            //                 ->pluck('student_ic')
-            //                 ->unique()
-            //                 ->values()
-            //                 ->toArray();
-            //             $currentKIVStudents = $students->where('status', 1)
-            //                 ->filter(function($student) {
-            //                     return \Carbon\Carbon::parse($student->date_offer)->lte(now());
-            //                 })
-            //                 ->pluck('student_ic')
-            //                 ->unique()
-            //                 ->values()
-            //                 ->toArray();
-
-            //             $currentOthersStudents = $students->where('status', '!=', 1)
-            //                 ->where('status', '!=', 2)
-            //                 ->where('status', '!=', 14)
-            //                 ->pluck('student_ic')
-            //                 ->unique()
-            //                 ->values()
-            //                 ->toArray();
-
-            //             $data['totalConvert'] = count($currentConvertStudents);
-            //             $data['registered'] = count($currentRegisteredStudents);
-            //             $data['rejected'] = count($currentRejectedStudents);
-            //             $data['offered'] = count($currentOfferedStudents);
-            //             $data['KIV'] = count($currentKIVStudents);
-            //             $data['others'] = count($currentOthersStudents);
-            //         } else {
-            //             // Return test data to show the interface is working
-            //             $data = [
-            //                 'totalConvert' => 5,
-            //                 'registered' => 3,
-            //                 'rejected' => 1,
-            //                 'offered' => 2,
-            //                 'KIV' => 1,
-            //                 'others' => 0
-            //             ];
-            //         }
-            //     } else {
-            //         // No data in database at all, return test data
-            //         $data = [
-            //             'totalConvert' => 10,
-            //             'registered' => 7,
-            //             'rejected' => 2,
-            //             'offered' => 3,
-            //             'KIV' => 1,
-            //             'others' => 2
-            //         ];
-            //     }
-                
-            //     return $data;
-            // }
 
             Log::info('Processing date range:', [
                 'fromss' => $from, 
@@ -4528,6 +4414,11 @@ class PendaftarController extends Controller
             Log::info('Processing data:', [
                 'studentss' => $students
             ]);
+
+            $currentAllStudents = $students->pluck('student_ic')
+                ->unique()
+                ->values()
+                ->toArray();
 
             $currentConvertStudents = $students->where('status', '!=', 1)
                 ->pluck('student_ic')
@@ -4569,6 +4460,7 @@ class PendaftarController extends Controller
                 ->values()
                 ->toArray();
 
+            $data['allStudents'] = count($currentAllStudents);
             $data['totalConvert'] = count($currentConvertStudents);
             $data['registered'] = count($currentRegisteredStudents);
             $data['rejected'] = count($currentRejectedStudents);
@@ -4579,6 +4471,7 @@ class PendaftarController extends Controller
         } catch (\Exception $e) {
             // If there's any database error, return test data
             $data = [
+                'allStudents' => 0,
                 'totalConvert' => 8,
                 'registered' => 5,
                 'rejected' => 1,
