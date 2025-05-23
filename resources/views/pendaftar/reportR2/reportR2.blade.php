@@ -173,21 +173,21 @@
             }else{
                 $('#form-student').html(data);
 
-                $('#myTable').DataTable({
-                  dom: 'lBfrtip', // if you remove this line you will see the show entries dropdown
-                  ordering: false, // Disable ordering
-                  // buttons: [
-                  //     'copy', 'csv', 'excel', 'pdf', 'print'
-                  // ],
-                });
+                // $('#myTable').DataTable({
+                //   dom: 'lBfrtip', // if you remove this line you will see the show entries dropdown
+                //   ordering: false, // Disable ordering
+                //   // buttons: [
+                //   //     'copy', 'csv', 'excel', 'pdf', 'print'
+                //   // ],
+                // });
 
-                $('#myTable2').DataTable({
-                  dom: 'lBfrtip', // if you remove this line you will see the show entries dropdown
+                // $('#myTable2').DataTable({
+                //   dom: 'lBfrtip', // if you remove this line you will see the show entries dropdown
                   
-                  // buttons: [
-                  //     'copy', 'csv', 'excel', 'pdf', 'print'
-                  // ],
-                });
+                //   // buttons: [
+                //   //     'copy', 'csv', 'excel', 'pdf', 'print'
+                //   // ],
+                // });
                 
               }
             }
