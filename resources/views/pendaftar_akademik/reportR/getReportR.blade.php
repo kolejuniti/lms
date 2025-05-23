@@ -127,7 +127,7 @@
                     Date Offer
                 </th>
                 <th style="width: 5%">
-                    Time Lapse After Offer
+                    Time Lapse After Offer (Days)
                 </th>
                 <th style="width: 5%">
                     Program
@@ -202,7 +202,7 @@
         </tbody>
         <tfoot>
             <tr>
-                <td colspan="13" style="text-align: center">
+                <td colspan="14" style="text-align: center">
                     TOTAL STUDENTS
                 </td>
                 <td>
