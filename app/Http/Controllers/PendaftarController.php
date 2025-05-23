@@ -4076,14 +4076,14 @@ class PendaftarController extends Controller
         
         // Add title and report information
         $sheet->setCellValue('A1', 'JADUAL REPORT PENCAPAIAN R BAGI TEMPOH ' . $data['from'] . ' HINGGA ' . $data['to']);
-        $sheet->mergeCells('A1:J1');
+        $sheet->mergeCells('A1:K1');
         $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(14);
         $sheet->getStyle('A1')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
         
         // Report Information
         $row = 3;
         $sheet->setCellValue('A' . $row, 'Report Information');
-        $sheet->mergeCells('A' . $row . ':J' . $row);
+        $sheet->mergeCells('A' . $row . ':K' . $row);
         $sheet->getStyle('A' . $row)->getFont()->setBold(true);
         
         $row++;
@@ -4093,13 +4093,13 @@ class PendaftarController extends Controller
         // Total Payment By Weeks header
         $row += 2;
         $sheet->setCellValue('A' . $row, 'Total Student R By Weeks');
-        $sheet->mergeCells('A' . $row . ':J' . $row);
+        $sheet->mergeCells('A' . $row . ':K' . $row);
         $sheet->getStyle('A' . $row)->getFont()->setBold(true);
         
         // Add note about weeks
         $row++;
         $sheet->setCellValue('A' . $row, 'Note: Weeks shown follow the calendar date per week (Sunday to Saturday)');
-        $sheet->mergeCells('A' . $row . ':J' . $row);
+        $sheet->mergeCells('A' . $row . ':K' . $row);
         $sheet->getStyle('A' . $row)->getFont()->setItalic(true)->setSize(10);
         
         // Table headers
@@ -4114,7 +4114,12 @@ class PendaftarController extends Controller
         $sheet->setCellValue('H' . $row, 'Student Rejected');
         $sheet->setCellValue('I' . $row, 'Student Offered');
         $sheet->setCellValue('J' . $row, 'Student KIV');
-        $sheet->getStyle('A' . $row . ':J' . $row)->getFont()->setBold(true);
+        $sheet->setCellValue('K' . $row, 'Student Others');
+        $sheet->getStyle('A' . $row . ':K' . $row)->getFont()->setBold(true);
+    
+        // Add notes for KIV and Others columns
+        $sheet->getComment('J' . $row)->getText()->createTextRun('Students whose current date has passed their offered date');
+        $sheet->getComment('K' . $row)->getText()->createTextRun('Includes: GAGAL BERHENTI, TARIK DIRI, MENINGGAL DUNIA, TANGGUH, DIBERHENTIKAN, TAMAT PENGAJIAN, TUKAR PROGRAM, GANTUNG, TUKAR KE KUKB, PINDAH KOLEJ, TIDAK TAMAT PENGAJIAN, TAMAT PENGAJIAN (MENINGGAL DUNIA)');
     
         $row++;
         $total_allW = 0;
@@ -4125,6 +4130,7 @@ class PendaftarController extends Controller
         $total_allO = 0;
         $total_allK = 0;
         $total_allT = 0;
+        $total_allOthers = 0;
         
         foreach ($data['dateRange'] as $key => $week) {
             $dateRange = \Carbon\Carbon::parse(reset($week['days']))->format('j F Y') . ' - ' . \Carbon\Carbon::parse(end($week['days']))->format('j F Y');
@@ -4138,23 +4144,25 @@ class PendaftarController extends Controller
             $sheet->setCellValue('H' . $row, $data['rejectedPerWeek'][$key]);
             $sheet->setCellValue('I' . $row, $data['offeredPerWeek'][$key]);
             $sheet->setCellValue('J' . $row, $data['KIVPerWeek'][$key]);
+            $sheet->setCellValue('K' . $row, $data['othersPerWeek'][$key]);
             
             $total_allW += $data['totalWeek'][$key]->total_week;
-            $total_allC = $data['countedPerWeek'][$key]; // Note: This is not cumulative in the blade file
+            $total_allC = $data['countedPerWeek'][$key];
             $total_allC2 += $data['totalConvert'][$key];
             $total_allB += $data['totalWeek'][$key]->total_week - $data['totalConvert'][$key];
             $total_allR += $data['registeredPerWeek'][$key];
             $total_allO += $data['rejectedPerWeek'][$key];
             $total_allK += $data['offeredPerWeek'][$key];
             $total_allT += $data['KIVPerWeek'][$key];
+            $total_allOthers += $data['othersPerWeek'][$key];
             $row++;
         }
     
-        // Totals row
+        // Totals row for weeks
         $sheet->setCellValue('A' . $row, 'TOTAL');
         $sheet->mergeCells('A' . $row . ':B' . $row);
         $sheet->getStyle('A' . $row)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
-        $sheet->getStyle('A' . $row . ':J' . $row)->getFont()->setBold(true);
+        $sheet->getStyle('A' . $row . ':K' . $row)->getFont()->setBold(true);
         $sheet->setCellValue('C' . $row, $total_allW);
         $sheet->setCellValue('D' . $row, $total_allC);
         $sheet->setCellValue('E' . $row, $total_allC2);
@@ -4163,14 +4171,15 @@ class PendaftarController extends Controller
         $sheet->setCellValue('H' . $row, $total_allO);
         $sheet->setCellValue('I' . $row, $total_allK);
         $sheet->setCellValue('J' . $row, $total_allT);
+        $sheet->setCellValue('K' . $row, $total_allOthers);
         
-        // Total Payment By Days header
+        // Total Student R By Days header
         $row += 2;
         $sheet->setCellValue('A' . $row, 'Total Student R By Days');
-        $sheet->mergeCells('A' . $row . ':I' . $row);
+        $sheet->mergeCells('A' . $row . ':K' . $row);
         $sheet->getStyle('A' . $row)->getFont()->setBold(true);
         
-        // Table headers
+        // Table headers for days
         $row++;
         $sheet->setCellValue('A' . $row, 'Date');
         $sheet->setCellValue('B' . $row, 'Total By Days');
@@ -4181,7 +4190,12 @@ class PendaftarController extends Controller
         $sheet->setCellValue('G' . $row, 'Student Rejected');
         $sheet->setCellValue('H' . $row, 'Student Offered');
         $sheet->setCellValue('I' . $row, 'Student KIV');
-        $sheet->getStyle('A' . $row . ':I' . $row)->getFont()->setBold(true);
+        $sheet->setCellValue('J' . $row, 'Student Others');
+        $sheet->getStyle('A' . $row . ':J' . $row)->getFont()->setBold(true);
+    
+        // Add notes for KIV and Others columns
+        $sheet->getComment('I' . $row)->getText()->createTextRun('Students whose current date has passed their offered date');
+        $sheet->getComment('J' . $row)->getText()->createTextRun('Includes: GAGAL BERHENTI, TARIK DIRI, MENINGGAL DUNIA, TANGGUH, DIBERHENTIKAN, TAMAT PENGAJIAN, TUKAR PROGRAM, GANTUNG, TUKAR KE KUKB, PINDAH KOLEJ, TIDAK TAMAT PENGAJIAN, TAMAT PENGAJIAN (MENINGGAL DUNIA)');
     
         $row++;
         $total_allD = 0;
@@ -4192,6 +4206,7 @@ class PendaftarController extends Controller
         $total_allO = 0;
         $total_allK = 0;
         $total_allT = 0;
+        $total_allOthers = 0;
         
         foreach ($data['dateRange'] as $key => $week) {
             foreach ($data['week'][$key] as $key2 => $day) {
@@ -4204,23 +4219,25 @@ class PendaftarController extends Controller
                 $sheet->setCellValue('G' . $row, $data['rejectedPerDay'][$key][$key2]);
                 $sheet->setCellValue('H' . $row, $data['offeredPerDay'][$key][$key2]);
                 $sheet->setCellValue('I' . $row, $data['KIVPerDay'][$key][$key2]);
+                $sheet->setCellValue('J' . $row, $data['othersPerDay'][$key][$key2]);
                 
                 $total_allD += $data['totalDay'][$key][$key2]->total_day;
-                $total_allQ = $data['countedPerDay'][$key][$key2]; // Note: This is not cumulative in the blade file
+                $total_allQ = $data['countedPerDay'][$key][$key2];
                 $total_allZ += $data['totalConvert2'][$key][$key2];
                 $total_allB += $data['totalDay'][$key][$key2]->total_day - $data['totalConvert2'][$key][$key2];
                 $total_allR += $data['registeredPerDay'][$key][$key2];
                 $total_allO += $data['rejectedPerDay'][$key][$key2];
                 $total_allK += $data['offeredPerDay'][$key][$key2];
                 $total_allT += $data['KIVPerDay'][$key][$key2];
+                $total_allOthers += $data['othersPerDay'][$key][$key2];
                 $row++;
             }
         }
     
-        // Totals row
+        // Totals row for days
         $sheet->setCellValue('A' . $row, 'TOTAL');
         $sheet->getStyle('A' . $row)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
-        $sheet->getStyle('A' . $row . ':I' . $row)->getFont()->setBold(true);
+        $sheet->getStyle('A' . $row . ':J' . $row)->getFont()->setBold(true);
         $sheet->setCellValue('B' . $row, $total_allD);
         $sheet->setCellValue('C' . $row, $total_allQ);
         $sheet->setCellValue('D' . $row, $total_allZ);
@@ -4229,9 +4246,10 @@ class PendaftarController extends Controller
         $sheet->setCellValue('G' . $row, $total_allO);
         $sheet->setCellValue('H' . $row, $total_allK);
         $sheet->setCellValue('I' . $row, $total_allT);
+        $sheet->setCellValue('J' . $row, $total_allOthers);
         
         // Set columns to auto width
-        foreach(range('A', 'J') as $column) {
+        foreach(range('A', 'K') as $column) {
             $sheet->getColumnDimension($column)->setAutoSize(true);
         }
     
