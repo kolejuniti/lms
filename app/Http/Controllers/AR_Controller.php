@@ -3839,6 +3839,7 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
             $data['below5convert'] = 0;
             $data['below5active'] = 0;
             $data['below5rejected'] = 0;
+            $data['below5others'] = 0;
 
             $data['below10'] = 0;
             $data['below10willregister'] = 0;
@@ -3846,6 +3847,7 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
             $data['below10convert'] = 0;
             $data['below10active'] = 0;
             $data['below10rejected'] = 0;
+            $data['below10others'] = 0;
 
             $data['below15'] = 0;
             $data['below15willregister'] = 0;
@@ -3853,6 +3855,7 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
             $data['below15convert'] = 0;
             $data['below15active'] = 0;
             $data['below15rejected'] = 0;
+            $data['below15others'] = 0;
 
             $data['below20'] = 0;
             $data['below20willregister'] = 0;
@@ -3860,6 +3863,7 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
             $data['below20convert'] = 0;
             $data['below20active'] = 0;
             $data['below20rejected'] = 0;
+            $data['below20others'] = 0;
 
             $data['below25'] = 0;
             $data['below25willregister'] = 0;
@@ -3867,6 +3871,7 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
             $data['below25convert'] = 0;
             $data['below25active'] = 0;
             $data['below25rejected'] = 0;
+            $data['below25others'] = 0;
 
             $data['below30'] = 0;
             $data['below30willregister'] = 0;
@@ -3874,6 +3879,7 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
             $data['below30convert'] = 0;
             $data['below30active'] = 0;
             $data['below30rejected'] = 0;
+            $data['below30others'] = 0;
 
             $data['above30'] = 0;
             $data['above30willregister'] = 0;
@@ -3881,6 +3887,7 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
             $data['above30convert'] = 0;
             $data['above30active'] = 0;
             $data['above30rejected'] = 0;
+            $data['above30others'] = 0;
 
             foreach($data['student'] as $key => $student)
             {
@@ -3913,6 +3920,12 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
                     {
                         $data['below5convert']++;
                     }
+
+                    if($student->status != 1 && $student->status != 2 && $student->status != 14)
+                    {
+                        $data['below5others']++;
+                    }
+
                 }
                 elseif($daysDiff < 10)
                 {
@@ -3940,6 +3953,12 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
                     {
                         $data['below10convert']++;
                     }
+
+                    if($student->status != 1 && $student->status != 2 && $student->status != 14)
+                    {
+                        $data['below10others']++;
+                    }
+
                 }
                 elseif($daysDiff < 15)
                 {
@@ -3967,6 +3986,12 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
                     {
                         $data['below15convert']++;
                     }
+
+                    if($student->status != 1 && $student->status != 2 && $student->status != 14)
+                    {
+                        $data['below15others']++;
+                    }
+
                 }
                 elseif($daysDiff < 20)
                 {
@@ -3994,6 +4019,12 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
                     {
                         $data['below20convert']++;
                     }
+
+                    if($student->status != 1 && $student->status != 2 && $student->status != 14)
+                    {
+                        $data['below20others']++;
+                    }
+
                 }
                 elseif($daysDiff < 25)
                 {
@@ -4021,6 +4052,12 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
                     {
                         $data['below25convert']++;
                     }
+
+                    if($student->status != 1 && $student->status != 2 && $student->status != 14)
+                    {
+                        $data['below25others']++;
+                    }
+
                 }
                 elseif($daysDiff < 30)
                 {
@@ -4048,6 +4085,12 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
                     {
                         $data['below30convert']++;
                     }
+
+                    if($student->status != 1 && $student->status != 2 && $student->status != 14)
+                    {
+                        $data['below30others']++;
+                    }
+
                 }
                 else
                 {
@@ -4075,6 +4118,12 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
                     {
                         $data['above30convert']++;
                     }
+
+                    if($student->status != 1 && $student->status != 2 && $student->status != 14)
+                    {
+                        $data['above30others']++;
+                    }
+                    
                 }
 
                 $payment_query = DB::table('tblpayment')

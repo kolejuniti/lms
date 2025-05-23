@@ -249,10 +249,11 @@
               <th style="width: 50%">Days Range</th>
               <th style="width: 50%">Number of Students</th>
               <th style="width: 50%">Number of Students Will Register</th>
-              <th style="width: 50%">Number of Students KIV</th>
+              <th style="width: 50%">Number of Students KIV <i class="fa fa-info-circle text-info" data-toggle="tooltip" data-placement="top" title="Students whose current date has passed their offered date"></i></th>
               <th style="width: 50%">Number of Students Convert</th>
               <th style="width: 50%">Number of Students Active</th>
               <th style="width: 50%">Number of Students Rejected</th>
+              <th style="width: 50%">Number of Students Others <i class="fa fa-info-circle text-info" data-toggle="tooltip" data-placement="top" title="Includes: GAGAL BERHENTI, TARIK DIRI, MENINGGAL DUNIA, TANGGUH, DIBERHENTIKAN, TAMAT PENGAJIAN, TUKAR PROGRAM, GANTUNG, TUKAR KE KUKB, PINDAH KOLEJ, TIDAK TAMAT PENGAJIAN, TAMAT PENGAJIAN (MENINGGAL DUNIA)"></i></th>
             </tr>
           </thead>
           <tbody>
@@ -264,6 +265,7 @@
               <td>{{ $data['below5convert'] }}</td>
               <td>{{ $data['below5active'] }}</td>
               <td>{{ $data['below5rejected'] }}</td>
+              <td>{{ $data['below5others'] }}</td>
             </tr>
             <tr>
               <td>5-9 days<br><small class="text-muted">({{ $data['dateRanges']['below10']['start'] }} - {{ $data['dateRanges']['below10']['end'] }})</small></td>
@@ -273,6 +275,7 @@
               <td>{{ $data['below10convert'] }}</td>
               <td>{{ $data['below10active'] }}</td>
               <td>{{ $data['below10rejected'] }}</td>
+              <td>{{ $data['below10others'] }}</td>
             </tr>
             <tr>
               <td>10-14 days<br><small class="text-muted">({{ $data['dateRanges']['below15']['start'] }} - {{ $data['dateRanges']['below15']['end'] }})</small></td>
@@ -282,6 +285,7 @@
               <td>{{ $data['below15convert'] }}</td>
               <td>{{ $data['below15active'] }}</td>
               <td>{{ $data['below15rejected'] }}</td>
+              <td>{{ $data['below15others'] }}</td>
             </tr>
             <tr>
               <td>15-19 days<br><small class="text-muted">({{ $data['dateRanges']['below20']['start'] }} - {{ $data['dateRanges']['below20']['end'] }})</small></td>
@@ -291,6 +295,7 @@
               <td>{{ $data['below20convert'] }}</td>
               <td>{{ $data['below20active'] }}</td>
               <td>{{ $data['below20rejected'] }}</td>
+              <td>{{ $data['below20others'] }}</td>
             </tr>
             <tr>
               <td>20-24 days<br><small class="text-muted">({{ $data['dateRanges']['below25']['start'] }} - {{ $data['dateRanges']['below25']['end'] }})</small></td>
@@ -300,6 +305,7 @@
               <td>{{ $data['below25convert'] }}</td>
               <td>{{ $data['below25active'] }}</td>
               <td>{{ $data['below25rejected'] }}</td>
+              <td>{{ $data['below25others'] }}</td>
             </tr>
             <tr>
               <td>25-29 days<br><small class="text-muted">({{ $data['dateRanges']['below30']['start'] }} - {{ $data['dateRanges']['below30']['end'] }})</small></td>
@@ -309,6 +315,7 @@
               <td>{{ $data['below30convert'] }}</td>
               <td>{{ $data['below30active'] }}</td>
               <td>{{ $data['below30rejected'] }}</td>
+              <td>{{ $data['below30others'] }}</td>
             </tr>
             <tr>
               <td>≥30 days<br><small class="text-muted">({{ $data['dateRanges']['above30']['start'] }})</small></td>
@@ -318,6 +325,7 @@
               <td>{{ $data['above30convert'] }}</td>
               <td>{{ $data['above30active'] }}</td>
               <td>{{ $data['above30rejected'] }}</td>
+              <td>{{ $data['above30others'] }}</td>
             </tr>
           </tbody>
           <tfoot>
@@ -331,6 +339,7 @@
               <td>{{ $data['below5convert'] + $data['below10convert'] + $data['below15convert'] + $data['below20convert'] + $data['below25convert'] + $data['below30convert'] + $data['above30convert'] }}</td>
               <td>{{ $data['below5active'] + $data['below10active'] + $data['below15active'] + $data['below20active'] + $data['below25active'] + $data['below30active'] + $data['above30active'] }}</td>
               <td>{{ $data['below5rejected'] + $data['below10rejected'] + $data['below15rejected'] + $data['below20rejected'] + $data['below25rejected'] + $data['below30rejected'] + $data['above30rejected'] }}</td>
+              <td>{{ $data['below5others'] + $data['below10others'] + $data['below15others'] + $data['below20others'] + $data['below25others'] + $data['below30others'] + $data['above30others'] }}</td>
             </tr>
           </tfoot>
         </table>
