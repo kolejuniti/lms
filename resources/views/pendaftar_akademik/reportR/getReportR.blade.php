@@ -177,7 +177,7 @@
             {{ $rgs->date_offer }}
             </td>
             <td>
-            {{ ($rgs->status == 1) ? $rgs->date_offer->diffInDays(now()) : 'Registered' }}
+            {{ ($rgs->status == 1 && $rgs->date_offer) ? Carbon\Carbon::parse($rgs->date_offer)->diffInDays(now()) : 'Registered' }}
             </td>
             <td>
             {{ $rgs->progcode }}
