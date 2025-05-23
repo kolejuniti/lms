@@ -149,6 +149,8 @@ Route::get('/pendaftar/student/reportRs', [App\Http\Controllers\PendaftarControl
 Route::get('/pendaftar/student/reportRs/getStudentReportR', [App\Http\Controllers\PendaftarController::class, 'getStudentReportRs']);
 Route::get('/pendaftar/student/reportR2', [App\Http\Controllers\PendaftarController::class, 'studentReportR2'])->name('pendaftar.student.reportR2');
 Route::get('/pendaftar/student/reportR2/getStudentReportR2', [App\Http\Controllers\PendaftarController::class, 'getStudentReportR2']);
+Route::get('/pendaftar/student/reportRA', [App\Http\Controllers\PendaftarController::class, 'studentReportRA'])->name('pendaftar.student.reportRA');
+Route::get('/pendaftar/student/reportRA/getStudentReportRA', [App\Http\Controllers\PendaftarController::class, 'getStudentReportRA']);
 Route::get('/pendaftar/student/incomeReport', [App\Http\Controllers\PendaftarController::class,'incomeReport'])->name('pendaftar.student.incomeReport');
 Route::post('/pendaftar/student/incomeReport/getIncomeReport', [App\Http\Controllers\PendaftarController::class,'getIncomeReport']);
 Route::get('/pendaftar/student/internationalReport', [App\Http\Controllers\PendaftarController::class,'internationalReport'])->name('pendaftar.student.internationalReport');
