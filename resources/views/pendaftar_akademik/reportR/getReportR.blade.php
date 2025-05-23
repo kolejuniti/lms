@@ -196,7 +196,7 @@
         </tbody>
         <tfoot>
             <tr>
-                <td colspan="12" style="text-align: center">
+                <td colspan="13" style="text-align: center">
                     TOTAL STUDENTS
                 </td>
                 <td>
