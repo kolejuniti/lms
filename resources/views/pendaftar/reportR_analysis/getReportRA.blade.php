@@ -184,12 +184,6 @@
       form.method = 'GET';
       form.action = url;
       
-      var csrfInput = document.createElement('input');
-      csrfInput.type = 'hidden';
-      csrfInput.name = '_token';
-      csrfInput.value = $('meta[name="csrf-token"]').attr('content');
-      form.appendChild(csrfInput);
-      
       var dateRangesInput = document.createElement('input');
       dateRangesInput.type = 'hidden';
       dateRangesInput.name = 'date_ranges';
