@@ -179,7 +179,9 @@
             <td
             @if($rgs->status == 1 && $rgs->date_offer)
                 @php
-                    $days = Carbon\Carbon::parse($rgs->date_offer)->diffInDays(now());
+                    $offerDate = Carbon\Carbon::parse($rgs->date_offer);
+                    $today = Carbon\Carbon::now();
+                    $days = $today->greaterThan($offerDate) ? $offerDate->diffInDays($today) : 0;
                 @endphp
                 @if($days <= 10)
                     style="background-color: #28a745; color: #fff;"
@@ -190,7 +192,16 @@
                 @endif
             @endif
             >
-            {{ ($rgs->status == 1 && $rgs->date_offer) ? Carbon\Carbon::parse($rgs->date_offer)->diffInDays(now()) : 'Registered' }}
+            @if($rgs->status == 1 && $rgs->date_offer)
+                @php
+                    $offerDate = Carbon\Carbon::parse($rgs->date_offer);
+                    $today = Carbon\Carbon::now();
+                    $daysPassed = $today->greaterThan($offerDate) ? $offerDate->diffInDays($today) : 0;
+                @endphp
+                {{ $daysPassed }}
+            @else
+                Registered
+            @endif
             </td>
             <td>
             {{ $rgs->progcode }}
