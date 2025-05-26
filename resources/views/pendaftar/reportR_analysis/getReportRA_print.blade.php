@@ -62,6 +62,7 @@
         <table class="table">
             <thead>
                 <tr>
+                    <th>Total Student R</th>
                     <th>Total by Convert</th>
                     <th>Balance Student</th>
                     <th>Student Active</th>
@@ -73,8 +74,9 @@
             </thead>
             <tbody>
                 <tr>
+                    <td>{{ $data['allStudents'][$key] }}</td>
                     <td>{{ $data['totalConvert'][$key] }}</td>
-                    <td>{{ $data['total'][$key]->total_ - $data['totalConvert'][$key] }}</td>
+                    <td>{{ $data['allStudents'][$key] - $data['totalConvert'][$key] }}</td>
                     <td>{{ $data['registered'][$key] }}</td>
                     <td>{{ $data['rejected'][$key] }}</td>
                     <td>{{ $data['offered'][$key] }}</td>
@@ -91,6 +93,7 @@
         <table class="table">
             <thead>
                 <tr>
+                    <th>Total Student R</th>
                     <th>Total by Convert</th>
                     <th>Balance Student</th>
                     <th>Student Active</th>
@@ -103,6 +106,7 @@
             <tbody>
                 <tr>
                     @php
+                    $total_student_r = array_sum($data['allStudents']);
                     $total_convert = array_sum($data['totalConvert']);
                     $total_registered = array_sum($data['registered']);
                     $total_rejected = array_sum($data['rejected']);
@@ -111,8 +115,9 @@
                     $total_others = array_sum($data['others']);
                     $grand_total = $total_convert + $total_registered + $total_rejected + $total_offered + $total_kiv + $total_others;
                     @endphp
+                    <td>{{ $total_student_r }}</td>
                     <td>{{ $total_convert }}</td>
-                    <td>{{ $grand_total - $total_convert }}</td>
+                    <td>{{ $total_student_r - $total_convert }}</td>
                     <td>{{ $total_registered }}</td>
                     <td>{{ $total_rejected }}</td>
                     <td>{{ $total_offered }}</td>
