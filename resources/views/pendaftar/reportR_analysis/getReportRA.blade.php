@@ -156,156 +156,158 @@
 @endif
 
 <script>
-  $(document).ready(function() {
-    // Initialize tooltips
-    $('[data-toggle="tooltip"]').tooltip();
-    
-    $('#exportBtn').on('click', function(e) {
-      e.preventDefault();
-      printReport2();
-    });
-
-    $('#analyseBtn').on('click', function(e) {
-      e.preventDefault();
-      analyseData();
-    });
+$(document).ready(function() {
+  // Initialize tooltips
+  $('[data-toggle="tooltip"]').tooltip();
+  
+  // Bind export button click handler
+  $(document).off('click', '#exportBtn').on('click', '#exportBtn', function(e) {
+    e.preventDefault();
+    printReport2();
   });
 
-  function printReport2() {
-    // Check if using multiple tables or single range
-    const tableCount = parseInt($('#table_count').val());
-    
-    if (tableCount > 0) {
-      // Use multiple date ranges for export
-      const dateRanges = collectDateRanges();
-      
-      var url = "{{ url('pendaftar/student/reportRA/getStudentReportRA?excel=true') }}";
-      var form = document.createElement('form');
-      form.method = 'GET';
-      form.action = url;
-      
-      var dateRangesInput = document.createElement('input');
-      dateRangesInput.type = 'hidden';
-      dateRangesInput.name = 'date_ranges';
-      dateRangesInput.value = JSON.stringify(dateRanges);
-      form.appendChild(dateRangesInput);
-      
-      var multipleTablesInput = document.createElement('input');
-      multipleTablesInput.type = 'hidden';
-      multipleTablesInput.name = 'multiple_tables';
-      multipleTablesInput.value = 'true';
-      form.appendChild(multipleTablesInput);
-      
-      document.body.appendChild(form);
-      form.submit();
-      document.body.removeChild(form);
-    } else {
-      // Use original single range method
-      var from = $('#from').val();
-      var to = $('#to').val();
-      var url = "{{ url('pendaftar/student/reportRA/getStudentReportRA?excel=true') }}";
+  // Bind analyse button click handler
+  $(document).off('click', '#analyseBtn').on('click', '#analyseBtn', function(e) {
+    e.preventDefault();
+    analyseData();
+  });
+});
 
-      window.location.href = `${url}&from=${from}&to=${to}`;
-    }
+function printReport2() {
+  // Check if using multiple tables or single range
+  const tableCount = parseInt($('#table_count').val()) || 0;
+  
+  if (tableCount > 0) {
+    // Use multiple date ranges for export
+    const dateRanges = collectDateRanges();
+    
+    var url = "{{ url('pendaftar/student/reportRA/getStudentReportRA?excel=true') }}";
+    var form = document.createElement('form');
+    form.method = 'GET';
+    form.action = url;
+    
+    var dateRangesInput = document.createElement('input');
+    dateRangesInput.type = 'hidden';
+    dateRangesInput.name = 'date_ranges';
+    dateRangesInput.value = JSON.stringify(dateRanges);
+    form.appendChild(dateRangesInput);
+    
+    var multipleTablesInput = document.createElement('input');
+    multipleTablesInput.type = 'hidden';
+    multipleTablesInput.name = 'multiple_tables';
+    multipleTablesInput.value = 'true';
+    form.appendChild(multipleTablesInput);
+    
+    document.body.appendChild(form);
+    form.submit();
+    document.body.removeChild(form);
+  } else {
+    // Use original single range method
+    var from = $('#from').val();
+    var to = $('#to').val();
+    var url = "{{ url('pendaftar/student/reportRA/getStudentReportRA?excel=true') }}";
+
+    window.location.href = `${url}&from=${from}&to=${to}`;
   }
+}
 
-  function analyseData() {
-    // Show analysis section and loading
-    $('#analysisSection').show();
-    $('#analysisLoading').show();
-    $('#analysisResult').hide();
-    
-    // Collect table data
-    const tableData = collectTableData();
-    
-    // Send data to backend for AI analysis
-    $.ajax({
-      url: "{{ url('pendaftar/student/reportRA/analyseData') }}",
-      method: 'POST',
-      data: {
-        _token: $('meta[name="csrf-token"]').attr('content'),
-        tableData: JSON.stringify(tableData)
-      },
-      success: function(response) {
-        $('#analysisLoading').hide();
-        $('#analysisResult').show();
-        
-        if (response.success) {
-          $('#analysisTextarea').val(response.analysis);
-        } else {
-          $('#analysisTextarea').val('Error: ' + response.message);
-        }
-      },
-      error: function(xhr, status, error) {
-        $('#analysisLoading').hide();
-        $('#analysisResult').show();
-        $('#analysisTextarea').val('Error occurred while analyzing data: ' + error);
+function analyseData() {
+  // Show analysis section and loading
+  $('#analysisSection').show();
+  $('#analysisLoading').show();
+  $('#analysisResult').hide();
+  
+  // Collect table data
+  const tableData = collectTableData();
+  
+  // Send data to backend for AI analysis
+  $.ajax({
+    url: "{{ url('pendaftar/student/reportRA/analyseData') }}",
+    method: 'POST',
+    data: {
+      _token: $('meta[name="csrf-token"]').attr('content'),
+      tableData: JSON.stringify(tableData)
+    },
+    success: function(response) {
+      $('#analysisLoading').hide();
+      $('#analysisResult').show();
+      
+      if (response.success) {
+        $('#analysisTextarea').val(response.analysis);
+      } else {
+        $('#analysisTextarea').val('Error: ' + response.message);
       }
-    });
+    },
+    error: function(xhr, status, error) {
+      $('#analysisLoading').hide();
+      $('#analysisResult').show();
+      $('#analysisTextarea').val('Error occurred while analyzing data: ' + error);
+    }
+  });
+}
+
+function collectTableData() {
+  const data = {};
+  
+  @if(isset($data['tableLabels']) && is_array($data['tableLabels']))
+    // Multiple tables
+    data.type = 'multiple';
+    data.tables = {};
+    data.labels = @json($data['tableLabels']);
+    
+    @foreach($data['tableLabels'] as $key => $label)
+      data.tables[{{ $key }}] = {
+        label: "{{ $label }}",
+        totalStudentR: {{ $data['allStudents'][$key] }},
+        totalConvert: {{ $data['totalConvert'][$key] }},
+        balanceStudent: {{ $data['allStudents'][$key] - $data['totalConvert'][$key] }},
+        studentActive: {{ $data['registered'][$key] }},
+        studentRejected: {{ $data['rejected'][$key] }},
+        studentOffered: {{ $data['offered'][$key] }},
+        studentKIV: {{ $data['KIV'][$key] }},
+        studentOthers: {{ $data['others'][$key] }}
+      };
+    @endforeach
+  @else
+    // Single table
+    data.type = 'single';
+    @php
+    $total_all = $data['allStudents'] + $data['totalConvert'] + $data['registered'] + $data['rejected'] + $data['offered'] + $data['KIV'] + $data['others'];
+    @endphp
+    data.table = {
+      label: "Total Student R Analysis",
+      totalStudentR: {{ $data['allStudents'] }},
+      totalConvert: {{ $data['totalConvert'] }},
+      balanceStudent: {{ $data['allStudents'] - $data['totalConvert'] }},
+      studentActive: {{ $data['registered'] }},
+      studentRejected: {{ $data['rejected'] }},
+      studentOffered: {{ $data['offered'] }},
+      studentKIV: {{ $data['KIV'] }},
+      studentOthers: {{ $data['others'] }}
+    };
+  @endif
+  
+  return data;
+}
+
+// Helper function to collect date ranges (should be available from parent page)
+function collectDateRanges() {
+  const ranges = [];
+  const tableCount = parseInt($('#table_count').val()) || 0;
+  
+  for (let i = 1; i <= tableCount; i++) {
+    const fromValue = $(`#from_${i}`).val();
+    const toValue = $(`#to_${i}`).val();
+    
+    if (fromValue && toValue) {
+      ranges.push({
+        table: i,
+        from: fromValue,
+        to: toValue
+      });
+    }
   }
   
-  function collectTableData() {
-    const data = {};
-    
-    @if(isset($data['tableLabels']) && is_array($data['tableLabels']))
-      // Multiple tables
-      data.type = 'multiple';
-      data.tables = {};
-      data.labels = @json($data['tableLabels']);
-      
-      @foreach($data['tableLabels'] as $key => $label)
-        data.tables[{{ $key }}] = {
-          label: "{{ $label }}",
-          totalStudentR: {{ $data['allStudents'][$key] }},
-          totalConvert: {{ $data['totalConvert'][$key] }},
-          balanceStudent: {{ $data['allStudents'][$key] - $data['totalConvert'][$key] }},
-          studentActive: {{ $data['registered'][$key] }},
-          studentRejected: {{ $data['rejected'][$key] }},
-          studentOffered: {{ $data['offered'][$key] }},
-          studentKIV: {{ $data['KIV'][$key] }},
-          studentOthers: {{ $data['others'][$key] }}
-        };
-      @endforeach
-    @else
-      // Single table
-      data.type = 'single';
-      @php
-      $total_all = $data['allStudents'] + $data['totalConvert'] + $data['registered'] + $data['rejected'] + $data['offered'] + $data['KIV'] + $data['others'];
-      @endphp
-      data.table = {
-        label: "Total Student R Analysis",
-        totalStudentR: {{ $data['allStudents'] }},
-        totalConvert: {{ $data['totalConvert'] }},
-        balanceStudent: {{ $data['allStudents'] - $data['totalConvert'] }},
-        studentActive: {{ $data['registered'] }},
-        studentRejected: {{ $data['rejected'] }},
-        studentOffered: {{ $data['offered'] }},
-        studentKIV: {{ $data['KIV'] }},
-        studentOthers: {{ $data['others'] }}
-      };
-    @endif
-    
-    return data;
-  }
-
-  // Helper function to collect date ranges (should be available from parent page)
-  function collectDateRanges() {
-    const ranges = [];
-    const tableCount = parseInt($('#table_count').val());
-    
-    for (let i = 1; i <= tableCount; i++) {
-      const fromValue = $(`#from_${i}`).val();
-      const toValue = $(`#to_${i}`).val();
-      
-      if (fromValue && toValue) {
-        ranges.push({
-          table: i,
-          from: fromValue,
-          to: toValue
-        });
-      }
-    }
-    
-    return ranges;
-  }
+  return ranges;
+}
 </script>
