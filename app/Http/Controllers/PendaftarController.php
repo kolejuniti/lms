@@ -4489,6 +4489,17 @@ class PendaftarController extends Controller
 
     private function exportToExcelRA($data, $isMultiple = false, $from = null, $to = null)
     {
+        Log::info('exportToExcelRA called', [
+            'isMultiple' => $isMultiple,
+            'from' => $from,
+            'to' => $to,
+            'data_keys' => array_keys($data),
+            'data_structure' => [
+                'allStudents_count' => is_array($data['allStudents'] ?? null) ? count($data['allStudents']) : 'single_value',
+                'tableLabels_count' => is_array($data['tableLabels'] ?? null) ? count($data['tableLabels']) : 'not_set'
+            ]
+        ]);
+
         $filename = 'student_r_analysis_' . date('Y-m-d_H-i-s') . '.csv';
         
         $headers = [
@@ -4496,7 +4507,11 @@ class PendaftarController extends Controller
             'Content-Disposition' => 'attachment; filename="' . $filename . '"',
         ];
 
+        Log::info('Excel export headers set', ['headers' => $headers]);
+
         $callback = function() use ($data, $isMultiple, $from, $to) {
+            Log::info('Excel export callback started');
+            
             $file = fopen('php://output', 'w');
             
             // Add BOM for UTF-8

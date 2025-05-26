@@ -181,10 +181,18 @@ function printReport2() {
     // Use multiple date ranges for export
     const dateRanges = collectDateRanges();
     
-    var url = "{{ url('pendaftar/student/reportRA/getStudentReportRA?excel=true') }}";
+    // Create base URL without query parameters
+    var url = "{{ url('pendaftar/student/reportRA/getStudentReportRA') }}";
     var form = document.createElement('form');
     form.method = 'GET';
     form.action = url;
+    
+    // Add excel parameter
+    var excelInput = document.createElement('input');
+    excelInput.type = 'hidden';
+    excelInput.name = 'excel';
+    excelInput.value = 'true';
+    form.appendChild(excelInput);
     
     var dateRangesInput = document.createElement('input');
     dateRangesInput.type = 'hidden';
@@ -205,9 +213,9 @@ function printReport2() {
     // Use original single range method
     var from = $('#from').val();
     var to = $('#to').val();
-    var url = "{{ url('pendaftar/student/reportRA/getStudentReportRA?excel=true') }}";
+    var url = "{{ url('pendaftar/student/reportRA/getStudentReportRA') }}";
 
-    window.location.href = `${url}&from=${from}&to=${to}`;
+    window.location.href = `${url}?excel=true&from=${from}&to=${to}`;
   }
 }
 
