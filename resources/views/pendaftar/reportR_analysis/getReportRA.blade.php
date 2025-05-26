@@ -66,6 +66,8 @@
   </div>
   @endforeach
 
+  Includes: GAGAL BERHENTI, TARIK DIRI, MENINGGAL DUNIA, TANGGUH, DIBERHENTIKAN, TAMAT PENGAJIAN, TUKAR PROGRAM, GANTUNG, TUKAR KE KUKB, PINDAH KOLEJ, TIDAK TAMAT PENGAJIAN, TAMAT PENGAJIAN (MENINGGAL DUNIA)
+
   @if(count($data['tableLabels']) > 1)
   <!-- Summary Table for Multiple Tables -->
   <div class="card mb-3" id="summary_table">
