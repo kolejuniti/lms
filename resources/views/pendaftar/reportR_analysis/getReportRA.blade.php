@@ -264,7 +264,7 @@
           label: "{{ $label }}",
           totalStudentR: {{ $data['allStudents'][$key] }},
           totalConvert: {{ $data['totalConvert'][$key] }},
-          balanceStudent: {{ $data['total'][$key]->total_ - $data['totalConvert'][$key] }},
+          balanceStudent: {{ $data['allStudents'][$key] - $data['totalConvert'][$key] }},
           studentActive: {{ $data['registered'][$key] }},
           studentRejected: {{ $data['rejected'][$key] }},
           studentOffered: {{ $data['offered'][$key] }},
