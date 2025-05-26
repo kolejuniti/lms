@@ -142,7 +142,7 @@
             @endphp
             <td>{{ $data['allStudents'] }}</td>
             <td>{{ $data['totalConvert'] }}</td>
-            <td>{{ $total_all - $data['totalConvert'] }}</td>
+            <td>{{ $data['allStudents'] - $data['totalConvert'] }}</td>
             <td>{{ $data['registered'] }}</td>
             <td>{{ $data['rejected'] }}</td>
             <td>{{ $data['offered'] }}</td>

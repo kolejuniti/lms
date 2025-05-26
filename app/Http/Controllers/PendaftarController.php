@@ -4511,6 +4511,7 @@ class PendaftarController extends Controller
                 foreach ($data['tableLabels'] as $key => $label) {
                     fputcsv($file, [$label]);
                     fputcsv($file, [
+                        'Total Student R',
                         'Total by Convert',
                         'Balance Student', 
                         'Student Active',
@@ -4521,8 +4522,9 @@ class PendaftarController extends Controller
                     ]);
                     
                     fputcsv($file, [
+                        $data['allStudents'][$key],
                         $data['totalConvert'][$key],
-                        $data['total'][$key]->total_ - $data['totalConvert'][$key],
+                        $data['allStudents'][$key] - $data['totalConvert'][$key],
                         $data['registered'][$key],
                         $data['rejected'][$key],
                         $data['offered'][$key],
@@ -4535,6 +4537,7 @@ class PendaftarController extends Controller
                 // Summary section
                 fputcsv($file, ['SUMMARY OF ALL TABLES']);
                 fputcsv($file, [
+                    'Total Student R',
                     'Total by Convert',
                     'Balance Student', 
                     'Student Active',
@@ -4544,6 +4547,7 @@ class PendaftarController extends Controller
                     'Student Others'
                 ]);
                 
+                $total_student_r = array_sum($data['allStudents']);
                 $total_convert = array_sum($data['totalConvert']);
                 $total_registered = array_sum($data['registered']);
                 $total_rejected = array_sum($data['rejected']);
@@ -4553,8 +4557,9 @@ class PendaftarController extends Controller
                 $grand_total = $total_convert + $total_registered + $total_rejected + $total_offered + $total_kiv + $total_others;
                 
                 fputcsv($file, [
+                    $total_student_r,
                     $total_convert,
-                    $grand_total - $total_convert,
+                    $total_student_r - $total_convert,
                     $total_registered,
                     $total_rejected,
                     $total_offered,
@@ -4570,6 +4575,7 @@ class PendaftarController extends Controller
                 fputcsv($file, []);
                 
                 fputcsv($file, [
+                    'Total Student R',
                     'Total by Convert',
                     'Balance Student', 
                     'Student Active',
@@ -4582,8 +4588,9 @@ class PendaftarController extends Controller
                 $total_all = $data['totalConvert'] + $data['registered'] + $data['rejected'] + $data['offered'] + $data['KIV'] + $data['others'];
                 
                 fputcsv($file, [
+                    $data['allStudents'],
                     $data['totalConvert'],
-                    $total_all - $data['totalConvert'],
+                    $data['allStudents'] - $data['totalConvert'],
                     $data['registered'],
                     $data['rejected'],
                     $data['offered'],

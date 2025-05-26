@@ -128,6 +128,7 @@
         <table class="table">
             <thead>
                 <tr>
+                    <th>Total Student R</th>
                     <th>Total by Convert</th>
                     <th>Balance Student</th>
                     <th>Student Active</th>
@@ -142,8 +143,9 @@
                     @php
                     $total_all = $data['totalConvert'] + $data['registered'] + $data['rejected'] + $data['offered'] + $data['KIV'] + $data['others'];
                     @endphp
+                    <td>{{ $data['allStudents'] }}</td>
                     <td>{{ $data['totalConvert'] }}</td>
-                    <td>{{ $total_all - $data['totalConvert'] }}</td>
+                    <td>{{ $data['allStudents'] - $data['totalConvert'] }}</td>
                     <td>{{ $data['registered'] }}</td>
                     <td>{{ $data['rejected'] }}</td>
                     <td>{{ $data['offered'] }}</td>
