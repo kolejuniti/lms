@@ -53,7 +53,7 @@
           <tr>
             <td>{{ $data['allStudents'][$key] }}</td>
             <td>{{ $data['totalConvert'][$key] }}</td>
-            <td>{{ $data['total'][$key]->total_ - $data['totalConvert'][$key] }}</td>
+            <td>{{ $data['allStudents'][$key] - $data['totalConvert'][$key] }}</td>
             <td>{{ $data['registered'][$key] }}</td>
             <td>{{ $data['rejected'][$key] }}</td>
             <td>{{ $data['offered'][$key] }}</td>
