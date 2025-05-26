@@ -181,7 +181,7 @@
       
       var url = "{{ url('pendaftar/student/reportRA/getStudentReportRA?excel=true') }}";
       var form = document.createElement('form');
-      form.method = 'POST';
+      form.method = 'GET';
       form.action = url;
       
       var csrfInput = document.createElement('input');
@@ -282,7 +282,7 @@
         label: "Total Student R Analysis",
         totalStudentR: {{ $data['allStudents'] }},
         totalConvert: {{ $data['totalConvert'] }},
-        balanceStudent: {{ $total_all - $data['totalConvert'] }},
+        balanceStudent: {{ $data['allStudents'] - $data['totalConvert'] }},
         studentActive: {{ $data['registered'] }},
         studentRejected: {{ $data['rejected'] }},
         studentOffered: {{ $data['offered'] }},
