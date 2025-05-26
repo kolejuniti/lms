@@ -181,9 +181,11 @@
                 @php
                     $offerDate = Carbon\Carbon::parse($rgs->date_offer);
                     $today = Carbon\Carbon::now();
-                    $days = $today->greaterThan($offerDate) ? $offerDate->diffInDays($today) : 0;
+                    $days = $today->greaterThan($offerDate) ? $offerDate->diffInDays($today) : 'Within Offer Date';
                 @endphp
-                @if($days <= 10)
+                @if($days === 'Within Offer Date')
+                    style="background-color: #007bff; color: #fff;"
+                @elseif($days <= 10)
                     style="background-color: #28a745; color: #fff;"
                 @elseif($days > 10 && $days <= 30)
                     style="background-color: #ffc107; color: #000;"
