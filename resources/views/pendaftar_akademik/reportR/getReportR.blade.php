@@ -196,7 +196,7 @@
                 @php
                     $offerDate = Carbon\Carbon::parse($rgs->date_offer);
                     $today = Carbon\Carbon::now();
-                    $daysPassed = $today->greaterThan($offerDate) ? $offerDate->diffInDays($today) : 0;
+                    $daysPassed = $today->greaterThan($offerDate) ? $offerDate->diffInDays($today) : 'Within Offer Date';
                 @endphp
                 {{ $daysPassed }}
             @else
