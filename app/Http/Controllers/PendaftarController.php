@@ -4794,7 +4794,7 @@ class PendaftarController extends Controller
                     ['p1.process_type_id', 1], 
                     ['p1.semester_id', 1]
                 ])
-                ->whereBetween('p1.date', ['2025-05-12', '2025-05-18'])
+                ->whereBetween('p1.date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])
                 ->orderBy('p1.date')
                 ->limit(50000) // Limit to prevent memory issues
                 ->get();
