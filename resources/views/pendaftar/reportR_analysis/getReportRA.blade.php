@@ -155,6 +155,123 @@
   </div>
 @endif
 
+@if(isset($data['monthlyComparison']) && !empty($data['monthlyComparison']) && !empty($data['monthlyComparison']['monthly_data']))
+<!-- Monthly Comparison Table -->
+<div class="card mb-3" id="monthly_comparison_table">
+  <div class="card-header">
+    <b>Monthly Comparison Analysis</b>
+    <div class="float-right">
+      <small class="text-muted">Showing {{ count($data['monthlyComparison']['years']) }} years</small>
+    </div>
+  </div>
+  <div class="small text-muted px-3 py-2">
+      Note: Data shown follows the calendar date (Sunday to Saturday) for weekly breakdown. Only months with data are displayed.
+  </div>
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-striped table-bordered table-sm">
+        <thead class="thead-light">
+          <tr>
+            <th rowspan="2" style="vertical-align: middle; width: 80px; position: sticky; left: 0; background: #f8f9fa;">Month</th>
+            <th rowspan="2" style="vertical-align: middle; width: 60px; position: sticky; left: 80px; background: #f8f9fa;">Week</th>
+            @foreach($data['monthlyComparison']['years'] as $year)
+              <th colspan="3" class="text-center bg-light">Year {{ $year }}</th>
+            @endforeach
+          </tr>
+          <tr>
+            @foreach($data['monthlyComparison']['years'] as $year)
+              <th style="width: 100px;">Total By Weeks</th>
+              <th style="width: 100px;">Total By Converts</th>
+              <th style="width: 100px;">Balance Student</th>
+            @endforeach
+          </tr>
+        </thead>
+        <tbody>
+          @php
+            $monthsWithData = [];
+            
+            // Collect all months that have data across all years
+            foreach($data['monthlyComparison']['years'] as $year) {
+              if (isset($data['monthlyComparison']['monthly_data'][$year])) {
+                foreach($data['monthlyComparison']['monthly_data'][$year] as $monthNum => $monthData) {
+                  if (!empty($monthData['weeks'])) {
+                    if (!in_array($monthNum, $monthsWithData)) {
+                      $monthsWithData[] = $monthNum;
+                    }
+                  }
+                }
+              }
+            }
+            
+            sort($monthsWithData);
+            
+            $monthNames = [
+              1 => 'January', 2 => 'February', 3 => 'March', 4 => 'April', 
+              5 => 'May', 6 => 'June', 7 => 'July', 8 => 'August', 
+              9 => 'September', 10 => 'October', 11 => 'November', 12 => 'December'
+            ];
+          @endphp
+          
+          @if(empty($monthsWithData))
+            <tr>
+              <td colspan="{{ 2 + (count($data['monthlyComparison']['years']) * 3) }}" class="text-center text-muted py-4">
+                No data available for the selected period
+              </td>
+            </tr>
+          @else
+            @foreach($monthsWithData as $monthNumber)
+              @php
+                $monthName = $monthNames[$monthNumber];
+                $maxWeeks = 0;
+                
+                // Find the maximum number of weeks across all years for this month
+                foreach($data['monthlyComparison']['years'] as $year) {
+                  if (isset($data['monthlyComparison']['monthly_data'][$year][$monthNumber]['weeks'])) {
+                    $maxWeeks = max($maxWeeks, count($data['monthlyComparison']['monthly_data'][$year][$monthNumber]['weeks']));
+                  }
+                }
+              @endphp
+              
+              @if($maxWeeks > 0)
+                @for($weekNum = 1; $weekNum <= $maxWeeks; $weekNum++)
+                  <tr>
+                    @if($weekNum == 1)
+                      <td rowspan="{{ $maxWeeks }}" style="vertical-align: middle; font-weight: bold; position: sticky; left: 0; background: #fff;">
+                        {{ $monthName }}
+                      </td>
+                    @endif
+                    <td class="text-center" style="position: sticky; left: 80px; background: #fff;">{{ $weekNum }}</td>
+                    
+                    @foreach($data['monthlyComparison']['years'] as $year)
+                      @php
+                        $weekData = null;
+                        if (isset($data['monthlyComparison']['monthly_data'][$year][$monthNumber]['weeks'][$weekNum - 1])) {
+                          $weekData = $data['monthlyComparison']['monthly_data'][$year][$monthNumber]['weeks'][$weekNum - 1];
+                        }
+                      @endphp
+                      
+                      @if($weekData)
+                        <td class="text-center">{{ number_format($weekData['total_by_weeks']) }}</td>
+                        <td class="text-center">{{ number_format($weekData['total_by_converts']) }}</td>
+                        <td class="text-center">{{ number_format($weekData['balance_student']) }}</td>
+                      @else
+                        <td class="text-center text-muted">-</td>
+                        <td class="text-center text-muted">-</td>
+                        <td class="text-center text-muted">-</td>
+                      @endif
+                    @endforeach
+                  </tr>
+                @endfor
+              @endif
+            @endforeach
+          @endif
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+@endif
+
 <script>
 $(document).ready(function() {
   // Initialize tooltips

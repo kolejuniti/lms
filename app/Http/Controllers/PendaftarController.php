@@ -4287,7 +4287,17 @@ class PendaftarController extends Controller
     {
         // Check if this is a multiple tables request
         if ($request->multiple_tables && $request->date_ranges) {
-            return $this->handleMultipleDateRanges($request);
+            $data = $this->handleMultipleDateRanges($request);
+            
+            // Check if it's already a response (like Excel export or print)
+            if ($data instanceof \Illuminate\Http\Response || $data instanceof \Illuminate\Http\RedirectResponse) {
+                return $data;
+            }
+            
+            // Add monthly comparison table data
+            $data['monthlyComparison'] = $this->generateMonthlyComparisonTable($request);
+            
+            return view('pendaftar.reportR_analysis.getReportRA', compact('data'));
         }
 
         // Original single date range logic
@@ -4360,7 +4370,7 @@ class PendaftarController extends Controller
             return view('pendaftar.reportR_analysis.getReportRA_print', compact('data'));
         }
 
-        return view('pendaftar.reportR_analysis.getReportRA', compact('data'));
+        return $data;
     }
 
     private function processSingleDateRange($from, $to)
@@ -4618,6 +4628,274 @@ class PendaftarController extends Controller
         };
 
         return response()->stream($callback, 200, $headers);
+    }
+
+    private function generateMonthlyComparisonTable(Request $request)
+    {
+        $dateRanges = json_decode($request->date_ranges, true);
+        
+        if (!$dateRanges || !is_array($dateRanges)) {
+            return [];
+        }
+
+        // Create cache key based on date ranges
+        $cacheKey = 'monthly_comparison_' . md5(serialize($dateRanges));
+        
+        // Try to get from cache first (valid for 30 minutes)
+        if (cache()->has($cacheKey)) {
+            return cache()->get($cacheKey);
+        }
+
+        // Get the earliest start date to determine year range
+        $startDate = null;
+        foreach ($dateRanges as $range) {
+            $rangeStart = Carbon::parse($range['from']);
+            if ($startDate === null || $rangeStart->lt($startDate)) {
+                $startDate = $rangeStart;
+            }
+        }
+        
+        if (!$startDate) {
+            return [];
+        }
+
+        // Limit to only 2 years to improve performance
+        $years = [];
+        $currentYear = $startDate->year;
+        for ($i = 0; $i < 2; $i++) { // Reduced from 3 to 2 years
+            $years[] = $currentYear + $i;
+        }
+
+        // Quick check if there's any data in the date range
+        $hasData = DB::table('tblpayment')
+            ->whereBetween('add_date', [
+                Carbon::createFromDate($years[0], 1, 1)->format('Y-m-d'),
+                Carbon::createFromDate(end($years), 12, 31)->format('Y-m-d')
+            ])
+            ->where([
+                ['process_status_id', 2],
+                ['process_type_id', 1], 
+                ['semester_id', 1]
+            ])
+            ->exists();
+            
+        if (!$hasData) {
+            $result = [
+                'years' => $years,
+                'monthly_data' => []
+            ];
+            cache()->put($cacheKey, $result, 1800); // Cache for 30 minutes
+            return $result;
+        }
+
+        // Pre-fetch all student data for all years at once to minimize database calls
+        $allYearData = $this->fetchAllYearDataOptimized($years);
+        
+        $monthlyData = [];
+        
+        // Generate monthly data for each year using pre-fetched data
+        foreach ($years as $year) {
+            $monthlyData[$year] = [];
+            
+            // Only process months that have data to save time
+            if (!isset($allYearData[$year])) {
+                continue;
+            }
+            
+            foreach ($allYearData[$year] as $month => $monthData) {
+                if (empty($monthData)) {
+                    continue;
+                }
+                
+                $monthStart = Carbon::createFromDate($year, $month, 1)->startOfMonth();
+                $monthEnd = Carbon::createFromDate($year, $month, 1)->endOfMonth();
+                
+                // Generate weekly breakdown for the month using pre-fetched data
+                $weeklyData = $this->generateOptimizedWeeklyDataForMonth($monthStart, $monthEnd, $allYearData);
+                
+                $monthlyData[$year][$month] = [
+                    'month_name' => $monthStart->format('F'),
+                    'weeks' => $weeklyData['weeks'],
+                    'monthly_totals' => $weeklyData['monthly_totals']
+                ];
+            }
+        }
+
+        $result = [
+            'years' => $years,
+            'monthly_data' => $monthlyData
+        ];
+        
+        // Cache the result for 30 minutes
+        cache()->put($cacheKey, $result, 1800);
+
+        return $result;
+    }
+
+    private function fetchAllYearDataOptimized($years)
+    {
+        try {
+            // Create date ranges for all years
+            $startDate = Carbon::createFromDate($years[0], 1, 1)->startOfYear();
+            $endDate = Carbon::createFromDate(end($years), 12, 31)->endOfYear();
+            
+            // Add limit to prevent massive datasets from causing timeouts
+            $allStudents = DB::table('tblpayment as p1')
+                ->select([
+                    'p1.student_ic',
+                    'p1.add_date',
+                    'students.status',
+                    DB::raw('YEAR(p1.add_date) as payment_year'),
+                    DB::raw('MONTH(p1.add_date) as payment_month'),
+                    DB::raw('DATE(p1.add_date) as payment_date')
+                ])
+                ->join('students', 'p1.student_ic', '=', 'students.ic')
+                ->whereExists(function ($query) {
+                    $query->select(DB::raw(1))
+                          ->from('tblpayment as p2')
+                          ->whereRaw('p2.student_ic = p1.student_ic')
+                          ->whereRaw('p2.date = (SELECT MIN(date) FROM tblpayment WHERE student_ic = p1.student_ic AND process_status_id = 2 AND process_type_id = 1 AND semester_id = 1)')
+                          ->where([
+                              ['p2.process_status_id', 2],
+                              ['p2.process_type_id', 1], 
+                              ['p2.semester_id', 1]
+                          ]);
+                })
+                ->where([
+                    ['p1.process_status_id', 2],
+                    ['p1.process_type_id', 1], 
+                    ['p1.semester_id', 1]
+                ])
+                ->whereBetween('p1.add_date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])
+                ->orderBy('p1.add_date')
+                ->limit(50000) // Limit to prevent memory issues
+                ->get();
+
+            // Group the data efficiently
+            $groupedData = [];
+            foreach ($allStudents as $student) {
+                $year = $student->payment_year;
+                $month = $student->payment_month;
+                $date = $student->payment_date;
+                
+                $groupedData[$year][$month][$date][] = $student;
+            }
+
+            return $groupedData;
+            
+        } catch (\Exception $e) {
+            Log::error('Error fetching year data: ' . $e->getMessage());
+            return [];
+        }
+    }
+
+    private function generateOptimizedWeeklyDataForMonth($monthStart, $monthEnd, $allYearData)
+    {
+        $weeks = [];
+        $monthlyTotals = [
+            'total_by_weeks' => 0,
+            'total_by_converts' => 0,
+            'balance_student' => 0
+        ];
+
+        $year = $monthStart->year;
+        $month = $monthStart->month;
+        
+        // Get data for this specific month
+        $monthData = $allYearData[$year][$month] ?? [];
+        
+        if (empty($monthData)) {
+            // Return empty weeks if no data
+            return [
+                'weeks' => [],
+                'monthly_totals' => $monthlyTotals
+            ];
+        }
+
+        // Initialize tracking variables
+        $alreadyCountedStudents = [];
+        $currentWeekNumber = 1;
+
+        // Generate date ranges for each week in the month
+        $start = $monthStart->copy();
+        $end = $monthEnd->copy();
+
+        while ($start <= $end) {
+            $weekStart = $start->copy();
+            $weekEnd = $start->copy()->endOfWeek(); // End of current week (Saturday)
+            
+            // Don't go beyond month end
+            if ($weekEnd->gt($end)) {
+                $weekEnd = $end->copy();
+            }
+
+            // Get weekly student data from pre-fetched data
+            $weekData = $this->getOptimizedWeeklyStudentData($weekStart, $weekEnd, $monthData, $alreadyCountedStudents);
+            
+            $weeks[] = [
+                'week' => $currentWeekNumber,
+                'total_by_weeks' => $weekData['total_week'],
+                'total_by_converts' => $weekData['total_convert'], 
+                'balance_student' => $weekData['total_week'] - $weekData['total_convert']
+            ];
+
+            // Update monthly totals
+            $monthlyTotals['total_by_weeks'] += $weekData['total_week'];
+            $monthlyTotals['total_by_converts'] += $weekData['total_convert'];
+            
+            // Update already counted students
+            $alreadyCountedStudents = array_merge($alreadyCountedStudents, $weekData['students']);
+
+            // Move to next week
+            $start = $weekEnd->copy()->addDay();
+            $currentWeekNumber++;
+        }
+
+        $monthlyTotals['balance_student'] = $monthlyTotals['total_by_weeks'] - $monthlyTotals['total_by_converts'];
+
+        return [
+            'weeks' => $weeks,
+            'monthly_totals' => $monthlyTotals
+        ];
+    }
+
+    private function getOptimizedWeeklyStudentData($startDate, $endDate, $monthData, $alreadyCountedStudents)
+    {
+        $currentWeekStudents = [];
+        $currentConvertStudents = [];
+        
+        // Iterate through each day in the week range
+        $current = $startDate->copy();
+        while ($current <= $endDate) {
+            $dateStr = $current->format('Y-m-d');
+            
+            if (isset($monthData[$dateStr])) {
+                foreach ($monthData[$dateStr] as $student) {
+                    // Skip if already counted
+                    if (in_array($student->student_ic, $alreadyCountedStudents)) {
+                        continue;
+                    }
+                    
+                    // Add to current week students
+                    if (!in_array($student->student_ic, $currentWeekStudents)) {
+                        $currentWeekStudents[] = $student->student_ic;
+                    }
+                    
+                    // Check if converted (status != 1)
+                    if ($student->status != 1 && !in_array($student->student_ic, $currentConvertStudents)) {
+                        $currentConvertStudents[] = $student->student_ic;
+                    }
+                }
+            }
+            
+            $current->addDay();
+        }
+
+        return [
+            'total_week' => count($currentWeekStudents),
+            'total_convert' => count($currentConvertStudents),
+            'students' => $currentWeekStudents
+        ];
     }
 
     public function incomeReport()
