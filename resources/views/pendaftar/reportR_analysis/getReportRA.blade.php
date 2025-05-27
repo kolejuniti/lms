@@ -180,7 +180,7 @@
           </tr>
           <tr>
             @foreach($data['monthlyComparison']['years'] as $year)
-              <th style="width: 100px; border: 1px solid black;">Total By Weeks</th>
+              <th style="width: 100px; border: 1px solid black;">Total By Weeksss</th>
               <th style="width: 100px; border: 1px solid black;">Total By Converts</th>
               <th style="width: 100px; border: 1px solid black;">Balance Student</th>
             @endforeach
