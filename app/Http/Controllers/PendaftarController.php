@@ -4286,7 +4286,8 @@ class PendaftarController extends Controller
             'p1.student_ic',
             'students.status',
             'students.date_offer',
-            'students.semester'
+            'students.semester',
+            'students.name'
         ])
         ->join('students', 'p1.student_ic', '=', 'students.ic')
         ->join(DB::raw('(
