@@ -172,8 +172,8 @@
       <table class="table table-striped table-bordered table-sm">
         <thead class="thead-light">
           <tr>
-            <th rowspan="2" style="vertical-align: middle; width: 80px; position: sticky; left: 0; background: #f8f9fa;">Month</th>
-            <th rowspan="2" style="vertical-align: middle; width: 60px; position: sticky; left: 80px; background: #f8f9fa;">Week</th>
+            <th rowspan="2" style="vertical-align: middle; width: 80px; position: sticky; left: 0; background: #f8f9fa; z-index: 10;">Month</th>
+            <th rowspan="2" style="vertical-align: middle; width: 180px; position: sticky; left: 80px; background: #f8f9fa; z-index: 10;">Week (Date Range)</th>
             @foreach($data['monthlyComparison']['years'] as $year)
               <th colspan="3" class="text-center bg-light">Year {{ $year }}</th>
             @endforeach
@@ -236,11 +236,30 @@
                 @for($weekNum = 1; $weekNum <= $maxWeeks; $weekNum++)
                   <tr>
                     @if($weekNum == 1)
-                      <td rowspan="{{ $maxWeeks }}" style="vertical-align: middle; font-weight: bold; position: sticky; left: 0; background: #fff;">
+                      <td rowspan="{{ $maxWeeks }}" style="vertical-align: middle; font-weight: bold; position: sticky; left: 0; background: #fff; z-index: 5;">
                         {{ $monthName }}
                       </td>
                     @endif
-                    <td class="text-center" style="position: sticky; left: 80px; background: #fff;">{{ $weekNum }}</td>
+                    
+                    @php
+                      // Get the date range for this week from any year that has data
+                      $weekDateRange = null;
+                      foreach($data['monthlyComparison']['years'] as $year) {
+                        if (isset($data['monthlyComparison']['monthly_data'][$year][$monthNumber]['weeks'][$weekNum - 1]['date_range'])) {
+                          $weekDateRange = $data['monthlyComparison']['monthly_data'][$year][$monthNumber]['weeks'][$weekNum - 1]['date_range'];
+                          break;
+                        }
+                      }
+                    @endphp
+                    
+                    <td class="text-center" style="position: sticky; left: 80px; background: #fff; font-size: 12px; z-index: 5; padding: 8px 4px;">
+                      <div style="line-height: 1.2;">
+                        <strong>Week {{ $weekNum }}</strong>
+                        @if($weekDateRange)
+                          <br><small class="text-muted" style="font-size: 10px;">({{ $weekDateRange }})</small>
+                        @endif
+                      </div>
+                    </td>
                     
                     @foreach($data['monthlyComparison']['years'] as $year)
                       @php

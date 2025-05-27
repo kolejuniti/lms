@@ -4834,6 +4834,9 @@ class PendaftarController extends Controller
             
             $weeks[] = [
                 'week' => $currentWeekNumber,
+                'week_start' => $weekStart->format('j M Y'),
+                'week_end' => $weekEnd->format('j M Y'),
+                'date_range' => $weekStart->format('j M Y') . ' - ' . $weekEnd->format('j M Y'),
                 'total_by_weeks' => $weekData['total_week'],
                 'total_by_converts' => $weekData['total_convert'], 
                 'balance_student' => $weekData['total_week'] - $weekData['total_convert']
