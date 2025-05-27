@@ -4320,7 +4320,7 @@ class PendaftarController extends Controller
             $data = $this->handleMultipleDateRanges($request);
             
             // Check if it's already a response (like Excel export or print)
-            if ($data instanceof \Illuminate\Http\Response || $data instanceof \Illuminate\Http\RedirectResponse) {
+            if ($data instanceof \Illuminate\Http\Response || $data instanceof \Illuminate\Http\RedirectResponse || $data instanceof \Symfony\Component\HttpFoundation\StreamedResponse) {
                 return $data;
             }
             
@@ -4393,6 +4393,10 @@ class PendaftarController extends Controller
 
         // Handle Excel export for multiple ranges
         if ($request->has('excel')) {
+            // Generate monthly comparison data for Excel export
+            $monthlyComparison = $this->generateMonthlyComparisonTable($request);
+            $data['monthlyComparison'] = $monthlyComparison;
+            
             return $this->exportToExcelRA($data, true);
         }
 
@@ -4621,6 +4625,121 @@ class PendaftarController extends Controller
                     $total_kiv,
                     $total_others
                 ]);
+                
+                // Add Monthly Comparison Analysis to Excel
+                if (isset($data['monthlyComparison']) && !empty($data['monthlyComparison']['monthly_data'])) {
+                    fputcsv($file, []);
+                    fputcsv($file, ['MONTHLY COMPARISON ANALYSIS']);
+                    fputcsv($file, ['Showing ' . count($data['monthlyComparison']['years']) . ' years']);
+                    fputcsv($file, []);
+                    
+                    // Create header row
+                    $headerRow = ['Month', 'Week (Date Range)'];
+                    foreach ($data['monthlyComparison']['years'] as $year) {
+                        $headerRow[] = "Year $year - Total By Weeks";
+                        $headerRow[] = "Year $year - Total By Converts";
+                        $headerRow[] = "Year $year - Balance Student";
+                    }
+                    fputcsv($file, $headerRow);
+                    
+                    // Collect all months that have data
+                    $monthsWithData = [];
+                    foreach ($data['monthlyComparison']['years'] as $year) {
+                        if (isset($data['monthlyComparison']['monthly_data'][$year])) {
+                            foreach ($data['monthlyComparison']['monthly_data'][$year] as $monthNum => $monthData) {
+                                if (!empty($monthData['weeks']) && !in_array($monthNum, $monthsWithData)) {
+                                    $monthsWithData[] = $monthNum;
+                                }
+                            }
+                        }
+                    }
+                    sort($monthsWithData);
+                    
+                    $monthNames = [
+                        1 => 'January', 2 => 'February', 3 => 'March', 4 => 'April',
+                        5 => 'May', 6 => 'June', 7 => 'July', 8 => 'August',
+                        9 => 'September', 10 => 'October', 11 => 'November', 12 => 'December'
+                    ];
+                    
+                    // Initialize totals for footer
+                    $yearTotals = [];
+                    foreach ($data['monthlyComparison']['years'] as $year) {
+                        $yearTotals[$year] = [
+                            'total_by_weeks' => 0,
+                            'total_by_converts' => 0,
+                            'balance_student' => 0
+                        ];
+                    }
+                    
+                    // Process each month
+                    foreach ($monthsWithData as $monthNumber) {
+                        $monthName = $monthNames[$monthNumber];
+                        $maxWeeks = 0;
+                        
+                        // Find maximum weeks across all years for this month
+                        foreach ($data['monthlyComparison']['years'] as $year) {
+                            if (isset($data['monthlyComparison']['monthly_data'][$year][$monthNumber]['weeks'])) {
+                                $maxWeeks = max($maxWeeks, count($data['monthlyComparison']['monthly_data'][$year][$monthNumber]['weeks']));
+                            }
+                        }
+                        
+                        // Process each week
+                        for ($weekNum = 1; $weekNum <= $maxWeeks; $weekNum++) {
+                            $row = [];
+                            
+                            // Month column (only for first week)
+                            if ($weekNum == 1) {
+                                $row[] = $monthName;
+                            } else {
+                                $row[] = '';
+                            }
+                            
+                            // Week column
+                            $weekDateRange = '';
+                            foreach ($data['monthlyComparison']['years'] as $year) {
+                                if (isset($data['monthlyComparison']['monthly_data'][$year][$monthNumber]['weeks'][$weekNum - 1]['date_range'])) {
+                                    $weekDateRange = $data['monthlyComparison']['monthly_data'][$year][$monthNumber]['weeks'][$weekNum - 1]['date_range'];
+                                    break;
+                                }
+                            }
+                            $row[] = "Week $weekNum ($weekDateRange)";
+                            
+                            // Data columns for each year
+                            foreach ($data['monthlyComparison']['years'] as $year) {
+                                $weekData = null;
+                                if (isset($data['monthlyComparison']['monthly_data'][$year][$monthNumber]['weeks'][$weekNum - 1])) {
+                                    $weekData = $data['monthlyComparison']['monthly_data'][$year][$monthNumber]['weeks'][$weekNum - 1];
+                                }
+                                
+                                if ($weekData) {
+                                    // Add to totals
+                                    $yearTotals[$year]['total_by_weeks'] += $weekData['total_by_weeks'];
+                                    $yearTotals[$year]['total_by_converts'] += $weekData['total_by_converts'];
+                                    $yearTotals[$year]['balance_student'] += $weekData['balance_student'];
+                                    
+                                    $row[] = $weekData['total_by_weeks'];
+                                    $row[] = $weekData['total_by_converts'];
+                                    $row[] = $weekData['balance_student'];
+                                } else {
+                                    $row[] = '-';
+                                    $row[] = '-';
+                                    $row[] = '-';
+                                }
+                            }
+                            
+                            fputcsv($file, $row);
+                        }
+                    }
+                    
+                    // Add totals row
+                    $totalsRow = ['TOTAL', 'All Weeks'];
+                    foreach ($data['monthlyComparison']['years'] as $year) {
+                        $totalsRow[] = $yearTotals[$year]['total_by_weeks'];
+                        $totalsRow[] = $yearTotals[$year]['total_by_converts'];
+                        $totalsRow[] = $yearTotals[$year]['balance_student'];
+                    }
+                    fputcsv($file, $totalsRow);
+                }
                 
             } else {
                 // Single table export
