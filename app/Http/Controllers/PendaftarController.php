@@ -4797,6 +4797,8 @@ class PendaftarController extends Controller
             ->limit(50000) // Limit to prevent memory issues
             ->get();
 
+            Log::info('Range', ['from' => $startDate->format('Y-m-d'), 'to' => $endDate->format('Y-m-d'), 'count' => $allStudents->count()]);
+
             // Group the data efficiently
             $groupedData = [];
             foreach ($allStudents as $student) {
