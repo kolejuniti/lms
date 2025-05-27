@@ -157,6 +157,29 @@
 
 @if(isset($data['monthlyComparison']) && !empty($data['monthlyComparison']) && !empty($data['monthlyComparison']['monthly_data']))
 <!-- Monthly Comparison Table -->
+<style>
+#monthly_comparison_table table {
+  border: 2px solid black !important;
+}
+
+#monthly_comparison_table th {
+  border: 1px solid black !important;
+}
+
+#monthly_comparison_table td {
+  border: 1px solid black !important;
+}
+
+#monthly_comparison_table .table-bordered {
+  border: 2px solid black !important;
+}
+
+#monthly_comparison_table .table-bordered th,
+#monthly_comparison_table .table-bordered td {
+  border: 1px solid black !important;
+}
+</style>
+
 <div class="card mb-3" id="monthly_comparison_table">
   <div class="card-header">
     <b>Monthly Comparison Analysis</b>
@@ -180,7 +203,7 @@
           </tr>
           <tr>
             @foreach($data['monthlyComparison']['years'] as $year)
-              <th style="width: 100px; border: 1px solid black;">Total By Weeksss</th>
+              <th style="width: 100px; border: 1px solid black;">Total By Weeks</th>
               <th style="width: 100px; border: 1px solid black;">Total By Converts</th>
               <th style="width: 100px; border: 1px solid black;">Balance Student</th>
             @endforeach
