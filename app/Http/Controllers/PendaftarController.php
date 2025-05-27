@@ -4285,7 +4285,6 @@ class PendaftarController extends Controller
         ->select([
             'p1.student_ic',
             'p1.date',
-            'students.status',
             DB::raw('YEAR(p1.date) as payment_year'),
             DB::raw('MONTH(p1.date) as payment_month'),
             DB::raw('DATE(p1.date) as payment_date')
@@ -4310,7 +4309,7 @@ class PendaftarController extends Controller
         ->get();
 
         dd($allStudents);
-        
+
         return view('pendaftar.reportR_analysis.reportRA');
     }
 
