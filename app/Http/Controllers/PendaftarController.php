@@ -4676,42 +4676,84 @@ class PendaftarController extends Controller
             return cache()->get($cacheKey);
         }
 
-        // Get the earliest start date to determine year range
-        $startDate = null;
+        // Extract all unique years from the date ranges provided
+        $candidateYears = [];
+        $allFromDates = [];
+        $allToDates = [];
+        
         foreach ($dateRanges as $range) {
-            $rangeStart = Carbon::parse($range['from']);
-            if ($startDate === null || $rangeStart->lt($startDate)) {
-                $startDate = $rangeStart;
+            $fromDate = Carbon::parse($range['from']);
+            $toDate = Carbon::parse($range['to']);
+            
+            $allFromDates[] = $fromDate;
+            $allToDates[] = $toDate;
+            
+            $fromYear = $fromDate->year;
+            $toYear = $toDate->year;
+            
+            // Add both from and to years if they're different
+            if (!in_array($fromYear, $candidateYears)) {
+                $candidateYears[] = $fromYear;
+            }
+            if ($fromYear !== $toYear && !in_array($toYear, $candidateYears)) {
+                $candidateYears[] = $toYear;
             }
         }
         
-        if (!$startDate) {
+        // Sort years in ascending order
+        sort($candidateYears);
+        
+        if (empty($candidateYears)) {
             return [];
         }
 
-        // Limit to only 2 years to improve performance
+        // Filter years to only include those that actually have data in the provided date ranges
         $years = [];
-        $currentYear = $startDate->year;
-        for ($i = 0; $i < 2; $i++) { // Reduced from 3 to 2 years
-            $years[] = $currentYear + $i;
-        }
-
-        // Quick check if there's any data in the date range
-        $hasData = DB::table('tblpayment')
-            ->whereBetween('add_date', [
-                Carbon::createFromDate($years[0], 1, 1)->format('Y-m-d'),
-                Carbon::createFromDate(end($years), 12, 31)->format('Y-m-d')
-            ])
-            ->where([
-                ['process_status_id', 2],
-                ['process_type_id', 1], 
-                ['semester_id', 1]
-            ])
-            ->exists();
+        foreach ($candidateYears as $year) {
+            $yearStart = Carbon::createFromDate($year, 1, 1);
+            $yearEnd = Carbon::createFromDate($year, 12, 31);
             
-        if (!$hasData) {
+            // Check if this year overlaps with any of the provided date ranges
+            $hasOverlap = false;
+            foreach ($dateRanges as $range) {
+                $rangeStart = Carbon::parse($range['from']);
+                $rangeEnd = Carbon::parse($range['to']);
+                
+                // Check if year overlaps with this date range
+                if ($yearStart->lte($rangeEnd) && $yearEnd->gte($rangeStart)) {
+                    $hasOverlap = true;
+                    break;
+                }
+            }
+            
+            if ($hasOverlap) {
+                // Verify there's actually payment data for this year within the date ranges
+                $hasData = DB::table('tblpayment')
+                    ->where([
+                        ['process_status_id', 2],
+                        ['process_type_id', 1], 
+                        ['semester_id', 1]
+                    ])
+                    ->where(function($query) use ($dateRanges) {
+                        foreach ($dateRanges as $range) {
+                            $query->orWhereBetween('date', [
+                                Carbon::parse($range['from'])->format('Y-m-d'),
+                                Carbon::parse($range['to'])->format('Y-m-d')
+                            ]);
+                        }
+                    })
+                    ->whereYear('date', $year)
+                    ->exists();
+                    
+                if ($hasData) {
+                    $years[] = $year;
+                }
+            }
+        }
+        
+        if (empty($years)) {
             $result = [
-                'years' => $years,
+                'years' => [],
                 'monthly_data' => []
             ];
             cache()->put($cacheKey, $result, 1800); // Cache for 30 minutes
