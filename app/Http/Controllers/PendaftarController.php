@@ -4280,6 +4280,36 @@ class PendaftarController extends Controller
 
     public function studentReportRA()
     {
+        // Original query for when data exists in the selected range
+        $students = DB::table('tblpayment as p1')
+        ->select([
+            'p1.student_ic',
+            'students.status',
+            'students.date_offer',
+            'students.semester'
+        ])
+        ->join('students', 'p1.student_ic', '=', 'students.ic')
+        ->join(DB::raw('(
+            SELECT student_ic, MIN(date) as first_payment_date 
+            FROM tblpayment 
+            WHERE process_status_id = 2 
+            AND process_type_id = 1 
+            AND semester_id = 1
+            GROUP BY student_ic
+        ) as p2'), function($join) {
+            $join->on('p1.student_ic', '=', 'p2.student_ic')
+                 ->on('p1.date', '=', 'p2.first_payment_date');
+        })
+        ->where([
+            ['p1.process_status_id', 2],
+            ['p1.process_type_id', 1], 
+            ['p1.semester_id', 1]
+        ])
+        ->whereBetween('p1.add_date', ['2022-07-27', '2022-07-27'])
+        ->get();
+
+        dd($students);
+
         return view('pendaftar.reportR_analysis.reportRA');
     }
 
