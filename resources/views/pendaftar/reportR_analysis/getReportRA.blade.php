@@ -233,6 +233,16 @@
               5 => 'May', 6 => 'June', 7 => 'July', 8 => 'August', 
               9 => 'September', 10 => 'October', 11 => 'November', 12 => 'December'
             ];
+            
+            // Initialize totals array for each year
+            $yearTotals = [];
+            foreach($data['monthlyComparison']['years'] as $year) {
+              $yearTotals[$year] = [
+                'total_by_weeks' => 0,
+                'total_by_converts' => 0,
+                'balance_student' => 0
+              ];
+            }
           @endphp
           
           @if(empty($monthsWithData))
@@ -293,6 +303,12 @@
                       @endphp
                       
                       @if($weekData)
+                        @php
+                          // Add to year totals
+                          $yearTotals[$year]['total_by_weeks'] += $weekData['total_by_weeks'];
+                          $yearTotals[$year]['total_by_converts'] += $weekData['total_by_converts'];
+                          $yearTotals[$year]['balance_student'] += $weekData['balance_student'];
+                        @endphp
                         <td class="text-center" style="border: 1px solid black;">{{ number_format($weekData['total_by_weeks']) }}</td>
                         <td class="text-center" style="border: 1px solid black;">{{ number_format($weekData['total_by_converts']) }}</td>
                         <td class="text-center" style="border: 1px solid black;">{{ number_format($weekData['balance_student']) }}</td>
@@ -308,6 +324,17 @@
             @endforeach
           @endif
         </tbody>
+        <tfoot style="background-color: #f8f9fa; font-weight: bold;">
+          <tr>
+            <td style="border: 1px solid black; text-align: center; font-weight: bold;">TOTAL</td>
+            <td style="border: 1px solid black; text-align: center; font-weight: bold;">All Weeks</td>
+            @foreach($data['monthlyComparison']['years'] as $year)
+              <td class="text-center" style="border: 1px solid black; background-color: #e9ecef;">{{ number_format($yearTotals[$year]['total_by_weeks']) }}</td>
+              <td class="text-center" style="border: 1px solid black; background-color: #e9ecef;">{{ number_format($yearTotals[$year]['total_by_converts']) }}</td>
+              <td class="text-center" style="border: 1px solid black; background-color: #e9ecef;">{{ number_format($yearTotals[$year]['balance_student']) }}</td>
+            @endforeach
+          </tr>
+        </tfoot>
       </table>
     </div>
   </div>
