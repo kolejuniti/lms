@@ -4280,6 +4280,37 @@ class PendaftarController extends Controller
 
     public function studentReportRA()
     {
+        // Add limit to prevent massive datasets from causing timeouts
+        $allStudents = DB::table('tblpayment as p1')
+        ->select([
+            'p1.student_ic',
+            'p1.date',
+            'students.status',
+            DB::raw('YEAR(p1.date) as payment_year'),
+            DB::raw('MONTH(p1.date) as payment_month'),
+            DB::raw('DATE(p1.date) as payment_date')
+        ])
+        ->join(DB::raw('(SELECT student_ic, MIN(date) as first_payment_date 
+            FROM tblpayment 
+            WHERE process_status_id = 2 
+            AND process_type_id = 1 
+            AND semester_id = 1
+            GROUP BY student_ic) as p2'), function($join) {
+            $join->on('p1.student_ic', '=', 'p2.student_ic')
+                ->on('p1.date', '=', 'p2.first_payment_date');
+        })
+        ->where([
+            ['p1.process_status_id', 2],
+            ['p1.process_type_id', 1], 
+            ['p1.semester_id', 1]
+        ])
+        ->whereBetween('p1.date', ['2025-05-12', '2025-05-18'])
+        ->orderBy('p1.date')
+        ->limit(50000) // Limit to prevent memory issues
+        ->get();
+
+        dd($allStudents);
+        
         return view('pendaftar.reportR_analysis.reportRA');
     }
 
@@ -4763,7 +4794,7 @@ class PendaftarController extends Controller
                     ['p1.process_type_id', 1], 
                     ['p1.semester_id', 1]
                 ])
-                ->whereBetween('p1.date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])
+                ->whereBetween('p1.date', ['2025-05-12', '2025-05-18'])
                 ->orderBy('p1.date')
                 ->limit(50000) // Limit to prevent memory issues
                 ->get();
