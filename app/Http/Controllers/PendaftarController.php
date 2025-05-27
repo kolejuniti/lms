@@ -4743,11 +4743,11 @@ class PendaftarController extends Controller
             $allStudents = DB::table('tblpayment as p1')
                 ->select([
                     'p1.student_ic',
-                    'p1.add_date',
+                    'p1.date',
                     'students.status',
-                    DB::raw('YEAR(p1.add_date) as payment_year'),
-                    DB::raw('MONTH(p1.add_date) as payment_month'),
-                    DB::raw('DATE(p1.add_date) as payment_date')
+                    DB::raw('YEAR(p1.date) as payment_year'),
+                    DB::raw('MONTH(p1.date) as payment_month'),
+                    DB::raw('DATE(p1.date) as payment_date')
                 ])
                 ->join(DB::raw('(SELECT student_ic, MIN(date) as first_payment_date 
                     FROM tblpayment 
@@ -4763,8 +4763,8 @@ class PendaftarController extends Controller
                     ['p1.process_type_id', 1], 
                     ['p1.semester_id', 1]
                 ])
-                ->whereBetween('p1.add_date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])
-                ->orderBy('p1.add_date')
+                ->whereBetween('p1.date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])
+                ->orderBy('p1.date')
                 ->limit(50000) // Limit to prevent memory issues
                 ->get();
 
