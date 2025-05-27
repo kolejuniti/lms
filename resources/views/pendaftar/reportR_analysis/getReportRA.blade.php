@@ -169,20 +169,20 @@
   </div>
   <div class="card-body p-0">
     <div class="table-responsive">
-      <table class="table table-striped table-bordered table-sm">
+      <table class="table table-striped table-bordered table-sm" style="border: 1px solid black;">
         <thead class="thead-light">
           <tr>
-            <th rowspan="2" style="vertical-align: middle; width: 80px; position: sticky; left: 0; background: #f8f9fa; z-index: 10;">Month</th>
-            <th rowspan="2" style="vertical-align: middle; width: 180px; position: sticky; left: 80px; background: #f8f9fa; z-index: 10;">Week (Date Range)</th>
+            <th rowspan="2" style="vertical-align: middle; width: 80px; position: sticky; left: 0; background: #f8f9fa; z-index: 10; border: 1px solid black;">Month</th>
+            <th rowspan="2" style="vertical-align: middle; width: 180px; position: sticky; left: 80px; background: #f8f9fa; z-index: 10; border: 1px solid black;">Week (Date Range)</th>
             @foreach($data['monthlyComparison']['years'] as $year)
-              <th colspan="3" class="text-center bg-light">Year {{ $year }}</th>
+              <th colspan="3" class="text-center bg-light" style="border: 1px solid black;">Year {{ $year }}</th>
             @endforeach
           </tr>
           <tr>
             @foreach($data['monthlyComparison']['years'] as $year)
-              <th style="width: 100px;">Total By Weeks</th>
-              <th style="width: 100px;">Total By Converts</th>
-              <th style="width: 100px;">Balance Student</th>
+              <th style="width: 100px; border: 1px solid black;">Total By Weeks</th>
+              <th style="width: 100px; border: 1px solid black;">Total By Converts</th>
+              <th style="width: 100px; border: 1px solid black;">Balance Student</th>
             @endforeach
           </tr>
         </thead>
@@ -214,7 +214,7 @@
           
           @if(empty($monthsWithData))
             <tr>
-              <td colspan="{{ 2 + (count($data['monthlyComparison']['years']) * 3) }}" class="text-center text-muted py-4">
+              <td colspan="{{ 2 + (count($data['monthlyComparison']['years']) * 3) }}" class="text-center text-muted py-4" style="border: 1px solid black;">
                 No data available for the selected period
               </td>
             </tr>
@@ -236,7 +236,7 @@
                 @for($weekNum = 1; $weekNum <= $maxWeeks; $weekNum++)
                   <tr>
                     @if($weekNum == 1)
-                      <td rowspan="{{ $maxWeeks }}" style="vertical-align: middle; font-weight: bold; position: sticky; left: 0; background: #fff; z-index: 5;">
+                      <td rowspan="{{ $maxWeeks }}" style="vertical-align: middle; font-weight: bold; position: sticky; left: 0; background: #fff; z-index: 5; border: 1px solid black;">
                         {{ $monthName }}
                       </td>
                     @endif
@@ -252,7 +252,7 @@
                       }
                     @endphp
                     
-                    <td class="text-center" style="position: sticky; left: 80px; background: #fff; font-size: 12px; z-index: 5; padding: 8px 4px;">
+                    <td class="text-center" style="position: sticky; left: 80px; background: #fff; font-size: 12px; z-index: 5; padding: 8px 4px; border: 1px solid black;">
                       <div style="line-height: 1.2;">
                         <strong>Week {{ $weekNum }}</strong>
                         @if($weekDateRange)
@@ -270,13 +270,13 @@
                       @endphp
                       
                       @if($weekData)
-                        <td class="text-center">{{ number_format($weekData['total_by_weeks']) }}</td>
-                        <td class="text-center">{{ number_format($weekData['total_by_converts']) }}</td>
-                        <td class="text-center">{{ number_format($weekData['balance_student']) }}</td>
+                        <td class="text-center" style="border: 1px solid black;">{{ number_format($weekData['total_by_weeks']) }}</td>
+                        <td class="text-center" style="border: 1px solid black;">{{ number_format($weekData['total_by_converts']) }}</td>
+                        <td class="text-center" style="border: 1px solid black;">{{ number_format($weekData['balance_student']) }}</td>
                       @else
-                        <td class="text-center text-muted">-</td>
-                        <td class="text-center text-muted">-</td>
-                        <td class="text-center text-muted">-</td>
+                        <td class="text-center text-muted" style="border: 1px solid black;">-</td>
+                        <td class="text-center text-muted" style="border: 1px solid black;">-</td>
+                        <td class="text-center text-muted" style="border: 1px solid black;">-</td>
                       @endif
                     @endforeach
                   </tr>
