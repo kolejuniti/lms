@@ -5005,12 +5005,18 @@ class PendaftarController extends Controller
         $currentWeekNumber = 1;
 
         // Generate date ranges for each week in the month for the specific year
+        // Start from the beginning of the month
         $start = $monthStart->copy();
         $end = $monthEnd->copy();
 
         while ($start <= $end) {
             $weekStart = $start->copy();
-            $weekEnd = $start->copy()->endOfWeek(); // End of current week (Saturday)
+            
+            // Calculate the end of the current week (Saturday)
+            // If it's already Sunday (0), we want to go to the next Saturday
+            // If it's Monday-Saturday (1-6), we want to go to the upcoming Saturday
+            $daysUntilSaturday = (6 - $weekStart->dayOfWeek) % 7;
+            $weekEnd = $weekStart->copy()->addDays($daysUntilSaturday);
             
             // Don't go beyond month end
             if ($weekEnd->gt($end)) {
@@ -5037,7 +5043,7 @@ class PendaftarController extends Controller
             // Update already counted students
             $alreadyCountedStudents = array_merge($alreadyCountedStudents, $weekData['students']);
 
-            // Move to next week
+            // Move to next week (start from the day after the current week end)
             $start = $weekEnd->copy()->addDay();
             $currentWeekNumber++;
         }
