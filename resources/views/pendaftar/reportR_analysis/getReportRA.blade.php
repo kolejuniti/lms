@@ -41,8 +41,8 @@
             <tr>
                 <th style="width: 15%">Total Student R</th>
                 <th style="width: 15%">Total by Convert</th>
-                <th style="width: 15%">Registered Before Offer</th>
-                <th style="width: 15%">Registered After Offer</th>
+                <th style="width: 15%">Active before End Date</th>
+                <th style="width: 15%">Active after End Date</th>
                 <th style="width: 15%">Balance Student</th>
                 <th style="width: 15%">Student Active</th>
                 <th style="width: 15%">Student Rejected</th>
@@ -82,8 +82,8 @@
             <tr>
                 <th style="width: 15%">Total Student R</th>
                 <th style="width: 15%">Total by Convert</th>
-                <th style="width: 15%">Registered Before Offer</th>
-                <th style="width: 15%">Registered After Offer</th>
+                <th style="width: 15%">Active before End Date</th>
+                <th style="width: 15%">Active after End Date</th>
                 <th style="width: 15%">Balance Student</th>
                 <th style="width: 15%">Student Active</th>
                 <th style="width: 15%">Student Rejected</th>
@@ -137,8 +137,8 @@
             <tr>
                 <th style="width: 15%">Total Student R</th>
                 <th style="width: 15%">Total by Convert</th>
-                <th style="width: 15%">Registered Before Offer</th>
-                <th style="width: 15%">Registered After Offer</th>
+                <th style="width: 15%">Active before End Date</th>
+                <th style="width: 15%">Active after End Date</th>
                 <th style="width: 15%">Balance Student</th>
                 <th style="width: 15%">Student Active</th>
                 <th style="width: 15%">Student Rejected</th>
