@@ -2,6 +2,8 @@
 <html>
 <head>
     <title>Student R Analysis Report</title>
+    <!-- Add jQuery for compatibility -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -99,6 +101,15 @@
     <div class="header">
         <h2>Student R Analysis Report</h2>
         <p>Generated on: {{ date('Y-m-d H:i:s') }}</p>
+        <!-- Manual print button as fallback -->
+        <div style="margin: 10px 0; text-align: center;" class="no-print">
+            <button onclick="window.print()" style="padding: 10px 20px; font-size: 14px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                🖨️ Print This Report
+            </button>
+            <p style="font-size: 12px; color: #666; margin-top: 5px;">
+                If auto-print doesn't work, click the button above or press Ctrl+P (Windows) / Cmd+P (Mac)
+            </p>
+        </div>
     </div>
 
     @if(isset($data['tableLabels']) && is_array($data['tableLabels']))
@@ -380,10 +391,41 @@
     @endif
 
     <script>
-        window.onload = function() {
-            setTimeout(function() {
-                window.print();
-            }, 1000);
+        // Simple and reliable auto-print function
+        function autoPrint() {
+            try {
+                // Wait for page to fully load
+                if (document.readyState === 'complete') {
+                    window.print();
+                } else {
+                    // If not ready, wait a bit more
+                    setTimeout(autoPrint, 500);
+                }
+            } catch (e) {
+                console.log('Auto-print failed:', e);
+                // Show manual instruction
+                setTimeout(function() {
+                    alert('Please press Ctrl+P (Windows) or Cmd+P (Mac) to print this page.');
+                }, 1000);
+            }
+        }
+        
+        // Start auto-print when page loads
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() {
+                setTimeout(autoPrint, 1000);
+            });
+        } else {
+            setTimeout(autoPrint, 1000);
+        }
+        
+        // Fallback with jQuery if available
+        if (typeof $ !== 'undefined') {
+            $(document).ready(function() {
+                setTimeout(function() {
+                    window.print();
+                }, 1200);
+            });
         }
     </script>
 </body>
