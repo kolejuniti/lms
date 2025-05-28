@@ -303,10 +303,39 @@
                         <td class="text-center" style="border: 1px solid black;">{{ number_format($weekData['total_by_converts']) }}</td>
                         <td class="text-center" style="border: 1px solid black;">{{ number_format($weekData['balance_student']) }}</td>
                       @else
-                        <td class="text-center text-muted" style="border: 1px solid black; font-size: 10px;">-</td>
-                        <td class="text-center text-muted" style="border: 1px solid black;">-</td>
-                        <td class="text-center text-muted" style="border: 1px solid black;">-</td>
-                        <td class="text-center text-muted" style="border: 1px solid black;">-</td>
+                        @php
+                          // Generate date range even when no data exists
+                          $monthStart = \Carbon\Carbon::createFromDate($year, $monthNumber, 1)->startOfMonth();
+                          $monthEnd = \Carbon\Carbon::createFromDate($year, $monthNumber, 1)->endOfMonth();
+                          
+                          // Calculate week start and end for this specific week number
+                          $start = $monthStart->copy();
+                          for ($i = 1; $i < $weekNum; $i++) {
+                            $weekStart = $start->copy();
+                            $daysUntilSaturday = (6 - $weekStart->dayOfWeek) % 7;
+                            $weekEnd = $weekStart->copy()->addDays($daysUntilSaturday);
+                            if ($weekEnd->gt($monthEnd)) {
+                              $weekEnd = $monthEnd->copy();
+                            }
+                            $start = $weekEnd->copy()->addDay();
+                          }
+                          
+                          // Calculate current week range
+                          $weekStart = $start->copy();
+                          $daysUntilSaturday = (6 - $weekStart->dayOfWeek) % 7;
+                          $weekEnd = $weekStart->copy()->addDays($daysUntilSaturday);
+                          if ($weekEnd->gt($monthEnd)) {
+                            $weekEnd = $monthEnd->copy();
+                          }
+                          
+                          $dateRange = $weekStart->format('j M Y') . ' - ' . $weekEnd->format('j M Y');
+                        @endphp
+                        <td class="text-center" style="border: 1px solid black; font-size: 10px; padding: 4px;">
+                          <small class="text-muted">{{ $dateRange }}</small>
+                        </td>
+                        <td class="text-center" style="border: 1px solid black;">0</td>
+                        <td class="text-center" style="border: 1px solid black;">0</td>
+                        <td class="text-center" style="border: 1px solid black;">0</td>
                       @endif
                     @endforeach
                   </tr>

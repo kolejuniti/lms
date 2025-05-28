@@ -4888,27 +4888,22 @@ class PendaftarController extends Controller
         foreach ($years as $year) {
             $monthlyData[$year] = [];
             
-            // Only process months that have data to save time
-            if (!isset($allYearData[$year])) {
-                continue;
-            }
-            
-            foreach ($allYearData[$year] as $month => $monthData) {
-                if (empty($monthData)) {
-                    continue;
-                }
-                
+            // Process all 12 months regardless of whether they have data
+            for ($month = 1; $month <= 12; $month++) {
                 $monthStart = Carbon::createFromDate($year, $month, 1)->startOfMonth();
                 $monthEnd = Carbon::createFromDate($year, $month, 1)->endOfMonth();
                 
                 // Generate weekly breakdown for the month using pre-fetched data with year context
                 $weeklyData = $this->generateOptimizedWeeklyDataForMonth($monthStart, $monthEnd, $allYearData, $year);
                 
-                $monthlyData[$year][$month] = [
-                    'month_name' => $monthStart->format('F'),
-                    'weeks' => $weeklyData['weeks'],
-                    'monthly_totals' => $weeklyData['monthly_totals']
-                ];
+                // Only include months that have at least one week with data or are within our date ranges
+                if (!empty($weeklyData['weeks']) || $this->monthHasDataInDateRanges($year, $month, $dateRanges)) {
+                    $monthlyData[$year][$month] = [
+                        'month_name' => $monthStart->format('F'),
+                        'weeks' => $weeklyData['weeks'],
+                        'monthly_totals' => $weeklyData['monthly_totals']
+                    ];
+                }
             }
         }
 
@@ -4978,6 +4973,24 @@ class PendaftarController extends Controller
         }
     }
 
+    private function monthHasDataInDateRanges($year, $month, $dateRanges)
+    {
+        $monthStart = Carbon::createFromDate($year, $month, 1)->startOfMonth();
+        $monthEnd = Carbon::createFromDate($year, $month, 1)->endOfMonth();
+        
+        foreach ($dateRanges as $range) {
+            $rangeStart = Carbon::parse($range['from']);
+            $rangeEnd = Carbon::parse($range['to']);
+            
+            // Check if this month overlaps with any date range
+            if ($monthStart->lte($rangeEnd) && $monthEnd->gte($rangeStart)) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+
     private function generateOptimizedWeeklyDataForMonth($monthStart, $monthEnd, $allYearData, $year)
     {
         $weeks = [];
@@ -4989,22 +5002,14 @@ class PendaftarController extends Controller
 
         $month = $monthStart->month;
         
-        // Get data for this specific month and year
+        // Get data for this specific month and year (can be empty)
         $monthData = $allYearData[$year][$month] ?? [];
-        
-        if (empty($monthData)) {
-            // Return empty weeks if no data
-            return [
-                'weeks' => [],
-                'monthly_totals' => $monthlyTotals
-            ];
-        }
 
         // Initialize tracking variables
         $alreadyCountedStudents = [];
         $currentWeekNumber = 1;
 
-        // Generate date ranges for each week in the month for the specific year
+        // Always generate date ranges for each week in the month for the specific year
         // Start from the beginning of the month
         $start = $monthStart->copy();
         $end = $monthEnd->copy();
@@ -5023,7 +5028,7 @@ class PendaftarController extends Controller
                 $weekEnd = $end->copy();
             }
 
-            // Get weekly student data from pre-fetched data
+            // Get weekly student data from pre-fetched data (will return 0 if no data)
             $weekData = $this->getOptimizedWeeklyStudentData($weekStart, $weekEnd, $monthData, $alreadyCountedStudents);
             
             $weeks[] = [
