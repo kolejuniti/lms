@@ -325,146 +325,160 @@
   function printReport() {
     $('#loading-overlay').removeClass('d-none');
     
-    // Get the existing content that's already displayed on the page
-    let printContent = '';
-    
     // Check if we have data loaded on the page
-    const hasData = $('#form-student').children().length > 0;
-    
-    if (!hasData) {
+    if ($('#form-student').children().length === 0) {
       $('#loading-overlay').addClass('d-none');
       alert("No data to print. Please select date ranges and load data first.");
       return;
     }
     
-    // Build the print HTML with the existing data
-    printContent = `
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <title>Student R Analysis Report</title>
-        <style>
-            body {
-                font-family: Arial, sans-serif;
-                margin: 20px;
-                font-size: 12px;
-            }
-            .header {
-                text-align: center;
-                margin-bottom: 30px;
-            }
-            .table {
-                width: 100%;
-                border-collapse: collapse;
-                margin-bottom: 30px;
-            }
-            .table th, .table td {
-                border: 1px solid #ddd;
-                padding: 8px;
-                text-align: center;
-            }
-            .table th {
-                background-color: #f2f2f2;
-                font-weight: bold;
-            }
-            .table-title {
-                font-weight: bold;
-                margin-bottom: 10px;
-                padding: 10px;
-                background-color: #007bff;
-                color: white;
-                text-align: center;
-            }
-            .summary-title {
-                font-weight: bold;
-                margin-top: 30px;
-                margin-bottom: 10px;
-                padding: 10px;
-                background-color: #28a745;
-                color: white;
-                text-align: center;
-            }
-            @media print {
-                body { margin: 0; }
-                .no-print { display: none; }
-            }
-        </style>
-    </head>
-    <body>
-        <div class="header">
-            <h2>Student R Analysis Report</h2>
-            <p>Generated on: ${new Date().toLocaleString()}</p>
-            <div style="margin: 10px 0; text-align: center;" class="no-print">
-                <button onclick="window.print()" style="padding: 10px 20px; font-size: 14px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">
-                    🖨️ Print This Report
-                </button>
-            </div>
-        </div>
-    `;
+    // Create the print window
+    var printWindow = window.open('', '_blank', 'width=1200,height=800');
     
-    // Extract table data from the existing DOM
-    const tables = $('#form-student .card');
+    // Build the HTML content
+    var htmlContent = '<!DOCTYPE html>';
+    htmlContent += '<html><head><title>Student R Analysis Report</title>';
+    htmlContent += '<style>';
+    htmlContent += 'body { font-family: Arial, sans-serif; margin: 20px; font-size: 11px; }';
+    htmlContent += '.header { text-align: center; margin-bottom: 30px; }';
+    htmlContent += '.table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }';
+    htmlContent += '.table th, .table td { border: 1px solid #ddd; padding: 8px; text-align: center; }';
+    htmlContent += '.table th { background-color: #f2f2f2; font-weight: bold; }';
+    htmlContent += '.table-title { font-weight: bold; margin-bottom: 10px; padding: 10px; background-color: #007bff; color: white; text-align: center; }';
+    htmlContent += '.summary-title { font-weight: bold; margin-top: 30px; margin-bottom: 10px; padding: 10px; background-color: #28a745; color: white; text-align: center; }';
+    htmlContent += '.monthly-title { font-weight: bold; margin-top: 30px; margin-bottom: 10px; padding: 10px; background-color: #17a2b8; color: white; text-align: center; }';
+    htmlContent += '.monthly-table { width: 100%; border-collapse: collapse; margin-bottom: 30px; font-size: 9px; }';
+    htmlContent += '.monthly-table th, .monthly-table td { border: 1px solid #000; padding: 4px; text-align: center; }';
+    htmlContent += '.monthly-table th { background-color: #f8f9fa; font-weight: bold; }';
+    htmlContent += '.monthly-table .month-cell { font-weight: bold; background-color: #fff; }';
+    htmlContent += '.monthly-table .week-cell { background-color: #fff; font-size: 8px; }';
+    htmlContent += '.monthly-table .total-row { background-color: #f8f9fa; font-weight: bold; }';
+    htmlContent += '.monthly-table .date-range { font-size: 7px; color: #666; }';
+    htmlContent += '@media print { body { margin: 0; } .no-print { display: none; } }';
+    htmlContent += '</style></head><body>';
     
-    tables.each(function(index, element) {
-        const $card = $(element);
-        const cardHeader = $card.find('.card-header b').text();
-        const tableRows = $card.find('tbody tr');
+    // Add header
+    htmlContent += '<div class="header">';
+    htmlContent += '<h2>Student R Analysis Report</h2>';
+    htmlContent += '<p>Generated on: ' + new Date().toLocaleString() + '</p>';
+    htmlContent += '<div class="no-print"><button onclick="window.print()" style="padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 5px;">Print Report</button></div>';
+    htmlContent += '</div>';
+    
+    // Extract and add main table data
+    $('#form-student .card').each(function() {
+        var cardHeader = $(this).find('.card-header b').text();
+        var tableRows = $(this).find('tbody tr');
         
-        if (tableRows.length > 0) {
-            printContent += `<div class="table-title">${cardHeader}</div>`;
-            printContent += '<table class="table">';
-            
-            // Add header
-            printContent += `
-            <thead>
-                <tr>
-                    <th>Total Student R</th>
-                    <th>Total by Convert</th>
-                    <th>Balance Student</th>
-                    <th>Student Active</th>
-                    <th>Student Rejected</th>
-                    <th>Student Offered</th>
-                    <th>Student KIV</th>
-                    <th>Student Others</th>
-                </tr>
-            </thead>
-            <tbody>
-            `;
-            
-            // Add data rows
-            tableRows.each(function() {
-                const cells = $(this).find('td');
-                if (cells.length > 0) {
-                    printContent += '<tr>';
-                    cells.each(function() {
-                        printContent += `<td>${$(this).text().trim()}</td>`;
-                    });
-                    printContent += '</tr>';
-                }
-            });
-            
-            printContent += '</tbody></table>';
+        // Skip Monthly Comparison Analysis for now, we'll add it separately
+        if (cardHeader.indexOf('Monthly Comparison Analysis') === -1) {
+            if (tableRows.length > 0) {
+                htmlContent += '<div class="table-title">' + cardHeader + '</div>';
+                htmlContent += '<table class="table"><thead><tr>';
+                htmlContent += '<th>Total Student R</th><th>Total by Convert</th><th>Balance Student</th>';
+                htmlContent += '<th>Student Active</th><th>Student Rejected</th><th>Student Offered</th>';
+                htmlContent += '<th>Student KIV</th><th>Student Others</th>';
+                htmlContent += '</tr></thead><tbody>';
+                
+                tableRows.each(function() {
+                    var cells = $(this).find('td');
+                    if (cells.length > 0) {
+                        htmlContent += '<tr>';
+                        cells.each(function() {
+                            htmlContent += '<td>' + $(this).text().trim() + '</td>';
+                        });
+                        htmlContent += '</tr>';
+                    }
+                });
+                
+                htmlContent += '</tbody></table>';
+            }
         }
     });
     
-    printContent += `
-        <script>
-            // Auto-print when page loads
-            window.onload = function() {
-                setTimeout(function() {
-                    window.print();
-                }, 1000);
-            };
-        </script>
-    </body>
-    </html>
-    `;
+    // Add Monthly Comparison Analysis table if it exists
+    var monthlyTable = $('#monthly_comparison_table');
+    if (monthlyTable.length > 0) {
+        htmlContent += '<div class="monthly-title">Monthly Comparison Analysis</div>';
+        htmlContent += '<table class="monthly-table">';
+        
+        // Add table headers
+        var headerRows = monthlyTable.find('thead tr');
+        if (headerRows.length > 0) {
+            htmlContent += '<thead>';
+            headerRows.each(function() {
+                htmlContent += '<tr>';
+                $(this).find('th').each(function() {
+                    var colspan = $(this).attr('colspan') || '1';
+                    var rowspan = $(this).attr('rowspan') || '1';
+                    var cellText = $(this).text().trim();
+                    htmlContent += '<th colspan="' + colspan + '" rowspan="' + rowspan + '">' + cellText + '</th>';
+                });
+                htmlContent += '</tr>';
+            });
+            htmlContent += '</thead>';
+        }
+        
+        // Add table body
+        var bodyRows = monthlyTable.find('tbody tr');
+        if (bodyRows.length > 0) {
+            htmlContent += '<tbody>';
+            bodyRows.each(function() {
+                htmlContent += '<tr>';
+                $(this).find('td').each(function() {
+                    var colspan = $(this).attr('colspan') || '1';
+                    var rowspan = $(this).attr('rowspan') || '1';
+                    var cellText = $(this).text().trim();
+                    var cellClass = '';
+                    
+                    // Check for special styling
+                    if ($(this).hasClass('text-center')) {
+                        cellClass += ' text-center';
+                    }
+                    if ($(this).find('strong').length > 0) {
+                        cellClass += ' month-cell';
+                    }
+                    if ($(this).find('small').length > 0) {
+                        cellClass += ' date-range';
+                    }
+                    
+                    htmlContent += '<td colspan="' + colspan + '" rowspan="' + rowspan + '" class="' + cellClass + '">' + cellText + '</td>';
+                });
+                htmlContent += '</tr>';
+            });
+            htmlContent += '</tbody>';
+        }
+        
+        // Add table footer
+        var footerRows = monthlyTable.find('tfoot tr');
+        if (footerRows.length > 0) {
+            htmlContent += '<tfoot>';
+            footerRows.each(function() {
+                htmlContent += '<tr class="total-row">';
+                $(this).find('td').each(function() {
+                    var colspan = $(this).attr('colspan') || '1';
+                    var cellText = $(this).text().trim();
+                    htmlContent += '<td colspan="' + colspan + '">' + cellText + '</td>';
+                });
+                htmlContent += '</tr>';
+            });
+            htmlContent += '</tfoot>';
+        }
+        
+        htmlContent += '</table>';
+    }
     
-    // Open print window with the captured content
+    htmlContent += '</body></html>';
+    
+    // Write content to print window
+    printWindow.document.write(htmlContent);
+    printWindow.document.close();
+    
+    // Auto print after a delay
+    setTimeout(function() {
+        printWindow.print();
+    }, 500);
+    
     $('#loading-overlay').addClass('d-none');
-    const newWindow = window.open();
-    newWindow.document.write(printContent);
-    newWindow.document.close();
   }
   </script>
 @endsection
