@@ -4901,8 +4901,8 @@ class PendaftarController extends Controller
                 $monthStart = Carbon::createFromDate($year, $month, 1)->startOfMonth();
                 $monthEnd = Carbon::createFromDate($year, $month, 1)->endOfMonth();
                 
-                // Generate weekly breakdown for the month using pre-fetched data
-                $weeklyData = $this->generateOptimizedWeeklyDataForMonth($monthStart, $monthEnd, $allYearData);
+                // Generate weekly breakdown for the month using pre-fetched data with year context
+                $weeklyData = $this->generateOptimizedWeeklyDataForMonth($monthStart, $monthEnd, $allYearData, $year);
                 
                 $monthlyData[$year][$month] = [
                     'month_name' => $monthStart->format('F'),
@@ -4978,7 +4978,7 @@ class PendaftarController extends Controller
         }
     }
 
-    private function generateOptimizedWeeklyDataForMonth($monthStart, $monthEnd, $allYearData)
+    private function generateOptimizedWeeklyDataForMonth($monthStart, $monthEnd, $allYearData, $year)
     {
         $weeks = [];
         $monthlyTotals = [
@@ -4987,10 +4987,9 @@ class PendaftarController extends Controller
             'balance_student' => 0
         ];
 
-        $year = $monthStart->year;
         $month = $monthStart->month;
         
-        // Get data for this specific month
+        // Get data for this specific month and year
         $monthData = $allYearData[$year][$month] ?? [];
         
         if (empty($monthData)) {
@@ -5005,7 +5004,7 @@ class PendaftarController extends Controller
         $alreadyCountedStudents = [];
         $currentWeekNumber = 1;
 
-        // Generate date ranges for each week in the month
+        // Generate date ranges for each week in the month for the specific year
         $start = $monthStart->copy();
         $end = $monthEnd->copy();
 

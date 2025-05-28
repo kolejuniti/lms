@@ -196,16 +196,17 @@
         <thead class="thead-light">
           <tr>
             <th rowspan="2" style="vertical-align: middle; width: 80px; position: sticky; left: 0; background: #f8f9fa; z-index: 10; border: 1px solid black;">Month</th>
-            <th rowspan="2" style="vertical-align: middle; width: 180px; position: sticky; left: 80px; background: #f8f9fa; z-index: 10; border: 1px solid black;">Week (Date Range)</th>
+            <th rowspan="2" style="vertical-align: middle; width: 120px; position: sticky; left: 80px; background: #f8f9fa; z-index: 10; border: 1px solid black;">Week</th>
             @foreach($data['monthlyComparison']['years'] as $year)
-              <th colspan="3" class="text-center bg-light" style="border: 1px solid black;">Year {{ $year }}</th>
+              <th colspan="4" class="text-center bg-light" style="border: 1px solid black;">Year {{ $year }}</th>
             @endforeach
           </tr>
           <tr>
             @foreach($data['monthlyComparison']['years'] as $year)
-              <th style="width: 100px; border: 1px solid black;">Total By Weeks</th>
-              <th style="width: 100px; border: 1px solid black;">Total By Converts</th>
-              <th style="width: 100px; border: 1px solid black;">Balance Student</th>
+              <th style="width: 120px; border: 1px solid black; font-size: 11px;">Range</th>
+              <th style="width: 80px; border: 1px solid black;">Total By Weeks</th>
+              <th style="width: 80px; border: 1px solid black;">Total By Converts</th>
+              <th style="width: 80px; border: 1px solid black;">Balance Student</th>
             @endforeach
           </tr>
         </thead>
@@ -247,7 +248,7 @@
           
           @if(empty($monthsWithData))
             <tr>
-              <td colspan="{{ 2 + (count($data['monthlyComparison']['years']) * 3) }}" class="text-center text-muted py-4" style="border: 1px solid black;">
+              <td colspan="{{ 2 + (count($data['monthlyComparison']['years']) * 4) }}" class="text-center text-muted py-4" style="border: 1px solid black;">
                 No data available for the selected period
               </td>
             </tr>
@@ -274,23 +275,9 @@
                       </td>
                     @endif
                     
-                    @php
-                      // Get the date range for this week from any year that has data
-                      $weekDateRange = null;
-                      foreach($data['monthlyComparison']['years'] as $year) {
-                        if (isset($data['monthlyComparison']['monthly_data'][$year][$monthNumber]['weeks'][$weekNum - 1]['date_range'])) {
-                          $weekDateRange = $data['monthlyComparison']['monthly_data'][$year][$monthNumber]['weeks'][$weekNum - 1]['date_range'];
-                          break;
-                        }
-                      }
-                    @endphp
-                    
                     <td class="text-center" style="position: sticky; left: 80px; background: #fff; font-size: 12px; z-index: 5; padding: 8px 4px; border: 1px solid black;">
                       <div style="line-height: 1.2;">
                         <strong>Week {{ $weekNum }}</strong>
-                        @if($weekDateRange)
-                          <br><small class="text-muted" style="font-size: 10px;">({{ $weekDateRange }})</small>
-                        @endif
                       </div>
                     </td>
                     
@@ -309,10 +296,14 @@
                           $yearTotals[$year]['total_by_converts'] += $weekData['total_by_converts'];
                           $yearTotals[$year]['balance_student'] += $weekData['balance_student'];
                         @endphp
+                        <td class="text-center" style="border: 1px solid black; font-size: 10px; padding: 4px;">
+                          <small class="text-muted">{{ $weekData['date_range'] }}</small>
+                        </td>
                         <td class="text-center" style="border: 1px solid black;">{{ number_format($weekData['total_by_weeks']) }}</td>
                         <td class="text-center" style="border: 1px solid black;">{{ number_format($weekData['total_by_converts']) }}</td>
                         <td class="text-center" style="border: 1px solid black;">{{ number_format($weekData['balance_student']) }}</td>
                       @else
+                        <td class="text-center text-muted" style="border: 1px solid black; font-size: 10px;">-</td>
                         <td class="text-center text-muted" style="border: 1px solid black;">-</td>
                         <td class="text-center text-muted" style="border: 1px solid black;">-</td>
                         <td class="text-center text-muted" style="border: 1px solid black;">-</td>
@@ -329,6 +320,7 @@
             <td style="border: 1px solid black; text-align: center; font-weight: bold;">TOTAL</td>
             <td style="border: 1px solid black; text-align: center; font-weight: bold;">All Weeks</td>
             @foreach($data['monthlyComparison']['years'] as $year)
+              <td class="text-center" style="border: 1px solid black; background-color: #e9ecef; font-size: 10px;">All Ranges</td>
               <td class="text-center" style="border: 1px solid black; background-color: #e9ecef;">{{ number_format($yearTotals[$year]['total_by_weeks']) }}</td>
               <td class="text-center" style="border: 1px solid black; background-color: #e9ecef;">{{ number_format($yearTotals[$year]['total_by_converts']) }}</td>
               <td class="text-center" style="border: 1px solid black; background-color: #e9ecef;">{{ number_format($yearTotals[$year]['balance_student']) }}</td>
