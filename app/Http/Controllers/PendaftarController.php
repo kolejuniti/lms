@@ -19,8 +19,6 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use GuzzleHttp\Client;
-use Illuminate\Database\QueryException;
-use Exception;
 
 class PendaftarController extends Controller
 {
@@ -1400,12 +1398,12 @@ class PendaftarController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return ["message"=>"Field Error", "error" => $validator->errors()->get('*')];
+            return ["message"=>"Field Error", "error" => $validator->messages()->get('*')];
         }
 
         try{ 
             DB::beginTransaction();
-            // DB::connection()->enableQueryLog(); // Deprecated method removed
+            DB::connection()->enableQueryLog();
 
             try{
                 $student = json_decode($studentData);
@@ -1588,7 +1586,7 @@ class PendaftarController extends Controller
                 if($ex->getCode() == 23000){
                     return ["message"=>"Class code already existed inside the system"];
                 }else{
-                    Log::debug($ex);
+                    \Log::debug($ex);
                     return ["message"=>"DB Error"];
                 }
             }
@@ -3880,16 +3878,16 @@ class PendaftarController extends Controller
                         ->values()
                         ->toArray();
                     $currentOfferedStudents = $weeklyStudents->where('status', 1)
-                        ->filter(function($student) use ($endDate) {
-                            return \Carbon\Carbon::parse($student->date_offer)->gt($endDate);
+                        ->filter(function($student) {
+                            return \Carbon\Carbon::parse($student->date_offer)->gt(now());
                         })
                         ->pluck('student_ic')
                         ->unique()
                         ->values()
                         ->toArray();
                     $currentKIVStudents = $weeklyStudents->where('status', 1)
-                        ->filter(function($student) use ($endDate) {
-                            return \Carbon\Carbon::parse($student->date_offer)->lte($endDate);
+                        ->filter(function($student) {
+                            return \Carbon\Carbon::parse($student->date_offer)->lte(now());
                         })
                         ->pluck('student_ic')
                         ->unique()
@@ -3990,8 +3988,8 @@ class PendaftarController extends Controller
                             ->toArray();
 
                         $currentDayOfferedStudents = $dailyStudents->where('status', 1)
-                            ->filter(function($student) use ($day) {
-                                return \Carbon\Carbon::parse($student->date_offer)->gt($day);
+                            ->filter(function($student) {
+                                return \Carbon\Carbon::parse($student->date_offer)->gt(now());
                             })
                             ->pluck('student_ic')
                             ->unique()
@@ -3999,8 +3997,8 @@ class PendaftarController extends Controller
                             ->toArray();
 
                         $currentDayKIVStudents = $dailyStudents->where('status', 1)
-                            ->filter(function($student) use ($day) {
-                                return \Carbon\Carbon::parse($student->date_offer)->lte($day);
+                            ->filter(function($student) {
+                                return \Carbon\Carbon::parse($student->date_offer)->lte(now());
                             })
                             ->pluck('student_ic')
                             ->unique()
@@ -4388,6 +4386,7 @@ class PendaftarController extends Controller
         // Initialize arrays for multiple tables
         $data['allStudents'] = [];
         $data['totalConvert'] = [];
+        $data['registered_before_offer'] = [];
         $data['registered'] = [];
         $data['rejected'] = [];
         $data['offered'] = [];
@@ -4413,6 +4412,7 @@ class PendaftarController extends Controller
             // Store data for each table
             $data['allStudents'][$index] = $tableData['allStudents'];
             $data['totalConvert'][$index] = $tableData['totalConvert'];
+            $data['registered_before_offer'][$index] = $tableData['registered_before_offer'];
             $data['registered'][$index] = $tableData['registered'];
             $data['rejected'][$index] = $tableData['rejected'];
             $data['offered'][$index] = $tableData['offered'];
@@ -4442,6 +4442,7 @@ class PendaftarController extends Controller
         $data = [
             'allStudents' => 0,
             'totalConvert' => 0,
+            'registered_before_offer' => 0,
             'registered' => 0,
             'rejected' => 0,
             'offered' => 0,
@@ -4554,6 +4555,7 @@ class PendaftarController extends Controller
 
             $data['allStudents'] = count($currentAllStudents);
             $data['totalConvert'] = count($currentConvertStudents);
+            $data['registered_before_offer'] = count($registeredBeforeOffer);
             $data['registered'] = count($currentRegisteredStudents);
             $data['rejected'] = count($currentRejectedStudents);
             $data['offered'] = count($currentOfferedStudents);
@@ -4565,6 +4567,7 @@ class PendaftarController extends Controller
             $data = [
                 'allStudents' => 0,
                 'totalConvert' => 8,
+                'registered_before_offer' => 0,
                 'registered' => 5,
                 'rejected' => 1,
                 'offered' => 4,
