@@ -4511,7 +4511,7 @@ class PendaftarController extends Controller
 
             $registeredBeforeOffer = $students->where('status', 1)
                 ->filter(function($student) use ($to) {
-                    return \Carbon\Carbon::parse($student->date_offer)->lt($to);
+                    return \Carbon\Carbon::parse($student->date_offer)->lte($to);
                 })
                 ->pluck('student_ic')
                 ->unique()
