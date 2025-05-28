@@ -4336,6 +4336,8 @@ class PendaftarController extends Controller
             $data = [
                 'allStudents' => 0,
                 'totalConvert' => 0,
+                'registered_before_offer' => 0,
+                'registered_after_offer' => 0,
                 'registered' => 0,
                 'rejected' => 0,
                 'offered' => 0,
@@ -4387,6 +4389,7 @@ class PendaftarController extends Controller
         $data['allStudents'] = [];
         $data['totalConvert'] = [];
         $data['registered_before_offer'] = [];
+        $data['registered_after_offer'] = [];
         $data['registered'] = [];
         $data['rejected'] = [];
         $data['offered'] = [];
@@ -4413,6 +4416,7 @@ class PendaftarController extends Controller
             $data['allStudents'][$index] = $tableData['allStudents'];
             $data['totalConvert'][$index] = $tableData['totalConvert'];
             $data['registered_before_offer'][$index] = $tableData['registered_before_offer'];
+            $data['registered_after_offer'][$index] = $tableData['registered_after_offer'];
             $data['registered'][$index] = $tableData['registered'];
             $data['rejected'][$index] = $tableData['rejected'];
             $data['offered'][$index] = $tableData['offered'];
@@ -4443,6 +4447,7 @@ class PendaftarController extends Controller
             'allStudents' => 0,
             'totalConvert' => 0,
             'registered_before_offer' => 0,
+            'registered_after_offer' => 0,
             'registered' => 0,
             'rejected' => 0,
             'offered' => 0,
@@ -4518,6 +4523,15 @@ class PendaftarController extends Controller
                 ->values()
                 ->toArray();
 
+            $registeredAfterOffer = $students->where('status', 1)
+                ->filter(function($student) use ($to) {
+                    return \Carbon\Carbon::parse($student->date_offer)->gt($to);
+                })
+                ->pluck('student_ic')
+                ->unique()
+                ->values()
+                ->toArray();
+
             $currentRegisteredStudents = $students->where('status', 2)
                 ->pluck('student_ic')
                 ->unique()
@@ -4556,6 +4570,7 @@ class PendaftarController extends Controller
             $data['allStudents'] = count($currentAllStudents);
             $data['totalConvert'] = count($currentConvertStudents);
             $data['registered_before_offer'] = count($registeredBeforeOffer);
+            $data['registered_after_offer'] = count($registeredAfterOffer);
             $data['registered'] = count($currentRegisteredStudents);
             $data['rejected'] = count($currentRejectedStudents);
             $data['offered'] = count($currentOfferedStudents);
@@ -4568,6 +4583,7 @@ class PendaftarController extends Controller
                 'allStudents' => 0,
                 'totalConvert' => 8,
                 'registered_before_offer' => 0,
+                'registered_after_offer' => 0,
                 'registered' => 5,
                 'rejected' => 1,
                 'offered' => 4,
