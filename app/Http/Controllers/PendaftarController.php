@@ -4338,6 +4338,11 @@ class PendaftarController extends Controller
             return $this->exportToExcelRA($data, false, $request->from, $request->to);
         }
         
+        // Handle print for single range
+        if ($request->has('print')) {
+            return view('pendaftar.reportR_analysis.getReportRA_print', compact('data'));
+        }
+        
         return view('pendaftar.reportR_analysis.getReportRA', compact('data'));
     }
 

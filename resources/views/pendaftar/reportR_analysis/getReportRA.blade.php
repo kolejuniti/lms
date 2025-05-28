@@ -138,16 +138,20 @@
         <tbody>
           <tr>
             @php
-            $total_all = $data['allStudents'] + $data['totalConvert'] + $data['registered'] + $data['rejected'] + $data['offered'] + $data['KIV'] + $data['others'];
+            // Ensure $data is an array before accessing keys
+            if (!is_array($data)) {
+                $data = [];
+            }
+            $total_all = ($data['allStudents'] ?? 0) + ($data['totalConvert'] ?? 0) + ($data['registered'] ?? 0) + ($data['rejected'] ?? 0) + ($data['offered'] ?? 0) + ($data['KIV'] ?? 0) + ($data['others'] ?? 0);
             @endphp
-            <td>{{ $data['allStudents'] }}</td>
-            <td>{{ $data['totalConvert'] }}</td>
-            <td>{{ $data['allStudents'] - $data['totalConvert'] }}</td>
-            <td>{{ $data['registered'] }}</td>
-            <td>{{ $data['rejected'] }}</td>
-            <td>{{ $data['offered'] }}</td>
-            <td>{{ $data['KIV'] }}</td>
-            <td>{{ $data['others'] }}</td>
+            <td>{{ $data['allStudents'] ?? 0 }}</td>
+            <td>{{ $data['totalConvert'] ?? 0 }}</td>
+            <td>{{ ($data['allStudents'] ?? 0) - ($data['totalConvert'] ?? 0) }}</td>
+            <td>{{ $data['registered'] ?? 0 }}</td>
+            <td>{{ $data['rejected'] ?? 0 }}</td>
+            <td>{{ $data['offered'] ?? 0 }}</td>
+            <td>{{ $data['KIV'] ?? 0 }}</td>
+            <td>{{ $data['others'] ?? 0 }}</td>
           </tr>
         </tbody>
       </table>
@@ -487,18 +491,18 @@ function collectTableData() {
     // Single table
     data.type = 'single';
     @php
-    $total_all = $data['allStudents'] + $data['totalConvert'] + $data['registered'] + $data['rejected'] + $data['offered'] + $data['KIV'] + $data['others'];
+    $total_all = ($data['allStudents'] ?? 0) + ($data['totalConvert'] ?? 0) + ($data['registered'] ?? 0) + ($data['rejected'] ?? 0) + ($data['offered'] ?? 0) + ($data['KIV'] ?? 0) + ($data['others'] ?? 0);
     @endphp
     data.table = {
       label: "Total Student R Analysis",
-      totalStudentR: {{ $data['allStudents'] }},
-      totalConvert: {{ $data['totalConvert'] }},
-      balanceStudent: {{ $data['allStudents'] - $data['totalConvert'] }},
-      studentActive: {{ $data['registered'] }},
-      studentRejected: {{ $data['rejected'] }},
-      studentOffered: {{ $data['offered'] }},
-      studentKIV: {{ $data['KIV'] }},
-      studentOthers: {{ $data['others'] }}
+      totalStudentR: {{ $data['allStudents'] ?? 0 }},
+      totalConvert: {{ $data['totalConvert'] ?? 0 }},
+      balanceStudent: {{ ($data['allStudents'] ?? 0) - ($data['totalConvert'] ?? 0) }},
+      studentActive: {{ $data['registered'] ?? 0 }},
+      studentRejected: {{ $data['rejected'] ?? 0 }},
+      studentOffered: {{ $data['offered'] ?? 0 }},
+      studentKIV: {{ $data['KIV'] ?? 0 }},
+      studentOthers: {{ $data['others'] ?? 0 }}
     };
   @endif
   

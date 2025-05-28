@@ -192,16 +192,20 @@
             <tbody>
                 <tr>
                     @php
-                    $total_all = $data['totalConvert'] + $data['registered'] + $data['rejected'] + $data['offered'] + $data['KIV'] + $data['others'];
+                    // Ensure $data is an array before accessing keys
+                    if (!is_array($data)) {
+                        $data = [];
+                    }
+                    $total_all = ($data['totalConvert'] ?? 0) + ($data['registered'] ?? 0) + ($data['rejected'] ?? 0) + ($data['offered'] ?? 0) + ($data['KIV'] ?? 0) + ($data['others'] ?? 0);
                     @endphp
-                    <td>{{ $data['allStudents'] }}</td>
-                    <td>{{ $data['totalConvert'] }}</td>
-                    <td>{{ $data['allStudents'] - $data['totalConvert'] }}</td>
-                    <td>{{ $data['registered'] }}</td>
-                    <td>{{ $data['rejected'] }}</td>
-                    <td>{{ $data['offered'] }}</td>
-                    <td>{{ $data['KIV'] }}</td>
-                    <td>{{ $data['others'] }}</td>
+                    <td>{{ $data['allStudents'] ?? 0 }}</td>
+                    <td>{{ $data['totalConvert'] ?? 0 }}</td>
+                    <td>{{ ($data['allStudents'] ?? 0) - ($data['totalConvert'] ?? 0) }}</td>
+                    <td>{{ $data['registered'] ?? 0 }}</td>
+                    <td>{{ $data['rejected'] ?? 0 }}</td>
+                    <td>{{ $data['offered'] ?? 0 }}</td>
+                    <td>{{ $data['KIV'] ?? 0 }}</td>
+                    <td>{{ $data['others'] ?? 0 }}</td>
                 </tr>
             </tbody>
         </table>
