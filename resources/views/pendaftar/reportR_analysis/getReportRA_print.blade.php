@@ -43,9 +43,55 @@
             color: white;
             text-align: center;
         }
+        .monthly-title {
+            font-weight: bold;
+            margin-top: 30px;
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: #17a2b8;
+            color: white;
+            text-align: center;
+        }
+        .monthly-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+            font-size: 10px;
+        }
+        .monthly-table th, .monthly-table td {
+            border: 1px solid #000;
+            padding: 4px;
+            text-align: center;
+        }
+        .monthly-table th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+        .monthly-table .month-cell {
+            font-weight: bold;
+            background-color: #fff;
+        }
+        .monthly-table .week-cell {
+            background-color: #fff;
+            font-size: 9px;
+        }
+        .monthly-table .total-row {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+        .monthly-table .date-range {
+            font-size: 8px;
+            color: #666;
+        }
         @media print {
             body { margin: 0; }
             .no-print { display: none; }
+            .monthly-table {
+                font-size: 8px;
+            }
+            .monthly-table th, .monthly-table td {
+                padding: 2px;
+            }
         }
     </style>
 </head>
@@ -159,6 +205,174 @@
                 </tr>
             </tbody>
         </table>
+    @endif
+
+    @if(isset($data['monthlyComparison']) && !empty($data['monthlyComparison']) && !empty($data['monthlyComparison']['monthly_data']))
+    <!-- Monthly Comparison Table -->
+    <div class="monthly-title">Monthly Comparison Analysis</div>
+    <p style="text-align: center; margin-bottom: 20px; font-size: 11px;">
+        Showing {{ count($data['monthlyComparison']['years']) }} years | 
+        Data follows calendar date (Sunday to Saturday) for weekly breakdown | 
+        Only months with data are displayed
+    </p>
+    
+    <table class="monthly-table">
+        <thead>
+            <tr>
+                <th rowspan="2" style="vertical-align: middle;">Month</th>
+                <th rowspan="2" style="vertical-align: middle;">Week</th>
+                @foreach($data['monthlyComparison']['years'] as $year)
+                    <th colspan="4">Year {{ $year }}</th>
+                @endforeach
+            </tr>
+            <tr>
+                @foreach($data['monthlyComparison']['years'] as $year)
+                    <th>Range</th>
+                    <th>Total By Weeks</th>
+                    <th>Total By Converts</th>
+                    <th>Balance Student</th>
+                @endforeach
+            </tr>
+        </thead>
+        <tbody>
+            @php
+                $monthsWithData = [];
+                
+                // Collect all months that have data across all years
+                foreach($data['monthlyComparison']['years'] as $year) {
+                    if (isset($data['monthlyComparison']['monthly_data'][$year])) {
+                        foreach($data['monthlyComparison']['monthly_data'][$year] as $monthNum => $monthData) {
+                            if (!empty($monthData['weeks'])) {
+                                if (!in_array($monthNum, $monthsWithData)) {
+                                    $monthsWithData[] = $monthNum;
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                sort($monthsWithData);
+                
+                $monthNames = [
+                    1 => 'January', 2 => 'February', 3 => 'March', 4 => 'April', 
+                    5 => 'May', 6 => 'June', 7 => 'July', 8 => 'August', 
+                    9 => 'September', 10 => 'October', 11 => 'November', 12 => 'December'
+                ];
+                
+                // Initialize totals array for each year
+                $yearTotals = [];
+                foreach($data['monthlyComparison']['years'] as $year) {
+                    $yearTotals[$year] = [
+                        'total_by_weeks' => 0,
+                        'total_by_converts' => 0,
+                        'balance_student' => 0
+                    ];
+                }
+            @endphp
+            
+            @if(empty($monthsWithData))
+                <tr>
+                    <td colspan="{{ 2 + (count($data['monthlyComparison']['years']) * 4) }}" style="text-align: center; padding: 20px;">
+                        No data available for the selected period
+                    </td>
+                </tr>
+            @else
+                @foreach($monthsWithData as $monthNumber)
+                    @php
+                        $monthName = $monthNames[$monthNumber];
+                        $maxWeeks = 0;
+                        
+                        // Find the maximum number of weeks across all years for this month
+                        foreach($data['monthlyComparison']['years'] as $year) {
+                            if (isset($data['monthlyComparison']['monthly_data'][$year][$monthNumber]['weeks'])) {
+                                $maxWeeks = max($maxWeeks, count($data['monthlyComparison']['monthly_data'][$year][$monthNumber]['weeks']));
+                            }
+                        }
+                    @endphp
+                    
+                    @if($maxWeeks > 0)
+                        @for($weekNum = 1; $weekNum <= $maxWeeks; $weekNum++)
+                            <tr>
+                                @if($weekNum == 1)
+                                    <td rowspan="{{ $maxWeeks }}" class="month-cell" style="vertical-align: middle;">
+                                        {{ $monthName }}
+                                    </td>
+                                @endif
+                                
+                                <td class="week-cell">Week {{ $weekNum }}</td>
+                                
+                                @foreach($data['monthlyComparison']['years'] as $year)
+                                    @php
+                                        $weekData = null;
+                                        if (isset($data['monthlyComparison']['monthly_data'][$year][$monthNumber]['weeks'][$weekNum - 1])) {
+                                            $weekData = $data['monthlyComparison']['monthly_data'][$year][$monthNumber]['weeks'][$weekNum - 1];
+                                        }
+                                    @endphp
+                                    
+                                    @if($weekData)
+                                        @php
+                                            // Add to year totals
+                                            $yearTotals[$year]['total_by_weeks'] += $weekData['total_by_weeks'];
+                                            $yearTotals[$year]['total_by_converts'] += $weekData['total_by_converts'];
+                                            $yearTotals[$year]['balance_student'] += $weekData['balance_student'];
+                                        @endphp
+                                        <td class="date-range">{{ $weekData['date_range'] }}</td>
+                                        <td>{{ number_format($weekData['total_by_weeks']) }}</td>
+                                        <td>{{ number_format($weekData['total_by_converts']) }}</td>
+                                        <td>{{ number_format($weekData['balance_student']) }}</td>
+                                    @else
+                                        @php
+                                            // Generate date range even when no data exists
+                                            $monthStart = \Carbon\Carbon::createFromDate($year, $monthNumber, 1)->startOfMonth();
+                                            $monthEnd = \Carbon\Carbon::createFromDate($year, $monthNumber, 1)->endOfMonth();
+                                            
+                                            // Calculate week start and end for this specific week number
+                                            $start = $monthStart->copy();
+                                            for ($i = 1; $i < $weekNum; $i++) {
+                                                $weekStart = $start->copy();
+                                                $daysUntilSaturday = (6 - $weekStart->dayOfWeek) % 7;
+                                                $weekEnd = $weekStart->copy()->addDays($daysUntilSaturday);
+                                                if ($weekEnd->gt($monthEnd)) {
+                                                    $weekEnd = $monthEnd->copy();
+                                                }
+                                                $start = $weekEnd->copy()->addDay();
+                                            }
+                                            
+                                            // Calculate current week range
+                                            $weekStart = $start->copy();
+                                            $daysUntilSaturday = (6 - $weekStart->dayOfWeek) % 7;
+                                            $weekEnd = $weekStart->copy()->addDays($daysUntilSaturday);
+                                            if ($weekEnd->gt($monthEnd)) {
+                                                $weekEnd = $monthEnd->copy();
+                                            }
+                                            
+                                            $dateRange = $weekStart->format('j M Y') . ' - ' . $weekEnd->format('j M Y');
+                                        @endphp
+                                        <td class="date-range">{{ $dateRange }}</td>
+                                        <td>0</td>
+                                        <td>0</td>
+                                        <td>0</td>
+                                    @endif
+                                @endforeach
+                            </tr>
+                        @endfor
+                    @endif
+                @endforeach
+            @endif
+        </tbody>
+        <tfoot class="total-row">
+            <tr>
+                <td style="font-weight: bold;">TOTAL</td>
+                <td style="font-weight: bold;">All Weeks</td>
+                @foreach($data['monthlyComparison']['years'] as $year)
+                    <td style="font-weight: bold;">All Ranges</td>
+                    <td style="font-weight: bold;">{{ number_format($yearTotals[$year]['total_by_weeks']) }}</td>
+                    <td style="font-weight: bold;">{{ number_format($yearTotals[$year]['total_by_converts']) }}</td>
+                    <td style="font-weight: bold;">{{ number_format($yearTotals[$year]['balance_student']) }}</td>
+                @endforeach
+            </tr>
+        </tfoot>
+    </table>
     @endif
 
     <script>
