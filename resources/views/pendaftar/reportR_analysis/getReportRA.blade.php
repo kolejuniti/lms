@@ -41,6 +41,7 @@
             <tr>
                 <th style="width: 15%">Total Student R</th>
                 <th style="width: 15%">Total by Convert</th>
+                <th style="width: 15%">Registered Before Offer</th>
                 <th style="width: 15%">Balance Student</th>
                 <th style="width: 15%">Student Active</th>
                 <th style="width: 15%">Student Rejected</th>
@@ -53,6 +54,7 @@
           <tr>
             <td>{{ $data['allStudents'][$key] }}</td>
             <td>{{ $data['totalConvert'][$key] }}</td>
+            <td>{{ $data['registered_before_offer'][$key] }}</td>
             <td>{{ $data['allStudents'][$key] - $data['totalConvert'][$key] }}</td>
             <td>{{ $data['registered'][$key] }}</td>
             <td>{{ $data['rejected'][$key] }}</td>
@@ -78,6 +80,7 @@
             <tr>
                 <th style="width: 15%">Total Student R</th>
                 <th style="width: 15%">Total by Convert</th>
+                <th style="width: 15%">Registered Before Offer</th>
                 <th style="width: 15%">Balance Student</th>
                 <th style="width: 15%">Student Active</th>
                 <th style="width: 15%">Student Rejected</th>
@@ -91,6 +94,7 @@
             @php
             $total_all = array_sum($data['allStudents']);
             $total_convert = array_sum($data['totalConvert']);
+            $total_registered_before_offer = array_sum($data['registered_before_offer']);
             $total_registered = array_sum($data['registered']);
             $total_rejected = array_sum($data['rejected']);
             $total_offered = array_sum($data['offered']);
@@ -100,6 +104,7 @@
             @endphp
             <td>{{ $total_all }}</td>
             <td>{{ $total_convert }}</td>
+            <td>{{ $total_registered_before_offer }}</td>
             <td>{{ $grand_total - $total_convert }}</td>
             <td>{{ $total_registered }}</td>
             <td>{{ $total_rejected }}</td>
@@ -127,6 +132,7 @@
             <tr>
                 <th style="width: 15%">Total Student R</th>
                 <th style="width: 15%">Total by Convert</th>
+                <th style="width: 15%">Registered Before Offer</th>
                 <th style="width: 15%">Balance Student</th>
                 <th style="width: 15%">Student Active</th>
                 <th style="width: 15%">Student Rejected</th>
@@ -146,6 +152,7 @@
             @endphp
             <td>{{ $data['allStudents'] ?? 0 }}</td>
             <td>{{ $data['totalConvert'] ?? 0 }}</td>
+            <td>{{ $data['registered_before_offer'] ?? 0 }}</td>
             <td>{{ ($data['allStudents'] ?? 0) - ($data['totalConvert'] ?? 0) }}</td>
             <td>{{ $data['registered'] ?? 0 }}</td>
             <td>{{ $data['rejected'] ?? 0 }}</td>
