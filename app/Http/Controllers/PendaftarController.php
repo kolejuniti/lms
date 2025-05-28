@@ -4514,7 +4514,7 @@ class PendaftarController extends Controller
                 ->values()
                 ->toArray();
 
-            $registeredBeforeOffer = $students->where('status', 1)
+            $registeredBeforeOffer = $students->where('status', 2)
                 ->filter(function($student) use ($to) {
                     return \Carbon\Carbon::parse($student->date_offer)->lte($to);
                 })
@@ -4523,7 +4523,7 @@ class PendaftarController extends Controller
                 ->values()
                 ->toArray();
 
-            $registeredAfterOffer = $students->where('status', 1)
+            $registeredAfterOffer = $students->where('status', 2)
                 ->filter(function($student) use ($to) {
                     return \Carbon\Carbon::parse($student->date_offer)->gt($to);
                 })
