@@ -4340,6 +4340,8 @@ class PendaftarController extends Controller
         
         // Handle print for single range
         if ($request->has('print')) {
+            // Generate monthly comparison data for print view
+            $data['monthlyComparison'] = $this->generateMonthlyComparisonTable($request);
             return view('pendaftar.reportR_analysis.getReportRA_print', compact('data'));
         }
         
@@ -4396,12 +4398,11 @@ class PendaftarController extends Controller
             $data['tableLabels'][$index] = "Table {$range['table']} ({$range['from']} to {$range['to']})";
         }
 
+        // Generate monthly comparison data for both Excel export and print
+        $data['monthlyComparison'] = $this->generateMonthlyComparisonTable($request);
+
         // Handle Excel export for multiple ranges
         if ($request->has('excel')) {
-            // Generate monthly comparison data for Excel export
-            $monthlyComparison = $this->generateMonthlyComparisonTable($request);
-            $data['monthlyComparison'] = $monthlyComparison;
-            
             return $this->exportToExcelRA($data, true);
         }
 

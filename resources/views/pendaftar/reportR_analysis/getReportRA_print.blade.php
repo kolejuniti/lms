@@ -2,8 +2,6 @@
 <html>
 <head>
     <title>Student R Analysis Report</title>
-    <!-- Add jQuery for compatibility -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -391,7 +389,7 @@
     @endif
 
     <script>
-        // Simple and reliable auto-print function
+        // Simple and reliable auto-print function without jQuery dependency
         function autoPrint() {
             try {
                 // Wait for page to fully load
@@ -417,15 +415,6 @@
             });
         } else {
             setTimeout(autoPrint, 1000);
-        }
-        
-        // Fallback with jQuery if available
-        if (typeof $ !== 'undefined') {
-            $(document).ready(function() {
-                setTimeout(function() {
-                    window.print();
-                }, 1200);
-            });
         }
     </script>
 </body>
