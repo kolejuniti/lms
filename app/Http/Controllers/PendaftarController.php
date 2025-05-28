@@ -19,6 +19,8 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use GuzzleHttp\Client;
+use Illuminate\Database\QueryException;
+use Exception;
 
 class PendaftarController extends Controller
 {
@@ -1398,12 +1400,12 @@ class PendaftarController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return ["message"=>"Field Error", "error" => $validator->messages()->get('*')];
+            return ["message"=>"Field Error", "error" => $validator->errors()->get('*')];
         }
 
         try{ 
             DB::beginTransaction();
-            DB::connection()->enableQueryLog();
+            // DB::connection()->enableQueryLog(); // Deprecated method removed
 
             try{
                 $student = json_decode($studentData);
@@ -1586,7 +1588,7 @@ class PendaftarController extends Controller
                 if($ex->getCode() == 23000){
                     return ["message"=>"Class code already existed inside the system"];
                 }else{
-                    \Log::debug($ex);
+                    Log::debug($ex);
                     return ["message"=>"DB Error"];
                 }
             }
@@ -3878,16 +3880,16 @@ class PendaftarController extends Controller
                         ->values()
                         ->toArray();
                     $currentOfferedStudents = $weeklyStudents->where('status', 1)
-                        ->filter(function($student) {
-                            return \Carbon\Carbon::parse($student->date_offer)->gt(now());
+                        ->filter(function($student) use ($endDate) {
+                            return \Carbon\Carbon::parse($student->date_offer)->gt($endDate);
                         })
                         ->pluck('student_ic')
                         ->unique()
                         ->values()
                         ->toArray();
                     $currentKIVStudents = $weeklyStudents->where('status', 1)
-                        ->filter(function($student) {
-                            return \Carbon\Carbon::parse($student->date_offer)->lte(now());
+                        ->filter(function($student) use ($endDate) {
+                            return \Carbon\Carbon::parse($student->date_offer)->lte($endDate);
                         })
                         ->pluck('student_ic')
                         ->unique()
@@ -3988,8 +3990,8 @@ class PendaftarController extends Controller
                             ->toArray();
 
                         $currentDayOfferedStudents = $dailyStudents->where('status', 1)
-                            ->filter(function($student) {
-                                return \Carbon\Carbon::parse($student->date_offer)->gt(now());
+                            ->filter(function($student) use ($day) {
+                                return \Carbon\Carbon::parse($student->date_offer)->gt($day);
                             })
                             ->pluck('student_ic')
                             ->unique()
@@ -3997,8 +3999,8 @@ class PendaftarController extends Controller
                             ->toArray();
 
                         $currentDayKIVStudents = $dailyStudents->where('status', 1)
-                            ->filter(function($student) {
-                                return \Carbon\Carbon::parse($student->date_offer)->lte(now());
+                            ->filter(function($student) use ($day) {
+                                return \Carbon\Carbon::parse($student->date_offer)->lte($day);
                             })
                             ->pluck('student_ic')
                             ->unique()
@@ -4505,6 +4507,16 @@ class PendaftarController extends Controller
                 ->unique()
                 ->values()
                 ->toArray();
+
+            $registeredBeforeOffer = $students->where('status', 1)
+                ->filter(function($student) use ($to) {
+                    return \Carbon\Carbon::parse($student->date_offer)->lt($to);
+                })
+                ->pluck('student_ic')
+                ->unique()
+                ->values()
+                ->toArray();
+
             $currentRegisteredStudents = $students->where('status', 2)
                 ->pluck('student_ic')
                 ->unique()
@@ -4754,9 +4766,9 @@ class PendaftarController extends Controller
                                     $row[] = $weekData['total_by_converts'];
                                     $row[] = $weekData['balance_student'];
                                 } else {
-                                    $row[] = '-';
-                                    $row[] = '-';
-                                    $row[] = '-';
+                                    $row[] = 0;
+                                    $row[] = 0;
+                                    $row[] = 0;
                                 }
                             }
                             

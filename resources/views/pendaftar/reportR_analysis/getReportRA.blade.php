@@ -44,8 +44,8 @@
                 <th style="width: 15%">Balance Student</th>
                 <th style="width: 15%">Student Active</th>
                 <th style="width: 15%">Student Rejected</th>
-                <th style="width: 15%">Student Offered</th>
-                <th style="width: 15%">Student KIV <i class="fa fa-info-circle text-info" data-toggle="tooltip" data-placement="top" title="Students whose current date has passed their offered date"></i></th>
+                <th style="width: 15%">Student Offered <i class="fa fa-info-circle text-info" data-toggle="tooltip" data-placement="top" title="Students whose offer date is after the end date of the selected range"></i></th>
+                <th style="width: 15%">Student KIV <i class="fa fa-info-circle text-info" data-toggle="tooltip" data-placement="top" title="Students whose offer date is on or before the end date of the selected range"></i></th>
                 <th style="width: 15%">Student Others <i class="fa fa-info-circle text-info" data-toggle="tooltip" data-placement="top" title="Includes: GAGAL BERHENTI, TARIK DIRI, MENINGGAL DUNIA, TANGGUH, DIBERHENTIKAN, TAMAT PENGAJIAN, TUKAR PROGRAM, GANTUNG, TUKAR KE KUKB, PINDAH KOLEJ, TIDAK TAMAT PENGAJIAN, TAMAT PENGAJIAN (MENINGGAL DUNIA)"></i></th>
             </tr>
         </thead>
@@ -130,8 +130,8 @@
                 <th style="width: 15%">Balance Student</th>
                 <th style="width: 15%">Student Active</th>
                 <th style="width: 15%">Student Rejected</th>
-                <th style="width: 15%">Student Offered</th>
-                <th style="width: 15%">Student KIV <i class="fa fa-info-circle text-info" data-toggle="tooltip" data-placement="top" title="Students whose current date has passed their offered date"></i></th>
+                <th style="width: 15%">Student Offered <i class="fa fa-info-circle text-info" data-toggle="tooltip" data-placement="top" title="Students whose offer date is after the end date of the selected range"></i></th>
+                <th style="width: 15%">Student KIV <i class="fa fa-info-circle text-info" data-toggle="tooltip" data-placement="top" title="Students whose offer date is on or before the end date of the selected range"></i></th>
                 <th style="width: 15%">Student Others <i class="fa fa-info-circle text-info" data-toggle="tooltip" data-placement="top" title="Includes: GAGAL BERHENTI, TARIK DIRI, MENINGGAL DUNIA, TANGGUH, DIBERHENTIKAN, TAMAT PENGAJIAN, TUKAR PROGRAM, GANTUNG, TUKAR KE KUKB, PINDAH KOLEJ, TIDAK TAMAT PENGAJIAN, TAMAT PENGAJIAN (MENINGGAL DUNIA)"></i></th>
             </tr>
         </thead>
