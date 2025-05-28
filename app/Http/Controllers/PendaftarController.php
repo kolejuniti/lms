@@ -4330,6 +4330,28 @@ class PendaftarController extends Controller
             return view('pendaftar.reportR_analysis.getReportRA', compact('data'));
         }
 
+        // Handle print request without any date selection (default case)
+        if ($request->has('print') && !$request->from && !$request->to && !$request->multiple_tables) {
+            // Return empty data structure for print view
+            $data = [
+                'allStudents' => 0,
+                'totalConvert' => 0,
+                'registered' => 0,
+                'rejected' => 0,
+                'offered' => 0,
+                'KIV' => 0,
+                'others' => 0
+            ];
+            
+            // Generate empty monthly comparison data
+            $data['monthlyComparison'] = [
+                'years' => [],
+                'monthly_data' => []
+            ];
+            
+            return view('pendaftar.reportR_analysis.getReportRA_print', compact('data'));
+        }
+
         // Original single date range logic
         $data = $this->processSingleDateRange($request->from, $request->to);
         
@@ -4424,6 +4446,11 @@ class PendaftarController extends Controller
             'KIV' => 0,
             'others' => 0
         ];
+
+        // Return empty data if no date range provided
+        if (!$from || !$to) {
+            return $data;
+        }
 
         // First, let's check if there are any payments in the date range at all
         try {

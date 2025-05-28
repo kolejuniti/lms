@@ -323,62 +323,148 @@
   });
 
   function printReport() {
-    // Check if using multiple tables or single range
-    const tableCount = parseInt($('#table_count').val());
+    $('#loading-overlay').removeClass('d-none');
     
-    if (tableCount > 0) {
-      // Use multiple date ranges for printing
-      const dateRanges = collectDateRanges();
-      
-      return $.ajax({
-        headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
-        url: "{{ url('pendaftar/student/reportRA/getStudentReportRA?print=true') }}",
-        method: 'GET',
-        data: { 
-          date_ranges: JSON.stringify(dateRanges),
-          multiple_tables: true
-        },
-        beforeSend: function() {
-          $('#loading-overlay').removeClass('d-none');
-        },
-        error: function(err) {
-          $('#loading-overlay').addClass('d-none');
-          alert("Error");
-          console.log(err);
-        },
-        success: function(data) {
-          $('#loading-overlay').addClass('d-none');
-          var newWindow = window.open();
-          newWindow.document.write(data);
-          newWindow.document.close();
-        }
-      });
-    } else {
-      // Use original single range method
-      var from = $('#from').val();
-      var to = $('#to').val();
-
-      return $.ajax({
-        headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
-        url: "{{ url('pendaftar/student/reportRA/getStudentReportRA?print=true') }}",
-        method: 'GET',
-        data: { from: from, to: to },
-        beforeSend: function() {
-            $('#loading-overlay').removeClass('d-none');
-        },
-        error: function(err) {
-          $('#loading-overlay').addClass('d-none');
-          alert("Error");
-          console.log(err);
-        },
-        success: function(data) {
-          $('#loading-overlay').addClass('d-none');
-          var newWindow = window.open();
-          newWindow.document.write(data);
-          newWindow.document.close();
-        }
-      });
+    // Get the existing content that's already displayed on the page
+    let printContent = '';
+    
+    // Check if we have data loaded on the page
+    const hasData = $('#form-student').children().length > 0;
+    
+    if (!hasData) {
+      $('#loading-overlay').addClass('d-none');
+      alert("No data to print. Please select date ranges and load data first.");
+      return;
     }
+    
+    // Build the print HTML with the existing data
+    printContent = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Student R Analysis Report</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                margin: 20px;
+                font-size: 12px;
+            }
+            .header {
+                text-align: center;
+                margin-bottom: 30px;
+            }
+            .table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-bottom: 30px;
+            }
+            .table th, .table td {
+                border: 1px solid #ddd;
+                padding: 8px;
+                text-align: center;
+            }
+            .table th {
+                background-color: #f2f2f2;
+                font-weight: bold;
+            }
+            .table-title {
+                font-weight: bold;
+                margin-bottom: 10px;
+                padding: 10px;
+                background-color: #007bff;
+                color: white;
+                text-align: center;
+            }
+            .summary-title {
+                font-weight: bold;
+                margin-top: 30px;
+                margin-bottom: 10px;
+                padding: 10px;
+                background-color: #28a745;
+                color: white;
+                text-align: center;
+            }
+            @media print {
+                body { margin: 0; }
+                .no-print { display: none; }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            <h2>Student R Analysis Report</h2>
+            <p>Generated on: ${new Date().toLocaleString()}</p>
+            <div style="margin: 10px 0; text-align: center;" class="no-print">
+                <button onclick="window.print()" style="padding: 10px 20px; font-size: 14px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                    🖨️ Print This Report
+                </button>
+            </div>
+        </div>
+    `;
+    
+    // Extract table data from the existing DOM
+    const tables = $('#form-student .card');
+    
+    tables.each(function(index, element) {
+        const $card = $(element);
+        const cardHeader = $card.find('.card-header b').text();
+        const tableRows = $card.find('tbody tr');
+        
+        if (tableRows.length > 0) {
+            printContent += `<div class="table-title">${cardHeader}</div>`;
+            printContent += '<table class="table">';
+            
+            // Add header
+            printContent += `
+            <thead>
+                <tr>
+                    <th>Total Student R</th>
+                    <th>Total by Convert</th>
+                    <th>Balance Student</th>
+                    <th>Student Active</th>
+                    <th>Student Rejected</th>
+                    <th>Student Offered</th>
+                    <th>Student KIV</th>
+                    <th>Student Others</th>
+                </tr>
+            </thead>
+            <tbody>
+            `;
+            
+            // Add data rows
+            tableRows.each(function() {
+                const cells = $(this).find('td');
+                if (cells.length > 0) {
+                    printContent += '<tr>';
+                    cells.each(function() {
+                        printContent += `<td>${$(this).text().trim()}</td>`;
+                    });
+                    printContent += '</tr>';
+                }
+            });
+            
+            printContent += '</tbody></table>';
+        }
+    });
+    
+    printContent += `
+        <script>
+            // Auto-print when page loads
+            window.onload = function() {
+                setTimeout(function() {
+                    window.print();
+                }, 1000);
+            };
+        </script>
+    </body>
+    </html>
+    `;
+    
+    // Open print window with the captured content
+    $('#loading-overlay').addClass('d-none');
+    const newWindow = window.open();
+    newWindow.document.write(printContent);
+    newWindow.document.close();
   }
   </script>
 @endsection
