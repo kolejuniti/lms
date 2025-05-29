@@ -4998,6 +4998,7 @@ class PendaftarController extends Controller
                     'p1.student_ic',
                     'p1.date',
                     'students.status',
+                    'students.date_offer',
                     DB::raw('YEAR(p1.date) as payment_year'),
                     DB::raw('MONTH(p1.date) as payment_month'),
                     DB::raw('DATE(p1.date) as payment_date')
@@ -5064,7 +5065,12 @@ class PendaftarController extends Controller
         $monthlyTotals = [
             'total_by_weeks' => 0,
             'total_by_converts' => 0,
-            'balance_student' => 0
+            'balance_student' => 0,
+            'total_active' => 0,
+            'total_rejected' => 0,
+            'total_offered' => 0,
+            'total_kiv' => 0,
+            'total_others' => 0
         ];
 
         $month = $monthStart->month;
@@ -5105,12 +5111,22 @@ class PendaftarController extends Controller
                 'date_range' => $weekStart->format('j M Y') . ' - ' . $weekEnd->format('j M Y'),
                 'total_by_weeks' => $weekData['total_week'],
                 'total_by_converts' => $weekData['total_convert'], 
-                'balance_student' => $weekData['total_week'] - $weekData['total_convert']
+                'balance_student' => $weekData['total_week'] - $weekData['total_convert'],
+                'total_active' => $weekData['total_active'],
+                'total_rejected' => $weekData['total_rejected'],
+                'total_offered' => $weekData['total_offered'],
+                'total_kiv' => $weekData['total_kiv'],
+                'total_others' => $weekData['total_others']
             ];
 
             // Update monthly totals
             $monthlyTotals['total_by_weeks'] += $weekData['total_week'];
             $monthlyTotals['total_by_converts'] += $weekData['total_convert'];
+            $monthlyTotals['total_active'] += $weekData['total_active'];
+            $monthlyTotals['total_rejected'] += $weekData['total_rejected'];
+            $monthlyTotals['total_offered'] += $weekData['total_offered'];
+            $monthlyTotals['total_kiv'] += $weekData['total_kiv'];
+            $monthlyTotals['total_others'] += $weekData['total_others'];
             
             // Update already counted students
             $alreadyCountedStudents = array_merge($alreadyCountedStudents, $weekData['students']);
@@ -5132,6 +5148,12 @@ class PendaftarController extends Controller
     {
         $currentWeekStudents = [];
         $currentConvertStudents = [];
+        $totalActive = [];
+        $totalRejected = [];
+        $totalOffered = [];
+        $totalKiv = [];
+        $totalOthers = [];
+        
         
         // Iterate through each day in the week range
         $current = $startDate->copy();
@@ -5154,6 +5176,32 @@ class PendaftarController extends Controller
                     if ($student->status != 1 && $student->status != 14 && !in_array($student->student_ic, $currentConvertStudents)) {
                         $currentConvertStudents[] = $student->student_ic;
                     }
+
+                    // Check if active (status == 2)
+                    if ($student->status == 2 && !in_array($student->student_ic, $totalActive)) {
+                        $totalActive[] = $student->student_ic;
+                    }
+
+                    // Check if rejected (status == 14)
+                    if ($student->status == 14 && !in_array($student->student_ic, $totalRejected)) {
+                        $totalRejected[] = $student->student_ic;
+                    }
+
+                    // Check if offered (status == 1) && (date_offer is more than now)
+                    if ($student->status == 1 && $student->date_offer > now() && !in_array($student->student_ic, $totalOffered)) {
+                        $totalOffered[] = $student->student_ic;
+                    }
+
+                    // Check if KIV (status == 1) && (date_offer is less than now)
+                    if ($student->status == 1 && $student->date_offer < now() && !in_array($student->student_ic, $totalKiv)) {
+                        $totalKiv[] = $student->student_ic;
+                    }
+
+                    // Check if others (status != 1 && status != 14)
+                    if ($student->status != 1 && $student->status != 14 && $student->status != 2 && !in_array($student->student_ic, $totalOthers)) {
+                        $totalOthers[] = $student->student_ic;
+                    }
+                    
                 }
             }
             
@@ -5163,7 +5211,12 @@ class PendaftarController extends Controller
         return [
             'total_week' => count($currentWeekStudents),
             'total_convert' => count($currentConvertStudents),
-            'students' => $currentWeekStudents
+            'total_active' => count($totalActive),
+            'total_rejected' => count($totalRejected),
+            'total_offered' => count($totalOffered),
+            'total_kiv' => count($totalKiv),
+            'total_others' => count($totalOthers),
+            'students' => $currentWeekStudents,
         ];
     }
 

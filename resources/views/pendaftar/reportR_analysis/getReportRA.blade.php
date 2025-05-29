@@ -225,6 +225,11 @@
               <th style="width: 80px; border: 1px solid black;">Total Student R By Weeks</th>
               <th style="width: 80px; border: 1px solid black;">Total Student R By Converts</th>
               <th style="width: 80px; border: 1px solid black;">Balance Student R</th>
+              <th style="width: 80px; border: 1px solid black;">Student Active</th>
+              <th style="width: 80px; border: 1px solid black;">Student Rejected</th>
+              <th style="width: 80px; border: 1px solid black;">Student Offered</th>
+              <th style="width: 80px; border: 1px solid black;">Student KIV</th>
+              <th style="width: 80px; border: 1px solid black;">Student Others</th>
             @endforeach
           </tr>
         </thead>
@@ -259,7 +264,12 @@
               $yearTotals[$year] = [
                 'total_by_weeks' => 0,
                 'total_by_converts' => 0,
-                'balance_student' => 0
+                'balance_student' => 0,
+                'total_active' => 0,
+                'total_rejected' => 0,
+                'total_offered' => 0,
+                'total_kiv' => 0,
+                'total_others' => 0
               ];
             }
           @endphp
@@ -313,6 +323,11 @@
                           $yearTotals[$year]['total_by_weeks'] += $weekData['total_by_weeks'];
                           $yearTotals[$year]['total_by_converts'] += $weekData['total_by_converts'];
                           $yearTotals[$year]['balance_student'] += $weekData['balance_student'];
+                          $yearTotals[$year]['total_active'] += $weekData['total_active'];
+                          $yearTotals[$year]['total_rejected'] += $weekData['total_rejected'];
+                          $yearTotals[$year]['total_offered'] += $weekData['total_offered'];
+                          $yearTotals[$year]['total_kiv'] += $weekData['total_kiv'];
+                          $yearTotals[$year]['total_others'] += $weekData['total_others'];
                         @endphp
                         <td class="text-center" style="border: 1px solid black; font-size: 10px; padding: 4px;">
                           <small class="text-muted">{{ $weekData['date_range'] }}</small>
@@ -320,6 +335,11 @@
                         <td class="text-center" style="border: 1px solid black;">{{ number_format($weekData['total_by_weeks']) }}</td>
                         <td class="text-center" style="border: 1px solid black;">{{ number_format($weekData['total_by_converts']) }}</td>
                         <td class="text-center" style="border: 1px solid black;">{{ number_format($weekData['balance_student']) }}</td>
+                        <td class="text-center" style="border: 1px solid black;">{{ number_format($weekData['total_active']) }}</td>
+                        <td class="text-center" style="border: 1px solid black;">{{ number_format($weekData['total_rejected']) }}</td>
+                        <td class="text-center" style="border: 1px solid black;">{{ number_format($weekData['total_offered']) }}</td>
+                        <td class="text-center" style="border: 1px solid black;">{{ number_format($weekData['total_kiv']) }}</td>
+                        <td class="text-center" style="border: 1px solid black;">{{ number_format($weekData['total_others']) }}</td>
                       @else
                         @php
                           // Generate date range even when no data exists
@@ -354,6 +374,11 @@
                         <td class="text-center" style="border: 1px solid black;">0</td>
                         <td class="text-center" style="border: 1px solid black;">0</td>
                         <td class="text-center" style="border: 1px solid black;">0</td>
+                        <td class="text-center" style="border: 1px solid black;">0</td>
+                        <td class="text-center" style="border: 1px solid black;">0</td>
+                        <td class="text-center" style="border: 1px solid black;">0</td>
+                        <td class="text-center" style="border: 1px solid black;">0</td>
+                        <td class="text-center" style="border: 1px solid black;">0</td>
                       @endif
                     @endforeach
                   </tr>
@@ -371,6 +396,11 @@
               <td class="text-center" style="border: 1px solid black; background-color: #e9ecef;">{{ number_format($yearTotals[$year]['total_by_weeks']) }}</td>
               <td class="text-center" style="border: 1px solid black; background-color: #e9ecef;">{{ number_format($yearTotals[$year]['total_by_converts']) }}</td>
               <td class="text-center" style="border: 1px solid black; background-color: #e9ecef;">{{ number_format($yearTotals[$year]['balance_student']) }}</td>
+              <td class="text-center" style="border: 1px solid black; background-color: #e9ecef;">{{ number_format($yearTotals[$year]['total_active']) }}</td>
+              <td class="text-center" style="border: 1px solid black; background-color: #e9ecef;">{{ number_format($yearTotals[$year]['total_rejected']) }}</td>
+              <td class="text-center" style="border: 1px solid black; background-color: #e9ecef;">{{ number_format($yearTotals[$year]['total_offered']) }}</td>
+              <td class="text-center" style="border: 1px solid black; background-color: #e9ecef;">{{ number_format($yearTotals[$year]['total_kiv']) }}</td>
+              <td class="text-center" style="border: 1px solid black; background-color: #e9ecef;">{{ number_format($yearTotals[$year]['total_others']) }}</td>
             @endforeach
           </tr>
         </tfoot>
