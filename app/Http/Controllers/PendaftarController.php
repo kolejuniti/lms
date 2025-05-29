@@ -4367,8 +4367,43 @@ class PendaftarController extends Controller
         // Handle print for single range
         if ($request->has('print')) {
             // Generate monthly comparison data for print view
-            $data['monthlyComparison'] = $this->generateMonthlyComparisonTable($request);
+            if ($request->from && $request->to) {
+                // Create a fake date_ranges structure for the generateMonthlyComparisonTable method
+                $singleDateRange = [
+                    [
+                        'table' => 1,
+                        'from' => $request->from,
+                        'to' => $request->to
+                    ]
+                ];
+                
+                // Create a new request with the date_ranges parameter
+                $modifiedRequest = clone $request;
+                $modifiedRequest->merge(['date_ranges' => json_encode($singleDateRange)]);
+                
+                $data['monthlyComparison'] = $this->generateMonthlyComparisonTable($modifiedRequest);
+            } else {
+                $data['monthlyComparison'] = ['years' => [], 'monthly_data' => []];
+            }
             return view('pendaftar.reportR_analysis.getReportRA_print', compact('data'));
+        }
+        
+        // Generate monthly comparison data for regular view with single date range
+        if ($request->from && $request->to) {
+            // Create a fake date_ranges structure for the generateMonthlyComparisonTable method
+            $singleDateRange = [
+                [
+                    'table' => 1,
+                    'from' => $request->from,
+                    'to' => $request->to
+                ]
+            ];
+            
+            // Create a new request with the date_ranges parameter
+            $modifiedRequest = clone $request;
+            $modifiedRequest->merge(['date_ranges' => json_encode($singleDateRange)]);
+            
+            $data['monthlyComparison'] = $this->generateMonthlyComparisonTable($modifiedRequest);
         }
         
         return view('pendaftar.reportR_analysis.getReportRA', compact('data'));
