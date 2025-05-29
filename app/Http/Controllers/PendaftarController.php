@@ -5696,4 +5696,108 @@ class PendaftarController extends Controller
         
         return $prompt;
     }
+
+    public function getFilteredData(Request $request)
+    {
+        try {
+            // Validate required parameters
+            $request->validate([
+                'year' => 'required|integer',
+                'from_date' => 'required|date',
+                'to_date' => 'required|date',
+                'filter_type' => 'required|string'
+            ]);
+
+            $year = $request->year;
+            $fromDate = $request->from_date;
+            $toDate = $request->to_date;
+            $filterType = $request->filter_type;
+
+            Log::info('getFilteredData called with parameters:', [
+                'year' => $year,
+                'from_date' => $fromDate,
+                'to_date' => $toDate,
+                'filter_type' => $filterType
+            ]);
+
+            // Get students with status=2 and date_offer in the specified range for the given year
+            $filteredStudents = DB::table('tblpayment as p1')
+                ->select([
+                    'p1.student_ic',
+                    'p1.date',
+                    DB::raw('YEAR(p1.date) as payment_year'),
+                    DB::raw('MONTH(p1.date) as payment_month'),
+                    DB::raw('WEEK(p1.date, 1) as payment_week'),
+                    'students.date_offer'
+                ])
+                ->join('students', 'p1.student_ic', '=', 'students.ic')
+                ->join(DB::raw('(
+                    SELECT student_ic, MIN(date) as first_payment_date 
+                    FROM tblpayment 
+                    WHERE process_status_id = 2 
+                    AND process_type_id = 1 
+                    AND semester_id = 1
+                    GROUP BY student_ic
+                ) as p2'), function($join) {
+                    $join->on('p1.student_ic', '=', 'p2.student_ic')
+                         ->on('p1.date', '=', 'p2.first_payment_date');
+                })
+                ->where([
+                    ['p1.process_status_id', 2],
+                    ['p1.process_type_id', 1], 
+                    ['p1.semester_id', 1],
+                    ['students.status', 2] // Only active students
+                ])
+                ->whereYear('p1.date', $year)
+                ->whereBetween('students.date_offer', [$fromDate, $toDate])
+                ->get();
+
+            Log::info('Filtered students found:', ['count' => $filteredStudents->count()]);
+
+            // Group data by month and week
+            $weeklyData = [];
+            
+            foreach ($filteredStudents as $student) {
+                $month = $student->payment_month;
+                $week = $student->payment_week;
+                
+                // Create a key for the week data
+                $weekKey = $month . '_' . $week;
+                
+                if (!isset($weeklyData[$weekKey])) {
+                    $weeklyData[$weekKey] = 0;
+                }
+                
+                $weeklyData[$weekKey]++;
+            }
+
+            Log::info('Weekly data processed:', $weeklyData);
+
+            $response = [
+                'success' => true,
+                'data' => [
+                    'filter_type' => $filterType,
+                    'year' => $year,
+                    'from_date' => $fromDate,
+                    'to_date' => $toDate,
+                    'total_students' => $filteredStudents->count(),
+                    'weekly_data' => $weeklyData
+                ]
+            ];
+
+            Log::info('getFilteredData response:', $response);
+
+            return response()->json($response);
+
+        } catch (\Exception $e) {
+            Log::error('Error in getFilteredData: ' . $e->getMessage(), [
+                'exception' => $e,
+                'trace' => $e->getTraceAsString()
+            ]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Error fetching filtered data: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }
