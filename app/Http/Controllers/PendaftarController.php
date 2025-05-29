@@ -5757,18 +5757,74 @@ class PendaftarController extends Controller
             // Group data by month and week
             $weeklyData = [];
             
+            // First, group by month and collect all dates
+            $monthlyGroups = [];
             foreach ($filteredStudents as $student) {
                 $month = $student->payment_month;
-                $week = $student->payment_week;
+                $date = $student->date;
                 
-                // Create a key for the week data
-                $weekKey = $month . '_' . $week;
-                
-                if (!isset($weeklyData[$weekKey])) {
-                    $weeklyData[$weekKey] = 0;
+                if (!isset($monthlyGroups[$month])) {
+                    $monthlyGroups[$month] = [];
                 }
                 
-                $weeklyData[$weekKey]++;
+                $monthlyGroups[$month][] = $date;
+            }
+            
+            // Now process each month and assign sequential week numbers
+            foreach ($monthlyGroups as $month => $dates) {
+                // Get unique dates and sort them
+                $uniqueDates = array_unique($dates);
+                sort($uniqueDates);
+                
+                // Group dates by weeks within the month
+                $monthStart = date('Y-m-01', strtotime($year . '-' . str_pad($month, 2, '0', STR_PAD_LEFT) . '-01'));
+                $monthWeeks = [];
+                
+                foreach ($uniqueDates as $date) {
+                    // Calculate week number within the month (1-based)
+                    $dateObj = new \DateTime($date);
+                    $monthStartObj = new \DateTime($monthStart);
+                    
+                    // Find the first Sunday of the month or the month start if it's Sunday
+                    $firstSunday = clone $monthStartObj;
+                    while ($firstSunday->format('w') != 0) { // 0 = Sunday
+                        $firstSunday->modify('+1 day');
+                    }
+                    
+                    // If the month doesn't start on Sunday, week 1 starts from month start
+                    if ($firstSunday->format('j') > 1) {
+                        $weekStartRef = $monthStartObj;
+                    } else {
+                        $weekStartRef = $firstSunday;
+                    }
+                    
+                    // Calculate week number within month
+                    $daysDiff = $dateObj->diff($weekStartRef)->days;
+                    $weekNumber = floor($daysDiff / 7) + 1;
+                    
+                    // Ensure week number is at least 1 and doesn't exceed reasonable limits
+                    $weekNumber = max(1, min($weekNumber, 6));
+                    
+                    if (!isset($monthWeeks[$weekNumber])) {
+                        $monthWeeks[$weekNumber] = 0;
+                    }
+                    
+                    // Count how many students have payments on this date
+                    $studentsOnThisDate = 0;
+                    foreach ($filteredStudents as $student) {
+                        if ($student->payment_month == $month && $student->date == $date) {
+                            $studentsOnThisDate++;
+                        }
+                    }
+                    
+                    $monthWeeks[$weekNumber] += $studentsOnThisDate;
+                }
+                
+                // Add to weeklyData with month_week format
+                foreach ($monthWeeks as $weekNum => $count) {
+                    $weekKey = $month . '_' . $weekNum;
+                    $weeklyData[$weekKey] = $count;
+                }
             }
 
             Log::info('Weekly data processed:', $weeklyData);

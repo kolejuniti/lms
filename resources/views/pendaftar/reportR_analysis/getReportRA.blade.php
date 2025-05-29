@@ -457,13 +457,36 @@ $(document).ready(function() {
   // Initialize tooltips
   $('[data-toggle="tooltip"]').tooltip();
   
-  // Initialize active filters storage
+  // Initialize global filter data storage
+  window.filterData = {};
   window.activeFilters = {};
   @foreach($data['monthlyComparison']['years'] as $year)
     window.activeFilters[{{ $year }}] = [];
-    // Initialize filter display for each year
     updateFiltersDisplay({{ $year }});
   @endforeach
+  
+  console.log('Filter system initialized for years:', @json($data['monthlyComparison']['years']));
+  console.log('Active filters initialized:', window.activeFilters);
+  
+  // Add test function for debugging
+  window.debugTable = function() {
+    console.log('=== TABLE DEBUG INFO ===');
+    console.log('Header row children count:', $('#column_header_row').children().length);
+    console.log('Year header row children count:', $('#year_header_row').children().length);
+    console.log('First data row children count:', $('#table_body tr').first().children().length);
+    console.log('Footer row children count:', $('tfoot tr').children().length);
+    
+    console.log('Active filters:', window.activeFilters);
+    console.log('Filter data:', window.filterData);
+    
+    // Log header structure
+    $('#column_header_row').children().each(function(index) {
+      console.log(`Header ${index}:`, $(this).text().trim());
+    });
+  };
+  
+  // Call debug function initially
+  window.debugTable();
   
   // Bind export button click handler
   $(document).off('click', '#exportBtn').on('click', '#exportBtn', function(e) {
@@ -624,20 +647,15 @@ function collectDateRanges() {
   return ranges;
 }
 
-// Add filter function
+// Completely rewrite addFilter with bulletproof approach
 function addFilter(year) {
   const filterType = $(`#filter_type_${year}`).val();
   const fromDate = $(`#filter_from_${year}`).val();
   const toDate = $(`#filter_to_${year}`).val();
   
   // Validation
-  if (!filterType) {
-    alert('Please select a filter type');
-    return;
-  }
-  
-  if (!fromDate || !toDate) {
-    alert('Please select both from and to dates');
+  if (!filterType || !fromDate || !toDate) {
+    alert('Please fill all filter fields');
     return;
   }
   
@@ -646,7 +664,7 @@ function addFilter(year) {
     return;
   }
   
-  // Check if filter type already exists for this year
+  // Check if filter type already exists
   const existingFilter = window.activeFilters[year].find(f => f.type === filterType);
   if (existingFilter) {
     alert(`Filter type "${filterType}" already exists for year ${year}`);
@@ -655,7 +673,7 @@ function addFilter(year) {
   
   // Create filter object
   const filter = {
-    id: Date.now(), // Unique ID
+    id: Date.now(),
     type: filterType,
     from: fromDate,
     to: toDate,
@@ -667,25 +685,250 @@ function addFilter(year) {
   
   // Update UI
   updateFiltersDisplay(year);
-  updateTableColumns();
   
   // Clear input fields
   $(`#filter_type_${year}`).val('');
   $(`#filter_from_${year}`).val('');
   $(`#filter_to_${year}`).val('');
   
-  // Fetch filtered data
-  fetchFilteredData(filter);
+  // Fetch data for this filter
+  fetchFilterData(filter);
 }
 
-// Remove filter function
-function removeFilter(year, filterId) {
-  // Remove from active filters
-  window.activeFilters[year] = window.activeFilters[year].filter(f => f.id !== filterId);
+// Fetch filter data
+function fetchFilterData(filter) {
+  $.ajax({
+    url: "{{ url('pendaftar/student/reportRA/getFilteredData') }}",
+    method: 'POST',
+    data: {
+      _token: $('meta[name="csrf-token"]').attr('content'),
+      year: filter.year,
+      from_date: filter.from,
+      to_date: filter.to,
+      filter_type: filter.type
+    },
+    success: function(response) {
+      console.log('Filter data received:', response);
+      
+      if (response.success && response.data && response.data.weekly_data) {
+        // Store filter data globally
+        window.filterData[filter.id] = response.data.weekly_data;
+        
+        // Add filter column to table
+        addFilterColumnToTable(filter);
+        
+        // Populate filter data in table
+        populateFilterData(filter);
+        
+      } else {
+        alert('Error: No data received for filter');
+        console.error('Invalid response:', response);
+      }
+    },
+    error: function(xhr, status, error) {
+      alert('Error fetching filter data: ' + error);
+      console.error('AJAX error:', xhr.responseText);
+    }
+  });
+}
+
+// Add filter column to table header and update colspan
+function addFilterColumnToTable(filter) {
+  console.log('Adding filter column for:', filter.type, 'year:', filter.year);
   
-  // Update UI
-  updateFiltersDisplay(year);
-  updateTableColumns();
+  const columnHeaderRow = $('#column_header_row');
+  const yearHeaders = @json($data['monthlyComparison']['years']);
+  const yearIndex = yearHeaders.indexOf(filter.year);
+  
+  console.log('Year index:', yearIndex, 'Year headers:', yearHeaders);
+  console.log('Current column headers count:', columnHeaderRow.children().length);
+  
+  // Create the filter header
+  const filterHeader = `
+    <th class="filter-header filter-${filter.id}" style="width: 80px; border: 1px solid black; background-color: #e3f2fd; font-size: 11px; text-align: center; color: #000;">
+      <div style="padding: 2px; word-wrap: break-word;">${filter.type}</div>
+    </th>
+  `;
+  
+  if (yearIndex !== -1) {
+    // For simplicity, let's just append the filter column at the end of the current year's columns
+    // This ensures it shows up and we can debug positioning later
+    
+    // Find the last column for this year
+    let insertAfterIndex = 1; // Start after Week column
+    
+    // Add columns for previous years
+    for (let i = 0; i < yearIndex; i++) {
+      const prevYear = yearHeaders[i];
+      const prevYearFilterCount = window.activeFilters[prevYear] ? window.activeFilters[prevYear].length : 0;
+      insertAfterIndex += 9 + prevYearFilterCount; // 9 base columns + filters for previous year
+    }
+    
+    // Add base columns for current year
+    insertAfterIndex += 9;
+    
+    // Add existing filters for current year (excluding the one we're adding)
+    const existingFiltersForYear = window.activeFilters[filter.year].length - 1;
+    insertAfterIndex += existingFiltersForYear;
+    
+    console.log('Calculated insert position:', insertAfterIndex);
+    
+    // Insert the header
+    const headerCells = columnHeaderRow.children();
+    console.log('Header cells count:', headerCells.length);
+    
+    if (insertAfterIndex < headerCells.length) {
+      $(headerCells[insertAfterIndex]).after(filterHeader);
+      console.log('Inserted header after position', insertAfterIndex);
+    } else {
+      columnHeaderRow.append(filterHeader);
+      console.log('Appended header at end');
+    }
+  } else {
+    // Fallback: append at the end
+    columnHeaderRow.append(filterHeader);
+    console.log('Fallback: appended header at end');
+  }
+  
+  // Update year header colspan
+  const filterCount = window.activeFilters[filter.year].length;
+  const yearHeaderSelector = `[data-year="${filter.year}"]`;
+  const yearHeaderElement = $(yearHeaderSelector);
+  
+  console.log('Year header element found:', yearHeaderElement.length);
+  console.log('Setting colspan to:', 9 + filterCount);
+  
+  yearHeaderElement.attr('colspan', 9 + filterCount);
+  
+  // Add empty cells to all data rows with a distinct identifier
+  $('#table_body tr').each(function(rowIndex) {
+    const row = $(this);
+    const emptyCell = `<td class="text-center filter-data filter-${filter.id}" 
+                           style="border: 1px solid black; background-color: #f0f8ff; min-width: 80px;" 
+                           data-filter-id="${filter.id}" data-row="${rowIndex}">
+                        <span style="color: #666;">-</span>
+                      </td>`;
+    
+    // For now, just append to the end to ensure visibility
+    row.append(emptyCell);
+  });
+  
+  // Add footer cell
+  const footerRow = $('tfoot tr');
+  const footerCell = `<td class="text-center filter-footer-total filter-footer-${filter.year}" 
+                          style="border: 1px solid black; background-color: #e9ecef; font-weight: bold;"
+                          data-filter-id="${filter.id}">0</td>`;
+  footerRow.append(footerCell);
+  
+  console.log('Added', $('#table_body tr').length, 'data cells and 1 footer cell');
+}
+
+// Populate filter data in the table
+function populateFilterData(filter) {
+  const weeklyData = window.filterData[filter.id];
+  let filterTotal = 0;
+  
+  console.log('=== POPULATING FILTER DATA ===');
+  console.log('Filter:', filter.type, 'ID:', filter.id);
+  console.log('Weekly data:', weeklyData);
+  
+  if (!weeklyData) {
+    console.error('No weekly data found for filter', filter.id);
+    return;
+  }
+  
+  // Track current month and week number
+  let currentMonth = null;
+  let currentMonthNumber = 0;
+  let currentWeekInMonth = 0;
+  let rowsProcessed = 0;
+  
+  const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
+                     'July', 'August', 'September', 'October', 'November', 'December'];
+  
+  $('#table_body tr').each(function(rowIndex) {
+    const row = $(this);
+    const monthCell = row.children().eq(0);
+    const weekCell = row.children().eq(1);
+    
+    if (monthCell.length && weekCell.length) {
+      // Check if this row has a month name (first row of month group)
+      const monthText = monthCell.text().trim();
+      
+      // Only update current month if this cell actually contains a month name
+      if (monthText && monthText !== '' && monthText !== 'TOTAL' && monthNames.includes(monthText)) {
+        currentMonth = monthText;
+        currentMonthNumber = monthNames.indexOf(currentMonth) + 1;
+        currentWeekInMonth = 1; // Reset to week 1 for new month
+        console.log('Found new month:', currentMonth, 'number:', currentMonthNumber);
+      } else if (currentMonthNumber > 0) {
+        // This is a continuation row for the current month, increment week number
+        currentWeekInMonth++;
+      }
+      
+      // Process the week data if we have a valid month and week
+      if (currentMonthNumber > 0 && currentWeekInMonth > 0) {
+        const weekKey = `${currentMonthNumber}_${currentWeekInMonth}`;
+        const count = weeklyData[weekKey] || 0;
+        
+        console.log(`Row ${rowIndex}: ${currentMonth} Week ${currentWeekInMonth} (${weekKey}) = ${count}`);
+        
+        if (count > 0) {
+          filterTotal += count;
+        }
+        
+        // Find the specific filter cell for this row using multiple selectors
+        let filterCell = row.find(`.filter-${filter.id}`);
+        
+        if (filterCell.length === 0) {
+          // Try alternative selector
+          filterCell = row.find(`[data-filter-id="${filter.id}"]`);
+        }
+        
+        if (filterCell.length > 0) {
+          console.log(`Updating cell for ${weekKey}: ${count}`);
+          filterCell.html(count);
+          
+          if (count > 0) {
+            filterCell.css({
+              'font-weight': 'bold',
+              'background-color': '#e8f5e8',
+              'color': '#2e7d32'
+            });
+          } else {
+            filterCell.css({
+              'font-weight': 'normal',
+              'background-color': '#f0f8ff',
+              'color': '#666'
+            });
+          }
+          rowsProcessed++;
+        } else {
+          console.warn(`No filter cell found for row ${rowIndex}, week ${weekKey}`);
+        }
+      } else {
+        console.log(`Row ${rowIndex}: Skipping - currentMonthNumber: ${currentMonthNumber}, currentWeekInMonth: ${currentWeekInMonth}`);
+      }
+    }
+  });
+  
+  console.log(`Processed ${rowsProcessed} rows`);
+  console.log(`Filter total for ${filter.type}:`, filterTotal);
+  
+  // Update footer total
+  let footerFilterCell = $('tfoot tr').find(`.filter-footer-${filter.year}[data-filter-id="${filter.id}"]`);
+  
+  if (footerFilterCell.length === 0) {
+    // Try alternative selector
+    footerFilterCell = $('tfoot tr').find(`.filter-${filter.id}`);
+  }
+  
+  if (footerFilterCell.length > 0) {
+    footerFilterCell.text(filterTotal);
+    console.log('Updated footer total to:', filterTotal);
+  } else {
+    console.warn('Footer cell not found for filter', filter.id);
+  }
 }
 
 // Update filters display
@@ -712,207 +955,50 @@ function updateFiltersDisplay(year) {
   });
 }
 
-// Update table columns
+// Remove filter function
+function removeFilter(year, filterId) {
+  console.log('Removing filter:', filterId, 'for year:', year);
+  
+  // Remove filter column from table
+  $(`.filter-${filterId}`).remove();
+  
+  // Remove from active filters
+  window.activeFilters[year] = window.activeFilters[year].filter(f => f.id !== filterId);
+  
+  // Remove from filter data
+  delete window.filterData[filterId];
+  
+  // Update year header colspan
+  const filterCount = window.activeFilters[year].length;
+  const yearHeaderSelector = `[data-year="${year}"]`;
+  $(yearHeaderSelector).attr('colspan', 9 + filterCount);
+  
+  console.log('Updated colspan for year', year, 'to:', 9 + filterCount, 'after removing filter');
+  
+  // Update UI
+  updateFiltersDisplay(year);
+}
+
+// Legacy function - keeping for compatibility but replacing with new implementation
+function rebuildTableWithFilters() {
+  console.log('rebuildTableWithFilters called - using new implementation');
+  // This function is now handled by addFilterColumnToTable and populateFilterData
+  // Keeping empty for backward compatibility
+}
+
+// Update table columns - simplified version
 function updateTableColumns() {
-  // Update column spans in header
+  // Update column spans in header for all years
   @foreach($data['monthlyComparison']['years'] as $year)
     const year{{ $year }}FilterCount = window.activeFilters[{{ $year }}].length;
-    const year{{ $year }}Colspan = 9 + year{{ $year }}FilterCount; // 9 original columns + 1 column per filter
-    $(`.year-header-{{ $year }}`).attr('colspan', year{{ $year }}Colspan);
+    const year{{ $year }}Colspan = 9 + year{{ $year }}FilterCount;
+    $(`[data-year="${$year}"]`).attr('colspan', year{{ $year }}Colspan);
   @endforeach
-  
-  // Add new column headers for filters
-  let columnHeaderRow = $('#column_header_row');
-  
-  // Remove existing filter headers
-  columnHeaderRow.find('.filter-header').remove();
-  
-  @foreach($data['monthlyComparison']['years'] as $year)
-    // Add filter column headers for year {{ $year }}
-    window.activeFilters[{{ $year }}].forEach(filter => {
-      const filterHeader = `
-        <th class="filter-header filter-year-{{ $year }}" style="width: 80px; border: 1px solid black; background-color: #e3f2fd; font-size: 11px; text-align: center;">
-          ${filter.type}
-        </th>
-      `;
-      
-      // Find the position to insert (after the original columns for this year)
-      const yearColumnIndex = getYearColumnIndex({{ $year }});
-      const insertPosition = yearColumnIndex + 9; // After original 9 columns
-      const existingFilterCount = window.activeFilters[{{ $year }}].indexOf(filter);
-      const finalInsertPosition = insertPosition + existingFilterCount;
-      
-      columnHeaderRow.children().eq(finalInsertPosition + 1).after(filterHeader);
-    });
-  @endforeach
-  
-  // Update table body to match new structure
-  updateTableBody();
-  
-  // Update footer totals
-  updateFooterTotals();
 }
 
-// Get column index for a specific year
-function getYearColumnIndex(year) {
-  let index = 2; // Start after Month and Week columns
-  @foreach($data['monthlyComparison']['years'] as $yearItem)
-    @if($yearItem != $data['monthlyComparison']['years'][0])
-      if ({{ $yearItem }} === year) {
-        return index;
-      }
-      index += 9 + window.activeFilters[{{ $yearItem }}].length; // 9 original + 1 per filter
-    @else
-      if ({{ $yearItem }} === year) {
-        return index;
-      }
-      index += 9 + window.activeFilters[{{ $yearItem }}].length; // 9 original + 1 per filter
-    @endif
-  @endforeach
-  return index;
-}
-
-// Fetch filtered data via AJAX
-function fetchFilteredData(filter) {
-  $.ajax({
-    url: "{{ url('pendaftar/student/reportRA/getFilteredData') }}",
-    method: 'POST',
-    data: {
-      _token: $('meta[name="csrf-token"]').attr('content'),
-      year: filter.year,
-      from_date: filter.from,
-      to_date: filter.to,
-      filter_type: filter.type
-    },
-    success: function(response) {
-      if (response.success) {
-        // Store filtered data for this filter
-        filter.data = response.data;
-        filter.weeklyData = response.data.weekly_data;
-        updateTableBody();
-      } else {
-        alert('Error fetching filtered data: ' + response.message);
-      }
-    },
-    error: function(xhr, status, error) {
-      alert('Error occurred while fetching filtered data: ' + error);
-    }
-  });
-}
-
-// Update table body with filtered data
-function updateTableBody() {
-  // Remove existing filter data columns first
-  $('#table_body tr').each(function() {
-    $(this).find('.filter-data-year').remove();
-  });
-  
-  // Add new filter columns to existing rows
-  $('#table_body tr').each(function() {
-    const row = $(this);
-    
-    @foreach($data['monthlyComparison']['years'] as $year)
-      window.activeFilters[{{ $year }}].forEach((filter, filterIndex) => {
-        if (filter.data && filter.weeklyData) {
-          // Get the month and week for this row
-          const monthCell = row.children().eq(0);
-          const weekCell = row.children().eq(1);
-          
-          let count = 0;
-          if (monthCell.length && weekCell.length) {
-            const monthText = monthCell.text().trim();
-            const weekText = weekCell.text().trim();
-            
-            // Extract month number from month name
-            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
-                               'July', 'August', 'September', 'October', 'November', 'December'];
-            const monthNumber = monthNames.indexOf(monthText) + 1;
-            
-            // Extract week number from week text
-            const weekMatch = weekText.match(/Week (\d+)/);
-            if (weekMatch && monthNumber > 0) {
-              const weekNumber = parseInt(weekMatch[1]);
-              const weekKey = monthNumber + '_' + weekNumber;
-              count = filter.weeklyData[weekKey] || 0;
-            }
-          }
-          
-          // Add single filtered data column
-          const filterCell = `
-            <td class="text-center filter-data-year filter-data-{{ $year }}" style="border: 1px solid black; background-color: #f0f8ff;">
-              ${count}
-            </td>
-          `;
-          
-          // Find position to insert after the original year columns
-          const yearColumnIndex = getYearColumnIndex({{ $year }});
-          const insertPosition = yearColumnIndex + 9 + filterIndex;
-          
-          // Insert the filter column
-          const targetCell = row.children().eq(insertPosition + 1);
-          if (targetCell.length > 0) {
-            targetCell.after(filterCell);
-          } else {
-            row.append(filterCell);
-          }
-        }
-      });
-    @endforeach
-  });
-}
-
-// Helper function to get week data for a row (now unused but kept for compatibility)
-function getRowWeekData(row) {
-  // Extract month and week from the row to match with filter data
-  const monthCell = row.find('td:first');
-  const weekCell = row.find('td:eq(1)');
-  
-  if (monthCell.length && weekCell.length) {
-    const monthText = monthCell.text().trim();
-    const weekText = weekCell.text().trim();
-    
-    return `${monthText}_${weekText}`;
-  }
-  
-  return null;
-}
-
-// Update footer totals
+// Update footer totals - simplified version
 function updateFooterTotals() {
-  // Remove existing filter totals from footer
-  $('tfoot tr').find('.filter-footer-total').remove();
-  
-  // Add filter totals to footer
-  @foreach($data['monthlyComparison']['years'] as $year)
-    window.activeFilters[{{ $year }}].forEach((filter, filterIndex) => {
-      if (filter.data && filter.weeklyData) {
-        // Calculate total for this filter
-        let filterTotal = 0;
-        for (const weekKey in filter.weeklyData) {
-          filterTotal += filter.weeklyData[weekKey];
-        }
-        
-        // Add filter total column to footer
-        const filterTotalCell = `
-          <td class="text-center filter-footer-total filter-footer-{{ $year }}" style="border: 1px solid black; background-color: #e9ecef; font-weight: bold;">
-            ${filterTotal}
-          </td>
-        `;
-        
-        // Find position to insert after the original year columns
-        const yearColumnIndex = getYearColumnIndex({{ $year }});
-        const insertPosition = yearColumnIndex + 9 + filterIndex;
-        
-        // Insert the filter total column
-        const footerRow = $('tfoot tr');
-        const targetCell = footerRow.children().eq(insertPosition + 1);
-        if (targetCell.length > 0) {
-          targetCell.after(filterTotalCell);
-        } else {
-          footerRow.append(filterTotalCell);
-        }
-      }
-    });
-  @endforeach
+  // Footer totals are now updated individually in populateFilterData
+  console.log('Footer totals updated');
 }
 </script>
