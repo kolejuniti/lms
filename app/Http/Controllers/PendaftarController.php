@@ -5725,10 +5725,11 @@ class PendaftarController extends Controller
                 ->select([
                     'p1.student_ic',
                     'p1.date',
+                    'students.status',
+                    'students.date_offer',
                     DB::raw('YEAR(p1.date) as payment_year'),
                     DB::raw('MONTH(p1.date) as payment_month'),
                     DB::raw('WEEK(p1.date, 1) as payment_week'),
-                    'students.date_offer'
                 ])
                 ->join('students', 'p1.student_ic', '=', 'students.ic')
                 ->join(DB::raw('(
@@ -5745,79 +5746,57 @@ class PendaftarController extends Controller
                 ->where([
                     ['p1.process_status_id', 2],
                     ['p1.process_type_id', 1], 
-                    ['p1.semester_id', 1],
-                    ['students.status', 2] // Only active students
+                    ['p1.semester_id', 1]
                 ])
+                ->whereNotIn('students.status', [1,14])
                 ->whereYear('p1.date', $year)
                 ->whereBetween('students.date_offer', [$fromDate, $toDate])
                 ->get();
 
             Log::info('Filtered students found:', ['count' => $filteredStudents->count()]);
 
+            Log::info('Range:', [$fromDate, $toDate]);
+
             // Group data by month and week
             $weeklyData = [];
             
-            // First, group by month and collect all dates
+            // First, group students by their offer month
             $monthlyGroups = [];
             foreach ($filteredStudents as $student) {
-                $month = $student->payment_month;
-                $date = $student->date;
+                $offerDate = $student->date_offer;
+                $offerMonth = date('n', strtotime($offerDate)); // 1-12
+                $offerYear = date('Y', strtotime($offerDate));
                 
-                if (!isset($monthlyGroups[$month])) {
-                    $monthlyGroups[$month] = [];
+                if (!isset($monthlyGroups[$offerMonth])) {
+                    $monthlyGroups[$offerMonth] = [];
                 }
                 
-                $monthlyGroups[$month][] = $date;
+                $monthlyGroups[$offerMonth][] = $student;
             }
             
-            // Now process each month and assign sequential week numbers
-            foreach ($monthlyGroups as $month => $dates) {
-                // Get unique dates and sort them
-                $uniqueDates = array_unique($dates);
-                sort($uniqueDates);
-                
-                // Group dates by weeks within the month
+            // Process each month and assign students to weeks based on their offer date
+            foreach ($monthlyGroups as $month => $students) {
+                // Get the first and last day of the month
                 $monthStart = date('Y-m-01', strtotime($year . '-' . str_pad($month, 2, '0', STR_PAD_LEFT) . '-01'));
-                $monthWeeks = [];
+                $monthEnd = date('Y-m-t', strtotime($monthStart));
                 
-                foreach ($uniqueDates as $date) {
-                    // Calculate week number within the month (1-based)
-                    $dateObj = new \DateTime($date);
-                    $monthStartObj = new \DateTime($monthStart);
+                // Generate week ranges for this month
+                $weekRanges = $this->generateWeekRangesForMonth($monthStart, $monthEnd);
+                
+                // Initialize week counts
+                $monthWeeks = [];
+                for ($i = 1; $i <= count($weekRanges); $i++) {
+                    $monthWeeks[$i] = 0;
+                }
+                
+                // Assign each student to appropriate week based on their offer date
+                foreach ($students as $student) {
+                    $offerDate = $student->date_offer;
+                    $weekNumber = $this->getWeekNumberForDate($offerDate, $weekRanges);
                     
-                    // Find the first Sunday of the month or the month start if it's Sunday
-                    $firstSunday = clone $monthStartObj;
-                    while ($firstSunday->format('w') != 0) { // 0 = Sunday
-                        $firstSunday->modify('+1 day');
+                    if ($weekNumber !== null && isset($monthWeeks[$weekNumber])) {
+                        $monthWeeks[$weekNumber]++;
                     }
-                    
-                    // If the month doesn't start on Sunday, week 1 starts from month start
-                    if ($firstSunday->format('j') > 1) {
-                        $weekStartRef = $monthStartObj;
-                    } else {
-                        $weekStartRef = $firstSunday;
-                    }
-                    
-                    // Calculate week number within month
-                    $daysDiff = $dateObj->diff($weekStartRef)->days;
-                    $weekNumber = floor($daysDiff / 7) + 1;
-                    
-                    // Ensure week number is at least 1 and doesn't exceed reasonable limits
-                    $weekNumber = max(1, min($weekNumber, 6));
-                    
-                    if (!isset($monthWeeks[$weekNumber])) {
-                        $monthWeeks[$weekNumber] = 0;
-                    }
-                    
-                    // Count how many students have payments on this date
-                    $studentsOnThisDate = 0;
-                    foreach ($filteredStudents as $student) {
-                        if ($student->payment_month == $month && $student->date == $date) {
-                            $studentsOnThisDate++;
-                        }
-                    }
-                    
-                    $monthWeeks[$weekNumber] += $studentsOnThisDate;
                 }
                 
                 // Add to weeklyData with month_week format
@@ -5855,5 +5834,84 @@ class PendaftarController extends Controller
                 'message' => 'Error fetching filtered data: ' . $e->getMessage()
             ], 500);
         }
+    }
+
+    private function generateWeekRangesForMonth($monthStart, $monthEnd)
+    {
+        $weekRanges = [];
+        $currentDate = Carbon::parse($monthStart);
+        $monthEndDate = Carbon::parse($monthEnd);
+        $weekNumber = 1;
+        
+        // Start from the first day of the month
+        while ($currentDate <= $monthEndDate) {
+            $weekStart = $currentDate->copy();
+            
+            // For the first week, start from the first day of the month
+            // For subsequent weeks, find the next Sunday or continue from where we left off
+            if ($weekNumber == 1) {
+                // Week 1 starts from the 1st of the month
+                $weekStart = $currentDate->copy();
+            } else {
+                // Find the next Sunday for subsequent weeks
+                while ($weekStart->dayOfWeek !== Carbon::SUNDAY && $weekStart <= $monthEndDate) {
+                    $weekStart->addDay();
+                }
+            }
+            
+            // Calculate the end of the week (Saturday)
+            $weekEnd = $weekStart->copy();
+            
+            // If it's the first week and doesn't start on Sunday, go to the end of that week
+            if ($weekNumber == 1 && $weekStart->dayOfWeek !== Carbon::SUNDAY) {
+                // Go to the Saturday of the first week
+                while ($weekEnd->dayOfWeek !== Carbon::SATURDAY && $weekEnd <= $monthEndDate) {
+                    $weekEnd->addDay();
+                }
+            } else {
+                // For normal weeks, add 6 days to get Saturday
+                $weekEnd->addDays(6);
+            }
+            
+            // Ensure we don't go beyond the month end
+            if ($weekEnd > $monthEndDate) {
+                $weekEnd = $monthEndDate->copy();
+            }
+            
+            // Only add if we have a valid week within the month
+            if ($weekStart <= $monthEndDate) {
+                $weekRanges[] = [
+                    'week' => $weekNumber,
+                    'start' => $weekStart->format('Y-m-d'),
+                    'end' => $weekEnd->format('Y-m-d')
+                ];
+            }
+
+            // Move to the day after the current week end
+            $currentDate = $weekEnd->copy()->addDay();
+            $weekNumber++;
+            
+            // Safety break to prevent infinite loops
+            if ($weekNumber > 6) {
+                break;
+            }
+        }
+
+        return $weekRanges;
+    }
+
+    private function getWeekNumberForDate($date, $weekRanges)
+    {
+        $checkDate = Carbon::parse($date);
+        
+        foreach ($weekRanges as $weekRange) {
+            $rangeStart = Carbon::parse($weekRange['start']);
+            $rangeEnd = Carbon::parse($weekRange['end']);
+            
+            if ($checkDate->between($rangeStart, $rangeEnd, true)) {
+                return $weekRange['week'];
+            }
+        }
+        return null;
     }
 }
