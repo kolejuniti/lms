@@ -192,6 +192,8 @@
                 @elseif($days > 30)
                     style="background-color: #dc3545; color: #fff;"
                 @endif
+            @elseif($rgs->status == 14)
+                style="background-color: #fd7e14; color: #fff;"
             @endif
             >
             @if($rgs->status == 1 && $rgs->date_offer)
