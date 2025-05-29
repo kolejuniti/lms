@@ -40,16 +40,16 @@
                     Month
                 </th>
                 <th style="width: 15%">
-                    Total By Weeks
+                    Total Student R By Weeks
                 </th>
                 <th style="width: 15%">
-                    Total by Cumulative
+                    Total Student R by Cumulative
                 </th>
                 <th style="width: 15%">
-                    Total by Convert
+                    Total Student R by Convert
                 </th>
                 <th style="width: 15%">
-                    Balance Student
+                    Balance Student R
                 </th>
                 <th style="width: 15%">
                     Student Active
@@ -180,7 +180,7 @@
                     Date
                 </th>
                 <th style="width: 15%">
-                    Total By Days
+                    Total Student R By Days
                 </th>
                 <th style="width: 15%">
                     Total by Cumulative

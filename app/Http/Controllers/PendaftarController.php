@@ -3863,6 +3863,7 @@ class PendaftarController extends Controller
                     // Process results in memory instead of making separate queries
                     $currentWeekStudents = $weeklyStudents->pluck('student_ic')->unique()->values()->toArray();
                     $currentConvertStudents = $weeklyStudents->where('status', '!=', 1)
+                        ->where('status', '!=', 14)
                         ->pluck('student_ic')
                         ->unique()
                         ->values()
@@ -3970,6 +3971,7 @@ class PendaftarController extends Controller
                         // Process results for converted students
                         $currentDayStudents = $dailyStudents->pluck('student_ic')->unique()->values()->toArray();
                         $currentDayConvertStudents = $dailyStudents->where('status', '!=', 1)
+                            ->where('status', '!=', 14)
                             ->pluck('student_ic')
                             ->unique()
                             ->values()
