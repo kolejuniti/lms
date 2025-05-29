@@ -5760,21 +5760,21 @@ class PendaftarController extends Controller
             // Group data by month and week
             $weeklyData = [];
             
-            // First, group students by their offer month
+            // First, group students by their payment month
             $monthlyGroups = [];
             foreach ($filteredStudents as $student) {
-                $offerDate = $student->date_offer;
-                $offerMonth = date('n', strtotime($offerDate)); // 1-12
-                $offerYear = date('Y', strtotime($offerDate));
+                $paymentDate = $student->date;
+                $paymentMonth = date('n', strtotime($paymentDate)); // 1-12
+                $paymentYear = date('Y', strtotime($paymentDate));
                 
-                if (!isset($monthlyGroups[$offerMonth])) {
-                    $monthlyGroups[$offerMonth] = [];
+                if (!isset($monthlyGroups[$paymentMonth])) {
+                    $monthlyGroups[$paymentMonth] = [];
                 }
                 
-                $monthlyGroups[$offerMonth][] = $student;
+                $monthlyGroups[$paymentMonth][] = $student;
             }
             
-            // Process each month and assign students to weeks based on their offer date
+            // Process each month and assign students to weeks based on their payment date
             foreach ($monthlyGroups as $month => $students) {
                 // Get the first and last day of the month
                 $monthStart = date('Y-m-01', strtotime($year . '-' . str_pad($month, 2, '0', STR_PAD_LEFT) . '-01'));
@@ -5789,10 +5789,10 @@ class PendaftarController extends Controller
                     $monthWeeks[$i] = 0;
                 }
                 
-                // Assign each student to appropriate week based on their offer date
+                // Assign each student to appropriate week based on their payment date
                 foreach ($students as $student) {
-                    $offerDate = $student->date_offer;
-                    $weekNumber = $this->getWeekNumberForDate($offerDate, $weekRanges);
+                    $paymentDate = $student->date;
+                    $weekNumber = $this->getWeekNumberForDate($paymentDate, $weekRanges);
                     
                     if ($weekNumber !== null && isset($monthWeeks[$weekNumber])) {
                         $monthWeeks[$weekNumber]++;
