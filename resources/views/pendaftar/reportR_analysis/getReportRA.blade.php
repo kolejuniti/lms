@@ -216,7 +216,7 @@
             <th rowspan="2" style="vertical-align: middle; width: 80px; position: sticky; left: 0; background: #f8f9fa; z-index: 10; border: 1px solid black;">Month</th>
             <th rowspan="2" style="vertical-align: middle; width: 120px; position: sticky; left: 80px; background: #f8f9fa; z-index: 10; border: 1px solid black;">Week</th>
             @foreach($data['monthlyComparison']['years'] as $year)
-              <th colspan="4" class="text-center bg-light" style="border: 1px solid black;">Year {{ $year }}</th>
+              <th colspan="9" class="text-center bg-light" style="border: 1px solid black;">Year {{ $year }}</th>
             @endforeach
           </tr>
           <tr>
@@ -276,7 +276,7 @@
           
           @if(empty($monthsWithData))
             <tr>
-              <td colspan="{{ 2 + (count($data['monthlyComparison']['years']) * 4) }}" class="text-center text-muted py-4" style="border: 1px solid black;">
+              <td colspan="{{ 2 + (count($data['monthlyComparison']['years']) * 9) }}" class="text-center text-muted py-4" style="border: 1px solid black;">
                 No data available for the selected period
               </td>
             </tr>

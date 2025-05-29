@@ -4706,6 +4706,11 @@ class PendaftarController extends Controller
                         $headerRow[] = "Year $year - Total By Weeks";
                         $headerRow[] = "Year $year - Total By Converts";
                         $headerRow[] = "Year $year - Balance Student";
+                        $headerRow[] = "Year $year - Student Active";
+                        $headerRow[] = "Year $year - Student Rejected";
+                        $headerRow[] = "Year $year - Student Offered";
+                        $headerRow[] = "Year $year - Student KIV";
+                        $headerRow[] = "Year $year - Student Others";
                     }
                     fputcsv($file, $headerRow);
                     
@@ -4734,7 +4739,12 @@ class PendaftarController extends Controller
                         $yearTotals[$year] = [
                             'total_by_weeks' => 0,
                             'total_by_converts' => 0,
-                            'balance_student' => 0
+                            'balance_student' => 0,
+                            'total_active' => 0,
+                            'total_rejected' => 0,
+                            'total_offered' => 0,
+                            'total_kiv' => 0,
+                            'total_others' => 0
                         ];
                     }
                     
@@ -4783,11 +4793,26 @@ class PendaftarController extends Controller
                                     $yearTotals[$year]['total_by_weeks'] += $weekData['total_by_weeks'];
                                     $yearTotals[$year]['total_by_converts'] += $weekData['total_by_converts'];
                                     $yearTotals[$year]['balance_student'] += $weekData['balance_student'];
+                                    $yearTotals[$year]['total_active'] += $weekData['total_active'];
+                                    $yearTotals[$year]['total_rejected'] += $weekData['total_rejected'];
+                                    $yearTotals[$year]['total_offered'] += $weekData['total_offered'];
+                                    $yearTotals[$year]['total_kiv'] += $weekData['total_kiv'];
+                                    $yearTotals[$year]['total_others'] += $weekData['total_others'];
                                     
                                     $row[] = $weekData['total_by_weeks'];
                                     $row[] = $weekData['total_by_converts'];
                                     $row[] = $weekData['balance_student'];
+                                    $row[] = $weekData['total_active'];
+                                    $row[] = $weekData['total_rejected'];
+                                    $row[] = $weekData['total_offered'];
+                                    $row[] = $weekData['total_kiv'];
+                                    $row[] = $weekData['total_others'];
                                 } else {
+                                    $row[] = 0;
+                                    $row[] = 0;
+                                    $row[] = 0;
+                                    $row[] = 0;
+                                    $row[] = 0;
                                     $row[] = 0;
                                     $row[] = 0;
                                     $row[] = 0;
@@ -4804,6 +4829,11 @@ class PendaftarController extends Controller
                         $totalsRow[] = $yearTotals[$year]['total_by_weeks'];
                         $totalsRow[] = $yearTotals[$year]['total_by_converts'];
                         $totalsRow[] = $yearTotals[$year]['balance_student'];
+                        $totalsRow[] = $yearTotals[$year]['total_active'];
+                        $totalsRow[] = $yearTotals[$year]['total_rejected'];
+                        $totalsRow[] = $yearTotals[$year]['total_offered'];
+                        $totalsRow[] = $yearTotals[$year]['total_kiv'];
+                        $totalsRow[] = $yearTotals[$year]['total_others'];
                     }
                     fputcsv($file, $totalsRow);
                 }
