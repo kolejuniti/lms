@@ -5151,7 +5151,7 @@ class PendaftarController extends Controller
                     }
                     
                     // Check if converted (status != 1)
-                    if ($student->status != 1 && !in_array($student->student_ic, $currentConvertStudents)) {
+                    if ($student->status != 1 && $student->status != 14 && !in_array($student->student_ic, $currentConvertStudents)) {
                         $currentConvertStudents[] = $student->student_ic;
                     }
                 }
