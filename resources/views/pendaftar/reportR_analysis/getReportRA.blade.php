@@ -222,9 +222,9 @@
           <tr>
             @foreach($data['monthlyComparison']['years'] as $year)
               <th style="width: 120px; border: 1px solid black; font-size: 11px;">Range</th>
-              <th style="width: 80px; border: 1px solid black;">Total By Weeks</th>
-              <th style="width: 80px; border: 1px solid black;">Total By Converts</th>
-              <th style="width: 80px; border: 1px solid black;">Balance Student</th>
+              <th style="width: 80px; border: 1px solid black;">Total Student R By Weeks</th>
+              <th style="width: 80px; border: 1px solid black;">Total Student R By Converts</th>
+              <th style="width: 80px; border: 1px solid black;">Balance Student R</th>
             @endforeach
           </tr>
         </thead>

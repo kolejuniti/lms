@@ -4511,6 +4511,7 @@ class PendaftarController extends Controller
                 ->toArray();
 
             $currentConvertStudents = $students->where('status', '!=', 1)
+                ->where('status', '!=', 14)
                 ->pluck('student_ic')
                 ->unique()
                 ->values()
