@@ -201,8 +201,12 @@
                     $daysPassed = $today->greaterThan($offerDate) ? $offerDate->diffInDays($today) : 'Within Offer Date';
                 @endphp
                 {{ $daysPassed }}
-            @else
+            @elseif($rgs->status == 2)
                 Registered
+            @elseif($rgs->status == 14)
+                Rejected
+            @else
+                Others
             @endif
             </td>
             <td>
