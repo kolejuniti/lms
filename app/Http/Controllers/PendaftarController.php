@@ -5720,8 +5720,10 @@ class PendaftarController extends Controller
                 'filter_type' => $filterType
             ]);
 
-            // Get students with status=2 and date_offer in the specified range for the given year
-            $filteredStudents = DB::table('tblpayment as p1')
+            if($filterType == 'ACTIVE NEXT YEAR'){
+
+                // Get students with status=2 and date_offer in the specified range for the given year
+                $filteredStudents = DB::table('tblpayment as p1')
                 ->select([
                     'p1.student_ic',
                     'p1.date',
@@ -5741,7 +5743,42 @@ class PendaftarController extends Controller
                     GROUP BY student_ic
                 ) as p2'), function($join) {
                     $join->on('p1.student_ic', '=', 'p2.student_ic')
-                         ->on('p1.date', '=', 'p2.first_payment_date');
+                        ->on('p1.date', '=', 'p2.first_payment_date');
+                })
+                ->where([
+                    ['p1.process_status_id', 2],
+                    ['p1.process_type_id', 1], 
+                    ['p1.semester_id', 1]
+                ])
+                ->whereNotIn('students.status', [1,14])
+                ->whereYear('p1.date', $year)
+                ->whereYear('students.date_offer', '>', $year)
+                ->get();
+
+            }else{
+
+                // Get students with status=2 and date_offer in the specified range for the given year
+                $filteredStudents = DB::table('tblpayment as p1')
+                ->select([
+                    'p1.student_ic',
+                    'p1.date',
+                    'students.status',
+                    'students.date_offer',
+                    DB::raw('YEAR(p1.date) as payment_year'),
+                    DB::raw('MONTH(p1.date) as payment_month'),
+                    DB::raw('WEEK(p1.date, 1) as payment_week'),
+                ])
+                ->join('students', 'p1.student_ic', '=', 'students.ic')
+                ->join(DB::raw('(
+                    SELECT student_ic, MIN(date) as first_payment_date 
+                    FROM tblpayment 
+                    WHERE process_status_id = 2 
+                    AND process_type_id = 1 
+                    AND semester_id = 1
+                    GROUP BY student_ic
+                ) as p2'), function($join) {
+                    $join->on('p1.student_ic', '=', 'p2.student_ic')
+                        ->on('p1.date', '=', 'p2.first_payment_date');
                 })
                 ->where([
                     ['p1.process_status_id', 2],
@@ -5752,6 +5789,8 @@ class PendaftarController extends Controller
                 ->whereYear('p1.date', $year)
                 ->whereBetween('students.date_offer', [$fromDate, $toDate])
                 ->get();
+
+            }
 
             Log::info('Filtered students found:', ['count' => $filteredStudents->count()]);
 
