@@ -999,6 +999,16 @@ function populateFilterData(filter) {
   console.log(`Processed ${rowsProcessed} rows`);
   console.log(`Filter total for ${filter.type}:`, filterTotal);
   
+  // Calculate footer total by summing actual displayed values in the filter column
+  let actualTotal = 0;
+  $(`.filter-${filter.id}`).each(function() {
+    const cellValue = parseInt($(this).text()) || 0;
+    actualTotal += cellValue;
+  });
+  
+  console.log(`Calculated total from displayed values: ${actualTotal}`);
+  console.log(`Original calculated total: ${filterTotal}`);
+  
   // Update footer total
   let footerFilterCell = $('tfoot tr').find(`.filter-footer-${filter.year}[data-filter-id="${filter.id}"]`);
   
@@ -1008,8 +1018,8 @@ function populateFilterData(filter) {
   }
   
   if (footerFilterCell.length > 0) {
-    footerFilterCell.text(filterTotal);
-    console.log('Updated footer total to:', filterTotal);
+    footerFilterCell.text(actualTotal);
+    console.log('Updated footer total to:', actualTotal);
   } else {
     console.warn('Footer cell not found for filter', filter.id);
   }
