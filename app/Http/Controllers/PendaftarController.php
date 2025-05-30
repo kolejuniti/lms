@@ -4311,7 +4311,7 @@ class PendaftarController extends Controller
             ['p1.semester_id', 1]
         ])
         ->whereNotIn('students.status', [1,14])
-        ->whereYear('p1.add_date', '2024')
+        ->whereBetween('p1.add_date', ['2024-08-01', '2024-08-03'])
         ->whereBetween('students.date_offer', ['2024-08-06', '2024-12-31'])
         ->get();
 
