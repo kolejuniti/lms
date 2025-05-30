@@ -881,36 +881,14 @@ function addFilterColumnToTable(filter) {
                           style="border: 1px solid black; background-color: #e9ecef; font-weight: bold;"
                           data-filter-id="${filter.id}">0</td>`;
   
-  // Footer row doesn't have Month and Week columns, so adjust the index
-  // Footer structure: TOTAL | All Weeks | Year1_Col1 | Year1_Col2 | ... | Year2_Col1 | ...
-  let footerInsertIndex = 1; // Start after "All Weeks" column
-  
-  // Add columns for previous years
-  for (let i = 0; i < yearIndex; i++) {
-    const prevYear = yearHeaders[i];
-    const prevYearFilterCount = window.activeFilters[prevYear] ? window.activeFilters[prevYear].length : 0;
-    footerInsertIndex += 9 + prevYearFilterCount; // 9 base columns + filters for previous year
-  }
-  
-  // Add base columns for current year (9 columns)
-  footerInsertIndex += 9;
-  
-  // Add existing filters for current year
-  const existingFiltersForYear = window.activeFilters[filter.year].length - 1;
-  footerInsertIndex += existingFiltersForYear;
-  
-  console.log('Footer insert index calculated:', footerInsertIndex);
-  
   const footerCells = footerRow.children();
-  console.log('Footer cells count:', footerCells.length);
-  
-  if (footerInsertIndex >= 0 && footerInsertIndex < footerCells.length) {
-    $(footerCells[footerInsertIndex]).after(footerCell);
-    console.log('Inserted footer cell AFTER position', footerInsertIndex);
+  if (headerInsertIndex >= 0 && headerInsertIndex < footerCells.length) {
+    $(footerCells[headerInsertIndex]).after(footerCell);
   } else {
     footerRow.append(footerCell);
-    console.log('Appended footer cell at end');
   }
+  
+  console.log('Added', $('#table_body tr').length, 'data cells and 1 footer cell AFTER position', headerInsertIndex);
   
   // Debug: Show final table structure
   console.log('=== FINAL TABLE STRUCTURE ===');
@@ -1021,18 +999,8 @@ function populateFilterData(filter) {
   console.log(`Processed ${rowsProcessed} rows`);
   console.log(`Filter total for ${filter.type}:`, filterTotal);
   
-  // Calculate footer total by summing actual displayed values in the filter column (only data cells, not footer)
-  let actualTotal = 0;
-  $(`#table_body .filter-${filter.id}`).each(function() {
-    const cellValue = parseInt($(this).text()) || 0;
-    actualTotal += cellValue;
-  });
-  
-  console.log(`Calculated total from displayed values: ${actualTotal}`);
-  console.log(`Original calculated total: ${filterTotal}`);
-  
-  // Update footer total - be more specific with the selector
-  let footerFilterCell = $(`tfoot tr td[data-filter-id="${filter.id}"]`);
+  // Update footer total
+  let footerFilterCell = $('tfoot tr').find(`.filter-footer-${filter.year}[data-filter-id="${filter.id}"]`);
   
   if (footerFilterCell.length === 0) {
     // Try alternative selector
@@ -1040,14 +1008,10 @@ function populateFilterData(filter) {
   }
   
   if (footerFilterCell.length > 0) {
-    footerFilterCell.text(actualTotal);
-    console.log('Updated footer total to:', actualTotal);
-    console.log('Footer cell selector used:', `tfoot tr td[data-filter-id="${filter.id}"]`);
+    footerFilterCell.text(filterTotal);
+    console.log('Updated footer total to:', filterTotal);
   } else {
     console.warn('Footer cell not found for filter', filter.id);
-    console.warn('Available footer cells:', $('tfoot tr td').map(function() { 
-      return $(this).attr('data-filter-id') || $(this).attr('class') || 'no-id'; 
-    }).get());
   }
 }
 
