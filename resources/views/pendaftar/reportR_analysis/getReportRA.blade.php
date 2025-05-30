@@ -949,9 +949,8 @@ function populateFilterData(filter) {
         
         console.log(`Row ${rowIndex}: ${currentMonth} Week ${currentWeekInMonth} (${weekKey}) = ${count}`);
         
-        if (count > 0) {
-          filterTotal += count;
-        }
+        // Add to total regardless of value (including 0) to match column display
+        filterTotal += count;
         
         // Find the specific filter cell for this row using multiple selectors
         let filterCell = row.find(`.filter-${filter.id}`);
