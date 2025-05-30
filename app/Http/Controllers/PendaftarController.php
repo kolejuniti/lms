@@ -5760,6 +5760,7 @@ class PendaftarController extends Controller
                 ->whereNotIn('students.status', [1,14])
                 ->whereYear('p1.add_date', $year)
                 ->whereBetween('students.date_offer', [$fromDate, $toDate])
+                ->groupBy('p1.student_ic')
                 ->get();
 
             }
