@@ -4313,6 +4313,7 @@ class PendaftarController extends Controller
         ->whereNotIn('students.status', [1,14])
         ->whereBetween('p1.add_date', ['2024-08-01', '2024-08-03'])
         ->whereBetween('students.date_offer', ['2024-08-06', '2024-12-31'])
+        ->groupBy('p1.student_ic')
         ->get();
 
         dd($filteredStudents);
