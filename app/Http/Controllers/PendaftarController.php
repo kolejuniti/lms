@@ -4606,11 +4606,17 @@ class PendaftarController extends Controller
 
     private function exportToExcelRA($data, $isMultiple = false, $from = null, $to = null)
     {
+        // Get filter data from request if available
+        $activeFilters = request('active_filters') ? json_decode(request('active_filters'), true) : [];
+        $filterData = request('filter_data') ? json_decode(request('filter_data'), true) : [];
+        
         Log::info('exportToExcelRA called', [
             'isMultiple' => $isMultiple,
             'from' => $from,
             'to' => $to,
             'data_keys' => array_keys($data),
+            'active_filters' => $activeFilters,
+            'filter_data_keys' => array_keys($filterData),
             'data_structure' => [
                 'allStudents_count' => is_array($data['allStudents'] ?? null) ? count($data['allStudents']) : 'single_value',
                 'tableLabels_count' => is_array($data['tableLabels'] ?? null) ? count($data['tableLabels']) : 'not_set'
@@ -4626,7 +4632,7 @@ class PendaftarController extends Controller
 
         Log::info('Excel export headers set', ['headers' => $headers]);
 
-        $callback = function() use ($data, $isMultiple, $from, $to) {
+        $callback = function() use ($data, $isMultiple, $from, $to, $activeFilters, $filterData) {
             Log::info('Excel export callback started');
             
             $file = fopen('php://output', 'w');
@@ -4699,16 +4705,17 @@ class PendaftarController extends Controller
                     $total_others
                 ]);
                 
-                // Add Monthly Comparison Analysis to Excel
+                // Add Monthly Comparison Analysis to Excel (with filter columns)
                 if (isset($data['monthlyComparison']) && !empty($data['monthlyComparison']['monthly_data'])) {
                     fputcsv($file, []);
                     fputcsv($file, ['MONTHLY COMPARISON ANALYSIS']);
                     fputcsv($file, ['Showing ' . count($data['monthlyComparison']['years']) . ' years']);
                     fputcsv($file, []);
                     
-                    // Create header row
+                    // Create header row with filter columns
                     $headerRow = ['Month', 'Week (Date Range)'];
                     foreach ($data['monthlyComparison']['years'] as $year) {
+                        $headerRow[] = "Year $year - Range";
                         $headerRow[] = "Year $year - Total By Weeks";
                         $headerRow[] = "Year $year - Total By Converts";
                         $headerRow[] = "Year $year - Balance Student";
@@ -4717,6 +4724,13 @@ class PendaftarController extends Controller
                         $headerRow[] = "Year $year - Student Offered";
                         $headerRow[] = "Year $year - Student KIV";
                         $headerRow[] = "Year $year - Student Others";
+                        
+                        // Add filter columns for this year
+                        if (isset($activeFilters[$year]) && is_array($activeFilters[$year])) {
+                            foreach ($activeFilters[$year] as $filter) {
+                                $headerRow[] = "Year $year - {$filter['type']}";
+                            }
+                        }
                     }
                     fputcsv($file, $headerRow);
                     
@@ -4739,8 +4753,9 @@ class PendaftarController extends Controller
                         9 => 'September', 10 => 'October', 11 => 'November', 12 => 'December'
                     ];
                     
-                    // Initialize totals for footer
+                    // Initialize totals for footer (including filter totals)
                     $yearTotals = [];
+                    $filterTotals = [];
                     foreach ($data['monthlyComparison']['years'] as $year) {
                         $yearTotals[$year] = [
                             'total_by_weeks' => 0,
@@ -4752,6 +4767,13 @@ class PendaftarController extends Controller
                             'total_kiv' => 0,
                             'total_others' => 0
                         ];
+                        
+                        // Initialize filter totals
+                        if (isset($activeFilters[$year]) && is_array($activeFilters[$year])) {
+                            foreach ($activeFilters[$year] as $filter) {
+                                $filterTotals[$filter['id']] = 0;
+                            }
+                        }
                     }
                     
                     // Process each month
@@ -4805,6 +4827,7 @@ class PendaftarController extends Controller
                                     $yearTotals[$year]['total_kiv'] += $weekData['total_kiv'];
                                     $yearTotals[$year]['total_others'] += $weekData['total_others'];
                                     
+                                    $row[] = $weekData['date_range'];
                                     $row[] = $weekData['total_by_weeks'];
                                     $row[] = $weekData['total_by_converts'];
                                     $row[] = $weekData['balance_student'];
@@ -4814,6 +4837,31 @@ class PendaftarController extends Controller
                                     $row[] = $weekData['total_kiv'];
                                     $row[] = $weekData['total_others'];
                                 } else {
+                                    // Calculate empty week date range for consistency
+                                    $monthStart = \Carbon\Carbon::createFromDate($year, $monthNumber, 1)->startOfMonth();
+                                    $monthEnd = \Carbon\Carbon::createFromDate($year, $monthNumber, 1)->endOfMonth();
+                                    
+                                    $start = $monthStart->copy();
+                                    for ($i = 1; $i < $weekNum; $i++) {
+                                        $weekStart = $start->copy();
+                                        $daysUntilSaturday = (6 - $weekStart->dayOfWeek) % 7;
+                                        $weekEnd = $weekStart->copy()->addDays($daysUntilSaturday);
+                                        if ($weekEnd->gt($monthEnd)) {
+                                            $weekEnd = $monthEnd->copy();
+                                        }
+                                        $start = $weekEnd->copy()->addDay();
+                                    }
+                                    
+                                    $weekStart = $start->copy();
+                                    $daysUntilSaturday = (6 - $weekStart->dayOfWeek) % 7;
+                                    $weekEnd = $weekStart->copy()->addDays($daysUntilSaturday);
+                                    if ($weekEnd->gt($monthEnd)) {
+                                        $weekEnd = $monthEnd->copy();
+                                    }
+                                    
+                                    $dateRange = $weekStart->format('j M Y') . ' - ' . $weekEnd->format('j M Y');
+                                    
+                                    $row[] = $dateRange;
                                     $row[] = 0;
                                     $row[] = 0;
                                     $row[] = 0;
@@ -4822,6 +4870,16 @@ class PendaftarController extends Controller
                                     $row[] = 0;
                                     $row[] = 0;
                                     $row[] = 0;
+                                }
+                                
+                                // Add filter data for this year
+                                if (isset($activeFilters[$year]) && is_array($activeFilters[$year])) {
+                                    foreach ($activeFilters[$year] as $filter) {
+                                        $weekKey = "{$monthNumber}_{$weekNum}";
+                                        $filterValue = isset($filterData[$filter['id']][$weekKey]) ? $filterData[$filter['id']][$weekKey] : 0;
+                                        $row[] = $filterValue;
+                                        $filterTotals[$filter['id']] += $filterValue;
+                                    }
                                 }
                             }
                             
@@ -4832,6 +4890,7 @@ class PendaftarController extends Controller
                     // Add totals row
                     $totalsRow = ['TOTAL', 'All Weeks'];
                     foreach ($data['monthlyComparison']['years'] as $year) {
+                        $totalsRow[] = 'All Ranges';
                         $totalsRow[] = $yearTotals[$year]['total_by_weeks'];
                         $totalsRow[] = $yearTotals[$year]['total_by_converts'];
                         $totalsRow[] = $yearTotals[$year]['balance_student'];
@@ -4840,6 +4899,13 @@ class PendaftarController extends Controller
                         $totalsRow[] = $yearTotals[$year]['total_offered'];
                         $totalsRow[] = $yearTotals[$year]['total_kiv'];
                         $totalsRow[] = $yearTotals[$year]['total_others'];
+                        
+                        // Add filter totals
+                        if (isset($activeFilters[$year]) && is_array($activeFilters[$year])) {
+                            foreach ($activeFilters[$year] as $filter) {
+                                $totalsRow[] = $filterTotals[$filter['id']];
+                            }
+                        }
                     }
                     fputcsv($file, $totalsRow);
                 }

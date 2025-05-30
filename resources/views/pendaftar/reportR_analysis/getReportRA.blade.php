@@ -528,6 +528,33 @@ function printReport2() {
   // Check if using multiple tables or single range
   const tableCount = parseInt($('#table_count').val()) || 0;
   
+  // Collect active filter data for export
+  const activeFiltersData = {};
+  const filterDataForExport = {};
+  
+  // Collect all active filters and their data
+  @foreach($data['monthlyComparison']['years'] as $year)
+    if (window.activeFilters && window.activeFilters[{{ $year }}]) {
+      activeFiltersData[{{ $year }}] = window.activeFilters[{{ $year }}].map(filter => ({
+        id: filter.id,
+        type: filter.type,
+        from: filter.from,
+        to: filter.to,
+        year: filter.year
+      }));
+      
+      // Collect the actual filter data
+      window.activeFilters[{{ $year }}].forEach(filter => {
+        if (window.filterData && window.filterData[filter.id]) {
+          filterDataForExport[filter.id] = window.filterData[filter.id];
+        }
+      });
+    }
+  @endforeach
+  
+  console.log('Exporting with filters:', activeFiltersData);
+  console.log('Filter data:', filterDataForExport);
+  
   if (tableCount > 0) {
     // Use multiple date ranges for export
     const dateRanges = collectDateRanges();
@@ -557,16 +584,38 @@ function printReport2() {
     multipleTablesInput.value = 'true';
     form.appendChild(multipleTablesInput);
     
+    // Add filter data for export
+    var activeFiltersInput = document.createElement('input');
+    activeFiltersInput.type = 'hidden';
+    activeFiltersInput.name = 'active_filters';
+    activeFiltersInput.value = JSON.stringify(activeFiltersData);
+    form.appendChild(activeFiltersInput);
+    
+    var filterDataInput = document.createElement('input');
+    filterDataInput.type = 'hidden';
+    filterDataInput.name = 'filter_data';
+    filterDataInput.value = JSON.stringify(filterDataForExport);
+    form.appendChild(filterDataInput);
+    
     document.body.appendChild(form);
     form.submit();
     document.body.removeChild(form);
   } else {
-    // Use original single range method
+    // Use original single range method with filter data
     var from = $('#from').val();
     var to = $('#to').val();
     var url = "{{ url('pendaftar/student/reportRA/getStudentReportRA') }}";
+    
+    // Build URL with filter data
+    const params = new URLSearchParams({
+      excel: 'true',
+      from: from,
+      to: to,
+      active_filters: JSON.stringify(activeFiltersData),
+      filter_data: JSON.stringify(filterDataForExport)
+    });
 
-    window.location.href = `${url}?excel=true&from=${from}&to=${to}`;
+    window.location.href = `${url}?${params.toString()}`;
   }
 }
 
