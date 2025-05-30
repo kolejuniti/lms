@@ -4315,6 +4315,8 @@ class PendaftarController extends Controller
         ->whereBetween('students.date_offer', ['2024-08-06', '2024-12-31'])
         ->get();
 
+        dd($filteredStudents);
+
         return view('pendaftar.reportR_analysis.reportRA');
     }
 
