@@ -875,7 +875,7 @@ function addFilterColumnToTable(filter) {
     }
   });
   
-  // Add footer cell at the calculated position
+  // For footer insertion, we want to insert after the last column of the current year (same as header)
   const footerRow = $('tfoot tr');
   const footerCell = `<td class="text-center filter-footer-total filter-footer-${filter.year}" 
                           style="border: 1px solid black; background-color: #e9ecef; font-weight: bold;"
@@ -883,7 +883,7 @@ function addFilterColumnToTable(filter) {
   
   const footerCells = footerRow.children();
   if (headerInsertIndex >= 0 && headerInsertIndex < footerCells.length) {
-    $(footerCells[headerInsertIndex]).after(footerCell);
+    $(footerCells[headerInsertIndex + 2]).after(footerCell);
   } else {
     footerRow.append(footerCell);
   }
