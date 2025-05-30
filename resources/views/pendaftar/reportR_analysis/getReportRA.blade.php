@@ -239,6 +239,135 @@
 #monthly_comparison_table .table-bordered td {
   border: 1px solid black !important;
 }
+
+/* Sticky Header Styles */
+#monthly_comparison_main_table thead th {
+  position: sticky !important;
+  top: 0 !important;
+  background: #f8f9fa !important;
+  z-index: 20 !important;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Ensure year header row is sticky */
+#year_header_row th {
+  position: sticky !important;
+  top: 0 !important;
+  background: #f8f9fa !important;
+  z-index: 22 !important;
+}
+
+/* Ensure column header row is sticky and positioned below year header */
+#column_header_row th {
+  position: sticky !important;
+  top: 42px !important; /* Adjust based on year header height */
+  background: #f8f9fa !important;
+  z-index: 21 !important;
+}
+
+/* Special handling for sticky Month and Week columns in header */
+#year_header_row th:first-child,
+#year_header_row th:nth-child(2) {
+  position: sticky !important;
+  top: 0 !important;
+  left: 0 !important;
+  background: #f8f9fa !important;
+  z-index: 25 !important;
+}
+
+#year_header_row th:nth-child(2) {
+  position: sticky !important;
+  top: 0 !important;
+  left: 80px !important;
+  background: #f8f9fa !important;
+  z-index: 25 !important;
+}
+
+/* Month cell styling for visual grouping */
+.month-cell {
+  position: sticky !important;
+  left: 0 !important;
+  background: #fff !important;
+  z-index: 15 !important;
+  vertical-align: middle !important;
+  font-weight: bold !important;
+  border: 1px solid black !important;
+}
+
+/* First week of month - show month name */
+.month-first {
+  border-top: 1px solid black !important;
+}
+
+.month-visible {
+  display: inline !important;
+  color: #000 !important;
+  font-weight: bold !important;
+}
+
+/* Continuation weeks - hide month name but keep cell structure */
+.month-continuation {
+  border-top: none !important;
+  position: relative;
+}
+
+.month-hidden {
+  display: none !important;
+}
+
+/* Add a subtle visual indicator for month grouping on continuation cells */
+.month-continuation::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background-color: #e0e0e0;
+  transform: translateX(-50%);
+}
+
+/* Ensure data cells maintain their sticky positioning with consistent z-index */
+#monthly_comparison_main_table tbody td:first-child {
+  position: sticky !important;
+  left: 0 !important;
+  background: #fff !important;
+  z-index: 15 !important;
+}
+
+#monthly_comparison_main_table tbody td:nth-child(2) {
+  position: sticky !important;
+  left: 80px !important;
+  background: #fff !important;
+  z-index: 15 !important;
+}
+
+/* Footer sticky positioning */
+#monthly_comparison_main_table tfoot td:first-child {
+  position: sticky !important;
+  left: 0 !important;
+  background: #f8f9fa !important;
+  z-index: 16 !important;
+}
+
+#monthly_comparison_main_table tfoot td:nth-child(2) {
+  position: sticky !important;
+  left: 80px !important;
+  background: #f8f9fa !important;
+  z-index: 16 !important;
+}
+
+/* Ensure the table container allows for proper scrolling */
+#monthly_comparison_table .table-responsive {
+  max-height: 80vh;
+  overflow-y: auto;
+  border: 1px solid #dee2e6;
+}
+
+/* Add some visual separation for the sticky headers */
+#monthly_comparison_main_table thead th {
+  border-bottom: 2px solid #333 !important;
+}
 </style>
 
 <div class="card mb-3" id="monthly_comparison_table">
@@ -256,8 +385,8 @@
       <table class="table table-striped table-bordered table-sm" id="monthly_comparison_main_table" style="border: 1px solid black;">
         <thead class="thead-light" id="table_header">
           <tr id="year_header_row">
-            <th rowspan="2" style="vertical-align: middle; width: 80px; position: sticky; left: 0; background: #f8f9fa; z-index: 10; border: 1px solid black;">Month</th>
-            <th rowspan="2" style="vertical-align: middle; width: 120px; position: sticky; left: 80px; background: #f8f9fa; z-index: 10; border: 1px solid black;">Week</th>
+            <th rowspan="2" style="vertical-align: middle; width: 80px; position: sticky; left: 0; background: #f8f9fa; z-index: 25; border: 1px solid black;">Month</th>
+            <th rowspan="2" style="vertical-align: middle; width: 120px; position: sticky; left: 80px; background: #f8f9fa; z-index: 25; border: 1px solid black;">Week</th>
             @foreach($data['monthlyComparison']['years'] as $year)
               <th colspan="9" class="text-center bg-light year-header-{{ $year }}" style="border: 1px solid black;" data-year="{{ $year }}">Year {{ $year }}</th>
             @endforeach
@@ -340,13 +469,13 @@
               @if($maxWeeks > 0)
                 @for($weekNum = 1; $weekNum <= $maxWeeks; $weekNum++)
                   <tr>
-                    @if($weekNum == 1)
-                      <td rowspan="{{ $maxWeeks }}" style="vertical-align: middle; font-weight: bold; position: sticky; left: 0; background: #fff; z-index: 5; border: 1px solid black;">
-                        {{ $monthName }}
-                      </td>
-                    @endif
+                    <td class="month-cell {{ $weekNum == 1 ? 'month-first' : 'month-continuation' }}" 
+                        style="position: sticky; left: 0; background: #fff; z-index: 15; border: 1px solid black; vertical-align: middle; font-weight: bold;" 
+                        data-month="{{ $monthName }}">
+                      <span class="{{ $weekNum == 1 ? 'month-visible' : 'month-hidden' }}">{{ $monthName }}</span>
+                    </td>
                     
-                    <td class="text-center" style="position: sticky; left: 80px; background: #fff; font-size: 12px; z-index: 5; padding: 8px 4px; border: 1px solid black;">
+                    <td class="text-center" style="position: sticky; left: 80px; background: #fff; font-size: 12px; z-index: 15; padding: 8px 4px; border: 1px solid black;">
                       <div style="line-height: 1.2;">
                         <strong>Week {{ $weekNum }}</strong>
                       </div>
@@ -902,17 +1031,11 @@ function addFilterColumnToTable(filter) {
                         <span style="color: #666;">-</span>
                       </td>`;
     
-    // Check if this row has the Month cell (first row of each month group)
-    // Rows with Month cell have one more cell than rows without it
-    const hasMonthCell = row.children().first().attr('rowspan') !== undefined;
-    
-    // Adjust insertion index for rows without Month cell
+    // All rows now have the same structure (Month, Week, then data columns)
+    // No need to check for Month cell presence since every row has one
     let rowInsertIndex = insertAfterIndex;
-    if (!hasMonthCell) {
-      rowInsertIndex = insertAfterIndex - 1; // Subtract 1 because no Month cell
-    }
     
-    console.log(`Row ${rowIndex}: hasMonthCell=${hasMonthCell}, using insertion index=${rowInsertIndex}`);
+    console.log(`Row ${rowIndex}: using insertion index=${rowInsertIndex}`);
     
     // Insert at the calculated position in data rows
     const rowCells = row.children();
@@ -977,18 +1100,25 @@ function populateFilterData(filter) {
     const weekCell = row.children().eq(1);
     
     if (monthCell.length && weekCell.length) {
-      // Check if this row has a month name (first row of month group)
-      const monthText = monthCell.text().trim();
+      // Get month name from data attribute or text content
+      let monthText = monthCell.data('month') || monthCell.text().trim();
       
       // Only update current month if this cell actually contains a month name
       if (monthText && monthText !== '' && monthText !== 'TOTAL' && monthNames.includes(monthText)) {
-        currentMonth = monthText;
-        currentMonthNumber = monthNames.indexOf(currentMonth) + 1;
-        currentWeekInMonth = 1; // Reset to week 1 for new month
-        console.log('Found new month:', currentMonth, 'number:', currentMonthNumber);
-      } else if (currentMonthNumber > 0) {
-        // This is a continuation row for the current month, increment week number
-        currentWeekInMonth++;
+        // Check if this is the first occurrence of this month (first week)
+        const weekText = weekCell.text().trim();
+        if (weekText.includes('Week 1')) {
+          currentMonth = monthText;
+          currentMonthNumber = monthNames.indexOf(currentMonth) + 1;
+          currentWeekInMonth = 1;
+          console.log('Found new month:', currentMonth, 'number:', currentMonthNumber);
+        } else if (currentMonth === monthText) {
+          // This is a continuation week for the current month
+          const weekMatch = weekText.match(/Week (\d+)/);
+          if (weekMatch) {
+            currentWeekInMonth = parseInt(weekMatch[1]);
+          }
+        }
       }
       
       // Process the week data if we have a valid month and week
