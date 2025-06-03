@@ -4050,7 +4050,7 @@ class PendaftarController extends Controller
                     $data['to'] = Carbon::createFromFormat('Y-m-d', $request->to)->translatedFormat('d F Y');
 
 
-                    return $this->exportToExcel($data);
+                    return $this->exportToExcelRA2($data);
 
                 }else{
 
@@ -4365,7 +4365,13 @@ class PendaftarController extends Controller
         
         // Handle Excel export for single range
         if ($request->has('excel')) {
-            return $this->exportToExcelRA($data, false, $request->from, $request->to);
+            // Check report type and use appropriate export function
+            $reportType = $request->input('report_type', '1');
+            if ($reportType === '2') {
+                return $this->exportToExcelRA2($data, false, $request->from, $request->to);
+            } else {
+                return $this->exportToExcelRA($data, false, $request->from, $request->to);
+            }
         }
         
         // Handle print for single range
@@ -4523,7 +4529,13 @@ class PendaftarController extends Controller
 
         // Handle Excel export for multiple years
         if ($request->has('excel')) {
-            return $this->exportToExcelRA($data, true);
+            // Check report type and use appropriate export function
+            $reportType = $request->input('report_type', '1');
+            if ($reportType === '2') {
+                return $this->exportToExcelRA2($data, true);
+            } else {
+                return $this->exportToExcelRA($data, true);
+            }
         }
 
         if ($request->has('print')) {
@@ -4790,7 +4802,13 @@ class PendaftarController extends Controller
 
         // Handle Excel export for multiple ranges
         if ($request->has('excel')) {
-            return $this->exportToExcelRA($data, true);
+            // Check report type and use appropriate export function
+            $reportType = $request->input('report_type', '1');
+            if ($reportType === '2') {
+                return $this->exportToExcelRA2($data, true);
+            } else {
+                return $this->exportToExcelRA($data, true);
+            }
         }
 
         if ($request->has('print')) {
@@ -5087,11 +5105,43 @@ class PendaftarController extends Controller
                     
                     // Collect all months that have data
                     $monthsWithData = [];
+                    
+                    // Parse from and to dates to determine month range
+                    $fromMonth = null;
+                    $toMonth = null;
+                    $fromYear = null;
+                    $toYear = null;
+                    
+                    if ($from && $to) {
+                        $fromDate = \Carbon\Carbon::parse($from);
+                        $toDate = \Carbon\Carbon::parse($to);
+                        $fromMonth = $fromDate->month;
+                        $toMonth = $toDate->month;
+                        $fromYear = $fromDate->year;
+                        $toYear = $toDate->year;
+                    }
+                    
                     foreach ($data['monthlyComparison']['years'] as $year) {
                         if (isset($data['monthlyComparison']['monthly_data'][$year])) {
                             foreach ($data['monthlyComparison']['monthly_data'][$year] as $monthNum => $monthData) {
-                                if (!empty($monthData['weeks']) && !in_array($monthNum, $monthsWithData)) {
-                                    $monthsWithData[] = $monthNum;
+                                if (!empty($monthData['weeks'])) {
+                                    // Filter months based on date range
+                                    $shouldIncludeMonth = true;
+                                    
+                                    if ($from && $to) {
+                                        // Check if this month/year combination falls within the date range
+                                        if ($year < $fromYear || $year > $toYear) {
+                                            $shouldIncludeMonth = false;
+                                        } else if ($year == $fromYear && $monthNum < $fromMonth) {
+                                            $shouldIncludeMonth = false;
+                                        } else if ($year == $toYear && $monthNum > $toMonth) {
+                                            $shouldIncludeMonth = false;
+                                        }
+                                    }
+                                    
+                                    if ($shouldIncludeMonth && !in_array($monthNum, $monthsWithData)) {
+                                        $monthsWithData[] = $monthNum;
+                                    }
                                 }
                             }
                         }
@@ -5696,6 +5746,296 @@ class PendaftarController extends Controller
             'total_others' => count($totalOthers),
             'students' => $currentWeekStudents,
         ];
+    }
+
+    private function exportToExcelRA2($data, $isMultiple = false, $from = null, $to = null)
+    {
+        // Get filter data from request if available
+        $activeFilters = request('active_filters') ? json_decode(request('active_filters'), true) : [];
+        $filterData = request('filter_data') ? json_decode(request('filter_data'), true) : [];
+        
+        Log::info('exportToExcelRA2 called', [
+            'isMultiple' => $isMultiple,
+            'from' => $from,
+            'to' => $to,
+            'data_keys' => array_keys($data),
+            'active_filters' => $activeFilters,
+            'filter_data_keys' => array_keys($filterData),
+            'data_structure' => [
+                'allStudents_count' => is_array($data['allStudents'] ?? null) ? count($data['allStudents']) : 'single_value',
+                'tableLabels_count' => is_array($data['tableLabels'] ?? null) ? count($data['tableLabels']) : 'not_set'
+            ]
+        ]);
+
+        $filename = 'student_r_analysis_report2_' . date('Y-m-d_H-i-s') . '.csv';
+        
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ];
+
+        Log::info('Excel export headers set for Report 2', ['headers' => $headers]);
+
+        $callback = function() use ($data, $isMultiple, $from, $to, $activeFilters, $filterData) {
+            Log::info('Excel export callback started for Report 2');
+            
+            $file = fopen('php://output', 'w');
+            
+            // Add BOM for UTF-8
+            fwrite($file, "\xEF\xBB\xBF");
+            
+            // Header information
+            fputcsv($file, ['Student R Analysis Report 2 - Monthly Comparison']);
+            fputcsv($file, ['Generated on: ' . date('Y-m-d H:i:s')]);
+            if ($from && $to) {
+                fputcsv($file, ['Date Range: ' . $from . ' to ' . $to]);
+            }
+            fputcsv($file, []);
+            
+            // Check if we have monthly comparison data
+            if (isset($data['monthlyComparison']) && !empty($data['monthlyComparison']['monthly_data'])) {
+                fputcsv($file, ['MONTHLY COMPARISON ANALYSIS']);
+                fputcsv($file, ['Showing ' . count($data['monthlyComparison']['years']) . ' years']);
+                fputcsv($file, ['Note: Data shown follows the calendar date (Sunday to Saturday) for weekly breakdown. Only months with data are displayed.']);
+                fputcsv($file, []);
+                
+                // Create header row for Report 2 structure
+                $headerRow = ['Month', 'Week'];
+                foreach ($data['monthlyComparison']['years'] as $year) {
+                    $headerRow[] = "Year $year - Range";
+                    $headerRow[] = "Year $year - Registered Actual";
+                    $headerRow[] = "Year $year - Registered Cumulative";
+                    $headerRow[] = "Year $year - R Per Week Actual";
+                    $headerRow[] = "Year $year - R Per Week Cumulative";
+                    $headerRow[] = "Year $year - Status Balance R Actual";
+                    $headerRow[] = "Year $year - Status Balance R Cumulative";
+                    $headerRow[] = "Year $year - Rejected";
+                    $headerRow[] = "Year $year - Offered";
+                    $headerRow[] = "Year $year - KIV";
+                }
+                fputcsv($file, $headerRow);
+                
+                // Collect all months that have data
+                $monthsWithData = [];
+                
+                // Parse from and to dates to determine month range
+                $fromMonth = null;
+                $toMonth = null;
+                $fromYear = null;
+                $toYear = null;
+                
+                if ($from && $to) {
+                    $fromDate = \Carbon\Carbon::parse($from);
+                    $toDate = \Carbon\Carbon::parse($to);
+                    $fromMonth = $fromDate->month;
+                    $toMonth = $toDate->month;
+                    $fromYear = $fromDate->year;
+                    $toYear = $toDate->year;
+                }
+                
+                foreach ($data['monthlyComparison']['years'] as $year) {
+                    if (isset($data['monthlyComparison']['monthly_data'][$year])) {
+                        foreach ($data['monthlyComparison']['monthly_data'][$year] as $monthNum => $monthData) {
+                            if (!empty($monthData['weeks'])) {
+                                // Filter months based on date range
+                                $shouldIncludeMonth = true;
+                                
+                                if ($from && $to) {
+                                    // Check if this month/year combination falls within the date range
+                                    if ($year < $fromYear || $year > $toYear) {
+                                        $shouldIncludeMonth = false;
+                                    } else if ($year == $fromYear && $monthNum < $fromMonth) {
+                                        $shouldIncludeMonth = false;
+                                    } else if ($year == $toYear && $monthNum > $toMonth) {
+                                        $shouldIncludeMonth = false;
+                                    }
+                                }
+                                
+                                if ($shouldIncludeMonth && !in_array($monthNum, $monthsWithData)) {
+                                    $monthsWithData[] = $monthNum;
+                                }
+                            }
+                        }
+                    }
+                }
+                sort($monthsWithData);
+                
+                $monthNames = [
+                    1 => 'January', 2 => 'February', 3 => 'March', 4 => 'April',
+                    5 => 'May', 6 => 'June', 7 => 'July', 8 => 'August',
+                    9 => 'September', 10 => 'October', 11 => 'November', 12 => 'December'
+                ];
+                
+                // Initialize cumulative totals for each year
+                $yearCumulativeTotals = [];
+                foreach ($data['monthlyComparison']['years'] as $year) {
+                    $yearCumulativeTotals[$year] = [
+                        'registered' => 0,
+                        'r_per_week' => 0,
+                        'balance' => 0,
+                        'rejected' => 0,
+                        'offered' => 0,
+                        'kiv' => 0
+                    ];
+                }
+                
+                // Initialize grand totals for footer
+                $grandTotals = [];
+                foreach ($data['monthlyComparison']['years'] as $year) {
+                    $grandTotals[$year] = [
+                        'registered_actual' => 0,
+                        'registered_cumulative' => 0,
+                        'r_per_week_actual' => 0,
+                        'r_per_week_cumulative' => 0,
+                        'balance_actual' => 0,
+                        'balance_cumulative' => 0,
+                        'rejected' => 0,
+                        'offered' => 0,
+                        'kiv' => 0
+                    ];
+                }
+                
+                // Process each month
+                foreach ($monthsWithData as $monthNumber) {
+                    $monthName = $monthNames[$monthNumber];
+                    $maxWeeks = 0;
+                    
+                    // Find maximum weeks across all years for this month
+                    foreach ($data['monthlyComparison']['years'] as $year) {
+                        if (isset($data['monthlyComparison']['monthly_data'][$year][$monthNumber]['weeks'])) {
+                            $maxWeeks = max($maxWeeks, count($data['monthlyComparison']['monthly_data'][$year][$monthNumber]['weeks']));
+                        }
+                    }
+                    
+                    // Process each week
+                    for ($weekNum = 1; $weekNum <= $maxWeeks; $weekNum++) {
+                        $row = [];
+                        
+                        // Month column (only for first week)
+                        if ($weekNum == 1) {
+                            $row[] = $monthName;
+                        } else {
+                            $row[] = '';
+                        }
+                        
+                        // Week column
+                        $row[] = "Week $weekNum";
+                        
+                        // Data columns for each year
+                        foreach ($data['monthlyComparison']['years'] as $year) {
+                            $weekData = null;
+                            if (isset($data['monthlyComparison']['monthly_data'][$year][$monthNumber]['weeks'][$weekNum - 1])) {
+                                $weekData = $data['monthlyComparison']['monthly_data'][$year][$monthNumber]['weeks'][$weekNum - 1];
+                            }
+                            
+                            if ($weekData) {
+                                // Calculate values for Report 2 template
+                                $registeredActual = $weekData['total_by_converts'] ?? 0;
+                                $rPerWeekActual = $weekData['total_by_weeks'] ?? 0;
+                                $balanceActual = $weekData['balance_student'] ?? 0;
+                                $rejected = $weekData['total_rejected'] ?? 0;
+                                $offered = $weekData['total_offered'] ?? 0;
+                                $kiv = $weekData['total_kiv'] ?? 0;
+                                
+                                // Update cumulative totals
+                                $yearCumulativeTotals[$year]['registered'] += $registeredActual;
+                                $yearCumulativeTotals[$year]['r_per_week'] += $rPerWeekActual;
+                                $yearCumulativeTotals[$year]['balance'] += $balanceActual;
+                                $yearCumulativeTotals[$year]['rejected'] += $rejected;
+                                $yearCumulativeTotals[$year]['offered'] += $offered;
+                                $yearCumulativeTotals[$year]['kiv'] += $kiv;
+                                
+                                // Update grand totals
+                                $grandTotals[$year]['registered_actual'] += $registeredActual;
+                                $grandTotals[$year]['registered_cumulative'] = $yearCumulativeTotals[$year]['registered'];
+                                $grandTotals[$year]['r_per_week_actual'] += $rPerWeekActual;
+                                $grandTotals[$year]['r_per_week_cumulative'] = $yearCumulativeTotals[$year]['r_per_week'];
+                                $grandTotals[$year]['balance_actual'] += $balanceActual;
+                                $grandTotals[$year]['balance_cumulative'] = $yearCumulativeTotals[$year]['balance'];
+                                $grandTotals[$year]['rejected'] += $rejected;
+                                $grandTotals[$year]['offered'] += $offered;
+                                $grandTotals[$year]['kiv'] += $kiv;
+                                
+                                $row[] = $weekData['date_range'];
+                                $row[] = $registeredActual;
+                                $row[] = $yearCumulativeTotals[$year]['registered'];
+                                $row[] = $rPerWeekActual;
+                                $row[] = $yearCumulativeTotals[$year]['r_per_week'];
+                                $row[] = $balanceActual;
+                                $row[] = $yearCumulativeTotals[$year]['balance'];
+                                $row[] = $rejected;
+                                $row[] = $offered;
+                                $row[] = $kiv;
+                            } else {
+                                // Generate date range even when no data exists
+                                $monthStart = \Carbon\Carbon::createFromDate($year, $monthNumber, 1)->startOfMonth();
+                                $monthEnd = \Carbon\Carbon::createFromDate($year, $monthNumber, 1)->endOfMonth();
+                                
+                                // Calculate week start and end for this specific week number
+                                $start = $monthStart->copy();
+                                for ($i = 1; $i < $weekNum; $i++) {
+                                    $weekStart = $start->copy();
+                                    $daysUntilSaturday = (6 - $weekStart->dayOfWeek) % 7;
+                                    $weekEnd = $weekStart->copy()->addDays($daysUntilSaturday);
+                                    if ($weekEnd->gt($monthEnd)) {
+                                        $weekEnd = $monthEnd->copy();
+                                    }
+                                    $start = $weekEnd->copy()->addDay();
+                                }
+                                
+                                $weekStart = $start->copy();
+                                $daysUntilSaturday = (6 - $weekStart->dayOfWeek) % 7;
+                                $weekEnd = $weekStart->copy()->addDays($daysUntilSaturday);
+                                if ($weekEnd->gt($monthEnd)) {
+                                    $weekEnd = $monthEnd->copy();
+                                }
+                                
+                                $dateRange = $weekStart->format('j M Y') . ' - ' . $weekEnd->format('j M Y');
+                                
+                                $row[] = $dateRange;
+                                $row[] = 0; // Registered Actual
+                                $row[] = $yearCumulativeTotals[$year]['registered']; // Registered Cumulative
+                                $row[] = 0; // R Per Week Actual
+                                $row[] = $yearCumulativeTotals[$year]['r_per_week']; // R Per Week Cumulative
+                                $row[] = 0; // Balance Actual
+                                $row[] = $yearCumulativeTotals[$year]['balance']; // Balance Cumulative
+                                $row[] = 0; // Rejected
+                                $row[] = 0; // Offered
+                                $row[] = 0; // KIV
+                            }
+                        }
+                        
+                        fputcsv($file, $row);
+                    }
+                }
+                
+                // Add totals row
+                $totalsRow = ['TOTAL', 'All Weeks'];
+                foreach ($data['monthlyComparison']['years'] as $year) {
+                    $totalsRow[] = 'All Ranges';
+                    $totalsRow[] = $grandTotals[$year]['registered_actual'];
+                    $totalsRow[] = $grandTotals[$year]['registered_cumulative'];
+                    $totalsRow[] = $grandTotals[$year]['r_per_week_actual'];
+                    $totalsRow[] = $grandTotals[$year]['r_per_week_cumulative'];
+                    $totalsRow[] = $grandTotals[$year]['balance_actual'];
+                    $totalsRow[] = $grandTotals[$year]['balance_cumulative'];
+                    $totalsRow[] = $grandTotals[$year]['rejected'];
+                    $totalsRow[] = $grandTotals[$year]['offered'];
+                    $totalsRow[] = $grandTotals[$year]['kiv'];
+                }
+                fputcsv($file, $totalsRow);
+                
+            } else {
+                // Fallback when no monthly comparison data is available
+                fputcsv($file, ['No monthly comparison data available for the selected period']);
+                fputcsv($file, ['Please ensure the selected date range contains valid data']);
+            }
+            
+            fclose($file);
+            Log::info('Excel export completed for Report 2');
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 
     public function incomeReport()
@@ -6368,4 +6708,5 @@ class PendaftarController extends Controller
         }
         return null;
     }
+
 }
