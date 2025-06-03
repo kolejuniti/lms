@@ -409,13 +409,42 @@
           @php
             $monthsWithData = [];
             
+            // Get date range information from data if available
+            $fromMonth = null;
+            $toMonth = null;
+            if (isset($data['dateRange'])) {
+                $fromMonth = $data['dateRange']['from_month'];
+                $toMonth = $data['dateRange']['to_month'];
+            }
+            
             // Collect all months that have data across all years
             foreach($data['monthlyComparison']['years'] as $year) {
               if (isset($data['monthlyComparison']['monthly_data'][$year])) {
                 foreach($data['monthlyComparison']['monthly_data'][$year] as $monthNum => $monthData) {
                   if (!empty($monthData['weeks'])) {
-                    if (!in_array($monthNum, $monthsWithData)) {
-                      $monthsWithData[] = $monthNum;
+                    // Filter based on date range if available
+                    if ($fromMonth !== null && $toMonth !== null) {
+                        // Check if month falls within the selected range
+                        if ($fromMonth <= $toMonth) {
+                            // Normal range (e.g., April to June)
+                            if ($monthNum >= $fromMonth && $monthNum <= $toMonth) {
+                                if (!in_array($monthNum, $monthsWithData)) {
+                                    $monthsWithData[] = $monthNum;
+                                }
+                            }
+                        } else {
+                            // Cross-year range (e.g., November to February)
+                            if ($monthNum >= $fromMonth || $monthNum <= $toMonth) {
+                                if (!in_array($monthNum, $monthsWithData)) {
+                                    $monthsWithData[] = $monthNum;
+                                }
+                            }
+                        }
+                    } else {
+                        // Fallback to original logic if no date range available
+                        if (!in_array($monthNum, $monthsWithData)) {
+                            $monthsWithData[] = $monthNum;
+                        }
                     }
                   }
                 }
@@ -590,55 +619,59 @@ $(document).ready(function() {
   // Initialize global filter data storage
   window.filterData = {};
   window.activeFilters = {};
-  @foreach($data['monthlyComparison']['years'] as $year)
-    window.activeFilters[{{ $year }}] = [];
-    updateFiltersDisplay({{ $year }});
-  @endforeach
-  
-  console.log('Filter system initialized for years:', @json($data['monthlyComparison']['years']));
-  console.log('Active filters initialized:', window.activeFilters);
-  
-  // Add test function for debugging
-  window.debugTable = function() {
-    console.log('=== TABLE DEBUG INFO ===');
-    console.log('Header row children count:', $('#column_header_row').children().length);
-    console.log('Year header row children count:', $('#year_header_row').children().length);
-    console.log('First data row children count:', $('#table_body tr').first().children().length);
-    console.log('Footer row children count:', $('tfoot tr').children().length);
+  @if(isset($data['monthlyComparison']['years']))
+    @foreach($data['monthlyComparison']['years'] as $year)
+      window.activeFilters[{{ $year }}] = [];
+      updateFiltersDisplay({{ $year }});
+    @endforeach
     
-    console.log('Active filters:', window.activeFilters);
-    console.log('Filter data:', window.filterData);
+    console.log('Filter system initialized for years:', @json($data['monthlyComparison']['years']));
+    console.log('Active filters initialized:', window.activeFilters);
     
-    // Log header structure
-    console.log('=== COLUMN HEADER STRUCTURE ===');
-    $('#column_header_row').children().each(function(index) {
-      const text = $(this).text().trim();
-      const classes = $(this).attr('class') || '';
-      console.log(`Header ${index}: "${text}" (classes: ${classes})`);
-    });
+    // Add test function for debugging
+    window.debugTable = function() {
+      console.log('=== TABLE DEBUG INFO ===');
+      console.log('Header row children count:', $('#column_header_row').children().length);
+      console.log('Year header row children count:', $('#year_header_row').children().length);
+      console.log('First data row children count:', $('#table_body tr').first().children().length);
+      console.log('Footer row children count:', $('tfoot tr').children().length);
+      
+      console.log('Active filters:', window.activeFilters);
+      console.log('Filter data:', window.filterData);
+      
+      // Log header structure
+      console.log('=== COLUMN HEADER STRUCTURE ===');
+      $('#column_header_row').children().each(function(index) {
+        const text = $(this).text().trim();
+        const classes = $(this).attr('class') || '';
+        console.log(`Header ${index}: "${text}" (classes: ${classes})`);
+      });
+      
+      // Log year header structure
+      console.log('=== YEAR HEADER STRUCTURE ===');
+      $('#year_header_row').children().each(function(index) {
+        const text = $(this).text().trim();
+        const colspan = $(this).attr('colspan') || '1';
+        const year = $(this).data('year') || 'N/A';
+        console.log(`Year Header ${index}: "${text}" (colspan: ${colspan}, year: ${year})`);
+      });
+      
+      // Log filter counts by year
+      console.log('=== FILTER COUNTS BY YEAR ===');
+      const yearHeaders = @json($data['monthlyComparison']['years']);
+      yearHeaders.forEach(year => {
+        const filterCount = window.activeFilters[year] ? window.activeFilters[year].length : 0;
+        const expectedColspan = 9 + filterCount;
+        const actualColspan = $(`[data-year="${year}"]`).attr('colspan');
+        console.log(`Year ${year}: ${filterCount} filters, expected colspan: ${expectedColspan}, actual colspan: ${actualColspan}`);
+      });
+    };
     
-    // Log year header structure
-    console.log('=== YEAR HEADER STRUCTURE ===');
-    $('#year_header_row').children().each(function(index) {
-      const text = $(this).text().trim();
-      const colspan = $(this).attr('colspan') || '1';
-      const year = $(this).data('year') || 'N/A';
-      console.log(`Year Header ${index}: "${text}" (colspan: ${colspan}, year: ${year})`);
-    });
-    
-    // Log filter counts by year
-    console.log('=== FILTER COUNTS BY YEAR ===');
-    const yearHeaders = @json($data['monthlyComparison']['years']);
-    yearHeaders.forEach(year => {
-      const filterCount = window.activeFilters[year] ? window.activeFilters[year].length : 0;
-      const expectedColspan = 9 + filterCount;
-      const actualColspan = $(`[data-year="${year}"]`).attr('colspan');
-      console.log(`Year ${year}: ${filterCount} filters, expected colspan: ${expectedColspan}, actual colspan: ${actualColspan}`);
-    });
-  };
-  
-  // Call debug function initially
-  window.debugTable();
+    // Call debug function initially
+    window.debugTable();
+  @else
+    console.log('No monthly comparison data available');
+  @endif
   
   // Bind export button click handler
   $(document).off('click', '#exportBtn').on('click', '#exportBtn', function(e) {
@@ -654,40 +687,46 @@ $(document).ready(function() {
 });
 
 function printReport2() {
-  // Check if using multiple tables or single range
-  const tableCount = parseInt($('#table_count').val()) || 0;
-  
+  const fromDate = $('#from_date').val();
+  const toDate = $('#to_date').val();
+  const selectedYears = [];
+  const reportType = $('input[name="report_type"]:checked').val();
+
+  // Collect selected years
+  $('.year-checkbox:checked').each(function() {
+    selectedYears.push($(this).val());
+  });
+
   // Collect active filter data for export
   const activeFiltersData = {};
   const filterDataForExport = {};
   
-  // Collect all active filters and their data
-  @foreach($data['monthlyComparison']['years'] as $year)
-    if (window.activeFilters && window.activeFilters[{{ $year }}]) {
-      activeFiltersData[{{ $year }}] = window.activeFilters[{{ $year }}].map(filter => ({
-        id: filter.id,
-        type: filter.type,
-        from: filter.from,
-        to: filter.to,
-        year: filter.year
-      }));
-      
-      // Collect the actual filter data
-      window.activeFilters[{{ $year }}].forEach(filter => {
-        if (window.filterData && window.filterData[filter.id]) {
-          filterDataForExport[filter.id] = window.filterData[filter.id];
-        }
-      });
-    }
-  @endforeach
+  // Collect all active filters and their data (only if data exists)
+  @if(isset($data['monthlyComparison']['years']))
+    @foreach($data['monthlyComparison']['years'] as $year)
+      if (window.activeFilters && window.activeFilters[{{ $year }}]) {
+        activeFiltersData[{{ $year }}] = window.activeFilters[{{ $year }}].map(filter => ({
+          id: filter.id,
+          type: filter.type,
+          from: filter.from,
+          to: filter.to,
+          year: filter.year
+        }));
+        
+        // Collect the actual filter data
+        window.activeFilters[{{ $year }}].forEach(filter => {
+          if (window.filterData && window.filterData[filter.id]) {
+            filterDataForExport[filter.id] = window.filterData[filter.id];
+          }
+        });
+      }
+    @endforeach
+  @endif
   
   console.log('Exporting with filters:', activeFiltersData);
   console.log('Filter data:', filterDataForExport);
   
-  if (tableCount > 0) {
-    // Use multiple date ranges for export
-    const dateRanges = collectDateRanges();
-    
+  if (fromDate && toDate && selectedYears.length > 0) {
     // Create base URL without query parameters
     var url = "{{ url('pendaftar/student/reportRA/getStudentReportRA') }}";
     var form = document.createElement('form');
@@ -700,18 +739,32 @@ function printReport2() {
     excelInput.name = 'excel';
     excelInput.value = 'true';
     form.appendChild(excelInput);
+
+    // Add report type parameter
+    var reportTypeInput = document.createElement('input');
+    reportTypeInput.type = 'hidden';
+    reportTypeInput.name = 'report_type';
+    reportTypeInput.value = reportType;
+    form.appendChild(reportTypeInput);
     
-    var dateRangesInput = document.createElement('input');
-    dateRangesInput.type = 'hidden';
-    dateRangesInput.name = 'date_ranges';
-    dateRangesInput.value = JSON.stringify(dateRanges);
-    form.appendChild(dateRangesInput);
+    // Add date parameters
+    var fromDateInput = document.createElement('input');
+    fromDateInput.type = 'hidden';
+    fromDateInput.name = 'from_date';
+    fromDateInput.value = fromDate;
+    form.appendChild(fromDateInput);
+
+    var toDateInput = document.createElement('input');
+    toDateInput.type = 'hidden';
+    toDateInput.name = 'to_date';
+    toDateInput.value = toDate;
+    form.appendChild(toDateInput);
     
-    var multipleTablesInput = document.createElement('input');
-    multipleTablesInput.type = 'hidden';
-    multipleTablesInput.name = 'multiple_tables';
-    multipleTablesInput.value = 'true';
-    form.appendChild(multipleTablesInput);
+    var selectedYearsInput = document.createElement('input');
+    selectedYearsInput.type = 'hidden';
+    selectedYearsInput.name = 'selected_years';
+    selectedYearsInput.value = JSON.stringify(selectedYears);
+    form.appendChild(selectedYearsInput);
     
     // Add filter data for export
     var activeFiltersInput = document.createElement('input');
@@ -827,22 +880,39 @@ function collectTableData() {
   return data;
 }
 
-// Helper function to collect date ranges (should be available from parent page)
+// Helper function to collect date ranges (updated for year-based approach)
 function collectDateRanges() {
   const ranges = [];
-  const tableCount = parseInt($('#table_count').val()) || 0;
-  
-  for (let i = 1; i <= tableCount; i++) {
-    const fromValue = $(`#from_${i}`).val();
-    const toValue = $(`#to_${i}`).val();
+  const fromDate = $('#from_date').val();
+  const toDate = $('#to_date').val();
+  const selectedYears = [];
+
+  // Collect selected years
+  $('.year-checkbox:checked').each(function() {
+    selectedYears.push($(this).val());
+  });
+
+  if (fromDate && toDate && selectedYears.length > 0) {
+    // Extract day and month from the provided dates
+    const fromCarbon = new Date(fromDate);
+    const toCarbon = new Date(toDate);
     
-    if (fromValue && toValue) {
+    const fromMonth = fromCarbon.getMonth() + 1; // getMonth() returns 0-11
+    const fromDay = fromCarbon.getDate();
+    const toMonth = toCarbon.getMonth() + 1;
+    const toDay = toCarbon.getDate();
+    
+    selectedYears.forEach((year, index) => {
+      // Create date range for this year using the same day/month
+      const yearFromDate = `${year}-${String(fromMonth).padStart(2, '0')}-${String(fromDay).padStart(2, '0')}`;
+      const yearToDate = `${year}-${String(toMonth).padStart(2, '0')}-${String(toDay).padStart(2, '0')}`;
+      
       ranges.push({
-        table: i,
-        from: fromValue,
-        to: toValue
+        table: index + 1,
+        from: yearFromDate,
+        to: yearToDate
       });
-    }
+    });
   }
   
   return ranges;

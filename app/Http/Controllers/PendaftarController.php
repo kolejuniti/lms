@@ -4288,7 +4288,28 @@ class PendaftarController extends Controller
 
     public function getStudentReportRA(Request $request)
     {
-        // Check if this is a multiple tables request
+        // Check if this is the new year-based approach
+        if ($request->selected_years && $request->from_date && $request->to_date) {
+            $data = $this->handleYearBasedDateRanges($request);
+            
+            // Check if it's already a response (like Excel export or print)
+            if ($data instanceof \Illuminate\Http\Response || $data instanceof \Illuminate\Http\RedirectResponse || $data instanceof \Symfony\Component\HttpFoundation\StreamedResponse) {
+                return $data;
+            }
+            
+            // Add monthly comparison table data
+            $data['monthlyComparison'] = $this->generateMonthlyComparisonTableYears($request);
+            
+            // Check report type and return appropriate view
+            $reportType = $request->input('report_type', '1'); // Default to Report 1
+            if ($reportType === '2') {
+                return view('pendaftar.reportR_analysis.getReportRA2', compact('data'));
+            } else {
+                return view('pendaftar.reportR_analysis.getReportRA', compact('data'));
+            }
+        }
+
+        // Check if this is a multiple tables request (legacy support)
         if ($request->multiple_tables && $request->date_ranges) {
             $data = $this->handleMultipleDateRanges($request);
             
@@ -4300,11 +4321,17 @@ class PendaftarController extends Controller
             // Add monthly comparison table data
             $data['monthlyComparison'] = $this->generateMonthlyComparisonTable($request);
             
-            return view('pendaftar.reportR_analysis.getReportRA', compact('data'));
+            // Check report type and return appropriate view
+            $reportType = $request->input('report_type', '1'); // Default to Report 1
+            if ($reportType === '2') {
+                return view('pendaftar.reportR_analysis.getReportRA2', compact('data'));
+            } else {
+                return view('pendaftar.reportR_analysis.getReportRA', compact('data'));
+            }
         }
 
         // Handle print request without any date selection (default case)
-        if ($request->has('print') && !$request->from && !$request->to && !$request->multiple_tables) {
+        if ($request->has('print') && !$request->from && !$request->to && !$request->multiple_tables && !$request->selected_years) {
             // Return empty data structure for print view
             $data = [
                 'allStudents' => 0,
@@ -4324,10 +4351,16 @@ class PendaftarController extends Controller
                 'monthly_data' => []
             ];
             
-            return view('pendaftar.reportR_analysis.getReportRA_print', compact('data'));
+            // Check report type for print view
+            $reportType = $request->input('report_type', '1');
+            if ($reportType === '2') {
+                return view('pendaftar.reportR_analysis.getReportRA2', compact('data'));
+            } else {
+                return view('pendaftar.reportR_analysis.getReportRA_print', compact('data'));
+            }
         }
 
-        // Original single date range logic
+        // Original single date range logic (legacy support)
         $data = $this->processSingleDateRange($request->from, $request->to);
         
         // Handle Excel export for single range
@@ -4356,11 +4389,31 @@ class PendaftarController extends Controller
             } else {
                 $data['monthlyComparison'] = ['years' => [], 'monthly_data' => []];
             }
-            return view('pendaftar.reportR_analysis.getReportRA_print', compact('data'));
+            
+            // Check report type for print view
+            $reportType = $request->input('report_type', '1');
+            if ($reportType === '2') {
+                return view('pendaftar.reportR_analysis.getReportRA2', compact('data'));
+            } else {
+                return view('pendaftar.reportR_analysis.getReportRA_print', compact('data'));
+            }
         }
         
         // Generate monthly comparison data for regular view with single date range
         if ($request->from && $request->to) {
+            // Add date range information to the data
+            $fromCarbon = Carbon::parse($request->from);
+            $toCarbon = Carbon::parse($request->to);
+            
+            $data['dateRange'] = [
+                'from_date' => $request->from,
+                'to_date' => $request->to,
+                'from_month' => $fromCarbon->month,
+                'to_month' => $toCarbon->month,
+                'from_day' => $fromCarbon->day,
+                'to_day' => $toCarbon->day
+            ];
+            
             // Create a fake date_ranges structure for the generateMonthlyComparisonTable method
             $singleDateRange = [
                 [
@@ -4377,7 +4430,281 @@ class PendaftarController extends Controller
             $data['monthlyComparison'] = $this->generateMonthlyComparisonTable($modifiedRequest);
         }
         
-        return view('pendaftar.reportR_analysis.getReportRA', compact('data'));
+        // Check report type and return appropriate view
+        $reportType = $request->input('report_type', '1'); // Default to Report 1
+        if ($reportType === '2') {
+            return view('pendaftar.reportR_analysis.getReportRA2', compact('data'));
+        } else {
+            return view('pendaftar.reportR_analysis.getReportRA', compact('data'));
+        }
+    }
+
+    private function handleYearBasedDateRanges(Request $request)
+    {
+        $selectedYears = json_decode($request->selected_years, true);
+        $fromDate = $request->from_date;
+        $toDate = $request->to_date;
+
+        // Log::info('Year-based date ranges received:', [
+        //     'selectedYears' => $selectedYears,
+        //     'fromDate' => $fromDate,
+        //     'toDate' => $toDate
+        // ]);
+        
+        // Check if selected_years is properly decoded
+        if (!$selectedYears || !is_array($selectedYears) || !$fromDate || !$toDate) {
+            return response()->json(['error' => 'Invalid parameters format'], 400);
+        }
+        
+        // Extract day and month from the provided dates
+        $fromCarbon = Carbon::parse($fromDate);
+        $toCarbon = Carbon::parse($toDate);
+        
+        $fromMonth = $fromCarbon->month;
+        $fromDay = $fromCarbon->day;
+        $toMonth = $toCarbon->month;
+        $toDay = $toCarbon->day;
+        
+        $data = [];
+        
+        // Add date range information to the data
+        $data['dateRange'] = [
+            'from_date' => $fromDate,
+            'to_date' => $toDate,
+            'from_month' => $fromMonth,
+            'to_month' => $toMonth,
+            'from_day' => $fromDay,
+            'to_day' => $toDay
+        ];
+        
+        // Initialize arrays for multiple years
+        $data['allStudents'] = [];
+        $data['totalConvert'] = [];
+        $data['registered_before_offer'] = [];
+        $data['registered_after_offer'] = [];
+        $data['registered'] = [];
+        $data['rejected'] = [];
+        $data['offered'] = [];
+        $data['KIV'] = [];
+        $data['others'] = [];
+        $data['total'] = [];
+        $data['tableLabels'] = [];
+
+        foreach ($selectedYears as $index => $year) {
+            // Create date range for this year using the same day/month
+            $yearFromDate = Carbon::createFromDate($year, $fromMonth, $fromDay)->format('Y-m-d');
+            $yearToDate = Carbon::createFromDate($year, $toMonth, $toDay)->format('Y-m-d');
+            
+            // // Log date range information for each year
+            // \Log::info('Processing year-based date range:', [
+            //     'year' => $year,
+            //     'from' => $yearFromDate, 
+            //     'to' => $yearToDate
+            // ]);
+            
+            $tableData = $this->processSingleDateRange($yearFromDate, $yearToDate);
+            
+            // Store data for each year
+            $data['allStudents'][$index] = $tableData['allStudents'];
+            $data['totalConvert'][$index] = $tableData['totalConvert'];
+            $data['registered_before_offer'][$index] = $tableData['registered_before_offer'];
+            $data['registered_after_offer'][$index] = $tableData['registered_after_offer'];
+            $data['registered'][$index] = $tableData['registered'];
+            $data['rejected'][$index] = $tableData['rejected'];
+            $data['offered'][$index] = $tableData['offered'];
+            $data['KIV'][$index] = $tableData['KIV'];
+            $data['others'][$index] = $tableData['others'];
+            $data['total'][$index] = (object) ['total_' => $tableData['allStudents'] + $tableData['totalConvert'] + $tableData['registered'] + $tableData['rejected'] + $tableData['offered'] + $tableData['KIV'] + $tableData['others']];
+            $data['tableLabels'][$index] = "Year {$year} ({$yearFromDate} to {$yearToDate})";
+        }
+
+        // Generate monthly comparison data for both Excel export and print
+        $data['monthlyComparison'] = $this->generateMonthlyComparisonTableYears($request);
+
+        // Handle Excel export for multiple years
+        if ($request->has('excel')) {
+            return $this->exportToExcelRA($data, true);
+        }
+
+        if ($request->has('print')) {
+            return view('pendaftar.reportR_analysis.getReportRA_print', compact('data'));
+        }
+
+        return $data;
+    }
+
+    private function generateMonthlyComparisonTableYears(Request $request)
+    {
+        $selectedYears = json_decode($request->selected_years, true);
+        $fromDate = $request->from_date;
+        $toDate = $request->to_date;
+        
+        if (!$selectedYears || !is_array($selectedYears) || !$fromDate || !$toDate) {
+            return [];
+        }
+
+        // Extract day and month from the provided dates
+        $fromCarbon = Carbon::parse($fromDate);
+        $toCarbon = Carbon::parse($toDate);
+        
+        $fromMonth = $fromCarbon->month;
+        $fromDay = $fromCarbon->day;
+        $toMonth = $toCarbon->month;
+        $toDay = $toCarbon->day;
+
+        // Create date ranges for each selected year
+        $dateRanges = [];
+        foreach ($selectedYears as $index => $year) {
+            $yearFromDate = Carbon::createFromDate($year, $fromMonth, $fromDay)->format('Y-m-d');
+            $yearToDate = Carbon::createFromDate($year, $toMonth, $toDay)->format('Y-m-d');
+            
+            $dateRanges[] = [
+                'table' => $index + 1,
+                'from' => $yearFromDate,
+                'to' => $yearToDate
+            ];
+        }
+
+        // Create cache key based on date ranges
+        $cacheKey = 'monthly_comparison_years_' . md5(serialize($dateRanges));
+        
+        // Try to get from cache first (valid for 30 minutes)
+        if (cache()->has($cacheKey)) {
+            return cache()->get($cacheKey);
+        }
+
+        // Filter years to only include those that actually have data in the provided date ranges
+        $years = [];
+        foreach ($selectedYears as $year) {
+            $yearStart = Carbon::createFromDate($year, 1, 1);
+            $yearEnd = Carbon::createFromDate($year, 12, 31);
+            
+            // Check if this year overlaps with any of the provided date ranges
+            $hasOverlap = false;
+            foreach ($dateRanges as $range) {
+                $rangeStart = Carbon::parse($range['from']);
+                $rangeEnd = Carbon::parse($range['to']);
+                
+                // Check if year overlaps with this date range
+                if ($yearStart->lte($rangeEnd) && $yearEnd->gte($rangeStart)) {
+                    $hasOverlap = true;
+                    break;
+                }
+            }
+            
+            if ($hasOverlap) {
+                // Verify there's actually payment data for this year within the date ranges
+                $hasData = DB::table('tblpayment')
+                    ->where([
+                        ['process_status_id', 2],
+                        ['process_type_id', 1], 
+                        ['semester_id', 1]
+                    ])
+                    ->where(function($query) use ($dateRanges) {
+                        foreach ($dateRanges as $range) {
+                            $query->orWhereBetween('date', [
+                                Carbon::parse($range['from'])->format('Y-m-d'),
+                                Carbon::parse($range['to'])->format('Y-m-d')
+                            ]);
+                        }
+                    })
+                    ->whereYear('date', $year)
+                    ->exists();
+                    
+                if ($hasData) {
+                    $years[] = $year;
+                }
+            }
+        }
+        
+        if (empty($years)) {
+            $result = [
+                'years' => [],
+                'monthly_data' => []
+            ];
+            cache()->put($cacheKey, $result, 1800); // Cache for 30 minutes
+            return $result;
+        }
+
+        // Pre-fetch all student data for all years at once to minimize database calls
+        $allYearData = $this->fetchAllYearDataOptimized($years);
+        
+        $monthlyData = [];
+        
+        // Generate monthly data for each year using pre-fetched data
+        foreach ($years as $year) {
+            $monthlyData[$year] = [];
+            
+            // Process all 12 months regardless of whether they have data
+            for ($month = 1; $month <= 12; $month++) {
+                $monthStart = Carbon::createFromDate($year, $month, 1)->startOfMonth();
+                $monthEnd = Carbon::createFromDate($year, $month, 1)->endOfMonth();
+                
+                // Generate weekly breakdown for the month using pre-fetched data with year context
+                $weeklyData = $this->generateOptimizedWeeklyDataForMonth($monthStart, $monthEnd, $allYearData, $year);
+                
+                // Only include months that have at least one week with data or are within our date ranges
+                if (!empty($weeklyData['weeks']) || $this->monthHasDataInYearDateRanges($year, $month, $dateRanges)) {
+                    $monthlyData[$year][$month] = [
+                        'month_name' => $monthStart->format('F'),
+                        'weeks' => $weeklyData['weeks'],
+                        'monthly_totals' => $weeklyData['monthly_totals']
+                    ];
+                }
+            }
+        }
+
+        $result = [
+            'years' => $years,
+            'monthly_data' => $monthlyData
+        ];
+        
+        // Cache the result for 30 minutes
+        cache()->put($cacheKey, $result, 1800);
+
+        return $result;
+    }
+
+    private function monthHasDataInYearDateRanges($year, $month, $dateRanges)
+    {
+        // For year-based date ranges, we need to check if the month falls within the selected range
+        // Extract the month range from the original request parameters
+        $request = request();
+        $fromDate = $request->from_date;
+        $toDate = $request->to_date;
+        
+        if ($fromDate && $toDate) {
+            $fromCarbon = Carbon::parse($fromDate);
+            $toCarbon = Carbon::parse($toDate);
+            
+            $fromMonth = $fromCarbon->month;
+            $toMonth = $toCarbon->month;
+            
+            // Check if the current month falls within the selected range
+            if ($fromMonth <= $toMonth) {
+                // Normal range (e.g., April to June)
+                return $month >= $fromMonth && $month <= $toMonth;
+            } else {
+                // Cross-year range (e.g., November to February)
+                return $month >= $fromMonth || $month <= $toMonth;
+            }
+        }
+        
+        // Fallback to original logic if no specific date range
+        $monthStart = Carbon::createFromDate($year, $month, 1)->startOfMonth();
+        $monthEnd = Carbon::createFromDate($year, $month, 1)->endOfMonth();
+        
+        foreach ($dateRanges as $range) {
+            $rangeStart = Carbon::parse($range['from']);
+            $rangeEnd = Carbon::parse($range['to']);
+            
+            // Check if this month overlaps with any date range and is in the same year
+            if ($rangeStart->year == $year && $monthStart->lte($rangeEnd) && $monthEnd->gte($rangeStart)) {
+                return true;
+            }
+        }
+        
+        return false;
     }
 
     private function handleMultipleDateRanges(Request $request)
@@ -4392,6 +4719,30 @@ class PendaftarController extends Controller
         }
         
         $data = [];
+        
+        // Extract overall date range from all provided ranges
+        $allFromDates = [];
+        $allToDates = [];
+        foreach ($dateRanges as $range) {
+            if (isset($range['from']) && isset($range['to'])) {
+                $allFromDates[] = Carbon::parse($range['from']);
+                $allToDates[] = Carbon::parse($range['to']);
+            }
+        }
+        
+        if (!empty($allFromDates) && !empty($allToDates)) {
+            $earliestFrom = min($allFromDates);
+            $latestTo = max($allToDates);
+            
+            $data['dateRange'] = [
+                'from_date' => $earliestFrom->format('Y-m-d'),
+                'to_date' => $latestTo->format('Y-m-d'),
+                'from_month' => $earliestFrom->month,
+                'to_month' => $latestTo->month,
+                'from_day' => $earliestFrom->day,
+                'to_day' => $latestTo->day
+            ];
+        }
         
         // Initialize arrays for multiple tables
         $data['allStudents'] = [];
@@ -5090,40 +5441,65 @@ class PendaftarController extends Controller
     private function fetchAllYearDataOptimized($years)
     {
         try {
-            // Create date ranges for all years
-            $startDate = Carbon::createFromDate($years[0], 1, 1)->startOfYear();
-            $endDate = Carbon::createFromDate(end($years), 12, 31)->endOfYear();
+            // For year-based queries, we need to get data for specific month/day ranges across multiple years
+            // This should be called with the original date range parameters
+            $request = request();
+            $selectedYears = json_decode($request->selected_years, true);
+            $fromDate = $request->from_date;
+            $toDate = $request->to_date;
             
-            // Add limit to prevent massive datasets from causing timeouts
-            $allStudents = DB::table('tblpayment as p1')
-                ->select([
-                    'p1.student_ic',
-                    'p1.date',
-                    'students.status',
-                    'students.date_offer',
-                    DB::raw('YEAR(p1.date) as payment_year'),
-                    DB::raw('MONTH(p1.date) as payment_month'),
-                    DB::raw('DATE(p1.date) as payment_date')
-                ])
-                ->join('students', 'p1.student_ic', '=', 'students.ic')
-                ->join(DB::raw('(SELECT student_ic, MIN(date) as first_payment_date 
-                    FROM tblpayment 
-                    WHERE process_status_id = 2 
-                    AND process_type_id = 1 
-                    AND semester_id = 1
-                    GROUP BY student_ic) as p2'), function($join) {
-                    $join->on('p1.student_ic', '=', 'p2.student_ic')
-                        ->on('p1.date', '=', 'p2.first_payment_date');
-                })
-                ->where([
-                    ['p1.process_status_id', 2],
-                    ['p1.process_type_id', 1], 
-                    ['p1.semester_id', 1]
-                ])
-                ->whereBetween('p1.date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])
-                ->orderBy('p1.date')
-                ->limit(50000) // Limit to prevent memory issues
-                ->get();
+            if (!$selectedYears || !$fromDate || !$toDate) {
+                return [];
+            }
+            
+            // Extract day and month from the provided dates
+            $fromCarbon = Carbon::parse($fromDate);
+            $toCarbon = Carbon::parse($toDate);
+            
+            $fromMonth = $fromCarbon->month;
+            $fromDay = $fromCarbon->day;
+            $toMonth = $toCarbon->month;
+            $toDay = $toCarbon->day;
+            
+            $allStudents = collect();
+            
+            // Fetch data for each year with the specific date range applied to that year
+            foreach ($years as $year) {
+                $yearFromDate = Carbon::createFromDate($year, $fromMonth, $fromDay)->format('Y-m-d');
+                $yearToDate = Carbon::createFromDate($year, $toMonth, $toDay)->format('Y-m-d');
+                
+                // Use payment date filtering like the original logic, not offer date filtering
+                $yearStudents = DB::table('tblpayment as p1')
+                    ->select([
+                        'p1.student_ic',
+                        'p1.date',
+                        'students.status',
+                        'students.date_offer',
+                        DB::raw('YEAR(p1.date) as payment_year'),
+                        DB::raw('MONTH(p1.date) as payment_month'),
+                        DB::raw('DATE(p1.date) as payment_date')
+                    ])
+                    ->join('students', 'p1.student_ic', '=', 'students.ic')
+                    ->join(DB::raw('(SELECT student_ic, MIN(date) as first_payment_date 
+                        FROM tblpayment 
+                        WHERE process_status_id = 2 
+                        AND process_type_id = 1 
+                        AND semester_id = 1
+                        GROUP BY student_ic) as p2'), function($join) {
+                        $join->on('p1.student_ic', '=', 'p2.student_ic')
+                            ->on('p1.date', '=', 'p2.first_payment_date');
+                    })
+                    ->where([
+                        ['p1.process_status_id', 2],
+                        ['p1.process_type_id', 1], 
+                        ['p1.semester_id', 1]
+                    ])
+                    ->whereBetween('p1.date', [$yearFromDate, $yearToDate])
+                    ->orderBy('p1.date')
+                    ->get();
+                
+                $allStudents = $allStudents->merge($yearStudents);
+            }
 
             // Group the data efficiently
             $groupedData = [];
