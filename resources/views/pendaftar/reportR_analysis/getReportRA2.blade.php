@@ -115,18 +115,18 @@
           <tr id="year_header_row_r2">
             <th rowspan="4" style="vertical-align: middle; width: 80px; background: #f8f9fa; border: 1px solid black;">Month</th>
             <th rowspan="4" style="vertical-align: middle; width: 120px; background: #f8f9fa; border: 1px solid black;">Week</th>
-            <th rowspan="4" style="vertical-align: middle; width: 120px; background: #f8f9fa; border: 1px solid black;">Range</th>
             @foreach($data['monthlyComparison']['years'] as $year)
-              <th colspan="9" class="text-center bg-light year-header-{{ $year }}" style="border: 1px solid black;" data-year="{{ $year }}">{{ $year }}</th>
+              <th colspan="10" class="text-center bg-light year-header-{{ $year }}" style="border: 1px solid black;" data-year="{{ $year }}">{{ $year }}</th>
             @endforeach
           </tr>
           <tr id="r_header_row_r2">
             @foreach($data['monthlyComparison']['years'] as $year)
-              <th colspan="9" class="text-center" style="border: 1px solid black; background-color: #f0f0f0; font-weight: bold;">R</th>
+              <th colspan="10" class="text-center" style="border: 1px solid black; background-color: #f0f0f0; font-weight: bold;">R</th>
             @endforeach
           </tr>
           <tr id="main_header_row_r2">
             @foreach($data['monthlyComparison']['years'] as $year)
+              <th rowspan="2" style="vertical-align: middle; width: 120px; background: #f8f9fa; border: 1px solid black; text-align: center; font-weight: bold;">Range</th>
               <th colspan="2" class="text-center" style="border: 1px solid black; background-color: #e3f2fd;">Registered</th>
               <th colspan="2" class="text-center" style="border: 1px solid black; background-color: #f3e5f5;">R Per Week</th>
               <th colspan="2" class="text-center" style="border: 1px solid black; background-color: #e8f5e8;">Status Balance R</th>
@@ -137,6 +137,7 @@
           </tr>
           <tr id="letter_header_row_r2">
             @foreach($data['monthlyComparison']['years'] as $year)
+              <!-- Range column is handled by rowspan in previous row -->
               <th style="border: 1px solid black; font-size: 11px; background-color: #e3f2fd; text-align: center; font-weight: bold;">Actual<br><span style="font-size: 14px; color: #000;">A</span></th>
               <th style="border: 1px solid black; font-size: 11px; background-color: #e3f2fd; text-align: center; font-weight: bold;">Cumulative<br><span style="font-size: 14px; color: #000;">B</span></th>
               <th style="border: 1px solid black; font-size: 11px; background-color: #f3e5f5; text-align: center; font-weight: bold;">Actual<br><span style="font-size: 14px; color: #000;">C</span></th>
@@ -233,7 +234,7 @@
           
           @if(empty($monthsWithData))
             <tr>
-              <td colspan="{{ 3 + (count($data['monthlyComparison']['years']) * 9) }}" class="text-center text-muted py-4" style="border: 1px solid black;">
+              <td colspan="{{ 3 + (count($data['monthlyComparison']['years']) * 10) }}" class="text-center text-muted py-4" style="border: 1px solid black;">
                 No data available for the selected period
               </td>
             </tr>
