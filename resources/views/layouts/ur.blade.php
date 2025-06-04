@@ -268,6 +268,7 @@
 						<li><a href="{{ route('pendaftar.student.reportR') }}" class="{{ (route('pendaftar.student.reportR') == Request::url()) ? 'active' : ''}}">Student Report R/R1/R2</a></li>
 						<li><a href="{{ route('pendaftar.student.reportR2') }}" class="{{ (route('pendaftar.student.reportR2') == Request::url()) ? 'active' : ''}}">Statistik Pencapaian R</a></li>
 						<li><a href="{{ route('pendaftar.student.reportRA') }}" class="{{ (route('pendaftar.student.reportRA') == Request::url()) ? 'active' : ''}}">Analysis Student R</a></li>
+						<li><a href="{{ route('finance.urReport') }}" class="{{ (route('finance.urReport') == Request::url()) ? 'active' : ''}}">UR Report</a></li>
 					</ul>
 				</li>
 				<li class="treeview">
