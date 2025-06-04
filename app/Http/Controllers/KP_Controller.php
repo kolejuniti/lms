@@ -801,57 +801,77 @@ $content .= '<tr>
 
             //Change Course Content Lecturer
 
-            $first = DB::table('lecturer_dir')
-                     ->where([
-                        'CourseID' => $old->course_id,
-                        'SessionID' => $old->session_id,
-                        'Addby' => $old->user_ic
-                     ])
-                     ->update([
-                        'Addby' => $request->main
-                     ]);
-
-            if($first)
-            {
-                $second = DB::table('material_dir')
-                     ->where([
-                        'LecturerDirID' => $first,
-                        'Addby' => $old->user_ic
-                     ])
-                     ->update([
-                        'Addby' => $request->main
-                     ]);
-
-                if($second)
-                {
-                    $third = DB::table('materialsub_dir')
-                     ->where([
-                        'MaterialDirID' => $second,
-                        'Addby' => $old->user_ic
-                     ])
-                     ->update([
-                        'Addby' => $request->main
-                     ]);
-
-                     DB::table('materialsub_url')
-                     ->where([
-                        'MaterialDirID' => $second,
-                        'Addby' => $old->user_ic
-                     ])
-                     ->update([
-                        'Addby' => $request->main
-                     ]);
-
-                    if($third)
-                    {
-                        DB::table('materialsub_url')
-                        ->where([
-                            'MaterialSubDirID' => $third,
+            // First, get the lecturer_dir record before updating
+            $lecturer_dir = DB::table('lecturer_dir')
+                         ->where([
+                            'CourseID' => $old->course_id,
+                            'SessionID' => $old->session_id,
                             'Addby' => $old->user_ic
-                        ])
-                        ->update([
-                            'Addby' => $request->main
-                        ]);
+                         ])
+                         ->first();
+
+            if($lecturer_dir)
+            {
+                // Update the lecturer_dir record
+                DB::table('lecturer_dir')
+                  ->where('id', $lecturer_dir->id)
+                  ->update(['Addby' => $request->main]);
+
+                // Get material_dir records before updating
+                $material_dirs = DB::table('material_dir')
+                     ->where([
+                        'LecturerDirID' => $lecturer_dir->id,
+                        'Addby' => $old->user_ic
+                     ])
+                     ->get();
+
+                if($material_dirs->isNotEmpty())
+                {
+                    // Update material_dir records
+                    DB::table('material_dir')
+                     ->where([
+                        'LecturerDirID' => $lecturer_dir->id,
+                        'Addby' => $old->user_ic
+                     ])
+                     ->update(['Addby' => $request->main]);
+
+                    // Process each material_dir record
+                    foreach($material_dirs as $material_dir)
+                    {
+                        // Update materialsub_dir
+                        DB::table('materialsub_dir')
+                         ->where([
+                            'MaterialDirID' => $material_dir->id,
+                            'Addby' => $old->user_ic
+                         ])
+                         ->update(['Addby' => $request->main]);
+
+                        // Update materialsub_url (direct MaterialDirID reference)
+                        DB::table('materialsub_url')
+                         ->where([
+                            'MaterialDirID' => $material_dir->id,
+                            'Addby' => $old->user_ic
+                         ])
+                         ->update(['Addby' => $request->main]);
+
+                        // Get materialsub_dir records for this material_dir
+                        $materialsub_dirs = DB::table('materialsub_dir')
+                                          ->where([
+                                            'MaterialDirID' => $material_dir->id,
+                                            'Addby' => $request->main // Use new addby since we just updated it
+                                          ])
+                                          ->get();
+
+                        // Update materialsub_url records that reference materialsub_dir
+                        foreach($materialsub_dirs as $materialsub_dir)
+                        {
+                            DB::table('materialsub_url')
+                            ->where([
+                                'MaterialSubDirID' => $materialsub_dir->id,
+                                'Addby' => $old->user_ic
+                            ])
+                            ->update(['Addby' => $request->main]);
+                        }
                     }
                 }
                      
