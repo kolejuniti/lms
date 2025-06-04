@@ -6458,25 +6458,29 @@ class PendaftarController extends Controller
                 'year' => 'required|integer',
                 'from_date' => 'required|date',
                 'to_date' => 'required|date',
-                'filter_type' => 'required|string'
+                'filter_type' => 'required|string',
+                'main_from_date' => 'nullable|date',
+                'main_to_date' => 'nullable|date'
             ]);
 
             $year = $request->year;
             $fromDate = $request->from_date;
             $toDate = $request->to_date;
             $filterType = $request->filter_type;
+            $mainFromDate = $request->main_from_date;
+            $mainToDate = $request->main_to_date;
 
             Log::info('getFilteredData called with parameters:', [
                 'year' => $year,
                 'from_date' => $fromDate,
                 'to_date' => $toDate,
-                'filter_type' => $filterType
+                'filter_type' => $filterType,
+                'main_from_date' => $mainFromDate,
+                'main_to_date' => $mainToDate
             ]);
 
-            if($filterType == 'ACTIVE NEXT YEAR'){
-
-                // Get students with status=2 and date_offer in the specified range for the given year
-                $filteredStudents = DB::table('tblpayment as p1')
+            // Build the base query
+            $query = DB::table('tblpayment as p1')
                 ->select([
                     'p1.student_ic',
                     'p1.date',
@@ -6505,51 +6509,20 @@ class PendaftarController extends Controller
                 ])
                 ->whereNotIn('students.status', [1,14])
                 ->whereYear('p1.date', $year)
-                ->whereBetween('students.date_offer', [$fromDate, $toDate])
-                ->groupBy('p1.student_ic')
-                ->get();
+                ->whereBetween('students.date_offer', [$fromDate, $toDate]);
 
-            }else{
-
-                // Get students with status=2 and date_offer in the specified range for the given year
-                $filteredStudents = DB::table('tblpayment as p1')
-                ->select([
-                    'p1.student_ic',
-                    'p1.date',
-                    'students.status',
-                    'students.date_offer',
-                    DB::raw('YEAR(p1.date) as payment_year'),
-                    DB::raw('MONTH(p1.date) as payment_month'),
-                    DB::raw('WEEK(p1.date, 1) as payment_week'),
-                ])
-                ->join('students', 'p1.student_ic', '=', 'students.ic')
-                ->join(DB::raw('(
-                    SELECT student_ic, MIN(date) as first_payment_date 
-                    FROM tblpayment 
-                    WHERE process_status_id = 2 
-                    AND process_type_id = 1 
-                    AND semester_id = 1
-                    GROUP BY student_ic
-                ) as p2'), function($join) {
-                    $join->on('p1.student_ic', '=', 'p2.student_ic')
-                        ->on('p1.date', '=', 'p2.first_payment_date');
-                })
-                ->where([
-                    ['p1.process_status_id', 2],
-                    ['p1.process_type_id', 1], 
-                    ['p1.semester_id', 1]
-                ])
-                ->whereNotIn('students.status', [1,14])
-                ->whereYear('p1.date', $year)
-                ->whereBetween('students.date_offer', [$fromDate, $toDate])
-                ->groupBy('p1.student_ic')
-                ->get();
-
+            // Add main table date range filter for payment dates if provided
+            if ($mainFromDate && $mainToDate) {
+                // Apply the main table's date range to payment dates
+                $query->whereBetween('p1.date', [$mainFromDate, $mainToDate]);
+                Log::info('Applied main date range filter to payment dates:', [$mainFromDate, $mainToDate]);
             }
 
-            Log::info('Filtered students found:', ['count' => $filteredStudents->count()]);
+            $filteredStudents = $query->groupBy('p1.student_ic')->get();
 
-            Log::info('Range:', [$fromDate, $toDate]);
+            Log::info('Filtered students found:', ['count' => $filteredStudents->count()]);
+            Log::info('Filter range:', [$fromDate, $toDate]);
+            Log::info('Main table range:', [$mainFromDate, $mainToDate]);
 
             // Group data by month and week
             $weeklyData = [];
@@ -6561,6 +6534,18 @@ class PendaftarController extends Controller
                 $paymentMonth = date('n', strtotime($paymentDate)); // 1-12
                 $paymentYear = date('Y', strtotime($paymentDate));
                 
+                // Only include months that would be shown in the main table
+                if ($mainFromDate && $mainToDate) {
+                    $paymentDateObj = new \DateTime($paymentDate);
+                    $mainFromDateObj = new \DateTime($mainFromDate);
+                    $mainToDateObj = new \DateTime($mainToDate);
+                    
+                    // Skip if payment date is outside main table range
+                    if ($paymentDateObj < $mainFromDateObj || $paymentDateObj > $mainToDateObj) {
+                        continue;
+                    }
+                }
+                
                 if (!isset($monthlyGroups[$paymentMonth])) {
                     $monthlyGroups[$paymentMonth] = [];
                 }
@@ -6570,9 +6555,27 @@ class PendaftarController extends Controller
             
             // Process each month and assign students to weeks based on their payment date
             foreach ($monthlyGroups as $month => $students) {
-                // Get the first and last day of the month
+                // Get the first and last day of the month for the specific year
                 $monthStart = date('Y-m-01', strtotime($year . '-' . str_pad($month, 2, '0', STR_PAD_LEFT) . '-01'));
                 $monthEnd = date('Y-m-t', strtotime($monthStart));
+                
+                // If main date range is provided, further restrict the month boundaries
+                if ($mainFromDate && $mainToDate) {
+                    $mainFromDateObj = new \DateTime($mainFromDate);
+                    $mainToDateObj = new \DateTime($mainToDate);
+                    $monthStartObj = new \DateTime($monthStart);
+                    $monthEndObj = new \DateTime($monthEnd);
+                    
+                    // Use the later of month start or main from date
+                    if ($mainFromDateObj > $monthStartObj) {
+                        $monthStart = $mainFromDate;
+                    }
+                    
+                    // Use the earlier of month end or main to date
+                    if ($mainToDateObj < $monthEndObj) {
+                        $monthEnd = $mainToDate;
+                    }
+                }
                 
                 // Generate week ranges for this month
                 $weekRanges = $this->generateWeekRangesForMonth($monthStart, $monthEnd);
@@ -6609,6 +6612,8 @@ class PendaftarController extends Controller
                     'year' => $year,
                     'from_date' => $fromDate,
                     'to_date' => $toDate,
+                    'main_from_date' => $mainFromDate,
+                    'main_to_date' => $mainToDate,
                     'total_students' => $filteredStudents->count(),
                     'weekly_data' => $weeklyData
                 ]

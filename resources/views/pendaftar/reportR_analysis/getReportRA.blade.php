@@ -779,6 +779,19 @@ function printReport2() {
     filterDataInput.value = JSON.stringify(filterDataForExport);
     form.appendChild(filterDataInput);
     
+    // Add main table date range for proper filter context
+    var mainFromDateInput = document.createElement('input');
+    mainFromDateInput.type = 'hidden';
+    mainFromDateInput.name = 'main_from_date';
+    mainFromDateInput.value = fromDate;
+    form.appendChild(mainFromDateInput);
+    
+    var mainToDateInput = document.createElement('input');
+    mainToDateInput.type = 'hidden';
+    mainToDateInput.name = 'main_to_date';
+    mainToDateInput.value = toDate;
+    form.appendChild(mainToDateInput);
+    
     document.body.appendChild(form);
     form.submit();
     document.body.removeChild(form);
@@ -794,7 +807,9 @@ function printReport2() {
       from: from,
       to: to,
       active_filters: JSON.stringify(activeFiltersData),
-      filter_data: JSON.stringify(filterDataForExport)
+      filter_data: JSON.stringify(filterDataForExport),
+      main_from_date: from,
+      main_to_date: to
     });
 
     window.location.href = `${url}?${params.toString()}`;
@@ -968,6 +983,10 @@ function addFilter(year) {
 
 // Fetch filter data
 function fetchFilterData(filter) {
+  // Get the main table's date range information
+  const mainFromDate = $('#from_date').val() || $('#from').val();
+  const mainToDate = $('#to_date').val() || $('#to').val();
+  
   $.ajax({
     url: "{{ url('pendaftar/student/reportRA/getFilteredData') }}",
     method: 'POST',
@@ -976,7 +995,9 @@ function fetchFilterData(filter) {
       year: filter.year,
       from_date: filter.from,
       to_date: filter.to,
-      filter_type: filter.type
+      filter_type: filter.type,
+      main_from_date: mainFromDate,
+      main_to_date: mainToDate
     },
     success: function(response) {
       console.log('Filter data received:', response);
@@ -1009,14 +1030,22 @@ function addFilterColumnToTable(filter) {
   
   const columnHeaderRow = $('#column_header_row');
   const yearHeaders = @json($data['monthlyComparison']['years']);
-  const yearIndex = yearHeaders.indexOf(filter.year);
   
-  console.log('Year index:', yearIndex, 'Year headers:', yearHeaders);
+  // Convert both to strings for comparison to handle type mismatches
+  const filterYearStr = String(filter.year);
+  const yearHeadersStr = yearHeaders.map(y => String(y));
+  const yearIndex = yearHeadersStr.indexOf(filterYearStr);
+  
+  console.log('Year headers (original):', yearHeaders);
+  console.log('Year headers (strings):', yearHeadersStr);
+  console.log('Filter year (string):', filterYearStr);
+  console.log('Year index:', yearIndex);
   console.log('Current column headers count:', columnHeaderRow.children().length);
   
   // Validate year index
   if (yearIndex === -1) {
     console.error('Year not found in headers:', filter.year);
+    alert('Error: Year ' + filter.year + ' not found in table headers');
     return;
   }
   
@@ -1056,29 +1085,17 @@ function addFilterColumnToTable(filter) {
   insertAfterIndex += existingFiltersForYear;
   console.log(`Added ${existingFiltersForYear} existing filters for current year`);
   
-  // For header insertion, we want to insert after the last column of the current year
-  let headerInsertIndex = insertAfterIndex - 2;
-  
-  console.log('Calculated header insert position:', headerInsertIndex);
-  console.log('Calculated data row insert position:', insertAfterIndex);
-  console.log('This should be after the last column of year', filter.year);
+  console.log('Calculated insert position:', insertAfterIndex);
   
   // Show what column we're inserting after
   const headerCells = columnHeaderRow.children();
-  if (headerInsertIndex >= 0 && headerInsertIndex < headerCells.length) {
-    const cellAfter = $(headerCells[headerInsertIndex]).text().trim();
-    console.log(`Will insert header AFTER column: "${cellAfter}" at position ${headerInsertIndex}`);
+  if (insertAfterIndex >= 0 && insertAfterIndex < headerCells.length) {
+    const cellAfter = $(headerCells[insertAfterIndex]).text().trim();
+    console.log(`Will insert header AFTER column: "${cellAfter}" at position ${insertAfterIndex}`);
+    $(headerCells[insertAfterIndex]).after(filterHeader);
+    console.log('Successfully inserted header after position', insertAfterIndex);
   } else {
-    console.log('Will append header at the end');
-  }
-  
-  console.log('Header cells count:', headerCells.length);
-  
-  if (headerInsertIndex >= 0 && headerInsertIndex < headerCells.length) {
-    $(headerCells[headerInsertIndex]).after(filterHeader);
-    console.log('Inserted header AFTER position', headerInsertIndex);
-  } else {
-    console.warn('Insert position out of bounds, appending at end');
+    console.log('Insert position out of bounds, appending at end');
     columnHeaderRow.append(filterHeader);
   }
   
@@ -1101,36 +1118,32 @@ function addFilterColumnToTable(filter) {
                         <span style="color: #666;">-</span>
                       </td>`;
     
-    // All rows now have the same structure (Month, Week, then data columns)
-    // No need to check for Month cell presence since every row has one
-    let rowInsertIndex = insertAfterIndex;
-    
-    console.log(`Row ${rowIndex}: using insertion index=${rowInsertIndex}`);
-    
-    // Insert at the calculated position in data rows
     const rowCells = row.children();
-    if (rowInsertIndex >= 0 && rowInsertIndex < rowCells.length) {
-      $(rowCells[rowInsertIndex]).after(emptyCell);
+    if (insertAfterIndex >= 0 && insertAfterIndex < rowCells.length) {
+      $(rowCells[insertAfterIndex]).after(emptyCell);
+      console.log(`Added cell to row ${rowIndex} after position ${insertAfterIndex}`);
     } else {
-      console.warn(`Row ${rowIndex}: Insert position ${rowInsertIndex} out of bounds (${rowCells.length} cells), appending at end`);
+      console.warn(`Row ${rowIndex}: Insert position ${insertAfterIndex} out of bounds (${rowCells.length} cells), appending at end`);
       row.append(emptyCell);
     }
   });
   
-  // For footer insertion, we want to insert after the last column of the current year (same as header)
+  // Add footer cell
   const footerRow = $('tfoot tr');
   const footerCell = `<td class="text-center filter-footer-total filter-footer-${filter.year}" 
                           style="border: 1px solid black; background-color: #e9ecef; font-weight: bold;"
                           data-filter-id="${filter.id}">0</td>`;
   
   const footerCells = footerRow.children();
-  if (headerInsertIndex >= 0 && headerInsertIndex < footerCells.length) {
-    $(footerCells[headerInsertIndex + 2]).after(footerCell);
+  if (insertAfterIndex >= 0 && insertAfterIndex < footerCells.length) {
+    $(footerCells[insertAfterIndex]).after(footerCell);
+    console.log('Added footer cell after position', insertAfterIndex);
   } else {
     footerRow.append(footerCell);
+    console.log('Appended footer cell at end');
   }
   
-  console.log('Added', $('#table_body tr').length, 'data cells and 1 footer cell AFTER position', headerInsertIndex);
+  console.log('Filter column addition completed');
   
   // Debug: Show final table structure
   console.log('=== FINAL TABLE STRUCTURE ===');
@@ -1149,6 +1162,7 @@ function populateFilterData(filter) {
   console.log('=== POPULATING FILTER DATA ===');
   console.log('Filter:', filter.type, 'ID:', filter.id);
   console.log('Weekly data:', weeklyData);
+  console.log('Weekly data keys:', Object.keys(weeklyData || {}));
   
   if (!weeklyData) {
     console.error('No weekly data found for filter', filter.id);
@@ -1163,6 +1177,33 @@ function populateFilterData(filter) {
   
   const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
                      'July', 'August', 'September', 'October', 'November', 'December'];
+  
+  // First, let's see what months are actually in the table
+  console.log('=== TABLE MONTHS ANALYSIS ===');
+  const tableMonths = [];
+  $('#table_body tr').each(function(rowIndex) {
+    const row = $(this);
+    const monthCell = row.children().eq(0);
+    const weekCell = row.children().eq(1);
+    
+    if (monthCell.length && weekCell.length) {
+      let monthText = monthCell.data('month') || monthCell.text().trim();
+      const weekText = weekCell.text().trim();
+      
+      if (monthText && monthText !== '' && monthText !== 'TOTAL' && monthNames.includes(monthText)) {
+        if (weekText.includes('Week 1')) {
+          const monthNum = monthNames.indexOf(monthText) + 1;
+          console.log(`Table month found: ${monthText} = ${monthNum}`);
+          if (!tableMonths.includes(monthNum)) {
+            tableMonths.push(monthNum);
+          }
+        }
+      }
+    }
+  });
+  
+  console.log('Table months (numbers):', tableMonths.sort());
+  console.log('Weekly data months:', Object.keys(weeklyData).map(key => key.split('_')[0]).filter((v, i, a) => a.indexOf(v) === i));
   
   $('#table_body tr').each(function(rowIndex) {
     const row = $(this);
@@ -1231,12 +1272,14 @@ function populateFilterData(filter) {
           console.warn(`No filter cell found for row ${rowIndex}, week ${weekKey}`);
           console.warn(`Row has ${row.children().length} cells. Looking for filter-${filter.id}`);
           
-          // Debug: Show all cells in this row
+          // Debug: Show all cells in this row that might be filter cells
           row.children().each(function(cellIndex) {
             const cellText = $(this).text().trim();
             const cellClasses = $(this).attr('class') || '';
             const cellDataId = $(this).data('filter-id') || 'none';
-            console.log(`  Cell ${cellIndex}: "${cellText}" (classes: ${cellClasses}, data-filter-id: ${cellDataId})`);
+            if (cellClasses.includes('filter') || cellDataId !== 'none') {
+              console.log(`  Potential filter cell ${cellIndex}: "${cellText}" (classes: ${cellClasses}, data-filter-id: ${cellDataId})`);
+            }
           });
         }
       } else {
@@ -1261,6 +1304,14 @@ function populateFilterData(filter) {
     console.log('Updated footer total to:', filterTotal);
   } else {
     console.warn('Footer cell not found for filter', filter.id);
+    // Debug footer cells
+    console.log('Available footer cells:');
+    $('tfoot tr').children().each(function(index) {
+      const cellText = $(this).text().trim();
+      const cellClasses = $(this).attr('class') || '';
+      const cellDataId = $(this).data('filter-id') || 'none';
+      console.log(`  Footer cell ${index}: "${cellText}" (classes: ${cellClasses}, data-filter-id: ${cellDataId})`);
+    });
   }
 }
 
