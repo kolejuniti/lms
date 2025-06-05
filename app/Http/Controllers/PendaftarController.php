@@ -5106,41 +5106,52 @@ class PendaftarController extends Controller
                     // Collect all months that have data
                     $monthsWithData = [];
                     
-                    // Parse from and to dates to determine month range
+                    // Get date range information from request parameters for year-based approach
                     $fromMonth = null;
                     $toMonth = null;
-                    $fromYear = null;
-                    $toYear = null;
                     
-                    if ($from && $to) {
+                    // For year-based date ranges, get from request parameters
+                    if (request('from_date') && request('to_date')) {
+                        $fromDate = \Carbon\Carbon::parse(request('from_date'));
+                        $toDate = \Carbon\Carbon::parse(request('to_date'));
+                        $fromMonth = $fromDate->month;
+                        $toMonth = $toDate->month;
+                    } elseif ($from && $to) {
+                        // Fallback to function parameters
                         $fromDate = \Carbon\Carbon::parse($from);
                         $toDate = \Carbon\Carbon::parse($to);
                         $fromMonth = $fromDate->month;
                         $toMonth = $toDate->month;
-                        $fromYear = $fromDate->year;
-                        $toYear = $toDate->year;
                     }
                     
+                    // Collect all months that have data across all years (using same logic as blade template)
                     foreach ($data['monthlyComparison']['years'] as $year) {
                         if (isset($data['monthlyComparison']['monthly_data'][$year])) {
                             foreach ($data['monthlyComparison']['monthly_data'][$year] as $monthNum => $monthData) {
                                 if (!empty($monthData['weeks'])) {
-                                    // Filter months based on date range
-                                    $shouldIncludeMonth = true;
-                                    
-                                    if ($from && $to) {
-                                        // Check if this month/year combination falls within the date range
-                                        if ($year < $fromYear || $year > $toYear) {
-                                            $shouldIncludeMonth = false;
-                                        } else if ($year == $fromYear && $monthNum < $fromMonth) {
-                                            $shouldIncludeMonth = false;
-                                        } else if ($year == $toYear && $monthNum > $toMonth) {
-                                            $shouldIncludeMonth = false;
+                                    // Filter based on date range if available (exact copy of blade template logic)
+                                    if ($fromMonth !== null && $toMonth !== null) {
+                                        // Check if month falls within the selected range
+                                        if ($fromMonth <= $toMonth) {
+                                            // Normal range (e.g., April to June)
+                                            if ($monthNum >= $fromMonth && $monthNum <= $toMonth) {
+                                                if (!in_array($monthNum, $monthsWithData)) {
+                                                    $monthsWithData[] = $monthNum;
+                                                }
+                                            }
+                                        } else {
+                                            // Cross-year range (e.g., November to February)
+                                            if ($monthNum >= $fromMonth || $monthNum <= $toMonth) {
+                                                if (!in_array($monthNum, $monthsWithData)) {
+                                                    $monthsWithData[] = $monthNum;
+                                                }
+                                            }
                                         }
-                                    }
-                                    
-                                    if ($shouldIncludeMonth && !in_array($monthNum, $monthsWithData)) {
-                                        $monthsWithData[] = $monthNum;
+                                    } else {
+                                        // Fallback to original logic if no date range available
+                                        if (!in_array($monthNum, $monthsWithData)) {
+                                            $monthsWithData[] = $monthNum;
+                                        }
                                     }
                                 }
                             }
@@ -5189,102 +5200,105 @@ class PendaftarController extends Controller
                             }
                         }
                         
-                        // Process each week
-                        for ($weekNum = 1; $weekNum <= $maxWeeks; $weekNum++) {
-                            $row = [];
-                            
-                            // Month column (only for first week)
-                            if ($weekNum == 1) {
-                                $row[] = $monthName;
-                            } else {
-                                $row[] = '';
-                            }
-                            
-                            // Week column
-                            $weekDateRange = '';
-                            foreach ($data['monthlyComparison']['years'] as $year) {
-                                if (isset($data['monthlyComparison']['monthly_data'][$year][$monthNumber]['weeks'][$weekNum - 1]['date_range'])) {
-                                    $weekDateRange = $data['monthlyComparison']['monthly_data'][$year][$monthNumber]['weeks'][$weekNum - 1]['date_range'];
-                                    break;
-                                }
-                            }
-                            $row[] = "Week $weekNum ($weekDateRange)";
-                            
-                            // Data columns for each year
-                            foreach ($data['monthlyComparison']['years'] as $year) {
-                                $weekData = null;
-                                if (isset($data['monthlyComparison']['monthly_data'][$year][$monthNumber]['weeks'][$weekNum - 1])) {
-                                    $weekData = $data['monthlyComparison']['monthly_data'][$year][$monthNumber]['weeks'][$weekNum - 1];
+                        // Only process if there are weeks for this month
+                        if ($maxWeeks > 0) {
+                            // Process each week
+                            for ($weekNum = 1; $weekNum <= $maxWeeks; $weekNum++) {
+                                $row = [];
+                                
+                                // Month column (only for first week)
+                                if ($weekNum == 1) {
+                                    $row[] = $monthName;
+                                } else {
+                                    $row[] = '';
                                 }
                                 
-                                if ($weekData) {
-                                    // Add to totals
-                                    $yearTotals[$year]['total_by_weeks'] += $weekData['total_by_weeks'];
-                                    $yearTotals[$year]['total_by_converts'] += $weekData['total_by_converts'];
-                                    $yearTotals[$year]['balance_student'] += $weekData['balance_student'];
-                                    $yearTotals[$year]['total_active'] += $weekData['total_active'];
-                                    $yearTotals[$year]['total_rejected'] += $weekData['total_rejected'];
-                                    $yearTotals[$year]['total_offered'] += $weekData['total_offered'];
-                                    $yearTotals[$year]['total_kiv'] += $weekData['total_kiv'];
-                                    $yearTotals[$year]['total_others'] += $weekData['total_others'];
+                                // Week column
+                                $weekDateRange = '';
+                                foreach ($data['monthlyComparison']['years'] as $year) {
+                                    if (isset($data['monthlyComparison']['monthly_data'][$year][$monthNumber]['weeks'][$weekNum - 1]['date_range'])) {
+                                        $weekDateRange = $data['monthlyComparison']['monthly_data'][$year][$monthNumber]['weeks'][$weekNum - 1]['date_range'];
+                                        break;
+                                    }
+                                }
+                                $row[] = "Week $weekNum ($weekDateRange)";
+                                
+                                // Data columns for each year
+                                foreach ($data['monthlyComparison']['years'] as $year) {
+                                    $weekData = null;
+                                    if (isset($data['monthlyComparison']['monthly_data'][$year][$monthNumber]['weeks'][$weekNum - 1])) {
+                                        $weekData = $data['monthlyComparison']['monthly_data'][$year][$monthNumber]['weeks'][$weekNum - 1];
+                                    }
                                     
-                                    $row[] = $weekData['date_range'];
-                                    $row[] = $weekData['total_by_weeks'];
-                                    $row[] = $weekData['total_by_converts'];
-                                    $row[] = $weekData['balance_student'];
-                                    $row[] = $weekData['total_active'];
-                                    $row[] = $weekData['total_rejected'];
-                                    $row[] = $weekData['total_offered'];
-                                    $row[] = $weekData['total_kiv'];
-                                    $row[] = $weekData['total_others'];
-                                } else {
-                                    // Calculate empty week date range for consistency
-                                    $monthStart = \Carbon\Carbon::createFromDate($year, $monthNumber, 1)->startOfMonth();
-                                    $monthEnd = \Carbon\Carbon::createFromDate($year, $monthNumber, 1)->endOfMonth();
-                                    
-                                    $start = $monthStart->copy();
-                                    for ($i = 1; $i < $weekNum; $i++) {
+                                    if ($weekData) {
+                                        // Add to totals
+                                        $yearTotals[$year]['total_by_weeks'] += $weekData['total_by_weeks'];
+                                        $yearTotals[$year]['total_by_converts'] += $weekData['total_by_converts'];
+                                        $yearTotals[$year]['balance_student'] += $weekData['balance_student'];
+                                        $yearTotals[$year]['total_active'] += $weekData['total_active'];
+                                        $yearTotals[$year]['total_rejected'] += $weekData['total_rejected'];
+                                        $yearTotals[$year]['total_offered'] += $weekData['total_offered'];
+                                        $yearTotals[$year]['total_kiv'] += $weekData['total_kiv'];
+                                        $yearTotals[$year]['total_others'] += $weekData['total_others'];
+                                        
+                                        $row[] = $weekData['date_range'];
+                                        $row[] = $weekData['total_by_weeks'];
+                                        $row[] = $weekData['total_by_converts'];
+                                        $row[] = $weekData['balance_student'];
+                                        $row[] = $weekData['total_active'];
+                                        $row[] = $weekData['total_rejected'];
+                                        $row[] = $weekData['total_offered'];
+                                        $row[] = $weekData['total_kiv'];
+                                        $row[] = $weekData['total_others'];
+                                    } else {
+                                        // Calculate empty week date range for consistency
+                                        $monthStart = \Carbon\Carbon::createFromDate($year, $monthNumber, 1)->startOfMonth();
+                                        $monthEnd = \Carbon\Carbon::createFromDate($year, $monthNumber, 1)->endOfMonth();
+                                        
+                                        $start = $monthStart->copy();
+                                        for ($i = 1; $i < $weekNum; $i++) {
+                                            $weekStart = $start->copy();
+                                            $daysUntilSaturday = (6 - $weekStart->dayOfWeek) % 7;
+                                            $weekEnd = $weekStart->copy()->addDays($daysUntilSaturday);
+                                            if ($weekEnd->gt($monthEnd)) {
+                                                $weekEnd = $monthEnd->copy();
+                                            }
+                                            $start = $weekEnd->copy()->addDay();
+                                        }
+                                        
                                         $weekStart = $start->copy();
                                         $daysUntilSaturday = (6 - $weekStart->dayOfWeek) % 7;
                                         $weekEnd = $weekStart->copy()->addDays($daysUntilSaturday);
                                         if ($weekEnd->gt($monthEnd)) {
                                             $weekEnd = $monthEnd->copy();
                                         }
-                                        $start = $weekEnd->copy()->addDay();
+                                        
+                                        $dateRange = $weekStart->format('j M Y') . ' - ' . $weekEnd->format('j M Y');
+                                        
+                                        $row[] = $dateRange;
+                                        $row[] = 0;
+                                        $row[] = 0;
+                                        $row[] = 0;
+                                        $row[] = 0;
+                                        $row[] = 0;
+                                        $row[] = 0;
+                                        $row[] = 0;
+                                        $row[] = 0;
                                     }
                                     
-                                    $weekStart = $start->copy();
-                                    $daysUntilSaturday = (6 - $weekStart->dayOfWeek) % 7;
-                                    $weekEnd = $weekStart->copy()->addDays($daysUntilSaturday);
-                                    if ($weekEnd->gt($monthEnd)) {
-                                        $weekEnd = $monthEnd->copy();
+                                    // Add filter data for this year
+                                    if (isset($activeFilters[$year]) && is_array($activeFilters[$year])) {
+                                        foreach ($activeFilters[$year] as $filter) {
+                                            $weekKey = "{$monthNumber}_{$weekNum}";
+                                            $filterValue = isset($filterData[$filter['id']][$weekKey]) ? $filterData[$filter['id']][$weekKey] : 0;
+                                            $row[] = $filterValue;
+                                            $filterTotals[$filter['id']] += $filterValue;
+                                        }
                                     }
-                                    
-                                    $dateRange = $weekStart->format('j M Y') . ' - ' . $weekEnd->format('j M Y');
-                                    
-                                    $row[] = $dateRange;
-                                    $row[] = 0;
-                                    $row[] = 0;
-                                    $row[] = 0;
-                                    $row[] = 0;
-                                    $row[] = 0;
-                                    $row[] = 0;
-                                    $row[] = 0;
-                                    $row[] = 0;
                                 }
                                 
-                                // Add filter data for this year
-                                if (isset($activeFilters[$year]) && is_array($activeFilters[$year])) {
-                                    foreach ($activeFilters[$year] as $filter) {
-                                        $weekKey = "{$monthNumber}_{$weekNum}";
-                                        $filterValue = isset($filterData[$filter['id']][$weekKey]) ? $filterData[$filter['id']][$weekKey] : 0;
-                                        $row[] = $filterValue;
-                                        $filterTotals[$filter['id']] += $filterValue;
-                                    }
-                                }
+                                fputcsv($file, $row);
                             }
-                            
-                            fputcsv($file, $row);
                         }
                     }
                     
@@ -5815,49 +5829,61 @@ class PendaftarController extends Controller
                 }
                 fputcsv($file, $headerRow);
                 
-                // Collect all months that have data
+                // Use the same month filtering logic as the blade template
                 $monthsWithData = [];
                 
-                // Parse from and to dates to determine month range
+                // Get date range information from request parameters for year-based approach
                 $fromMonth = null;
                 $toMonth = null;
-                $fromYear = null;
-                $toYear = null;
                 
-                if ($from && $to) {
+                // For year-based date ranges, get from request parameters
+                if (request('from_date') && request('to_date')) {
+                    $fromDate = \Carbon\Carbon::parse(request('from_date'));
+                    $toDate = \Carbon\Carbon::parse(request('to_date'));
+                    $fromMonth = $fromDate->month;
+                    $toMonth = $toDate->month;
+                } elseif ($from && $to) {
+                    // Fallback to function parameters
                     $fromDate = \Carbon\Carbon::parse($from);
                     $toDate = \Carbon\Carbon::parse($to);
                     $fromMonth = $fromDate->month;
                     $toMonth = $toDate->month;
-                    $fromYear = $fromDate->year;
-                    $toYear = $toDate->year;
                 }
                 
+                // Collect all months that have data across all years (using same logic as blade template)
                 foreach ($data['monthlyComparison']['years'] as $year) {
                     if (isset($data['monthlyComparison']['monthly_data'][$year])) {
                         foreach ($data['monthlyComparison']['monthly_data'][$year] as $monthNum => $monthData) {
                             if (!empty($monthData['weeks'])) {
-                                // Filter months based on date range
-                                $shouldIncludeMonth = true;
-                                
-                                if ($from && $to) {
-                                    // Check if this month/year combination falls within the date range
-                                    if ($year < $fromYear || $year > $toYear) {
-                                        $shouldIncludeMonth = false;
-                                    } else if ($year == $fromYear && $monthNum < $fromMonth) {
-                                        $shouldIncludeMonth = false;
-                                    } else if ($year == $toYear && $monthNum > $toMonth) {
-                                        $shouldIncludeMonth = false;
+                                // Filter based on date range if available (exact copy of blade template logic)
+                                if ($fromMonth !== null && $toMonth !== null) {
+                                    // Check if month falls within the selected range
+                                    if ($fromMonth <= $toMonth) {
+                                        // Normal range (e.g., April to June)
+                                        if ($monthNum >= $fromMonth && $monthNum <= $toMonth) {
+                                            if (!in_array($monthNum, $monthsWithData)) {
+                                                $monthsWithData[] = $monthNum;
+                                            }
+                                        }
+                                    } else {
+                                        // Cross-year range (e.g., November to February)
+                                        if ($monthNum >= $fromMonth || $monthNum <= $toMonth) {
+                                            if (!in_array($monthNum, $monthsWithData)) {
+                                                $monthsWithData[] = $monthNum;
+                                            }
+                                        }
                                     }
-                                }
-                                
-                                if ($shouldIncludeMonth && !in_array($monthNum, $monthsWithData)) {
-                                    $monthsWithData[] = $monthNum;
+                                } else {
+                                    // Fallback to original logic if no date range available
+                                    if (!in_array($monthNum, $monthsWithData)) {
+                                        $monthsWithData[] = $monthNum;
+                                    }
                                 }
                             }
                         }
                     }
                 }
+                
                 sort($monthsWithData);
                 
                 $monthNames = [
@@ -5895,135 +5921,144 @@ class PendaftarController extends Controller
                     ];
                 }
                 
-                // Process each month
-                foreach ($monthsWithData as $monthNumber) {
-                    $monthName = $monthNames[$monthNumber];
-                    $maxWeeks = 0;
-                    
-                    // Find maximum weeks across all years for this month
-                    foreach ($data['monthlyComparison']['years'] as $year) {
-                        if (isset($data['monthlyComparison']['monthly_data'][$year][$monthNumber]['weeks'])) {
-                            $maxWeeks = max($maxWeeks, count($data['monthlyComparison']['monthly_data'][$year][$monthNumber]['weeks']));
-                        }
-                    }
-                    
-                    // Process each week
-                    for ($weekNum = 1; $weekNum <= $maxWeeks; $weekNum++) {
-                        $row = [];
+                // Check if we have months to display (same as blade template)
+                if (empty($monthsWithData)) {
+                    fputcsv($file, ['No data available for the selected period']);
+                    fputcsv($file, ['Please select date ranges to generate the Monthly Comparison Analysis report.']);
+                } else {
+                    // Process each month (only the filtered months)
+                    foreach ($monthsWithData as $monthNumber) {
+                        $monthName = $monthNames[$monthNumber];
+                        $maxWeeks = 0;
                         
-                        // Month column (only for first week)
-                        if ($weekNum == 1) {
-                            $row[] = $monthName;
-                        } else {
-                            $row[] = '';
-                        }
-                        
-                        // Week column
-                        $row[] = "Week $weekNum";
-                        
-                        // Data columns for each year
+                        // Find maximum weeks across all years for this month
                         foreach ($data['monthlyComparison']['years'] as $year) {
-                            $weekData = null;
-                            if (isset($data['monthlyComparison']['monthly_data'][$year][$monthNumber]['weeks'][$weekNum - 1])) {
-                                $weekData = $data['monthlyComparison']['monthly_data'][$year][$monthNumber]['weeks'][$weekNum - 1];
-                            }
-                            
-                            if ($weekData) {
-                                // Calculate values for Report 2 template
-                                $registeredActual = $weekData['total_by_converts'] ?? 0;
-                                $rPerWeekActual = $weekData['total_by_weeks'] ?? 0;
-                                $balanceActual = $weekData['balance_student'] ?? 0;
-                                $rejected = $weekData['total_rejected'] ?? 0;
-                                $offered = $weekData['total_offered'] ?? 0;
-                                $kiv = $weekData['total_kiv'] ?? 0;
-                                
-                                // Update cumulative totals
-                                $yearCumulativeTotals[$year]['registered'] += $registeredActual;
-                                $yearCumulativeTotals[$year]['r_per_week'] += $rPerWeekActual;
-                                $yearCumulativeTotals[$year]['balance'] += $balanceActual;
-                                $yearCumulativeTotals[$year]['rejected'] += $rejected;
-                                $yearCumulativeTotals[$year]['offered'] += $offered;
-                                $yearCumulativeTotals[$year]['kiv'] += $kiv;
-                                
-                                // Update grand totals
-                                $grandTotals[$year]['registered_actual'] += $registeredActual;
-                                $grandTotals[$year]['registered_cumulative'] = $yearCumulativeTotals[$year]['registered'];
-                                $grandTotals[$year]['r_per_week_actual'] += $rPerWeekActual;
-                                $grandTotals[$year]['r_per_week_cumulative'] = $yearCumulativeTotals[$year]['r_per_week'];
-                                $grandTotals[$year]['balance_actual'] += $balanceActual;
-                                $grandTotals[$year]['balance_cumulative'] = $yearCumulativeTotals[$year]['balance'];
-                                $grandTotals[$year]['rejected'] += $rejected;
-                                $grandTotals[$year]['offered'] += $offered;
-                                $grandTotals[$year]['kiv'] += $kiv;
-                                
-                                $row[] = $weekData['date_range'];
-                                $row[] = $registeredActual;
-                                $row[] = $yearCumulativeTotals[$year]['registered'];
-                                $row[] = $rPerWeekActual;
-                                $row[] = $yearCumulativeTotals[$year]['r_per_week'];
-                                $row[] = $balanceActual;
-                                $row[] = $yearCumulativeTotals[$year]['balance'];
-                                $row[] = $rejected;
-                                $row[] = $offered;
-                                $row[] = $kiv;
-                            } else {
-                                // Generate date range even when no data exists
-                                $monthStart = \Carbon\Carbon::createFromDate($year, $monthNumber, 1)->startOfMonth();
-                                $monthEnd = \Carbon\Carbon::createFromDate($year, $monthNumber, 1)->endOfMonth();
-                                
-                                // Calculate week start and end for this specific week number
-                                $start = $monthStart->copy();
-                                for ($i = 1; $i < $weekNum; $i++) {
-                                    $weekStart = $start->copy();
-                                    $daysUntilSaturday = (6 - $weekStart->dayOfWeek) % 7;
-                                    $weekEnd = $weekStart->copy()->addDays($daysUntilSaturday);
-                                    if ($weekEnd->gt($monthEnd)) {
-                                        $weekEnd = $monthEnd->copy();
-                                    }
-                                    $start = $weekEnd->copy()->addDay();
-                                }
-                                
-                                $weekStart = $start->copy();
-                                $daysUntilSaturday = (6 - $weekStart->dayOfWeek) % 7;
-                                $weekEnd = $weekStart->copy()->addDays($daysUntilSaturday);
-                                if ($weekEnd->gt($monthEnd)) {
-                                    $weekEnd = $monthEnd->copy();
-                                }
-                                
-                                $dateRange = $weekStart->format('j M Y') . ' - ' . $weekEnd->format('j M Y');
-                                
-                                $row[] = $dateRange;
-                                $row[] = 0; // Registered Actual
-                                $row[] = $yearCumulativeTotals[$year]['registered']; // Registered Cumulative
-                                $row[] = 0; // R Per Week Actual
-                                $row[] = $yearCumulativeTotals[$year]['r_per_week']; // R Per Week Cumulative
-                                $row[] = 0; // Balance Actual
-                                $row[] = $yearCumulativeTotals[$year]['balance']; // Balance Cumulative
-                                $row[] = 0; // Rejected
-                                $row[] = 0; // Offered
-                                $row[] = 0; // KIV
+                            if (isset($data['monthlyComparison']['monthly_data'][$year][$monthNumber]['weeks'])) {
+                                $maxWeeks = max($maxWeeks, count($data['monthlyComparison']['monthly_data'][$year][$monthNumber]['weeks']));
                             }
                         }
                         
-                        fputcsv($file, $row);
+                        // Only process if there are weeks for this month
+                        if ($maxWeeks > 0) {
+                            // Process each week
+                            for ($weekNum = 1; $weekNum <= $maxWeeks; $weekNum++) {
+                                $row = [];
+                                
+                                // Month column (only for first week)
+                                if ($weekNum == 1) {
+                                    $row[] = $monthName;
+                                } else {
+                                    $row[] = '';
+                                }
+                                
+                                // Week column
+                                $row[] = "Week $weekNum";
+                                
+                                // Data columns for each year
+                                foreach ($data['monthlyComparison']['years'] as $year) {
+                                    $weekData = null;
+                                    if (isset($data['monthlyComparison']['monthly_data'][$year][$monthNumber]['weeks'][$weekNum - 1])) {
+                                        $weekData = $data['monthlyComparison']['monthly_data'][$year][$monthNumber]['weeks'][$weekNum - 1];
+                                    }
+                                    
+                                    if ($weekData) {
+                                        // Calculate values for Report 2 template
+                                        $registeredActual = $weekData['total_by_converts'] ?? 0;
+                                        $rPerWeekActual = $weekData['total_by_weeks'] ?? 0;
+                                        $balanceActual = $weekData['balance_student'] ?? 0;
+                                        $rejected = $weekData['total_rejected'] ?? 0;
+                                        $offered = $weekData['total_offered'] ?? 0;
+                                        $kiv = $weekData['total_kiv'] ?? 0;
+                                        
+                                        // Update cumulative totals
+                                        $yearCumulativeTotals[$year]['registered'] += $registeredActual;
+                                        $yearCumulativeTotals[$year]['r_per_week'] += $rPerWeekActual;
+                                        $yearCumulativeTotals[$year]['balance'] += $balanceActual;
+                                        $yearCumulativeTotals[$year]['rejected'] += $rejected;
+                                        $yearCumulativeTotals[$year]['offered'] += $offered;
+                                        $yearCumulativeTotals[$year]['kiv'] += $kiv;
+                                        
+                                        // Update grand totals
+                                        $grandTotals[$year]['registered_actual'] += $registeredActual;
+                                        $grandTotals[$year]['registered_cumulative'] = $yearCumulativeTotals[$year]['registered'];
+                                        $grandTotals[$year]['r_per_week_actual'] += $rPerWeekActual;
+                                        $grandTotals[$year]['r_per_week_cumulative'] = $yearCumulativeTotals[$year]['r_per_week'];
+                                        $grandTotals[$year]['balance_actual'] += $balanceActual;
+                                        $grandTotals[$year]['balance_cumulative'] = $yearCumulativeTotals[$year]['balance'];
+                                        $grandTotals[$year]['rejected'] += $rejected;
+                                        $grandTotals[$year]['offered'] += $offered;
+                                        $grandTotals[$year]['kiv'] += $kiv;
+                                        
+                                        $row[] = $weekData['date_range'];
+                                        $row[] = $registeredActual;
+                                        $row[] = $yearCumulativeTotals[$year]['registered'];
+                                        $row[] = $rPerWeekActual;
+                                        $row[] = $yearCumulativeTotals[$year]['r_per_week'];
+                                        $row[] = $balanceActual;
+                                        $row[] = $yearCumulativeTotals[$year]['balance'];
+                                        $row[] = $rejected;
+                                        $row[] = $offered;
+                                        $row[] = $kiv;
+                                    } else {
+                                        // Generate date range even when no data exists
+                                        $monthStart = \Carbon\Carbon::createFromDate($year, $monthNumber, 1)->startOfMonth();
+                                        $monthEnd = \Carbon\Carbon::createFromDate($year, $monthNumber, 1)->endOfMonth();
+                                        
+                                        // Calculate week start and end for this specific week number
+                                        $start = $monthStart->copy();
+                                        for ($i = 1; $i < $weekNum; $i++) {
+                                            $weekStart = $start->copy();
+                                            $daysUntilSaturday = (6 - $weekStart->dayOfWeek) % 7;
+                                            $weekEnd = $weekStart->copy()->addDays($daysUntilSaturday);
+                                            if ($weekEnd->gt($monthEnd)) {
+                                                $weekEnd = $monthEnd->copy();
+                                            }
+                                            $start = $weekEnd->copy()->addDay();
+                                        }
+                                        
+                                        $weekStart = $start->copy();
+                                        $daysUntilSaturday = (6 - $weekStart->dayOfWeek) % 7;
+                                        $weekEnd = $weekStart->copy()->addDays($daysUntilSaturday);
+                                        if ($weekEnd->gt($monthEnd)) {
+                                            $weekEnd = $monthEnd->copy();
+                                        }
+                                        
+                                        $dateRange = $weekStart->format('j M Y') . ' - ' . $weekEnd->format('j M Y');
+                                        
+                                        $row[] = $dateRange;
+                                        $row[] = 0; // Registered Actual
+                                        $row[] = $yearCumulativeTotals[$year]['registered']; // Registered Cumulative
+                                        $row[] = 0; // R Per Week Actual
+                                        $row[] = $yearCumulativeTotals[$year]['r_per_week']; // R Per Week Cumulative
+                                        $row[] = 0; // Balance Actual
+                                        $row[] = $yearCumulativeTotals[$year]['balance']; // Balance Cumulative
+                                        $row[] = 0; // Rejected
+                                        $row[] = 0; // Offered
+                                        $row[] = 0; // KIV
+                                    }
+                                }
+                                
+                                fputcsv($file, $row);
+                            }
+                        }
                     }
+                    
+                    // Add totals row
+                    $totalsRow = ['TOTAL', 'All Weeks'];
+                    foreach ($data['monthlyComparison']['years'] as $year) {
+                        $totalsRow[] = 'All Ranges';
+                        $totalsRow[] = $grandTotals[$year]['registered_actual'];
+                        $totalsRow[] = $grandTotals[$year]['registered_cumulative'];
+                        $totalsRow[] = $grandTotals[$year]['r_per_week_actual'];
+                        $totalsRow[] = $grandTotals[$year]['r_per_week_cumulative'];
+                        $totalsRow[] = $grandTotals[$year]['balance_actual'];
+                        $totalsRow[] = $grandTotals[$year]['balance_cumulative'];
+                        $totalsRow[] = $grandTotals[$year]['rejected'];
+                        $totalsRow[] = $grandTotals[$year]['offered'];
+                        $totalsRow[] = $grandTotals[$year]['kiv'];
+                    }
+                    fputcsv($file, $totalsRow);
                 }
-                
-                // Add totals row
-                $totalsRow = ['TOTAL', 'All Weeks'];
-                foreach ($data['monthlyComparison']['years'] as $year) {
-                    $totalsRow[] = 'All Ranges';
-                    $totalsRow[] = $grandTotals[$year]['registered_actual'];
-                    $totalsRow[] = $grandTotals[$year]['registered_cumulative'];
-                    $totalsRow[] = $grandTotals[$year]['r_per_week_actual'];
-                    $totalsRow[] = $grandTotals[$year]['r_per_week_cumulative'];
-                    $totalsRow[] = $grandTotals[$year]['balance_actual'];
-                    $totalsRow[] = $grandTotals[$year]['balance_cumulative'];
-                    $totalsRow[] = $grandTotals[$year]['rejected'];
-                    $totalsRow[] = $grandTotals[$year]['offered'];
-                    $totalsRow[] = $grandTotals[$year]['kiv'];
-                }
-                fputcsv($file, $totalsRow);
                 
             } else {
                 // Fallback when no monthly comparison data is available
