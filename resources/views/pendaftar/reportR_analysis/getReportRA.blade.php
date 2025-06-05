@@ -2,9 +2,9 @@
   <div class="col-md-12 mb-3">
     <div class="pull-right">
       <button id="exportBtn" class="btn btn-success">Export to Excel</button>
-      <button id="analyseBtn" class="btn btn-primary ml-2">
+      {{-- <button id="analyseBtn" class="btn btn-primary ml-2">
         <i class="fa fa-chart-line"></i> Analyse Data
-      </button>
+      </button> --}}
     </div>
   </div>
 </div>
@@ -41,8 +41,8 @@
             <tr>
                 <th style="width: 15%">Total Student R</th>
                 <th style="width: 15%">Total by Convert</th>
-                <th style="width: 15%">Active before End Date</th>
-                <th style="width: 15%">Active after End Date</th>
+                {{-- <th style="width: 15%">Active before End Date</th>
+                <th style="width: 15%">Active after End Date</th> --}}
                 <th style="width: 15%">Balance Student</th>
                 <th style="width: 15%">Student Active</th>
                 <th style="width: 15%">Student Rejected</th>
@@ -55,8 +55,8 @@
           <tr>
             <td>{{ $data['allStudents'][$key] }}</td>
             <td>{{ $data['totalConvert'][$key] }}</td>
-            <td>{{ $data['registered_before_offer'][$key] }}</td>
-            <td>{{ $data['registered_after_offer'][$key] }}</td>
+            {{-- <td>{{ $data['registered_before_offer'][$key] }}</td>
+            <td>{{ $data['registered_after_offer'][$key] }}</td> --}}
             <td>{{ $data['allStudents'][$key] - $data['totalConvert'][$key] }}</td>
             <td>{{ $data['registered'][$key] }}</td>
             <td>{{ $data['rejected'][$key] }}</td>
@@ -82,8 +82,8 @@
             <tr>
                 <th style="width: 15%">Total Student R</th>
                 <th style="width: 15%">Total by Convert</th>
-                <th style="width: 15%">Active before End Date</th>
-                <th style="width: 15%">Active after End Date</th>
+                {{-- <th style="width: 15%">Active before End Date</th>
+                <th style="width: 15%">Active after End Date</th> --}}
                 <th style="width: 15%">Balance Student</th>
                 <th style="width: 15%">Student Active</th>
                 <th style="width: 15%">Student Rejected</th>
@@ -97,8 +97,8 @@
             @php
             $total_all = array_sum($data['allStudents']);
             $total_convert = array_sum($data['totalConvert']);
-            $total_registered_before_offer = array_sum($data['registered_before_offer']);
-            $total_registered_after_offer = array_sum($data['registered_after_offer']);
+            // $total_registered_before_offer = array_sum($data['registered_before_offer']);
+            // $total_registered_after_offer = array_sum($data['registered_after_offer']);
             $total_registered = array_sum($data['registered']);
             $total_rejected = array_sum($data['rejected']);
             $total_offered = array_sum($data['offered']);
@@ -108,8 +108,8 @@
             @endphp
             <td>{{ $total_all }}</td>
             <td>{{ $total_convert }}</td>
-            <td>{{ $total_registered_before_offer }}</td>
-            <td>{{ $total_registered_after_offer }}</td>
+            {{-- <td>{{ $total_registered_before_offer }}</td>
+            <td>{{ $total_registered_after_offer }}</td> --}}
             <td>{{ $grand_total - $total_convert }}</td>
             <td>{{ $total_registered }}</td>
             <td>{{ $total_rejected }}</td>
@@ -137,8 +137,8 @@
             <tr>
                 <th style="width: 15%">Total Student R</th>
                 <th style="width: 15%">Total by Convert</th>
-                <th style="width: 15%">Active before End Date</th>
-                <th style="width: 15%">Active after End Date</th>
+                {{-- <th style="width: 15%">Active before End Date</th>
+                <th style="width: 15%">Active after End Date</th> --}}
                 <th style="width: 15%">Balance Student</th>
                 <th style="width: 15%">Student Active</th>
                 <th style="width: 15%">Student Rejected</th>
@@ -158,8 +158,8 @@
             @endphp
             <td>{{ $data['allStudents'] ?? 0 }}</td>
             <td>{{ $data['totalConvert'] ?? 0 }}</td>
-            <td>{{ $data['registered_before_offer'] ?? 0 }}</td>
-            <td>{{ $data['registered_after_offer'] ?? 0 }}</td>
+            {{-- <td>{{ $data['registered_before_offer'] ?? 0 }}</td>
+            <td>{{ $data['registered_after_offer'] ?? 0 }}</td> --}}
             <td>{{ ($data['allStudents'] ?? 0) - ($data['totalConvert'] ?? 0) }}</td>
             <td>{{ $data['registered'] ?? 0 }}</td>
             <td>{{ $data['rejected'] ?? 0 }}</td>
@@ -679,11 +679,11 @@ $(document).ready(function() {
     printReport2();
   });
 
-  // Bind analyse button click handler
-  $(document).off('click', '#analyseBtn').on('click', '#analyseBtn', function(e) {
-    e.preventDefault();
-    analyseData();
-  });
+  // // Bind analyse button click handler
+  // $(document).off('click', '#analyseBtn').on('click', '#analyseBtn', function(e) {
+  //   e.preventDefault();
+  //   analyseData();
+  // });
 });
 
 function printReport2() {
@@ -816,40 +816,40 @@ function printReport2() {
   }
 }
 
-function analyseData() {
-  // Show analysis section and loading
-  $('#analysisSection').show();
-  $('#analysisLoading').show();
-  $('#analysisResult').hide();
+// function analyseData() {
+//   // Show analysis section and loading
+//   $('#analysisSection').show();
+//   $('#analysisLoading').show();
+//   $('#analysisResult').hide();
   
-  // Collect table data
-  const tableData = collectTableData();
+//   // Collect table data
+//   const tableData = collectTableData();
   
-  // Send data to backend for AI analysis
-  $.ajax({
-    url: "{{ url('pendaftar/student/reportRA/analyseData') }}",
-    method: 'POST',
-    data: {
-      _token: $('meta[name="csrf-token"]').attr('content'),
-      tableData: JSON.stringify(tableData)
-    },
-    success: function(response) {
-      $('#analysisLoading').hide();
-      $('#analysisResult').show();
+//   // Send data to backend for AI analysis
+//   $.ajax({
+//     url: "{{ url('pendaftar/student/reportRA/analyseData') }}",
+//     method: 'POST',
+//     data: {
+//       _token: $('meta[name="csrf-token"]').attr('content'),
+//       tableData: JSON.stringify(tableData)
+//     },
+//     success: function(response) {
+//       $('#analysisLoading').hide();
+//       $('#analysisResult').show();
       
-      if (response.success) {
-        $('#analysisTextarea').val(response.analysis);
-      } else {
-        $('#analysisTextarea').val('Error: ' + response.message);
-      }
-    },
-    error: function(xhr, status, error) {
-      $('#analysisLoading').hide();
-      $('#analysisResult').show();
-      $('#analysisTextarea').val('Error occurred while analyzing data: ' + error);
-    }
-  });
-}
+//       if (response.success) {
+//         $('#analysisTextarea').val(response.analysis);
+//       } else {
+//         $('#analysisTextarea').val('Error: ' + response.message);
+//       }
+//     },
+//     error: function(xhr, status, error) {
+//       $('#analysisLoading').hide();
+//       $('#analysisResult').show();
+//       $('#analysisTextarea').val('Error occurred while analyzing data: ' + error);
+//     }
+//   });
+// }
 
 function collectTableData() {
   const data = {};
