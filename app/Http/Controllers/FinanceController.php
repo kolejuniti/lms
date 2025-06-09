@@ -6234,7 +6234,7 @@ class FinanceController extends Controller
                 $data['withdrawStudDetail'][] = DB::table('tblpaymentdtl')
                                                 ->join('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
                                                 ->where('tblpaymentdtl.payment_id', $pym->id)
-                                                ->whereIn('tblstudentclaim.groupid', [1])
+                                                ->whereIn('tblstudentclaim.groupid', [1,5])
                                                 ->where('tblpaymentdtl.amount', '!=', 0)
                                                 ->select('tblpaymentdtl.*', 'tblstudentclaim.name AS type')
                                                 ->get();
