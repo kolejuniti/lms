@@ -40,14 +40,15 @@
                 <p>No messages yet. Start a conversation!</p>
               </div>
               
-              <transition-group name="message-fade">
+              <div v-if="state.messages && state.messages.length > 0" class="messages-container" v-memo="[state.messages, state.ic, isTyping]">
                 <message-bubble
-                  v-for="message in state.messages" 
-                  :key="message.id"
+                  v-for="(message, index) in state.messages" 
+                  :key="`${state.ic}-${message.id || index}`"
                   :data="message"
                   :isMine="isMessageMine(message.user_type)"
+                  :showDateHeader="shouldShowDateHeader(message, index)"
                 />
-              </transition-group>
+              </div>
             </div>
           </div>
   
@@ -57,6 +58,8 @@
                 type="text" 
                 v-model="message" 
                 @keyup.enter="submitMessage"
+                @focus="handleFocus"
+                @blur="handleBlur"
                 placeholder="Type a message..." 
                 class="chat-input"
                 ref="messageInput"
@@ -144,6 +147,8 @@
       const emojiPicker = ref(null);
       const showEmojiPicker = ref(false);
       const selectedCategory = ref(0);
+      const isTyping = ref(false);
+      const typingTimeout = ref(null);
   
       // Emoji categories and their emojis
       const emojiCategories = [
@@ -169,12 +174,28 @@
       const currentCategoryEmojis = computed(() => {
         return emojiCategories[selectedCategory.value].emojis;
       });
+
+
   
       // Method to handle the custom event
       const getMessage = (event) => {
-        state.ic = event.detail.ic;
+        const newIc = event.detail.ic;
+        
+        // If switching to a different student, clear messages and update IC first
+        if (state.ic !== newIc) {
+          state.ic = newIc;
+          state.messages = [];
+          
+          // Use nextTick to ensure state is updated before fetching
+          nextTick(() => {
+            fetchMessages();
+          });
+        } else {
+          // Same student, just refresh messages
+          fetchMessages();
+        }
+        
         state.isChatBoxOpen = true;
-        fetchMessages();
       };
   
       // Function to toggle emoji picker
@@ -192,12 +213,61 @@
         message.value += emoji;
         messageInput.value.focus();
       };
+
+      // Handle typing detection to pause polling
+      const handleTyping = () => {
+        // Only set isTyping to true if it's not already true (avoid unnecessary re-renders)
+        if (!isTyping.value) {
+          isTyping.value = true;
+        }
+        
+        // Clear existing timeout
+        if (typingTimeout.value) {
+          clearTimeout(typingTimeout.value);
+        }
+        
+        // Set user as not typing after 3 seconds of inactivity (longer delay)
+        typingTimeout.value = setTimeout(() => {
+          isTyping.value = false;
+          // Fetch messages once when user stops typing to get any updates
+          setTimeout(() => {
+            fetchMessages();
+          }, 500);
+        }, 3000);
+      };
+
+      // Handle input focus
+      const handleFocus = () => {
+        // Set typing state only once when focused
+        if (!isTyping.value) {
+          isTyping.value = true;
+          console.log('Input focused, stopping updates');
+        }
+      };
+
+      // Handle input blur
+      const handleBlur = () => {
+        // Resume normal polling after a longer delay
+        console.log('Input blurred, will resume updates in 2 seconds');
+        setTimeout(() => {
+          isTyping.value = false;
+          // Fetch messages once when input loses focus
+          setTimeout(() => {
+            fetchMessages();
+          }, 500);
+        }, 2000);
+      };
   
       // Function to toggle chat box visibility
       const toggleChatBox = () => {
         state.isChatBoxOpen = !state.isChatBoxOpen;
         
         if (state.isChatBoxOpen) {
+          // Fetch latest messages when chat opens
+          if (state.ic) {
+            fetchMessages();
+          }
+          
           // Focus on input when chat opens
           nextTick(() => {
             if (messageInput.value) messageInput.value.focus();
@@ -209,26 +279,112 @@
       const isMessageMine = (messageSender) => {
         return messageSender === state.sessionUserId;
       };
+
+      // Function to determine if a date header should be shown
+      const shouldShowDateHeader = (message, index) => {
+        // Skip computation when user is typing to avoid re-renders
+        if (isTyping.value) return false;
+        
+        // Safety checks
+        if (!message || !state.messages || state.messages.length === 0) return false;
+        
+        // Always show date header for the first message
+        if (index === 0) return true;
+        
+        // Safety check for previous message
+        if (index <= 0 || index >= state.messages.length) return false;
+        
+        // Use cached date strings instead of creating new Date objects
+        const currentDateStr = message.datetime || message.created_at;
+        const previousMessage = state.messages[index - 1];
+        if (!previousMessage) return false;
+        
+        const previousDateStr = previousMessage.datetime || previousMessage.created_at;
+        
+        // Simple string comparison for same day (much faster)
+        if (!currentDateStr || !previousDateStr) return false;
+        
+        try {
+          const currentDate = currentDateStr.split(' ')[0] || currentDateStr.split('T')[0];
+          const previousDate = previousDateStr.split(' ')[0] || previousDateStr.split('T')[0];
+          return currentDate !== previousDate;
+        } catch (e) {
+          return false;
+        }
+      };
+
+      // Helper function to get date from timestamp
+      const getMessageDate = (timestamp) => {
+        if (!timestamp) return new Date();
+        try {
+          return new Date(timestamp);
+        } catch (e) {
+          return new Date();
+        }
+      };
+
+      // Helper function to check if two dates are the same day
+      const isSameDate = (date1, date2) => {
+        return date1.getDate() === date2.getDate() &&
+               date1.getMonth() === date2.getMonth() &&
+               date1.getFullYear() === date2.getFullYear();
+      };
   
       // Function to fetch messages
       const fetchMessages = () => {
-        if (!state.ic) return;
+        if (!state.ic) {
+          console.log('No IC set, skipping fetch');
+          return;
+        }
+        
+        // Skip fetching if user is actively typing to avoid input disruption
+        if (isTyping.value) {
+          console.log('User is typing, skipping fetch to avoid input disruption');
+          return;
+        }
+        
+        console.log(`Fetching messages for IC: ${state.ic}`);
         
         axios.post('/all/massage/user/getMassage', { 
           ic: state.ic,
           type: state.sessionUserId
         })
         .then(response => {
-          const newMessages = response.data;
+          const newMessages = response.data || [];
+          console.log(`Received ${newMessages.length} messages from server`);
           
-          // Only update if there are new messages
-          if (JSON.stringify(newMessages) !== JSON.stringify(state.messages)) {
-            state.messages = newMessages;
+          // Ensure each message has a unique ID for Vue's key tracking
+          const processedMessages = newMessages.map((msg, index) => {
+            // Create a more stable ID that won't change between fetches
+            const stableId = msg.id || msg.message_id || `${msg.message}-${msg.created_at || msg.datetime}-${index}`;
+            return {
+              ...msg,
+              id: stableId
+            };
+          });
+          
+          const previousLength = state.messages.length;
+          console.log(`Previous messages: ${previousLength}, New messages: ${processedMessages.length}`);
+          
+          // Don't update messages if user is typing to prevent visual disruption
+          if (isTyping.value) {
+            console.log('User is typing, skipping message update to prevent visual disruption');
+            return;
+          }
+          
+          // Check if this is genuinely new data to avoid unnecessary updates
+          const hasChanged = JSON.stringify(processedMessages.map(m => m.id)) !== JSON.stringify(state.messages.map(m => m.id));
+          
+          if (hasChanged || previousLength === 0) {
+            // Update messages
+            state.messages = processedMessages;
             
-            // Scroll to bottom on new messages
-            nextTick(() => {
-              scrollToBottom();
-            });
+            // Scroll to bottom if new messages were added or if this is the first load
+            if (processedMessages.length > previousLength || previousLength === 0) {
+              nextTick(() => {
+                scrollToBottom();
+              });
+            }
           }
         })
         .catch(error => {
@@ -248,7 +404,7 @@
       const startPolling = () => {
         // Start polling only if the chat box is open
         if (state.isChatBoxOpen && !pollingInterval) {
-          pollingInterval = setInterval(fetchMessages, 3000); // Less aggressive polling
+          pollingInterval = setInterval(fetchMessages, 3000); // Much less aggressive polling
         }
       };
   
@@ -291,16 +447,22 @@
         // Close emoji picker when sending a message
         showEmojiPicker.value = false;
         
-        // Create a temporary message object with a temporary ID
+        const messageToSend = message.value.trim();
+        
+        // Create a temporary message to show immediately
+        const tempId = `temp-${state.ic}-${Date.now()}`;
         const tempMessage = {
-          id: 'temp-' + Date.now(),
-          message: message.value,
+          id: tempId,
+          message: messageToSend,
           user_type: state.sessionUserId,
-          created_at: new Date().toISOString()
+          created_at: new Date().toISOString(),
+          isTemporary: true
         };
         
-        // Add to UI immediately
-        state.messages.push(tempMessage);
+        // Add temp message to UI immediately (safer approach)
+        const currentMessages = [...state.messages];
+        currentMessages.push(tempMessage);
+        state.messages = currentMessages;
         
         // Clear input
         message.value = '';
@@ -310,19 +472,40 @@
           scrollToBottom();
         });
         
+        console.log('Sending message:', messageToSend);
+        
         // Send to server
         axios.post('/all/massage/user/sendMassage', {
-          message: tempMessage.message,
+          message: messageToSend,
           ic: state.ic,
           type: state.sessionUserId
         })
         .then(response => {
-          console.log(response.data.message);
-          // You could replace the temp message with the real one if needed
+          console.log('Message sent successfully:', response.data);
+          
+          // Wait a bit for server to process, then fetch messages to replace temp message
+          setTimeout(() => {
+            console.log('Fetching messages after send - attempt 1');
+            fetchMessages();
+            
+            // Second attempt after another delay to ensure we get the update
+            setTimeout(() => {
+              console.log('Fetching messages after send - attempt 2');
+              fetchMessages();
+            }, 1500);
+          }, 1000);
         })
         .catch(error => {
           console.error("Error sending message:", error);
-          // Handle error - maybe add a retry button to the message
+          
+          // Remove temp message if sending failed
+          state.messages = state.messages.filter(msg => msg.id !== tempMessage.id);
+          
+          // Restore the message to input if sending failed
+          message.value = messageToSend;
+          
+          // Show error message to user
+          alert('Failed to send message. Please try again.');
         });
       };
   
@@ -341,6 +524,11 @@
         window.removeEventListener('message-requested', getMessage);
         window.removeEventListener('click', handleClickOutside);
         stopPolling();
+        
+        // Clear typing timeout
+        if (typingTimeout.value) {
+          clearTimeout(typingTimeout.value);
+        }
       });
   
       // Return everything that needs to be accessible in the template
@@ -361,7 +549,10 @@
         scrollToBottom,
         toggleEmojiPicker,
         selectCategory,
-        insertEmoji
+        insertEmoji,
+        shouldShowDateHeader,
+        handleFocus,
+        handleBlur
       };
     }
   }
@@ -726,15 +917,27 @@
     transform: translateY(20px);
   }
   
-  .message-fade-enter-active,
-  .message-fade-leave-active {
-    transition: all 0.5s ease;
+  .messages-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
   }
   
-  .message-fade-enter-from,
-  .message-fade-leave-to {
-    opacity: 0;
-    transform: translateY(20px);
+  .messages-container > * {
+    animation: messageSlideIn 0.3s ease-out;
+  }
+  
+
+  
+  @keyframes messageSlideIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
   
   /* Responsive adjustments */
