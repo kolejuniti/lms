@@ -5,7 +5,7 @@
 require('./bootstrap');
 
 import { createApp } from 'vue';
-import feather from 'feather-icons';
+// import feather from 'feather-icons';
 
 // Create the Vue application instance.
 const app = createApp({});
@@ -31,10 +31,10 @@ if (document.getElementById('app')) {
     app.mount('#app');
 }
 
-// Initialize Feather icons after the DOM is fully loaded.
-document.addEventListener('DOMContentLoaded', () => {
-    feather.replace();
-});
+// // Initialize Feather icons after the DOM is fully loaded.
+// document.addEventListener('DOMContentLoaded', () => {
+//     feather.replace();
+// });
 
 // Import your React setup.
 require('./react-app');

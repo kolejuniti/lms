@@ -5,7 +5,7 @@ import ResultReport from './components/resultReport/resultReport.jsx';
 import VehicleReport from './components/vehicleReport/vehicleReport.jsx';
 import AnnouncementSystem from './components/annoucementStudent/annoucementStudent.jsx';
 import AnnouncementBanner from './components/annoucementStudent/annoucementBanner.jsx';
-import ScheduleStudent from './components/scheduleStudent/scheduleStudent.jsx';
+// import ScheduleStudent from './components/scheduleStudent/scheduleStudent.jsx';
 
 window.renderSenateReport = function(data) {
 
@@ -76,15 +76,15 @@ if (document.getElementById('announcementBanner')) {
     ReactDOM.render(<AnnouncementBanner />, document.getElementById('announcementBanner'));
 }
 
-window.renderScheduleStudent = () => {
+// window.renderScheduleStudent = () => {
 
-    const container = document.createElement('div');
-    container.id = 'scheduleStudent';
-    $('#form-student').html(container);
+//     const container = document.createElement('div');
+//     container.id = 'scheduleStudent';
+//     $('#form-student').html(container);
 
-    ReactDOM.render(
-        <ScheduleStudent />,
-        document.getElementById('scheduleStudent')
-    )
+//     ReactDOM.render(
+//         <ScheduleStudent />,
+//         document.getElementById('scheduleStudent')
+//     )
 
-}
+// }
