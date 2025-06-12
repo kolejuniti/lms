@@ -1,57 +1,245 @@
-<div id="material-directory">
-    <div class="row">
-    @foreach ($test as $ts)
-        @if ($ts->date_from != null)
-        <div class="col-md-3 mb-4">
-            <a href="#">
-                <div class="box m-1 b-1 border-primary shadow-sm">
-                    <div class="box-body h-150">
-                        <div class="align-self-center">
-                            <h3 class="d-flex justify-content-center">
-                                {{ $ts->title }} 
-                            </h3>
-                            <p class="d-flex justify-content-center">
-                                {{ sprintf("%0d hour %02d minute",   floor($ts->duration / 60), $ts->duration % 60) }}
-                            </p>
-                            <p class="d-flex justify-content-center">
-                                {{ $ts->statusname }} 
-                            </p>
-                
-                            <p class="d-flex justify-content-center">
-                                <a href="/lecturer/test/{{ Session::get('CourseID') }}/create?testid={{ $ts->id }}&REUSE=1" class="btn btn-info m-1" data-toggle="tooltip" data-placement="auto" title="Use"><i class="fa fa-recycle"></i></a>
-                            </p>
-                        </div>
+<div id="test-library" class="container-fluid">
+    <div class="row g-4">
+        @foreach ($test as $ts)
+            <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12">
+                <div class="quiz-card h-100 position-relative overflow-hidden">
+                    <!-- Status Badge -->
+                    <div class="position-absolute top-0 end-0 m-3" style="z-index: 10;">
+                        <span class="badge {{ $ts->date_from != null ? 'bg-success text-white' : 'bg-secondary text-white' }} px-3 py-2 rounded-pill shadow">
+                            {{ $ts->statusname }}
+                        </span>
                     </div>
-                </div>
-            </a>
-        </div>
-        &nbsp&nbsp&nbsp&nbsp
-        @else
-        <div class="col-md-3 mb-4">
-            <a href="#">
-                <div class="box m-1 b-1 border-primary shadow-sm">
-                    <div class="box-body h-150">
-                        <div class="align-self-center">
-                            <h3 class="d-flex justify-content-center">
-                                {{ $ts->title }}
-                            </h3>
-                            <p class="d-flex justify-content-center">
-                                OFFLINE
-                            </p>
-                            <p class="d-flex justify-content-center">
-                                {{ $ts->statusname }} 
-                            </p>
-                
-                            <p class="d-flex justify-content-center">
-                                <a href="{{ Storage::disk('linode')->url($ts->content) }}" target="_blank" class="btn btn-primary m-1" data-toggle="tooltip" data-placement="auto" title="Use"><i class="fa fa-download "></i></a>
-                            </p>
+
+                    <!-- Card Header -->
+                    <div class="quiz-card-header p-4 text-center">
+                        <div class="quiz-icon mb-3">
+                            @if ($ts->date_from != null)
+                                <i class="fa fa-file-text text-warning" style="font-size: 4rem;"></i>
+                            @else
+                                <i class="fa fa-download text-secondary" style="font-size: 4rem;"></i>
+                            @endif
                         </div>
+                        <h4 class="quiz-title fw-bold text-dark mb-3 line-clamp-2">
+                            {{ $ts->title }}
+                        </h4>
                     </div>
+
+                    <!-- Card Body -->
+                    <div class="quiz-card-body px-4 py-4">
+                        @if ($ts->date_from != null)
+                            <!-- Online Test Info -->
+                            <div class="quiz-info mb-4">
+                                <div class="d-flex align-items-center justify-content-center mb-3">
+                                    <i class="fa fa-clock text-muted me-2"></i>
+                                    <span class="text-muted fw-medium">
+                                        {{ sprintf("%0d hour %02d minute", floor($ts->duration / 60), $ts->duration % 60) }}
+                                    </span>
+                                </div>
+                                <div class="quiz-type-badge text-center">
+                                    <span class="badge bg-warning text-dark px-3 py-2 rounded-pill">
+                                        <i class="fa fa-wifi me-1"></i>ONLINE TEST
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Action Button -->
+                            <div class="text-center">
+                                <a href="/lecturer/test/{{ Session::get('CourseID') }}/create?testid={{ $ts->id }}&REUSE=1" 
+                                   class="btn btn-warning btn-lg px-4 py-3 rounded-pill shadow hover-lift text-dark fw-bold" 
+                                   data-bs-toggle="tooltip" 
+                                   data-bs-placement="top" 
+                                   title="Reuse Test"
+                                   style="text-decoration: none; border: none; background: linear-gradient(45deg, #ffc107, #e0a800);">
+                                    <i class="fa fa-recycle me-2"></i>Reuse Test
+                                </a>
+                            </div>
+                        @else
+                            <!-- Offline Test Info -->
+                            <div class="quiz-info mb-4">
+                                <div class="quiz-type-badge text-center mb-3">
+                                    <span class="badge bg-secondary text-white px-3 py-2 rounded-pill">
+                                        <i class="fa fa-download me-1"></i>OFFLINE TEST
+                                    </span>
+                                </div>
+                                <p class="text-muted text-center mb-0">
+                                    Download and view offline content
+                                </p>
+                            </div>
+
+                            <!-- Action Button -->
+                            <div class="text-center">
+                                <a href="{{ Storage::disk('linode')->url($ts->content) }}" 
+                                   target="_blank" 
+                                   class="btn btn-outline-warning btn-lg px-4 py-3 rounded-pill shadow hover-lift fw-bold" 
+                                   data-bs-toggle="tooltip" 
+                                   data-bs-placement="top" 
+                                   title="Download Test"
+                                   style="text-decoration: none; border: 2px solid #ffc107; color: #ffc107;">
+                                    <i class="fa fa-download me-2"></i>Download
+                                </a>
+                            </div>
+                        @endif
+                    </div>
+
+                    <!-- Card Hover Effect -->
+                    <div class="quiz-card-overlay"></div>
                 </div>
-            </a>
-        </div>
-        &nbsp&nbsp&nbsp&nbsp
-        @endif
-    @endforeach
+            </div>
+        @endforeach
     </div>
 </div>
+
+<style>
+.quiz-card {
+    background: #ffffff;
+    border: 1px solid #e9ecef;
+    border-radius: 20px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    min-height: 420px;
+    display: flex;
+    flex-direction: column;
+}
+
+.quiz-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    border-color: #ffc107;
+}
+
+.quiz-card-header {
+    background: linear-gradient(135deg, #fff8e1 0%, #ffffff 100%);
+    border-bottom: 1px solid #e9ecef;
+    border-radius: 20px 20px 0 0;
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.quiz-card-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 200px;
+}
+
+.quiz-title {
+    font-size: 1.2rem;
+    line-height: 1.4;
+    color: #2d3748;
+    font-weight: 700 !important;
+}
+
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    min-height: 3rem;
+}
+
+.hover-lift {
+    transition: all 0.3s ease !important;
+}
+
+.hover-lift:hover {
+    transform: translateY(-3px) !important;
+    box-shadow: 0 15px 30px rgba(255, 193, 7, 0.4) !important;
+}
+
+.quiz-icon {
+    transition: transform 0.3s ease;
+}
+
+.quiz-card:hover .quiz-icon {
+    transform: scale(1.15);
+}
+
+.quiz-card-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255, 193, 7, 0.05) 0%, rgba(255, 193, 7, 0.02) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    border-radius: 20px;
+    pointer-events: none;
+}
+
+.quiz-card:hover .quiz-card-overlay {
+    opacity: 1;
+}
+
+/* Button enhancements */
+.btn {
+    font-weight: 600 !important;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease !important;
+}
+
+.btn-warning {
+    background: linear-gradient(45deg, #ffc107, #e0a800) !important;
+    border: none !important;
+    color: #212529 !important;
+}
+
+.btn-warning:hover {
+    background: linear-gradient(45deg, #e0a800, #d39e00) !important;
+    transform: translateY(-2px);
+    color: #212529 !important;
+}
+
+.btn-outline-warning {
+    border: 2px solid #ffc107 !important;
+    color: #ffc107 !important;
+    background: transparent !important;
+}
+
+.btn-outline-warning:hover {
+    background: #ffc107 !important;
+    color: #212529 !important;
+    border-color: #ffc107 !important;
+    transform: translateY(-2px);
+}
+
+/* Badge improvements */
+.badge {
+    font-weight: 600 !important;
+    font-size: 0.75rem !important;
+    letter-spacing: 0.5px;
+}
+
+@media (max-width: 576px) {
+    .quiz-card {
+        margin-bottom: 1.5rem;
+    }
+    
+    .quiz-title {
+        font-size: 1.1rem;
+    }
+    
+    .btn-lg {
+        padding: 0.75rem 2rem;
+        font-size: 1rem;
+    }
+    
+    .quiz-icon i {
+        font-size: 3rem !important;
+    }
+}
+
+/* Fix for button visibility */
+.btn-lg {
+    padding: 12px 30px !important;
+    font-size: 1.1rem !important;
+    min-height: 50px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+</style>
