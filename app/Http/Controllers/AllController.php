@@ -702,6 +702,103 @@ class AllController extends Controller
 
     }
 
+    public function getStudentOldMassage(Request $request)
+    {
+
+        $students = DB::table('students')
+            ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+            ->join('sessions AS a', 'students.intake', 'a.SessionID')
+            ->join('sessions AS b', 'students.session', 'b.SessionID')
+            ->join('tblmessage_dtl', 'students.ic', 'tblmessage_dtl.sender')
+            ->join('tblmessage', 'tblmessage_dtl.message_id', 'tblmessage.id')
+            ->select('students.*', 'tblprogramme.progname', 'a.SessionName AS intake', 
+                     'b.SessionName AS session')
+            ->where('tblmessage_dtl.status', 'READ')
+            ->where('tblmessage.user_type', Auth::user()->usrtype)
+            ->distinct('students.ic')
+            ->get();
+
+        $content = "";
+        $content .= '<thead>
+                        <tr>
+                            <th style="width: 1%">
+                                No.
+                            </th>
+                            <th>
+                                Name
+                            </th>
+                            <th>
+                                No. IC
+                            </th>
+                            <th>
+                                No. Matric
+                            </th>
+                            <th>
+                                Program
+                            </th>
+                            <th>
+                                Intake
+                            </th>
+                            <th>
+                                Current Session
+                            </th>
+                            <th>
+                                Semester
+                            </th>
+                            <th>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="table">';
+                    
+        foreach($students as $key => $student){
+            //$registered = ($student->status == 'ACTIVE') ? 'checked' : '';
+            $content .= '
+            <tr>
+                <td style="width: 1%">
+                '. $key+1 .'
+                </td>
+                <td>
+                '. $student->name .'
+                </td>
+                <td>
+                '. $student->ic .'
+                </td>
+                <td>
+                '. $student->no_matric .'
+                </td>
+                <td>
+                '. $student->progname .'
+                </td>
+                <td>
+                '. $student->intake .'
+                </td>
+                <td>
+                '. $student->session .'
+                </td>
+                <td>
+                '. $student->semester .'
+                </td>';
+                
+
+            
+                $content .= '<td class="project-actions text-right" >
+                                <a class="btn btn-secondary btn-sm btn-sm mr-2 mb-2" href="#" onclick="getMessage(\''. $student->ic .'\')">
+                                    <i class="ti-eye">
+                                    </i>
+                                    Massage
+                                </a>
+                            </td>
+                        
+                        ';
+           
+            }
+            $content .= '</tr></tbody>';
+
+            return $content;
+
+    }
+
     public function sendMassage(Request $request)
     {
 

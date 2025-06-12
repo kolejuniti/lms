@@ -1006,6 +1006,7 @@ Route::post('/all/student/spm/report/getStudentSPM', [App\Http\Controllers\AllCo
 Route::get('/all/massage/user', [App\Http\Controllers\AllController::class, 'studentMassage']);
 Route::post('/all/massage/user/getStudentMassage', [App\Http\Controllers\AllController::class, 'getStudentMassage']);
 Route::get('/all/massage/user/getStudentNewMassage', [App\Http\Controllers\AllController::class, 'getStudentNewMassage']);
+Route::get('/all/massage/user/getStudentOldMassage', [App\Http\Controllers\AllController::class, 'getStudentOldMassage']);
 Route::post('/all/massage/user/sendMassage', [App\Http\Controllers\AllController::class, 'sendMassage']);
 Route::post('/all/massage/user/getMassage', [App\Http\Controllers\AllController::class, 'getMassage']);
 Route::get('/all/massage/student/countMessage', [App\Http\Controllers\AllController::class, 'countMessage']);

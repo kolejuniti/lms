@@ -165,6 +165,66 @@
             <example-component></example-component>
         </div>
       </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Old Message</h3>
+          <div class="card-tools">
+            <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+              <i class="fas fa-minus"></i>
+            </button>
+          </div>
+        </div>
+        <div class="card-body p-0">
+          <table id="complex_header3" class="table table-striped projects display dataTable">
+            <thead>
+                <tr>
+                    <th style="width: 1%">
+                        No.
+                    </th>
+                    <th style="width: 15%">
+                        Name
+                    </th>
+                    <th style="width: 15%">
+                        No. IC
+                    </th>
+                    <th style="width: 10%">
+                        No. Matric
+                    </th>
+                    <th style="width: 10%">
+                        Program
+                    </th>
+                    <th style="width: 20%">
+                    </th>
+                </tr>
+            </thead>
+            <tbody id="table">
+            </tbody>
+          </table>
+        </div>
+        <!-- /.card-body -->
+        <div id="uploadModal" class="modal" class="modal fade" role="dialog">
+          <div class="modal-dialog modal-lg">
+              <!-- modal content-->
+              <div class="modal-content">
+                <div class="modal-header">
+                    <div class="">
+                        <button class="close waves-effect waves-light btn btn-danger btn-sm pull-right" data-dismiss="modal">
+                            &times;
+                        </button>
+                    </div>
+                </div>
+                <div class="modal-body" id="getModal">
+                  
+                </div>
+              </div>
+          </div>
+        </div>
+
+        <div id="app">
+            <example-component></example-component>
+        </div>
+      </div>
       <!-- /.card -->
     </section>
     <!-- /.content -->
@@ -294,6 +354,7 @@
 
   $(document).ready(function() {
     getNewStudent();
+    getOldStudent();
   });
 
   // Your getNewStudent function (if globally defined)
@@ -323,6 +384,33 @@
               $('#complex_header2').DataTable();
           }
       });
+  }
+
+  function getOldStudent() {
+    $('#complex_header3').DataTable().destroy();
+
+    return $.ajax({
+      headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+      url: "{{ url('/all/massage/user/getStudentOldMassage') }}",
+      method: 'GET',
+      beforeSend: function(xhr) {
+        $("#complex_header3").LoadingOverlay("show", {
+          // Loading overlay settings
+        });
+      },
+      complete: function() {
+        $("#complex_header3").LoadingOverlay("hide");
+      },
+      error: function(err) {
+        alert("Error");
+        console.log(err);
+      },
+      success: function(data) {
+        $('#complex_header3').removeAttr('hidden');
+        $('#complex_header3').html(data);
+        
+      }
+    });
   }
   </script>
 @endsection
