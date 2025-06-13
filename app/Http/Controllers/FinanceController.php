@@ -12354,10 +12354,10 @@ class FinanceController extends Controller
                         '. $std->ic .'
                         </td>
                         <td>
-                        '. $std->progcode .'
+                        '. $std->no_matric .'
                         </td>
                         <td>
-                        '. $std->no_matric .'
+                        '. $std->progcode .'
                         </td>
                         <td>
                         '. $std->session .'
