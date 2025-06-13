@@ -12251,6 +12251,9 @@ class FinanceController extends Controller
                         ['tblstudentclaim.groupid', '=', 1],
                         ['tblclaim.student_ic', '=', $std->ic]
                     ])
+                    ->when($filter->from != '' && $filter->to != '', function ($query) use ($filter){
+                        return $query->whereBetween('tblclaim.date', [$filter->from, $filter->to]);
+                    })
                     ->select(DB::raw("IFNULL(SUM(tblclaimdtl.amount), 0) AS claim"), DB::raw('0 as payment'));
 
                     // Define the second part of the union
