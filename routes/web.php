@@ -171,6 +171,9 @@ Route::post('/AR/assignCourse/getCourse0', [App\Http\Controllers\AR_Controller::
 Route::post('/AR/assignCourse/getCourse2', [App\Http\Controllers\AR_Controller::class, 'getCourse2']);
 Route::post('/AR/assignCourse/addCourse', [App\Http\Controllers\AR_Controller::class, 'addCourse']);
 Route::delete('/AR/assignCourse/deleteCourse2', [App\Http\Controllers\AR_Controller::class, 'deleteCourse2']);
+Route::get('/AR/structureReport', [App\Http\Controllers\AR_Controller::class, 'structureReport'])->name('pendaftar_akademik.structureReport');
+Route::post('/AR/structureReport/getStructure', [App\Http\Controllers\AR_Controller::class, 'getStructure']);
+Route::post('/AR/structureReport/getStructureReport', [App\Http\Controllers\AR_Controller::class, 'getStructureReport']);
 Route::get('/AR/student', [App\Http\Controllers\AR_Controller::class, 'studentCourse'])->name('pendaftar_akademik.student');
 Route::get('/AR/student/getStudent', [App\Http\Controllers\AR_Controller::class, 'getStudents']);
 Route::get('/AR/student/getCourse', [App\Http\Controllers\AR_Controller::class, 'getCourses']);

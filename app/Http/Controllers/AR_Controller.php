@@ -518,6 +518,104 @@ class AR_Controller extends Controller
 
     }
 
+    public function structureReport()
+    {
+
+        $data = [
+
+            'program' => DB::table('tblprogramme')->get(),
+
+        ];
+
+        return view('pendaftar_akademik.course.structureReport', compact('data'));
+
+    }
+
+    public function getStructure(Request $request)
+    {
+
+        $structure = DB::table('subjek_structure')
+                     ->join('structure', 'subjek_structure.structure', 'structure.id')
+                     ->where('program_id', $request->program)
+                     ->groupBy('structure')
+                     ->select('structure.*')
+                     ->get();
+
+        return response()->json(['data' => $structure]);
+
+    }
+
+    public function getStructureReport(Request $request)
+    {
+        $structure = DB::table('subjek_structure')
+                     ->join('structure', 'subjek_structure.structure', 'structure.id')
+                     ->join('subjek', 'subjek_structure.courseID', 'subjek.sub_id')
+                     ->join('tblcourse_level', 'subjek.course_level_id', 'tblcourse_level.id')
+                     ->where('program_id', $request->program)
+                     ->where('structure.id', $request->structure)
+                     ->groupBy('subjek_structure.courseID', 'subjek_structure.semester_id')
+                     ->orderBy('subjek_structure.semester_id')
+                    //  ->orderBy('subjek_structure.semester_id')
+                    //  ->orderBy('subjek.course_code')
+                     ->select('structure.structure_name', 'subjek_structure.semester_id', 'subjek.course_code', 'subjek.course_name', 'subjek.course_credit', 'tblcourse_level.name AS classification')
+                     ->get();
+
+        // Group courses by semester
+        $groupedData = $structure->groupBy('semester_id');
+        
+        $html = '<thead>
+                    <tr>
+                        <th style="width: 1%; border: 1px solid #000;">No.</th>
+                        <th style="width: 5%; border: 1px solid #000;">Semester</th>
+                        <th style="width: 10%; border: 1px solid #000;">Course Code</th>
+                        <th style="width: 30%; border: 1px solid #000;">Course Name</th>
+                        <th style="width: 5%; border: 1px solid #000;">Structure</th>
+                        <th style="width: 5%; border: 1px solid #000;">Credit</th>
+                        <th style="width: 15%; border: 1px solid #000;">Classification</th>
+                    </tr>
+                </thead>
+                <tbody>';
+        
+        $counter = 1;
+        foreach($groupedData as $semester => $courses) {
+            $semesterTotal = 0;
+            $isFirstRow = true;
+            $semesterRowCount = count($courses);
+            
+            foreach($courses as $index => $course) {
+                $html .= '<tr>';
+                $html .= '<td style="border: 1px solid #000; text-align: center;">' . $counter . '</td>';
+                
+                // Show semester only on first row of each semester group
+                if($isFirstRow) {
+                    $html .= '<td rowspan="' . ($semesterRowCount + 1) . '" style="vertical-align: middle; text-align: center; font-weight: bold; border: 1px solid #000;">' . $semester . '</td>';
+                    $isFirstRow = false;
+                }
+                
+                $html .= '<td style="border: 1px solid #000;">' . $course->course_code . '</td>';
+                $html .= '<td style="border: 1px solid #000; padding-left: 8px;">' . $course->course_name . '</td>';
+                $html .= '<td style="border: 1px solid #000; text-align: center;">' . $course->structure_name . '</td>'; // Structure column placeholder
+                $html .= '<td style="border: 1px solid #000; text-align: center;">' . $course->course_credit . '</td>';
+                $html .= '<td style="border: 1px solid #000; text-align: center;">' . $course->classification . '</td>';
+                $html .= '</tr>';
+                
+                $semesterTotal += $course->course_credit;
+                $counter++;
+            }
+            
+            // Add semester total row - compatible with both light and dark modes
+            $html .= '<tr style="vertical-align: middle; text-align: center; font-weight: bold; border: 1px solid #000;">';
+            $html .= '<td colspan="5" style="border: 1px solid #000; text-align: center; padding: 8px;">JUMLAH</td>';
+            $html .= '<td style="border: 1px solid #000; text-align: center; padding: 8px;">' . $semesterTotal . '</td>';
+            $html .= '<td style="border: 1px solid #000;"></td>';
+            $html .= '</tr>';
+        }
+        
+        $html .= '</tbody>';
+        
+        return $html;
+    }
+
     public function studentCourse()
     {
 
