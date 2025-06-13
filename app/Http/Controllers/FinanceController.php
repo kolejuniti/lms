@@ -12157,7 +12157,7 @@ class FinanceController extends Controller
 
         $data['program'] = DB::table('tblprogramme')->orderBy('program_ID')->get();
 
-        $data['session'] = DB::table('sessions')->get();
+        $data['session'] = DB::table('sessions')->orderBy('Year', 'DESC')->get();
 
         $data['status'] = DB::table('tblstudent_status')->get();
 
@@ -12207,6 +12207,9 @@ class FinanceController extends Controller
                                    })
                                    ->when($filter->session != 'all', function ($query) use ($filter){
                                         return $query->where('students.session', $filter->session);
+                                    })
+                                    ->when($filter->intake != '', function ($query) use ($filter){
+                                        return $query->whereIn('students.intake', $filter->intake);
                                     })
                                    ->select('students.name','students.ic', 'students.no_matric', 'tblprogramme.progcode', 
                                             'sessions.SessionName', 'students.semester', 'tblstudent_status.name AS status')
