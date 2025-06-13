@@ -12208,7 +12208,7 @@ class FinanceController extends Controller
                                    ->when($filter->session != 'all', function ($query) use ($filter){
                                         return $query->where('students.session', $filter->session);
                                     })
-                                    ->when($filter->intake != '', function ($query) use ($filter){
+                                    ->when(is_array($filter->intake) && !empty($filter->intake), function ($query) use ($filter){
                                         return $query->whereIn('students.intake', $filter->intake);
                                     })
                                    ->select('students.name','students.ic', 'students.no_matric', 'tblprogramme.progcode', 
