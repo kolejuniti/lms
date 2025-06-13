@@ -12206,11 +12206,11 @@ class FinanceController extends Controller
                                    ->when($filter->status != 'all', function ($query) use ($filter){
                                         return $query->where('students.status', $filter->status);
                                    })
-                                   ->when($filter->session != 'all', function ($query) use ($filter){
-                                        return $query->where('students.session', $filter->session);
-                                    })
-                                    ->when(is_array($filter->intake) && !empty($filter->intake), function ($query) use ($filter){
-                                        return $query->whereIn('students.intake', $filter->intake);
+                                //    ->when($filter->session != 'all', function ($query) use ($filter){
+                                //         return $query->where('students.session', $filter->session);
+                                //     })
+                                    ->when(is_array($filter->session) && !empty($filter->session), function ($query) use ($filter){
+                                        return $query->whereIn('students.session', $filter->session);
                                     })
                                    ->select('students.name','students.ic', 'students.no_matric', 'tblprogramme.progcode', 
                                             'A.SessionName AS session', 'B.SessionName AS intake', 'students.semester', 'tblstudent_status.name AS status')

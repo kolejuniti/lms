@@ -51,8 +51,8 @@
             <div class="col-md-6 mr-3" id="session-card">
               <div class="form-group">
                 <label class="form-label" for="session">Session</label>
-                <select class="form-select" id="session" name="session">
-                  <option value="all" selected>All Session</option> 
+                <select class="form-select" id="session" name="session" multiple size="9">
+                  {{-- <option value="all" selected>All Session</option>  --}}
                   @foreach ($data['session'] as $sts)
                   <option value="{{ $sts->SessionID }}">{{ $sts->SessionName}}</option> 
                   @endforeach
@@ -70,7 +70,7 @@
                 </select>
               </div>
             </div>
-            <div class="col-md-6 mr-3" id="intake-card">
+            {{-- <div class="col-md-6 mr-3" id="intake-card">
               <div class="form-group">
                 <label class="form-label" for="intake">Intake</label>
                 <select class="form-select" id="intake" name="intake" multiple size="9">
@@ -79,7 +79,7 @@
                   @endforeach
                 </select>
               </div>
-            </div>
+            </div> --}}
           </div>
           <div class="row">
             <div class="col-md-6">
@@ -194,7 +194,7 @@
         program: $('#program').val(),
         session: $('#session').val(),
         status: $('#status').val(),
-        intake: $('#intake').val(),
+        // intake: $('#intake').val(),
         from: $('#from').val(),
         to: $('#to').val(),
       };
