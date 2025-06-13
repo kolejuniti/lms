@@ -12262,6 +12262,9 @@ class FinanceController extends Controller
                         ['tblstudentclaim.groupid', '=', 1],
                         ['tblpayment.student_ic', '=', $std->ic]
                     ])
+                    ->when($filter->from != '' && $filter->to != '', function ($query) use ($filter){
+                        return $query->whereBetween('tblpayment.date', [$filter->from, $filter->to]);
+                    })
                     ->select(DB::raw('0 as claim'), DB::raw("IFNULL(SUM(tblpaymentdtl.amount), 0) AS payment"))
                     ->unionAll($query); // Here, use the Query Builder instance directly
 

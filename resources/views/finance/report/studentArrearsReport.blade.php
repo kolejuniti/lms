@@ -71,6 +71,20 @@
               </div>
             </div>
           </div>
+          <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                <label class="form-label" for="from">FROM</label>
+                <input type="date" class="form-control" id="from" name="from">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                <label class="form-label" for="to">TO</label>
+                <input type="date" class="form-control" id="to" name="to">
+                </div>
+            </div>
+          </div>
           <button type="submit" id="block" class="btn btn-warning pull-left mb-3 mt-3" onclick="submit2()" hidden>Block / Unblock</button>
           <button type="submit" class="btn btn-primary pull-right mb-3" onclick="submit()">Find</button>
 
@@ -170,6 +184,8 @@
         program: $('#program').val(),
         session: $('#session').val(),
         status: $('#status').val(),
+        from: $('#from').val(),
+        to: $('#to').val(),
       };
 
 
