@@ -12198,7 +12198,8 @@ class FinanceController extends Controller
                 }
 
                 $data['student'] = DB::table('students')
-                                   ->leftjoin('sessions', 'students.session', 'sessions.SessionID')
+                                   ->leftjoin('sessions AS A', 'students.session', 'A.SessionID')
+                                   ->leftjoin('sessions AS B', 'students.intake', 'B.SessionID')
                                    ->leftjoin('tblprogramme', 'students.program', 'tblprogramme.id')
                                    ->leftjoin('tblstudent_status', 'students.status', 'tblstudent_status.id')
                                    ->whereIn('students.program', $program)
@@ -12212,7 +12213,7 @@ class FinanceController extends Controller
                                         return $query->whereIn('students.intake', $filter->intake);
                                     })
                                    ->select('students.name','students.ic', 'students.no_matric', 'tblprogramme.progcode', 
-                                            'sessions.SessionName', 'students.semester', 'tblstudent_status.name AS status')
+                                            'A.SessionName AS session', 'B.SessionName AS intake', 'students.semester', 'tblstudent_status.name AS status')
                                    ->get();
 
                 foreach($data['student'] as $key => $std)
@@ -12303,6 +12304,9 @@ class FinanceController extends Controller
                                         Session
                                     </th>
                                     <th>
+                                        Intake
+                                    </th>
+                                    <th>
                                         Semester
                                     </th>
                                     <th>
@@ -12356,7 +12360,10 @@ class FinanceController extends Controller
                         '. $std->no_matric .'
                         </td>
                         <td>
-                        '. $std->SessionName .'
+                        '. $std->session .'
+                        </td>
+                        <td>
+                        '. $std->intake .'
                         </td>
                         <td>
                         '. $std->semester .'
