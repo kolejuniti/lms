@@ -618,7 +618,7 @@ $content .= '<tr>
         <table id="table_registerstudent" class="w-100 table text-fade table-bordered table-hover display nowrap margin-top-10 w-p100">
             <thead class="thead-themed">
             <th>No.</th>
-            <th>Name</th>
+            <th>Main Lecturer</th>
             <th>Staff No.</th>
             <th>Lecturer Amali</th>
             <th>Course</th>
