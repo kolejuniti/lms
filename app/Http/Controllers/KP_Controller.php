@@ -820,7 +820,7 @@ $content .= '<tr>
             {
                 // Update the lecturer_dir record
                 DB::table('lecturer_dir')
-                  ->where('id', $lecturer_dir->DrID)
+                  ->where('DrID', $lecturer_dir->DrID)
                   ->update(['Addby' => $request->main]);
 
                 // Get material_dir records before updating
