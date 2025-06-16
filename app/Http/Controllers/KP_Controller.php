@@ -796,11 +796,18 @@ $content .= '<tr>
 
             $old = DB::table('user_subjek')->where('id', $request->id)->first();
 
-            $id = DB::table('subjek')->where('sub_id', $old->course_id)->first()->id;
+            // Get the course ID from subjek table
+            $course = DB::table('subjek')
+                       ->where('sub_id', $old->course_id)
+                       ->first();
 
-            //Change Course Content Lecturer
+            if (!$course) {
+                return response()->json(['message' => 'Course not found'], 404);
+            }
 
-            // First, get the lecturer_dir record before updating
+            $id = $course->id;
+
+            // Get the lecturer directory record
             $lecturer_dir = DB::table('lecturer_dir')
                          ->where([
                             'CourseID' => $id,
