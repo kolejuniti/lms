@@ -651,7 +651,7 @@ $content .= '<tr>
                 <td>
                     <div class="form-group">
                           <select class="form-select" id="lct-'. $sbj->id .'" name="lct-'. $sbj->id .'">
-                              <option value="-" selected disabled>-</option>';
+                              <option value=" " selected>-</option>';
                               foreach($user as $usr)
                               {
                                 $content .= '<option value="'. $usr->ic .'" '. (($sbj->amali_ic == $usr->ic) ? 'selected' : '') .'>'. $usr->name .'</option>';
