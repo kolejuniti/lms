@@ -796,12 +796,14 @@ $content .= '<tr>
 
             $old = DB::table('user_subjek')->where('id', $request->id)->first();
 
+            $id = DB::table('subjek')->where('sub_id', $old->course_id)->first()->id;
+
             //Change Course Content Lecturer
 
             // First, get the lecturer_dir record before updating
             $lecturer_dir = DB::table('lecturer_dir')
                          ->where([
-                            'CourseID' => $old->course_id,
+                            'CourseID' => $id,
                             'SessionID' => $old->session_id,
                             'Addby' => $old->user_ic
                          ])
@@ -873,8 +875,6 @@ $content .= '<tr>
                 }
                      
             }
-
-            $id = DB::table('subjek')->where('sub_id', $old->course_id)->first()->id;
 
             //Change Quiz Lecturer
 
