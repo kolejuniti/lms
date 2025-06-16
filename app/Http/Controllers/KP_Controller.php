@@ -319,7 +319,7 @@ class KP_Controller extends Controller
         if(Auth::user()->usrtype == 'AR')
         {
 
-            $programs = DB::table('user_program')->join('tblprogramme', 'user_program.program_id', 'tblprogramme.id')->get();
+            $programs = DB::table('tblprogramme')->get();
 
         }else{
 
