@@ -635,9 +635,6 @@ $content .= '<tr>
                     '. $i+1 .'
                 </td>
                 <td>
-                    '. $sbj->name .'
-                </td>
-                <td>
                     <div class="form-group">
                           <select class="form-select" id="main-'. $sbj->id .'" name="main-'. $sbj->id .'">
                               <option value="-" selected disabled>-</option>';
