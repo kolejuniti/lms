@@ -820,13 +820,13 @@ $content .= '<tr>
             {
                 // Update the lecturer_dir record
                 DB::table('lecturer_dir')
-                  ->where('id', $lecturer_dir->id)
+                  ->where('id', $lecturer_dir->DrID)
                   ->update(['Addby' => $request->main]);
 
                 // Get material_dir records before updating
                 $material_dirs = DB::table('material_dir')
                      ->where([
-                        'LecturerDirID' => $lecturer_dir->id,
+                        'LecturerDirID' => $lecturer_dir->DrID,
                         'Addby' => $old->user_ic
                      ])
                      ->get();
@@ -836,7 +836,7 @@ $content .= '<tr>
                     // Update material_dir records
                     DB::table('material_dir')
                      ->where([
-                        'LecturerDirID' => $lecturer_dir->id,
+                        'LecturerDirID' => $lecturer_dir->DrID,
                         'Addby' => $old->user_ic
                      ])
                      ->update(['Addby' => $request->main]);
@@ -847,7 +847,7 @@ $content .= '<tr>
                         // Update materialsub_dir
                         DB::table('materialsub_dir')
                          ->where([
-                            'MaterialDirID' => $material_dir->id,
+                            'MaterialDirID' => $material_dir->DrID,
                             'Addby' => $old->user_ic
                          ])
                          ->update(['Addby' => $request->main]);
@@ -855,7 +855,7 @@ $content .= '<tr>
                         // Update materialsub_url (direct MaterialDirID reference)
                         DB::table('materialsub_url')
                          ->where([
-                            'MaterialDirID' => $material_dir->id,
+                            'MaterialDirID' => $material_dir->DrID,
                             'Addby' => $old->user_ic
                          ])
                          ->update(['Addby' => $request->main]);
@@ -863,7 +863,7 @@ $content .= '<tr>
                         // Get materialsub_dir records for this material_dir
                         $materialsub_dirs = DB::table('materialsub_dir')
                                           ->where([
-                                            'MaterialDirID' => $material_dir->id,
+                                            'MaterialDirID' => $material_dir->DrID,
                                             'Addby' => $request->main // Use new addby since we just updated it
                                           ])
                                           ->get();
@@ -873,7 +873,7 @@ $content .= '<tr>
                         {
                             DB::table('materialsub_url')
                             ->where([
-                                'MaterialSubDirID' => $materialsub_dir->id,
+                                'MaterialSubDirID' => $materialsub_dir->DrID,
                                 'Addby' => $old->user_ic
                             ])
                             ->update(['Addby' => $request->main]);
