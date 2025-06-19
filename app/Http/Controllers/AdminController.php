@@ -1940,4 +1940,40 @@ class AdminController extends Controller
         return $content;
 
     }
+
+    public function lecturerProgram()
+    {
+
+        $data['session'] = DB::table('sessions')->where('Status', 'ACTIVE')->get();
+
+        return view('admin.report.lecturerProgram', compact('data'));
+
+    }
+
+    public function getLecturerProgram(Request $request)
+    {
+        if(!empty($request->session)){
+
+        $data['program'] = DB::table('tblprogramme')->get();
+
+            foreach($data['program'] as $key => $program){
+
+                $data['lecturer'][$key] = DB::table('user_subjek')
+                                    ->join('users', 'user_subjek.user_ic', 'users.ic')
+                                    ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
+                                    ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+                                    ->join('subjek_structure', 'subjek.sub_id', 'subjek_structure.courseID')
+                                    ->join('tblprogramme', 'subjek_structure.program_id', 'tblprogramme.id')
+                                    ->whereIn('sessions.SessionID', $request->session)
+                                    ->where('tblprogramme.id', $program->id)
+                                    ->select('users.name AS lecturer', 'users.ic', 'sessions.SessionName AS session', 'subjek.course_name AS course', 'subjek.course_code AS course_code')
+                                    ->get();
+
+            }
+
+        }
+
+        return response()->json($data);
+
+    }
 }
