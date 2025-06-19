@@ -1952,60 +1952,36 @@ class AdminController extends Controller
 
     public function getLecturerProgram(Request $request)
     {
-        try {
-            \Log::info('getLecturerProgram started', ['sessions' => $request->session]);
-            
-            if(empty($request->session)){
-                return response()->json(['error' => 'No session selected'], 400);
-            }
+        if(!empty($request->session)){
 
-            // Get all programs first
-            $data['program'] = DB::table('tblprogramme')
-                ->select('id', 'progname')
-                ->get();
+            $data = [];
             
-            \Log::info('Programs fetched', ['count' => count($data['program'])]);
+            $lecturers = DB::table('user_subjek')
+                        ->join('users', 'user_subjek.user_ic', 'users.ic')
+                        ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
+                        ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+                        ->join('subjek_structure', 'subjek.sub_id', 'subjek_structure.courseID')
+                        ->join('tblprogramme', 'subjek_structure.program_id', 'tblprogramme.id')
+                        ->whereIn('sessions.SessionID', $request->session)
+                        ->select(
+                            'tblprogramme.progname AS program',
+                            'tblprogramme.id AS program_id',
+                            'subjek.course_name AS course', 
+                            'subjek.course_code AS course_code',
+                            'users.name AS lecturer', 
+                            'users.ic', 
+                            'sessions.SessionName AS session'
+                        )
+                        ->groupBy('user_subjek.id')
+                        ->get();
 
-            // Get all lecturer data in one optimized query instead of loop
-            $lecturerData = DB::table('user_subjek')
-                ->join('users', 'user_subjek.user_ic', 'users.ic')
-                ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
-                ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
-                ->join('subjek_structure', 'subjek.sub_id', 'subjek_structure.courseID')
-                ->join('tblprogramme', 'subjek_structure.program_id', 'tblprogramme.id')
-                ->whereIn('sessions.SessionID', $request->session)
-                ->select(
-                    'users.name AS lecturer', 
-                    'users.ic', 
-                    'sessions.SessionName AS session', 
-                    'subjek.course_name AS course', 
-                    'subjek.course_code AS course_code',
-                    'tblprogramme.id AS program_id'
-                )
-                ->get();
-            
-            \Log::info('Lecturer data fetched', ['count' => count($lecturerData)]);
+            // Group by program
+            $data['grouped_lecturers'] = $lecturers->groupBy('program');
 
-            // Group lecturer data by program_id
-            $groupedLecturers = $lecturerData->groupBy('program_id');
-            
-            // Initialize lecturer array for each program
-            foreach($data['program'] as $key => $program){
-                $data['lecturer'][$key] = $groupedLecturers->get($program->id, collect())->toArray();
-            }
-            
-            \Log::info('getLecturerProgram completed successfully');
-            
-            return response()->json($data);
-            
-        } catch (\Exception $e) {
-            \Log::error('getLecturerProgram error', [
-                'message' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine()
-            ]);
-            
-            return response()->json(['error' => 'An error occurred while fetching data'], 500);
+            return view('admin.report.getLecturerProgram', compact('data'));
+
         }
+
+        return view('admin.report.getLecturerProgram', ['data' => ['lecturers' => []]]);
     }
 }
