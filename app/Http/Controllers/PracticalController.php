@@ -37,7 +37,8 @@ class PracticalController extends Controller
                 ->where([
                     ['classid', Session::get('CourseIDS')],
                     ['sessionid', Session::get('SessionIDS')],
-                    ['addby', $user->ic]
+                    ['addby', $user->ic],
+                    ['status', '!=', 3],
                 ])->get();
 
       
