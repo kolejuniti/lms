@@ -80,34 +80,40 @@
         
         @else
         <style>
+            html, body {
+                margin: 0;
+                padding: 0;
+                width: 100%;
+                height: 100%;
+            }
+            
             body::before {
                 content: '';
                 position: fixed;
-                top: 0;
-                left: 0;
-                width: 100vw;
-                height: 100vh;
+                top: -1cm;
+                left: -1cm;
+                right: -1cm;
+                bottom: -1cm;
                 background-image: url('{{ asset("assets/images/letter_head/letter_head_transcript.jpg") }}');
-                background-size: cover;
+                background-size: 100% 100%;
                 background-position: center;
                 background-repeat: no-repeat;
                 background-attachment: fixed;
                 z-index: -1;
-                margin: 0;
-                padding: 0;
             }
             
             @media print {
+                @page {
+                    margin: 0;
+                }
+                
                 body::before {
                     position: absolute;
-                    width: 100%;
-                    height: 100%;
-                    top: 0;
-                    left: 0;
-                    right: 0;
-                    bottom: 0;
-                    background-attachment: fixed;
-                    background-size: cover;
+                    top: -2cm;
+                    left: -2cm;
+                    right: -2cm;
+                    bottom: -2cm;
+                    background-size: calc(100% + 4cm) calc(100% + 4cm);
                     background-position: center;
                     background-repeat: no-repeat;
                     z-index: -1;
@@ -117,6 +123,7 @@
                 body {
                     position: relative;
                     z-index: 1;
+                    margin: 1cm;
                 }
             }
         </style>
