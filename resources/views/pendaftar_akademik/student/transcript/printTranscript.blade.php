@@ -121,8 +121,6 @@
                     background-repeat: no-repeat;
                     z-index: -999;
                     pointer-events: none;
-                    -webkit-print-color-adjust: exact;
-                    color-adjust: exact;
                 }
                 
                 /* Reset body and allow normal content flow */
