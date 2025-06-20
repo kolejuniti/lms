@@ -593,7 +593,7 @@ class AR_Controller extends Controller
                 }
                 
                 $html .= '<td style="border: 1px solid #000;">' . $course->course_code . '</td>';
-                $html .= '<td style="border: 1px solid #000; padding-left: 8px; text-transform: uppercase;">' . $course->course_name . '</td>';
+                $html .= '<td style="border: 1px solid #000; padding-left: 8px;">' . strtoupper($course->course_name) . '</td>';
                 $html .= '<td style="border: 1px solid #000; text-align: center;">' . $course->structure_name . '</td>'; // Structure column placeholder
                 $html .= '<td style="border: 1px solid #000; text-align: center;">' . $course->course_credit . '</td>';
                 $html .= '<td style="border: 1px solid #000; text-align: center;">' . $course->classification . '</td>';
