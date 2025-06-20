@@ -80,32 +80,48 @@
         
         @else
         <style>
-            body {
+            html::before {
+                content: '';
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
                 background-image: url('{{ asset("assets/images/letter_head/letter_head_transcript.jpg") }}');
                 background-size: cover;
                 background-position: center;
                 background-repeat: no-repeat;
-                background-attachment: fixed;
-                margin: 0;
-                padding: 0;
+                z-index: -1;
+                pointer-events: none;
+            }
+            
+            body {
+                background: transparent;
+                position: relative;
+                z-index: 1;
             }
             
             @media print {
-                body {
+                html::before {
+                    position: fixed !important;
+                    top: 0 !important;
+                    left: 0 !important;
+                    width: 100vw !important;
+                    height: 100vh !important;
                     background-image: url('{{ asset("assets/images/letter_head/letter_head_transcript.jpg") }}') !important;
                     background-size: cover !important;
                     background-position: center !important;
                     background-repeat: no-repeat !important;
-                    background-attachment: fixed !important;
+                    z-index: -1 !important;
+                    pointer-events: none !important;
                     -webkit-print-color-adjust: exact !important;
                     color-adjust: exact !important;
-                    margin: 0 !important;
-                    padding: 0 !important;
                 }
                 
-                html {
-                    margin: 0 !important;
-                    padding: 0 !important;
+                body {
+                    background: transparent !important;
+                    position: relative !important;
+                    z-index: 1 !important;
                 }
             }
         </style>
