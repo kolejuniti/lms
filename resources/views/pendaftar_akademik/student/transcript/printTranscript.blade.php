@@ -130,8 +130,8 @@
                     background: transparent !important;
                     position: relative;
                     z-index: 1;
-                    /* Restore the original page margins for content */
-                    margin: 1cm !important;
+                    /* Restore the original page margins for content with extra top margin */
+                    margin: 2cm 1cm 1cm 1cm !important;
                     padding: 0 !important;
                 }
                 
@@ -145,7 +145,7 @@
         @endif
     </head>
     <body>
-        <div class="col-12 mb-1 mt-6">  
+        <div class="col-12 mb-1 mt-1">  
             <div style="border: 1px solid white; padding: 10px;">
                 <table>
                     <tr>
