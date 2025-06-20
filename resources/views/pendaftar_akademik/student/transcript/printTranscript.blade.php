@@ -80,19 +80,11 @@
         
         @else
         <style>
-            html, body {
-                margin: 0;
-                padding: 0;
-                height: 100%;
-                width: 100%;
+            body {
                 background-image: url('{{ asset("assets/images/letter_head/letter_head_transcript.jpg") }}');
                 background-size: cover;
                 background-position: center;
                 background-repeat: no-repeat;
-                background-attachment: fixed;
-            }
-            @page {
-                margin: 0;
             }
         </style>
         @endif
