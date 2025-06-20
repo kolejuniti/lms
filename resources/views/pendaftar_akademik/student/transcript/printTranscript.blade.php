@@ -145,7 +145,7 @@
         @endif
     </head>
     <body>
-        <div class="col-12 mb-1 mt-1">  
+        <div class="col-12 mb-1 mt-3">  
             <div style="border: 1px solid white; padding: 10px;">
                 <table>
                     <tr>
