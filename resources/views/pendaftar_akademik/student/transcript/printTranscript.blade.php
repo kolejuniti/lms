@@ -80,50 +80,32 @@
         
         @else
         <style>
-            html, body {
-                margin: 0;
-                padding: 0;
-                width: 100%;
-                height: 100%;
-            }
-            
-            body::before {
-                content: '';
-                position: fixed;
-                top: -1cm;
-                left: -1cm;
-                right: -1cm;
-                bottom: -1cm;
+            body {
                 background-image: url('{{ asset("assets/images/letter_head/letter_head_transcript.jpg") }}');
-                background-size: 100% 100%;
+                background-size: cover;
                 background-position: center;
                 background-repeat: no-repeat;
                 background-attachment: fixed;
-                z-index: -1;
+                margin: 0;
+                padding: 0;
             }
             
             @media print {
-                @page {
-                    margin: 0;
-                }
-                
-                body::before {
-                    position: absolute;
-                    top: -2cm;
-                    left: -2cm;
-                    right: -2cm;
-                    bottom: -2cm;
-                    background-size: calc(100% + 4cm) calc(100% + 4cm);
-                    background-position: center;
-                    background-repeat: no-repeat;
-                    z-index: -1;
-                }
-                
-                /* Ensure content stays above background */
                 body {
-                    position: relative;
-                    z-index: 1;
-                    margin: 1cm;
+                    background-image: url('{{ asset("assets/images/letter_head/letter_head_transcript.jpg") }}') !important;
+                    background-size: cover !important;
+                    background-position: center !important;
+                    background-repeat: no-repeat !important;
+                    background-attachment: fixed !important;
+                    -webkit-print-color-adjust: exact !important;
+                    color-adjust: exact !important;
+                    margin: 0 !important;
+                    padding: 0 !important;
+                }
+                
+                html {
+                    margin: 0 !important;
+                    padding: 0 !important;
                 }
             }
         </style>
