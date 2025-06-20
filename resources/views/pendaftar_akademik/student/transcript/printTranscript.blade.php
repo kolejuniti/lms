@@ -22,6 +22,10 @@
             @page {
                 size: A4;
                 margin: 1cm;
+                background-image: url('{{ asset("assets/images/letter_head/letter_head_transcript.jpg") }}');
+                background-size: cover;
+                background-position: center;
+                background-repeat: no-repeat;
             }
             * {
                 margin: 0;
@@ -80,72 +84,37 @@
         
         @else
         <style>
-            /* Remove all margins and padding from html and body */
-            html, body {
-                margin: 0 !important;
-                padding: 0 !important;
-                width: 100%;
-                height: 100%;
-            }
-            
-            /* Create a fixed background layer that covers entire viewport */
-            html::after {
-                content: '';
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                width: 100vw;
-                height: 100vh;
-                background-image: url('{{ asset("assets/images/letter_head/letter_head_transcript.jpg") }}');
-                background-size: cover;
-                background-position: center;
-                background-repeat: no-repeat;
-                z-index: -999;
-                pointer-events: none;
-            }
-            
-            body {
-                background: transparent !important;
-                position: relative;
-                z-index: 1;
+            @media screen {
+                body {
+                    background-image: url('{{ asset("assets/images/letter_head/letter_head_transcript.jpg") }}');
+                    background-size: cover;
+                    background-position: center;
+                    background-repeat: no-repeat;
+                    background-attachment: fixed;
+                }
             }
             
             @media print {
-                /* Override @page margins for background only */
-                html, body {
+                /* Force no margins on html/body for background */
+                html {
                     margin: 0 !important;
                     padding: 0 !important;
-                }
-                
-                /* Fixed background that ignores all margin changes */
-                html::after {
-                    content: '' !important;
-                    position: absolute !important;
-                    top: 0 !important;
-                    left: 0 !important;
-                    right: 0 !important;
-                    bottom: 0 !important;
-                    width: 100% !important;
-                    height: 100% !important;
                     background-image: url('{{ asset("assets/images/letter_head/letter_head_transcript.jpg") }}') !important;
                     background-size: cover !important;
                     background-position: center !important;
                     background-repeat: no-repeat !important;
                     background-attachment: fixed !important;
-                    z-index: -999 !important;
-                    pointer-events: none !important;
                     -webkit-print-color-adjust: exact !important;
                     color-adjust: exact !important;
-                    transform: none !important;
                 }
                 
                 body {
                     background: transparent !important;
-                    position: relative !important;
-                    z-index: 1 !important;
+                    margin: 0 !important;
+                    padding: 0 !important;
                 }
+                
+
             }
         </style>
         @endif
