@@ -80,11 +80,44 @@
         
         @else
         <style>
-            body {
+            body::before {
+                content: '';
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
                 background-image: url('{{ asset("assets/images/letter_head/letter_head_transcript.jpg") }}');
                 background-size: cover;
                 background-position: center;
                 background-repeat: no-repeat;
+                background-attachment: fixed;
+                z-index: -1;
+                margin: 0;
+                padding: 0;
+            }
+            
+            @media print {
+                body::before {
+                    position: absolute;
+                    width: 100%;
+                    height: 100%;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background-attachment: fixed;
+                    background-size: cover;
+                    background-position: center;
+                    background-repeat: no-repeat;
+                    z-index: -1;
+                }
+                
+                /* Ensure content stays above background */
+                body {
+                    position: relative;
+                    z-index: 1;
+                }
             }
         </style>
         @endif
