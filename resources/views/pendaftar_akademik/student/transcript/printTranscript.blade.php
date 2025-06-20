@@ -47,7 +47,7 @@
                 page-break-inside: avoid;
             }
             .custom-table, .custom-table th, .custom-table td {
-                border: 1px solid white;
+                border: none;
             }
             
             .custom-table {
