@@ -81,18 +81,18 @@
         @else
         <style>
             html, body {
-                margin: 0 !important;
-                padding: 0 !important;
-                height: 100% !important;
-                width: 100% !important;
-                background-image: url('{{ asset("assets/images/letter_head/letter_head_transcript.jpg") }}') !important;
-                background-size: cover !important;
-                background-position: center !important;
-                background-repeat: no-repeat !important;
-                background-attachment: fixed !important;
+                margin: 0;
+                padding: 0;
+                height: 100%;
+                width: 100%;
+                background-image: url('{{ asset("assets/images/letter_head/letter_head_transcript.jpg") }}');
+                background-size: cover;
+                background-position: center;
+                background-repeat: no-repeat;
+                background-attachment: fixed;
             }
             @page {
-                margin: 0 !important;
+                margin: 0;
             }
         </style>
         @endif
