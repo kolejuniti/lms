@@ -22,10 +22,6 @@
             @page {
                 size: A4;
                 margin: 1cm;
-                background-image: url('{{ asset("assets/images/letter_head/letter_head_transcript.jpg") }}');
-                background-size: cover;
-                background-position: center;
-                background-repeat: no-repeat;
             }
             * {
                 margin: 0;
@@ -84,37 +80,46 @@
         
         @else
         <style>
-            @media screen {
-                body {
+            body {
+                background-image: url('{{ asset("assets/images/letter_head/letter_head_transcript.jpg") }}');
+                background-size: cover;
+                background-position: center;
+                background-repeat: no-repeat;
+                background-attachment: fixed;
+            }
+            
+            @media print {
+                /* Create a background overlay that ignores all margin settings */
+                body::before {
+                    content: '';
+                    display: block;
+                    position: fixed;
+                    top: -50vh;
+                    left: -50vw;
+                    width: 200vw;
+                    height: 200vh;
                     background-image: url('{{ asset("assets/images/letter_head/letter_head_transcript.jpg") }}');
                     background-size: cover;
                     background-position: center;
                     background-repeat: no-repeat;
                     background-attachment: fixed;
-                }
-            }
-            
-            @media print {
-                /* Force no margins on html/body for background */
-                html {
-                    margin: 0 !important;
-                    padding: 0 !important;
-                    background-image: url('{{ asset("assets/images/letter_head/letter_head_transcript.jpg") }}') !important;
-                    background-size: cover !important;
-                    background-position: center !important;
-                    background-repeat: no-repeat !important;
-                    background-attachment: fixed !important;
-                    -webkit-print-color-adjust: exact !important;
-                    color-adjust: exact !important;
+                    z-index: -1;
+                    pointer-events: none;
+                    -webkit-print-color-adjust: exact;
+                    color-adjust: exact;
                 }
                 
                 body {
                     background: transparent !important;
-                    margin: 0 !important;
-                    padding: 0 !important;
+                    position: relative;
+                    z-index: 1;
                 }
                 
-
+                /* Ensure only first page gets background */
+                body::before {
+                    page-break-after: avoid;
+                    page-break-inside: avoid;
+                }
             }
         </style>
         @endif
