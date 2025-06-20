@@ -212,6 +212,7 @@
             $total_credit = 0;
             @endphp
             @foreach($data['semesters'] as $key => $sm)
+            @if(isset($data['detail'][$key]))
             <div class="col-md-6 mt-3">
                 <div class="text-center"><b><u>SESI {{ $data['detail'][$key]->session }} SEMESTER {{ $sm }}</u></b></div>
                 <table class="custom-table">
@@ -242,6 +243,7 @@
                     </tfoot>
                 </table>
             </div>
+            @endif
             @endforeach  
         </div>
 
