@@ -131,7 +131,7 @@
                     <thead>
                         <tr class="line">
                             <th class="text-center" style="width: 2%">KOD</th>
-                            <th style="width: 10%">KURSUS</th>
+                            <th style="width: 11%">KURSUS</th>
                             <th class="text-center" style="width: 1%">KR</th>
                             <th style="width: 1%">GR</th>
                         </tr>
@@ -143,7 +143,7 @@
                     <thead>
                         <tr class="line">
                             <th class="text-center" style="width: 2%">KOD</th>
-                            <th style="width: 15%">KURSUS</th>
+                            <th style="width: 16%">KURSUS</th>
                             <th class="text-center" style="width: 1%">KR</th>
                             <th style="width: 1%">GR</th>
                         </tr>
@@ -166,7 +166,7 @@
                         @foreach($data['course'][$key] as $key2 => $crs)
                         <tr class="line">
                             <td style="width: 5%">{{ $crs->course_code }}</td>
-                            <td style="width: 25%">{{ $crs->course_name }}</td>
+                            <td style="width: 26%">{{ $crs->course_name }}</td>
                             <td class="text-center" style="width: 1%">{{ $crs->credit }}</td>
                             <td style="width: 1%">{{ $crs->grade }}</td>
                         </tr>
