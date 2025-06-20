@@ -81,7 +81,7 @@
         @else
         <style>
             body {
-                background-image: url('{{ asset("assets/images/letter_head/letter_head.jpg") }}');
+                background-image: url('{{ asset("assets/images/letter_head/letter_head_transcript.jpg") }}');
                 background-size: cover;
                 background-position: center;
                 background-repeat: no-repeat;
