@@ -131,7 +131,7 @@
                     <thead>
                         <tr class="line">
                             <th class="text-center" style="width: 2%">KOD</th>
-                            <th style="width: 11%">KURSUS</th>
+                            <th style="width: 10%">KURSUS</th>
                             <th class="text-center" style="width: 1%">KR</th>
                             <th style="width: 1%">GR</th>
                         </tr>
