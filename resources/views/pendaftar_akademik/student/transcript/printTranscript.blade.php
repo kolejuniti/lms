@@ -80,45 +80,65 @@
         
         @else
         <style>
-            body {
-                background-image: url('{{ asset("assets/images/letter_head/letter_head_transcript.jpg") }}');
-                background-size: cover;
-                background-position: center;
-                background-repeat: no-repeat;
-                background-attachment: fixed;
-            }
-            
-            @media print {
-                /* Create a background overlay that ignores all margin settings */
-                body::before {
-                    content: '';
-                    display: block;
-                    position: fixed;
-                    top: -50vh;
-                    left: -50vw;
-                    width: 200vw;
-                    height: 200vh;
+            /* Screen version */
+            @media screen {
+                body {
                     background-image: url('{{ asset("assets/images/letter_head/letter_head_transcript.jpg") }}');
                     background-size: cover;
                     background-position: center;
                     background-repeat: no-repeat;
                     background-attachment: fixed;
-                    z-index: -1;
+                }
+            }
+            
+            /* Print version - definitive solution */
+            @media print {
+                /* Reset everything */
+                * {
+                    margin: 0 !important;
+                    padding: 0 !important;
+                }
+                
+                /* Force the root elements to have no margins */
+                html {
+                    margin: 0 !important;
+                    padding: 0 !important;
+                    width: 100% !important;
+                    height: 100% !important;
+                }
+                
+                /* Create absolute positioned background that covers entire page */
+                html::before {
+                    content: '';
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background-image: url('{{ asset("assets/images/letter_head/letter_head_transcript.jpg") }}');
+                    background-size: cover;
+                    background-position: center;
+                    background-repeat: no-repeat;
+                    z-index: -999;
                     pointer-events: none;
                     -webkit-print-color-adjust: exact;
                     color-adjust: exact;
                 }
                 
+                /* Reset body and allow normal content flow */
                 body {
                     background: transparent !important;
                     position: relative;
                     z-index: 1;
+                    /* Restore the original page margins for content */
+                    margin: 1cm !important;
+                    padding: 0 !important;
                 }
                 
-                /* Ensure only first page gets background */
-                body::before {
-                    page-break-after: avoid;
-                    page-break-inside: avoid;
+                /* Override the global @page rule for this specific case */
+                @page {
+                    margin: 0 !important;
+                    size: A4;
                 }
             }
         </style>
