@@ -140,12 +140,12 @@
                                   <!--<th>
                                     TEST2
                                   </th>-->
-                                  @foreach ($test[$ky] as $key=>$qz)
+                                  @foreach ($test2[$ky] as $key=>$qz)
                                   <th>
                                     TEST 2 {{ $key+1 }} : {{ $qz->title }} ({{ $qz->total_mark }})
                                   </th>
                                   @endforeach
-                                  @if (count($test[$ky]) > 0)
+                                  @if (count($test2[$ky]) > 0)
                                   <th >
                                     @php
                                     $markpercen = DB::table('tblclassmarks')->where([
