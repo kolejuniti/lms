@@ -14253,8 +14253,8 @@ class FinanceController extends Controller
             
             // Generate sub-headers for each month
             foreach ($monthsWithData as $monthNum => $monthData) {
-                $content .= '<th style="background-color: #f8f9fa; text-align: center; font-size: 10px; padding: 8px;">Number<br/>of<br/>Student</th>';
                 $content .= '<th style="background-color: #f8f9fa; text-align: center; font-size: 10px; padding: 8px;">Amount</th>';
+                $content .= '<th style="background-color: #f8f9fa; text-align: center; font-size: 10px; padding: 8px;">Number<br/>of<br/>Student</th>';
             }
             
             $content .= '</tr>
@@ -14287,15 +14287,14 @@ class FinanceController extends Controller
                         $dayData = $monthData['days'][$day] ?? null;
                         
                         if ($dayData && $dayData['total_amount'] > 0) {
-                            $content .= '<td style="text-align: center;">' . $dayData['student_count'] . '</td>';
                             $content .= '<td style="text-align: center;">' . number_format($dayData['total_amount'], 2) . '</td>';
-                            
+                            $content .= '<td style="text-align: center;">' . $dayData['student_count'] . '</td>';                            
                             // Accumulate totals
                             if (!isset($monthlyTotals[$monthNum])) {
                                 $monthlyTotals[$monthNum] = ['amount' => 0, 'students' => 0];
                             }
-                            $monthlyTotals[$monthNum]['amount'] += $dayData['total_amount'];
                             $monthlyTotals[$monthNum]['students'] += $dayData['student_count'];
+                            $monthlyTotals[$monthNum]['amount'] += $dayData['total_amount'];
                         } else {
                             $content .= '<td style="text-align: center;"></td>';
                             $content .= '<td style="text-align: center;"></td>';
@@ -14314,8 +14313,8 @@ class FinanceController extends Controller
             
             foreach ($monthsWithData as $monthNum => $monthData) {
                 $monthTotal = $monthlyTotals[$monthNum] ?? ['amount' => 0, 'students' => 0];
-                $content .= '<td style="text-align: center; background-color: #ffeb3b;">' . $monthTotal['students'] . '</td>';
                 $content .= '<td style="text-align: center; background-color: #ffeb3b;">' . number_format($monthTotal['amount'], 2) . '</td>';
+                $content .= '<td style="text-align: center; background-color: #ffeb3b;">' . $monthTotal['students'] . '</td>';
                 
                 $grandTotal += $monthTotal['amount'];
                 $grandStudentCount += $monthTotal['students'];
