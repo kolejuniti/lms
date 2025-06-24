@@ -76,9 +76,9 @@
                               </label>
                           </div>
                           <div class="form-check">
-                              <input class="form-check-input" type="radio" name="format" id="format_collection" value="collection">
-                              <label class="form-check-label fw-bold text-warning" for="format_collection">
-                                  Collection Format (Expected vs Actual Payments)
+                              <input class="form-check-input" type="radio" name="format" id="format_payment" value="payment">
+                              <label class="form-check-label fw-bold text-warning" for="format_payment">
+                                  Payment Comparison Format (Expected vs Actual)
                               </label>
                           </div>
                       </div>
