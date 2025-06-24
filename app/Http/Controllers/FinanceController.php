@@ -14342,8 +14342,13 @@ class FinanceController extends Controller
         $students = DB::table('tblpayment')
                        ->join('students', 'tblpayment.student_ic', 'students.ic')
                        ->whereBetween('tblpayment.add_date', [$from, $to])
-                       ->where('students.status', 8) // Graduate status
-                       ->where('students.semester', '!=', 1)
+                       ->whereRaw('(SELECT tblstudent_status.id 
+                                  FROM tblstudent_log 
+                                  LEFT JOIN tblstudent_status ON tblstudent_log.status_id = tblstudent_status.id 
+                                  WHERE tblstudent_log.student_ic = tblpayment.student_ic 
+                                  AND tblstudent_log.date <= tblpayment.add_date 
+                                  ORDER BY tblstudent_log.id DESC 
+                                  LIMIT 1) = 8') // Graduate status
                        ->where('tblpayment.process_type_id', 1)
                        ->where('tblpayment.process_status_id', 2)
                        ->where('tblpayment.sponsor_id', null)
