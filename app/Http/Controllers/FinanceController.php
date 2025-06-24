@@ -13747,7 +13747,7 @@ class FinanceController extends Controller
                 ->where([
                     ['students.status', 8],
                     ['tblpayment.sponsor_id', '=', null],
-                    ['tblpayment.semester', '!=', 1],
+                    ['students.semester', '!=', 1],
                 ]) // Graduate status
                 ->whereIn('tblpayment.process_type_id', [1,8])
                 ->whereNotNull('tblpayment.ref_no')
