@@ -633,7 +633,6 @@ class PendaftarController extends Controller
                 'status' => 1,
                 'campus_id' => 0,
                 'date_offer' => $request->dol,
-                'date_study' => $request->dos,
                 'student_status' => 1,
                 'stafID_add' => Auth::user()->ic,
                 'date_add' => date('Y-m-d'),
@@ -980,8 +979,7 @@ class PendaftarController extends Controller
             'intake' => $data['session'],
             'batch' => $data['batch'],
             'program' => $data['program'],
-            'date_offer' => $request->dol,
-            'date_study' => $request->dos
+            'date_offer' => $request->dol
         ]);
 
         DB::table('tblstudent_personal')->updateOrInsert(
