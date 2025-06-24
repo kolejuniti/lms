@@ -13732,15 +13732,6 @@ class FinanceController extends Controller
                 ->join('tblpaymentdtl', 'tblpayment.id', 'tblpaymentdtl.payment_id')
                 ->join('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
                 ->leftjoin('tblprogramme', 'tblpayment.program_id', 'tblprogramme.id')
-                ->leftJoin(DB::raw('(SELECT tblstudent_log.student_ic, tblstudent_status.id as status_id
-                                   FROM tblstudent_log
-                                   LEFT JOIN tblstudent_status ON tblstudent_log.status_id = tblstudent_status.id
-                                   WHERE tblstudent_log.id IN (
-                                       SELECT MAX(id) 
-                                       FROM tblstudent_log 
-                                       WHERE date <= tblpayment.add_date 
-                                       GROUP BY student_ic
-                                   )) as latest_status'), 'students.ic', '=', 'latest_status.student_ic')
                 ->select(
                     DB::raw('YEAR(tblpayment.add_date) as year'),
                     DB::raw('MONTH(tblpayment.add_date) as month'),
@@ -13754,10 +13745,16 @@ class FinanceController extends Controller
                 ->whereBetween('tblpayment.add_date', [$from, $to])
                 ->where('tblpayment.process_status_id', 2)
                 ->where([
-                    ['latest_status.status_id', 8],
                     ['tblpayment.sponsor_id', '=', null],
                     ['students.semester', '!=', 1],
                 ]) // Graduate status
+                ->whereRaw('(SELECT tblstudent_status.id 
+                            FROM tblstudent_log 
+                            LEFT JOIN tblstudent_status ON tblstudent_log.status_id = tblstudent_status.id 
+                            WHERE tblstudent_log.student_ic = tblpayment.student_ic 
+                            AND tblstudent_log.date <= tblpayment.add_date 
+                            ORDER BY tblstudent_log.id DESC 
+                            LIMIT 1) = 8')
                 ->whereIn('tblpayment.process_type_id', [1,8])
                 ->whereNotNull('tblpayment.ref_no')
                 ->where('tblpaymentdtl.amount', '!=', 0)
