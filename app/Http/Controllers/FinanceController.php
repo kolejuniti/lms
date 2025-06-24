@@ -14342,6 +14342,7 @@ class FinanceController extends Controller
         $students = DB::table('tblpayment')
                        ->join('students', 'tblpayment.student_ic', 'students.ic')
                        ->whereBetween('tblpayment.add_date', [$from, $to])
+                       ->where('students.status', 8) // Graduate status
                        ->where('students.semester', '!=', 1)
                        ->where('tblpayment.process_type_id', 1)
                        ->where('tblpayment.process_status_id', 2)
@@ -14349,25 +14350,8 @@ class FinanceController extends Controller
                        ->select('students.name', 'students.ic', 'students.no_matric', 'tblpayment.id AS pym_id', 'tblpayment.add_date')
                        ->get();
 
-        $filteredStudents = [];
-
-        foreach ($students as $student) {
-            $status = DB::table('tblstudent_log')
-                        ->join('tblstudent_status', 'tblstudent_log.status_id', '=', 'tblstudent_status.id')
-                        ->where('tblstudent_log.student_ic', $student->ic)
-                        ->where('tblstudent_log.date', '<=', $student->add_date)
-                        ->orderBy('tblstudent_log.id', 'desc')
-                        ->select('tblstudent_status.id')
-                        ->first();
-            
-            if ($status && $status->id == 8) {
-                $filteredStudents[] = $student;
-            }
-        }
-        
-        $data['student'] = collect($filteredStudents);
-
         $data = [];
+        $data['student'] = $students;
 
         foreach($data['student'] as $key => $std) {
             // Get actual payments for the student in the period
