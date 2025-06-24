@@ -13738,7 +13738,7 @@ class FinanceController extends Controller
                     DB::raw('DAY(tblpayment.add_date) as day'),
                     DB::raw('MONTHNAME(tblpayment.add_date) as month_name'),
                     DB::raw('DATE(tblpayment.add_date) as payment_date'),
-                    DB::raw('COUNT(students.ic) as student_count'),
+                    DB::raw('COUNT(tblpayment.student_ic) as student_count'),
                     DB::raw('SUM(tblpaymentdtl.amount) as total_amount'),
                     DB::raw('COUNT(DISTINCT tblpayment.id) as payment_count')
                 )
