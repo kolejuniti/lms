@@ -13744,7 +13744,12 @@ class FinanceController extends Controller
                 )
                 ->whereBetween('tblpayment.add_date', [$from, $to])
                 ->where('tblpayment.process_status_id', 2)
-                ->where('students.status', 8) // Graduate status
+                ->where([
+                    ['students.status', 8],
+                    ['tblpayment.sponsor_id', '=', null],
+                    ['tblpayment.semester', '!=', 1],
+                ]) // Graduate status
+                ->whereIn('tblpayment.process_type_id', [1,8])
                 ->whereNotNull('tblpayment.ref_no')
                 ->where('tblpaymentdtl.amount', '!=', 0)
                 ->whereIn('tblstudentclaim.groupid', [1])
@@ -13798,8 +13803,8 @@ class FinanceController extends Controller
             // Generate HTML content based on format
             if ($format === 'table') {
                 $content = $this->generateGraduateTableReportHTML($yearlyData, $years, $from, $to, $isPrint);
-            } elseif ($format === 'collection') {
-                $content = $this->generateCollectionFormatHTML($from, $to, $isPrint);
+            } elseif ($format === 'payment') {
+                $content = $this->generateGraduatePaymentReportHTML($from, $to, $isPrint);
             } else {
                 $content = $this->generateGraduateReportHTML($yearlyData, $years, $from, $to, $isPrint);
             }
@@ -14325,182 +14330,278 @@ class FinanceController extends Controller
         return $content;
     }
 
-    private function generateCollectionFormatHTML($from, $to, $isPrint = false)
+    private function generateGraduatePaymentReportHTML($from, $to, $isPrint = false)
     {
-        // Get expected payments from student_payment_log
-        $expectedPayments = DB::table('student_payment_log')
-            ->join('students', 'student_payment_log.student_ic', 'students.ic')
-            ->whereBetween('student_payment_log.date_of_payment', [$from, $to])
-            ->where('students.status', 8) // Graduate status
-            ->select(
-                'students.name',
-                'students.ic',
-                'students.no_matric',
-                'student_payment_log.date_of_call',
-                'student_payment_log.date_of_payment',
-                'student_payment_log.amount as expected_amount',
-                DB::raw('MONTH(student_payment_log.date_of_payment) as month'),
-                DB::raw('YEAR(student_payment_log.date_of_payment) as year')
-            )
-            ->orderBy('student_payment_log.date_of_payment')
+        // Get graduate students who made payments in the period similar to getCollectionExpectReport
+        $students = DB::table('tblpayment')
+                       ->join('students', 'tblpayment.student_ic', 'students.ic')
+                       ->whereBetween('tblpayment.add_date', [$from, $to])
+                       ->where('students.status', 8) // Graduate status
+                       ->where('tblpayment.process_type_id', 1)
+                       ->where('tblpayment.process_status_id', 2)
+                       ->where('tblpayment.sponsor_id', null)
+                       ->select('students.name', 'students.ic', 'students.no_matric', 'tblpayment.id AS pym_id', 'tblpayment.add_date')
+                       ->get();
+
+        $data = [];
+        $data['student'] = $students;
+
+        foreach($data['student'] as $key => $std) {
+            // Get actual payments for the student in the period
+            $data['payments'][] = DB::table('tblpayment')
+                                    ->join('tblpaymentdtl', 'tblpayment.id', 'tblpaymentdtl.payment_id')
+                                    ->join('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
+                                    ->where('tblpayment.student_ic', $std->ic)
+                                    ->where('tblpayment.id', $std->pym_id)
+                                    ->whereBetween('tblpayment.add_date', [$from, $to])
+                                    ->where(function ($query){
+                                        $query->where('tblpayment.process_type_id', 1);
+                                        $query->orWhere('tblpayment.process_type_id', 8);
+                                    })
+                                    ->where('tblpayment.process_status_id', 2)
+                                    ->where('tblstudentclaim.groupid', 1)
+                                    ->orderBy('tblpayment.add_date')
+                                    ->select('tblpayment.add_date as payment_date', DB::raw('SUM(tblpaymentdtl.amount) as amount'))
+                                    ->get();
+
+            // Get expected payment information from student_payment_log
+            $data['expected'][$key] = DB::table('student_payment_log')
+                                    ->where('student_payment_log.student_ic', $std->ic)
+                                    ->whereBetween('student_payment_log.date_of_payment', [$from, $to])
+                                    ->orderBy('date_of_payment', 'DESC')
+                                    ->first();
+
+            // Calculate total balance for the student
+            $data['total_balance'][$key] = 0.00;
+
+            $record = DB::table('tblpaymentdtl')
+            ->leftJoin('tblpayment', 'tblpaymentdtl.payment_id', 'tblpayment.id')
+            ->leftJoin('tblprocess_type', 'tblpayment.process_type_id', 'tblprocess_type.id')
+            ->leftJoin('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
+            ->leftjoin('tblprogramme', 'tblpayment.program_id', 'tblprogramme.id')
+            ->where([
+                ['tblpayment.student_ic', $std->ic],
+                ['tblpayment.process_status_id', 2], 
+                ['tblstudentclaim.groupid', 1], 
+                ['tblpaymentdtl.amount', '!=', 0]
+                ])
+            ->select(DB::raw("'payment' as source"), 'tblprocess_type.name AS process', 'tblpayment.ref_no','tblpayment.date', 'tblstudentclaim.name', 'tblpaymentdtl.amount', 'tblpayment.process_type_id', 'tblprogramme.progcode AS program', DB::raw('NULL as remark'));
+
+            $data['record'] = DB::table('tblclaimdtl')
+            ->leftJoin('tblclaim', 'tblclaimdtl.claim_id', 'tblclaim.id')
+            ->leftJoin('tblprocess_type', 'tblclaim.process_type_id', 'tblprocess_type.id')
+            ->leftJoin('tblstudentclaim', 'tblclaimdtl.claim_package_id', 'tblstudentclaim.id')
+            ->leftjoin('tblprogramme', 'tblclaim.program_id', 'tblprogramme.id')
+            ->where([
+                ['tblclaim.student_ic', $std->ic],
+                ['tblclaim.process_status_id', 2],  
+                ['tblstudentclaim.groupid', 1],
+                ['tblclaimdtl.amount', '!=', 0]
+                ])
+            ->unionALL($record)
+            ->select(DB::raw("'claim' as source"), 'tblprocess_type.name AS process', 'tblclaim.ref_no','tblclaim.date', 'tblstudentclaim.name', 'tblclaimdtl.amount', 'tblclaim.process_type_id', 'tblprogramme.progcode AS program', 'tblclaim.remark')
+            ->orderBy('date')
             ->get();
 
-        // Get actual payments for the same period and students
-        $studentICs = $expectedPayments->pluck('ic')->unique();
-        
-        $actualPayments = DB::table('tblpayment')
-            ->join('tblpaymentdtl', 'tblpayment.id', 'tblpaymentdtl.payment_id')
-            ->join('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
-            ->whereIn('tblpayment.student_ic', $studentICs)
-            ->where('tblpayment.process_status_id', 2)
-            ->where('tblpayment.process_type_id', 1)
-            ->where('tblstudentclaim.groupid', 1)
-            ->whereBetween('tblpayment.add_date', [$from, $to])
-            ->select(
-                'tblpayment.student_ic as ic',
-                'tblpayment.add_date as payment_date',
-                DB::raw('SUM(tblpaymentdtl.amount) as actual_amount'),
-                DB::raw('MONTH(tblpayment.add_date) as month'),
-                DB::raw('YEAR(tblpayment.add_date) as year')
-            )
-            ->groupBy('tblpayment.student_ic', 'tblpayment.add_date', 'month', 'year')
-            ->get();
+            $data['total'] = 0;
 
-        // Group data by month-year
-        $collectionData = [];
+            foreach($data['record'] as $keys => $req) {
+                if(array_intersect([2,3,4,5,11], (array) $req->process_type_id) && $req->source == 'claim') {
+                    $data['total'] += $req->amount;
+                } elseif(array_intersect([1,5,6,7,8,9,10,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27], (array) $req->process_type_id) && $req->source == 'payment') {
+                    $data['total'] -= $req->amount;
+                }
+            }
+
+            $data['total_balance'][$key] = $data['total'];
+        }
+
+        // Generate months grid data like the attached picture
+        $monthsData = [];
+        $years = [];
         
-        foreach ($expectedPayments as $expected) {
-            $monthYear = $expected->year . '-' . str_pad($expected->month, 2, '0', STR_PAD_LEFT);
+        // Get the years from the date range
+        $fromYear = date('Y', strtotime($from));
+        $toYear = date('Y', strtotime($to));
+        
+        for ($year = $fromYear; $year <= $toYear; $year++) {
+            $years[] = $year;
             
-            if (!isset($collectionData[$monthYear])) {
-                $collectionData[$monthYear] = [
-                    'month_name' => date('F Y', strtotime($expected->year . '-' . $expected->month . '-01')),
-                    'total_expected' => 0,
-                    'total_actual' => 0,
-                    'student_count' => 0,
-                    'payment_count' => 0
+            // Initialize monthly data structure
+            for ($month = 1; $month <= 12; $month++) {
+                $monthKey = $year . '_' . str_pad($month, 2, '0', STR_PAD_LEFT);
+                $monthsData[$monthKey] = [
+                    'year' => $year,
+                    'month' => $month,
+                    'month_name' => date('M', mktime(0, 0, 0, $month, 1)),
+                    'target' => 0,
+                    'actual' => 0
                 ];
             }
-            
-            $collectionData[$monthYear]['total_expected'] += $expected->expected_amount;
-            $collectionData[$monthYear]['student_count']++;
         }
 
-        foreach ($actualPayments as $actual) {
-            $monthYear = $actual->year . '-' . str_pad($actual->month, 2, '0', STR_PAD_LEFT);
+        // Calculate actual payment data by month for graduate students
+        foreach($data['student'] as $key => $std) {
+            if(isset($data['payments'][$key])) {
+                foreach($data['payments'][$key] as $pym) {
+                    if($pym->payment_date != null) {
+                        $paymentMonth = date('Y_m', strtotime($pym->payment_date));
+                        if(isset($monthsData[$paymentMonth])) {
+                            $monthsData[$paymentMonth]['actual'] += $pym->amount;
+                        }
+                    }
+                }
+            }
             
-            if (isset($collectionData[$monthYear])) {
-                $collectionData[$monthYear]['total_actual'] += $actual->actual_amount;
-                $collectionData[$monthYear]['payment_count']++;
+            // Calculate expected payment (target) data by month
+            if(isset($data['expected'][$key]) && $data['expected'][$key]) {
+                $expectedMonth = date('Y_m', strtotime($data['expected'][$key]->date_of_payment));
+                if(isset($monthsData[$expectedMonth])) {
+                    $monthsData[$expectedMonth]['target'] += $data['expected'][$key]->amount ?? 0;
+                }
             }
         }
 
-        // Generate HTML
         if ($isPrint) {
             $content = '<!DOCTYPE html>
             <html>
             <head>
-                <title>Collection Report - Graduate Payments</title>
+                <title>Graduate Payment Comparison Report</title>
                 <style>
                     body { font-family: Arial, sans-serif; margin: 20px; }
                     .header { text-align: center; margin-bottom: 20px; }
                     .date-range { text-align: center; margin-bottom: 30px; font-weight: bold; }
-                    .collection-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-                    .collection-table th, .collection-table td { border: 1px solid #ddd; padding: 12px; text-align: center; }
-                    .collection-table th { background-color: #007bff; color: white; font-weight: bold; }
-                    .collection-table tbody tr:nth-child(even) { background-color: #f9f9f9; }
-                    .total-row { background-color: #e9ecef; font-weight: bold; }
+                    .main-table { width: 100%; border-collapse: collapse; border: 2px solid #333; margin-bottom: 20px; }
+                    .main-table th, .main-table td { border: 1px solid #333; padding: 8px; text-align: center; font-size: 10px; }
+                    .main-table th { background-color: #f8f9fa; font-weight: bold; }
+                    .year-header { background-color: #007bff; color: black; font-weight: bold; }
+                    .month-header { background-color: #17a2b8; color: black; }
+                    .target-cell { background-color: #ffeb3b; }
+                    .actual-cell { background-color: #28a745; color: black; }
+                    .total-row { background-color: #6c757d; color: black; font-weight: bold; }
                 </style>
             </head>
             <body>
                 <div class="header">
-                    <h2>Collection Report - Graduate Expected vs Actual Payments</h2>
+                    <h2>BAYARAN PELAJAR TAMAT PENGAJIAN</h2>
+                    <h3>(KOLEJ UNITI)</h3>
                 </div>
                 <div class="date-range">Period: ' . date('d/m/Y', strtotime($from)) . ' - ' . date('d/m/Y', strtotime($to)) . '</div>';
+            
+            $content .= $this->generatePaymentComparisonTable($monthsData, $years, true);
+            $content .= '</body></html>';
         } else {
-            $content = '<div class="card">
+            $content = '<style>
+                .main-table { width: 100%; border-collapse: collapse; border: 2px solid #333; margin-bottom: 20px; }
+                .main-table th, .main-table td { border: 1px solid #333; padding: 8px; text-align: center; font-size: 11px; }
+                .main-table th { background-color: #f8f9fa; font-weight: bold; }
+                .year-header { background-color: #007bff; color: black; font-weight: bold; }
+                .month-header { background-color: #17a2b8; color: black; }
+                .target-cell { background-color: #ffeb3b; }
+                .actual-cell { background-color: #28a745; color: black; }
+                .total-row { background-color: #6c757d; color: black; font-weight: bold; }
+            </style>
+            
+            <div class="card">
                 <div class="card-header">
-                    <h3>Collection Report - Graduate Expected vs Actual Payments</h3>
+                    <h3>BAYARAN PELAJAR TAMAT PENGAJIAN (KOLEJ UNITI)</h3>
                     <h5>Period: ' . date('d/m/Y', strtotime($from)) . ' to ' . date('d/m/Y', strtotime($to)) . '</h5>
                 </div>
                 <div class="card-body">';
-        }
-
-        $content .= '<table class="' . ($isPrint ? 'collection-table' : 'table table-bordered table-striped') . '" id="collection_table">
-                        <thead>
-                            <tr>
-                                <th>Month</th>
-                                <th>Expected Amount (RM)</th>
-                                <th>Actual Amount (RM)</th>
-                                <th>Difference (RM)</th>
-                                <th>Collection Rate (%)</th>
-                                <th>Student Count</th>
-                                <th>Payment Count</th>
-                            </tr>
-                        </thead>
-                        <tbody>';
-
-        $totalExpected = 0;
-        $totalActual = 0;
-        $totalStudents = 0;
-        $totalPayments = 0;
-
-        ksort($collectionData);
-        foreach ($collectionData as $data) {
-            $difference = $data['total_actual'] - $data['total_expected'];
-            $collectionRate = $data['total_expected'] > 0 ? ($data['total_actual'] / $data['total_expected']) * 100 : 0;
             
-            $content .= '<tr>
-                <td>' . $data['month_name'] . '</td>
-                <td>' . number_format($data['total_expected'], 2) . '</td>
-                <td>' . number_format($data['total_actual'], 2) . '</td>
-                <td class="' . ($difference >= 0 ? 'text-success' : 'text-danger') . '">' . number_format($difference, 2) . '</td>
-                <td>' . number_format($collectionRate, 1) . '%</td>
-                <td>' . $data['student_count'] . '</td>
-                <td>' . $data['payment_count'] . '</td>
-            </tr>';
-            
-            $totalExpected += $data['total_expected'];
-            $totalActual += $data['total_actual'];
-            $totalStudents += $data['student_count'];
-            $totalPayments += $data['payment_count'];
-        }
-
-        $totalDifference = $totalActual - $totalExpected;
-        $totalCollectionRate = $totalExpected > 0 ? ($totalActual / $totalExpected) * 100 : 0;
-
-        $content .= '</tbody>
-                    <tfoot>
-                        <tr class="' . ($isPrint ? 'total-row' : 'table-info font-weight-bold') . '">
-                            <td><strong>TOTAL</strong></td>
-                            <td><strong>' . number_format($totalExpected, 2) . '</strong></td>
-                            <td><strong>' . number_format($totalActual, 2) . '</strong></td>
-                            <td class="' . ($totalDifference >= 0 ? 'text-success' : 'text-danger') . '"><strong>' . number_format($totalDifference, 2) . '</strong></td>
-                            <td><strong>' . number_format($totalCollectionRate, 1) . '%</strong></td>
-                            <td><strong>' . $totalStudents . '</strong></td>
-                            <td><strong>' . $totalPayments . '</strong></td>
-                        </tr>
-                    </tfoot>
-                </table>';
-
-        if ($isPrint) {
-            $content .= '</body></html>';
-        } else {
+            $content .= $this->generatePaymentComparisonTable($monthsData, $years, false);
             $content .= '</div></div>';
-            
-            // Add JavaScript for DataTable initialization
-            $content .= '<script>
-                $(document).ready(function() {
-                    $("#collection_table").DataTable({
-                        dom: "lBfrtip",
-                        buttons: ["copy", "csv", "excel", "pdf", "print"],
-                        pageLength: 25,
-                        responsive: true
-                    });
-                });
-            </script>';
         }
 
+        return $content;
+    }
+
+    private function generatePaymentComparisonTable($monthsData, $years, $isPrint = false)
+    {
+        $content = '<table class="main-table">';
+        
+        // Header row with years
+        $content .= '<thead><tr><th rowspan="3">Tahun</th><th rowspan="3">Bulan</th>';
+        
+        foreach ($years as $year) {
+            $content .= '<th colspan="2" class="year-header">' . $year . '</th>';
+        }
+        
+        $content .= '</tr><tr>';
+        
+        foreach ($years as $year) {
+            $content .= '<th class="target-cell">Target</th><th class="actual-cell">Sebenar</th>';
+        }
+        
+        $content .= '</tr></thead><tbody>';
+        
+        // Generate rows for each month
+        $months = ['Jan', 'Feb', 'Mac', 'Apr', 'Mei', 'Jun', 'Jul', 'Ogs', 'Sept', 'Okt', 'Nov', 'Dis'];
+        $yearTotals = [];
+        
+        foreach ($years as $year) {
+            $yearTotals[$year] = ['target' => 0, 'actual' => 0];
+        }
+        
+        for ($month = 1; $month <= 12; $month++) {
+            $monthName = $months[$month - 1];
+            $content .= '<tr>';
+            
+            // Show year only for first month
+            if ($month == 1) {
+                $content .= '<td rowspan="12" style="vertical-align: middle; font-weight: bold;">' . implode('<br/>', $years) . '</td>';
+            }
+            
+            $content .= '<td class="month-header" style="font-weight: bold;">' . $monthName . '</td>';
+            
+            foreach ($years as $year) {
+                $monthKey = $year . '_' . str_pad($month, 2, '0', STR_PAD_LEFT);
+                $target = $monthsData[$monthKey]['target'] ?? 0;
+                $actual = $monthsData[$monthKey]['actual'] ?? 0;
+                
+                $yearTotals[$year]['target'] += $target;
+                $yearTotals[$year]['actual'] += $actual;
+                
+                if ($target > 0) {
+                    $content .= '<td class="target-cell">' . number_format($target, 2) . '</td>';
+                } else {
+                    $content .= '<td class="target-cell">-</td>';
+                }
+                
+                if ($actual > 0) {
+                    $content .= '<td class="actual-cell">' . number_format($actual, 2) . '</td>';
+                } else {
+                    $content .= '<td class="actual-cell">-</td>';
+                }
+            }
+            
+            $content .= '</tr>';
+        }
+        
+        // Total row
+        $content .= '<tr class="total-row">';
+        $content .= '<td colspan="2" style="text-align: center; font-weight: bold;">TOTAL</td>';
+        
+        $grandTarget = 0;
+        $grandActual = 0;
+        
+        foreach ($years as $year) {
+            $content .= '<td>' . number_format($yearTotals[$year]['target'], 2) . '</td>';
+            $content .= '<td>' . number_format($yearTotals[$year]['actual'], 2) . '</td>';
+            
+            $grandTarget += $yearTotals[$year]['target'];
+            $grandActual += $yearTotals[$year]['actual'];
+        }
+        
+        $content .= '</tr>';
+        $content .= '</tbody></table>';
+        
+        // Grand totals summary
+        $content .= '<div style="margin-top: 20px; text-align: right; border: 2px solid #333; padding: 10px; background-color: #f8f9fa;">';
+        $content .= '<div style="margin-bottom: 10px;"><strong>Total TARGET: ' . number_format($grandTarget, 2) . '</strong></div>';
+        $content .= '<div><strong>Total SEBENAR: ' . number_format($grandActual, 2) . '</strong></div>';
+        $content .= '</div>';
+        
         return $content;
     }
 
