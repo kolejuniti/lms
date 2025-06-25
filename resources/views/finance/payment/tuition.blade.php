@@ -106,6 +106,7 @@ function getStudent(search)
                 console.log(err);
             },
             success  : function(data){
+                alert(data);
                 $('#student').html(data);
                 $('#student').selectpicker('refresh');
 
