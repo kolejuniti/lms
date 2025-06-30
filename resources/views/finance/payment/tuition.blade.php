@@ -82,6 +82,7 @@
 
 $('#search').keyup(function(event){
     if (event.keyCode === 13) { // 13 is the code for the "Enter" key
+        event.preventDefault(); // Prevent any other Enter handlers
         var searchTerm = $(this).val();
         getStudent(searchTerm);
     }
@@ -94,25 +95,35 @@ $('#student').on('change', function(){
 
 
 function getStudent(search)
-  {
+{
 
-      return $.ajax({
-              headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
-              url      : "{{ url('pendaftar/student/status/listStudent') }}",
-              method   : 'POST',
-              data 	 : {search: search},
-              error:function(err){
-                  alert("Error");
-                  console.log(err);
-              },
-              success  : function(data){
-                  $('#student').html(data);
-                  $('#student').selectpicker('refresh');
+    return $.ajax({
+            headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
+            url      : "{{ url('pendaftar/student/status/listStudent') }}",
+            method   : 'POST',
+            data 	 : {search: search},
+            dataType : 'html', // Explicitly specify data type
+            error:function(xhr, status, err){
+                console.log("AJAX Error Details:");
+                console.log("Status: " + status);
+                console.log("Error: " + err);
+                console.log("Response Text: " + xhr.responseText);
+                console.log("Status Code: " + xhr.status);
+                
+                // Only show alert if it's a real error (not just missing data)
+                if (xhr.status !== 200) {
+                    alert("Error loading students: " + err);
+                }
+            },
+            success  : function(data){
+                console.log("Success - Data received:", data);
+                $('#student').html(data);
+                $('#student').selectpicker('refresh');
 
-              }
-          });
-      
-  }
+            }
+        });
+    
+}
 
 function getStudInfo(student)
 {
@@ -240,11 +251,15 @@ function save(ic)
 
 }
 
-document.addEventListener('keydown', function(event) {
-  if (event.key === 'Enter') {
-    event.preventDefault();
-    add(); // Call your add() function or form submission logic
-  }
+// Remove the global document event listener and replace with specific field handlers
+$(document).ready(function() {
+    // Add Enter key handler for payment form fields only
+    $('#method, #bank, #nodoc, #amount').keydown(function(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            add(); // Call add() function only for payment fields
+        }
+    });
 });
 
 function add(ic)

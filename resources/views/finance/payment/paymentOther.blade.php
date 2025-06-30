@@ -82,6 +82,7 @@
 
 $('#search').keyup(function(event){
     if (event.keyCode === 13) { // 13 is the code for the "Enter" key
+        event.preventDefault(); // Prevent any other Enter handlers
         var searchTerm = $(this).val();
         getStudent(searchTerm);
     }
@@ -229,11 +230,15 @@ function save(ic)
 
 }
 
-document.addEventListener('keydown', function(event) {
-  if (event.key === 'Enter') {
-    event.preventDefault();
-    add(); // Call your add() function or form submission logic
-  }
+// Remove the global document event listener and replace with specific field handlers
+$(document).ready(function() {
+    // Add Enter key handler for payment form fields only
+    $('#type, #method, #bank, #nodoc, #amount').keydown(function(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            add(); // Call add() function only for payment fields
+        }
+    });
 });
 
 function add(ic)
