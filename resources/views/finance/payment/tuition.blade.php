@@ -94,25 +94,25 @@ $('#student').on('change', function(){
 
 
 function getStudent(search)
-{
+  {
 
-    return $.ajax({
-            headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
-            url      : "{{ url('pendaftar/student/status/listStudent') }}",
-            method   : 'POST',
-            data 	 : {search: search},
-            error:function(err){
-                alert("Error");
-                console.log(err);
-            },
-            success  : function(data){
-                $('#student').html(data);
-                $('#student').selectpicker('refresh');
+      return $.ajax({
+              headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
+              url      : "{{ url('pendaftar/student/status/listStudent') }}",
+              method   : 'POST',
+              data 	 : {search: search},
+              error:function(err){
+                  alert("Error");
+                  console.log(err);
+              },
+              success  : function(data){
+                  $('#student').html(data);
+                  $('#student').selectpicker('refresh');
 
-            }
-        });
-    
-}
+              }
+          });
+      
+  }
 
 function getStudInfo(student)
 {
@@ -121,11 +121,21 @@ function getStudInfo(student)
             url      : "{{ url('finance/payment/tuition/getStudent') }}",
             method   : 'POST',
             data 	 : {student: student},
-            error:function(err){
-                alert("Error");
-                console.log(err);
+            dataType : 'html',
+            error:function(xhr, status, err){
+                console.log("getStudInfo AJAX Error Details:");
+                console.log("Status: " + status);
+                console.log("Error: " + err);
+                console.log("Response Text: " + xhr.responseText);
+                console.log("Status Code: " + xhr.status);
+                
+                // Only show alert if it's a real error (not just missing data)
+                if (xhr.status !== 200) {
+                    alert("Error loading student info: " + err);
+                }
             },
             success  : function(data){
+                console.log("getStudInfo Success - Data received:", data);
               var d = new Date();
 
               var month = d.getMonth()+1;
@@ -318,11 +328,20 @@ function deletedtl(dtl,id)
                   url      : "{{ url('finance/payment/tuition/deleteTuition') }}",
                   method   : 'POST',
                   data 	 : {dtl:dtl, id: id},
-                  error:function(err){
-                      alert("Error");
-                      console.log(err);
+                  dataType : 'html',
+                  error:function(xhr, status, err){
+                      console.log("deletedtl AJAX Error Details:");
+                      console.log("Status: " + status);
+                      console.log("Error: " + err);
+                      console.log("Response Text: " + xhr.responseText);
+                      console.log("Status Code: " + xhr.status);
+                      
+                      if (xhr.status !== 200) {
+                          alert("Error deleting payment: " + err);
+                      }
                   },
                   success  : function(data){
+                      console.log("deletedtl Success - Data received:", data);
                       alert("success");
                       $('#payment_list').html(data);
                       $('#payment_list').DataTable();
