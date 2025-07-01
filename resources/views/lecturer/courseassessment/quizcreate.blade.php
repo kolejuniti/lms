@@ -344,6 +344,187 @@
                                             border-radius: 10px;
                                             box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3);
                                         }
+
+                                        /* Answer Options Modal Styles */
+                                        .options-preview-list {
+                                            max-height: 300px;
+                                            overflow-y: auto;
+                                        }
+
+                                        .options-preview-list .form-check {
+                                            padding: 8px 12px;
+                                            border: 1px solid #e9ecef;
+                                            border-radius: 6px;
+                                            background-color: #fff;
+                                            transition: all 0.2s ease;
+                                        }
+
+                                        .options-preview-list .form-check:hover {
+                                            background-color: #f8f9fa;
+                                            border-color: #6610f2;
+                                            transform: translateX(2px);
+                                        }
+
+                                        .options-preview-list .form-check-label {
+                                            cursor: default;
+                                            width: 100%;
+                                            margin-bottom: 0;
+                                            color: #000000 !important;
+                                            font-weight: 500;
+                                        }
+
+                                        .options-preview-list .form-check-input {
+                                            margin-top: 0.25rem;
+                                        }
+
+                                        #pastedOptions {
+                                            font-family: 'Courier New', monospace;
+                                            resize: vertical;
+                                            min-height: 150px;
+                                        }
+
+                                        #pastedOptions:focus {
+                                            border-color: #6610f2;
+                                            box-shadow: 0 0 0 0.2rem rgba(102, 16, 242, 0.25);
+                                        }
+
+                                        #optionsPreview {
+                                            border-radius: 8px;
+                                            overflow: hidden;
+                                        }
+
+                                        #optionsPreview .text-muted {
+                                            text-align: center;
+                                            margin: 60px 0;
+                                            font-style: italic;
+                                        }
+
+                                        .modal-header {
+                                            background: linear-gradient(135deg, #6610f2 0%, #9333ea 100%);
+                                            color: white;
+                                            border-bottom: none;
+                                        }
+
+                                        .modal-header .btn-close {
+                                            filter: invert(1);
+                                        }
+
+                                        .modal-title {
+                                            font-weight: 600;
+                                        }
+
+                                        #answerOptionsModal .btn-primary {
+                                            background: linear-gradient(135deg, #6610f2 0%, #9333ea 100%);
+                                            border: none;
+                                            transition: all 0.3s ease;
+                                        }
+
+                                        #answerOptionsModal .btn-primary:hover {
+                                            transform: translateY(-2px);
+                                            box-shadow: 0 4px 15px rgba(102, 16, 242, 0.4);
+                                        }
+
+                                        /* Animation for option count */
+                                        #optionCount {
+                                            font-weight: bold;
+                                            color: #6610f2;
+                                            transition: all 0.3s ease;
+                                        }
+
+                                        /* Scrollbar styling for preview area */
+                                        .options-preview-list::-webkit-scrollbar {
+                                            width: 6px;
+                                        }
+
+                                        .options-preview-list::-webkit-scrollbar-track {
+                                            background: #f1f1f1;
+                                            border-radius: 3px;
+                                        }
+
+                                        .options-preview-list::-webkit-scrollbar-thumb {
+                                            background: #6610f2;
+                                            border-radius: 3px;
+                                        }
+
+                                        .options-preview-list::-webkit-scrollbar-thumb:hover {
+                                            background: #9333ea;
+                                        }
+
+                                        /* Correct Answer Selection Styles */
+                                        .correct-answer-list {
+                                            max-height: 180px;
+                                            overflow-y: auto;
+                                        }
+
+                                        .correct-answer-list .form-check {
+                                            padding: 8px 12px;
+                                            border: 1px solid #e9ecef;
+                                            border-radius: 6px;
+                                            background-color: #fff;
+                                            transition: all 0.3s ease;
+                                            cursor: pointer;
+                                        }
+
+                                        .correct-answer-list .form-check:hover {
+                                            background-color: #e8f5e8;
+                                            border-color: #28a745;
+                                            transform: translateX(2px);
+                                        }
+
+                                        .correct-answer-list .form-check-input:checked + .form-check-label {
+                                            color: #28a745;
+                                            font-weight: 600;
+                                        }
+
+                                        .correct-answer-list .form-check-input:checked ~ * {
+                                            background-color: #d4edda;
+                                            border-color: #28a745;
+                                        }
+
+                                        .correct-answer-list .form-check-label {
+                                            cursor: pointer;
+                                            width: 100%;
+                                            margin-bottom: 0;
+                                            color: #000000;
+                                            transition: all 0.3s ease;
+                                        }
+
+                                        .correct-answer-list .form-check-input {
+                                            margin-top: 0.25rem;
+                                            accent-color: #28a745;
+                                        }
+
+                                        #selectedCorrectAnswers {
+                                            font-weight: bold;
+                                            color: #28a745;
+                                            transition: all 0.3s ease;
+                                        }
+
+                                        #correctAnswerSection .alert-info {
+                                            background-color: #e3f2fd;
+                                            border-color: #bbdefb;
+                                            color: #1976d2;
+                                            border-radius: 8px;
+                                        }
+
+                                        /* Scrollbar for correct answer list */
+                                        .correct-answer-list::-webkit-scrollbar {
+                                            width: 6px;
+                                        }
+
+                                        .correct-answer-list::-webkit-scrollbar-track {
+                                            background: #f1f1f1;
+                                            border-radius: 3px;
+                                        }
+
+                                        .correct-answer-list::-webkit-scrollbar-thumb {
+                                            background: #28a745;
+                                            border-radius: 3px;
+                                        }
+
+                                        .correct-answer-list::-webkit-scrollbar-thumb:hover {
+                                            background: #1e7e34;
+                                        }
                                         
                                         /* Tooltip for slider */
                                         .slider-tooltip {
@@ -360,6 +541,31 @@
                                             pointer-events: none;
                                             transform: translateX(-50%);
                                             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+                                        }
+
+                                        /* Correct Answer Styling */
+                                        .correct-answer {
+                                            color: #000000 !important;
+                                            font-weight: 600;
+                                            background-color: #f8f9fa;
+                                            padding: 8px 12px;
+                                            border-radius: 6px;
+                                            border-left: 4px solid #28a745;
+                                            margin: 10px 0;
+                                        }
+
+                                        .correct-answer p {
+                                            color: #000000 !important;
+                                            margin: 0;
+                                        }
+
+                                        /* Fix text color in alert-info for correct answer selection */
+                                        #correctAnswerSection .alert-info {
+                                            color: #000000 !important;
+                                        }
+
+                                        #correctAnswerSection .alert-info small {
+                                            color: #000000 !important;
                                         }
                                         
                                         .slider-tooltip::after {
@@ -969,6 +1175,66 @@
                                         <a id="appendfield2" class="appendfield4 waves-effect waves-light btn btn-app btn-success-light " data-label="Question" type="button">
                                             <i class="fa fa-plus"></i> <b>Subjective Question</b></a>
                                     </div>
+
+                                    <!-- Answer Options Modal -->
+                                    <div class="modal fade" id="answerOptionsModal" tabindex="-1" role="dialog" aria-labelledby="answerOptionsModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog modal-lg" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="answerOptionsModalLabel">Set Answer Options</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" data-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <h6>Paste Your Options (one per line):</h6>
+                                                            <textarea id="pastedOptions" class="form-control" rows="8" placeholder="Option 1
+Option 2
+Option 3
+Option 4
+
+Tip: Copy from Google Docs, Word, or any text source - each line becomes an option!
+You can paste from clipboard or type directly here."></textarea>
+                                                            <div class="mt-2">
+                                                                <button type="button" class="btn btn-sm btn-secondary" id="clearOptions">Clear</button>
+                                                                <button type="button" class="btn btn-sm btn-info" id="addDefaultOptions">Add Default A-D</button>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <h6>Preview:</h6>
+                                                            <div id="optionsPreview" class="border p-3" style="min-height: 200px; background-color: #f8f9fa;">
+                                                                <p class="text-muted">Options will appear here as you type...</p>
+                                                            </div>
+                                                            <div class="mt-2">
+                                                                <small class="text-muted">Total options: <span id="optionCount">0</span></small>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <!-- Correct Answer Selection for Multiple Choice -->
+                                                    <div class="row mt-3" id="correctAnswerSection" style="display: none;">
+                                                        <div class="col-md-12">
+                                                            <h6>Select Correct Answer(s):</h6>
+                                                            <div class="alert alert-info">
+                                                                <small><i class="fa fa-info-circle"></i> For <strong>Radio Questions</strong>: Select ONE correct answer</small><br>
+                                                                <small><i class="fa fa-info-circle"></i> For <strong>Checkbox Questions</strong>: Select MULTIPLE correct answers</small>
+                                                            </div>
+                                                            <div id="correctAnswerOptions" class="border p-3" style="background-color: #f8f9fa; border-radius: 6px; max-height: 200px; overflow-y: auto;">
+                                                                <p class="text-muted text-center">Add options above to select correct answers...</p>
+                                                            </div>
+                                                            <div class="mt-2">
+                                                                <small class="text-success">Selected: <span id="selectedCorrectAnswers">None</span></small>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-dismiss="modal">Cancel</button>
+                                                    <button type="button" class="btn btn-primary" id="applyOptions">Apply Options</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                     <div class="pull-right  badge badge-xl badge-success" style="font-size:1.2em">
                                         <label id="participant-mark"></label> 
                                         <input type="text" id="collectmark" name="collectmark" hidden>
@@ -1293,205 +1559,40 @@ jQuery(function($) {
     var buttons = document.getElementsByClassName('appendfield1');
 for (let j = 0; j < buttons.length; j++) {
     buttons[j].onclick = function() {
-        // Use the current value of questionnum for the question number
-        var field = {
-            type: 'header',
-            className: 'mt-4',
-            label: this.dataset.label + ' ' + questionnum
-        };
-        var index = this.dataset.index ? Number(this.dataset.index) : undefined;
+        // Store current question type and number for modal use
+        window.currentQuestionType = 'radio';
+        window.currentQuestionNum = questionnum;
+        window.currentButtonIndex = this.dataset.index ? Number(this.dataset.index) : undefined;
         
-        formBuilder.actions.addField(field, index);
-
-        field = {
-            type: 'file',
-            className: 'form-control',
-            label: 'Upload Image',
-            name: 'uploaded_image[]',
-            description: 'Drag and drop or click to select an image file.',
-            attrs: {
-                'data-subtype': 'file-' + questionnum
-            }
-        };
+        // Clear previous modal data
+        $('#pastedOptions').val('');
+        $('#optionsPreview').html('<p class="text-muted">Options will appear here as you type...</p>');
+        $('#optionCount').text('0');
+        $('#correctAnswerSection').hide();
+        $('#selectedCorrectAnswers').text('None');
         
-        formBuilder.actions.addField(field, index);
-
-        field = {
-            type: 'paragraph',
-            className: '',
-            label: 'Sample of the question paragraph...'
-        };
-        
-        formBuilder.actions.addField(field, index);
-
-        field = {
-            type: 'radio-group',
-            className: 'with-gap radio-col-primary',
-            label: '<label class="mt-2 text-primary"><strong>Your Answer</strong></label>',
-            name: 'radio-question' + questionnum,
-            values: [
-                {
-                    "label": "a) ",
-                    "value": "a",
-                    "selected": false
-                },
-                {
-                    "label": "b)",
-                    "value": "b",
-                    "selected": false
-                },
-                {
-                    "label": "c)",
-                    "value": "c",
-                    "selected": false
-                },
-                {
-                    "label": "d)",
-                    "value": "d",
-                    "selected": false
-                },
-            ]
-        };
-        
-        formBuilder.actions.addField(field, index);
-
-        field = {
-            type: 'paragraph',
-            className: 'correct-answer',
-            label: 'a'
-        };
-
-        formBuilder.actions.addField(field, index);
-
-        field = {
-            type: 'checkbox-group',
-            className: 'collected-marks pull-right chk-col-danger',
-            label: '',  
-            values: [
-                {
-                    "label": "1 mark",
-                    "value": "1",
-                    "selected": false
-                }
-            ]
-        };
-        
-        formBuilder.actions.addField(field, index);
-
-        field = {
-            type: 'text',
-            className: 'feedback-text form-control',
-            placeholder: 'Comment',
-            label: '',
-        };
-        
-        formBuilder.actions.addField(field, index);
-        
-        // Only increment questionnum after adding the question
-        questionnum++;
-        $('#question-index').val(questionnum);
+        // Show modal
+        $('#answerOptionsModal').modal('show');
     };
 }
 
 var buttons2 = document.getElementsByClassName('appendfield2');
 for (let j = 0; j < buttons2.length; j++) {
     buttons2[j].onclick = function() {
-        var field = {
-            type: 'header',
-            className: 'mt-4',
-            label: this.dataset.label + ' ' + questionnum
-        };
-        var index = this.dataset.index ? Number(this.dataset.index) : undefined;
-
-        formBuilder.actions.addField(field, index);
-
-        field = {
-            type: 'file',
-            className: 'form-control',
-            label: 'Upload Image',
-            name: 'uploaded_image[]',
-            description: 'Drag and drop or click to select an image file.',
-            attrs: {
-                'data-subtype': 'file-' + questionnum
-            }
-        };
-
-        formBuilder.actions.addField(field, index);
-
-        field = {
-            type: 'paragraph',
-            className: '',
-            label: 'Sample of the question paragraph...'
-        };
+        // Store current question type and number for modal use
+        window.currentQuestionType = 'checkbox';
+        window.currentQuestionNum = questionnum;
+        window.currentButtonIndex = this.dataset.index ? Number(this.dataset.index) : undefined;
         
-        formBuilder.actions.addField(field, index);
-
-        field = {
-            type: 'checkbox-group',
-            className: 'filled-in chk-col-warning',
-            label: '<label class="mt-2 text-primary"><strong>Your Answer</strong></label>',
-            name: 'checkbox-question' + questionnum,
-            values: [
-                {
-                    "label": "a)",
-                    "value": "a",
-                    "selected": false
-                },
-                {
-                    "label": "b)",
-                    "value": "b",
-                    "selected": false
-                },
-                {
-                    "label": "c)",
-                    "value": "c",
-                    "selected": false
-                },
-                {
-                    "label": "d)",
-                    "value": "d",
-                    "selected": false
-                },
-            ]
-        };
-
-        formBuilder.actions.addField(field, index);
-
-        field = {
-            type: 'paragraph',
-            className: 'correct-answer',
-            label: 'a'
-        };
+        // Clear previous modal data
+        $('#pastedOptions').val('');
+        $('#optionsPreview').html('<p class="text-muted">Options will appear here as you type...</p>');
+        $('#optionCount').text('0');
+        $('#correctAnswerSection').hide();
+        $('#selectedCorrectAnswers').text('None');
         
-        formBuilder.actions.addField(field, index);
-
-        field = {
-            type: 'checkbox-group',
-            className: 'collected-marks pull-right chk-col-danger',
-            label: '',  
-            values: [
-                {
-                    "label": "1 mark",
-                    "value": "1",
-                    "selected": false
-                }
-            ]
-        };
-        
-        formBuilder.actions.addField(field, index);
-
-        field = {
-            type: 'text',
-            className: 'feedback-text form-control',
-            placeholder: 'Comment',
-            label: '',
-        };
-        
-        formBuilder.actions.addField(field, index);
-        
-        // Increment after adding
-        questionnum++;
-        $('#question-index').val(questionnum);
+        // Show modal
+        $('#answerOptionsModal').modal('show');
     };
 }
 
@@ -1604,7 +1705,321 @@ $(document).ready(function() {
     $(document).on('change', '#question-index', function() {
         questionnum = parseInt($(this).val()) || 1;
     });
+    
+    // Initialize answer options modal functionality
+    initializeAnswerOptionsModal();
 });
+
+/**
+ * Initialize the Answer Options Modal functionality
+ */
+function initializeAnswerOptionsModal() {
+    // Live preview as user types
+    $('#pastedOptions').on('input', function() {
+        updateOptionsPreview();
+    });
+    
+    // Clear options button
+    $('#clearOptions').on('click', function() {
+        $('#pastedOptions').val('');
+        updateOptionsPreview();
+        $('#correctAnswerSection').hide();
+        $('#selectedCorrectAnswers').text('None');
+    });
+    
+    // Add default A-D options button
+    $('#addDefaultOptions').on('click', function() {
+        $('#pastedOptions').val('Option A\nOption B\nOption C\nOption D');
+        updateOptionsPreview();
+    });
+    
+    // Apply options button
+    $('#applyOptions').on('click', function() {
+        var options = parseOptionsFromText($('#pastedOptions').val());
+        if (options.length === 0) {
+            alert('Please enter at least one option.');
+            return;
+        }
+        
+        // Validate correct answers are selected
+        var selectedCorrectAnswers = getSelectedCorrectAnswers();
+        if (selectedCorrectAnswers.length === 0) {
+            alert('Please select at least one correct answer.');
+            return;
+        }
+        
+        // Create the question with custom options and correct answers
+        createQuestionWithOptions(window.currentQuestionType, options, selectedCorrectAnswers);
+        
+        // Close modal
+        $('#answerOptionsModal').modal('hide');
+        
+        // Increment question number
+        questionnum++;
+        $('#question-index').val(questionnum);
+    });
+    
+    // Close button handlers - Enhanced for better compatibility
+    // Handle the X close button
+    $(document).on('click', '#answerOptionsModal .btn-close', function(e) {
+        e.preventDefault();
+        $('#answerOptionsModal').modal('hide');
+    });
+    
+    // Handle data-bs-dismiss and data-dismiss attributes
+    $(document).on('click', '#answerOptionsModal [data-bs-dismiss="modal"], #answerOptionsModal [data-dismiss="modal"]', function(e) {
+        e.preventDefault();
+        $('#answerOptionsModal').modal('hide');
+    });
+    
+    // Cancel button handler - more specific selector
+    $(document).on('click', '#answerOptionsModal .modal-footer .btn-secondary', function(e) {
+        e.preventDefault();
+        $('#answerOptionsModal').modal('hide');
+    });
+    
+    // ESC key handler
+    $(document).on('keydown', function(e) {
+        if (e.key === 'Escape' && $('#answerOptionsModal').hasClass('show')) {
+            $('#answerOptionsModal').modal('hide');
+        }
+    });
+}
+
+/**
+ * Update the options preview in real-time
+ */
+function updateOptionsPreview() {
+    var options = parseOptionsFromText($('#pastedOptions').val());
+    var preview = $('#optionsPreview');
+    var questionType = window.currentQuestionType || 'radio';
+    
+    if (options.length === 0) {
+        preview.html('<p class="text-muted">Options will appear here as you type...</p>');
+        $('#optionCount').text('0');
+        $('#correctAnswerSection').hide();
+        return;
+    }
+    
+    var previewHtml = '<div class="options-preview-list">';
+    options.forEach(function(option, index) {
+        var letter = String.fromCharCode(97 + index); // a, b, c, d...
+        var inputType = questionType === 'radio' ? 'radio' : 'checkbox';
+        var inputName = questionType === 'radio' ? 'preview-radio' : 'preview-checkbox-' + index;
+        
+        previewHtml += `
+            <div class="form-check mb-2">
+                <input class="form-check-input" type="${inputType}" name="${inputName}" id="preview-${index}" disabled>
+                <label class="form-check-label" for="preview-${index}">
+                    <strong>${letter})</strong> ${option}
+                </label>
+            </div>
+        `;
+    });
+    previewHtml += '</div>';
+    
+    preview.html(previewHtml);
+    $('#optionCount').text(options.length);
+    
+    // Update correct answer selection
+    updateCorrectAnswerSelection(options, questionType);
+}
+
+/**
+ * Update the correct answer selection section
+ */
+function updateCorrectAnswerSelection(options, questionType) {
+    var correctAnswerContainer = $('#correctAnswerOptions');
+    
+    if (options.length === 0) {
+        $('#correctAnswerSection').hide();
+        return;
+    }
+    
+    $('#correctAnswerSection').show();
+    
+    var correctAnswerHtml = '<div class="correct-answer-list">';
+    options.forEach(function(option, index) {
+        var letter = String.fromCharCode(97 + index); // a, b, c, d...
+        var inputType = questionType === 'radio' ? 'radio' : 'checkbox';
+        var inputName = questionType === 'radio' ? 'correct-answer' : 'correct-answer-' + index;
+        
+        correctAnswerHtml += `
+            <div class="form-check mb-2">
+                <input class="form-check-input correct-answer-input" type="${inputType}" name="${inputName}" id="correct-${index}" value="${option}" data-letter="${letter}">
+                <label class="form-check-label" for="correct-${index}">
+                    <strong>${letter})</strong> ${option}
+                </label>
+            </div>
+        `;
+    });
+    correctAnswerHtml += '</div>';
+    
+    correctAnswerContainer.html(correctAnswerHtml);
+    
+    // Add event listeners to update selected answers display
+    $('.correct-answer-input').on('change', function() {
+        updateSelectedCorrectAnswers(questionType);
+    });
+    
+    // Clear previous selections
+    $('#selectedCorrectAnswers').text('None');
+}
+
+/**
+ * Update the display of selected correct answers
+ */
+function updateSelectedCorrectAnswers(questionType) {
+    var selectedAnswers = [];
+    
+    if (questionType === 'radio') {
+        var checkedInput = $('.correct-answer-input:checked');
+        if (checkedInput.length > 0) {
+            var letter = checkedInput.data('letter');
+            var value = checkedInput.val();
+            selectedAnswers.push(letter + ') ' + value);
+        }
+    } else {
+        $('.correct-answer-input:checked').each(function() {
+            var letter = $(this).data('letter');
+            var value = $(this).val();
+            selectedAnswers.push(letter + ') ' + value);
+        });
+    }
+    
+    var displayText = selectedAnswers.length > 0 ? selectedAnswers.join(', ') : 'None';
+    $('#selectedCorrectAnswers').text(displayText);
+}
+
+/**
+ * Parse options from textarea input
+ */
+function parseOptionsFromText(text) {
+    if (!text.trim()) return [];
+    
+    return text.split('\n')
+        .map(option => option.trim())
+        .filter(option => option.length > 0);
+}
+
+/**
+ * Get selected correct answers
+ */
+function getSelectedCorrectAnswers() {
+    var selectedAnswers = [];
+    $('.correct-answer-input:checked').each(function() {
+        selectedAnswers.push($(this).val());
+    });
+    return selectedAnswers;
+}
+
+/**
+ * Create a question with the specified options
+ */
+function createQuestionWithOptions(questionType, customOptions, correctAnswers) {
+    var questionNum = window.currentQuestionNum;
+    var index = window.currentButtonIndex;
+    
+    // Create header
+    var field = {
+        type: 'header',
+        className: 'mt-4',
+        label: 'Question ' + questionNum
+    };
+    formBuilder.actions.addField(field, index);
+    
+    // Create file upload
+    field = {
+        type: 'file',
+        className: 'form-control',
+        label: 'Upload Image',
+        name: 'uploaded_image[]',
+        description: 'Drag and drop or click to select an image file.',
+        attrs: {
+            'data-subtype': 'file-' + questionNum
+        }
+    };
+    formBuilder.actions.addField(field, index);
+    
+    // Create question paragraph
+    field = {
+        type: 'paragraph',
+        className: '',
+        label: 'Sample of the question paragraph...'
+    };
+    formBuilder.actions.addField(field, index);
+    
+    // Create answer options based on type
+    var values = customOptions.map(function(option, optionIndex) {
+        var letter = String.fromCharCode(97 + optionIndex); // a, b, c, d...
+        return {
+            "label": letter + ") " + option,
+            "value": option,
+            "selected": false
+        };
+    });
+    
+    if (questionType === 'radio') {
+        field = {
+            type: 'radio-group',
+            className: 'with-gap radio-col-primary',
+            label: '<label class="mt-2 text-primary"><strong>Your Answer</strong></label>',
+            name: 'radio-question' + questionNum,
+            values: values
+        };
+    } else if (questionType === 'checkbox') {
+        field = {
+            type: 'checkbox-group',
+            className: 'filled-in chk-col-warning',
+            label: '<label class="mt-2 text-primary"><strong>Your Answer</strong></label>',
+            name: 'checkbox-question' + questionNum,
+            values: values
+        };
+    }
+    
+    formBuilder.actions.addField(field, index);
+    
+    // Create correct answer field with selected answers
+    var correctAnswerText = '';
+    if (questionType === 'radio') {
+        // For radio questions, show the single correct answer
+        correctAnswerText = correctAnswers[0];
+    } else if (questionType === 'checkbox') {
+        // For checkbox questions, show all correct answers comma-separated
+        correctAnswerText = correctAnswers.join(',');
+    }
+    
+    field = {
+        type: 'paragraph',
+        className: 'correct-answer',
+        label: correctAnswerText
+    };
+    formBuilder.actions.addField(field, index);
+    
+    // Create marks checkbox
+    field = {
+        type: 'checkbox-group',
+        className: 'collected-marks pull-right chk-col-danger',
+        label: '',  
+        values: [
+            {
+                "label": "1 mark",
+                "value": "1",
+                "selected": false
+            }
+        ]
+    };
+    formBuilder.actions.addField(field, index);
+    
+    // Create comment field
+    field = {
+        type: 'text',
+        className: 'feedback-text form-control',
+        placeholder: 'Comment',
+        label: '',
+    };
+    formBuilder.actions.addField(field, index);
+}
 
     /* On Clicks */
     $('.edit-form', $formContainer).click(function() {
