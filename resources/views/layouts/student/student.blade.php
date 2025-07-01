@@ -492,9 +492,9 @@
 						</ul>
 					</li>
 					{{-- <li><a href="/student/test/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Test</a></li>
-					<li><a href="/student/assign/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Assignment</a></li>
+					<li><a href="/student/assign/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Assignment</a></li> --}}
 					<li><a href="/student/midterm/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Midterm</a></li>
-					<li><a href="/student/final/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Final</a></li>
+					{{-- <li><a href="/student/final/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Final</a></li>
 					<li><a href="/student/paperwork/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Paperwork</a></li> --}}
 					<li><a href="/student/practical/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Practical</a></li>
 					{{-- <li><a href="/student/other/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Lain-Lain</a></li>
