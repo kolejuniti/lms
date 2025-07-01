@@ -56,9 +56,6 @@
                               <th style="width: 5%">
                                 Matric No.
                               </th>
-                              <th style="width: 10%">
-                                Status Submission
-                              </th>
                               <th style="width: 5%">
                                 Marks
                               </th>
@@ -84,17 +81,6 @@
                               </td>
                               <td style="width: 5%">
                                 <span class="{{ $alert }}">{{ Session::get('StudInfos')->no_matric }}</span>
-                              </td>
-                              <td>
-                                  @if (empty($sts))
-                                    -
-                                  @else
-                                    @if ($sts->status_submission == 2)
-                                      <span class="badge bg-danger">Late</span>
-                                    @else
-                                      <span class="badge bg-success">Submit</span>
-                                    @endif
-                                  @endif
                               </td>
                               <td>
                                     {{ empty($sts) ? '-' : $sts->final_mark }}
