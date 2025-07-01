@@ -56,9 +56,6 @@
                               <th style="width: 5%">
                                 Matric No.
                               </th>
-                              <th style="width: 15%">
-                                Attachment
-                              </th>
                               <th style="width: 10%">
                                 Status Submission
                               </th>
@@ -87,13 +84,6 @@
                               </td>
                               <td style="width: 5%">
                                 <span class="{{ $alert }}">{{ Session::get('StudInfos')->no_matric }}</span>
-                              </td>
-                              <td style="width: 5%">
-                                  @if (empty($sts))
-                                    -
-                                  @else
-                                    <a href="{{ Storage::disk('linode')->url($sts->content) }}"><i class="fa fa-file-pdf-o fa-3x"></i></a>
-                                  @endif
                               </td>
                               <td>
                                   @if (empty($sts))
