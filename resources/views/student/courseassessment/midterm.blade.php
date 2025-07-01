@@ -63,9 +63,6 @@
                                 Chapters
                               </th>
                               <th style="width: 5%">
-                                Duration
-                              </th>
-                              <th style="width: 5%">
                                 Date From
                               </th>
                               <th style="width: 5%">
@@ -94,9 +91,6 @@
                                 @foreach ($chapter[$key] as $chp)
                                   Chapter {{ $chp->ChapterNo }} : {{ $chp->DrName }},
                                 @endforeach
-                              </td>
-                              <td>
-                                {{ $dt->duration }} minutes
                               </td>
                               <td>
                                 {{ $dt->date_from }}
