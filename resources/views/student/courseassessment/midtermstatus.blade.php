@@ -59,87 +59,64 @@
                               <th style="width: 20%">
                                 Submission Date
                               </th>
+                              <th style="width: 15%">
+                                Attachment
+                              </th>
                               <th style="width: 10%">
-                                Status
+                                Status Submission
                               </th>
                               <th style="width: 5%">
                                 Marks
-                              </th>
-                              <th style="width: 20%">
                               </th>
                             </tr>
                           </thead>
                           <tbody>
                             @foreach ($midterm as $key => $qz)
-                              @foreach ($status as $sts)
-                              @php
-                                if(empty($sts))
-                                {
-                                  $alert = "badge bg-danger";
-                                }else{
-                                  $alert = "badge bg-success";
-                                }
-                              @endphp
-                              <tr>
-                                <td style="width: 1%">
-                                    {{ $key+1 }}
-                                </td>
-                                <td style="width: 15%">
-                                  <span class="{{ $alert }}">{{ Session::get('StudInfos')->name }}</span>
-                                </td>
-                                <td style="width: 5%">
-                                  <span class="{{ $alert }}">{{ Session::get('StudInfos')->no_matric }}</span>
-                                </td>
-                                <td style="width: 20%">
-                                      {{ empty($sts) ? '-' : $sts->submittime }}
-                                </td>
-                                <td>
-                                      {{ empty($sts) ? '-' : $sts->status }}
-                                </td>
-                                <td>
-                                      {{ empty($sts) ? '-' : $sts->final_mark }}
-                                </td>                          
-                                
-                                <td class="project-actions text-center" >
-                                  @if (empty($sts) || ($sts->status == 1) )
-                                    @if ($qz->status == 2)
-                                      @if (date("Y-m-d H:i:s") >= $qz->date_from && date("Y-m-d H:i:s") <= $qz->date_to)
-                                      <a class="btn btn-success btn-sm mr-2" href="/student/midterm/{{ Session::get('CourseIDS') }}/{{ request()->midterm }}/view">
-                                        <i class="ti-user">
-                                        </i>
-                                        Answer
-                                      </a>
-                                      @elseif (date("Y-m-d H:i:s") < $qz->date_from)
-                                        <a class="btn btn-danger btn-sm mr-2">
-                                          <i class="ti-lock">
-                                          </i>
-                                          Midterm will be open on {{  $qz->date_from  }}
-                                        </a>
-                                      @elseif (date("Y-m-d H:i:s") > $qz->date_to)
-                                        <a class="btn btn-danger btn-sm mr-2">
-                                          <i class="ti-lock">
-                                          </i>
-                                          Midterm has closed on {{  $qz->date_to  }}
-                                        </a>
-                                      @endif
-                                    @elseif ($qz->status == 1)
-                                      <a class="btn btn-danger btn-sm mr-2">
-                                        <i class="ti-lock">
-                                        </i>
-                                        Midterm is not published yet
-                                      </a>
-                                    @endif
-                                  @elseif (!empty($sts))
-                                  <a class="btn btn-success btn-sm mr-2" href="/student/midterm/{{ request()->midterm }}/{{ Session::get('StudInfos')->ic }}/result">
-                                    <i class="ti-user">
-                                    </i>
-                                    Result
-                                  </a>
+                            @foreach ($status as $sts)
+                            @php
+                              if(empty($sts))
+                              {
+                                $alert = "badge bg-danger";
+                              }else{
+                                $alert = "badge bg-success";
+                              }
+                            @endphp
+                            <tr>
+                              <td style="width: 1%">
+                                  {{ $key+1 }}
+                              </td>
+                              <td style="width: 15%">
+                                <span class="{{ $alert }}">{{ Session::get('StudInfos')->name }}</span>
+                              </td>
+                              <td style="width: 5%">
+                                <span class="{{ $alert }}">{{ Session::get('StudInfos')->no_matric }}</span>
+                              </td>
+                              <td style="width: 20%">
+                                    {{ empty($sts) ? '-' : $sts->subdate }}
+                              </td>
+                              <td style="width: 5%">
+                                  @if (empty($sts))
+                                    -
+                                  @else
+                                    <a href="{{ Storage::disk('linode')->url($sts->content) }}"><i class="fa fa-file-pdf-o fa-3x"></i></a>
                                   @endif
-                                  
-                                </td>
-                              </tr>
-                              @endforeach                            
+                              </td>
+                              <td>
+                                  @if (empty($sts))
+                                    -
+                                  @else
+                                    @if ($sts->status_submission == 2)
+                                      <span class="badge bg-danger">Late</span>
+                                    @else
+                                      <span class="badge bg-success">Submit</span>
+                                    @endif
+                                  @endif
+                              </td>
+                              <td>
+                                    {{ empty($sts) ? '-' : $sts->final_mark }}
+                              </td>
+                            </tr>
+                            @endforeach                            
                             @endforeach
                           </tbody>
                         </table>
@@ -163,10 +140,6 @@
 $(document).ready( function () {
     $('#myTable').DataTable();
 } );
-
-    $(document).on('click', '#newFolder', function() {
-        location.href = "/lecturer/midterm/{{ Session::get('CourseID') }}/create";
-    })
 
     function deleteMaterial(dir){     
         Swal.fire({
