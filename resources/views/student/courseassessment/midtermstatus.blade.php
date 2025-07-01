@@ -56,9 +56,6 @@
                               <th style="width: 5%">
                                 Matric No.
                               </th>
-                              <th style="width: 20%">
-                                Submission Date
-                              </th>
                               <th style="width: 15%">
                                 Attachment
                               </th>
@@ -90,9 +87,6 @@
                               </td>
                               <td style="width: 5%">
                                 <span class="{{ $alert }}">{{ Session::get('StudInfos')->no_matric }}</span>
-                              </td>
-                              <td style="width: 20%">
-                                    {{ empty($sts) ? '-' : $sts->subdate }}
                               </td>
                               <td style="width: 5%">
                                   @if (empty($sts))
