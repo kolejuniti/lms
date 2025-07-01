@@ -62,12 +62,6 @@
                               <th style="width: 15%">
                                 Chapters
                               </th>
-                              <th style="width: 5%">
-                                Date From
-                              </th>
-                              <th style="width: 5%">
-                                Date To
-                              </th>
                               <th style="width: 15%">
                               </th>
                             </tr>
@@ -91,12 +85,6 @@
                                 @foreach ($chapter[$key] as $chp)
                                   Chapter {{ $chp->ChapterNo }} : {{ $chp->DrName }},
                                 @endforeach
-                              </td>
-                              <td>
-                                {{ $dt->date_from }}
-                              </td>
-                              <td>
-                                {{ $dt->date_to }}
                               </td>
                               <td class="project-actions text-center" >
                                 <a class="btn btn-success btn-sm mr-2" href="/student/midterm/{{ Session::get('CourseIDS') }}/{{ $dt->id }}">
