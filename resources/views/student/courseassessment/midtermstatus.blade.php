@@ -50,13 +50,13 @@
                               <th style="width: 1%">
                                 No.
                               </th>
-                              <th style="width: 15%">
+                              <th>
                                 Name
                               </th>
-                              <th style="width: 5%">
+                              <th>
                                 Matric No.
                               </th>
-                              <th style="width: 5%">
+                              <th>
                                 Marks
                               </th>
                             </tr>
@@ -76,10 +76,10 @@
                               <td style="width: 1%">
                                   {{ $key+1 }}
                               </td>
-                              <td style="width: 15%">
+                              <td>
                                 <span class="{{ $alert }}">{{ Session::get('StudInfos')->name }}</span>
                               </td>
-                              <td style="width: 5%">
+                              <td>
                                 <span class="{{ $alert }}">{{ Session::get('StudInfos')->no_matric }}</span>
                               </td>
                               <td>
