@@ -557,4 +557,33 @@ class MidtermController extends Controller
         return view('student.courseassessment.midterm', compact('data', 'chapter', 'marks'));
 
     }
+
+    public function studentmidtermstatus()
+    {
+        $midterm = DB::table('student_subjek')
+                ->join('tblclassmidterm_group', function($join){
+                    $join->on('student_subjek.group_id', 'tblclassmidterm_group.groupid');
+                    $join->on('student_subjek.group_name', 'tblclassmidterm_group.groupname');
+                })
+                ->join('tblclassmidterm', 'tblclassmidterm_group.midtermid', 'tblclassmidterm.id')
+                ->where([
+                    ['tblclassmidterm.classid', Session::get('CourseIDS')],
+                    ['tblclassmidterm.sessionid', Session::get('SessionIDS')],
+                    ['tblclassmidterm.id', request()->midterm],
+                    ['student_subjek.student_ic', Session::get('StudInfos')->ic]
+                ])->get();
+            
+        foreach($midterm as $qz)
+        {
+            $status[] = DB::table('tblclassstudentmidterm')
+            ->where([
+                ['midtermid', $qz->id],
+                ['userid', Session::get('StudInfos')->ic]
+            ])->first();
+        }
+
+        //dd($status);
+
+        return view('student.courseassessment.midtermstatus', compact('midterm', 'status'));
+    }
 }
