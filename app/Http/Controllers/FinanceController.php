@@ -11941,7 +11941,7 @@ class FinanceController extends Controller
         )
         ->whereBetween('sessions.Year', [$request->from, $request->to])
         ->whereIn('students.program', $data['program'])
-        ->whereIn('students.status', [3, 8])
+        ->whereIn('students.status', [8])
         ->get();
 
                            
