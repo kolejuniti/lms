@@ -148,27 +148,27 @@
                 <table>
                     <tr>
                         <td style="padding-right: 10px;">PROGRAM</td>
-                        <td>:</td>
+                        <td>&nbsp;&nbsp;:&nbsp;&nbsp;</td>
                         <td style="padding-left: 10px;">{{ $data['student']->program }}</td>
                     </tr>
                     <tr>
                         <td style="padding-right: 10px;">NO. RUJUKAN MQA</td>
-                        <td>:</td>
+                        <td>&nbsp;&nbsp;:&nbsp;&nbsp;</td>
                         <td style="padding-left: 10px;">{{ $data['student']->mqa }}</td>
                     </tr>
                     <tr>
                         <td style="padding-right: 10px;">NAMA</td>
-                        <td>:</td>
+                        <td>&nbsp;&nbsp;:&nbsp;&nbsp;</td>
                         <td style="padding-left: 10px;">{{ $data['student']->name }}</td>
                     </tr>
                     <tr>
                         <td style="padding-right: 10px;">NO. MATRIKS</td>
-                        <td>:</td>
+                        <td>&nbsp;&nbsp;:&nbsp;&nbsp;</td>
                         <td style="padding-left: 10px;">{{ $data['student']->no_matric }}</td>
                     </tr>
                     <tr>
                         <td style="padding-right: 10px;">NO. K.P. / NO. PASSPORT</td>
-                        <td>:</td>
+                        <td>&nbsp;&nbsp;:&nbsp;&nbsp;</td>
                         <td style="padding-left: 10px;">{{ $data['student']->ic }}</td>
                     </tr>
                 </table>
@@ -195,7 +195,7 @@
                 <table class="custom-table">
                     <thead>
                         <tr class="line">
-                            <th class="text-center" style="width: 2%">KOD</th>
+                            <th class="text-center" style="width: 5%">KOD</th>
                             <th style="width: 16%">KURSUS</th>
                             <th class="text-center" style="width: 1%">KR</th>
                             <th style="width: 1%">GR</th>
@@ -233,16 +233,17 @@
                         <tr class="line">
                             <td colspan="2"></td>
                             <td>PNGS :</td>
-                            <td>{{ $data['detail'][$key]->gpa }}</td>
+                            <td>&nbsp;{{ $data['detail'][$key]->gpa }}</td>
                         </tr>
                         <tr class="line">
                             <td colspan="2"></td>
                             <td>PNGK :</td>
-                            <td>{{ $data['detail'][$key]->cgpa }}</td>
+                            <td>&nbsp;{{ $data['detail'][$key]->cgpa }}</td>
                         </tr>
                     </tfoot>
                 </table>
             </div>
+            &nbsp;&nbsp;&nbsp;&nbsp;
             @endif
             @endforeach  
         </div>
@@ -252,12 +253,12 @@
             <table style="float: right;">
                 <tr>
                 <td style="padding-right: 10px;"><b>PURATA TIMBUNAN MATA NILAIAN</b></td>
-                <td><b>:</b></td>
+                <td><b>&nbsp;:&nbsp;</b></td>
                 <td style="padding-left: 10px;"><b>{{ $data['lastCGPA'] }}</b></td>
                 </tr>
                 <tr>
                 <td style="padding-right: 10px;"><b>JUMLAH KREDIT KESELURUHAN</b></td>
-                <td><b>:</b></td>
+                <td><b>&nbsp;:&nbsp;</b></td>
                 <td style="padding-left: 10px;"><b>{{ $total_credit }}</b></td>
                 </tr>
             </table>
