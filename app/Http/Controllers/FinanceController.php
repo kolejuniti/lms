@@ -11897,11 +11897,14 @@ class FinanceController extends Controller
         if($request->program == 'all')
         {
 
-            $data['program'] = DB::table('tblprogramme')->pluck('id');
+            $data['program'] = DB::table('tblprogramme')
+            ->where('id', '!=', 30)
+            ->pluck('id');
 
         }else{
 
-            $data['program'] = DB::table('tblprogramme')->where('id', $request->program)->pluck('id');
+            $data['program'] = DB::table('tblprogramme')
+            ->where('id', $request->program)->pluck('id');
             
         }
 
