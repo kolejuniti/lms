@@ -12043,7 +12043,12 @@ class FinanceController extends Controller
 
             // Now, wrap the subquery and calculate the balance
             $data['balance'][$key] = DB::query()->fromSub($subQuery, 'sub')
-            ->select(DB::raw('"" AS date'), DB::raw('SUM(claim) - SUM(payment) AS balance'), DB::raw('"" AS cr_limit'), DB::raw('"" AS cr_term'))
+            ->select(
+                DB::raw('"" AS date'), 
+                DB::raw('(SUM(claim) - SUM(payment) - IFNULL((SELECT correction_amount FROM student_remarks WHERE student_ic = "' . $std->ic . '" LIMIT 1), 0)) AS balance'), 
+                DB::raw('"" AS cr_limit'), 
+                DB::raw('"" AS cr_term')
+            )
             ->limit(1)
             ->get();
 
