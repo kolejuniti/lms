@@ -243,7 +243,7 @@
                     </tfoot>
                 </table>
             </div>
-            &nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             @endif
             @endforeach  
         </div>
