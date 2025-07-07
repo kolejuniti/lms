@@ -22,9 +22,7 @@
   <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="https://unpkg.com/css-skeletons@1.0.3/css/css-skeletons.min.css" />
   
-  <!-- Custom CSS -->
-  <link rel="stylesheet" href="{{ asset('css/customCSS.css') }}">
-  <link rel="stylesheet" href="{{ asset('css/customLayoutCSS.css') }}">
+    <!-- Custom CSS -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.8.2/dist/alpine.min.js" defer></script>
 </head>
