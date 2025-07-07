@@ -1459,15 +1459,13 @@
         <div class="col-xl-6 col-12">
           <div class="box">
             <div class="box-header with-border">
-              <h4 class="box-title modern-title">Quick Access
-                <span class="badge bg-secondary ms-1">Available Soon</span>
-              </h4>
+              <h4 class="box-title modern-title">Quick Access</h4>
             </div>
             <div class="box-body">
               <div class="row g-3">
                 <!-- Quick Access Item 1 -->
                 <div class="col-6 col-sm-4">
-                  <a href="#" class="quick-access-item">
+                  <a href="{{ route('student') }}" class="quick-access-item">
                     <div class="icon-container bg-gradient-blue">
                       <i class="mdi mdi-book-open-page-variant fs-24"></i>
                     </div>
@@ -1477,51 +1475,51 @@
                 
                 <!-- Quick Access Item 2 -->
                 <div class="col-6 col-sm-4">
-                  <a href="#" class="quick-access-item">
+                  <a href="{{ route('student.class.schedule') }}" class="quick-access-item">
                     <div class="icon-container bg-gradient-green">
-                      <i class="mdi mdi-file-document fs-24"></i>
+                      <i class="mdi mdi-calendar-clock fs-24"></i>
                     </div>
-                    <h6>Assignments</h6>
+                    <h6>Class Schedule</h6>
                   </a>
                 </div>
                 
                 <!-- Quick Access Item 3 -->
                 <div class="col-6 col-sm-4">
-                  <a href="#" class="quick-access-item">
+                  <a href="{{ route('student.affair.result') }}" class="quick-access-item">
                     <div class="icon-container bg-gradient-orange">
                       <i class="mdi mdi-chart-line fs-24"></i>
                     </div>
-                    <h6>Grades</h6>
+                    <h6>My Results</h6>
                   </a>
                 </div>
                 
                 <!-- Quick Access Item 4 -->
                 <div class="col-6 col-sm-4">
-                  <a href="#" class="quick-access-item">
+                  <a href="{{ route('student.setting') }}" class="quick-access-item">
                     <div class="icon-container bg-gradient-purple">
                       <i class="mdi mdi-account fs-24"></i>
                     </div>
-                    <h6>Profile</h6>
+                    <h6>Profile Settings</h6>
                   </a>
                 </div>
                 
                 <!-- Quick Access Item 5 -->
                 <div class="col-6 col-sm-4">
-                  <a href="#" class="quick-access-item">
+                  <a href="{{ route('yuran-pengajian') }}" class="quick-access-item">
                     <div class="icon-container bg-gradient-red">
-                      <i class="mdi mdi-help-circle fs-24"></i>
+                      <i class="mdi mdi-credit-card fs-24"></i>
                     </div>
-                    <h6>Support</h6>
+                    <h6>Payment</h6>
                   </a>
                 </div>
                 
                 <!-- Quick Access Item 6 -->
                 <div class="col-6 col-sm-4">
-                  <a href="#" class="quick-access-item">
+                  <a href="{{ route('student.announcement.list') }}" class="quick-access-item">
                     <div class="icon-container bg-gradient-teal">
-                      <i class="mdi mdi-calendar fs-24"></i>
+                      <i class="mdi mdi-bullhorn fs-24"></i>
                     </div>
-                    <h6>Calendar</h6>
+                    <h6>Announcements</h6>
                   </a>
                 </div>
               </div>
