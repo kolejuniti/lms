@@ -1475,11 +1475,11 @@
                 
                 <!-- Quick Access Item 2 -->
                 <div class="col-6 col-sm-4">
-                  <a href="{{ route('student.class.schedule') }}" class="quick-access-item">
+                  <a href="AR/schedule/scheduleTable/{{ Auth::guard('student')->user()->ic }}?type=std" class="quick-access-item" target="_blank">
                     <div class="icon-container bg-gradient-green">
                       <i class="mdi mdi-calendar-clock fs-24"></i>
                     </div>
-                    <h6>Class Schedule</h6>
+                    <h6>Class Timetable</h6>
                   </a>
                 </div>
                 
