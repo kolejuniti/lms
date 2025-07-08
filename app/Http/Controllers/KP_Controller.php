@@ -354,7 +354,8 @@ class KP_Controller extends Controller
                 ->where('student_subjek.courseid',$request->course)
                 ->where('student_subjek.sessionid',$request->session)
                 ->where('students.program', $request->program)
-                ->where('student_subjek.group_id', null);
+                ->where('student_subjek.group_id', null)
+                ->where('students.status', 2);
                 
                 if(isset($request->semester))
                 {
@@ -372,7 +373,8 @@ class KP_Controller extends Controller
                 ->join('sessions', 'students.intake', 'sessions.SessionID')
                 ->where('student_subjek.sessionid',$request->session)
                 ->where('students.program', $request->program)
-                ->where('student_subjek.group_id', null);
+                ->where('student_subjek.group_id', null)
+                ->where('students.status', 2);
 
                 if(isset($request->semester))
                 {
