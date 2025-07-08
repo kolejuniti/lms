@@ -499,7 +499,10 @@ $content .= '<tr>
                 ->where('student_subjek.courseid',$request->course)
                 ->where('student_subjek.sessionid',$request->session)
                 ->where('student_subjek.group_id', $request->lecturer)
-                ->where('students.program', $request->program)->orderBy('students.name')->get();
+                ->where('students.program', $request->program)
+                ->orderBy('students.name')
+                ->where('students.status', 2)
+                ->get();
         }
 
         $content = "";
