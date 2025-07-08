@@ -1616,7 +1616,7 @@ class StudentController extends Controller
         $onlineStudents = DB::table('students')
             ->select('ic', 'name', 'no_matric', 'program')
             ->where('ic', '!=', $student->ic)
-            ->where('status', 1) // Only active students
+            ->where('status', 2) // Only active students
             ->limit(50)
             ->get();
 
@@ -1868,6 +1868,31 @@ class StudentController extends Controller
     private function checkDraw($board)
     {
         return !in_array(null, $board);
+    }
+
+    public function searchStudents(Request $request)
+    {
+        $search = $request->input('search');
+        
+        if (empty($search) || strlen($search) < 1) {
+            return response()->json([]);
+        }
+
+        $currentStudentIc = auth()->guard('student')->user()->ic;
+        
+        $students = DB::table('students')
+            ->where(function($query) use ($search) {
+                $query->where('name', 'LIKE', '%' . $search . '%')
+                      ->orWhere('no_matric', 'LIKE', '%' . $search . '%');
+            })
+            ->where('ic', '!=', $currentStudentIc) // Exclude current student
+            ->where('status', 1) // Only active students
+            ->select('ic', 'name', 'no_matric')
+            ->orderBy('name')
+            ->limit(20)
+            ->get();
+
+        return response()->json($students);
     }
 
 }

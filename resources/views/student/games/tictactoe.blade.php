@@ -2,6 +2,29 @@
 
 @section('title', 'Tic Tac Toe')
 
+@push('styles')
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<style>
+.select2-container--default .select2-selection--single {
+    height: 38px;
+    border: 1px solid #d2d6de;
+    border-radius: 0;
+    padding: 6px 12px;
+}
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    color: #555;
+    line-height: 26px;
+}
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 36px;
+}
+.select2-dropdown {
+    border: 1px solid #d2d6de;
+    border-radius: 0;
+}
+</style>
+@endpush
+
 @section('main')
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
@@ -66,11 +89,8 @@
                         <div id="opponentSelection" class="text-center">
                             <h4>Select an opponent:</h4>
                             <div class="form-group">
-                                <select class="form-control" id="opponentSelect" style="width: 300px; margin: 0 auto;">
-                                    <option value="">Choose a student...</option>
-                                    @foreach($availableStudents as $student)
-                                        <option value="{{ $student->ic }}">{{ $student->name }} ({{ $student->no_matric }})</option>
-                                    @endforeach
+                                <select class="form-control select2" id="opponentSelect" style="width: 300px; margin: 0 auto;">
+                                    <option value="">Search and select a student...</option>
                                 </select>
                             </div>
                             <button class="btn btn-primary" id="startGameBtn">Start Game</button>
@@ -142,6 +162,8 @@
 }
 </style>
 
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
 <script>
 let currentGame = null;
 let gameId = null;
@@ -150,6 +172,46 @@ let playerSymbol = '';
 let gameInterval = null;
 
 $(document).ready(function() {
+    // Initialize Select2 with search functionality
+    $('#opponentSelect').select2({
+        placeholder: 'Search and select a student...',
+        allowClear: true,
+        minimumInputLength: 1,
+        ajax: {
+            url: '{{ route("student.search") }}',
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    search: params.term,
+                    _token: '{{ csrf_token() }}'
+                };
+            },
+            processResults: function (data) {
+                return {
+                    results: data.map(function(student) {
+                        return {
+                            id: student.ic,
+                            text: student.name + ' (' + student.no_matric + ')'
+                        };
+                    })
+                };
+            },
+            cache: true
+        },
+        language: {
+            inputTooShort: function () {
+                return "Please enter 1 or more characters";
+            },
+            searching: function () {
+                return "Searching...";
+            },
+            noResults: function () {
+                return "No students found";
+            }
+        }
+    });
+
     // Check if there's a game_id in URL parameters
     const urlParams = new URLSearchParams(window.location.search);
     const gameIdFromUrl = urlParams.get('game_id');

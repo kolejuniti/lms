@@ -684,6 +684,7 @@ Route::post('/student/games/create', [App\Http\Controllers\StudentController::cl
 Route::post('/student/games/accept', [App\Http\Controllers\StudentController::class, 'acceptGameInvitation'])->name('student.games.accept');
 Route::get('/student/games/{game_id}', [App\Http\Controllers\StudentController::class, 'getGame'])->name('student.games.get');
 Route::post('/student/games/move', [App\Http\Controllers\StudentController::class, 'makeMove'])->name('student.games.move');
+Route::post('/student/search', [App\Http\Controllers\StudentController::class, 'searchStudents'])->name('student.search');
 
 
 Route::get('/finance_dashboard', [App\Http\Controllers\FinanceController::class, 'dashboard'])->name('finance.dashboard');
