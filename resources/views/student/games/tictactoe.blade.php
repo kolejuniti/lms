@@ -5,81 +5,93 @@
 @push('styles')
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <style>
-/* Select2 Custom Styling */
+/* Select2 Custom Styling - High Specificity Override */
+#opponentSelection .select2-container--default .select2-selection--single,
 .select2-container--default .select2-selection--single {
-    height: 45px;
-    border: 2px solid #e1e5e9;
-    border-radius: 8px;
-    padding: 8px 16px;
-    background: #ffffff;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+    height: 45px !important;
+    border: 2px solid #e1e5e9 !important;
+    border-radius: 8px !important;
+    padding: 8px 16px !important;
+    background: #ffffff !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.04) !important;
+    line-height: 27px !important;
 }
 
+#opponentSelection .select2-container--default .select2-selection--single:hover,
 .select2-container--default .select2-selection--single:hover {
-    border-color: #c3d1e4;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    border-color: #c3d1e4 !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08) !important;
 }
 
+#opponentSelection .select2-container--default.select2-container--focus .select2-selection--single,
 .select2-container--default.select2-container--focus .select2-selection--single {
-    border-color: #4f84e7;
-    box-shadow: 0 0 0 3px rgba(79, 132, 231, 0.1);
-    outline: none;
+    border-color: #4f84e7 !important;
+    box-shadow: 0 0 0 3px rgba(79, 132, 231, 0.1) !important;
+    outline: none !important;
 }
 
+#opponentSelection .select2-container--default .select2-selection--single .select2-selection__rendered,
 .select2-container--default .select2-selection--single .select2-selection__rendered {
-    color: #495057;
-    line-height: 27px;
-    font-size: 14px;
-    font-weight: 500;
-    padding-left: 0;
+    color: #495057 !important;
+    line-height: 27px !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    padding-left: 0 !important;
+    padding-right: 20px !important;
 }
 
+#opponentSelection .select2-container--default .select2-selection--single .select2-selection__placeholder,
 .select2-container--default .select2-selection--single .select2-selection__placeholder {
-    color: #868e96;
-    font-weight: 400;
+    color: #868e96 !important;
+    font-weight: 400 !important;
 }
 
+#opponentSelection .select2-container--default .select2-selection--single .select2-selection__arrow,
 .select2-container--default .select2-selection--single .select2-selection__arrow {
-    height: 43px;
-    right: 12px;
+    height: 43px !important;
+    right: 12px !important;
+    width: 20px !important;
 }
 
+#opponentSelection .select2-container--default .select2-selection--single .select2-selection__arrow b,
 .select2-container--default .select2-selection--single .select2-selection__arrow b {
-    border-color: #6c757d transparent transparent transparent;
-    border-width: 6px 6px 0 6px;
+    border-color: #6c757d transparent transparent transparent !important;
+    border-width: 6px 6px 0 6px !important;
+    border-style: solid !important;
 }
 
 .select2-dropdown {
-    border: 2px solid #e1e5e9;
-    border-radius: 8px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-    border-top: 2px solid #4f84e7;
+    border: 2px solid #e1e5e9 !important;
+    border-radius: 8px !important;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12) !important;
+    border-top: 2px solid #4f84e7 !important;
+    z-index: 9999 !important;
 }
 
 .select2-search--dropdown .select2-search__field {
-    border: 2px solid #e1e5e9;
-    border-radius: 6px;
-    padding: 8px 12px;
-    font-size: 14px;
+    border: 2px solid #e1e5e9 !important;
+    border-radius: 6px !important;
+    padding: 8px 12px !important;
+    font-size: 14px !important;
 }
 
 .select2-search--dropdown .select2-search__field:focus {
-    border-color: #4f84e7;
-    outline: none;
-    box-shadow: 0 0 0 2px rgba(79, 132, 231, 0.1);
+    border-color: #4f84e7 !important;
+    outline: none !important;
+    box-shadow: 0 0 0 2px rgba(79, 132, 231, 0.1) !important;
 }
 
 .select2-results__option {
-    padding: 12px 16px;
-    font-size: 14px;
-    transition: all 0.2s ease;
+    padding: 12px 16px !important;
+    font-size: 14px !important;
+    transition: all 0.2s ease !important;
 }
 
 .select2-results__option--highlighted {
     background-color: #f8f9fa !important;
     color: #495057 !important;
-    border-left: 3px solid #4f84e7;
+    border-left: 3px solid #4f84e7 !important;
 }
 
 .select2-results__option--selected {
@@ -88,33 +100,33 @@
 }
 
 .select2-results__message {
-    padding: 12px 16px;
-    color: #6c757d;
-    font-style: italic;
-    font-size: 13px;
+    padding: 12px 16px !important;
+    color: #6c757d !important;
+    font-style: italic !important;
+    font-size: 13px !important;
 }
 
 /* Opponent Selection Styling */
 #opponentSelection {
-    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-    border-radius: 12px;
-    padding: 32px;
-    margin: 24px auto;
-    max-width: 500px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-    border: 1px solid #e9ecef;
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%) !important;
+    border-radius: 12px !important;
+    padding: 32px !important;
+    margin: 24px auto !important;
+    max-width: 500px !important;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08) !important;
+    border: 1px solid #e9ecef !important;
 }
 
 #opponentSelection h4 {
-    color: #2c3e50;
-    font-weight: 600;
-    margin-bottom: 24px;
-    font-size: 18px;
-    text-align: center;
+    color: #2c3e50 !important;
+    font-weight: 600 !important;
+    margin-bottom: 24px !important;
+    font-size: 18px !important;
+    text-align: center !important;
 }
 
 #opponentSelection .form-group {
-    margin-bottom: 24px;
+    margin-bottom: 24px !important;
 }
 
 #opponentSelection .select2-container {
@@ -122,69 +134,73 @@
 }
 
 #startGameBtn {
-    background: linear-gradient(135deg, #4f84e7 0%, #3a6dcf 100%);
-    border: none;
-    border-radius: 8px;
-    padding: 12px 32px;
-    font-size: 16px;
-    font-weight: 600;
-    color: white;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(79, 132, 231, 0.3);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    background: linear-gradient(135deg, #4f84e7 0%, #3a6dcf 100%) !important;
+    border: none !important;
+    border-radius: 8px !important;
+    padding: 12px 32px !important;
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    color: white !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 4px 12px rgba(79, 132, 231, 0.3) !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    display: block !important;
+    margin: 0 auto !important;
 }
 
 #startGameBtn:hover {
-    background: linear-gradient(135deg, #3a6dcf 0%, #2952b3 100%);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(79, 132, 231, 0.4);
+    background: linear-gradient(135deg, #3a6dcf 0%, #2952b3 100%) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 20px rgba(79, 132, 231, 0.4) !important;
 }
 
 #startGameBtn:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 8px rgba(79, 132, 231, 0.3);
+    transform: translateY(0) !important;
+    box-shadow: 0 2px 8px rgba(79, 132, 231, 0.3) !important;
 }
 
 #startGameBtn:disabled {
-    background: #6c757d;
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
+    background: #6c757d !important;
+    cursor: not-allowed !important;
+    transform: none !important;
+    box-shadow: none !important;
 }
 
-/* Loading animation */
-.select2-results__option.loading {
-    background-color: #f8f9fa;
-    text-align: center;
-    font-style: italic;
-    color: #6c757d;
+/* Override any conflicting styles */
+.select2-container .select2-selection--single {
+    height: auto !important;
 }
 
-/* Responsive adjustments */
+.select2-container .select2-selection--single .select2-selection__rendered {
+    padding-left: 12px !important;
+    padding-right: 20px !important;
+}
+
+/* Mobile responsive */
 @media (max-width: 768px) {
     #opponentSelection {
-        margin: 16px;
-        padding: 24px 16px;
+        margin: 16px !important;
+        padding: 24px 16px !important;
     }
     
     .select2-container--default .select2-selection--single {
-        height: 50px;
-        padding: 12px 16px;
+        height: 50px !important;
+        padding: 12px 16px !important;
     }
     
     .select2-container--default .select2-selection--single .select2-selection__rendered {
-        line-height: 26px;
+        line-height: 26px !important;
     }
     
     .select2-container--default .select2-selection--single .select2-selection__arrow {
-        height: 48px;
+        height: 48px !important;
     }
 }
 </style>
 @endpush
 
-@section('main')
+@section('content')
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
     <!-- Content Header (Page header) -->
@@ -326,6 +342,8 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 <script>
+console.log('SCRIPT STARTED - Testing if JavaScript works');
+
 let currentGame = null;
 let gameId = null;
 let isMyTurn = false;
@@ -333,45 +351,44 @@ let playerSymbol = '';
 let gameInterval = null;
 
 $(document).ready(function() {
-    // Initialize Select2 with search functionality
-    $('#opponentSelect').select2({
-        placeholder: 'Search and select a student...',
-        allowClear: true,
-        minimumInputLength: 1,
-        ajax: {
-            url: '{{ route("student.search") }}',
-            dataType: 'json',
-            delay: 250,
-            data: function (params) {
-                return {
-                    search: params.term,
-                    _token: '{{ csrf_token() }}'
-                };
-            },
-            processResults: function (data) {
-                return {
-                    results: data.map(function(student) {
-                        return {
-                            id: student.ic,
-                            text: student.name + ' (' + student.no_matric + ')'
-                        };
-                    })
-                };
-            },
-            cache: true
-        },
-        language: {
-            inputTooShort: function () {
-                return "Please enter 1 or more characters";
-            },
-            searching: function () {
-                return "Searching...";
-            },
-            noResults: function () {
-                return "No students found";
+    console.log('Document ready - initializing Select2');
+    
+    // Simple test function
+    window.testSelect2 = function() {
+        console.log('Testing Select2 manually');
+        $('#opponentSelect').select2({
+            placeholder: 'Search and select a student...',
+            allowClear: true,
+            minimumInputLength: 1,
+            ajax: {
+                url: '{{ route("student.search") }}',
+                type: 'POST',
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    console.log('AJAX data function called with params:', params);
+                    return {
+                        search: params.term,
+                        _token: '{{ csrf_token() }}'
+                    };
+                },
+                processResults: function (data) {
+                    console.log('Search results received:', data);
+                    return {
+                        results: data.map(function(student) {
+                            return {
+                                id: student.ic,
+                                text: student.name + ' (' + student.no_matric + ')'
+                            };
+                        })
+                    };
+                }
             }
-        }
-    });
+        });
+    };
+    
+    // Call the test function
+    testSelect2();
 
     // Check if there's a game_id in URL parameters
     const urlParams = new URLSearchParams(window.location.search);
@@ -389,14 +406,14 @@ $(document).ready(function() {
             return;
         }
 
-                 $.ajax({
-             url: '{{ route("student.games.create") }}',
-             method: 'POST',
-             data: {
-                 game_type: 'tic_tac_toe',
-                 opponent_ic: opponentIc,
-                 _token: '{{ csrf_token() }}'
-             },
+        $.ajax({
+            url: '{{ route("student.games.create") }}',
+            method: 'POST',
+            data: {
+                game_type: 'tic_tac_toe',
+                opponent_ic: opponentIc,
+                _token: '{{ csrf_token() }}'
+            },
             success: function(response) {
                 gameId = response.game_id;
                 $('#gameStatus').text('Game invitation sent! Waiting for opponent to accept...');
@@ -500,9 +517,9 @@ function updateBoard(boardState) {
         $(this).text(boardState[index] || '');
         $(this).removeClass('disabled');
         
-                 if (boardState[index] || !isMyTurn || currentGame?.status === 'completed') {
-             $(this).addClass('disabled');
-         }
+        if (boardState[index] || !isMyTurn || currentGame?.status === 'completed') {
+            $(this).addClass('disabled');
+        }
     });
 }
 

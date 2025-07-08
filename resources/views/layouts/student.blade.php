@@ -19,12 +19,14 @@
   <!-- Style-->  
   <link rel="stylesheet" href="{{ asset('assets/src/css/style.css') }}">
   <link rel="stylesheet" href="{{ asset('assets/src/css/skin_color.css') }}">
-  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="https://unpkg.com/css-skeletons@1.0.3/css/css-skeletons.min.css" />
   
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ asset('css/customCSS.css') }}">
     <link rel="stylesheet" href="{{ asset('css/customLayoutCSS.css') }}">
+  
+  @stack('styles')
+  
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.8.2/dist/alpine.min.js" defer></script>
 </head>
@@ -563,7 +565,7 @@
   <script src="{{ asset('assets/assets/vendor_components/nestable/jquery.nestable.js') }}"></script>
   <script src="{{ asset('assets/assets/vendor_components/bootstrap-tagsinput/dist/bootstrap-tagsinput.js') }}"></script>
   <script src="{{ asset('assets/assets/vendor_components/bootstrap-touchspin/dist/jquery.bootstrap-touchspin.min.js') }}"></script>
-  <script src="{{ asset('assets/assets/vendor_components/select2/dist/js/select2.full.js') }}"></script>
+  {{-- <script src="{{ asset('assets/assets/vendor_components/select2/dist/js/select2.full.js') }}"></script> --}}
   <script src="{{ asset('assets/assets/vendor_plugins/input-mask/jquery.inputmask.js') }}"></script>
   <script src="{{ asset('assets/assets/vendor_plugins/input-mask/jquery.inputmask.date.extensions.js') }}"></script>
   <script src="{{ asset('assets/assets/vendor_plugins/input-mask/jquery.inputmask.extensions.js') }}"></script>
@@ -580,7 +582,7 @@
   <script src="{{ asset('assets/assets/vendor_components/datatable/datatables.min.js') }}"></script>
   <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="https://cdn.jsdelivr.net/npm/gasparesganga-jquery-loading-overlay@2.1.7/dist/loadingoverlay.min.js"></script>
-  <script src="http://spp3.intds.com.my/assets/js/formplugins/select2/select2.bundle.js"></script>
+  {{-- <script src="http://spp3.intds.com.my/assets/js/formplugins/select2/select2.bundle.js"></script> --}}
   <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
   <script src="{{ asset('assets/src/js/pages/component-animations-css3.js')}}"></script>
   

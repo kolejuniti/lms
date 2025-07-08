@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 
 
@@ -1872,27 +1873,42 @@ class StudentController extends Controller
 
     public function searchStudents(Request $request)
     {
-        $search = $request->input('search');
-        
-        if (empty($search) || strlen($search) < 1) {
-            return response()->json([]);
+        try {
+            $search = $request->input('search');
+            
+            if (empty($search) || strlen($search) < 1) {
+                return response()->json([]);
+            }
+
+            // Get current student from session (matching how other methods work)
+            $currentStudent = Session::get('StudInfo');
+            if (!$currentStudent) {
+                $currentStudent = auth()->guard('student')->user();
+                if (!$currentStudent) {
+                    return response()->json(['error' => 'Not authenticated'], 401);
+                }
+            }
+            
+            // Start with a simple query to test
+            $students = DB::table('students')
+                ->where(function($query) use ($search) {
+                    $query->where('name', 'LIKE', '%' . $search . '%')
+                          ->orWhere('no_matric', 'LIKE', '%' . $search . '%')
+                          ->orWhere('ic', 'LIKE', '%' . $search . '%');
+                })
+                ->where('ic', '!=', $currentStudent->ic) // Exclude current student
+                ->whereNotNull('name')
+                ->whereNotNull('no_matric')
+                ->select('ic', 'name', 'no_matric')
+                ->orderBy('name')
+                ->limit(20)
+                ->get();
+
+            return response()->json($students);
+            
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Search failed: ' . $e->getMessage()], 500);
         }
-
-        $currentStudentIc = auth()->guard('student')->user()->ic;
-        
-        $students = DB::table('students')
-            ->where(function($query) use ($search) {
-                $query->where('name', 'LIKE', '%' . $search . '%')
-                      ->orWhere('no_matric', 'LIKE', '%' . $search . '%');
-            })
-            ->where('ic', '!=', $currentStudentIc) // Exclude current student
-            ->where('status', 2) // Only active students
-            ->select('ic', 'name', 'no_matric')
-            ->orderBy('name')
-            ->limit(20)
-            ->get();
-
-        return response()->json($students);
     }
 
 }
