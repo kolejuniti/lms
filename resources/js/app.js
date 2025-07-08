@@ -15,8 +15,13 @@ import ExampleComponent from './components/TextBox/index.vue';
 app.component('example-component', ExampleComponent);
 
 // Define a global method to dispatch a custom event.
-window.getMessage = function(ic) {
-    const event = new CustomEvent('message-requested', { detail: { ic } });
+window.getMessage = function(ic, messageType = null) {
+    const event = new CustomEvent('message-requested', { 
+        detail: { 
+            ic: ic,
+            messageType: messageType || ic // Use messageType if provided, otherwise fall back to ic for backward compatibility
+        } 
+    });
     window.dispatchEvent(event);
 };
 

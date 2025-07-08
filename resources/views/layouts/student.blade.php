@@ -277,9 +277,9 @@
                   </span>
                 </a>
                 <ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
-                  <li><a href="#" onclick="getMessage('FN')">UKP <span id="ukp-count" class="count-circle">0</span></a></li>
-                  <li><a href="#" onclick="getMessage('RGS')">KRP <span id="krp-count" class="count-circle">0</span></a></li>
-                  <li><a href="#">HEP</a></li>
+                  <li><a href="#" onclick="getMessage('FN', 'FN')">UKP <span id="ukp-count" class="count-circle">0</span></a></li>
+                  <li><a href="#" onclick="getMessage('RGS', 'RGS')">KRP <span id="krp-count" class="count-circle">0</span></a></li>
+                  <li><a href="#" onclick="getMessage('HEP', 'HEP')">HEP <span id="hep-count" class="count-circle hidden">0</span></a></li>
                 </ul>
               </li>
               
@@ -464,6 +464,7 @@
     // Message count updates
     let previousUkpCount = 0;
     let previousKrpCount = 0;
+    let previousHepCount = 0;
     let totalCount = 0;
     
     function updateMessageCount(type, elementId) {
@@ -491,6 +492,11 @@
               totalCount = totalCount - previousKrpCount + count;
               previousKrpCount = count;
             }
+          } else if (type === 'HEP') {
+            if (previousHepCount !== count) {
+              totalCount = totalCount - previousHepCount + count;
+              previousHepCount = count;
+            }
           }
           
           // Update total count display
@@ -509,6 +515,7 @@
     setInterval(() => {
       updateMessageCount('FN', 'ukp-count');
       updateMessageCount('RGS', 'krp-count');
+      updateMessageCount('HEP', 'hep-count');
     }, 1000);
     
     window.Laravel = {

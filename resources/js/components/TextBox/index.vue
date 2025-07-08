@@ -1,8 +1,8 @@
 <template>
     <div class="chat-widget">
-      <!-- Chat Toggle Button -->
+      <!-- Chat Toggle Button (hidden for students - they access chat via sidebar) -->
       <button 
-        v-if="!state.isChatBoxOpen" 
+        v-if="!state.isChatBoxOpen && !isStudent" 
         @click="toggleChatBox" 
         class="chat-toggle-btn"
       >
@@ -18,7 +18,7 @@
           <div class="chat-header">
             <div class="chat-header-info">
               <div class="status-indicator" :class="{ 'online': true }"></div>
-              <h2>Chat</h2>
+              <h2>{{ getChatTitle() }}</h2>
             </div>
             <div class="chat-actions">
               <button class="action-btn minimize" @click="toggleChatBox">
@@ -135,6 +135,7 @@
         isChatBoxOpen: false,
         messages: [],
         ic: null,
+        messageType: null,
         sessionUserId: window.Laravel.sessionUserId,
         status: 'online',
         isTyping: false
@@ -175,15 +176,35 @@
         return emojiCategories[selectedCategory.value].emojis;
       });
 
+      // Check if current user is a student
+      const isStudent = computed(() => {
+        return state.sessionUserId === 'STUDENT';
+      });
+
+      // Get chat title based on message type
+      const getChatTitle = () => {
+        if (!state.messageType) return 'Chat';
+        
+        const titleMap = {
+          'FN': 'Chat with UKP',
+          'RGS': 'Chat with KRP', 
+          'HEP': 'Chat with HEP'
+        };
+        
+        return titleMap[state.messageType] || 'Chat';
+      };
+
 
   
       // Method to handle the custom event
       const getMessage = (event) => {
         const newIc = event.detail.ic;
+        const messageType = event.detail.messageType || newIc; // For backwards compatibility
         
-        // If switching to a different student, clear messages and update IC first
+        // If switching to a different user/type, clear messages and update details
         if (state.ic !== newIc) {
           state.ic = newIc;
+          state.messageType = messageType;
           state.messages = [];
           
           // Use nextTick to ensure state is updated before fetching
@@ -191,7 +212,7 @@
             fetchMessages();
           });
         } else {
-          // Same student, just refresh messages
+          // Same user, just refresh messages
           fetchMessages();
         }
         
@@ -543,6 +564,8 @@
         emojiCategories,
         selectedCategory,
         currentCategoryEmojis,
+        isStudent,
+        getChatTitle,
         toggleChatBox, 
         isMessageMine, 
         submitMessage,
