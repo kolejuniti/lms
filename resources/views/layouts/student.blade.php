@@ -277,7 +277,7 @@
                   </span>
                 </a>
                 <ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
-                  <li><a href="#" onclick="getMessage('FN', 'FN')">UKP (StudentFinance)<span id="ukp-count" class="count-circle">0</span></a></li>
+                  <li><a href="#" onclick="getMessage('FN', 'FN')">UKP (Student Finance)<span id="ukp-count" class="count-circle">0</span></a></li>
                   <li><a href="#" onclick="getMessage('RGS', 'RGS')">KRP (Registration)<span id="krp-count" class="count-circle">0</span></a></li>
                   <li><a href="#" onclick="getMessage('HEP', 'HEP')">HEP <span id="hep-count" class="count-circle hidden">0</span></a></li>
                 </ul>
