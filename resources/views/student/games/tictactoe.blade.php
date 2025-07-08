@@ -5,22 +5,181 @@
 @push('styles')
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <style>
+/* Select2 Custom Styling */
 .select2-container--default .select2-selection--single {
-    height: 38px;
-    border: 1px solid #d2d6de;
-    border-radius: 0;
-    padding: 6px 12px;
+    height: 45px;
+    border: 2px solid #e1e5e9;
+    border-radius: 8px;
+    padding: 8px 16px;
+    background: #ffffff;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.04);
 }
+
+.select2-container--default .select2-selection--single:hover {
+    border-color: #c3d1e4;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.select2-container--default.select2-container--focus .select2-selection--single {
+    border-color: #4f84e7;
+    box-shadow: 0 0 0 3px rgba(79, 132, 231, 0.1);
+    outline: none;
+}
+
 .select2-container--default .select2-selection--single .select2-selection__rendered {
-    color: #555;
-    line-height: 26px;
+    color: #495057;
+    line-height: 27px;
+    font-size: 14px;
+    font-weight: 500;
+    padding-left: 0;
 }
+
+.select2-container--default .select2-selection--single .select2-selection__placeholder {
+    color: #868e96;
+    font-weight: 400;
+}
+
 .select2-container--default .select2-selection--single .select2-selection__arrow {
-    height: 36px;
+    height: 43px;
+    right: 12px;
 }
+
+.select2-container--default .select2-selection--single .select2-selection__arrow b {
+    border-color: #6c757d transparent transparent transparent;
+    border-width: 6px 6px 0 6px;
+}
+
 .select2-dropdown {
-    border: 1px solid #d2d6de;
-    border-radius: 0;
+    border: 2px solid #e1e5e9;
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    border-top: 2px solid #4f84e7;
+}
+
+.select2-search--dropdown .select2-search__field {
+    border: 2px solid #e1e5e9;
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 14px;
+}
+
+.select2-search--dropdown .select2-search__field:focus {
+    border-color: #4f84e7;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(79, 132, 231, 0.1);
+}
+
+.select2-results__option {
+    padding: 12px 16px;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.select2-results__option--highlighted {
+    background-color: #f8f9fa !important;
+    color: #495057 !important;
+    border-left: 3px solid #4f84e7;
+}
+
+.select2-results__option--selected {
+    background-color: #4f84e7 !important;
+    color: white !important;
+}
+
+.select2-results__message {
+    padding: 12px 16px;
+    color: #6c757d;
+    font-style: italic;
+    font-size: 13px;
+}
+
+/* Opponent Selection Styling */
+#opponentSelection {
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    border-radius: 12px;
+    padding: 32px;
+    margin: 24px auto;
+    max-width: 500px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    border: 1px solid #e9ecef;
+}
+
+#opponentSelection h4 {
+    color: #2c3e50;
+    font-weight: 600;
+    margin-bottom: 24px;
+    font-size: 18px;
+    text-align: center;
+}
+
+#opponentSelection .form-group {
+    margin-bottom: 24px;
+}
+
+#opponentSelection .select2-container {
+    width: 100% !important;
+}
+
+#startGameBtn {
+    background: linear-gradient(135deg, #4f84e7 0%, #3a6dcf 100%);
+    border: none;
+    border-radius: 8px;
+    padding: 12px 32px;
+    font-size: 16px;
+    font-weight: 600;
+    color: white;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(79, 132, 231, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+#startGameBtn:hover {
+    background: linear-gradient(135deg, #3a6dcf 0%, #2952b3 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(79, 132, 231, 0.4);
+}
+
+#startGameBtn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(79, 132, 231, 0.3);
+}
+
+#startGameBtn:disabled {
+    background: #6c757d;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Loading animation */
+.select2-results__option.loading {
+    background-color: #f8f9fa;
+    text-align: center;
+    font-style: italic;
+    color: #6c757d;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    #opponentSelection {
+        margin: 16px;
+        padding: 24px 16px;
+    }
+    
+    .select2-container--default .select2-selection--single {
+        height: 50px;
+        padding: 12px 16px;
+    }
+    
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        line-height: 26px;
+    }
+    
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+        height: 48px;
+    }
 }
 </style>
 @endpush
@@ -86,14 +245,16 @@
                         </div>
 
                         <!-- Opponent Selection -->
-                        <div id="opponentSelection" class="text-center">
+                        <div id="opponentSelection">
                             <h4>Select an opponent:</h4>
                             <div class="form-group">
-                                <select class="form-control select2" id="opponentSelect" style="width: 300px; margin: 0 auto;">
+                                <select class="form-control select2" id="opponentSelect">
                                     <option value="">Search and select a student...</option>
                                 </select>
                             </div>
-                            <button class="btn btn-primary" id="startGameBtn">Start Game</button>
+                            <div class="text-center">
+                                <button class="btn btn-primary" id="startGameBtn">Start Game</button>
+                            </div>
                         </div>
                     </div>
                 </div>

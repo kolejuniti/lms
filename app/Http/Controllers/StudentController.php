@@ -1886,7 +1886,7 @@ class StudentController extends Controller
                       ->orWhere('no_matric', 'LIKE', '%' . $search . '%');
             })
             ->where('ic', '!=', $currentStudentIc) // Exclude current student
-            ->where('status', 1) // Only active students
+            ->where('status', 2) // Only active students
             ->select('ic', 'name', 'no_matric')
             ->orderBy('name')
             ->limit(20)
