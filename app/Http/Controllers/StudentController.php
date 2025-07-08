@@ -172,14 +172,18 @@ class StudentController extends Controller
 
         if($data['pass'] != null)
         {
-            Auth::guard('student')->user()->update([
-                'email' => $data['email'],
-                'password' =>  Hash::make($data['pass'])
-            ]);
+            DB::table('students')
+                ->where('ic', Auth::guard('student')->user()->ic)
+                ->update([
+                    'email' => $data['email'],
+                    'password' =>  Hash::make($data['pass'])
+                ]);
         }else{
-            Auth::guard('student')->user()->update([
-                'email' => $data['email']
-            ]);
+            DB::table('students')
+                ->where('ic', Auth::guard('student')->user()->ic)
+                ->update([
+                    'email' => $data['email']
+                ]);
         }
 
         return redirect()->back()->with('alert', 'You have successfully updated your setting!');
@@ -1601,6 +1605,269 @@ class StudentController extends Controller
 
         return view('student.affair.result.studentResult', compact('data'));
 
+    }
+
+    // Game Methods
+    public function gamesLobby()
+    {
+        $student = Session::get('StudInfo');
+        
+        // Get available students for inviting to games
+        $onlineStudents = DB::table('students')
+            ->select('ic', 'name', 'no_matric', 'program')
+            ->where('ic', '!=', $student->ic)
+            ->where('status', 1) // Only active students
+            ->limit(50)
+            ->get();
+
+        // Get recent game invitations
+        $gameInvitations = DB::table('game_invitations')
+            ->join('students', 'game_invitations.from_student_ic', 'students.ic')
+            ->where('game_invitations.to_student_ic', $student->ic)
+            ->where('game_invitations.status', 'pending')
+            ->select('game_invitations.*', 'students.name as sender_name')
+            ->get();
+
+        // Get active games
+        $activeGames = DB::table('games')
+            ->leftJoin('students as player1', 'games.player1_ic', 'player1.ic')
+            ->leftJoin('students as player2', 'games.player2_ic', 'player2.ic')
+            ->where(function($query) use ($student) {
+                $query->where('games.player1_ic', $student->ic)
+                      ->orWhere('games.player2_ic', $student->ic);
+            })
+            ->where('games.status', 'active')
+            ->select('games.*', 'player1.name as player1_name', 'player2.name as player2_name')
+            ->get();
+
+        return view('student.games.lobby', compact('onlineStudents', 'gameInvitations', 'activeGames'));
+    }
+
+    public function ticTacToe()
+    {
+        $student = Session::get('StudInfo');
+        
+        // Get available students to invite
+        $availableStudents = DB::table('students')
+            ->select('ic', 'name', 'no_matric')
+            ->where('ic', '!=', $student->ic)
+            ->limit(50)
+            ->get();
+
+        return view('student.games.tictactoe', compact('availableStudents'));
+    }
+
+    public function createGame(Request $request)
+    {
+        $student = Session::get('StudInfo');
+        
+        $request->validate([
+            'game_type' => 'required|in:tic_tac_toe',
+            'opponent_ic' => 'required|exists:students,ic'
+        ]);
+
+        // Check if there's already an active game between these players
+        $existingGame = DB::table('games')
+            ->where(function($query) use ($student, $request) {
+                $query->where('player1_ic', $student->ic)
+                      ->where('player2_ic', $request->opponent_ic);
+            })
+            ->orWhere(function($query) use ($student, $request) {
+                $query->where('player1_ic', $request->opponent_ic)
+                      ->where('player2_ic', $student->ic);
+            })
+            ->where('status', '!=', 'completed')
+            ->first();
+
+        if ($existingGame) {
+            return response()->json(['error' => 'Game already exists with this player'], 400);
+        }
+
+        // Create new game
+        $gameId = DB::table('games')->insertGetId([
+            'game_type' => 'tic_tac_toe',
+            'player1_ic' => $student->ic,
+            'player2_ic' => $request->opponent_ic,
+            'current_turn' => $student->ic,
+            'game_data' => json_encode(array_fill(0, 9, null)),
+            'status' => 'waiting',
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
+
+        // Create game invitation
+        DB::table('game_invitations')->insert([
+            'game_id' => $gameId,
+            'from_student_ic' => $student->ic,
+            'to_student_ic' => $request->opponent_ic,
+            'game_type' => 'tic_tac_toe',
+            'status' => 'pending',
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
+
+        return response()->json(['success' => 'Game invitation sent!', 'game_id' => $gameId]);
+    }
+
+    public function acceptGameInvitation(Request $request)
+    {
+        $student = Session::get('StudInfo');
+        
+        $invitation = DB::table('game_invitations')
+            ->where('id', $request->invitation_id)
+            ->where('to_student_ic', $student->ic)
+            ->where('status', 'pending')
+            ->first();
+
+        if (!$invitation) {
+            return response()->json(['error' => 'Invalid invitation'], 400);
+        }
+
+        // Update invitation status
+        DB::table('game_invitations')
+            ->where('id', $invitation->id)
+            ->update(['status' => 'accepted', 'updated_at' => now()]);
+
+        // Update game status
+        DB::table('games')
+            ->where('id', $invitation->game_id)
+            ->update(['status' => 'active', 'updated_at' => now()]);
+
+        return response()->json(['success' => 'Game started!', 'game_id' => $invitation->game_id]);
+    }
+
+    public function getGame(Request $request)
+    {
+        $student = Session::get('StudInfo');
+        
+        $game = DB::table('games')
+            ->leftJoin('students as player1', 'games.player1_ic', 'player1.ic')
+            ->leftJoin('students as player2', 'games.player2_ic', 'player2.ic')
+            ->where('games.id', $request->game_id)
+            ->where(function($query) use ($student) {
+                $query->where('games.player1_ic', $student->ic)
+                      ->orWhere('games.player2_ic', $student->ic);
+            })
+            ->select(
+                'games.*',
+                'player1.name as player1_name',
+                'player2.name as player2_name'
+            )
+            ->first();
+
+        if (!$game) {
+            return response()->json(['error' => 'Game not found'], 404);
+        }
+
+        $game->board_state = json_decode($game->game_data);
+        $game->is_current_player = ($game->current_turn === $student->ic);
+        $game->player_symbol = ($game->player1_ic === $student->ic) ? 'X' : 'O';
+
+        return response()->json($game);
+    }
+
+    public function makeMove(Request $request)
+    {
+        $student = Session::get('StudInfo');
+        
+        $request->validate([
+            'game_id' => 'required|exists:games,id',
+            'position' => 'required|integer|min:0|max:8'
+        ]);
+
+        $game = DB::table('games')->where('id', $request->game_id)->first();
+
+        if (!$game) {
+            return response()->json(['error' => 'Game not found'], 404);
+        }
+
+        if ($game->current_turn !== $student->ic) {
+            return response()->json(['error' => 'Not your turn'], 400);
+        }
+
+        if ($game->status !== 'active') {
+            return response()->json(['error' => 'Game is not active'], 400);
+        }
+
+        $boardState = json_decode($game->game_data, true);
+
+        if ($boardState[$request->position] !== null) {
+            return response()->json(['error' => 'Position already taken'], 400);
+        }
+
+        // Determine player symbol
+        $playerSymbol = ($game->player1_ic === $student->ic) ? 'X' : 'O';
+        $nextPlayer = ($game->player1_ic === $student->ic) ? $game->player2_ic : $game->player1_ic;
+
+        // Make the move
+        $boardState[$request->position] = $playerSymbol;
+
+        // Check for winner
+        $winner = $this->checkWinner($boardState);
+        $isDraw = $this->checkDraw($boardState);
+
+        $status = $game->status;
+        $winnerIc = null;
+
+        if ($winner) {
+            $status = 'completed';
+            $winnerIc = $student->ic;
+        } elseif ($isDraw) {
+            $status = 'completed';
+            $winnerIc = 'draw';
+        }
+
+        // Update game
+        DB::table('games')
+            ->where('id', $request->game_id)
+            ->update([
+                'game_data' => json_encode($boardState),
+                'current_turn' => $winner || $isDraw ? null : $nextPlayer,
+                'status' => $status,
+                'winner_ic' => $winnerIc,
+                'updated_at' => now()
+            ]);
+
+        // Record the move
+        DB::table('game_moves')->insert([
+            'game_id' => $request->game_id,
+            'player_ic' => $student->ic,
+            'position' => $request->position,
+            'symbol' => $playerSymbol,
+            'created_at' => now()
+        ]);
+
+        return response()->json([
+            'success' => 'Move made successfully',
+            'board_state' => $boardState,
+            'winner' => $winner,
+            'is_draw' => $isDraw,
+            'game_status' => $status
+        ]);
+    }
+
+    private function checkWinner($board)
+    {
+        $winningCombinations = [
+            [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
+            [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
+            [0, 4, 8], [2, 4, 6] // Diagonals
+        ];
+
+        foreach ($winningCombinations as $combination) {
+            if ($board[$combination[0]] !== null &&
+                $board[$combination[0]] === $board[$combination[1]] &&
+                $board[$combination[1]] === $board[$combination[2]]) {
+                return $board[$combination[0]];
+            }
+        }
+
+        return null;
+    }
+
+    private function checkDraw($board)
+    {
+        return !in_array(null, $board);
     }
 
 }

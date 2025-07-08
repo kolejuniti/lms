@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
@@ -675,6 +676,14 @@ Route::post('/notifications/mark-read/{id}', function ($id) {
     }
     return response()->json(['success' => false], 404);
 })->name('notifications.markRead');
+
+// Student Games Routes
+Route::get('/student/games/lobby', [App\Http\Controllers\StudentController::class, 'gamesLobby'])->name('student.games.lobby');
+Route::get('/student/games/tictactoe', [App\Http\Controllers\StudentController::class, 'ticTacToe'])->name('student.games.tictactoe');
+Route::post('/student/games/create', [App\Http\Controllers\StudentController::class, 'createGame'])->name('student.games.create');
+Route::post('/student/games/accept', [App\Http\Controllers\StudentController::class, 'acceptGameInvitation'])->name('student.games.accept');
+Route::get('/student/games/{game_id}', [App\Http\Controllers\StudentController::class, 'getGame'])->name('student.games.get');
+Route::post('/student/games/move', [App\Http\Controllers\StudentController::class, 'makeMove'])->name('student.games.move');
 
 
 Route::get('/finance_dashboard', [App\Http\Controllers\FinanceController::class, 'dashboard'])->name('finance.dashboard');

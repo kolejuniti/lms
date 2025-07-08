@@ -293,6 +293,31 @@
                   <i data-feather="file-text"></i><span>Finals Timetable</span>
                 </a>
               </li>
+              
+              <!-- Mini Games -->
+              <li class="treeview">
+                <a href="#">
+                  <i data-feather="gamepad-2"></i>
+                  <span>Mini Games</span>
+                  <span class="pull-right-container">
+                    <i class="fa fa-angle-right pull-right"></i>
+                  </span>
+                </a>
+                <ul class="treeview-menu treeview-menu-visible">
+                  <li>
+                    <a href="{{ route('student.games.lobby') }}" 
+                      class="{{ (route('student.games.lobby') == Request::url()) ? 'active' : ''}}">
+                      <i data-feather="users"></i> Game Lobby
+                    </a>
+                  </li>
+                  <li>
+                    <a href="{{ route('student.games.tictactoe') }}" 
+                      class="{{ (route('student.games.tictactoe') == Request::url()) ? 'active' : ''}}">
+                      <i data-feather="grid-3x3"></i> Tic Tac Toe
+                    </a>
+                  </li>
+                </ul>
+              </li>
             </ul>
             
             <!-- Sidebar Widget -->
