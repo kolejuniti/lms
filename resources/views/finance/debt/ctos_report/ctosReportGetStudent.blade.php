@@ -145,7 +145,8 @@
                                     {{ $data['waris'][$key]->remarks ?? null }}
                                 </td>
                                 <td>
-                                    {{ $data['waris'][$key]->notification ?? null }}
+                                    {{-- {{ $data['waris'][$key]->notification ?? null }} --}}
+                                    {{ $std->date_add }}
                                 </td>
                                 <td>
                                     {{ $data['waris'][$key]->relationship ?? null }}

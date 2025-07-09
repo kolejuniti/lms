@@ -11940,7 +11940,8 @@ class FinanceController extends Controller
             'students.email',
             'tblstudent_personal.no_tel',
             DB::raw('"" AS ref_no'),
-            DB::raw('"" AS account_no')
+            'students.no_matric AS account_no',
+            'students.date_add'
         )
         ->whereBetween('sessions.Year', [$request->from, $request->to])
         ->whereIn('students.program', $data['program'])
