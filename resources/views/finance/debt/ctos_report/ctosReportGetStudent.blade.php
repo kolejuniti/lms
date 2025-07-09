@@ -145,11 +145,11 @@
                                     {{ $data['waris'][$key]->remarks ?? null }}
                                 </td>
                                 <td>
-                                    {{-- {{ $data['waris'][$key]->notification ?? null }} --}}
-                                    {{ $std->date_add }}
+                                    {{ $data['waris'][$key]->notification ?? null }}
                                 </td>
                                 <td>
-                                    {{ $data['waris'][$key]->relationship ?? null }}
+                                    {{-- {{ $data['waris'][$key]->relationship ?? null }} --}}
+                                    {{ $std->date_add }}
                                 </td>
                                 <td>
                                     {{ $data['waris'][$key]->type ?? null }}
