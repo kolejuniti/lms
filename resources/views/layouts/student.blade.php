@@ -291,7 +291,7 @@
                 </a>
               </li>
               <li>
-                <a href="{{ asset('storage/finals_schedule/Jadual Peperiksaan Akhir Semester II Sesi 20242025 (Kemasukan Mac).pdf') }}" target="_blank">
+                <a href="{{ asset('storage/finals_schedule/Jadual Pengawasan Peperiksaan Akhir UNITI Semester II Sesi 20242025 (Kemasukan Mac).pdf') }}" target="_blank">
                   <i data-feather="file-text"></i><span>Finals Timetable</span>
                 </a>
               </li>
