@@ -47,6 +47,7 @@
                   :data="message"
                   :isMine="isMessageMine(message.user_type)"
                   :showDateHeader="shouldShowDateHeader(message, index)"
+                  @delete-message="handleDeleteMessage"
                 />
               </div>
             </div>
@@ -431,19 +432,19 @@
       };
   
       // Function to fetch messages
-      const fetchMessages = () => {
+      const fetchMessages = (forceUpdate = false) => {
         if (!state.ic) {
           console.log('No IC set, skipping fetch');
           return;
         }
         
-        // Skip fetching if user is actively typing to avoid input disruption
-        if (isTyping.value) {
+        // Skip fetching if user is actively typing to avoid input disruption (unless forced)
+        if (!forceUpdate && isTyping.value) {
           console.log('User is typing, skipping fetch to avoid input disruption');
           return;
         }
         
-        console.log(`Fetching messages for IC: ${state.ic}`);
+        console.log(`Fetching messages for IC: ${state.ic}${forceUpdate ? ' (FORCED)' : ''}`);
         
         axios.post('/all/massage/user/getMassage', { 
           ic: state.ic,
@@ -466,16 +467,16 @@
           const previousLength = state.messages.length;
           console.log(`Previous messages: ${previousLength}, New messages: ${processedMessages.length}`);
           
-          // Don't update messages if user is typing to prevent visual disruption
-          if (isTyping.value) {
+          // Don't update messages if user is typing to prevent visual disruption (unless forced)
+          if (!forceUpdate && isTyping.value) {
             console.log('User is typing, skipping message update to prevent visual disruption');
             return;
           }
           
           // Check if this is genuinely new data to avoid unnecessary updates
-          const hasChanged = JSON.stringify(processedMessages.map(m => m.id)) !== JSON.stringify(state.messages.map(m => m.id));
+          const hasChanged = JSON.stringify(processedMessages.map(m => `${m.id}-${m.status}`)) !== JSON.stringify(state.messages.map(m => `${m.id}-${m.status}`));
           
-          if (hasChanged || previousLength === 0) {
+          if (hasChanged || previousLength === 0 || forceUpdate) {
             // Update messages
             state.messages = processedMessages;
             
@@ -504,7 +505,7 @@
       const startPolling = () => {
         // Start polling only if the chat box is open
         if (state.isChatBoxOpen && !pollingInterval) {
-          pollingInterval = setInterval(fetchMessages, 3000); // Much less aggressive polling
+          pollingInterval = setInterval(() => fetchMessages(), 2000); // More frequent polling for better real-time updates
         }
       };
   
@@ -538,6 +539,71 @@
         }
       };
   
+      // Handle message deletion
+      const handleDeleteMessage = (messageData) => {
+        // Show confirmation dialog
+        if (!confirm('Are you sure you want to delete this message?')) {
+          return;
+        }
+        
+        console.log('Deleting message:', messageData);
+        
+        // Optimistically update UI - mark message as deleted immediately
+        const messageIndex = state.messages.findIndex(msg => 
+          msg.id === messageData.id || 
+          (msg.message === messageData.message && msg.created_at === messageData.created_at)
+        );
+        
+        if (messageIndex !== -1) {
+          // Create a copy of the message with deleted status
+          const updatedMessages = [...state.messages];
+          updatedMessages[messageIndex] = {
+            ...updatedMessages[messageIndex],
+            status: 'DELETED',
+            is_deleted: true
+          };
+          state.messages = updatedMessages;
+        }
+        
+        // Send delete request to server
+        const deleteData = {
+          message_id: messageData.id || messageData.message_id,
+          ic: state.ic,
+          type: state.sessionUserId
+        };
+        
+        axios.post('/all/massage/user/deleteMassage', deleteData)
+        .then(response => {
+          console.log('Message deleted successfully:', response.data);
+          
+          // Force immediate update to get the latest state from server
+          fetchMessages(true);
+          
+          // Set up aggressive polling for the next 10 seconds to ensure all clients see the update
+          const aggressivePolling = setInterval(() => {
+            fetchMessages(true);
+          }, 1000); // Every 1 second
+          
+          // Stop aggressive polling after 10 seconds and return to normal polling
+          setTimeout(() => {
+            clearInterval(aggressivePolling);
+            console.log('Stopped aggressive polling after delete operation');
+          }, 10000);
+        })
+        .catch(error => {
+          console.error('Error deleting message:', error);
+          
+          // Revert the optimistic update if deletion failed
+          if (messageIndex !== -1) {
+            const revertedMessages = [...state.messages];
+            revertedMessages[messageIndex] = messageData; // Restore original message
+            state.messages = revertedMessages;
+          }
+          
+          alert('Failed to delete message. Please try again.');
+        });
+      };
+
       // Define your methods here
       const submitMessage = () => {
         if (message.value.trim() === '' && !selectedImage.value) {
@@ -608,17 +674,20 @@
         .then(response => {
           console.log('Message sent successfully:', response.data);
           
-          // Wait a bit for server to process, then fetch messages to replace temp message
+          // Force immediate update to replace temp message
           setTimeout(() => {
-            console.log('Fetching messages after send - attempt 1');
-            fetchMessages();
+            fetchMessages(true);
             
-            // Second attempt after another delay to ensure we get the update
+            // Set up brief aggressive polling to ensure recipient sees the message quickly
+            const sendPolling = setInterval(() => {
+              fetchMessages(true);
+            }, 1000);
+            
+            // Stop after 5 seconds
             setTimeout(() => {
-              console.log('Fetching messages after send - attempt 2');
-              fetchMessages();
-            }, 1500);
-          }, 1000);
+              clearInterval(sendPolling);
+            }, 5000);
+          }, 500);
         })
         .catch(error => {
           console.error("Error sending message:", error);
@@ -683,6 +752,7 @@
         shouldShowDateHeader,
         handleFocus,
         handleBlur,
+        handleDeleteMessage,
         // Image upload related
         imageInput,
         imageButton,

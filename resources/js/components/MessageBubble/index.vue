@@ -13,24 +13,50 @@
       </div>
     </div>
     
-    <div class="message-bubble" :class="{ 'mine': isMine, 'others': !isMine, 'temporary': data.isTemporary }">
+    <div class="message-bubble" 
+         :class="{ 'mine': isMine, 'others': !isMine, 'temporary': data.isTemporary, 'deleted': isDeleted }"
+         @mouseenter="showDeleteOption = true"
+         @mouseleave="showDeleteOption = false">
+      
+      <!-- Delete button (only for own messages and not temporary or already deleted) -->
+      <div v-if="isMine && !data.isTemporary && !isDeleted && showDeleteOption" class="delete-button" @click="deleteMessage">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="3,6 5,6 21,6"></polyline>
+          <path d="m19,6v14a2,2 0 0,1 -2,2H7a2,2 0 0,1 -2,-2V6m3,0V4a2,2 0 0,1 2,-2h4a2,2 0 0,1 2,2v2"></path>
+          <line x1="10" y1="11" x2="10" y2="17"></line>
+          <line x1="14" y1="11" x2="14" y2="17"></line>
+        </svg>
+      </div>
+
       <div class="message-content">
-        <!-- Image display -->
-        <div v-if="data.image_url" class="message-image-container">
-          <img 
-            :src="getImageUrl(data.image_url)" 
-            :alt="data.message || 'Image'" 
-            class="message-image"
-            @click="openImageModal"
-            @error="handleImageError"
-          >
-          <div v-if="data.isTemporary" class="image-uploading-overlay">
-            <div class="uploading-spinner"></div>
-          </div>
+        <!-- Deleted message indicator -->
+        <div v-if="isDeleted" class="deleted-message">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="deleted-icon">
+            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+            <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+          </svg>
+          <span class="deleted-text">{{ getDeletedText() }}</span>
         </div>
-        
-        <!-- Text message (only show if there's text content) -->
-        <p v-if="data.message && data.message.trim()" class="message-text">{{ data.message }}</p>
+
+        <!-- Regular message content (only show if not deleted) -->
+        <template v-else>
+          <!-- Image display -->
+          <div v-if="data.image_url" class="message-image-container">
+            <img 
+              :src="getImageUrl(data.image_url)" 
+              :alt="data.message || 'Image'" 
+              class="message-image"
+              @click="openImageModal"
+              @error="handleImageError"
+            >
+            <div v-if="data.isTemporary" class="image-uploading-overlay">
+              <div class="uploading-spinner"></div>
+            </div>
+          </div>
+          
+          <!-- Text message (only show if there's text content) -->
+          <p v-if="data.message && data.message.trim()" class="message-text">{{ data.message }}</p>
+        </template>
         
         <div class="message-metadata">
           <span class="message-time">{{ formatTime(data.datetime || data.created_at) }}</span>
@@ -80,7 +106,28 @@ export default {
       default: false
     }
   },
+  data() {
+    return {
+      showDeleteOption: false
+    }
+  },
+  computed: {
+    isDeleted() {
+      return this.data.status === 'DELETED' || this.data.is_deleted === 1 || this.data.is_deleted === true;
+    }
+  },
   methods: {
+    deleteMessage() {
+      // Emit an event to the parent component to handle the deletion
+      this.$emit('delete-message', this.data);
+    },
+    getDeletedText() {
+      if (this.isMine) {
+        return 'You deleted this message';
+      } else {
+        return 'This message was deleted';
+      }
+    },
     formatTime(timestamp) {
       if (!timestamp) return '';
       
@@ -451,10 +498,78 @@ export default {
   }
 }
 
+/* Delete button styles */
+.delete-button {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background-color: #ef4444;
+  color: white;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  opacity: 0;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  z-index: 10;
+}
+
+.message-bubble:hover .delete-button {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.delete-button:hover {
+  background-color: #dc2626;
+  transform: scale(1.2) !important;
+}
+
+.delete-button:active {
+  transform: scale(0.95) !important;
+}
+
+/* Deleted message styles */
+.deleted-message {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  opacity: 0.7;
+  font-style: italic;
+}
+
+.deleted-icon {
+  width: 16px;
+  height: 16px;
+  opacity: 0.6;
+}
+
+.deleted-text {
+  font-size: 0.9rem;
+}
+
+.message-bubble.deleted .message-content {
+  background-color: #f9fafb !important;
+  color: #6b7280 !important;
+  border: 1px dashed #d1d5db;
+}
+
+.message-bubble.mine.deleted .message-content {
+  background-color: #f3f4f6 !important;
+  color: #6b7280 !important;
+}
+
 /* Responsive adjustments */
 @media (max-width: 640px) {
   .message-bubble {
     max-width: 80%;
+  }
+  
+  .delete-button {
+    opacity: 1; /* Always show delete button on mobile */
   }
 }
 </style>

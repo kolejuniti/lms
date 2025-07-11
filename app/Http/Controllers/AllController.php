@@ -934,6 +934,7 @@ class AllController extends Controller
                 ->where('tblmessage.user_type', $request->type)
                 ->where('tblmessage.recipient', $request->ic)
                 ->where('tblmessage_dtl.sender', '!=', Auth::user()->ic)
+                ->where('tblmessage_dtl.status', 'NEW') // Only update NEW messages
                 ->update([
                     'status' => 'READ'
                 ]);
@@ -954,6 +955,7 @@ class AllController extends Controller
                 ->where('tblmessage.user_type', $request->ic)
                 ->where('tblmessage.recipient', Auth::guard('student')->user()->ic)
                 ->where('tblmessage_dtl.sender', '!=', Auth::guard('student')->user()->ic)
+                ->where('tblmessage_dtl.status', 'NEW') // Only update NEW messages
                 ->update([
                     'status' => 'READ'
                 ]);
@@ -971,6 +973,34 @@ class AllController extends Controller
         }
 
         return response()->json($messages);
+    }
+
+    public function deleteMassage(Request $request)
+    {
+        try {
+            // Validate the request
+            if (!$request->message_id || !$request->ic || !$request->type) {
+                return response()->json(['error' => 'Missing required parameters'], 400);
+            }
+
+            // Update the message status to 'DELETED' instead of actually deleting it
+            $updated = DB::table('tblmessage_dtl')
+                ->where('id', $request->message_id)
+                ->update(['status' => 'DELETED']);
+
+            if ($updated) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Message deleted successfully'
+                ]);
+            } else {
+                return response()->json(['error' => 'Message not found or already deleted'], 404);
+            }
+
+        } catch (\Exception $e) {
+            Log::error('Delete message failed: ' . $e->getMessage());
+            return response()->json(['error' => 'Failed to delete message'], 500);
+        }
     }
 
     public function countMessage(Request $request)

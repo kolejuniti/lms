@@ -1029,6 +1029,7 @@ Route::get('/all/massage/user/getStudentNewMassage', [App\Http\Controllers\AllCo
 Route::get('/all/massage/user/getStudentOldMassage', [App\Http\Controllers\AllController::class, 'getStudentOldMassage']);
 Route::post('/all/massage/user/sendMassage', [App\Http\Controllers\AllController::class, 'sendMassage']);
 Route::post('/all/massage/user/getMassage', [App\Http\Controllers\AllController::class, 'getMassage']);
+Route::post('/all/massage/user/deleteMassage', [App\Http\Controllers\AllController::class, 'deleteMassage']);
 Route::get('/all/massage/student/countMessage', [App\Http\Controllers\AllController::class, 'countMessage']);
 Route::get('/all/massage/student/countMassageAdmin', [App\Http\Controllers\AllController::class, 'countMassageAdmin'])->name('all.massage.student.countMassageAdmin');
 
