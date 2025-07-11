@@ -685,6 +685,9 @@ Route::post('/student/games/accept', [App\Http\Controllers\StudentController::cl
 Route::get('/student/games/{game_id}', [App\Http\Controllers\StudentController::class, 'getGame'])->name('student.games.get');
 Route::post('/student/games/move', [App\Http\Controllers\StudentController::class, 'makeMove'])->name('student.games.move');
 Route::post('/student/search', [App\Http\Controllers\StudentController::class, 'searchStudents'])->name('student.search');
+Route::get('/test-student-search', function() {
+    return response()->json(['test' => 'route works', 'students_count' => DB::table('students')->count()]);
+});
 
 
 Route::get('/finance_dashboard', [App\Http\Controllers\FinanceController::class, 'dashboard'])->name('finance.dashboard');

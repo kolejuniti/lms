@@ -16,6 +16,7 @@ use Carbon\Carbon;
 use League\Flysystem\AwsS3V3\PortableVisibilityConverter;
 use Mail;
 use Intervention\Image\Facades\Image;
+use Illuminate\Support\Facades\Log;
 
 class AllController extends Controller
 {
@@ -261,7 +262,7 @@ class AllController extends Controller
 
         }
 
-        return view('alluser.post.adminGetStaff', compact('data'));
+        return view('alluser.post.adminGetStaffTbody', compact('data'));
 
     }
 
@@ -801,6 +802,11 @@ class AllController extends Controller
 
     public function sendMassage(Request $request)
     {
+        // Handle image upload if present
+        $imageUrl = null;
+        if ($request->hasFile('image')) {
+            $imageUrl = $this->uploadMessageImage($request->file('image'), $request->ic, $request->type);
+        }
 
         if($request->type != 'STUDENT')
         {
@@ -830,7 +836,8 @@ class AllController extends Controller
                 'message_id' => $id,
                 'sender' => Auth::user()->ic,
                 'user_type' => $request->type,
-                'message' => $request->message,
+                'message' => $request->message ?? '',
+                'image_url' => $imageUrl,
                 'status' => 'NEW'
             ]);
 
@@ -862,17 +869,58 @@ class AllController extends Controller
                 'message_id' => $id,
                 'sender' => Auth::guard('student')->user()->ic,
                 'user_type' => $request->type,
-                'message' => $request->message,
+                'message' => $request->message ?? '',
+                'image_url' => $imageUrl,
                 'status' => 'NEW'
             ]);
 
         }
 
-        
+        return response()->json([
+            'message' => $request->message ?? '',
+            'image_url' => $imageUrl
+        ]);
+    }
 
+    private function uploadMessageImage($image, $ic, $type)
+    {
+        try {
+            // Validate image
+            $allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'image/webp'];
+            if (!in_array($image->getMimeType(), $allowedTypes)) {
+                throw new \Exception('Invalid image type. Only JPEG, PNG, JPG, GIF, and WebP are allowed.');
+            }
 
-        return response()->json(['message' => $request->message]);
+            // Check file size (max 5MB)
+            if ($image->getSize() > 5 * 1024 * 1024) {
+                throw new \Exception('Image size must be less than 5MB.');
+            }
 
+            // Generate unique filename
+            $extension = $image->getClientOriginalExtension();
+            $filename = 'msg_' . $ic . '_' . $type . '_' . time() . '_' . uniqid() . '.' . $extension;
+            
+            // Create directory path
+            $directory = 'messages/' . date('Y') . '/' . date('m');
+            
+            // Check if directory exists, if not create it
+            if (!Storage::disk('linode')->exists($directory)) {
+                Storage::disk('linode')->makeDirectory($directory, 'public');
+            }
+            
+            // Upload to Linode storage using the same pattern as existing code
+            $path = $image->storeAs($directory, $filename, [
+                'disk' => 'linode',
+                'visibility' => 'public'
+            ]);
+
+            // Return the full URL using environment variables like other controllers
+            return env('LINODE_ENDPOINT') . '/' . env('LINODE_BUCKET') . '/' . $path;
+
+        } catch (\Exception $e) {
+            Log::error('Image upload failed: ' . $e->getMessage());
+            return null;
+        }
     }
 
     public function getMassage(Request $request)

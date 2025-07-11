@@ -15,7 +15,22 @@
     
     <div class="message-bubble" :class="{ 'mine': isMine, 'others': !isMine, 'temporary': data.isTemporary }">
       <div class="message-content">
-        <p class="message-text">{{ data.message }}</p>
+        <!-- Image display -->
+        <div v-if="data.image_url" class="message-image-container">
+          <img 
+            :src="getImageUrl(data.image_url)" 
+            :alt="data.message || 'Image'" 
+            class="message-image"
+            @click="openImageModal"
+            @error="handleImageError"
+          >
+          <div v-if="data.isTemporary" class="image-uploading-overlay">
+            <div class="uploading-spinner"></div>
+          </div>
+        </div>
+        
+        <!-- Text message (only show if there's text content) -->
+        <p v-if="data.message && data.message.trim()" class="message-text">{{ data.message }}</p>
         
         <div class="message-metadata">
           <span class="message-time">{{ formatTime(data.datetime || data.created_at) }}</span>
@@ -26,7 +41,7 @@
           </svg>
           
           <!-- Double green ticks for READ messages -->
-          <svg v-if="isMine && !data.isTemporary && data.status === 'READ'" class="status-icon read-message" xmlns="http://www.w3.org/2000/svg" width="16" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg v-if="isMine && !data.isTemporary && data.status === 'read'" class="status-icon read-message" xmlns="http://www.w3.org/2000/svg" width="16" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="20 6 9 17 4 12"></polyline>
             <polyline points="16 6 5 17 0 12"></polyline>
           </svg>
@@ -131,6 +146,42 @@ export default {
       // Get initial from user or a default
       // This would need to be adapted to your user data structure
       return 'U';
+    },
+    getImageUrl(url) {
+      if (!url) return '';
+      
+      // If it's already a full URL (starts with http), return as is
+      if (url.startsWith('http')) {
+        return url;
+      }
+      
+      // If it's a relative path, construct the full URL using Linode configuration
+      // This handles cases where old images were stored as paths only
+      const linodeEndpoint = window.Laravel?.linodeEndpoint || process.env.LINODE_ENDPOINT;
+      const linodeBucket = window.Laravel?.linodeBucket || process.env.LINODE_BUCKET;
+      
+      if (linodeEndpoint && linodeBucket) {
+        return `${linodeEndpoint}/${linodeBucket}/${url}`;
+      }
+      
+      // Fallback: return the URL as-is
+      return url;
+    },
+    handleImageError(event) {
+      console.warn('Failed to load image:', event.target.src);
+      // Set a placeholder image or hide the image
+      event.target.style.display = 'none';
+      
+      // Optionally, you could set a placeholder
+      // event.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3QgeD0iMyIgeT0iMyIgd2lkdGg9IjE4IiBoZWlnaHQ9IjE4IiByeD0iMiIgcnk9IjIiIGZpbGw9IiNmM2Y0ZjYiIHN0cm9rZT0iI2Q1ZDVkNSIvPgo8Y2lyY2xlIGN4PSI5IiBjeT0iOSIgcj0iMiIgZmlsbD0iI2Q1ZDVkNSIvPgo8cGF0aCBkPSJNMjEgMTVsLTMuMDg2LTMuMDg2YTIgMiAwIDAgMC0yLjgyOCAwTDYgMjEiIHN0cm9rZT0iI2Q1ZDVkNSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPC9zdmc+';
+    },
+    openImageModal() {
+      // This method would typically open a modal or lightbox
+      // For now, we'll just open the image in a new tab
+      const imageUrl = this.getImageUrl(this.data.image_url);
+      if (imageUrl) {
+        window.open(imageUrl, '_blank');
+      }
     }
   }
 }
@@ -241,9 +292,76 @@ export default {
 
 .message-text {
   margin: 0;
-  font-size: 0.95rem;
-  line-height: 1.4;
+  line-height: 1.5;
+  word-wrap: break-word;
   white-space: pre-wrap;
+}
+
+/* Image message styles */
+.message-image-container {
+  position: relative;
+  margin-bottom: 0.5rem;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  max-width: 250px;
+  width: 100%;
+}
+
+.message-image {
+  width: 100%;
+  height: auto;
+  max-height: 300px;
+  object-fit: cover;
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+  border-radius: 0.75rem;
+}
+
+.message-image:hover {
+  opacity: 0.9;
+}
+
+.image-uploading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.75rem;
+}
+
+.uploading-spinner {
+  width: 24px;
+  height: 24px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Adjust message bubble styling for images */
+.message-bubble:has(.message-image-container) {
+  padding: 0.25rem;
+}
+
+.message-bubble:has(.message-image-container) .message-content {
+  padding: 0.25rem;
+}
+
+.message-bubble:has(.message-image-container) .message-text {
+  padding: 0 0.5rem 0.25rem 0.5rem;
+}
+
+.message-bubble:has(.message-image-container) .message-metadata {
+  padding: 0 0.5rem 0.25rem 0.5rem;
 }
 
 .message-metadata {

@@ -52,6 +52,19 @@
             </div>
           </div>
   
+          <!-- Image Preview (above the input area) -->
+          <div v-if="selectedImage" class="image-preview-container">
+            <div class="image-preview">
+              <img :src="selectedImage.preview" alt="Image preview" class="preview-image">
+              <button @click="removeSelectedImage" class="remove-image-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
+            </div>
+          </div>
+
           <div class="chat-footer">
             <div class="chat-input-container">
               <input 
@@ -65,6 +78,24 @@
                 ref="messageInput"
               >
               <div class="input-actions">
+                <!-- Image Upload Button -->
+                <button class="image-button" @click="triggerImageUpload" ref="imageButton">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                    <circle cx="9" cy="9" r="2"></circle>
+                    <path d="M21 15l-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path>
+                  </svg>
+                </button>
+                
+                <!-- Hidden File Input -->
+                <input 
+                  type="file" 
+                  ref="imageInput" 
+                  @change="handleImageSelect" 
+                  accept="image/*" 
+                  style="display: none"
+                >
+                
                 <button class="emoji-button" @click="toggleEmojiPicker" ref="emojiButton">
                   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="12" cy="12" r="10"></circle>
@@ -104,10 +135,11 @@
                 </div>
               </div>
             </div>
+            
             <button 
               @click="submitMessage" 
               class="send-button" 
-              :class="{ 'active': message.trim().length > 0 }"
+              :class="{ 'active': message.trim().length > 0 || selectedImage }"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="22" y1="2" x2="11" y2="13"></line>
@@ -150,6 +182,11 @@
       const selectedCategory = ref(0);
       const isTyping = ref(false);
       const typingTimeout = ref(null);
+      
+      // Image upload refs
+      const imageInput = ref(null);
+      const imageButton = ref(null);
+      const selectedImage = ref(null);
   
       // Emoji categories and their emojis
       const emojiCategories = [
@@ -233,6 +270,48 @@
       const insertEmoji = (emoji) => {
         message.value += emoji;
         messageInput.value.focus();
+      };
+
+      // Image handling methods
+      const triggerImageUpload = () => {
+        imageInput.value.click();
+      };
+
+      const handleImageSelect = (event) => {
+        const file = event.target.files[0];
+        if (file) {
+          // Validate file type
+          const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'image/webp'];
+          if (!allowedTypes.includes(file.type)) {
+            alert('Please select a valid image file (JPEG, PNG, JPG, GIF, or WebP)');
+            return;
+          }
+
+          // Validate file size (5MB max)
+          if (file.size > 5 * 1024 * 1024) {
+            alert('Image size must be less than 5MB');
+            return;
+          }
+
+          // Create preview
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            selectedImage.value = {
+              file: file,
+              preview: e.target.result,
+              name: file.name,
+              size: file.size
+            };
+          };
+          reader.readAsDataURL(file);
+        }
+        
+        // Reset the input value so the same file can be selected again
+        event.target.value = '';
+      };
+
+      const removeSelectedImage = () => {
+        selectedImage.value = null;
       };
 
       // Handle typing detection to pause polling
@@ -461,14 +540,15 @@
   
       // Define your methods here
       const submitMessage = () => {
-        if (message.value.trim() === '') {
-          return; // Don't send empty messages
+        if (message.value.trim() === '' && !selectedImage.value) {
+          return; // Don't send empty messages without image
         }
         
         // Close emoji picker when sending a message
         showEmojiPicker.value = false;
         
         const messageToSend = message.value.trim();
+        const imageToSend = selectedImage.value;
         
         // Create a temporary message to show immediately
         const tempId = `temp-${state.ic}-${Date.now()}`;
@@ -477,7 +557,8 @@
           message: messageToSend,
           user_type: state.sessionUserId,
           created_at: new Date().toISOString(),
-          isTemporary: true
+          isTemporary: true,
+          image_url: imageToSend ? imageToSend.preview : null // Show preview temporarily
         };
         
         // Add temp message to UI immediately (safer approach)
@@ -485,8 +566,9 @@
         currentMessages.push(tempMessage);
         state.messages = currentMessages;
         
-        // Clear input
+        // Clear input and image
         message.value = '';
+        selectedImage.value = null;
         
         // Scroll to bottom
         nextTick(() => {
@@ -495,12 +577,34 @@
         
         console.log('Sending message:', messageToSend);
         
+        // Prepare data for submission
+        let requestData;
+        let config = {};
+        
+        if (imageToSend) {
+          // Use FormData for image upload
+          requestData = new FormData();
+          requestData.append('message', messageToSend);
+          requestData.append('ic', state.ic);
+          requestData.append('type', state.sessionUserId);
+          requestData.append('image', imageToSend.file);
+          
+          config = {
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
+          };
+        } else {
+          // Use regular JSON for text-only message
+          requestData = {
+            message: messageToSend,
+            ic: state.ic,
+            type: state.sessionUserId
+          };
+        }
+        
         // Send to server
-        axios.post('/all/massage/user/sendMassage', {
-          message: messageToSend,
-          ic: state.ic,
-          type: state.sessionUserId
-        })
+        axios.post('/all/massage/user/sendMassage', requestData, config)
         .then(response => {
           console.log('Message sent successfully:', response.data);
           
@@ -524,6 +628,9 @@
           
           // Restore the message to input if sending failed
           message.value = messageToSend;
+          if (imageToSend) {
+            selectedImage.value = imageToSend;
+          }
           
           // Show error message to user
           alert('Failed to send message. Please try again.');
@@ -575,7 +682,14 @@
         insertEmoji,
         shouldShowDateHeader,
         handleFocus,
-        handleBlur
+        handleBlur,
+        // Image upload related
+        imageInput,
+        imageButton,
+        selectedImage,
+        triggerImageUpload,
+        handleImageSelect,
+        removeSelectedImage
       };
     }
   }
@@ -789,6 +903,24 @@
     position: relative;
   }
   
+  .image-button {
+    background: transparent;
+    border: none;
+    color: var(--light-text);
+    cursor: pointer;
+    padding: 0.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: color 0.2s;
+    margin-right: 0.25rem;
+  }
+  
+  .image-button:hover {
+    color: var(--primary-color);
+  }
+  
   .emoji-button {
     background: transparent;
     border: none;
@@ -804,6 +936,53 @@
   
   .emoji-button:hover {
     color: var(--primary-color);
+  }
+
+  /* Image Preview Styles */
+  .image-preview-container {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--border-color);
+    background-color: #f9fafb;
+  }
+
+  .image-preview {
+    position: relative;
+    display: inline-block;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    border: 2px solid var(--border-color);
+    background-color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .preview-image {
+    width: auto;
+    height: 120px;
+    max-width: 200px;
+    object-fit: cover;
+    display: block;
+    border-radius: 0.5rem;
+  }
+
+  .remove-image-btn {
+    position: absolute;
+    top: 0.25rem;
+    right: 0.25rem;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+  }
+
+  .remove-image-btn:hover {
+    background-color: var(--error-color);
   }
   
   /* Emoji Picker Styles */
