@@ -45,7 +45,7 @@
          outline: 0;
          vertical-align: baseline;
          background: transparent;
-         font-size: 12px; /* reduce font-size */
+         font-size: 11px; /* reduce font-size */
          table-layout: fixed;
       }
       h2,h3,p {

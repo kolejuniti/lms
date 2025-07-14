@@ -45,7 +45,7 @@
          font-size: 100%;
          vertical-align: baseline;
          background: transparent;
-         font-size: 12px; /* reduce font-size */
+         font-size: 11px; /* reduce font-size */
       }
       h2,h3,p {
          margin: 0;
