@@ -253,6 +253,11 @@ Route::get('/AR/student/resultOverall', [App\Http\Controllers\AR_Controller::cla
 Route::post('/AR/student/resultOverall/submit', [App\Http\Controllers\AR_Controller::class, 'resultOverallSubmit']);
 Route::get('/AR/student/assessmentFilter', [App\Http\Controllers\AR_Controller::class, 'assessmentFilter'])->name('pendaftar_akademik.assessmentFilter');
 Route::post('/AR/student/assessmentFilter/submit', [App\Http\Controllers\AR_Controller::class, 'assessmentFilterSubmit']);
+Route::get('/AR/student/certificate', [App\Http\Controllers\AR_Controller::class, 'studentCertificate'])->name('pendaftar_akademik.student.certificate');
+Route::post('/AR/student/certificate/search', [App\Http\Controllers\AR_Controller::class, 'searchStudentForCertificate']);
+Route::post('/AR/student/certificate/generate', [App\Http\Controllers\AR_Controller::class, 'generateCertificateNumber']);
+Route::post('/AR/student/certificate/history', [App\Http\Controllers\AR_Controller::class, 'getCertificateHistory']);
+Route::post('/AR/student/certificate/updateStatus', [App\Http\Controllers\AR_Controller::class, 'updateCertificateStatus']);
 
 Route::get('/HEA', [App\Http\Controllers\HEA_Controller::class, 'index'])->name('HEA');
 

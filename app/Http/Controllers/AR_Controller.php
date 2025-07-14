@@ -5873,4 +5873,199 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
 
     }
 
+    public function studentCertificate()
+    {
+        return view('pendaftar_akademik.student.certificate.studentCertificate');
+    }
+
+    public function searchStudentForCertificate(Request $request)
+    {
+        $search = $request->search;
+        
+        $students = DB::table('students')
+            ->where('name', 'LIKE', '%' . $search . '%')
+            ->orWhere('ic', 'LIKE', '%' . $search . '%')
+            ->orWhere('no_matric', 'LIKE', '%' . $search . '%')
+            ->get();
+
+        return response()->json($students);
+    }
+
+    public function generateCertificateNumber(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+
+            $studentIc = $request->student_ic;
+            $certificateType = $request->certificate_type ?? 'NEW'; // 'NEW' or 'RECLAIMED'
+
+            if ($certificateType === 'NEW') {
+                // Check if student already has a certificate with status 'NEW'
+                $existingNewCertificate = DB::table('student_certificate')
+                    ->where('student_ic', $studentIc)
+                    ->where('status', 'NEW')
+                    ->first();
+
+                if ($existingNewCertificate) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Student already has a pending certificate (Status: NEW)'
+                    ]);
+                }
+
+                $status = 'NEW';
+                $message = 'Certificate generated successfully';
+            } else if ($certificateType === 'RECLAIMED') {
+                // Check if student has a CLAIMED certificate (required for RECLAIMED)
+                $claimedCertificate = DB::table('student_certificate')
+                    ->where('student_ic', $studentIc)
+                    ->where('status', 'CLAIMED')
+                    ->first();
+
+                if (!$claimedCertificate) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Cannot generate reclaimed certificate. Student must have a claimed certificate first.'
+                    ]);
+                }
+
+                // Check if student already has a certificate with status 'NEW'
+                $existingNewCertificate = DB::table('student_certificate')
+                    ->where('student_ic', $studentIc)
+                    ->where('status', 'NEW')
+                    ->first();
+
+                if ($existingNewCertificate) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Cannot generate reclaimed certificate while there is a pending NEW certificate'
+                    ]);
+                }
+
+                $status = 'RECLAIMED';
+                $message = 'Reclaimed certificate generated successfully';
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid certificate type'
+                ]);
+            }
+
+            // Get current counter
+            $counter = DB::table('certificate_counter')->where('id', 1)->first();
+            $currentCount = intval($counter->count);
+            $newCount = $currentCount + 1;
+            $newCountFormatted = str_pad($newCount, 4, '0', STR_PAD_LEFT);
+
+            // Update counter
+            DB::table('certificate_counter')
+                ->where('id', 1)
+                ->update([
+                    'count' => $newCountFormatted,
+                    'updated_at' => now()
+                ]);
+
+            // Generate serial number (you can customize this format)
+            $serialNo = 'CERT-' . date('Y') . '-' . $newCountFormatted;
+
+            // Insert new certificate record
+            DB::table('student_certificate')->insert([
+                'student_ic' => $studentIc,
+                'serial_no' => $serialNo,
+                'status' => $status,
+                'date' => now(),
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => $message,
+                'serial_no' => $serialNo,
+                'status' => $status
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'success' => false,
+                'message' => 'Error generating certificate: ' . $e->getMessage()
+            ]);
+        }
+    }
+
+    public function getCertificateHistory(Request $request)
+    {
+        $studentIc = $request->student_ic;
+        
+        $certificates = DB::table('student_certificate')
+            ->where('student_ic', $studentIc)
+            ->orderBy('created_at', 'desc')
+            ->get();
+        
+        return response()->json($certificates);
+    }
+
+    public function updateCertificateStatus(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+
+            $certificateId = $request->certificate_id;
+            $newStatus = $request->status;
+
+            // Validate status
+            if (!in_array($newStatus, ['NEW', 'CLAIMED', 'RECLAIMED'])) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid status provided'
+                ]);
+            }
+
+            // Get current certificate
+            $certificate = DB::table('student_certificate')->where('id', $certificateId)->first();
+            
+            if (!$certificate) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Certificate not found'
+                ]);
+            }
+
+            // Update certificate status
+            $updateData = [
+                'status' => $newStatus,
+                'updated_at' => now()
+            ];
+
+            // If marking as CLAIMED or RECLAIMED, update date_claimed
+            if ($newStatus === 'CLAIMED' || $newStatus === 'RECLAIMED') {
+                $updateData['date_claimed'] = now();
+            } else {
+                // If setting back to NEW, clear date_claimed
+                $updateData['date_claimed'] = null;
+            }
+
+            DB::table('student_certificate')
+                ->where('id', $certificateId)
+                ->update($updateData);
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Certificate status updated successfully to ' . $newStatus
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'success' => false,
+                'message' => 'Error updating certificate status: ' . $e->getMessage()
+            ]);
+        }
+    }
+
 }

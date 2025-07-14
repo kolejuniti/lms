@@ -347,6 +347,7 @@ li a {
 						<li><a href="{{ route('pendaftar_akademik.leave') }}" class="{{ (route('pendaftar_akademik.leave') == Request::url()) ? 'active' : ''}}">Student Leave</a></li>
 						<li><a href="{{ route('all.student.spm.report') }}" class="{{ (route('all.student.spm.report') == Request::url()) ? 'active' : ''}}">Student Report SPM</a></li>
 						<li><a href="{{ route('pendaftar_akademik.student.studentAssessment') }}" class="{{ (route('pendaftar_akademik.student.studentAssessment') == Request::url()) ? 'active' : ''}}">Student Assessment</a></li>
+						<li><a href="{{ route('pendaftar_akademik.student.certificate') }}" class="{{ (route('pendaftar_akademik.student.certificate') == Request::url()) ? 'active' : ''}}">Student Certificate</a></li>
 					</ul>
 				</li>
 				<li class="treeview">
