@@ -265,7 +265,7 @@
             </div> 
         </div>
         <div style="text-align: right; margin-top: 30px;">
-            <img src="{{ asset('storage/signature/signature2.png') }}" alt="Signature" width="80px" height="80px" style="float: right; clear: right; margin-bottom: 10px;">
+            <img src="{{ asset('storage/signature/signature2.png') }}" alt="Signature" width="90px" height="90px" style="float: right; clear: right; margin-bottom: 8px;">
             <div style="clear: right; text-align: right; line-height: 1.2;">
                 <b>......................................<br>
                 AZHAR BIN ZUNAIDAK<br>
