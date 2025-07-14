@@ -265,8 +265,8 @@
             </div> 
         </div>
         <div style="text-align: right; margin-top: 30px;">
-            <img src="{{ asset('storage/signature/signature2.png') }}" alt="Signature" width="80px" height="60px" style="display: block; margin-left: auto; margin-bottom: 10px;">
-            <div style="line-height: 1.2;">
+            <img src="{{ asset('storage/signature/signature2.png') }}" alt="Signature" width="80px" height="60px" style="float: right; clear: right; margin-bottom: 10px;">
+            <div style="clear: right; text-align: right; line-height: 1.2;">
                 <b>......................................<br>
                 AZHAR BIN ZUNAIDAK<br>
                 PENOLONG PENDAFTAR<br>
