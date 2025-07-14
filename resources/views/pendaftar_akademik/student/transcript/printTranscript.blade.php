@@ -265,7 +265,7 @@
             </div> 
         </div>
         <br>
-        <img src="{{ asset('storage/signature/signature2.png') }}" alt="Image" width="10%" height="10%" style="float: right;">
+        <img src="{{ asset('storage/signature/signature2.png') }}" alt="Image" width="10%" height="10%" style="text-align: right;">
         <br>
         <br>
         <br>
