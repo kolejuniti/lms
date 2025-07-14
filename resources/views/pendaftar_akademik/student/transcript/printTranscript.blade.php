@@ -264,7 +264,7 @@
             </table>
             </div> 
         </div>
-        {{-- <img src="{{ asset('storage/signature/signature2.png') }}" alt="Image" width="10%" height="10%" style="float: right;"> --}}
+        <img src="{{ asset('storage/signature/signature2.png') }}" alt="Image" width="10%" height="10%" style="float: right;">
         <br>
         <br>
         <br>
