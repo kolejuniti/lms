@@ -264,18 +264,16 @@
             </table>
             </div> 
         </div>
-        <br>
-        <img src="{{ asset('storage/signature/signature2.png') }}" alt="Image" width="10%" height="10%" style="float: right;">
-        <br>
-        <br>
-        <br>
-        <br>
-
-        <p style="text-align: right;"><b>......................................<br>
-        AZHAR BIN ZUNAIDAK<br>
-        PENOLONG PENDAFTAR<br>
-        HAL EHWAL AKADEMIK<br>
-        BP: KETUA EKSEKUTIF</b></p><br>
+        <div style="text-align: right; margin-top: 30px;">
+            <img src="{{ asset('storage/signature/signature2.png') }}" alt="Signature" width="80px" height="60px" style="display: block; margin-left: auto; margin-bottom: 10px;">
+            <div style="line-height: 1.2;">
+                <b>......................................<br>
+                AZHAR BIN ZUNAIDAK<br>
+                PENOLONG PENDAFTAR<br>
+                HAL EHWAL AKADEMIK<br>
+                BP: KETUA EKSEKUTIF</b>
+            </div>
+        </div>
 
         <p style="text-align: right;"><b>TARIKH: {{ $data['date'] }}</b><br>
         
