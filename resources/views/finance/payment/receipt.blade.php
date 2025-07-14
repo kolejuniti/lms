@@ -45,7 +45,7 @@
          outline: 0;
          vertical-align: baseline;
          background: transparent;
-         font-size: 11px; /* reduce font-size */
+         font-size: 10px; /* reduce font-size */
          table-layout: fixed;
       }
       h2,h3,p {
@@ -55,7 +55,7 @@
          outline: 0;
          vertical-align: baseline;
          background: transparent;
-         font-size: 11px; /* reduce font-size */
+         font-size: 10px; /* reduce font-size */
       }
       .container {
          transform: scale(0.1); /* scale down everything */
