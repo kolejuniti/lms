@@ -6068,4 +6068,92 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
         }
     }
 
+    public function bulkStudentCertificate()
+    {
+        return view('pendaftar_akademik.student.certificate.bulkStudentCertificate');
+    }
+
+    public function getNewCertificates(Request $request)
+    {
+        try {
+            $certificates = DB::table('student_certificate')
+                ->join('students', 'student_certificate.student_ic', '=', 'students.ic')
+                ->select(
+                    'student_certificate.*',
+                    'students.name as student_name',
+                    'students.no_matric as student_matric',
+                    'students.program as student_program'
+                )
+                ->where('student_certificate.status', 'NEW')
+                ->orderBy('student_certificate.created_at', 'asc')
+                ->get();
+
+            return response()->json([
+                'success' => true,
+                'data' => $certificates
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error fetching certificates: ' . $e->getMessage()
+            ]);
+        }
+    }
+
+    public function bulkClaimCertificates(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+
+            $certificateIds = $request->certificate_ids;
+            
+            if (empty($certificateIds)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No certificates selected'
+                ]);
+            }
+
+            // Validate that all certificates exist and have NEW status
+            $certificates = DB::table('student_certificate')
+                ->whereIn('id', $certificateIds)
+                ->where('status', 'NEW')
+                ->get();
+
+            if ($certificates->count() !== count($certificateIds)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Some certificates are not valid or already claimed'
+                ]);
+            }
+
+            // Update certificates to CLAIMED status
+            $updateData = [
+                'status' => 'CLAIMED',
+                'date_claimed' => now(),
+                'updated_at' => now()
+            ];
+
+            $updatedCount = DB::table('student_certificate')
+                ->whereIn('id', $certificateIds)
+                ->where('status', 'NEW')
+                ->update($updateData);
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => $updatedCount . ' certificates have been marked as CLAIMED successfully'
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'success' => false,
+                'message' => 'Error bulk claiming certificates: ' . $e->getMessage()
+            ]);
+        }
+    }
+
 }
