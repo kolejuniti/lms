@@ -44,6 +44,26 @@ class URController extends Controller
 
     }
 
+    public function updateEducationAdvisor(Request $request)
+    {
+        // Validate the request
+        $request->validate([
+            'id' => 'required|integer|exists:tbledu_advisor,id',
+            'name' => 'required|string|max:255',
+            'ic' => 'required|string|max:20'
+        ]);
+
+        // Update the education advisor record
+        DB::table('tbledu_advisor')
+            ->where('id', $request->id)
+            ->update([
+                'name' => $request->name,
+                'ic' => $request->ic
+            ]);
+
+        return response()->json(['success' => true, 'message' => 'Education advisor updated successfully']);
+    }
+
     public function deleteEducationAdvisor()
     {
 

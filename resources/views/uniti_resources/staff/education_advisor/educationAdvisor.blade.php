@@ -1,4 +1,4 @@
-@extends('layouts.pendaftar_akademik')
+@extends('layouts.ur')
 
 @section('main')
 <!-- Content Header (Page header) -->
@@ -45,10 +45,15 @@
                 </div>
               </div>
                 <div class="pull-right">
-                    <a type="button" class="waves-effect waves-light btn btn-info btn-sm" onclick="submit()">
-                        <i class="fa fa-plus"></i> <i class="fa fa-object-group"></i> &nbsp Submit
+                    <a type="button" class="waves-effect waves-light btn btn-info btn-sm" onclick="submit()" id="submitBtn">
+                        <i class="fa fa-plus"></i> <i class="fa fa-object-group"></i> &nbsp <span id="submitText">Submit</span>
+                    </a>
+                    <a type="button" class="waves-effect waves-light btn btn-secondary btn-sm" onclick="cancelEdit()" id="cancelBtn" style="display:none;">
+                        <i class="fa fa-times"></i> &nbsp Cancel
                     </a>
                 </div>
+                <!-- Hidden field to store the ID during edit mode -->
+                <input type="hidden" id="editId" value="">
             </div>
         </div>
         </div>
@@ -66,6 +71,7 @@
                         Ic
                     </th>
                     <th>
+                        Actions
                     </th>
                 </tr>
             </thead>
@@ -80,8 +86,12 @@
                   {{ $ea->ic }}
                 </td>
                 <td class="project-actions text-right" style="text-align: center;">
+                  <a class="btn btn-warning btn-sm" href="#" onclick="editMaterial('{{ $ea->id }}', '{{ $ea->name }}', '{{ $ea->ic }}')">
+                    <i class="ti-pencil-alt"></i> Edit
+                  </a>
                   <a class="btn btn-danger btn-sm" href="#" onclick="deleteMaterial('{{ $ea->id }}')">
-                  <i class="ti-trash"></i> Delete</a>
+                    <i class="ti-trash"></i> Delete
+                  </a>
                 </td>
               </tr>
               @endforeach
@@ -132,27 +142,90 @@
   {
     name = $('#name').val();
     ic = $('#ic').val();
+    editId = $('#editId').val();
+
+    // Validation
+    if (!name || !ic) {
+        alert("Please fill in all fields");
+        return;
+    }
+
+    var url, method, data;
+    
+    if (editId) {
+        // Update mode
+        url = "{{ url('ur/educationAdvisor/update') }}";
+        method = 'PUT';
+        data = {id: editId, name: name, ic: ic};
+    } else {
+        // Create mode
+        url = "{{ url('ur/educationAdvisor/post') }}";
+        method = 'POST';
+        data = {name: name, ic: ic};
+    }
 
     return $.ajax({
             headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
-            url      : "{{ url('ur/educationAdvisor/post') }}",
-            method   : 'POST',
-            data 	 : {name: name, ic: ic},
+            url      : url,
+            method   : method,
+            data 	 : data,
             error:function(err){
                 alert("Error");
                 console.log(err);
             },
             success  : function(data){
+              resetForm();
               window.location.reload();
             }
         });
+  }
 
+  function editMaterial(id, name, ic)
+  {
+    // Populate form fields
+    $('#name').val(name);
+    $('#ic').val(ic);
+    $('#editId').val(id);
+    
+    // Update UI for edit mode
+    $('#submitText').text('Update');
+    $('#submitBtn').removeClass('btn-info').addClass('btn-success');
+    $('#submitBtn i:first').removeClass('fa-plus').addClass('fa-edit');
+    $('#cancelBtn').show();
+    
+    // Add visual indicator that we're in edit mode
+    $('.card-header h3').html('Edit Education Advisor <small class="text-muted">(Editing: ' + name + ')</small>');
+    
+    // Scroll to form
+    $('html, body').animate({
+        scrollTop: $('.card').offset().top - 20
+    }, 500);
+  }
 
+  function cancelEdit()
+  {
+    resetForm();
+  }
+
+  function resetForm()
+  {
+    // Clear form fields
+    $('#name').val('');
+    $('#ic').val('');
+    $('#editId').val('');
+    
+    // Reset UI to create mode
+    $('#submitText').text('Submit');
+    $('#submitBtn').removeClass('btn-success').addClass('btn-info');
+    $('#submitBtn i:first').removeClass('fa-edit').addClass('fa-plus');
+    $('#cancelBtn').hide();
+    
+    // Reset header
+    $('.card-header h3').text('Assigned Education Advisor');
   }
 
   function deleteMaterial(id)
   {
-
     Swal.fire({
     title: "Are you sure?",
     text: "This will be permanent",
@@ -177,9 +250,7 @@
               });
           }
       });
-
   }
   
-
   </script>
 @endsection
