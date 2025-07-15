@@ -5883,6 +5883,8 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
         $search = $request->search;
         
         $students = DB::table('students')
+            ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+            ->select('students.*', 'tblprogramme.progname AS program')
             ->where('name', 'LIKE', '%' . $search . '%')
             ->orWhere('ic', 'LIKE', '%' . $search . '%')
             ->orWhere('no_matric', 'LIKE', '%' . $search . '%')
@@ -6078,11 +6080,12 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
         try {
             $certificates = DB::table('student_certificate')
                 ->join('students', 'student_certificate.student_ic', '=', 'students.ic')
+                ->join('tblprogramme', 'students.program', '=', 'tblprogramme.id')
                 ->select(
                     'student_certificate.*',
                     'students.name as student_name',
                     'students.no_matric as student_matric',
-                    'students.program as student_program'
+                    'tblprogramme.progname as student_program'
                 )
                 ->where('student_certificate.status', 'NEW')
                 ->orderBy('student_certificate.created_at', 'asc')
