@@ -1173,20 +1173,6 @@ class LecturerController extends Controller
     {
         $group = explode('|', $request->group);
 
-        // if(!empty($request->program))
-        // {
-
-        //     $students = student::join('students', 'student_subjek.student_ic', 'students.ic')
-        //                 ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
-        //                 ->where('group_id', $group[0])->where('group_name', $group[1])
-        //                 ->where('student_subjek.sessionid', Session::get('SessionID'))
-        //                 ->where('students.program', $request->program)
-        //                 ->whereNotIn('students.status', [4,5,6,7,16])
-        //                 ->orderBy('students.name')
-        //                 ->get();
-
-        // }else{
-
             $student = student::join('students', 'student_subjek.student_ic', 'students.ic')
                         ->join('tblprogramme', 'students.program', 'tblprogramme.id')
                         ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
@@ -1206,8 +1192,6 @@ class LecturerController extends Controller
                         }
 
                         $students = $student->get();
-
-        // }
 
         $content = "";
         $content .= '
@@ -1461,6 +1445,57 @@ $content .= '</tr>
 
     }
 
+    public function printExamination(Request $request)
+    {
+        $group = explode('|', $request->group);
+
+        // Get all programs for this group
+        $programs = student::join('students', 'student_subjek.student_ic', 'students.ic')
+                    ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+                    ->where('student_subjek.group_id', $group[0])
+                    ->where('student_subjek.group_name', $group[1])
+                    ->where('student_subjek.sessionid', Session::get('SessionID'))
+                    ->whereNotIn('students.status', [4,5,6,7,16])
+                    ->groupBy('tblprogramme.id')
+                    ->select('tblprogramme.*')
+                    ->orderBy('tblprogramme.progcode')
+                    ->get();
+
+        // Filter by selected programs if provided
+        if(!empty($request->program)) {
+            $programs = $programs->whereIn('id', $request->program);
+        }
+
+        $data = [];
+        
+        // Get students grouped by program
+        foreach($programs as $program) {
+            $students = student::join('students', 'student_subjek.student_ic', 'students.ic')
+                        ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+                        ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
+                        ->where('student_subjek.group_id', $group[0])
+                        ->where('student_subjek.group_name', $group[1])
+                        ->where('student_subjek.sessionid', Session::get('SessionID'))
+                        ->where('students.program', $program->id)
+                        ->whereNotIn('students.status', [4,5,6,7,16])
+                        ->orderBy('students.name')
+                        ->select('students.*', 'tblprogramme.progcode', 'tblprogramme.progname', 'sessions.SessionName')
+                        ->get();
+
+            if($students->count() > 0) {
+                $data[] = [
+                    'program' => $program,
+                    'students' => $students
+                ];
+            }
+        }
+
+        $course = DB::table('subjek')->where('id', Session::get('CourseID'))->first();
+        $session = DB::table('sessions')->where('SessionID', Session::get('SessionID'))->first();
+
+        return view('lecturer.class.printExamination', compact('data', 'course', 'session'));
+    }
+
     public function getDate(Request $request)
     {
         //$day = DateTime::createFromFormat('d/m/Y', $request->date);
@@ -1480,8 +1515,6 @@ $content .= '</tr>
 
     public function storeAttendance(Request $request)
     {
-
-        //dd($request->student);
 
         try {
 
@@ -1554,7 +1587,6 @@ $content .= '</tr>
                             'student_ic' => $std,
                             'groupid' => $group[0],
                             'groupname' => $group[1],
-                            //'classscheduleid' => $data['schedule'],
                             'classtype' => $data['class'],
                             'classdate' => $data['date'],
                             'classend' => $data['date2']
@@ -1574,7 +1606,6 @@ $content .= '</tr>
                 DB::table('tblclassattendance')->insert([
                     'groupid' => $group[0],
                     'groupname' => $group[1],
-                    //'classscheduleid' => $data['schedule'],\
                     'classtype' => $data['class'],
                     'classdate' => $data['date'],
                     'classend' => $data['date2']

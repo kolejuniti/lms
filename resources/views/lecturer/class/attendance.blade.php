@@ -20,7 +20,7 @@
     </div>
     @endif
   <!-- Content Header (Page header) -->	  
-  <div class="content-header">
+  <div class="page-header">
     <div class="d-flex align-items-center">
       <div class="me-auto">
         <h4 class="page-title">Attendance Record</h4>
@@ -130,8 +130,11 @@
                   </div>
                   <div class="card-header" id="export" hidden>
                     <b>Search Student</b>
-                    <button id="printButton" class="waves-effect waves-light btn btn-primary btn-sm">
-                      <i class="ti-printer"></i>&nbsp Export
+                    <button id="printAttendanceButton" class="waves-effect waves-light btn btn-primary btn-sm me-2">
+                      <i class="ti-printer"></i>&nbsp Export Class Attendance
+                    </button>
+                    <button id="printExaminationButton" class="waves-effect waves-light btn btn-success btn-sm">
+                      <i class="ti-printer"></i>&nbsp Export Examination
                     </button>
                   </div>
                   <div class="col-md-12">
@@ -314,20 +317,46 @@ function CheckAll(elem) {
  }
 
  $(document).ready(function() {
-    $('#printButton').on('click', function(e) {
+    $('#printAttendanceButton').on('click', function(e) {
       e.preventDefault();
-      printReport();
+      printAttendanceReport();
+    });
+
+    $('#printExaminationButton').on('click', function(e) {
+      e.preventDefault();
+      printExaminationReport();
     });
   });
 
 
-  function printReport() {
+  function printAttendanceReport() {
     var group = $('#group').val();
     var program = $('#program').val();
 
     return $.ajax({
       headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
       url: "{{ url('lecturer/class/attendance/print') }}",
+      method: 'GET',
+      data: { group: group, program: program },
+      error: function(err) {
+        alert("Error");
+        console.log(err);
+      },
+      success: function(data) {
+        var newWindow = window.open();
+        newWindow.document.write(data);
+        newWindow.document.close();
+      }
+    });
+  }
+
+  function printExaminationReport() {
+    var group = $('#group').val();
+    var program = $('#program').val();
+
+    return $.ajax({
+      headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+      url: "{{ url('lecturer/class/examination/print') }}",
       method: 'GET',
       data: { group: group, program: program },
       error: function(err) {
