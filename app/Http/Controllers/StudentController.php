@@ -1811,10 +1811,10 @@ class StudentController extends Controller
         $winnerIc = null;
 
         if ($winner) {
-            $status = 'finished';
+            $status = 'completed';
             $winnerIc = $student->ic;
         } elseif ($isDraw) {
-            $status = 'finished';
+            $status = 'completed';
             $winnerIc = 'draw';
         }
 
