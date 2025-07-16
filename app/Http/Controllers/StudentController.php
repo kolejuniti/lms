@@ -13,7 +13,6 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 
 
@@ -1670,47 +1669,20 @@ class StudentController extends Controller
         // Check if there's already an active or waiting game between these players
         $existingGame = DB::table('games')
             ->where(function($query) use ($student, $request) {
-                $query->where('player1_ic', $student->ic)
+                $query->where(function($q) use ($student, $request) {
+                    $q->where('player1_ic', $student->ic)
                       ->where('player2_ic', $request->opponent_ic);
-            })
-            ->orWhere(function($query) use ($student, $request) {
-                $query->where('player1_ic', $request->opponent_ic)
+                })
+                ->orWhere(function($q) use ($student, $request) {
+                    $q->where('player1_ic', $request->opponent_ic)
                       ->where('player2_ic', $student->ic);
+                });
             })
             ->whereIn('status', ['waiting', 'active'])
             ->first();
 
-        // Debug: Log what we found
-        \Log::info('Game creation debug', [
-            'current_user' => $student->ic,
-            'opponent' => $request->opponent_ic,
-            'existing_game' => $existingGame
-        ]);
-
-        // Also check all games between these players for debugging
-        $allGames = DB::table('games')
-            ->where(function($query) use ($student, $request) {
-                $query->where('player1_ic', $student->ic)
-                      ->where('player2_ic', $request->opponent_ic);
-            })
-            ->orWhere(function($query) use ($student, $request) {
-                $query->where('player1_ic', $request->opponent_ic)
-                      ->where('player2_ic', $student->ic);
-            })
-            ->get();
-
-        \Log::info('All games between these players', ['games' => $allGames]);
-
         if ($existingGame) {
-            return response()->json([
-                'error' => 'Game already exists with this player', 
-                'debug' => [
-                    'found_game_id' => $existingGame->id,
-                    'found_game_status' => $existingGame->status,
-                    'current_user' => $student->ic,
-                    'opponent' => $request->opponent_ic
-                ]
-            ], 400);
+            return response()->json(['error' => 'Game already exists with this player'], 400);
         }
 
         // Create new game
