@@ -1053,6 +1053,15 @@
                     font-size: 7px;
                     font-weight: 500;
                     line-height: 1.2;
+                    margin: 1px 0;
+                }
+
+                .event-time-display {
+                    color: #000000;
+                    font-size: 7px;
+                    font-weight: 600;
+                    line-height: 1.2;
+                    margin: 1px 0;
                 }
 
                 .rehat-cell {
@@ -1231,9 +1240,11 @@
                         }
                     }
 
-                    // Create cell with REHAT
+                    // Create cell with REHAT showing actual times
+                    let rehatTimeDisplay = `${toHHMM(start)} - ${toHHMM(end)}`;
                     html += `<td rowspan="${rowSpan}" class="rehat-cell">
                                 <div class="event-title">REHAT</div>
+                                <div class="event-time-display">${rehatTimeDisplay}</div>
                             </td>`;
 
                     // Skip processing other events in this cell
@@ -1306,6 +1317,12 @@
 
                         // Title
                         html += `<div class="event-title">${event.title || '(No Title)'}</div>`;
+
+                        // Add actual event times
+                        let eventStart = event.start;
+                        let eventEnd = event.end || new Date(eventStart.getTime() + 60 * 60 * 1000);
+                        let eventTimeDisplay = `${toHHMM(eventStart)} - ${toHHMM(eventEnd)}`;
+                        html += `<div class="event-time-display">${eventTimeDisplay}</div>`;
 
                         // Add description if available
                         if (event.extendedProps && event.extendedProps.description) {
