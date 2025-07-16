@@ -814,20 +814,36 @@
     const dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
     const hiddenDays = [];
 
-    // Build 15-minute time slots for precise positioning
+    // Build time slots with 30-minute intervals, except 13:00-14:30 which uses 15-minute intervals
     let times = [];
-    let startHour = 7; // From 7:00 as per calendar config
-    let startMinute = 0;
+    let currentHour = 7; // From 7:00 as per calendar config
+    let currentMinute = 0;
     let endHour = 20; // Until 20:00 as per calendar config
 
-    while (startHour < endHour || (startHour === endHour && startMinute === 0)) {
-        let hh = String(startHour).padStart(2, '0');
-        let mm = String(startMinute).padStart(2, '0');
+    while (currentHour < endHour || (currentHour === endHour && currentMinute === 0)) {
+        let hh = String(currentHour).padStart(2, '0');
+        let mm = String(currentMinute).padStart(2, '0');
         times.push(`${hh}:${mm}`);
-        startMinute += 15; // Changed from 30 to 15 minutes
-        if (startMinute === 60) {
-            startMinute = 0;
-            startHour++;
+        
+        // Special handling for 13:00-14:30 period (15-minute intervals)
+        if (currentHour === 13 && currentMinute === 0) {
+            // Add 13:15, 13:30, 13:45, 14:00, 14:15, 14:30
+            times.push('13:15');
+            times.push('13:30');
+            times.push('13:45');
+            times.push('14:00');
+            times.push('14:15');
+            times.push('14:30');
+            // Jump to 15:00 for next iteration
+            currentHour = 15;
+            currentMinute = 0;
+        } else {
+            // Regular 30-minute increment
+            currentMinute += 30;
+            if (currentMinute === 60) {
+                currentMinute = 0;
+                currentHour++;
+            }
         }
     }
 
@@ -1023,11 +1039,11 @@
 
                 td {
                     border: 1px solid #000000;
-                    padding: 1px;
+                    padding: 2px;
                     text-align: center;
                     vertical-align: middle;
                     background-color: #f8f8f8;
-                    height: 18px; /* Reduced height for 15-minute slots */
+                    height: 20px; /* Slightly reduced height for mixed intervals */
                 }
 
                 .time-column {
@@ -1203,26 +1219,31 @@
 
     // For each timeslot row
     for (let t = 0; t < times.length; t++) {
-        // Build the time label - show only every 30 minutes (every 2nd slot) to avoid clutter
+        let currentTime = times[t];
+        
+        // Determine if this is a major slot (30-minute boundary) or minor slot (15-minute mark)
+        let isMinorSlot = false;
         let timeLabel = '';
-        if (t % 2 === 0) {
-            // Major time slot - show full label
-            timeLabel = times[t];
+        
+        // Check if this is a 15-minute mark within the 13:00-14:30 period
+        if (currentTime === '13:15' || currentTime === '13:45' || currentTime === '14:15') {
+            isMinorSlot = true;
+            timeLabel = currentTime; // Just show the time
+        } else {
+            // Major time slot - show range
+            timeLabel = currentTime;
             if (t + 1 < times.length) {
                 timeLabel += ' - ' + times[t + 1];
             } else {
                 timeLabel += ' - 20:00';
             }
-        } else {
-            // Minor time slot - show just the time
-            timeLabel = times[t];
         }
 
         // Start a row
         html += `<tr>`;
 
         // Left column: time label with appropriate styling
-        let timeColumnClass = (t % 2 === 0) ? "time-column" : "time-column minor-slot";
+        let timeColumnClass = isMinorSlot ? "time-column minor-slot" : "time-column";
         html += `<td class="${timeColumnClass}">${timeLabel}</td>`;
 
         // For each day column
