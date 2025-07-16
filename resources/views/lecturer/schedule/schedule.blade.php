@@ -814,22 +814,22 @@
     const dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
     const hiddenDays = [];
 
-    // Build half-hour time slots with precise start times
-let times = [];
-let startHour = 7; // From 7:00 as per calendar config
-let startMinute = 0;
-let endHour = 20; // Until 20:00 as per calendar config
+    // Build half-hour time slots
+    let times = [];
+    let startHour = 7; // From 7:00 as per calendar config
+    let startMinute = 0;
+    let endHour = 20; // Until 20:00 as per calendar config
 
-while (startHour < endHour || (startHour === endHour && startMinute === 0)) {
-    let hh = String(startHour).padStart(2, '0');
-    let mm = String(startMinute).padStart(2, '0');
-    times.push(`${hh}:${mm}`);
-    startMinute += 15; // Use 15-minute increments for finer granularity
-    if (startMinute >= 60) {
-        startMinute = 0;
-        startHour++;
+    while (startHour < endHour || (startHour === endHour && startMinute === 0)) {
+        let hh = String(startHour).padStart(2, '0');
+        let mm = String(startMinute).padStart(2, '0');
+        times.push(`${hh}:${mm}`);
+        startMinute += 30;
+        if (startMinute === 60) {
+            startMinute = 0;
+            startHour++;
+        }
     }
-}
 
     // Get events from FullCalendar
     const events = calendar.getEvents();
@@ -890,46 +890,26 @@ while (startHour < endHour || (startHour === endHour && startMinute === 0)) {
     }
 
     // Fill the scheduleData with events
-events.forEach(event => {
-    let start = event.start;
-    let end = event.end || new Date(start.getTime() + 60 * 60 * 1000);
+    events.forEach(event => {
+        let start = event.start;
+        let end = event.end || new Date(start.getTime() + 60 * 60 * 1000);
 
-    // Day of week (0=Sunday, 1=Monday, etc.)
-    let dayIndex = start.getDay();
-    if (dayIndex === 0) dayIndex = 6; // Move Sunday to the end (index 6)
-    else dayIndex -= 1; // Adjust other days (Monday=0, Tuesday=1, etc.)
+        // Day of week (0=Sunday, 1=Monday, etc.)
+        let dayIndex = start.getDay();
+        if (dayIndex === 0) dayIndex = 6; // Move Sunday to the end (index 6)
+        else dayIndex -= 1; // Adjust other days (Monday=0, Tuesday=1, etc.)
 
-    let startTimeStr = toHHMM(start);
-    let endTimeStr = toHHMM(end);
+        let startTimeStr = toHHMM(start);
+        let endTimeStr = toHHMM(end);
 
-    // Find the exact time slot index for start and end
-    let startIndex = times.indexOf(startTimeStr);
-    if (startIndex === -1) {
-        // If exact match not found, find the closest slot <= start time
-        startIndex = times.findIndex(time => {
-            let [tHour, tMin] = time.split(':').map(Number);
-            let [sHour, sMin] = startTimeStr.split(':').map(Number);
-            return (tHour < sHour) || (tHour === sHour && tMin <= sMin);
-        });
-        startIndex = startIndex === -1 ? 0 : startIndex;
-    }
+        let startIndex = findTimeSlotIndex(startTimeStr, times, false);
+        let endIndex = findTimeSlotIndex(endTimeStr, times, true);
 
-    let endIndex = times.indexOf(endTimeStr);
-    if (endIndex === -1) {
-        // If exact match not found, find the closest slot >= end time
-        endIndex = times.findIndex(time => {
-            let [tHour, tMin] = time.split(':').map(Number);
-            let [eHour, eMin] = endTimeStr.split(':').map(Number);
-            return (tHour > eHour) || (tHour === eHour && tMin >= eMin);
-        });
-        endIndex = endIndex === -1 ? times.length - 1 : endIndex + 1;
-    }
-
-    // Fill each slot with the event
-    for (let i = startIndex; i < endIndex; i++) {
-        scheduleData[dayIndex][i].push(event);
-    }
-});
+        // Fill each half-hour slot with the event
+        for (let i = startIndex; i < endIndex; i++) {
+            scheduleData[dayIndex][i].push(event);
+        }
+    });
 
     // Create processed tracking arrays
     let processedEvents = new Set();
