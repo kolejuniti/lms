@@ -814,7 +814,7 @@
     const dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
     const hiddenDays = [];
 
-    // Build half-hour time slots
+    // Build 15-minute time slots for precise positioning
     let times = [];
     let startHour = 7; // From 7:00 as per calendar config
     let startMinute = 0;
@@ -824,7 +824,7 @@
         let hh = String(startHour).padStart(2, '0');
         let mm = String(startMinute).padStart(2, '0');
         times.push(`${hh}:${mm}`);
-        startMinute += 30;
+        startMinute += 15; // Changed from 30 to 15 minutes
         if (startMinute === 60) {
             startMinute = 0;
             startHour++;
@@ -1023,10 +1023,11 @@
 
                 td {
                     border: 1px solid #000000;
-                    padding: 2px;
+                    padding: 1px;
                     text-align: center;
                     vertical-align: middle;
                     background-color: #f8f8f8;
+                    height: 18px; /* Reduced height for 15-minute slots */
                 }
 
                 .time-column {
@@ -1034,6 +1035,13 @@
                     font-weight: 700;
                     color: #000000;
                     width: 60px;
+                }
+
+                .time-column.minor-slot {
+                    background-color: #f0f0f0;
+                    font-weight: 500;
+                    font-size: 7px;
+                    color: #666666;
                 }
 
                 .event-cell {
@@ -1137,6 +1145,13 @@
                         font-weight: 700 !important;
                     }
 
+                    .time-column.minor-slot {
+                        background-color: #f0f0f0 !important;
+                        color: #666666 !important;
+                        font-weight: 500 !important;
+                        font-size: 7px !important;
+                    }
+
                     .event-cell {
                         background-color: #d1e4ff !important;
                         border: 1.5px solid #000000 !important;
@@ -1188,19 +1203,27 @@
 
     // For each timeslot row
     for (let t = 0; t < times.length; t++) {
-        // Build the time label, e.g. "08:30 - 09:00"
-        let timeLabel = times[t];
-        if (t < times.length - 1) {
-            timeLabel += ' - ' + times[t + 1];
+        // Build the time label - show only every 30 minutes (every 2nd slot) to avoid clutter
+        let timeLabel = '';
+        if (t % 2 === 0) {
+            // Major time slot - show full label
+            timeLabel = times[t];
+            if (t + 1 < times.length) {
+                timeLabel += ' - ' + times[t + 1];
+            } else {
+                timeLabel += ' - 20:00';
+            }
         } else {
-            timeLabel += ' - 20:00';
+            // Minor time slot - show just the time
+            timeLabel = times[t];
         }
 
         // Start a row
         html += `<tr>`;
 
-        // Left column: time label
-        html += `<td class="time-column">${timeLabel}</td>`;
+        // Left column: time label with appropriate styling
+        let timeColumnClass = (t % 2 === 0) ? "time-column" : "time-column minor-slot";
+        html += `<td class="${timeColumnClass}">${timeLabel}</td>`;
 
         // For each day column
         for (let d = 0; d < 7; d++) {
