@@ -499,7 +499,7 @@ function updateGameStatus(game) {
                 status += ' (Your turn)';
             }
         }
-         } else if (game.status === 'completed') {
+         } else if (game.status === 'finished') {
          if (game.winner_ic === 'draw') {
              status = "Game completed - It's a draw!";
          } else {
@@ -517,7 +517,7 @@ function updateBoard(boardState) {
         $(this).text(boardState[index] || '');
         $(this).removeClass('disabled');
         
-        if (boardState[index] || !isMyTurn || currentGame?.status === 'completed') {
+        if (boardState[index] || !isMyTurn || currentGame?.status === 'finished') {
             $(this).addClass('disabled');
         }
     });

@@ -1667,7 +1667,7 @@ class StudentController extends Controller
             'opponent_ic' => 'required|exists:students,ic'
         ]);
 
-        // Check if there's already an active game between these players
+        // Check if there's already an active or waiting game between these players
         $existingGame = DB::table('games')
             ->where(function($query) use ($student, $request) {
                 $query->where('player1_ic', $student->ic)
@@ -1677,7 +1677,7 @@ class StudentController extends Controller
                 $query->where('player1_ic', $request->opponent_ic)
                       ->where('player2_ic', $student->ic);
             })
-            ->where('status', '!=', 'completed')
+            ->whereIn('status', ['waiting', 'active'])
             ->first();
 
         if ($existingGame) {
@@ -1811,10 +1811,10 @@ class StudentController extends Controller
         $winnerIc = null;
 
         if ($winner) {
-            $status = 'completed';
+            $status = 'finished';
             $winnerIc = $student->ic;
         } elseif ($isDraw) {
-            $status = 'completed';
+            $status = 'finished';
             $winnerIc = 'draw';
         }
 
