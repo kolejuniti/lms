@@ -883,21 +883,30 @@
             let slotTotalMinutes = slotHours * 60 + slotMinutes;
             
             if (isEndTime) {
-                // For end times, find the slot that the time falls within or the next slot
-                if (i === times.length - 1) {
-                    return i + 1; // Beyond the last slot
+                // For end times, find the slot that matches exactly or the next available slot
+                if (totalMinutes <= slotTotalMinutes) {
+                    return i;
                 }
                 
-                let [nextSlotHours, nextSlotMinutes] = times[i + 1].split(':').map(Number);
-                let nextSlotTotalMinutes = nextSlotHours * 60 + nextSlotMinutes;
-                
-                if (totalMinutes > slotTotalMinutes && totalMinutes <= nextSlotTotalMinutes) {
+                // If this is the last slot and we haven't found a match, return beyond last slot
+                if (i === times.length - 1) {
                     return i + 1;
                 }
             } else {
-                // For start times, find the slot that contains this time
+                // For start times, find the exact slot or the closest one
                 if (totalMinutes <= slotTotalMinutes) {
                     return i;
+                }
+                
+                // Special handling for times that fall between slots
+                if (i < times.length - 1) {
+                    let [nextSlotHours, nextSlotMinutes] = times[i + 1].split(':').map(Number);
+                    let nextSlotTotalMinutes = nextSlotHours * 60 + nextSlotMinutes;
+                    
+                    // If the time falls between this slot and next slot, use this slot
+                    if (totalMinutes > slotTotalMinutes && totalMinutes < nextSlotTotalMinutes) {
+                        return i;
+                    }
                 }
             }
         }
@@ -1228,12 +1237,34 @@
         // Check if this is a 15-minute mark within the 13:00-14:30 period
         if (currentTime === '13:15' || currentTime === '13:45' || currentTime === '14:15') {
             isMinorSlot = true;
-            timeLabel = currentTime; // Just show the time
+            // For 15-minute slots, show the exact time range
+            if (t + 1 < times.length) {
+                timeLabel = currentTime + ' - ' + times[t + 1];
+            } else {
+                timeLabel = currentTime;
+            }
         } else {
             // Major time slot - show range
             timeLabel = currentTime;
             if (t + 1 < times.length) {
-                timeLabel += ' - ' + times[t + 1];
+                // Skip intermediate 15-minute marks when showing range for major slots
+                let nextTime = times[t + 1];
+                // If the next time is a 15-minute mark, find the next major slot
+                if (nextTime === '13:15' || nextTime === '13:30' || nextTime === '13:45' || 
+                    nextTime === '14:00' || nextTime === '14:15' || nextTime === '14:30') {
+                    // For slots that lead into the 15-minute breakdown, show proper range
+                    if (currentTime === '13:00') {
+                        timeLabel += ' - 13:15';
+                    } else if (currentTime === '13:30') {
+                        timeLabel += ' - 13:45';
+                    } else if (currentTime === '14:00') {
+                        timeLabel += ' - 14:15';
+                    } else {
+                        timeLabel += ' - ' + nextTime;
+                    }
+                } else {
+                    timeLabel += ' - ' + nextTime;
+                }
             } else {
                 timeLabel += ' - 20:00';
             }
@@ -1275,21 +1306,32 @@
                     let startIndex = findTimeSlotIndex(startTimeStr, times, false);
                     let endIndex = findTimeSlotIndex(endTimeStr, times, true);
 
-                    let rowSpan = endIndex - startIndex;
-
-                    // Mark future slots to skip
-                    for (let k = 1; k < rowSpan; k++) {
-                        if (t + k < times.length) {
-                            skip[d][t + k] = true;
+                    // Only create REHAT cell if this is the actual starting time slot
+                    if (t === startIndex) {
+                        let rowSpan = endIndex - startIndex;
+                        
+                        // Ensure minimum rowspan of 1
+                        if (rowSpan < 1) {
+                            rowSpan = 1;
                         }
-                    }
 
-                    // Create cell with REHAT showing actual times
-                    let rehatTimeDisplay = `${toHHMM(start)} - ${toHHMM(end)}`;
-                    html += `<td rowspan="${rowSpan}" class="rehat-cell">
-                                <div class="event-title">REHAT</div>
-                                <div class="event-time-display">${rehatTimeDisplay}</div>
-                            </td>`;
+                        // Mark future slots to skip
+                        for (let k = 1; k < rowSpan; k++) {
+                            if (t + k < times.length) {
+                                skip[d][t + k] = true;
+                            }
+                        }
+
+                        // Create cell with REHAT showing actual times
+                        let rehatTimeDisplay = `${toHHMM(start)} - ${toHHMM(end)}`;
+                        html += `<td rowspan="${rowSpan}" class="rehat-cell">
+                                    <div class="event-title">REHAT</div>
+                                    <div class="event-time-display">${rehatTimeDisplay}</div>
+                                </td>`;
+                    } else {
+                        // This time slot is part of a REHAT that started earlier, skip it
+                        continue;
+                    }
 
                     // Skip processing other events in this cell
                     continue;
