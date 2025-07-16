@@ -582,7 +582,7 @@
         if (!calendarEl) return;
         
         // Define hidden days - here we show all days
-        var hiddenDays = [];
+        var hiddenDays = [5, 6]; // Hide Friday(5) & Saturday(6)
 
         calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'timeGridWeek',
@@ -812,7 +812,7 @@
      function generateScheduleHTML() {
     // Build days array
     const dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-    const hiddenDays = [];
+    const hiddenDays = [4, 5]; // Hide Friday(4) & Saturday(5) in dayNames array (0-based index)
 
     // Build time slots with proper 15-minute intervals during lunch period
     let times = [];
