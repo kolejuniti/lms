@@ -624,17 +624,17 @@
                 var date = new Date(fetchInfo.start);
                 while (date < fetchInfo.end) {
                     var dayOfWeek = date.getDay(); 
-                    if (dayOfWeek >= 0 && dayOfWeek <= 4) {
-                        // Monday-Thursday => 13:30 to 14:00
-                        rehatEvents.push({
-                            title: 'REHAT',
-                            start: new Date(date.getFullYear(), date.getMonth(), date.getDate(), 13, 15, 0),
-                            end: new Date(date.getFullYear(), date.getMonth(), date.getDate(), 14, 15, 0),
-                            allDay: false,
-                            color: '#e63946',
-                            textColor: '#ffffff',
-                            borderColor: '#e63946'
-                        });
+                                    if (dayOfWeek >= 1 && dayOfWeek <= 4) {
+                    // Monday-Thursday => 13:15 to 14:15
+                    rehatEvents.push({
+                        title: 'REHAT',
+                        start: new Date(date.getFullYear(), date.getMonth(), date.getDate(), 13, 15, 0),
+                        end: new Date(date.getFullYear(), date.getMonth(), date.getDate(), 14, 15, 0),
+                        allDay: false,
+                        color: '#e63946',
+                        textColor: '#ffffff',
+                        borderColor: '#e63946'
+                    });
                     } else if (dayOfWeek === 5) {
                         // Friday => 12:30 to 14:30
                         rehatEvents.push({
@@ -850,6 +850,45 @@
         return hh + ':' + mm;
     }
 
+    // Helper function to find the appropriate time slot index for any time
+    function findTimeSlotIndex(timeStr, times, isEndTime = false) {
+        let exactIndex = times.indexOf(timeStr);
+        if (exactIndex !== -1) {
+            return exactIndex;
+        }
+
+        // Parse the time string
+        let [hours, minutes] = timeStr.split(':').map(Number);
+        let totalMinutes = hours * 60 + minutes;
+
+        // Find the appropriate slot
+        for (let i = 0; i < times.length; i++) {
+            let [slotHours, slotMinutes] = times[i].split(':').map(Number);
+            let slotTotalMinutes = slotHours * 60 + slotMinutes;
+            
+            if (isEndTime) {
+                // For end times, find the slot that the time falls within or the next slot
+                if (i === times.length - 1) {
+                    return i + 1; // Beyond the last slot
+                }
+                
+                let [nextSlotHours, nextSlotMinutes] = times[i + 1].split(':').map(Number);
+                let nextSlotTotalMinutes = nextSlotHours * 60 + nextSlotMinutes;
+                
+                if (totalMinutes > slotTotalMinutes && totalMinutes <= nextSlotTotalMinutes) {
+                    return i + 1;
+                }
+            } else {
+                // For start times, find the slot that contains this time
+                if (totalMinutes <= slotTotalMinutes) {
+                    return i;
+                }
+            }
+        }
+
+        return isEndTime ? times.length : 0;
+    }
+
     // Fill the scheduleData with events
     events.forEach(event => {
         let start = event.start;
@@ -863,11 +902,8 @@
         let startTimeStr = toHHMM(start);
         let endTimeStr = toHHMM(end);
 
-        let startIndex = times.indexOf(startTimeStr);
-        if (startIndex === -1) return;
-
-        let endIndex = times.indexOf(endTimeStr);
-        if (endIndex === -1) endIndex = times.length;
+        let startIndex = findTimeSlotIndex(startTimeStr, times, false);
+        let endIndex = findTimeSlotIndex(endTimeStr, times, true);
 
         // Fill each half-hour slot with the event
         for (let i = startIndex; i < endIndex; i++) {
@@ -1183,9 +1219,8 @@
                     let startTimeStr = toHHMM(start);
                     let endTimeStr = toHHMM(end);
 
-                    let startIndex = times.indexOf(startTimeStr);
-                    let endIndex = times.indexOf(endTimeStr);
-                    if (endIndex === -1) endIndex = times.length;
+                    let startIndex = findTimeSlotIndex(startTimeStr, times, false);
+                    let endIndex = findTimeSlotIndex(endTimeStr, times, true);
 
                     let rowSpan = endIndex - startIndex;
 
@@ -1218,9 +1253,8 @@
                     let startTimeStr = toHHMM(start);
                     let endTimeStr = toHHMM(end);
 
-                    let startIndex = times.indexOf(startTimeStr);
-                    let endIndex = times.indexOf(endTimeStr);
-                    if (endIndex === -1) endIndex = times.length;
+                    let startIndex = findTimeSlotIndex(startTimeStr, times, false);
+                    let endIndex = findTimeSlotIndex(endTimeStr, times, true);
 
                     // Create a unique key for this time span
                     let timeSpanKey = `${startIndex}-${endIndex}`;
