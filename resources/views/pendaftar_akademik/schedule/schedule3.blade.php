@@ -406,10 +406,26 @@ function printScheduleTable(param1, param2, param3, param4, type) {
         let hh = String(startHour).padStart(2, '0');
         let mm = String(startMinute).padStart(2, '0');
         times.push(`${hh}:${mm}`);
-        startMinute += 30;
-        if (startMinute === 60) {
+        
+        // Special handling for break time (13:00-14:30) - use 15-minute intervals
+        if (startHour === 13 && startMinute === 0) {
+            // Add 15-minute intervals during break time
+            times.push('13:15');
+            times.push('13:30');
+            times.push('13:45');
+            times.push('14:00');
+            times.push('14:15');
+            times.push('14:30');
+            // Jump to 15:00 (next 30-minute slot after break)
+            startHour = 15;
             startMinute = 0;
-            startHour++;
+        } else {
+            // Regular 30-minute intervals
+            startMinute += 30;
+            if (startMinute === 60) {
+                startMinute = 0;
+                startHour++;
+            }
         }
     }
     const events = calendar.getEvents();
