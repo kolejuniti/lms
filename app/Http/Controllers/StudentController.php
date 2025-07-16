@@ -1680,8 +1680,37 @@ class StudentController extends Controller
             ->whereIn('status', ['waiting', 'active'])
             ->first();
 
+        // Debug: Log what we found
+        \Log::info('Game creation debug', [
+            'current_user' => $student->ic,
+            'opponent' => $request->opponent_ic,
+            'existing_game' => $existingGame
+        ]);
+
+        // Also check all games between these players for debugging
+        $allGames = DB::table('games')
+            ->where(function($query) use ($student, $request) {
+                $query->where('player1_ic', $student->ic)
+                      ->where('player2_ic', $request->opponent_ic);
+            })
+            ->orWhere(function($query) use ($student, $request) {
+                $query->where('player1_ic', $request->opponent_ic)
+                      ->where('player2_ic', $student->ic);
+            })
+            ->get();
+
+        \Log::info('All games between these players', ['games' => $allGames]);
+
         if ($existingGame) {
-            return response()->json(['error' => 'Game already exists with this player'], 400);
+            return response()->json([
+                'error' => 'Game already exists with this player', 
+                'debug' => [
+                    'found_game_id' => $existingGame->id,
+                    'found_game_status' => $existingGame->status,
+                    'current_user' => $student->ic,
+                    'opponent' => $request->opponent_ic
+                ]
+            ], 400);
         }
 
         // Create new game
