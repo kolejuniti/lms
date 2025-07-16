@@ -1640,7 +1640,39 @@ class StudentController extends Controller
             ->select('games.*', 'player1.name as player1_name', 'player2.name as player2_name')
             ->get();
 
-        return view('student.games.lobby', compact('onlineStudents', 'gameInvitations', 'activeGames'));
+        // Calculate player stats
+        $totalGames = DB::table('games')
+            ->where(function($query) use ($student) {
+                $query->where('player1_ic', $student->ic)
+                      ->orWhere('player2_ic', $student->ic);
+            })
+            ->where('status', 'completed')
+            ->count();
+
+        $wins = DB::table('games')
+            ->where('winner_ic', $student->ic)
+            ->where('status', 'completed')
+            ->count();
+
+        $draws = DB::table('games')
+            ->where(function($query) use ($student) {
+                $query->where('player1_ic', $student->ic)
+                      ->orWhere('player2_ic', $student->ic);
+            })
+            ->where('winner_ic', 'draw')
+            ->where('status', 'completed')
+            ->count();
+
+        $losses = $totalGames - $wins - $draws;
+
+        $playerStats = [
+            'total_games' => $totalGames,
+            'wins' => $wins,
+            'losses' => $losses,
+            'draws' => $draws
+        ];
+
+        return view('student.games.lobby', compact('onlineStudents', 'gameInvitations', 'activeGames', 'playerStats'));
     }
 
     public function ticTacToe()
@@ -1736,6 +1768,33 @@ class StudentController extends Controller
             ->update(['status' => 'active', 'updated_at' => now()]);
 
         return response()->json(['success' => 'Game started!', 'game_id' => $invitation->game_id]);
+    }
+
+    public function declineGameInvitation(Request $request)
+    {
+        $student = Session::get('StudInfo');
+        
+        $invitation = DB::table('game_invitations')
+            ->where('id', $request->invitation_id)
+            ->where('to_student_ic', $student->ic)
+            ->where('status', 'pending')
+            ->first();
+
+        if (!$invitation) {
+            return response()->json(['error' => 'Invalid invitation'], 400);
+        }
+
+        // Update invitation status
+        DB::table('game_invitations')
+            ->where('id', $invitation->id)
+            ->update(['status' => 'declined', 'updated_at' => now()]);
+
+        // Update game status to cancelled
+        DB::table('games')
+            ->where('id', $invitation->game_id)
+            ->update(['status' => 'cancelled', 'updated_at' => now()]);
+
+        return response()->json(['success' => 'Invitation declined successfully']);
     }
 
     public function getGame(Request $request)
