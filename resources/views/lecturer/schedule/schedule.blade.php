@@ -623,15 +623,30 @@
                 var rehatEvents = [];
                 var date = new Date(fetchInfo.start);
                 while (date < fetchInfo.end) {
-                    rehatEvents.push({
-                        title: 'REHAT',
-                        start: new Date(date.getFullYear(), date.getMonth(), date.getDate(), 13, 0, 0),
-                        end: new Date(date.getFullYear(), date.getMonth(), date.getDate(), 14, 0, 0),
-                        allDay: false,
-                        color: '#e63946',
-                        textColor: '#ffffff',
-                        borderColor: '#e63946'
-                    });
+                    var dayOfWeek = date.getDay(); 
+                    if (dayOfWeek >= 0 && dayOfWeek <= 4) {
+                        // Monday-Thursday => 13:30 to 14:00
+                        rehatEvents.push({
+                            title: 'REHAT',
+                            start: new Date(date.getFullYear(), date.getMonth(), date.getDate(), 13, 15, 0),
+                            end: new Date(date.getFullYear(), date.getMonth(), date.getDate(), 14, 15, 0),
+                            allDay: false,
+                            color: '#e63946',
+                            textColor: '#ffffff',
+                            borderColor: '#e63946'
+                        });
+                    } else if (dayOfWeek === 5) {
+                        // Friday => 12:30 to 14:30
+                        rehatEvents.push({
+                            title: 'REHAT',
+                            start: new Date(date.getFullYear(), date.getMonth(), date.getDate(), 12, 30, 0),
+                            end: new Date(date.getFullYear(), date.getMonth(), date.getDate(), 14, 30, 0),
+                            allDay: false,
+                            color: '#e63946',
+                            textColor: '#ffffff',
+                            borderColor: '#e63946'
+                        });
+                    }
                     date.setDate(date.getDate() + 1);
                 }
 
