@@ -806,164 +806,114 @@
     }
 
     /**
-     * Generate HTML for schedule
-     * Extracted as a separate function so it can be used by both print and PDF functions
+     * Helper function to convert Date to "HH:MM" format
      */
-     function generateScheduleHTML() {
-    // Build days array
-    const dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-    const hiddenDays = [];
-
-    // Build time slots with 30-minute intervals, except 13:00-14:30 which uses 15-minute intervals
-    let times = [];
-    let currentHour = 7; // From 7:00 as per calendar config
-    let currentMinute = 0;
-    let endHour = 20; // Until 20:00 as per calendar config
-
-    while (currentHour < endHour || (currentHour === endHour && currentMinute === 0)) {
-        let hh = String(currentHour).padStart(2, '0');
-        let mm = String(currentMinute).padStart(2, '0');
-        times.push(`${hh}:${mm}`);
-        
-        // Special handling for 13:00-14:30 period (15-minute intervals)
-        if (currentHour === 13 && currentMinute === 0) {
-            // Add 13:15, 13:30, 13:45, 14:00, 14:15, 14:30
-            times.push('13:15');
-            times.push('13:30');
-            times.push('13:45');
-            times.push('14:00');
-            times.push('14:15');
-            times.push('14:30');
-            // Jump to 15:00 for next iteration
-            currentHour = 15;
-            currentMinute = 0;
-        } else {
-            // Regular 30-minute increment
-            currentMinute += 30;
-            if (currentMinute === 60) {
-                currentMinute = 0;
-                currentHour++;
-            }
-        }
-    }
-
-    // Get events from FullCalendar
-    const events = calendar.getEvents();
-
-    // Build a 2D array scheduleData[dayIndex][timeIndex] = [events]
-    let scheduleData = [];
-    for (let d = 0; d < 7; d++) { // 7 days of the week
-        scheduleData[d] = [];
-        for (let t = 0; t < times.length; t++) {
-            scheduleData[d][t] = []; // Initialize with empty array
-        }
-    }
-
-    // Helper function to convert Date to "HH:MM" format
     function toHHMM(dateObj) {
         let hh = String(dateObj.getHours()).padStart(2, '0');
         let mm = String(dateObj.getMinutes()).padStart(2, '0');
         return hh + ':' + mm;
     }
 
-    // Helper function to find the appropriate time slot index for any time
-    function findTimeSlotIndex(timeStr, times, isEndTime = false) {
-        let exactIndex = times.indexOf(timeStr);
-        if (exactIndex !== -1) {
-            return exactIndex;
-        }
+    /**
+     * Print the schedule
+     */
+     function printSchedule() {
+        // Show loading notification
+        showNotification('Preparing timetable for printing...', 'info');
+        
+        const dayNames = ['Monday','Tuesday','Wednesday','Thursday','Friday'];
 
-        // Parse the time string
-        let [hours, minutes] = timeStr.split(':').map(Number);
-        let totalMinutes = hours * 60 + minutes;
+        // Build time slots with 15-minute intervals during break time
+        let times = [];
+        let startHour = 8;
+        let startMinute = 30;
+        let endHour = 18;
 
-        // Find the appropriate slot
-        for (let i = 0; i < times.length; i++) {
-            let [slotHours, slotMinutes] = times[i].split(':').map(Number);
-            let slotTotalMinutes = slotHours * 60 + slotMinutes;
+        while (startHour < endHour || (startHour === endHour && startMinute === 0)) {
+            let hh = String(startHour).padStart(2, '0');
+            let mm = String(startMinute).padStart(2, '0');
+            times.push(`${hh}:${mm}`);
             
-            if (isEndTime) {
-                // For end times, find the slot that matches exactly or the next available slot
-                if (totalMinutes <= slotTotalMinutes) {
-                    return i;
-                }
-                
-                // If this is the last slot and we haven't found a match, return beyond last slot
-                if (i === times.length - 1) {
-                    return i + 1;
-                }
+            // Special handling for break time (13:00-14:30) - use 15-minute intervals
+            if (startHour === 13 && startMinute === 0) {
+                // Add 15-minute intervals during break time
+                times.push('13:15');
+                times.push('13:30');
+                times.push('13:45');
+                times.push('14:00');
+                times.push('14:15');
+                times.push('14:30');
+                // Jump to 15:00 (next 30-minute slot after break)
+                startHour = 15;
+                startMinute = 0;
             } else {
-                // For start times, find the exact slot or the closest one
-                if (totalMinutes <= slotTotalMinutes) {
-                    return i;
-                }
-                
-                // Special handling for times that fall between slots
-                if (i < times.length - 1) {
-                    let [nextSlotHours, nextSlotMinutes] = times[i + 1].split(':').map(Number);
-                    let nextSlotTotalMinutes = nextSlotHours * 60 + nextSlotMinutes;
-                    
-                    // If the time falls between this slot and next slot, use this slot
-                    if (totalMinutes > slotTotalMinutes && totalMinutes < nextSlotTotalMinutes) {
-                        return i;
-                    }
+                // Regular 30-minute intervals
+                startMinute += 30;
+                if (startMinute === 60) {
+                    startMinute = 0;
+                    startHour++;
                 }
             }
         }
 
-        return isEndTime ? times.length : 0;
-    }
+        // Get events from FullCalendar
+        const events = calendar.getEvents();
 
-    // Fill the scheduleData with events
-    events.forEach(event => {
-        let start = event.start;
-        let end = event.end || new Date(start.getTime() + 60 * 60 * 1000);
-
-        // Day of week (0=Sunday, 1=Monday, etc.)
-        let dayIndex = start.getDay();
-        if (dayIndex === 0) dayIndex = 6; // Move Sunday to the end (index 6)
-        else dayIndex -= 1; // Adjust other days (Monday=0, Tuesday=1, etc.)
-
-        let startTimeStr = toHHMM(start);
-        let endTimeStr = toHHMM(end);
-
-        let startIndex = findTimeSlotIndex(startTimeStr, times, false);
-        let endIndex = findTimeSlotIndex(endTimeStr, times, true);
-
-        // Fill each half-hour slot with the event
-        for (let i = startIndex; i < endIndex; i++) {
-            scheduleData[dayIndex][i].push(event);
+        // Build a simple 2D array scheduleData[dayIndex][timeIndex] = event
+        let scheduleData = [];
+        for (let d = 0; d < dayNames.length; d++) {
+            scheduleData[d] = new Array(times.length).fill(null);
         }
-    });
 
-    // Create processed tracking arrays
-    let processedEvents = new Set();
-    let skip = [];
-    for (let d = 0; d < 7; d++) {
-        skip[d] = new Array(times.length).fill(false);
-    }
+        events.forEach(event => {
+            let start = event.start;
+            let end = event.end || new Date(start.getTime() + 60 * 60 * 1000);
 
-    // Add current date for footer
-    const currentDate = new Date().toLocaleDateString('en-GB', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-    });
+            // Convert day-of-week (Mon=1..Fri=5 => index 0..4)
+            let dayIndex = start.getDay() - 1; 
+            if (dayIndex < 0 || dayIndex > 4) return; // skip Sat/Sun
 
-    // Build HTML with modern styling (DECLARED ONCE)
-    let html = `
+            let startTimeStr = toHHMM(start);
+            let endTimeStr = toHHMM(end);
+
+            let startIndex = times.indexOf(startTimeStr);
+            if (startIndex === -1) return;
+
+            let endIndex = times.indexOf(endTimeStr);
+            if (endIndex === -1) endIndex = times.length;
+
+            // Fill each time slot with the event
+            for (let i = startIndex; i < endIndex; i++) {
+                scheduleData[dayIndex][i] = event;
+            }
+        });
+
+        // Track which cells to skip due to rowspan
+        let skip = [];
+        for (let d = 0; d < dayNames.length; d++) {
+            skip[d] = new Array(times.length).fill(false);
+        }
+
+        // Add current date for footer
+        const currentDate = new Date().toLocaleDateString('en-GB', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+
+        // Build HTML
+        let html = `
         <html>
         <head>
             <title>Lecturer Timetable</title>
             <style>
-                /* Control page breaks */
                 @page {
                     size: A4 landscape;
                     margin: 0.5cm;
                 }
-
+                
                 body {
                     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
                     margin: 0;
@@ -972,27 +922,27 @@
                     font-size: 9px;
                     font-weight: 500;
                 }
-
+                
                 .container {
                     max-width: 100%;
                     margin: 0 auto;
                     padding: 10px;
                 }
-
+                
                 .header {
                     text-align: center;
                     margin-bottom: 10px;
                     padding-bottom: 5px;
                     border-bottom: 1px solid #4361ee;
                 }
-
+                
                 h1 {
                     color: #4361ee;
                     margin: 0;
                     font-size: 16px;
                     font-weight: 600;
                 }
-
+                
                 .lecturer-info {
                     background-color: #f8f9fa;
                     border-radius: 4px;
@@ -1000,37 +950,20 @@
                     margin-bottom: 10px;
                     border: 1px solid #e0e0e0;
                 }
-
+                
                 .lecturer-info p {
                     margin: 2px 0;
                     font-size: 9px;
                     font-weight: 600;
                     color: #000000;
                 }
-
-                /* Table styling */
+                
                 table {
                     width: 100%;
                     border-collapse: collapse;
-                    box-shadow: none;
-                    border-radius: 0;
                     font-size: 8px;
-                    page-break-inside: auto;
                 }
-
-                tr {
-                    page-break-inside: avoid;
-                    page-break-after: auto;
-                }
-
-                thead {
-                    display: table-header-group;
-                }
-
-                tfoot {
-                    display: table-footer-group;
-                }
-
+                
                 th {
                     background-color: #1e40af;
                     color: white;
@@ -1039,154 +972,75 @@
                     font-weight: 700;
                     font-size: 9px;
                 }
-
-                th.time-column {
-                    background-color: #1e40af;
-                    color: white;
-                    font-weight: 700;
-                }
-
+                
                 td {
                     border: 1px solid #000000;
                     padding: 2px;
                     text-align: center;
                     vertical-align: middle;
                     background-color: #f8f8f8;
-                    height: 20px; /* Slightly reduced height for mixed intervals */
                 }
-
+                
                 .time-column {
                     background-color: #e0e0e0;
                     font-weight: 700;
                     color: #000000;
                     width: 60px;
                 }
-
-                .time-column.minor-slot {
-                    background-color: #f0f0f0;
-                    font-weight: 500;
-                    font-size: 7px;
-                    color: #666666;
-                }
-
+                
                 .event-cell {
                     background-color: #d1e4ff;
                     border: 1.5px solid #000000;
                 }
-
+                
                 .event-title {
                     font-weight: 700;
                     color: #000000;
                     margin-bottom: 1px;
                     font-size: 8px;
                 }
-
+                
                 .event-description {
                     color: #333333;
                     font-size: 7px;
                     font-weight: 500;
-                    line-height: 1.2;
-                    margin: 1px 0;
                 }
-
-                .event-time-display {
-                    color: #000000;
-                    font-size: 7px;
-                    font-weight: 600;
-                    line-height: 1.2;
-                    margin: 1px 0;
-                }
-
+                
                 .rehat-cell {
                     background-color: #ffcccf;
                     border: 1.5px solid #000000;
                     color: #c62828;
                     font-weight: 700;
                 }
-
-                .multi-event-container {
-                    display: flex;
-                    flex-direction: column;
-                    gap: 2px;
-                }
-
-                .event-divider {
-                    border-top: 1px dashed #ccc;
-                    margin: 1px 0;
-                }
-
-                .print-date {
-                    text-align: right;
-                    color: #999;
-                    font-size: 8px;
-                    margin-top: 5px;
-                }
-
+                
                 footer {
                     text-align: center;
                     margin-top: 5px;
                     font-size: 8px;
                     color: #999;
                 }
-
-                /* Table footer for page number */
-                .table-footer {
-                    text-align: center;
-                    font-size: 7px;
-                    border: none !important;
-                    background: transparent !important;
-                }
-
+                
                 @media print {
                     body {
                         -webkit-print-color-adjust: exact;
                         print-color-adjust: exact;
                     }
-
-                    .container {
-                        padding: 0;
-                    }
-
-                    /* Ensure text is dark enough for printing */
-                    * {
-                        color: #000000 !important;
-                    }
-
+                    
                     th {
                         background-color: #1e40af !important;
                         color: white !important;
-                        font-weight: 800 !important;
-                        border: 1px solid #000000 !important;
                     }
-
-                    td {
-                        background-color: #f8f8f8 !important;
-                        border: 1px solid #000000 !important;
-                    }
-
+                    
                     .time-column {
                         background-color: #e0e0e0 !important;
-                        color: #000000 !important;
-                        font-weight: 700 !important;
                     }
-
-                    .time-column.minor-slot {
-                        background-color: #f0f0f0 !important;
-                        color: #666666 !important;
-                        font-weight: 500 !important;
-                        font-size: 7px !important;
-                    }
-
+                    
                     .event-cell {
                         background-color: #d1e4ff !important;
-                        border: 1.5px solid #000000 !important;
                     }
-
+                    
                     .rehat-cell {
                         background-color: #ffcccf !important;
-                        color: #c62828 !important;
-                        font-weight: 700 !important;
-                        border: 1.5px solid #000000 !important;
                     }
                 }
             </style>
@@ -1196,326 +1050,113 @@
                 <div class="header">
                     <h1>Lecturer Timetable</h1>
                 </div>
-
+                
                 <div class="lecturer-info">
                     <p><strong>Date Generated:</strong> ${currentDate}</p>
                 </div>
-
+                
                 <table>
-                    <!-- Table Header (repeats on each page) -->
                     <thead>
                         <tr>
                             <th class="time-column">Time</th>`;
 
-    // Column headers for days (only show days that aren't hidden)
-    const visibleDays = dayNames.filter((_, i) => !hiddenDays.includes(i));
-    visibleDays.forEach(day => {
-        html += `<th>${day}</th>`;
-    });
+        // Column headers for days
+        dayNames.forEach(day => {
+            html += `<th>${day}</th>`;
+        });
 
-    html += `</tr></thead>
+        html += `</tr></thead><tbody>`;
 
-                    <!-- Table Footer (repeats on each page) -->
-                    <tfoot>
-                        <tr>
-                            <td colspan="${visibleDays.length + 1}" class="table-footer">
-                                Lecturer Timetable - Generated on: ${currentDate}
-                            </td>
-                        </tr>
-                    </tfoot>
-
-                    <tbody>`;
-
-    // For each timeslot row
-    for (let t = 0; t < times.length; t++) {
-        let currentTime = times[t];
-        
-        // Determine if this is a major slot (30-minute boundary) or minor slot (15-minute mark)
-        let isMinorSlot = false;
-        let timeLabel = '';
-        
-        // Check if this is a 15-minute mark within the 13:00-14:30 period
-        if (currentTime === '13:15' || currentTime === '13:45' || currentTime === '14:15') {
-            isMinorSlot = true;
-            // For 15-minute slots, show the exact time range
-            if (t + 1 < times.length) {
-                timeLabel = currentTime + ' - ' + times[t + 1];
+        // For each timeslot row
+        for (let t = 0; t < times.length; t++) {
+            // Build the time label
+            let timeLabel = times[t];
+            if (t < times.length - 1) {
+                timeLabel += ' - ' + times[t + 1];
             } else {
-                timeLabel = currentTime;
-            }
-        } else {
-            // Major time slot - show range
-            timeLabel = currentTime;
-            if (t + 1 < times.length) {
-                // Skip intermediate 15-minute marks when showing range for major slots
-                let nextTime = times[t + 1];
-                // If the next time is a 15-minute mark, find the next major slot
-                if (nextTime === '13:15' || nextTime === '13:30' || nextTime === '13:45' || 
-                    nextTime === '14:00' || nextTime === '14:15' || nextTime === '14:30') {
-                    // For slots that lead into the 15-minute breakdown, show proper range
-                    if (currentTime === '13:00') {
-                        timeLabel += ' - 13:15';
-                    } else if (currentTime === '13:30') {
-                        timeLabel += ' - 13:45';
-                    } else if (currentTime === '14:00') {
-                        timeLabel += ' - 14:15';
-                    } else {
-                        timeLabel += ' - ' + nextTime;
-                    }
-                } else {
-                    timeLabel += ' - ' + nextTime;
-                }
-            } else {
-                timeLabel += ' - 20:00';
-            }
-        }
-
-        // Start a row
-        html += `<tr>`;
-
-        // Left column: time label with appropriate styling
-        let timeColumnClass = isMinorSlot ? "time-column minor-slot" : "time-column";
-        html += `<td class="${timeColumnClass}">${timeLabel}</td>`;
-
-        // For each day column
-        for (let d = 0; d < 7; d++) {
-            // Skip if this day is hidden
-            if (hiddenDays.includes(d)) continue;
-
-            // If this slot is marked skip => do nothing
-            if (skip[d][t]) {
-                continue;
+                timeLabel += ' - 18:00';
             }
 
-            let eventList = scheduleData[d][t];
+            // Start a row
+            html += `<tr><td class="time-column"><b>${timeLabel}</b></td>`;
 
-            if (eventList.length > 0) {
-                // Check if there's a REHAT event in this cell
-                let hasRehat = eventList.some(event => event.title === 'REHAT');
+            // For each day column
+            for (let d = 0; d < dayNames.length; d++) {
+                if (skip[d][t]) continue;
 
-                // If there's a REHAT event, give it priority
-                if (hasRehat) {
-                    let rehatEvent = eventList.find(event => event.title === 'REHAT');
-
-                    let start = rehatEvent.start;
-                    let end = rehatEvent.end || new Date(start.getTime() + 60 * 60 * 1000);
-
-                    let startTimeStr = toHHMM(start);
-                    let endTimeStr = toHHMM(end);
-
-                    let startIndex = findTimeSlotIndex(startTimeStr, times, false);
-                    let endIndex = findTimeSlotIndex(endTimeStr, times, true);
-
-                    // Only create REHAT cell if this is the actual starting time slot
-                    if (t === startIndex) {
-                        let rowSpan = endIndex - startIndex;
-                        
-                        // Ensure minimum rowspan of 1
-                        if (rowSpan < 1) {
-                            rowSpan = 1;
+                let event = scheduleData[d][t];
+                if (event) {
+                    // Calculate rowspan by looking ahead
+                    let rowSpan = 1;
+                    for (let k = t + 1; k < times.length; k++) {
+                        if (scheduleData[d][k] === event) {
+                            rowSpan++;
+                        } else {
+                            break;
                         }
-
-                        // Mark future slots to skip
-                        for (let k = 1; k < rowSpan; k++) {
-                            if (t + k < times.length) {
-                                skip[d][t + k] = true;
-                            }
-                        }
-
-                        // Create cell with REHAT showing actual times
-                        let rehatTimeDisplay = `${toHHMM(start)} - ${toHHMM(end)}`;
-                        html += `<td rowspan="${rowSpan}" class="rehat-cell">
-                                    <div class="event-title">REHAT</div>
-                                    <div class="event-time-display">${rehatTimeDisplay}</div>
-                                </td>`;
-                    } else {
-                        // This time slot is part of a REHAT that started earlier, skip it
-                        continue;
                     }
-
-                    // Skip processing other events in this cell
-                    continue;
-                }
-
-                // Group non-REHAT events by their full time span
-                let eventGroups = {};
-
-                eventList.forEach(event => {
-                    // Skip if we already processed this event
-                    if (processedEvents.has(event.id)) return;
-
-                    let start = event.start;
-                    let end = event.end || new Date(start.getTime() + 60 * 60 * 1000);
-
-                    let startTimeStr = toHHMM(start);
-                    let endTimeStr = toHHMM(end);
-
-                    let startIndex = findTimeSlotIndex(startTimeStr, times, false);
-                    let endIndex = findTimeSlotIndex(endTimeStr, times, true);
-
-                    // Create a unique key for this time span
-                    let timeSpanKey = `${startIndex}-${endIndex}`;
-
-                    // Initialize group if not exists
-                    if (!eventGroups[timeSpanKey]) {
-                        eventGroups[timeSpanKey] = {
-                            events: [],
-                            rowSpan: endIndex - startIndex
-                        };
-                    }
-
-                    // Add event to the group
-                    eventGroups[timeSpanKey].events.push(event);
-
-                    // Mark event as processed
-                    processedEvents.add(event.id);
-                });
-
-                // Get the keys sorted by start time
-                let timeSpanKeys = Object.keys(eventGroups).sort();
-
-                // Only process if we have groups and this is the starting row for a group
-                if (timeSpanKeys.length > 0) {
-                    let firstGroup = eventGroups[timeSpanKeys[0]];
-                    let rowSpan = firstGroup.rowSpan;
-                    let events = firstGroup.events;
 
                     // Mark future slots to skip
                     for (let k = 1; k < rowSpan; k++) {
-                        if (t + k < times.length) {
-                            skip[d][t + k] = true;
-                        }
+                        skip[d][t + k] = true;
                     }
 
-                    // Create cell with rowspan
-                    html += `<td rowspan="${rowSpan}" class="event-cell">`;
+                    // Create cell content
+                    let cellClass = event.title === 'REHAT' ? 'rehat-cell' : 'event-cell';
+                    html += `<td rowspan="${rowSpan}" class="${cellClass}">`;
+                    html += `<div class="event-title">${event.title || '(No Title)'}</div>`;
 
-                    // Start multi-event container if we have multiple events
-                    if (events.length > 1) {
-                        html += `<div class="multi-event-container">`;
+                    // Add description if available
+                    if (event.extendedProps && event.extendedProps.description) {
+                        html += `<div class="event-description">${event.extendedProps.description}</div>`;
                     }
 
-                    // Add each event
-                    events.forEach((event, index) => {
-                        if (index > 0) {
-                            html += `<div class="event-divider"></div>`;
-                        }
-
-                        // Title
-                        html += `<div class="event-title">${event.title || '(No Title)'}</div>`;
-
-                        // Add actual event times
-                        let eventStart = event.start;
-                        let eventEnd = event.end || new Date(eventStart.getTime() + 60 * 60 * 1000);
-                        let eventTimeDisplay = `${toHHMM(eventStart)} - ${toHHMM(eventEnd)}`;
-                        html += `<div class="event-time-display">${eventTimeDisplay}</div>`;
-
-                        // Add description if available
-                        if (event.extendedProps && event.extendedProps.description) {
-                            html += `<div class="event-description">${event.extendedProps.description}</div>`;
-                        }
-
-                        // Add program info if available (only once, with special class)
-                        if (event.extendedProps && event.extendedProps.programInfo) {
-                            html += `<div class="event-description program-info">Program: ${event.extendedProps.programInfo}</div>`;
-                        }
-                    });
-
-                    // Close multi-event container if needed
-                    if (events.length > 1) {
-                        html += `</div>`;
+                    // Add program info if available
+                    if (event.extendedProps && event.extendedProps.programInfo) {
+                        html += `<div class="event-description">Program: ${event.extendedProps.programInfo}</div>`;
                     }
 
                     html += `</td>`;
                 } else {
-                    // No unprocessed events => empty cell
                     html += `<td></td>`;
                 }
-            } else {
-                // No events => just a normal empty cell
-                html += `<td></td>`;
             }
+
+            html += `</tr>`;
         }
 
-        // Close row
-        html += `</tr>`;
-    }
-
-    html += `
-                    </tbody>
-                </table>
-
-                <footer>
-                    © Timetable Management System
-                </footer>
-            </div>
+        html += `
+                </tbody>
+            </table>
+            
+            <footer>
+                © Timetable Management System
+            </footer>
+        </div>
         </body>
         </html>`;
 
-    return html; // Return the generated HTML
-}
-    /**
-    /**
-     * Print the schedule
-     */
-     function printSchedule() {
-        // Show loading notification
-        showNotification('Preparing timetable for printing...', 'info');
-        
-        // Generate HTML using the extracted function
-        const html = generateScheduleHTML();
-        
-        // Improved print function with better error handling
+        // Open print window
         try {
-            // Create the print window
             let printWindow = window.open('', '_blank', 'width=1100,height=800');
-            
             if (!printWindow) {
-                // If window.open returns null, it was likely blocked by a popup blocker
                 showNotification('Print window was blocked. Please allow popups for this site.', 'error', false);
                 return;
             }
-            
-            // Write content to the window
+
             printWindow.document.open();
             printWindow.document.write(html);
             printWindow.document.close();
-            
-            // Add event listener to detect when the content is fully loaded
-            printWindow.onload = function() {
-                try {
-                    // Focus on the window to bring it to front
-                    printWindow.focus();
-                    
-                    // Trigger the print dialog
-                    printWindow.print();
-                    
-                    // Show success notification
-                    showNotification('Timetable printed successfully', 'success');
-                    
-                    // Close the print window after printing (optional)
-                    // printWindow.close();
-                } catch (printError) {
-                    console.error('Print error:', printError);
-                    showNotification('Error during printing: ' + printError.message, 'error', false);
-                }
-            };
-            
-            // Fallback in case onload doesn't trigger
+
             setTimeout(() => {
-                if (printWindow.document.readyState === 'complete') {
-                    if (!printWindow._printTriggered) {
-                        printWindow._printTriggered = true;
-                        printWindow.focus();
-                        printWindow.print();
-                        showNotification('Timetable printed successfully (fallback)', 'success');
-                    }
-                }
-            }, 2000);
-            
+                printWindow.focus();
+                printWindow.print();
+                showNotification('Timetable printed successfully', 'success');
+            }, 1000);
+
         } catch (error) {
-            console.error('Print setup error:', error);
-            showNotification('Error setting up print: ' + error.message, 'error', false);
+            console.error('Print error:', error);
+            showNotification('Error during printing: ' + error.message, 'error', false);
         }
     }
     /**
