@@ -5193,6 +5193,8 @@ class FinanceController extends Controller
     public function getReceiptProof(Request $request)
     {
 
+        dd($request->id);
+
         if(array_intersect([2,3,4,5,11], (array) $request->type))
         {
 
