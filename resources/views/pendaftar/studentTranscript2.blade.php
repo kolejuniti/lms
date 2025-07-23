@@ -408,7 +408,7 @@
                                     "<td>" + (i+1) + "</td>" +
                                     "<td>" + item.name + "</td>" +
                                     "<td>" + item.student_ic + "</td>" +
-                                    "<td>" + item.total_credit_s + "</td>" +
+                                    "<td>" + item.passed_credit_s + "</td>" +
                                     "<td>" + item.grade_pointer_s + "</td>" +
                                     "<td>" + item.gpa + "</td>" +
                                     "<td>" + item.count_credit_c + "</td>" +
