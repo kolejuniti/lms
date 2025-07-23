@@ -284,7 +284,7 @@
                               SEMESTER SEMASA
                            </td>
                            <td class="text-center">
-                              {{ $data['transcript']->total_credit_s }}
+                              {{ $data['transcript']->passed_credit_s }}
                            </td>
                            <td class="text-center">
                               {{ $data['transcript']->grade_pointer_s }}
@@ -298,7 +298,7 @@
                               KESELURUHAN SEMESTER
                            </td>
                            <td class="text-center">
-                              {{ $data['transcript']->count_credit_c }}
+                              {{ $data['transcript']->passed_credit_c }}
                            </td>
                            <td class="text-center">
                               {{ $data['transcript']->grade_pointer_c }}
