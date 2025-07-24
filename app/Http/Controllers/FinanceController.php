@@ -14633,6 +14633,7 @@ class FinanceController extends Controller
                            ->where('tblclaim.remark', 'LIKE', "%"."BAYARAN PENUH"."%")
                            ->whereBetween('tblclaim.date', ['2025-01-02', '2025-01-02'])
                            ->groupBy('students.ic')
+                           ->select('students.ic', 'students.name', 'students.no_matric', 'tblclaim.*')
                            ->get();
 
         foreach($data['student'] as $key => $std)
@@ -14682,7 +14683,7 @@ class FinanceController extends Controller
                 if(array_intersect([2,3,4,5,11], (array) $req->process_type_id) && $req->source == 'claim')
                 {
 
-                    $data['total'][$key] = $val + $req->amount;
+                    $data['total'][$key][$keys] = $val + $req->amount;
 
                     $val = $val + $req->amount;
                     
@@ -14690,7 +14691,7 @@ class FinanceController extends Controller
                 }elseif(array_intersect([1,5,6,7,8,9,10,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27], (array) $req->process_type_id) && $req->source == 'payment')
                 {
 
-                    $data['total'][$key] = $val - $req->amount;
+                    $data['total'][$key][$keys] = $val - $req->amount;
 
                     $val = $val - $req->amount;
 
@@ -14698,7 +14699,7 @@ class FinanceController extends Controller
 
             }  
 
-            $data['sum'][$key] = $data['total'][$key];
+            $data['sum'][$key] = end($data['total'][$key]);
 
         }
                    
