@@ -14648,6 +14648,7 @@ class FinanceController extends Controller
                    ->join('tblclaimdtl', 'tblclaim.id', 'tblclaimdtl.claim_id')
                    ->join('students', 'tblclaim.student_ic', 'students.ic')
                    ->where('tblclaim.remark', 'LIKE', "%"."BAYARAN PENUH"."%")
+                   ->where('students.status', 8)
                    ->whereBetween('tblclaim.date', [$from, $to]);
 
         // Add program filter if not 'all'
