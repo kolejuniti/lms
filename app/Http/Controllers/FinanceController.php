@@ -14702,9 +14702,11 @@ class FinanceController extends Controller
 
             $data['sum'][$key] = end($data['total'][$key]);
 
+            $data['actual'][$key] = $std->amount + $data['sum'][$key];
+
         }
                    
-        dd( $data['sum']);
+        dd( $data['actual']);
 
         return view('finance.debt.discount_report.discountReport');
 
