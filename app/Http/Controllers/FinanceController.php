@@ -14657,7 +14657,7 @@ class FinanceController extends Controller
 
         $data['student'] = $query->select('students.ic', 'students.name', 'students.no_matric', 'tblclaim.*', 'tblclaimdtl.amount')
                                  ->groupBy('students.ic')
-                                 ->orderBy('students.name')
+                                 ->orderBy('tblclaim.date')
                                  ->get();
 
         foreach($data['student'] as $key => $std)
