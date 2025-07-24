@@ -14698,7 +14698,7 @@ class FinanceController extends Controller
 
             }  
 
-            $data['sum'][$key] = end($data['total'][$key]);
+            $data['sum'][$key] = $data['total'][$key];
 
         }
                    
