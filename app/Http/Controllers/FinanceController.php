@@ -14655,8 +14655,8 @@ class FinanceController extends Controller
             $query->where('students.program', $program);
         }
 
-        $data['student'] = $query->select('students.*', 'tblclaim.date', 'tblclaimdtl.amount')
-                                 ->groupBy('students.ic', 'tblclaim.date', 'tblclaimdtl.amount')
+        $data['student'] = $query->select('students.ic', 'students.name', 'students.no_matric', 'tblclaim.*', 'tblclaimdtl.amount')
+                                 ->groupBy('students.ic')
                                  ->get();
 
         foreach($data['student'] as $key => $std)

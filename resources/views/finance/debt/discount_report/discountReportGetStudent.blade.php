@@ -26,7 +26,7 @@
                         @foreach ($data['student'] as $key => $std)
                             <tr>
                                 <td>{{ $key+1 }}</td>
-                                <td>{{ $std->ref_no }}</td>
+                                <td>{{ $std->no_matric }}</td>
                                 <td>{{ $std->name }}</td>
                                 <td>{{ $std->ic }}</td>
                                 <td>{{ date('d/m/Y', strtotime($std->date)) }}</td>
