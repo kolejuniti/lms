@@ -39,7 +39,7 @@
                                     @endif
                                 </td>
                                 <td style="text-align: right;">
-                                    @if($std->amount > 0)
+                                    @if($std->amount > 0 || $std->amount < 0)
                                         {{ number_format($std->amount, 2) }}
                                         @php $totalDiskaun += $std->amount; @endphp
                                     @else
