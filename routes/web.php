@@ -887,6 +887,7 @@ Route::get('/finance/debt/studentRemarks', [App\Http\Controllers\FinanceControll
 Route::post('/finance/debt/studentRemarks/getStudentRemarks', [App\Http\Controllers\FinanceController::class, 'getStudentRemarks']);
 Route::post('/finance/debt/studentRemarks/storeStudentRemarks', [App\Http\Controllers\FinanceController::class, 'storeStudentRemarks']);
 Route::get('/finance/debt/discountReport', [App\Http\Controllers\FinanceController::class, 'discountReport'])->name('finance.discountReport');
+Route::post('/finance/debt/discountReport/getDiscountReport', [App\Http\Controllers\FinanceController::class, 'getDiscountReport']);
 Route::get('/finance/asset/vehicleRecord', [App\Http\Controllers\FinanceController::class,'vehicleRecord'])->name('finance.vehicleRecord');
 Route::post('/finance/asset/vehicleRecord/storeVehicle', [App\Http\Controllers\FinanceController::class,'storeVehicle']);
 Route::delete('/finance/asset/vehicleRecord/deleteVehicle', [App\Http\Controllers\FinanceController::class,'deleteVehicle']);

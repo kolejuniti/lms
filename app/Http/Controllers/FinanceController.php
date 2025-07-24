@@ -14627,14 +14627,37 @@ class FinanceController extends Controller
 
     public function discountReport()
     {
-        $data['student'] = DB::table('tblclaim')
-                           ->join('tblclaimdtl', 'tblclaim.id', 'tblclaimdtl.claim_id')
-                           ->join('students', 'tblclaim.student_ic', 'students.ic')
-                           ->where('tblclaim.remark', 'LIKE', "%"."BAYARAN PENUH"."%")
-                           ->whereBetween('tblclaim.date', ['2025-01-02', '2025-01-02'])
-                           ->groupBy('students.ic')
-                           ->select('students.ic', 'students.name', 'students.no_matric', 'tblclaim.*', 'tblclaimdtl.amount')
-                           ->get();
+        $data['program'] = DB::table('tblprogramme')->get();
+
+        return view('finance.debt.discount_report.discountReport', compact('data'));
+
+    }
+
+    public function getDiscountReport(Request $request)
+    {
+        // Validate input
+        if (!$request->from || !$request->to) {
+            return response()->json(['error' => 'From and To dates are required'], 400);
+        }
+
+        $from = $request->from;
+        $to = $request->to;
+        $program = $request->program;
+
+        $query = DB::table('tblclaim')
+                   ->join('tblclaimdtl', 'tblclaim.id', 'tblclaimdtl.claim_id')
+                   ->join('students', 'tblclaim.student_ic', 'students.ic')
+                   ->where('tblclaim.remark', 'LIKE', "%"."BAYARAN PENUH"."%")
+                   ->whereBetween('tblclaim.date', [$from, $to]);
+
+        // Add program filter if not 'all'
+        if ($program && $program != 'all') {
+            $query->where('students.program', $program);
+        }
+
+        $data['student'] = $query->select('students.*', 'tblclaim.date', 'tblclaimdtl.amount')
+                                 ->groupBy('students.ic', 'tblclaim.date', 'tblclaimdtl.amount')
+                                 ->get();
 
         foreach($data['student'] as $key => $std)
         {
@@ -14705,96 +14728,8 @@ class FinanceController extends Controller
             $data['actual'][$key] = $std->amount + $data['sum'][$key];
 
         }
-                   
-        dd( $data['actual']);
 
-        return view('finance.debt.discount_report.discountReport');
-
-    }
-
-    public function getDiscountReport(Request $request)
-    {
-
-        $from = $request->from;
-
-        $to = $request->to;
-
-        $data['student'] = DB::table('tblclaim')
-                           ->join('tblclaimdtl', 'tblclaim.id', 'tblclaimdtl.claim_id')
-                           ->join('students', 'tblclaim.student_ic', 'students.ic')
-                           ->where('tblclaim', 'LIKE', "%"."BAYARAN PENUH"."%")
-                           ->whereBetween('tblclaim.date', [$from, $to])
-                           ->groupBy('students.ic')
-                           ->get();
-
-        foreach($data['student'] as $key => $std)
-        {
-            $data['total'][$key] = [];
-
-            $record = DB::table('tblpaymentdtl')
-            ->leftJoin('tblpayment', 'tblpaymentdtl.payment_id', 'tblpayment.id')
-            ->leftJoin('tblprocess_type', 'tblpayment.process_type_id', 'tblprocess_type.id')
-            ->leftJoin('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
-            ->leftjoin('tblprogramme', 'tblpayment.program_id', 'tblprogramme.id')
-            ->where([
-                ['tblpayment.student_ic', $std->ic],
-                ['tblpayment.process_status_id', 2], 
-                ['tblstudentclaim.groupid', 1], 
-                ['tblpaymentdtl.amount', '!=', 0]
-                ])
-            ->where('tblpayment.date', '<', $std->date)
-            ->select(DB::raw("'payment' as source"), 'tblprocess_type.name AS process', 'tblpayment.ref_no','tblpayment.date', 'tblstudentclaim.name', 
-            'tblpaymentdtl.amount',
-            'tblpayment.process_type_id', 'tblprogramme.progcode AS program', DB::raw('NULL as remark'));
-
-            $data['record'][$key] = DB::table('tblclaimdtl')
-            ->leftJoin('tblclaim', 'tblclaimdtl.claim_id', 'tblclaim.id')
-            ->leftJoin('tblprocess_type', 'tblclaim.process_type_id', 'tblprocess_type.id')
-            ->leftJoin('tblstudentclaim', 'tblclaimdtl.claim_package_id', 'tblstudentclaim.id')
-            ->leftjoin('tblprogramme', 'tblclaim.program_id', 'tblprogramme.id')
-            ->where([
-                ['tblclaim.student_ic', $std->ic],
-                ['tblclaim.process_status_id', 2],  
-                ['tblstudentclaim.groupid', 1],
-                ['tblclaimdtl.amount', '!=', 0]
-                ])
-            ->where('tblclaim.date', '<', $std->date)
-            ->unionALL($record)
-            ->select(DB::raw("'claim' as source"), 'tblprocess_type.name AS process', 'tblclaim.ref_no','tblclaim.date', 'tblstudentclaim.name', 
-            'tblclaimdtl.amount',
-            'tblclaim.process_type_id', 'tblprogramme.progcode AS program', 'tblclaim.remark')
-            ->orderBy('date')
-            ->get();
-
-            $val = 0;
-
-            foreach($data['record'][$key] as $keys => $req)
-            {
-
-                if(array_intersect([2,3,4,5,11], (array) $req->process_type_id) && $req->source == 'claim')
-                {
-
-                    $data['total'][$key] = $val + $req->amount;
-
-                    $val = $val + $req->amount;
-                    
-
-                }elseif(array_intersect([1,5,6,7,8,9,10,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27], (array) $req->process_type_id) && $req->source == 'payment')
-                {
-
-                    $data['total'][$key] = $val - $req->amount;
-
-                    $val = $val - $req->amount;
-
-                }
-
-            }  
-
-            $data['sum'][$key] = end($data['total'][$key]);
-
-        }
-
-        dd( $data['sum']);
+        return view('finance.debt.discount_report.discountReportGetStudent', compact('data'));
 
     }
 
