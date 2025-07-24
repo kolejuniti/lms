@@ -14633,7 +14633,7 @@ class FinanceController extends Controller
                            ->where('tblclaim.remark', 'LIKE', "%"."BAYARAN PENUH"."%")
                            ->whereBetween('tblclaim.date', ['2025-01-02', '2025-01-02'])
                            ->groupBy('students.ic')
-                           ->select('students.ic', 'students.name', 'students.no_matric', 'tblclaim.*')
+                           ->select('students.ic', 'students.name', 'students.no_matric', 'tblclaim.*', 'tblclaimdtl.amount')
                            ->get();
 
         foreach($data['student'] as $key => $std)
