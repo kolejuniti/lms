@@ -14666,7 +14666,7 @@ class FinanceController extends Controller
                 ['tblstudentclaim.groupid', 1],
                 ['tblclaimdtl.amount', '!=', 0]
                 ])
-            ->where('tblclaim.date', '<', $std->date)
+            // ->where('tblclaim.date', '<', $std->date)
             ->unionALL($record)
             ->select(DB::raw("'claim' as source"), 'tblprocess_type.name AS process', 'tblclaim.ref_no','tblclaim.date', 'tblstudentclaim.name', 
             'tblclaimdtl.amount',
