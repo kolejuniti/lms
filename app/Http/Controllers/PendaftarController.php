@@ -1267,34 +1267,43 @@ class PendaftarController extends Controller
 
     public function getStudentList(Request $request)
     {
-        $students = DB::table('students')->where('name', 'LIKE', "%".$request->search."%")
-                                         ->orwhere('ic', 'LIKE', "%".$request->search."%")
-                                         ->orwhere('no_matric', 'LIKE', "%".$request->search."%")->get();
+        try {
+            // Validate search parameter
+            if (!$request->has('search') || empty(trim($request->search))) {
+                $content = "<option value='0' selected disabled>Please enter search term</option>";
+                return response($content, 200);
+            }
 
-        $content = "";
+            $students = DB::table('students')->where('name', 'LIKE', "%".$request->search."%")
+                                             ->orwhere('ic', 'LIKE', "%".$request->search."%")
+                                             ->orwhere('no_matric', 'LIKE', "%".$request->search."%")->get();
 
-        $content .= "<option value='0' selected disabled>-</option>";
-        foreach($students as $std){
+            $content = "";
+            $content .= "<option value='0' selected disabled>-</option>";
+            
+            foreach($students as $std){
+                $content .= "<option data-style=\"btn-inverse\"
+                data-content=\"<div class='row'>
+                    <div class='col-md-2'>
+                    <div class='d-flex justify-content-center'>
+                        <img src='' 
+                            height='auto' width='70%' class='bg-light ms-0 me-2 rounded-circle'>
+                            </div>
+                    </div>
+                    <div class='col-md-10 align-self-center lh-lg'>
+                        <span><strong>". htmlspecialchars($std->name) ."</strong></span><br>
+                        <span>". htmlspecialchars($std->email) ." | <strong class='text-fade'>". htmlspecialchars($std->ic) ."</strong></span><br>
+                        <span class='text-fade'></span>
+                    </div>
+                </div>\" value='". htmlspecialchars($std->ic) ."' ></option>";
+            }
+            
+            return response($content, 200);
 
-            $content .= "<option data-style=\"btn-inverse\"
-            data-content=\"<div class='row'>
-                <div class='col-md-2'>
-                <div class='d-flex justify-content-center'>
-                    <img src='' 
-                        height='auto' width='70%' class='bg-light ms-0 me-2 rounded-circle'>
-                        </div>
-                </div>
-                <div class='col-md-10 align-self-center lh-lg'>
-                    <span><strong>". $std->name ."</strong></span><br>
-                    <span>". $std->email ." | <strong class='text-fade'>". $std->ic ."</strong></span><br>
-                    <span class='text-fade'></span>
-                </div>
-            </div>\" value='". $std->ic ."' ></option>";
-
+        } catch (\Exception $e) {
+            Log::error('Error in getStudentList: ' . $e->getMessage());
+            return response('<option value="0" selected disabled>Error loading students</option>', 500);
         }
-        
-        return $content;
-
     }
 
     public function getStudentInfo(Request $request)
@@ -2628,7 +2637,7 @@ class PendaftarController extends Controller
                         ['semesterid', $data->semester],
                         ['group_id', '!=', null]
                     ])
-                    ->whereIn('course_status_id', [1])->sum('credit');
+                    ->whereIn('course_status_id', [1, 12, 15])->sum('credit');
 
                     $grade_pointer_s = DB::table('student_subjek')
                     ->where([
@@ -2669,7 +2678,7 @@ class PendaftarController extends Controller
                         ['group_id', '!=', null]
                     ])
                     ->where('semesterid', '<=', $data->semester)
-                    ->whereIn('course_status_id', [1])->sum('credit');
+                    ->whereIn('course_status_id', [1, 12, 15])->sum('credit');
 
                     $distinct_courses = DB::table('student_subjek')
                     ->where([
