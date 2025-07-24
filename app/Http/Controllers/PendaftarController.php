@@ -3027,7 +3027,7 @@ class PendaftarController extends Controller
                         ['sessionid', $data->session],
                         ['semesterid', $data->semester],
                         ['group_id','!=',null]
-                    ])->whereIn('course_status_id', [1])->sum('credit');
+                    ])->whereIn('course_status_id', [1, 12, 15])->sum('credit');
 
                     $grade_pointer_s = DB::table('student_subjek')
                     ->where([
@@ -3062,7 +3062,7 @@ class PendaftarController extends Controller
                         ['student_ic', $std],
                         ['group_id','!=',null]
                     ])->where('semesterid', '<=', $data->semester)
-                    ->whereIn('course_status_id', [1])->sum('credit');
+                    ->whereIn('course_status_id', [1, 12, 15])->sum('credit');
 
                     $distinct_courses = DB::table('student_subjek')
                     ->where([
