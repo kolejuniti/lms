@@ -886,6 +886,7 @@ Route::post('/finance/debt/studentCtos/deleteCTOS', [App\Http\Controllers\Financ
 Route::get('/finance/debt/studentRemarks', [App\Http\Controllers\FinanceController::class, 'studentRemarks'])->name('finance.studentRemarks');
 Route::post('/finance/debt/studentRemarks/getStudentRemarks', [App\Http\Controllers\FinanceController::class, 'getStudentRemarks']);
 Route::post('/finance/debt/studentRemarks/storeStudentRemarks', [App\Http\Controllers\FinanceController::class, 'storeStudentRemarks']);
+Route::get('/finance/debt/discountReport', [App\Http\Controllers\FinanceController::class, 'discountReport'])->name('finance.discountReport');
 Route::get('/finance/asset/vehicleRecord', [App\Http\Controllers\FinanceController::class,'vehicleRecord'])->name('finance.vehicleRecord');
 Route::post('/finance/asset/vehicleRecord/storeVehicle', [App\Http\Controllers\FinanceController::class,'storeVehicle']);
 Route::delete('/finance/asset/vehicleRecord/deleteVehicle', [App\Http\Controllers\FinanceController::class,'deleteVehicle']);
@@ -1052,6 +1053,13 @@ Route::prefix('all')->group(function () {
     Route::delete('/student/announcements/delete/{id}', [App\Http\Controllers\AllController::class, 'destroyAnnouncements']);
     Route::get('/student/announcements/getBannerAnnouncement', [App\Http\Controllers\AllController::class, 'getBannerAnnouncement']);
 });
+
+// PDF Export Routes
+Route::get('/all/pdf-export', [App\Http\Controllers\AllController::class, 'pdfExportIndex'])->name('all.pdf.export.index');
+Route::post('/all/pdf-export/upload', [App\Http\Controllers\AllController::class, 'pdfExportUpload'])->name('all.pdf.export.upload');
+Route::get('/all/pdf-export/download/{filename}', [App\Http\Controllers\AllController::class, 'pdfExportDownload'])->name('all.pdf.export.download');
+Route::get('/all/pdf-export/template/download', [App\Http\Controllers\AllController::class, 'downloadTemplate'])->name('all.pdf.export.template.download');
+Route::get('/all/pdf-export/sample/download', [App\Http\Controllers\AllController::class, 'downloadSample'])->name('all.pdf.export.sample.download');
 
 Route::get('/all/student/announcements', function () {
     return view('alluser.student.announcements.index');

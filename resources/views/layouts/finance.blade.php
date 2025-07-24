@@ -455,6 +455,7 @@ li a {
 					<li><a href="{{ route('finance.studentCtos') }}" class="{{ (route('finance.studentCtos') == Request::url()) ? 'active' : ''}}">Student CTOSs</a></li>
 					<li><a href="{{ route('finance.authorizeTranscript') }}" class="{{ (route('finance.authorizeTranscript') == Request::url()) ? 'active' : ''}}">Autorization Transcript</a></li>
 					<li><a href="{{ route('finance.studentRemarks') }}" class="{{ (route('finance.studentRemarks') == Request::url()) ? 'active' : ''}}">Student Remark</a></li>
+					<li><a href="{{ route('finance.discountReport') }}" class="{{ (route('finance.discountReport') == Request::url()) ? 'active' : ''}}">Discount Report</a></li>
 				</ul>
 			  </li>
 			  <li class="treeview">
@@ -508,6 +509,10 @@ li a {
 			  </script>
 			  <li>
 				<a href="{{ route('posting.staff') }}" class="{{ (route('posting.staff') == Request::url()) ? 'active' : ''}}"><i data-feather="tv"></i><span>Posting</span></a>
+			  </li> 
+
+			  <li>
+				<a href="{{ route('all.pdf.export.index') }}" class="{{ (route('all.pdf.export.index') == Request::url()) ? 'active' : ''}}"><i data-feather="file-text"></i><span>PDF Export</span></a>
 			  </li> 
 		  </div>
 		</div>
