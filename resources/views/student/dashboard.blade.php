@@ -1484,6 +1484,16 @@
                 </div>
                 
                 <!-- Quick Access Item 3 -->
+                @php
+                $range = DB::table('tblresult_period')->first();
+                $now = now();
+                $block_status = Auth::guard('student')->user()->block_status;
+                $program_list = DB::table('tblresult_program')->pluck('program_id')->toArray();
+                $session_list = DB::table('tblresult_session')->pluck('session_id')->toArray();
+                $semester_list = DB::table('tblresult_semester')->pluck('semester_id')->toArray();
+                @endphp
+
+                @if($now >= $range->Start && $now <= $range->End && in_array(Auth::guard('student')->user()->program, $program_list) && in_array(Auth::guard('student')->user()->session, $session_list) && in_array(Auth::guard('student')->user()->semester, $semester_list) && $block_status == 0)
                 <div class="col-6 col-sm-4">
                   <a href="{{ route('student.affair.result') }}" class="quick-access-item">
                     <div class="icon-container bg-gradient-orange">
@@ -1492,6 +1502,7 @@
                     <h6>My Results</h6>
                   </a>
                 </div>
+                @endif
                 
                 <!-- Quick Access Item 4 -->
                 <div class="col-6 col-sm-4">

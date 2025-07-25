@@ -1581,9 +1581,6 @@ class StudentController extends Controller
                            ->select('students.*', 'tblstudent_status.name AS statusName', 'tblprogramme.progname AS program', 'students.program AS progid', 't1.SessionName AS intake_name', 't2.SessionName AS session_name')
                            ->where('ic',  $student->ic)->first();
 
-        if($student->block_status == 0)
-        {
-
         $data['result'] = DB::table('student_transcript')
                 ->leftjoin('students', 'student_transcript.student_ic', 'students.ic')
                 ->leftjoin('sessions', 'student_transcript.session_id', 'sessions.SessionID')
@@ -1594,14 +1591,6 @@ class StudentController extends Controller
                 // ->whereIn('student_transcript.semester', $semesterArray)
                 ->select('student_transcript.*', 'students.name', 'students.no_matric', 'sessions.SessionName','transcript_status.status_name AS transcript_status_id')
                 ->get();
-
-        }else{
-
-            $data['result'] = [];
-
-            $data['error'] = 'You are blocked from viewing results, please consult the finance department for any inquiries.';
-
-        }
 
         return view('student.affair.result.studentResult', compact('data'));
 
