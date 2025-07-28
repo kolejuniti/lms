@@ -723,8 +723,11 @@
                 </select>
             </div>
             <button class="start-game-btn" id="startGameBtn">
-                <i class="fas fa-play"></i> Start Game
+                <i class="fas fa-play"></i> Send Connect Four Invitation
             </button>
+            <p style="text-align: center; margin-top: 15px; color: #666; font-size: 0.9rem;">
+                <i class="fas fa-info-circle"></i> This will send a Connect Four game invitation to the selected player
+            </p>
         </div>
     </div>
 

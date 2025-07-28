@@ -650,8 +650,8 @@
                     </div>
                     
                     <div class="mb-4">
-                        <label class="form-label fw-bold">Choose Game Type:</label>
-                        <div>
+                        <label class="form-label fw-bold" style="color: #e74c3c;">⚠️ Choose Game Type (Required):</label>
+                        <div style="border: 2px solid #e74c3c; border-radius: 8px; padding: 10px; background: rgba(231, 76, 60, 0.1);">
                             <div class="game-type-option selected" data-game="tic_tac_toe">
                                 <div class="game-type-icon">
                                     <i class="fas fa-th"></i>
@@ -672,6 +672,9 @@
                             </div>
                         </div>
                         <input type="hidden" id="game_type" name="game_type" value="tic_tac_toe">
+                        <small style="color: #e74c3c; font-weight: 600;">
+                            <i class="fas fa-hand-pointer"></i> Click on the game you want to play above
+                        </small>
                     </div>
                 </form>
             </div>
@@ -728,6 +731,16 @@ $(document).ready(function() {
             game_type: $('#game_type').val(),
             _token: '{{ csrf_token() }}'
         };
+
+        // Debug: Log what we're sending
+        console.log('Sending game invitation:', formData);
+        
+        // Show user what type of invitation they're sending
+        var gameTypeName = formData.game_type === 'connect_four' ? 'Connect Four' : 'Tic Tac Toe';
+        if (!confirm('Send ' + gameTypeName + ' invitation to ' + $('#player_name').text() + '?')) {
+            btn.html(originalText).prop('disabled', false);
+            return;
+        }
 
         $.ajax({
             url: '{{ route("student.games.create") }}',
