@@ -652,7 +652,7 @@
                     <div class="mb-4">
                         <label class="form-label fw-bold">Choose Game Type:</label>
                         <div>
-                            <div class="game-type-option" data-game="tic_tac_toe">
+                            <div class="game-type-option selected" data-game="tic_tac_toe">
                                 <div class="game-type-icon">
                                     <i class="fas fa-th"></i>
                                 </div>
@@ -698,6 +698,11 @@ $(document).ready(function() {
         $('#opponent_ic').val(ic);
         $('#player_name').text(name);
         $('#player_initial').text(name.charAt(0));
+        
+        // Reset game type selection to default (tic_tac_toe)
+        $('.game-type-option').removeClass('selected');
+        $('.game-type-option[data-game="tic_tac_toe"]').addClass('selected');
+        $('#game_type').val('tic_tac_toe');
         
         var modal = new bootstrap.Modal(document.getElementById('inviteModal'));
         modal.show();
