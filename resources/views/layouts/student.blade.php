@@ -318,6 +318,12 @@
                       <i data-feather="grid-3x3"></i> Tic Tac Toe
                     </a>
                   </li>
+                  <li>
+                    <a href="{{ route('student.games.connectfour') }}" 
+                      class="{{ (route('student.games.connectfour') == Request::url()) ? 'active' : ''}}">
+                      <i data-feather="circle"></i> Connect Four
+                    </a>
+                  </li>
                 </ul>
               </li>
             </ul>

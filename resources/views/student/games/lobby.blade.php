@@ -545,7 +545,12 @@
                                         </div>
                                     </div>
                                     <div class="mt-3 text-center">
-                                        <a href="{{ route('student.games.tictactoe') }}?game_id={{ $game->id }}" class="btn btn-modern btn-continue">
+                                        @php
+                                            $gameRoute = $game->game_type === 'connect_four' 
+                                                ? route('student.games.connectfour') 
+                                                : route('student.games.tictactoe');
+                                        @endphp
+                                        <a href="{{ $gameRoute }}?game_id={{ $game->id }}" class="btn btn-modern btn-continue">
                                             <i class="fas fa-play"></i> Continue Game
                                         </a>
                                     </div>
@@ -607,6 +612,9 @@
                     <a href="{{ route('student.games.tictactoe') }}" class="game-button">
                         <i class="fas fa-th"></i> Tic Tac Toe
                     </a>
+                    <a href="{{ route('student.games.connectfour') }}" class="game-button">
+                        <i class="fas fa-circle"></i> Connect Four
+                    </a>
                     <div style="margin-top: 20px; color: #666; font-size: 0.9rem;">
                         More games coming soon!
                     </div>
@@ -651,6 +659,15 @@
                                 <div>
                                     <div class="fw-bold">Tic Tac Toe</div>
                                     <small class="text-muted">Classic 3x3 strategy game</small>
+                                </div>
+                            </div>
+                            <div class="game-type-option" data-game="connect_four">
+                                <div class="game-type-icon">
+                                    <i class="fas fa-circle"></i>
+                                </div>
+                                <div>
+                                    <div class="fw-bold">Connect Four</div>
+                                    <small class="text-muted">Drop pieces to get four in a row</small>
                                 </div>
                             </div>
                         </div>

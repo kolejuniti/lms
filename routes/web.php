@@ -691,6 +691,7 @@ Route::post('/notifications/mark-read/{id}', function ($id) {
 // Student Games Routes
 Route::get('/student/games/lobby', [App\Http\Controllers\StudentController::class, 'gamesLobby'])->name('student.games.lobby');
 Route::get('/student/games/tictactoe', [App\Http\Controllers\StudentController::class, 'ticTacToe'])->name('student.games.tictactoe');
+Route::get('/student/games/connectfour', [App\Http\Controllers\StudentController::class, 'connectFour'])->name('student.games.connectfour');
 Route::post('/student/games/create', [App\Http\Controllers\StudentController::class, 'createGame'])->name('student.games.create');
 Route::post('/student/games/accept', [App\Http\Controllers\StudentController::class, 'acceptGameInvitation'])->name('student.games.accept');
 Route::post('/student/games/decline', [App\Http\Controllers\StudentController::class, 'declineGameInvitation'])->name('student.games.decline');

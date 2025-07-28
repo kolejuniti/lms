@@ -1678,12 +1678,26 @@ class StudentController extends Controller
         return view('student.games.tictactoe', compact('availableStudents'));
     }
 
+    public function connectFour()
+    {
+        $student = Session::get('StudInfo');
+        
+        // Get available students to invite
+        $availableStudents = DB::table('students')
+            ->select('ic', 'name', 'no_matric')
+            ->where('ic', '!=', $student->ic)
+            ->limit(50)
+            ->get();
+
+        return view('student.games.connectfour', compact('availableStudents'));
+    }
+
     public function createGame(Request $request)
     {
         $student = Session::get('StudInfo');
         
         $request->validate([
-            'game_type' => 'required|in:tic_tac_toe',
+            'game_type' => 'required|in:tic_tac_toe,connect_four',
             'opponent_ic' => 'required|exists:students,ic'
         ]);
 
