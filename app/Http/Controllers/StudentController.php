@@ -1830,7 +1830,13 @@ class StudentController extends Controller
 
         $game->board_state = json_decode($game->game_data);
         $game->is_current_player = ($game->current_turn === $student->ic);
-        $game->player_symbol = ($game->player1_ic === $student->ic) ? 'X' : 'O';
+        
+        // Set player symbol/color based on game type
+        if ($game->game_type === 'connect_four') {
+            $game->player_color = ($game->player1_ic === $student->ic) ? 'red' : 'yellow';
+        } else {
+            $game->player_symbol = ($game->player1_ic === $student->ic) ? 'X' : 'O';
+        }
 
         return response()->json($game);
     }
@@ -1839,11 +1845,6 @@ class StudentController extends Controller
     {
         $student = Session::get('StudInfo');
         
-        $request->validate([
-            'game_id' => 'required|exists:games,id',
-            'position' => 'required|integer|min:0|max:8'
-        ]);
-
         $game = DB::table('games')->where('id', $request->game_id)->first();
 
         if (!$game) {
@@ -1858,8 +1859,31 @@ class StudentController extends Controller
             return response()->json(['error' => 'Game is not active'], 400);
         }
 
+        // Validate position based on game type
+        if ($game->game_type === 'connect_four') {
+            $request->validate([
+                'game_id' => 'required|exists:games,id',
+                'position' => 'required|integer|min:0|max:6' // Columns 0-6 for Connect Four
+            ]);
+        } else {
+            $request->validate([
+                'game_id' => 'required|exists:games,id',
+                'position' => 'required|integer|min:0|max:8' // Positions 0-8 for Tic Tac Toe
+            ]);
+        }
+
         $boardState = json_decode($game->game_data, true);
 
+        // Handle different game types
+        if ($game->game_type === 'connect_four') {
+            return $this->makeConnectFourMove($request, $game, $boardState, $student);
+        } else {
+            return $this->makeTicTacToeMove($request, $game, $boardState, $student);
+        }
+    }
+
+    private function makeTicTacToeMove($request, $game, $boardState, $student)
+    {
         if ($boardState[$request->position] !== null) {
             return response()->json(['error' => 'Position already taken'], 400);
         }
@@ -1872,8 +1896,8 @@ class StudentController extends Controller
         $boardState[$request->position] = $playerSymbol;
 
         // Check for winner
-        $winner = $this->checkWinner($boardState);
-        $isDraw = $this->checkDraw($boardState);
+        $winner = $this->checkTicTacToeWinner($boardState);
+        $isDraw = $this->checkTicTacToeDraw($boardState);
 
         $status = $game->status;
         $winnerIc = null;
@@ -1897,7 +1921,6 @@ class StudentController extends Controller
                 'updated_at' => now()
             ]);
 
-        // Record the move
         DB::table('game_moves')->insert([
             'game_id' => $request->game_id,
             'player_ic' => $student->ic,
@@ -1909,13 +1932,99 @@ class StudentController extends Controller
         return response()->json([
             'success' => 'Move made successfully',
             'board_state' => $boardState,
-            'winner' => $winner,
+            'winner' => $winner ? $playerSymbol : null,
             'is_draw' => $isDraw,
             'game_status' => $status
         ]);
     }
 
-    private function checkWinner($board)
+    private function makeConnectFourMove($request, $game, $boardState, $student)
+    {
+        $column = $request->position;
+        
+        // Convert flat array to 2D array for easier manipulation
+        $board2D = [];
+        for ($i = 0; $i < 6; $i++) {
+            $board2D[] = array_slice($boardState, $i * 7, 7);
+        }
+
+        // Check if column is full
+        if ($board2D[0][$column] !== null) {
+            return response()->json(['error' => 'Column is full'], 400);
+        }
+
+        // Find the lowest available row in the column
+        $targetRow = -1;
+        for ($row = 5; $row >= 0; $row--) {
+            if ($board2D[$row][$column] === null) {
+                $targetRow = $row;
+                break;
+            }
+        }
+
+        if ($targetRow === -1) {
+            return response()->json(['error' => 'Column is full'], 400);
+        }
+
+        // Determine player color
+        $playerColor = ($game->player1_ic === $student->ic) ? 'red' : 'yellow';
+        $nextPlayer = ($game->player1_ic === $student->ic) ? $game->player2_ic : $game->player1_ic;
+
+        // Make the move
+        $board2D[$targetRow][$column] = $playerColor;
+
+        // Convert back to flat array
+        $boardState = [];
+        for ($i = 0; $i < 6; $i++) {
+            $boardState = array_merge($boardState, $board2D[$i]);
+        }
+
+        // Check for winner
+        $winner = $this->checkConnectFourWinner($board2D, $targetRow, $column, $playerColor);
+        $isDraw = $this->checkConnectFourDraw($board2D);
+
+        $status = $game->status;
+        $winnerIc = null;
+
+        if ($winner) {
+            $status = 'completed';
+            $winnerIc = $student->ic;
+        } elseif ($isDraw) {
+            $status = 'completed';
+            $winnerIc = 'draw';
+        }
+
+        // Update game
+        DB::table('games')
+            ->where('id', $request->game_id)
+            ->update([
+                'game_data' => json_encode($boardState),
+                'current_turn' => $winner || $isDraw ? null : $nextPlayer,
+                'status' => $status,
+                'winner_ic' => $winnerIc,
+                'updated_at' => now()
+            ]);
+
+        DB::table('game_moves')->insert([
+            'game_id' => $request->game_id,
+            'player_ic' => $student->ic,
+            'position' => $targetRow * 7 + $column, // Store actual board position
+            'symbol' => $playerColor,
+            'created_at' => now()
+        ]);
+
+        return response()->json([
+            'success' => 'Move made successfully',
+            'board_state' => $boardState,
+            'winner' => $winner ? $playerColor : null,
+            'is_draw' => $isDraw,
+            'game_status' => $status,
+            'target_row' => $targetRow,
+            'target_column' => $column
+        ]);
+    }
+
+    private function checkTicTacToeWinner($board)
     {
         $winningCombinations = [
             [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
@@ -1934,9 +2043,71 @@ class StudentController extends Controller
         return null;
     }
 
-    private function checkDraw($board)
+    private function checkTicTacToeDraw($board)
     {
         return !in_array(null, $board);
+    }
+
+    private function checkConnectFourWinner($board2D, $row, $col, $color)
+    {
+        $directions = [
+            [0, 1],   // Horizontal
+            [1, 0],   // Vertical
+            [1, 1],   // Diagonal \
+            [1, -1]   // Diagonal /
+        ];
+
+        foreach ($directions as $direction) {
+            $count = 1;
+            $dr = $direction[0];
+            $dc = $direction[1];
+
+            // Check in positive direction
+            $r = $row + $dr;
+            $c = $col + $dc;
+            while ($r >= 0 && $r < 6 && $c >= 0 && $c < 7 && $board2D[$r][$c] === $color) {
+                $count++;
+                $r += $dr;
+                $c += $dc;
+            }
+
+            // Check in negative direction
+            $r = $row - $dr;
+            $c = $col - $dc;
+            while ($r >= 0 && $r < 6 && $c >= 0 && $c < 7 && $board2D[$r][$c] === $color) {
+                $count++;
+                $r -= $dr;
+                $c -= $dc;
+            }
+
+            if ($count >= 4) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function checkConnectFourDraw($board2D)
+    {
+        // Check if top row is full
+        for ($col = 0; $col < 7; $col++) {
+            if ($board2D[0][$col] === null) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    // Keep the old methods for backward compatibility, but rename them
+    private function checkWinner($board)
+    {
+        return $this->checkTicTacToeWinner($board);
+    }
+
+    private function checkDraw($board)
+    {
+        return $this->checkTicTacToeDraw($board);
     }
 
     public function searchStudents(Request $request)
