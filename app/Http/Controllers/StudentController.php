@@ -1720,13 +1720,18 @@ class StudentController extends Controller
             return response()->json(['error' => 'Game already exists with this player'], 400);
         }
 
+        // Determine initial game data based on game type
+        $initialGameData = $request->game_type === 'connect_four' 
+            ? json_encode(array_fill(0, 42, null)) // 6x7 grid for Connect Four
+            : json_encode(array_fill(0, 9, null));  // 3x3 grid for Tic Tac Toe
+
         // Create new game
         $gameId = DB::table('games')->insertGetId([
-            'game_type' => 'tic_tac_toe',
+            'game_type' => $request->game_type,
             'player1_ic' => $student->ic,
             'player2_ic' => $request->opponent_ic,
             'current_turn' => $student->ic,
-            'game_data' => json_encode(array_fill(0, 9, null)),
+            'game_data' => $initialGameData,
             'status' => 'waiting',
             'created_at' => now(),
             'updated_at' => now()
@@ -1737,7 +1742,7 @@ class StudentController extends Controller
             'game_id' => $gameId,
             'from_student_ic' => $student->ic,
             'to_student_ic' => $request->opponent_ic,
-            'game_type' => 'tic_tac_toe',
+            'game_type' => $request->game_type,
             'status' => 'pending',
             'created_at' => now(),
             'updated_at' => now()
