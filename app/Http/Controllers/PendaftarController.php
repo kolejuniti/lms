@@ -4059,7 +4059,7 @@ class PendaftarController extends Controller
                     $data['to'] = Carbon::createFromFormat('Y-m-d', $request->to)->translatedFormat('d F Y');
 
 
-                    return $this->exportToExcelRA2($data);
+                    return $this->exportToExcel($data);
 
                 }else{
 
