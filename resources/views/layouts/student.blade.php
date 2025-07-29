@@ -106,6 +106,15 @@
               </a>				
             </li>
             
+            <!-- Student Messages Button -->
+            <li class="messaging-dropdown d-flex align-items-center">
+              <button class="messaging-btn" onclick="toggleMessagingPanel()">
+                <i data-feather="message-circle" style="color: #4f81c7;"></i>
+                <div class="pulse-wave"></div>
+                <span id="total-student-messages-count" class="badge hidden">0</span>
+              </button>
+            </li>
+
             <!-- Notifications -->
             <li class="notification-dropdown d-flex align-items-center">
               <button class="notification-btn" onclick="toggleNotificationDropdown()">
@@ -285,32 +294,37 @@
                 </ul>
               </li>
               
-              <!-- Student Messages -->
+              <!-- Quick Student Messages (Sidebar) -->
               <li class="treeview">
                 <a href="#">
                   <i data-feather="users"></i>
                   <span>Student Messages</span>
-                  <span id="total-student-messages-count" class="count-circle hidden">0</span>
+                  <span id="sidebar-student-messages-count" class="count-circle hidden">0</span>
                   <span class="pull-right-container">
                     <i class="fa fa-angle-right pull-right"></i>
                   </span>
                 </a>
                 <ul class="treeview-menu treeview-menu-visible">
                   <li>
-                    <div class="student-search-container">
-                      <div class="search-box">
-                        <input type="text" id="student-search" placeholder="Search students..." class="form-control">
-                        <div id="search-results" class="search-results"></div>
-                      </div>
+                    <div class="sidebar-quick-search">
+                      <input type="text" id="sidebar-student-search" placeholder="Quick search..." class="form-control form-control-sm">
+                      <div id="sidebar-search-results" class="sidebar-search-results"></div>
                     </div>
                   </li>
                   <li>
-                    <div id="student-conversations" class="student-conversations">
-                      <!-- Conversations will be loaded here -->
+                    <div id="sidebar-recent-conversations" class="sidebar-conversations">
+                      <!-- Recent conversations will be loaded here -->
                     </div>
+                  </li>
+                  <li>
+                    <a href="#" onclick="toggleMessagingPanel()" class="view-all-messages">
+                      <i data-feather="message-square"></i>
+                      <span>View All Messages</span>
+                    </a>
                   </li>
                 </ul>
               </li>
+
               
               <li>
                 <a href="/yuran-pengajian" class="">
@@ -384,6 +398,42 @@
     
     <!-- Main Content -->
     @yield('main')
+    
+    <!-- Student Messaging Panel (Facebook-like) -->
+    <div id="messaging-panel" class="messaging-panel">
+      <div class="messaging-panel-header">
+        <div class="messaging-header-content">
+          <h3><i data-feather="message-circle"></i> Messages</h3>
+          <button class="close-messaging-btn" onclick="toggleMessagingPanel()">
+            <i data-feather="x"></i>
+          </button>
+        </div>
+        <div class="messaging-search-container">
+          <div class="messaging-search-box">
+            <i data-feather="search" class="search-icon"></i>
+            <input type="text" id="messaging-student-search" placeholder="Search students..." class="messaging-search-input">
+            <div id="messaging-search-results" class="messaging-search-results"></div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="messaging-panel-body">
+        <!-- Recent Conversations -->
+        <div class="messaging-section">
+          <h4 class="messaging-section-title">Recent Conversations</h4>
+          <div id="messaging-conversations" class="messaging-conversations">
+            <div class="messaging-empty-state">
+              <i data-feather="message-square"></i>
+              <p>No conversations yet</p>
+              <span>Search for students to start chatting!</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Messaging Panel Overlay -->
+    <div id="messaging-overlay" class="messaging-overlay" onclick="toggleMessagingPanel()"></div>
     
     <!-- Footer -->
     <footer class="main-footer">
@@ -462,71 +512,492 @@
   
   <!-- Scripts -->
   <style>
-    .student-search-container {
-      padding: 10px 15px;
+    /* Messaging Button Styles */
+    .messaging-btn {
+      position: relative;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 50%;
+      transition: background-color 0.2s ease;
     }
     
-    .search-box {
+    .messaging-btn:hover {
+      background-color: rgba(79, 129, 199, 0.1);
+    }
+    
+    .messaging-btn .badge {
+      position: absolute;
+      top: 0;
+      right: 0;
+      background: #ff4757;
+      color: white;
+      border-radius: 50%;
+      min-width: 18px;
+      height: 18px;
+      font-size: 11px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid white;
+    }
+    
+    .messaging-btn .badge.hidden {
+      display: none;
+    }
+
+    /* Messaging Panel Styles */
+    .messaging-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.3);
+      z-index: 999;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+    
+    .messaging-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .messaging-panel {
+      position: fixed;
+      top: 0;
+      right: -400px;
+      width: 400px;
+      height: 100vh;
+      background: white;
+      z-index: 1000;
+      box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+      transition: right 0.3s ease;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .messaging-panel.active {
+      right: 0;
+    }
+
+    .messaging-panel-header {
+      background: #4f81c7;
+      color: white;
+      padding: 20px;
+      border-bottom: 1px solid #e1e8ed;
+    }
+    
+    .messaging-header-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 15px;
+    }
+    
+    .messaging-header-content h3 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .close-messaging-btn {
+      background: none;
+      border: none;
+      color: white;
+      cursor: pointer;
+      padding: 5px;
+      border-radius: 50%;
+      transition: background-color 0.2s ease;
+    }
+    
+    .close-messaging-btn:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .messaging-search-container {
       position: relative;
     }
     
-    .search-results {
+    .messaging-search-box {
+      position: relative;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 20px;
+      padding: 8px 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .search-icon {
+      width: 16px;
+      height: 16px;
+      color: #666;
+    }
+    
+    .messaging-search-input {
+      flex: 1;
+      border: none;
+      outline: none;
+      background: transparent;
+      font-size: 14px;
+      color: #333;
+    }
+    
+    .messaging-search-input::placeholder {
+      color: #666;
+    }
+
+    .messaging-search-results {
       position: absolute;
       top: 100%;
       left: 0;
       right: 0;
       background: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      max-height: 250px;
+      overflow-y: auto;
+      z-index: 1001;
+      display: none;
+      margin-top: 8px;
+    }
+    
+    .messaging-search-results.active {
+      display: block;
+    }
+
+    .messaging-panel-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0;
+    }
+
+    .messaging-section {
+      padding: 20px;
+    }
+    
+    .messaging-section-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #333;
+      margin: 0 0 15px 0;
+    }
+
+    .messaging-conversations {
+      /* Remove max-height to allow full expansion */
+    }
+    
+    .messaging-empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #666;
+    }
+    
+    .messaging-empty-state i {
+      width: 48px;
+      height: 48px;
+      margin-bottom: 15px;
+      color: #ccc;
+    }
+    
+    .messaging-empty-state p {
+      font-size: 16px;
+      font-weight: 500;
+      margin: 0 0 5px 0;
+    }
+    
+    .messaging-empty-state span {
+      font-size: 14px;
+      color: #999;
+    }
+
+    /* Search Result Items */
+    .messaging-search-result-item {
+      padding: 12px 15px;
+      cursor: pointer;
+      border-bottom: 1px solid #f0f0f0;
+      transition: background-color 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .messaging-search-result-item:hover {
+      background-color: #f8f9fa;
+    }
+    
+    .messaging-search-result-item:last-child {
+      border-bottom: none;
+    }
+    
+    .messaging-search-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #4f81c7, #667eea);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+    
+    .messaging-search-details {
+      flex: 1;
+      min-width: 0;
+    }
+    
+    .messaging-search-name {
+      font-weight: 600;
+      font-size: 14px;
+      color: #333;
+      margin-bottom: 2px;
+    }
+    
+    .messaging-search-info {
+      font-size: 12px;
+      color: #666;
+    }
+
+    /* Conversation Items */
+    .messaging-conversation-item {
+      display: flex;
+      align-items: center;
+      padding: 12px 0;
+      cursor: pointer;
+      border-bottom: 1px solid #f0f0f0;
+      transition: background-color 0.2s ease;
+      gap: 12px;
+    }
+    
+    .messaging-conversation-item:hover {
+      background-color: #f8f9fa;
+      padding-left: 8px;
+      padding-right: 8px;
+      margin-left: -8px;
+      margin-right: -8px;
+      border-radius: 8px;
+    }
+    
+    .messaging-conversation-item:last-child {
+      border-bottom: none;
+    }
+    
+    .messaging-conversation-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #4f81c7, #667eea);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 18px;
+      flex-shrink: 0;
+      position: relative;
+    }
+    
+    .messaging-conversation-avatar.online::after {
+      content: '';
+      position: absolute;
+      bottom: 2px;
+      right: 2px;
+      width: 12px;
+      height: 12px;
+      background: #2ed573;
+      border: 2px solid white;
+      border-radius: 50%;
+    }
+    
+    .messaging-conversation-details {
+      flex: 1;
+      min-width: 0;
+    }
+    
+    .messaging-conversation-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+    
+    .messaging-conversation-name {
+      font-weight: 600;
+      font-size: 15px;
+      color: #333;
+    }
+    
+    .messaging-conversation-time {
+      font-size: 12px;
+      color: #999;
+    }
+    
+    .messaging-conversation-preview {
+      font-size: 13px;
+      color: #666;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    
+    .messaging-conversation-preview.unread {
+      font-weight: 600;
+      color: #333;
+    }
+    
+    .messaging-conversation-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .messaging-unread-badge {
+      background: #4f81c7;
+      color: white;
+      border-radius: 50%;
+      min-width: 20px;
+      height: 20px;
+      font-size: 11px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .messaging-panel {
+        width: 100%;
+        right: -100%;
+      }
+    }
+
+    /* Sidebar Quick Messaging Styles */
+    .sidebar-quick-search {
+      padding: 10px 15px;
+    }
+    
+    .sidebar-quick-search .form-control-sm {
+      font-size: 12px;
+      padding: 6px 10px;
+      border-radius: 15px;
       border: 1px solid #ddd;
-      border-radius: 5px;
+    }
+    
+    .sidebar-search-results {
+      position: absolute;
+      top: 100%;
+      left: 15px;
+      right: 15px;
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
       max-height: 200px;
       overflow-y: auto;
       z-index: 1000;
       display: none;
+      margin-top: 5px;
     }
     
-    .search-result-item {
+    .sidebar-search-results.active {
+      display: block;
+    }
+    
+    .sidebar-search-item {
       padding: 8px 12px;
       cursor: pointer;
-      border-bottom: 1px solid #eee;
+      border-bottom: 1px solid #f0f0f0;
+      transition: background-color 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
     
-    .search-result-item:hover {
-      background-color: #f5f5f5;
+    .sidebar-search-item:hover {
+      background-color: #f8f9fa;
     }
     
-    .search-result-item:last-child {
+    .sidebar-search-item:last-child {
       border-bottom: none;
     }
     
-    .search-result-name {
-      font-weight: bold;
-      font-size: 14px;
-    }
-    
-    .search-result-details {
-      font-size: 12px;
-      color: #666;
-    }
-    
-    .student-conversations {
-      max-height: 300px;
-      overflow-y: auto;
-    }
-    
-    .conversation-item {
+    .sidebar-search-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #4f81c7;
+      color: white;
       display: flex;
       align-items: center;
-      padding: 8px 15px;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 11px;
+      flex-shrink: 0;
+    }
+    
+    .sidebar-search-info {
+      flex: 1;
+      min-width: 0;
+    }
+    
+    .sidebar-search-name {
+      font-weight: 600;
+      font-size: 12px;
+      color: #333;
+      margin-bottom: 1px;
+    }
+    
+    .sidebar-search-details {
+      font-size: 10px;
+      color: #666;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    .sidebar-conversations {
+      max-height: 250px;
+      overflow-y: auto;
+      padding: 0 15px;
+    }
+    
+    .sidebar-conversation-item {
+      display: flex;
+      align-items: center;
+      padding: 8px 0;
       cursor: pointer;
-      border-bottom: 1px solid #eee;
-      transition: background-color 0.2s;
+      border-bottom: 1px solid #f0f0f0;
+      transition: all 0.2s ease;
+      gap: 8px;
     }
     
-    .conversation-item:hover {
-      background-color: #f5f5f5;
+    .sidebar-conversation-item:hover {
+      background-color: #f8f9fa;
+      margin: 0 -8px;
+      padding: 8px 8px;
+      border-radius: 6px;
     }
     
-    .conversation-avatar {
+    .sidebar-conversation-item:last-child {
+      border-bottom: none;
+    }
+    
+    .sidebar-conversation-avatar {
       width: 32px;
       height: 32px;
       border-radius: 50%;
@@ -536,22 +1007,36 @@
       align-items: center;
       justify-content: center;
       font-weight: bold;
-      margin-right: 10px;
       font-size: 12px;
+      flex-shrink: 0;
+      position: relative;
     }
     
-    .conversation-details {
+    .sidebar-conversation-avatar.online::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      right: -1px;
+      width: 10px;
+      height: 10px;
+      background: #2ed573;
+      border: 2px solid white;
+      border-radius: 50%;
+    }
+    
+    .sidebar-conversation-details {
       flex: 1;
       min-width: 0;
     }
     
-    .conversation-name {
-      font-weight: bold;
-      font-size: 13px;
+    .sidebar-conversation-name {
+      font-weight: 600;
+      font-size: 12px;
+      color: #333;
       margin-bottom: 2px;
     }
     
-    .conversation-last-message {
+    .sidebar-conversation-preview {
       font-size: 11px;
       color: #666;
       white-space: nowrap;
@@ -559,24 +1044,48 @@
       text-overflow: ellipsis;
     }
     
-    .conversation-unread {
+    .sidebar-conversation-preview.unread {
+      font-weight: 600;
+      color: #333;
+    }
+    
+    .sidebar-conversation-unread {
       background: #4f81c7;
       color: white;
       border-radius: 50%;
-      width: 18px;
-      height: 18px;
+      min-width: 16px;
+      height: 16px;
+      font-size: 9px;
+      font-weight: bold;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 10px;
-      font-weight: bold;
     }
     
-    .empty-conversations {
-      padding: 20px;
+    .sidebar-empty-conversations {
+      padding: 15px 0;
       text-align: center;
       color: #666;
-      font-size: 12px;
+      font-size: 11px;
+    }
+    
+    .view-all-messages {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #4f81c7 !important;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+    
+    .view-all-messages:hover {
+      color: #3d6bb3 !important;
+      background-color: rgba(79, 129, 199, 0.1);
+    }
+    
+    .view-all-messages i {
+      width: 14px;
+      height: 14px;
     }
   </style>
 
@@ -705,11 +1214,42 @@
     // Student messaging functionality
     let searchTimeout;
     let currentStudentChat = null;
+    let messagingPanelOpen = false;
+    
+    // Toggle messaging panel
+    function toggleMessagingPanel() {
+      const panel = document.getElementById('messaging-panel');
+      const overlay = document.getElementById('messaging-overlay');
+      
+      messagingPanelOpen = !messagingPanelOpen;
+      
+      if (messagingPanelOpen) {
+        panel.classList.add('active');
+        overlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        // Load conversations when panel opens
+        loadStudentConversations();
+      } else {
+        panel.classList.remove('active');
+        overlay.classList.remove('active');
+        document.body.style.overflow = '';
+        // Clear search when closing
+        const searchInput = document.getElementById('messaging-student-search');
+        const searchResults = document.getElementById('messaging-search-results');
+        if (searchInput) searchInput.value = '';
+        if (searchResults) searchResults.classList.remove('active');
+      }
+    }
     
     // Initialize student messaging
     document.addEventListener('DOMContentLoaded', function() {
-      const searchInput = document.getElementById('student-search');
-      const searchResults = document.getElementById('search-results');
+      // Main messaging panel search
+      const searchInput = document.getElementById('messaging-student-search');
+      const searchResults = document.getElementById('messaging-search-results');
+      
+      // Sidebar quick search
+      const sidebarSearchInput = document.getElementById('sidebar-student-search');
+      const sidebarSearchResults = document.getElementById('sidebar-search-results');
       
       if (searchInput) {
         searchInput.addEventListener('input', function() {
@@ -717,7 +1257,7 @@
           const query = this.value.trim();
           
           if (query.length < 2) {
-            searchResults.style.display = 'none';
+            searchResults.classList.remove('active');
             return;
           }
           
@@ -729,16 +1269,54 @@
         // Hide search results when clicking outside
         document.addEventListener('click', function(e) {
           if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
-            searchResults.style.display = 'none';
+            searchResults.classList.remove('active');
+          }
+          
+          // Also handle sidebar search results
+          if (sidebarSearchInput && sidebarSearchResults && 
+              !sidebarSearchInput.contains(e.target) && !sidebarSearchResults.contains(e.target)) {
+            sidebarSearchResults.classList.remove('active');
           }
         });
-      }
+              }
+        
+        // Sidebar search functionality
+        if (sidebarSearchInput) {
+          sidebarSearchInput.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            const query = this.value.trim();
+            
+            if (query.length < 2) {
+              sidebarSearchResults.classList.remove('active');
+              return;
+            }
+            
+            searchTimeout = setTimeout(() => {
+              searchStudentsForSidebar(query);
+            }, 300);
+          });
+        }
+        
+        // Load existing conversations
+        loadStudentConversations();
+        loadSidebarConversations();
       
-      // Load existing conversations
-      loadStudentConversations();
+              // Set up periodic refresh for conversations when panel is open
+        setInterval(() => {
+          if (messagingPanelOpen) {
+            loadStudentConversations();
+          }
+          // Always refresh sidebar conversations
+          loadSidebarConversations();
+        }, 5000);
       
-      // Set up periodic refresh for conversations
-      setInterval(loadStudentConversations, 5000);
+      // Keyboard shortcuts
+      document.addEventListener('keydown', function(e) {
+        // Close messaging panel with Escape key
+        if (e.key === 'Escape' && messagingPanelOpen) {
+          toggleMessagingPanel();
+        }
+      });
     });
     
     function searchStudents(query) {
@@ -752,20 +1330,61 @@
       })
       .then(response => response.json())
       .then(students => {
-        const searchResults = document.getElementById('search-results');
+        const searchResults = document.getElementById('messaging-search-results');
         
         if (students.length === 0) {
-          searchResults.innerHTML = '<div class="search-result-item">No students found</div>';
+          searchResults.innerHTML = '<div class="messaging-search-result-item">No students found</div>';
         } else {
           searchResults.innerHTML = students.map(student => `
-            <div class="search-result-item" onclick="startStudentChat('${student.ic}', '${student.name}')">
-              <div class="search-result-name">${student.name}</div>
-              <div class="search-result-details">${student.no_matric} - ${student.progname}</div>
+            <div class="messaging-search-result-item" onclick="startStudentChat('${student.ic}', '${student.name}')">
+              <div class="messaging-search-avatar">
+                ${student.name.charAt(0).toUpperCase()}
+              </div>
+              <div class="messaging-search-details">
+                <div class="messaging-search-name">${student.name}</div>
+                <div class="messaging-search-info">${student.no_matric} • ${student.progname}</div>
+              </div>
             </div>
           `).join('');
         }
         
-        searchResults.style.display = 'block';
+        searchResults.classList.add('active');
+      })
+      .catch(error => {
+        console.error('Error searching students:', error);
+      });
+    }
+    
+    function searchStudentsForSidebar(query) {
+      fetch('/all/student/search', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
+        body: JSON.stringify({ search: query })
+      })
+      .then(response => response.json())
+      .then(students => {
+        const searchResults = document.getElementById('sidebar-search-results');
+        
+        if (students.length === 0) {
+          searchResults.innerHTML = '<div class="sidebar-search-item">No students found</div>';
+        } else {
+          searchResults.innerHTML = students.map(student => `
+            <div class="sidebar-search-item" onclick="startStudentChatFromSidebar('${student.ic}', '${student.name}')">
+              <div class="sidebar-search-avatar">
+                ${student.name.charAt(0).toUpperCase()}
+              </div>
+              <div class="sidebar-search-info">
+                <div class="sidebar-search-name">${student.name}</div>
+                <div class="sidebar-search-details">${student.no_matric}</div>
+              </div>
+            </div>
+          `).join('');
+        }
+        
+        searchResults.classList.add('active');
       })
       .catch(error => {
         console.error('Error searching students:', error);
@@ -773,9 +1392,31 @@
     }
     
     function startStudentChat(studentIc, studentName) {
-      // Hide search results
-      document.getElementById('search-results').style.display = 'none';
-      document.getElementById('student-search').value = '';
+      // Hide search results and clear search
+      const searchResults = document.getElementById('messaging-search-results');
+      const searchInput = document.getElementById('messaging-student-search');
+      if (searchResults) searchResults.classList.remove('active');
+      if (searchInput) searchInput.value = '';
+      
+      // Close messaging panel
+      toggleMessagingPanel();
+      
+      // Check if TextBox component is available
+      if (window.textBoxComponent) {
+        currentStudentChat = studentIc;
+        window.textBoxComponent.openStudentChat(studentIc, studentName);
+      } else {
+        // Fallback - load the chat in a modal or new window
+        openStudentChatModal(studentIc, studentName);
+      }
+    }
+    
+    function startStudentChatFromSidebar(studentIc, studentName) {
+      // Hide sidebar search results and clear search
+      const sidebarSearchResults = document.getElementById('sidebar-search-results');
+      const sidebarSearchInput = document.getElementById('sidebar-student-search');
+      if (sidebarSearchResults) sidebarSearchResults.classList.remove('active');
+      if (sidebarSearchInput) sidebarSearchInput.value = '';
       
       // Check if TextBox component is available
       if (window.textBoxComponent) {
@@ -822,31 +1463,61 @@
       fetch('/all/student/conversations')
         .then(response => response.json())
         .then(conversations => {
-          const container = document.getElementById('student-conversations');
+          const container = document.getElementById('messaging-conversations');
           
           if (conversations.length === 0) {
-            container.innerHTML = '<div class="empty-conversations">No conversations yet. Search for a student to start chatting!</div>';
+            container.innerHTML = `
+              <div class="messaging-empty-state">
+                <i data-feather="message-square"></i>
+                <p>No conversations yet</p>
+                <span>Search for students to start chatting!</span>
+              </div>
+            `;
           } else {
             container.innerHTML = conversations.map(conv => {
               const lastMessage = conv.last_message;
               const student = conv.student;
               const unreadCount = conv.unread_count;
               
+              // Format time
+              const messageTime = lastMessage && lastMessage.datetime ? 
+                new Date(lastMessage.datetime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '';
+              
+              // Format message preview
+              let messagePreview = 'No messages yet';
+              if (lastMessage) {
+                if (lastMessage.message && lastMessage.message.trim()) {
+                  messagePreview = lastMessage.message;
+                } else if (lastMessage.image_url) {
+                  messagePreview = '📷 Photo';
+                }
+              }
+              
               return `
-                <div class="conversation-item" onclick="startStudentChat('${student.ic}', '${student.name}')">
-                  <div class="conversation-avatar">
+                <div class="messaging-conversation-item" onclick="startStudentChat('${student.ic}', '${student.name}')">
+                  <div class="messaging-conversation-avatar online">
                     ${student.name.charAt(0).toUpperCase()}
                   </div>
-                  <div class="conversation-details">
-                    <div class="conversation-name">${student.name}</div>
-                    <div class="conversation-last-message">
-                      ${lastMessage ? (lastMessage.message || 'Image') : 'No messages yet'}
+                  <div class="messaging-conversation-details">
+                    <div class="messaging-conversation-header">
+                      <div class="messaging-conversation-name">${student.name}</div>
+                      <div class="messaging-conversation-time">${messageTime}</div>
+                    </div>
+                    <div class="messaging-conversation-preview ${unreadCount > 0 ? 'unread' : ''}">
+                      ${messagePreview}
                     </div>
                   </div>
-                  ${unreadCount > 0 ? `<div class="conversation-unread">${unreadCount}</div>` : ''}
+                  <div class="messaging-conversation-meta">
+                    ${unreadCount > 0 ? `<div class="messaging-unread-badge">${unreadCount}</div>` : ''}
+                  </div>
                 </div>
               `;
             }).join('');
+          }
+          
+          // Re-initialize feather icons
+          if (window.feather) {
+            feather.replace();
           }
           
           // Update total unread count
@@ -861,6 +1532,69 @@
         })
         .catch(error => {
           console.error('Error loading conversations:', error);
+        });
+    }
+    
+    function loadSidebarConversations() {
+      fetch('/all/student/conversations')
+        .then(response => response.json())
+        .then(conversations => {
+          const container = document.getElementById('sidebar-recent-conversations');
+          
+          if (conversations.length === 0) {
+            container.innerHTML = `
+              <div class="sidebar-empty-conversations">
+                No recent conversations
+              </div>
+            `;
+          } else {
+            // Show only the first 3 conversations for the sidebar
+            const recentConversations = conversations.slice(0, 3);
+            
+            container.innerHTML = recentConversations.map(conv => {
+              const lastMessage = conv.last_message;
+              const student = conv.student;
+              const unreadCount = conv.unread_count;
+              
+              // Format message preview
+              let messagePreview = 'No messages yet';
+              if (lastMessage) {
+                if (lastMessage.message && lastMessage.message.trim()) {
+                  messagePreview = lastMessage.message;
+                } else if (lastMessage.image_url) {
+                  messagePreview = '📷 Photo';
+                }
+              }
+              
+              return `
+                <div class="sidebar-conversation-item" onclick="startStudentChatFromSidebar('${student.ic}', '${student.name}')">
+                  <div class="sidebar-conversation-avatar online">
+                    ${student.name.charAt(0).toUpperCase()}
+                  </div>
+                  <div class="sidebar-conversation-details">
+                    <div class="sidebar-conversation-name">${student.name}</div>
+                    <div class="sidebar-conversation-preview ${unreadCount > 0 ? 'unread' : ''}">
+                      ${messagePreview}
+                    </div>
+                  </div>
+                  ${unreadCount > 0 ? `<div class="sidebar-conversation-unread">${unreadCount}</div>` : ''}
+                </div>
+              `;
+            }).join('');
+          }
+          
+          // Update sidebar unread count
+          const totalUnread = conversations.reduce((sum, conv) => sum + conv.unread_count, 0);
+          const sidebarCountElement = document.getElementById('sidebar-student-messages-count');
+          if (totalUnread > 0) {
+            sidebarCountElement.textContent = totalUnread;
+            sidebarCountElement.classList.remove('hidden');
+          } else {
+            sidebarCountElement.classList.add('hidden');
+          }
+        })
+        .catch(error => {
+          console.error('Error loading sidebar conversations:', error);
         });
     }
     
