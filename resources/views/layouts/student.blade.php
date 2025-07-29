@@ -285,6 +285,33 @@
                 </ul>
               </li>
               
+              <!-- Student Messages -->
+              <li class="treeview">
+                <a href="#">
+                  <i data-feather="users"></i>
+                  <span>Student Messages</span>
+                  <span id="total-student-messages-count" class="count-circle hidden">0</span>
+                  <span class="pull-right-container">
+                    <i class="fa fa-angle-right pull-right"></i>
+                  </span>
+                </a>
+                <ul class="treeview-menu treeview-menu-visible">
+                  <li>
+                    <div class="student-search-container">
+                      <div class="search-box">
+                        <input type="text" id="student-search" placeholder="Search students..." class="form-control">
+                        <div id="search-results" class="search-results"></div>
+                      </div>
+                    </div>
+                  </li>
+                  <li>
+                    <div id="student-conversations" class="student-conversations">
+                      <!-- Conversations will be loaded here -->
+                    </div>
+                  </li>
+                </ul>
+              </li>
+              
               <li>
                 <a href="/yuran-pengajian" class="">
                   <i data-feather="credit-card"></i><span>Payment</span>
@@ -434,6 +461,125 @@
   </div>
   
   <!-- Scripts -->
+  <style>
+    .student-search-container {
+      padding: 10px 15px;
+    }
+    
+    .search-box {
+      position: relative;
+    }
+    
+    .search-results {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      max-height: 200px;
+      overflow-y: auto;
+      z-index: 1000;
+      display: none;
+    }
+    
+    .search-result-item {
+      padding: 8px 12px;
+      cursor: pointer;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .search-result-item:hover {
+      background-color: #f5f5f5;
+    }
+    
+    .search-result-item:last-child {
+      border-bottom: none;
+    }
+    
+    .search-result-name {
+      font-weight: bold;
+      font-size: 14px;
+    }
+    
+    .search-result-details {
+      font-size: 12px;
+      color: #666;
+    }
+    
+    .student-conversations {
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    
+    .conversation-item {
+      display: flex;
+      align-items: center;
+      padding: 8px 15px;
+      cursor: pointer;
+      border-bottom: 1px solid #eee;
+      transition: background-color 0.2s;
+    }
+    
+    .conversation-item:hover {
+      background-color: #f5f5f5;
+    }
+    
+    .conversation-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #4f81c7;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      margin-right: 10px;
+      font-size: 12px;
+    }
+    
+    .conversation-details {
+      flex: 1;
+      min-width: 0;
+    }
+    
+    .conversation-name {
+      font-weight: bold;
+      font-size: 13px;
+      margin-bottom: 2px;
+    }
+    
+    .conversation-last-message {
+      font-size: 11px;
+      color: #666;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    .conversation-unread {
+      background: #4f81c7;
+      color: white;
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: bold;
+    }
+    
+    .empty-conversations {
+      padding: 20px;
+      text-align: center;
+      color: #666;
+      font-size: 12px;
+    }
+  </style>
+
   <script>
     function toggleNotificationDropdown() {
       const dropdown = document.getElementById('notificationDropdown');
@@ -552,8 +698,213 @@
     }, 1000);
     
     window.Laravel = {
-      sessionUserId: 'STUDENT'
+      sessionUserId: 'STUDENT',
+      currentStudentIc: '{{ Auth::guard("student")->user()->ic ?? "" }}'
     };
+    
+    // Student messaging functionality
+    let searchTimeout;
+    let currentStudentChat = null;
+    
+    // Initialize student messaging
+    document.addEventListener('DOMContentLoaded', function() {
+      const searchInput = document.getElementById('student-search');
+      const searchResults = document.getElementById('search-results');
+      
+      if (searchInput) {
+        searchInput.addEventListener('input', function() {
+          clearTimeout(searchTimeout);
+          const query = this.value.trim();
+          
+          if (query.length < 2) {
+            searchResults.style.display = 'none';
+            return;
+          }
+          
+          searchTimeout = setTimeout(() => {
+            searchStudents(query);
+          }, 300);
+        });
+        
+        // Hide search results when clicking outside
+        document.addEventListener('click', function(e) {
+          if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+            searchResults.style.display = 'none';
+          }
+        });
+      }
+      
+      // Load existing conversations
+      loadStudentConversations();
+      
+      // Set up periodic refresh for conversations
+      setInterval(loadStudentConversations, 5000);
+    });
+    
+    function searchStudents(query) {
+      fetch('/all/student/search', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
+        body: JSON.stringify({ search: query })
+      })
+      .then(response => response.json())
+      .then(students => {
+        const searchResults = document.getElementById('search-results');
+        
+        if (students.length === 0) {
+          searchResults.innerHTML = '<div class="search-result-item">No students found</div>';
+        } else {
+          searchResults.innerHTML = students.map(student => `
+            <div class="search-result-item" onclick="startStudentChat('${student.ic}', '${student.name}')">
+              <div class="search-result-name">${student.name}</div>
+              <div class="search-result-details">${student.no_matric} - ${student.progname}</div>
+            </div>
+          `).join('');
+        }
+        
+        searchResults.style.display = 'block';
+      })
+      .catch(error => {
+        console.error('Error searching students:', error);
+      });
+    }
+    
+    function startStudentChat(studentIc, studentName) {
+      // Hide search results
+      document.getElementById('search-results').style.display = 'none';
+      document.getElementById('student-search').value = '';
+      
+      // Check if TextBox component is available
+      if (window.textBoxComponent) {
+        currentStudentChat = studentIc;
+        window.textBoxComponent.openStudentChat(studentIc, studentName);
+      } else {
+        // Fallback - load the chat in a modal or new window
+        openStudentChatModal(studentIc, studentName);
+      }
+    }
+    
+    function openStudentChatModal(studentIc, studentName) {
+      // Create a modal for student chat
+      const modal = document.createElement('div');
+      modal.innerHTML = `
+        <div class="modal fade" id="studentChatModal" tabindex="-1">
+          <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Chat with ${studentName}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+              </div>
+              <div class="modal-body">
+                <div id="student-chat-container" data-student-ic="${studentIc}" data-student-name="${studentName}"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      document.body.appendChild(modal);
+      
+      // Show the modal
+      const modalElement = new bootstrap.Modal(document.getElementById('studentChatModal'));
+      modalElement.show();
+      
+      // Clean up when modal is closed
+      document.getElementById('studentChatModal').addEventListener('hidden.bs.modal', function() {
+        this.remove();
+      });
+    }
+    
+    function loadStudentConversations() {
+      fetch('/all/student/conversations')
+        .then(response => response.json())
+        .then(conversations => {
+          const container = document.getElementById('student-conversations');
+          
+          if (conversations.length === 0) {
+            container.innerHTML = '<div class="empty-conversations">No conversations yet. Search for a student to start chatting!</div>';
+          } else {
+            container.innerHTML = conversations.map(conv => {
+              const lastMessage = conv.last_message;
+              const student = conv.student;
+              const unreadCount = conv.unread_count;
+              
+              return `
+                <div class="conversation-item" onclick="startStudentChat('${student.ic}', '${student.name}')">
+                  <div class="conversation-avatar">
+                    ${student.name.charAt(0).toUpperCase()}
+                  </div>
+                  <div class="conversation-details">
+                    <div class="conversation-name">${student.name}</div>
+                    <div class="conversation-last-message">
+                      ${lastMessage ? (lastMessage.message || 'Image') : 'No messages yet'}
+                    </div>
+                  </div>
+                  ${unreadCount > 0 ? `<div class="conversation-unread">${unreadCount}</div>` : ''}
+                </div>
+              `;
+            }).join('');
+          }
+          
+          // Update total unread count
+          const totalUnread = conversations.reduce((sum, conv) => sum + conv.unread_count, 0);
+          const countElement = document.getElementById('total-student-messages-count');
+          if (totalUnread > 0) {
+            countElement.textContent = totalUnread;
+            countElement.classList.remove('hidden');
+          } else {
+            countElement.classList.add('hidden');
+          }
+        })
+        .catch(error => {
+          console.error('Error loading conversations:', error);
+        });
+    }
+    
+    // Function to be called by TextBox component for student messaging
+    function getStudentMessage(ic, type) {
+      if (type === 'STUDENT_TO_STUDENT') {
+        return fetch('/all/student/getMessages', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+          },
+          body: JSON.stringify({ recipient_ic: ic })
+        }).then(response => response.json());
+      } else {
+        // Fallback to original getMessage for departments
+        return fetch('/all/massage/user/getMassage', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+          },
+          body: JSON.stringify({ ic: ic, type: type })
+        }).then(response => response.json());
+      }
+    }
+    
+    // Function to send student message
+    function sendStudentMessage(recipientIc, message, imageFile) {
+      const formData = new FormData();
+      formData.append('recipient_ic', recipientIc);
+      formData.append('message', message || '');
+      if (imageFile) {
+        formData.append('image', imageFile);
+      }
+      
+      return fetch('/all/student/sendMessage', {
+        method: 'POST',
+        headers: {
+          'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
+        body: formData
+      }).then(response => response.json());
+    }
   </script>
   
   <!-- Vendor and App JS -->

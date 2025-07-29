@@ -17,6 +17,10 @@ use League\Flysystem\AwsS3V3\PortableVisibilityConverter;
 use Mail;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Log;
+use Maatwebsite\Excel\Facades\Excel;
+use PhpOffice\PhpWord\TemplateProcessor;
+use PhpOffice\PhpWord\IOFactory;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class AllController extends Controller
 {
@@ -1148,6 +1152,396 @@ class AllController extends Controller
         }
         
         return back()->with('success', 'Images visibility updated successfully!');
+    }
+
+    // PDF Export functionality
+    public function pdfExportIndex()
+    {
+        return view('alluser.pdf_export.index');
+    }
+
+    public function pdfExportUpload(Request $request)
+    {
+        try {
+            // Validate the uploaded files
+            $request->validate([
+                'excel_file' => 'required|file|mimes:xlsx,xls,csv|max:10240', // 10MB max
+                'word_template' => 'required|file|mimes:docx,doc|max:10240', // 10MB max
+            ]);
+
+            // Store the uploaded files temporarily
+            $excelPath = $request->file('excel_file')->store('temp/excel', 'local');
+            $templatePath = $request->file('word_template')->store('temp/templates', 'local');
+
+            // Read Excel data
+            $data = Excel::toArray([], storage_path('app/' . $excelPath));
+            
+            if (empty($data) || empty($data[0])) {
+                return back()->with('error', 'Excel file is empty or invalid.');
+            }
+
+            $excelData = $data[0];
+            $headers = array_shift($excelData); // Get headers from first row
+
+            // Process each row and generate PDFs
+            $generatedFiles = [];
+            
+            foreach ($excelData as $index => $row) {
+                if (empty(array_filter($row))) continue; // Skip empty rows
+                
+                // Create associative array with headers as keys
+                $rowData = array_combine($headers, $row);
+                
+                // Generate PDF for this row
+                $pdfFileName = $this->generatePdfFromTemplate(
+                    storage_path('app/' . $templatePath), 
+                    $rowData, 
+                    $index + 1
+                );
+                
+                if ($pdfFileName) {
+                    $generatedFiles[] = $pdfFileName;
+                }
+            }
+
+            // Clean up temporary files
+            Storage::disk('local')->delete($excelPath);
+            Storage::disk('local')->delete($templatePath);
+
+            if (empty($generatedFiles)) {
+                return back()->with('error', 'No PDFs were generated. Please check your data.');
+            }
+
+            // If only one file, download directly
+            if (count($generatedFiles) == 1) {
+                return redirect()->route('all.pdf.export.download', ['filename' => $generatedFiles[0]]);
+            }
+
+            // If multiple files, create a zip
+            $zipFileName = $this->createZipFile($generatedFiles);
+            
+            return back()->with('success', 'PDFs generated successfully!')
+                        ->with('download_link', route('all.pdf.export.download', ['filename' => $zipFileName]));
+
+        } catch (\Exception $e) {
+            Log::error('PDF Export Error: ' . $e->getMessage());
+            return back()->with('error', 'Error generating PDFs: ' . $e->getMessage());
+        }
+    }
+
+    private function generatePdfFromTemplate($templatePath, $data, $index)
+    {
+        try {
+            // Create a copy of the template
+            $templateProcessor = new TemplateProcessor($templatePath);
+            
+            // Replace placeholders with data
+            foreach ($data as $key => $value) {
+                $templateProcessor->setValue($key, $value ?? '');
+            }
+
+            // Save the processed document
+            $processedDocPath = storage_path('app/temp/processed_' . $index . '.docx');
+            $templateProcessor->saveAs($processedDocPath);
+
+            // Convert Word to HTML first, then to PDF
+            $htmlContent = $this->convertWordToHtml($processedDocPath, $data);
+            
+            // Generate PDF using DomPDF
+            $pdf = PDF::loadHTML($htmlContent);
+            $pdfFileName = 'generated_' . $index . '_' . time() . '.pdf';
+            $pdfPath = storage_path('app/temp/pdfs/' . $pdfFileName);
+            
+            // Ensure directory exists
+            if (!file_exists(dirname($pdfPath))) {
+                mkdir(dirname($pdfPath), 0755, true);
+            }
+            
+            $pdf->save($pdfPath);
+
+            // Clean up processed document
+            if (file_exists($processedDocPath)) {
+                unlink($processedDocPath);
+            }
+
+            return $pdfFileName;
+
+        } catch (\Exception $e) {
+            Log::error('Template processing error: ' . $e->getMessage());
+            return null;
+        }
+    }
+
+    private function convertWordToHtml($docPath, $data)
+    {
+        // Simple conversion - replace placeholders in a basic HTML template
+        $html = '
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>Generated Document</title>
+            <style>
+                body { font-family: Arial, sans-serif; margin: 40px; }
+                .header { text-align: center; margin-bottom: 30px; }
+                .content { line-height: 1.6; }
+                .field { margin-bottom: 15px; }
+                .label { font-weight: bold; }
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <h2>Generated Document</h2>
+            </div>
+            <div class="content">';
+
+        foreach ($data as $key => $value) {
+            $html .= '<div class="field"><span class="label">' . ucfirst(str_replace('_', ' ', $key)) . ':</span> ' . htmlspecialchars($value ?? '') . '</div>';
+        }
+
+        $html .= '
+            </div>
+        </body>
+        </html>';
+
+        return $html;
+    }
+
+    private function createZipFile($pdfFiles)
+    {
+        $zipFileName = 'generated_pdfs_' . time() . '.zip';
+        $zipPath = storage_path('app/temp/pdfs/' . $zipFileName);
+
+        $zip = new \ZipArchive();
+        if ($zip->open($zipPath, \ZipArchive::CREATE) === TRUE) {
+            foreach ($pdfFiles as $pdfFile) {
+                $pdfPath = storage_path('app/temp/pdfs/' . $pdfFile);
+                if (file_exists($pdfPath)) {
+                    $zip->addFile($pdfPath, $pdfFile);
+                }
+            }
+            $zip->close();
+        }
+
+        return $zipFileName;
+    }
+
+    public function pdfExportDownload($filename)
+    {
+        $filePath = storage_path('app/temp/pdfs/' . $filename);
+        
+        if (!file_exists($filePath)) {
+            return back()->with('error', 'File not found.');
+        }
+
+        return response()->download($filePath)->deleteFileAfterSend(true);
+    }
+
+    public function downloadTemplate()
+    {
+        $templatePath = public_path('template/template_example.txt');
+        
+        if (!file_exists($templatePath)) {
+            return back()->with('error', 'Template example file not found.');
+        }
+
+        return response()->download($templatePath, 'word_template_example.txt');
+    }
+
+    public function downloadSample()
+    {
+        $samplePath = public_path('template/sample_data.csv');
+        
+        if (!file_exists($samplePath)) {
+            return back()->with('error', 'Sample file not found.');
+        }
+
+        return response()->download($samplePath, 'sample_data.csv');
+    }
+
+    // Student-to-student messaging methods
+    public function searchStudents(Request $request)
+    {
+        $currentStudentIc = Auth::guard('student')->user()->ic;
+        
+        $students = DB::table('students')
+            ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+            ->join('sessions AS a', 'students.intake', 'a.SessionID')
+            ->join('sessions AS b', 'students.session', 'b.SessionID')
+            ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
+            ->select('students.ic', 'students.name', 'students.no_matric', 'tblprogramme.progname', 
+                     'a.SessionName AS intake', 'b.SessionName AS session', 'students.semester')
+            ->where('students.ic', '!=', $currentStudentIc) // Exclude current student
+            ->where(function($query) use ($request) {
+                $query->where('students.name', 'LIKE', "%".$request->search."%")
+                      ->orWhere('students.ic', 'LIKE', "%".$request->search."%")
+                      ->orWhere('students.no_matric', 'LIKE', "%".$request->search."%");
+            })
+            ->limit(10) // Limit results for performance
+            ->get();
+
+        return response()->json($students);
+    }
+
+    public function sendStudentMessage(Request $request)
+    {
+        // Handle image upload if present
+        $imageUrl = null;
+        if ($request->hasFile('image')) {
+            $imageUrl = $this->uploadMessageImage($request->file('image'), $request->recipient_ic, 'STUDENT_TO_STUDENT');
+        }
+
+        $currentStudentIc = Auth::guard('student')->user()->ic;
+        $recipientIc = $request->recipient_ic;
+
+        // Create a unique conversation ID by sorting the ICs
+        $conversationId = ($currentStudentIc < $recipientIc) 
+            ? $currentStudentIc . '_' . $recipientIc 
+            : $recipientIc . '_' . $currentStudentIc;
+
+        // Check if conversation exists
+        if (!DB::table('tblmessage')->where([
+            ['user_type', 'STUDENT_CONVERSATION'],
+            ['recipient', $conversationId]
+        ])->exists()) {
+            $id = DB::table('tblmessage')->insertGetId([
+                'sender' => null,
+                'user_type' => 'STUDENT_CONVERSATION',
+                'recipient' => $conversationId
+            ]);
+        } else {
+            $id = DB::table('tblmessage')->where([
+                ['user_type', 'STUDENT_CONVERSATION'],
+                ['recipient', $conversationId]
+            ])->value('id');
+        }
+
+        DB::table('tblmessage_dtl')->insert([
+            'message_id' => $id,
+            'sender' => $currentStudentIc,
+            'user_type' => 'STUDENT_TO_STUDENT',
+            'message' => $request->message ?? '',
+            'image_url' => $imageUrl,
+            'status' => 'NEW'
+        ]);
+
+        return response()->json([
+            'message' => $request->message ?? '',
+            'image_url' => $imageUrl,
+            'conversation_id' => $conversationId
+        ]);
+    }
+
+    public function getStudentMessages(Request $request)
+    {
+        $currentStudentIc = Auth::guard('student')->user()->ic;
+        $recipientIc = $request->recipient_ic;
+
+        // Create conversation ID
+        $conversationId = ($currentStudentIc < $recipientIc) 
+            ? $currentStudentIc . '_' . $recipientIc 
+            : $recipientIc . '_' . $currentStudentIc;
+
+        // Mark messages as read (only messages from the other student)
+        DB::table('tblmessage')
+            ->join('tblmessage_dtl', 'tblmessage.id', '=', 'tblmessage_dtl.message_id')
+            ->where('tblmessage.user_type', 'STUDENT_CONVERSATION')
+            ->where('tblmessage.recipient', $conversationId)
+            ->where('tblmessage_dtl.sender', '!=', $currentStudentIc)
+            ->where('tblmessage_dtl.status', 'NEW')
+            ->update(['tblmessage_dtl.status' => 'READ']);
+
+        // Fetch messages
+        $messages = DB::table('tblmessage')
+            ->join('tblmessage_dtl', 'tblmessage.id', '=', 'tblmessage_dtl.message_id')
+            ->join('students', 'tblmessage_dtl.sender', '=', 'students.ic')
+            ->where('tblmessage.user_type', 'STUDENT_CONVERSATION')
+            ->where('tblmessage.recipient', $conversationId)
+            ->where('tblmessage_dtl.status', '!=', 'DELETED')
+            ->select('tblmessage_dtl.*', 'students.name as sender_name', 'tblmessage.datetime as message_datetime')
+            ->orderBy('tblmessage_dtl.id', 'asc')
+            ->get();
+
+        return response()->json($messages);
+    }
+
+    public function countStudentMessages(Request $request)
+    {
+        $currentStudentIc = Auth::guard('student')->user()->ic;
+        $recipientIc = $request->recipient_ic;
+
+        // Create conversation ID
+        $conversationId = ($currentStudentIc < $recipientIc) 
+            ? $currentStudentIc . '_' . $recipientIc 
+            : $recipientIc . '_' . $currentStudentIc;
+
+        $count = DB::table('tblmessage')
+                    ->join('tblmessage_dtl', 'tblmessage.id', '=', 'tblmessage_dtl.message_id')
+                    ->where('tblmessage.user_type', 'STUDENT_CONVERSATION')
+                    ->where('tblmessage.recipient', $conversationId)
+                    ->where('tblmessage_dtl.sender', '!=', $currentStudentIc)
+                    ->where('tblmessage_dtl.status', 'NEW')
+                    ->count();
+
+        return response()->json(['count' => $count]);
+    }
+
+    public function getStudentConversations()
+    {
+        $currentStudentIc = Auth::guard('student')->user()->ic;
+
+        // Get all conversations where current student is involved
+        $conversations = DB::table('tblmessage')
+            ->join('tblmessage_dtl', 'tblmessage.id', '=', 'tblmessage_dtl.message_id')
+            ->where('tblmessage.user_type', 'STUDENT_CONVERSATION')
+            ->where('tblmessage.recipient', 'LIKE', '%' . $currentStudentIc . '%')
+            ->select('tblmessage.recipient as conversation_id', DB::raw('MAX(tblmessage_dtl.id) as last_message_id'))
+            ->groupBy('tblmessage.recipient')
+            ->get();
+
+        $conversationList = [];
+
+        foreach ($conversations as $conversation) {
+            // Extract the other student's IC from conversation ID
+            $parts = explode('_', $conversation->conversation_id);
+            $otherStudentIc = ($parts[0] == $currentStudentIc) ? $parts[1] : $parts[0];
+
+            // Get other student details
+            $otherStudent = DB::table('students')
+                ->where('ic', $otherStudentIc)
+                ->select('ic', 'name', 'no_matric')
+                ->first();
+
+            if ($otherStudent) {
+                // Get last message
+                $lastMessage = DB::table('tblmessage_dtl')
+                    ->where('id', $conversation->last_message_id)
+                    ->first();
+
+                // Count unread messages
+                $unreadCount = DB::table('tblmessage')
+                    ->join('tblmessage_dtl', 'tblmessage.id', '=', 'tblmessage_dtl.message_id')
+                    ->where('tblmessage.user_type', 'STUDENT_CONVERSATION')
+                    ->where('tblmessage.recipient', $conversation->conversation_id)
+                    ->where('tblmessage_dtl.sender', '!=', $currentStudentIc)
+                    ->where('tblmessage_dtl.status', 'NEW')
+                    ->count();
+
+                $conversationList[] = [
+                    'student' => $otherStudent,
+                    'last_message' => $lastMessage,
+                    'unread_count' => $unreadCount,
+                    'conversation_id' => $conversation->conversation_id
+                ];
+            }
+        }
+
+        // Sort by last message time
+        usort($conversationList, function($a, $b) {
+            return strtotime($b['last_message']->datetime ?? '1970-01-01') - strtotime($a['last_message']->datetime ?? '1970-01-01');
+        });
+
+        return response()->json($conversationList);
     }
 
 }

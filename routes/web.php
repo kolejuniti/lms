@@ -1049,6 +1049,18 @@ Route::post('/all/massage/user/deleteMassage', [App\Http\Controllers\AllControll
 Route::get('/all/massage/student/countMessage', [App\Http\Controllers\AllController::class, 'countMessage']);
 Route::get('/all/massage/student/countMassageAdmin', [App\Http\Controllers\AllController::class, 'countMassageAdmin'])->name('all.massage.student.countMassageAdmin');
 
+// Student-to-student messaging routes
+Route::post('/all/student/search', [App\Http\Controllers\AllController::class, 'searchStudents']);
+Route::post('/all/student/sendMessage', [App\Http\Controllers\AllController::class, 'sendStudentMessage']);
+Route::post('/all/student/getMessages', [App\Http\Controllers\AllController::class, 'getStudentMessages']);
+Route::get('/all/student/countMessages', [App\Http\Controllers\AllController::class, 'countStudentMessages']);
+Route::get('/all/student/conversations', [App\Http\Controllers\AllController::class, 'getStudentConversations']);
+
+// Test page for student messaging
+Route::get('/student/test-messaging', function () {
+    return view('student.test_messaging');
+})->middleware('auth:student')->name('student.test.messaging');
+
 Route::prefix('all')->group(function () {
     Route::get('/student/announcements/getannoucement', [App\Http\Controllers\AllController::class, 'indexAnnouncements']);
     Route::post('/student/announcements/post', [App\Http\Controllers\AllController::class, 'storeAnnouncements']);

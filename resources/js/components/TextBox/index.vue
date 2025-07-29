@@ -45,7 +45,7 @@
                   v-for="(message, index) in state.messages" 
                   :key="`${state.ic}-${message.id || index}`"
                   :data="message"
-                  :isMine="isMessageMine(message.user_type)"
+                  :isMine="isMessageMine(message)"
                   :showDateHeader="shouldShowDateHeader(message, index)"
                   @delete-message="handleDeleteMessage"
                 />
@@ -169,6 +169,7 @@
         messages: [],
         ic: null,
         messageType: null,
+        studentName: '',
         sessionUserId: window.Laravel.sessionUserId,
         status: 'online',
         isTyping: false
@@ -223,6 +224,11 @@
       const getChatTitle = () => {
         if (!state.messageType) return 'Chat';
         
+        // If it's a student chat, use the student name
+        if (state.messageType === 'STUDENT_TO_STUDENT') {
+          return state.studentName ? `Chat with ${state.studentName}` : 'Student Chat';
+        }
+        
         const titleMap = {
           'FN': 'Chat with UKP',
           'RGS': 'Chat with KRP', 
@@ -243,6 +249,7 @@
         if (state.ic !== newIc) {
           state.ic = newIc;
           state.messageType = messageType;
+          state.studentName = event.detail.studentName || '';
           state.messages = [];
           
           // Use nextTick to ensure state is updated before fetching
@@ -255,6 +262,20 @@
         }
         
         state.isChatBoxOpen = true;
+      };
+
+      // Method to open student chat
+      const openStudentChat = (studentIc, studentName) => {
+        state.ic = studentIc;
+        state.messageType = 'STUDENT_TO_STUDENT';
+        state.studentName = studentName;
+        state.messages = [];
+        state.isChatBoxOpen = true;
+        
+        // Fetch messages for this student
+        nextTick(() => {
+          fetchMessages();
+        });
       };
   
       // Function to toggle emoji picker
@@ -377,8 +398,15 @@
       };
   
       // Function to determine if the message is from the current user
-      const isMessageMine = (messageSender) => {
-        return messageSender === state.sessionUserId;
+      const isMessageMine = (message) => {
+        if (state.messageType === 'STUDENT_TO_STUDENT') {
+          // For student-to-student messaging, check if sender IC matches current user
+          const currentStudentIc = window.Laravel?.currentStudentIc;
+          // Check both sender and user_type fields
+          return message.sender === currentStudentIc || 
+                 (message.user_type === 'STUDENT_TO_STUDENT' && message.sender === currentStudentIc);
+        }
+        return message.user_type === state.sessionUserId;
       };
 
       // Function to determine if a date header should be shown
@@ -446,10 +474,22 @@
         
         console.log(`Fetching messages for IC: ${state.ic}${forceUpdate ? ' (FORCED)' : ''}`);
         
-        axios.post('/all/massage/user/getMassage', { 
-          ic: state.ic,
-          type: state.sessionUserId
-        })
+        let fetchPromise;
+        
+        if (state.messageType === 'STUDENT_TO_STUDENT') {
+          // Use student messaging endpoint
+          fetchPromise = axios.post('/all/student/getMessages', { 
+            recipient_ic: state.ic
+          });
+        } else {
+          // Use regular department messaging endpoint
+          fetchPromise = axios.post('/all/massage/user/getMassage', { 
+            ic: state.ic,
+            type: state.sessionUserId
+          });
+        }
+        
+        fetchPromise
         .then(response => {
           const newMessages = response.data || [];
           console.log(`Received ${newMessages.length} messages from server`);
@@ -621,7 +661,8 @@
         const tempMessage = {
           id: tempId,
           message: messageToSend,
-          user_type: state.sessionUserId,
+          user_type: state.messageType === 'STUDENT_TO_STUDENT' ? 'STUDENT_TO_STUDENT' : state.sessionUserId,
+          sender: state.messageType === 'STUDENT_TO_STUDENT' ? window.Laravel?.currentStudentIc : state.sessionUserId,
           created_at: new Date().toISOString(),
           isTemporary: true,
           image_url: imageToSend ? imageToSend.preview : null // Show preview temporarily
@@ -646,31 +687,60 @@
         // Prepare data for submission
         let requestData;
         let config = {};
+        let endpoint;
         
-        if (imageToSend) {
-          // Use FormData for image upload
-          requestData = new FormData();
-          requestData.append('message', messageToSend);
-          requestData.append('ic', state.ic);
-          requestData.append('type', state.sessionUserId);
-          requestData.append('image', imageToSend.file);
+        if (state.messageType === 'STUDENT_TO_STUDENT') {
+          // Student-to-student messaging
+          endpoint = '/all/student/sendMessage';
           
-          config = {
-            headers: {
-              'Content-Type': 'multipart/form-data'
-            }
-          };
+          if (imageToSend) {
+            // Use FormData for image upload
+            requestData = new FormData();
+            requestData.append('message', messageToSend);
+            requestData.append('recipient_ic', state.ic);
+            requestData.append('image', imageToSend.file);
+            
+            config = {
+              headers: {
+                'Content-Type': 'multipart/form-data'
+              }
+            };
+          } else {
+            // Use regular JSON for text-only message
+            requestData = {
+              message: messageToSend,
+              recipient_ic: state.ic
+            };
+          }
         } else {
-          // Use regular JSON for text-only message
-          requestData = {
-            message: messageToSend,
-            ic: state.ic,
-            type: state.sessionUserId
-          };
+          // Department messaging
+          endpoint = '/all/massage/user/sendMassage';
+          
+          if (imageToSend) {
+            // Use FormData for image upload
+            requestData = new FormData();
+            requestData.append('message', messageToSend);
+            requestData.append('ic', state.ic);
+            requestData.append('type', state.sessionUserId);
+            requestData.append('image', imageToSend.file);
+            
+            config = {
+              headers: {
+                'Content-Type': 'multipart/form-data'
+              }
+            };
+          } else {
+            // Use regular JSON for text-only message
+            requestData = {
+              message: messageToSend,
+              ic: state.ic,
+              type: state.sessionUserId
+            };
+          }
         }
         
         // Send to server
-        axios.post('/all/massage/user/sendMassage', requestData, config)
+        axios.post(endpoint, requestData, config)
         .then(response => {
           console.log('Message sent successfully:', response.data);
           
@@ -710,6 +780,11 @@
       onMounted(() => {
         window.addEventListener('message-requested', getMessage);
         window.addEventListener('click', handleClickOutside);
+        
+        // Expose component methods globally
+        window.textBoxComponent = {
+          openStudentChat
+        };
         
         if (state.isChatBoxOpen) {
           fetchMessages();
@@ -753,6 +828,7 @@
         handleFocus,
         handleBlur,
         handleDeleteMessage,
+        openStudentChat,
         // Image upload related
         imageInput,
         imageButton,
