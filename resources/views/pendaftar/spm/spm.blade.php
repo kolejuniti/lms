@@ -46,7 +46,7 @@
             <div class="card card-primary">
               <!-- /.card-header -->
               @php 
-              $required = ['1','2','3','4','5','6','7'];
+              $required = ['1','2','3','4','5','6','7','8','9','10','11'];
               @endphp
               <!-- form start -->
               <form action="/pendaftar/spm/{{ request()->ic }}/store" method="POST">
@@ -123,7 +123,7 @@
                 <div class="card-body d-flex justify-content-center">
                     <div class="col-md-12">
                         @if (count($data['spm']) == 0)
-                            <div class="col-md-12">
+                            {{-- <div class="col-md-12">
                                 <div class="row">
                                     <div class="col-md-5">
                                         <div class="form-group">
@@ -230,9 +230,9 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </div> --}}
                             @php
-                                $count = 3;
+                                $count = 0;
                             @endphp
                             @foreach ($required as $key=> $req)
                             @php
@@ -276,7 +276,7 @@
                         @foreach ($data['spm'] as $key => $req)
                             <div class="col-md-12">
                                 <div class="row">
-                                    <div class="col-md-5">
+                                    {{-- <div class="col-md-5">
                                         <div class="form-group">
                                             <label class="form-label" for="subject">Subject</label>
                                             <select class="form-select" id="subject_{{ $key }}" name="subject[]" onchange="reqGrade('{{ $key }}')">
@@ -284,6 +284,20 @@
                                                 @foreach ($data['subject'] as $sub)
                                                     <option value="{{ $sub->id }}" {{ $req->subject_spm_id == $sub->id ? "selected" : "" }} 
                                                         {{ ((0 <= $key) && ($key <= 3)) ? ($sub->id == $req->subject_spm_id ? '' : 'disabled') : '' }}>
+                                                        {{ $sub->name }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div> --}}
+                                    <div class="col-md-5">
+                                        <div class="form-group">
+                                            <label class="form-label" for="subject">Subject</label>
+                                            <select class="form-select" id="subject_{{ $key }}" name="subject[]" onchange="reqGrade('{{ $key }}')">
+                                                <option value="" selected>-</option>
+                                                @foreach ($data['subject'] as $sub)
+                                                    <option value="{{ $sub->id }}" {{ $req->subject_spm_id == $sub->id ? "selected" : "" }} 
+                                                        >
                                                         {{ $sub->name }}
                                                     </option>
                                                 @endforeach
