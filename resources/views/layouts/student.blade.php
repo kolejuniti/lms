@@ -210,11 +210,11 @@
                   <i data-feather="bookmark"></i><span>Course</span>
                 </a>
               </li>
-              <li>
+              {{-- <li>
                 <a href="{{ Storage::disk('linode')->url('classschedule/index.htm') }}" target="_blank">
                   <i data-feather="layout"></i><span>Old Timetable</span>
                 </a>
-              </li>
+              </li> --}}
               <li>
                 <a href="AR/schedule/scheduleTable/{{ Auth::guard('student')->user()->ic }}?type=std" target="_blank">
                   <i data-feather="calendar"></i><span>Timetable</span>
