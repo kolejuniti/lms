@@ -13,7 +13,7 @@ use Carbon\Carbon;
         <meta name="description" content="">
         <meta name="author" content="">
         <meta name="csrf-token" content="{{ csrf_token() }}">
-        <title>Surat Peringatan Pelajar Tidak Hadir Ke Kelas</title>
+        <title>Surat Perjanjian Tunggakan</title>
         <!-- Vendors Style-->
         <link rel="stylesheet" href="{{ asset('assets/src/css/vendors_css.css') }}">
     <!-- Style-->  
