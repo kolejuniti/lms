@@ -74,7 +74,7 @@
                 </table>
                 @else
                 <div class="alert alert-info">
-                    <h5><i class="icon fas fa-info"></i> No Records Found!</h5>
+                    <h5><i class="icon fa fa-info"></i> No Records Found!</h5>
                     No discount records found for the selected criteria. Add some discount data to see records here.
                 </div>
                 @endif
