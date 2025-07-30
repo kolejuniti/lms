@@ -121,7 +121,7 @@ use Carbon\Carbon;
         <!-- Black Line Divider using Border -->
         <div class="border-line"></div>
 
-        <p>Pelajar seperti berikut hanya dibenarkan mengambil mini transkrip sahaja kerana mempunyai baki tunggakan semasa pengajian di Kolej Uniti:-</p>
+        <p>Pelajar seperti berikut hanya dibenarkan mengambil MINI TRANSKRIP sahaja kerana mempunyai baki tunggakan semasa pengajian di Kolej Uniti:-</p>
         <div class="col-12 mb-1 mt-1">  
             <div style="border: 1px solid white; padding: 10px;">
                 <table>
@@ -144,12 +144,12 @@ use Carbon\Carbon;
                 </table>
             </div> 
         </div>
-        <p>Pelajar boleh membuat tuntutan salinan transkrip bermula pada tarikh 21/10/2024 di Pejabat Pentadbiran Kolej Uniti dengan Pegawai Hal Akademik (Cik Suriya) atau permohonan melalui emel di suriya@uniti.edu.my</p>
+        <p>Tarikh tuntutan adalah pada <b>5/10/2025</b> dan bertempat di <b>Bilik Pemulangan Jubah - Bangi Avenue Convention Centre (BACC)</b></p>
         <br>
         {{-- <p style="text-align: center;"><b>[THIS IS A COMPUTER GENERATED AND DOES NOT REQUIRE SIGNATURE]</b></p> --}}
         <p>Dikeluarkan oleh:</p>
         <br>
-        <p><b>EMI MARLIDA BINTI JABAR</b><br>
+        <p>(<b>EMI MARLIDA BINTI JABAR</b>)<br>
         <p>Ketua Unit</p>
         <p>Unit Penstrukturan Tunggakan Pelajar</p>
         <b>KOLEJ UNITI SDN BHD</b></p><br>
