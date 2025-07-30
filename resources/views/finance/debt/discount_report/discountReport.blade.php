@@ -54,50 +54,113 @@
             <!-- general form elements -->
             <div class="card card-primary">
               <div class="card-header">
-                <h3 class="card-title">Student Discount Report</h3>
+                <h3 class="card-title">Student Discount Management</h3>
               </div>
               <!-- /.card-header -->
+              
+              <!-- Student Search Section -->
               <div class="card mb-3">
                 <div class="card-header">
-                  <b>Search Student</b>
+                  <b>Add New Discount Entry</b>
                 </div>
                 <div class="card-body">
                   <div class="row">
-                    <div class="col-md-12 ml-3">
-                      <div class="form-group">
-                          <label class="form-label" for="program">Program</label>
-                          <select class="form-select" id="program" name="program">
-                            <option value="all" selected>All Program</option> 
-                            @foreach ($data['program'] as $prg)
-                            <option value="{{ $prg->id }}">{{ $prg->progcode }} - {{ $prg->progname }}</option> 
-                            @endforeach
-                          </select>
+                      <div class="col-md-6">
+                          <div class="form-group">
+                          <label class="form-label" for="name">Name / No. IC / No. Matric</label>
+                          <input type="text" class="form-control" id="search" placeholder="Search..." name="search">
+                          </div>
                       </div>
-                    </div>
+                      <div class="col-md-6">
+                          <div class="form-group">
+                            <label class="form-label" for="student">Student</label>
+                            <select class="form-select" id="student" name="student">
+                              <option value="-" selected disabled>-</option>
+                            </select>
+                          </div>
+                      </div>
                   </div>
-                  <div class="row">
-                    <div class="col-md-6">
-                      <div class="form-group">
-                      <label class="form-label" for="from">FROM</label>
-                      <input type="date" class="form-control" id="from" name="from" />
+                  <div id="discount-form-section" style="display: none;">
+                    <div class="row mt-3">
+                      <div class="col-md-12">
+                        <h5>Enter Discount Information</h5>
+                        <hr>
                       </div>
                     </div>
-                    <div class="col-md-6">
+                    <div class="row">
+                      <div class="col-md-3">
                         <div class="form-group">
-                        <label class="form-label" for="to">TO</label>
-                        <input type="date" class="form-control" id="to" name="to" />
+                          <label class="form-label" for="discount_percentage">Discount (%)</label>
+                          <input type="number" step="0.01" class="form-control" id="discount_percentage" name="discount_percentage" min="0" max="100">
                         </div>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <label class="form-label" for="total_arrears">Jumlah Tunggakan (RM)</label>
+                          <input type="number" step="0.01" class="form-control" id="total_arrears" name="total_arrears" min="0">
+                        </div>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <label class="form-label" for="received_discount">Terimaan Diskaun (RM)</label>
+                          <input type="number" step="0.01" class="form-control" id="received_discount" name="received_discount" min="0">
+                        </div>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <label class="form-label" for="payment">Bayaran Pelajar (RM)</label>
+                          <input type="number" step="0.01" class="form-control" id="payment" name="payment" min="0">
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row mt-3">
+                      <div class="col-md-12">
+                        <button type="button" class="btn btn-success" onclick="saveDiscountData()">Save Discount Data</button>
+                        <button type="button" class="btn btn-secondary" onclick="clearForm()">Clear Form</button>
+                      </div>
                     </div>
                   </div>
-                  <button type="submit" class="btn btn-primary pull-right mb-3" onclick="submit()">Find</button>
-                  <div class="row">
-                    <div id="form-student">
-                      
-                    </div>
-                  </div>
-                 
                 </div>
               </div>
+
+              <!-- Monthly/Yearly Data Table Section -->
+              <div class="card mb-3">
+                <div class="card-header">
+                  <b>Discount Records - Monthly/Yearly View</b>
+                </div>
+                <div class="card-body">
+                  <div class="row mb-3">
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label class="form-label" for="filter_year">Filter by Year</label>
+                        <select class="form-select" id="filter_year" name="filter_year">
+                          <option value="all" selected>All Years</option>
+                          @for($year = date('Y'); $year >= 2020; $year--)
+                            <option value="{{ $year }}">{{ $year }}</option>
+                          @endfor
+                        </select>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label class="form-label" for="filter_month">Filter by Month</label>
+                        <select class="form-select" id="filter_month" name="filter_month">
+                          <option value="all" selected>All Months</option>
+                          @for($month = 1; $month <= 12; $month++)
+                            <option value="{{ $month }}">{{ date('F', mktime(0, 0, 0, $month, 1)) }}</option>
+                          @endfor
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                  <button type="button" class="btn btn-primary mb-3" onclick="loadDiscountRecords()">Load Records</button>
+                  
+                  <div id="discount-records-table">
+                    <!-- Table will be loaded here -->
+                  </div>
+                </div>
+              </div>
+
             </div>
             <!-- /.card -->
           </div>
@@ -112,60 +175,136 @@
 <script src="https://cdn.ckeditor.com/ckeditor5/31.0.0/classic/ckeditor.js"></script>
 <script type="text/javascript">
 
+// Student search functionality
+$('#search').keyup(function(event){
+    if (event.keyCode === 13) { // 13 is the code for the "Enter" key
+        var searchTerm = $(this).val();
+        getStudent(searchTerm);
+    }
+});
 
-function submit()
+$('#student').on('change', function(){
+    var selectedStudent = $(this).val();
+    if(selectedStudent !== '-') {
+        $('#discount-form-section').show();
+    } else {
+        $('#discount-form-section').hide();
+    }
+});
+
+function getStudent(search)
 {
-
-  var program = $('#program').val();
-  var from = $('#from').val();
-  var to = $('#to').val();
-
-  if (!from || !to) {
-    alert('Please select both From and To dates');
-    return;
-  }
-
-  // Show the spinner
-  $('#loading-spinner').css('display', 'block');
-
-  return $.ajax({
+    return $.ajax({
             headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
-            url      : "{{ url('finance/debt/discountReport/getDiscountReport') }}",
+            url      : "{{ url('pendaftar/student/status/listStudent') }}",
             method   : 'POST',
-            data 	 : {program: program, from: from, to: to},
+            data 	 : {search: search},
             error:function(err){
                 alert("Error");
                 console.log(err);
-
-                // Hide the spinner on error
-                $('#loading-spinner').css('display', 'none');
             },
             success  : function(data){
-                // Hide the spinner on success
-                $('#loading-spinner').css('display', 'none');
-
-                $('#form-student').html(data);
-
-                $('#discount_table').DataTable({
-                  dom: 'lBfrtip', // if you remove this line you will see the show entries dropdown
-                  
-                  buttons: [
-                      'copy', 'csv', 'excel', 'pdf', 'print'
-                  ],
-                });
-
-               
-
-                      
+                $('#student').html(data);
+                $('#student').selectpicker('refresh');
             }
         });
-
-
-
 }
 
+function saveDiscountData()
+{
+    var studentIc = $('#student').val();
+    var discountPercentage = $('#discount_percentage').val();
+    var totalArrears = $('#total_arrears').val();
+    var receivedDiscount = $('#received_discount').val();
+    var payment = $('#payment').val();
 
+    // Validation
+    if(!studentIc || studentIc === '-') {
+        alert('Please select a student');
+        return;
+    }
 
+    if(!discountPercentage || !totalArrears || !receivedDiscount || !payment) {
+        alert('Please fill in all discount information fields');
+        return;
+    }
+
+    return $.ajax({
+            headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
+            url      : "{{ url('finance/debt/discountReport/saveDiscountData') }}",
+            method   : 'POST',
+            data 	 : {
+                student_ic: studentIc,
+                discount: discountPercentage,
+                total_arrears: totalArrears,
+                received_discount: receivedDiscount,
+                payment: payment
+            },
+            error:function(err){
+                alert("Error saving data");
+                console.log(err);
+            },
+            success  : function(data){
+                if(data.message === 'Success') {
+                    alert('Discount data saved successfully!');
+                    clearForm();
+                    loadDiscountRecords(); // Reload records
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            }
+        });
+}
+
+function clearForm()
+{
+    $('#search').val('');
+    $('#student').html('<option value="-" selected disabled>-</option>');
+    $('#discount_percentage').val('');
+    $('#total_arrears').val('');
+    $('#received_discount').val('');
+    $('#payment').val('');
+    $('#discount-form-section').hide();
+}
+
+function loadDiscountRecords()
+{
+    var year = $('#filter_year').val();
+    var month = $('#filter_month').val();
+
+    return $.ajax({
+            headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
+            url      : "{{ url('finance/debt/discountReport/getDiscountRecords') }}",
+            method   : 'POST',
+            data 	 : {
+                year: year,
+                month: month
+            },
+            error:function(err){
+                alert("Error loading records");
+                console.log(err);
+            },
+            success  : function(data){
+                $('#discount-records-table').html(data);
+                
+                // Initialize DataTable if records exist
+                if($('#discount_records_table').length) {
+                    $('#discount_records_table').DataTable({
+                        dom: 'lBfrtip',
+                        buttons: [
+                            'copy', 'csv', 'excel', 'pdf', 'print'
+                        ],
+                        order: [[ 5, "desc" ]] // Order by created date descending
+                    });
+                }
+            }
+        });
+}
+
+// Load records on page load
+$(document).ready(function(){
+    loadDiscountRecords();
+});
 
 </script>
 @endsection 

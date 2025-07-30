@@ -891,6 +891,13 @@ Route::post('/finance/debt/studentRemarks/getStudentRemarks', [App\Http\Controll
 Route::post('/finance/debt/studentRemarks/storeStudentRemarks', [App\Http\Controllers\FinanceController::class, 'storeStudentRemarks']);
 Route::get('/finance/debt/discountReport', [App\Http\Controllers\FinanceController::class, 'discountReport'])->name('finance.discountReport');
 Route::post('/finance/debt/discountReport/getDiscountReport', [App\Http\Controllers\FinanceController::class, 'getDiscountReport']);
+
+// New discount management routes
+Route::post('/finance/debt/discountReport/saveDiscountData', [App\Http\Controllers\FinanceController::class, 'saveDiscountData']);
+Route::post('/finance/debt/discountReport/getDiscountRecords', [App\Http\Controllers\FinanceController::class, 'getDiscountRecords']);
+Route::get('/finance/debt/discountReport/getDiscountRecord/{id}', [App\Http\Controllers\FinanceController::class, 'getDiscountRecord']);
+Route::post('/finance/debt/discountReport/updateDiscountRecord', [App\Http\Controllers\FinanceController::class, 'updateDiscountRecord']);
+Route::delete('/finance/debt/discountReport/deleteDiscountRecord/{id}', [App\Http\Controllers\FinanceController::class, 'deleteDiscountRecord']);
 Route::get('/finance/asset/vehicleRecord', [App\Http\Controllers\FinanceController::class,'vehicleRecord'])->name('finance.vehicleRecord');
 Route::post('/finance/asset/vehicleRecord/storeVehicle', [App\Http\Controllers\FinanceController::class,'storeVehicle']);
 Route::delete('/finance/asset/vehicleRecord/deleteVehicle', [App\Http\Controllers\FinanceController::class,'deleteVehicle']);

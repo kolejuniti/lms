@@ -14735,4 +14735,172 @@ class FinanceController extends Controller
 
     }
 
+    // New discount management methods
+    public function saveDiscountData(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'student_ic' => 'required|string',
+            'discount' => 'required|numeric|min:0|max:100',
+            'total_arrears' => 'required|numeric|min:0',
+            'received_discount' => 'required|numeric|min:0',
+            'payment' => 'required|numeric|min:0'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(["message" => "Field Error", "error" => $validator->errors()->all()], 400);
+        }
+
+        try {
+            DB::beginTransaction();
+
+            // Check if student exists
+            $student = DB::table('students')->where('ic', $request->student_ic)->first();
+            if (!$student) {
+                return response()->json(["message" => "Student not found"], 404);
+            }
+
+            // Insert discount record
+            DB::table('student_discount')->insert([
+                'student_ic' => $request->student_ic,
+                'discount' => $request->discount,
+                'total_arrears' => $request->total_arrears,
+                'received_discount' => $request->received_discount,
+                'payment' => $request->payment,
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+
+            DB::commit();
+            return response()->json(['message' => 'Success']);
+
+        } catch (Exception $ex) {
+            DB::rollback();
+            return response()->json(["message" => "Error saving data"], 500);
+        }
+    }
+
+    public function getDiscountRecords(Request $request)
+    {
+        $year = $request->year;
+        $month = $request->month;
+
+        $query = DB::table('student_discount')
+                   ->leftJoin('students', 'student_discount.student_ic', '=', 'students.ic')
+                   ->select(
+                       'student_discount.*',
+                       'students.name',
+                       'students.no_matric'
+                   );
+
+        // Apply filters
+        if ($year && $year !== 'all') {
+            $query->whereYear('student_discount.created_at', $year);
+        }
+
+        if ($month && $month !== 'all') {
+            $query->whereMonth('student_discount.created_at', $month);
+        }
+
+        $data['records'] = $query->orderBy('student_discount.created_at', 'desc')->get();
+
+        // Create filter info string
+        $filterInfo = '';
+        if ($year && $year !== 'all') {
+            $filterInfo .= 'Year: ' . $year;
+        }
+        if ($month && $month !== 'all') {
+            if ($filterInfo) $filterInfo .= ', ';
+            $filterInfo .= 'Month: ' . date('F', mktime(0, 0, 0, $month, 1));
+        }
+        if (!$filterInfo) {
+            $filterInfo = 'All Records';
+        }
+
+        $data['filter_info'] = $filterInfo;
+
+        return view('finance.debt.discount_report.discountReportGetStudent', compact('data'));
+    }
+
+    public function getDiscountRecord($id)
+    {
+        try {
+            $record = DB::table('student_discount')->where('id', $id)->first();
+            
+            if (!$record) {
+                return response()->json(['success' => false, 'message' => 'Record not found'], 404);
+            }
+
+            return response()->json(['success' => true, 'record' => $record]);
+
+        } catch (Exception $ex) {
+            return response()->json(['success' => false, 'message' => 'Error loading record'], 500);
+        }
+    }
+
+    public function updateDiscountRecord(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'record_id' => 'required|integer',
+            'discount' => 'required|numeric|min:0|max:100',
+            'total_arrears' => 'required|numeric|min:0',
+            'received_discount' => 'required|numeric|min:0',
+            'payment' => 'required|numeric|min:0'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(["message" => "Field Error", "error" => $validator->errors()->all()], 400);
+        }
+
+        try {
+            DB::beginTransaction();
+
+            // Check if record exists
+            $record = DB::table('student_discount')->where('id', $request->record_id)->first();
+            if (!$record) {
+                return response()->json(["message" => "Record not found"], 404);
+            }
+
+            // Update record
+            DB::table('student_discount')
+                ->where('id', $request->record_id)
+                ->update([
+                    'discount' => $request->discount,
+                    'total_arrears' => $request->total_arrears,
+                    'received_discount' => $request->received_discount,
+                    'payment' => $request->payment,
+                    'updated_at' => now()
+                ]);
+
+            DB::commit();
+            return response()->json(['message' => 'Success']);
+
+        } catch (Exception $ex) {
+            DB::rollback();
+            return response()->json(["message" => "Error updating record"], 500);
+        }
+    }
+
+    public function deleteDiscountRecord($id)
+    {
+        try {
+            DB::beginTransaction();
+
+            // Check if record exists
+            $record = DB::table('student_discount')->where('id', $id)->first();
+            if (!$record) {
+                return response()->json(["message" => "Record not found"], 404);
+            }
+
+            // Delete record
+            DB::table('student_discount')->where('id', $id)->delete();
+
+            DB::commit();
+            return response()->json(['message' => 'Success']);
+
+        } catch (Exception $ex) {
+            DB::rollback();
+            return response()->json(["message" => "Error deleting record"], 500);
+        }
+    }
+
 }
