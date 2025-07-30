@@ -27,10 +27,6 @@
 
   	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
-	{{-- link for css bootstrap --}}
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.css" integrity="sha512-jU/7UFiaW5UBGODEopEqnbIAHOI8fO6T99m7Tsmqs2gkdujByJfkCbbfPSN4Wlqlb9TGnsuC0YgUgWkRBK7B9A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-	
-	
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.15.1/moment.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
@@ -39,7 +35,6 @@
 
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.8.2/dist/alpine.min.js" defer></script>
-	
   </head>
 
 <style>
@@ -184,6 +179,7 @@ li a {
     <div class="spinner"></div>
   </div>
 
+
 <div class='custom-progress'>
 	<div class='custom-progress-bar' id='custom-progress-bar1'></div>
 	<div class='custom-percent' id='custom-percent1'></div>
@@ -212,7 +208,7 @@ li a {
 			  <span class="dark-logo"><img src="{{ asset('assets/images/logo_ucms2.png') }}" alt="logo" class="eduhub"></span>
 		  </div>
 		</a>	
-	</div>    
+	</div>   
     <!-- Header Navbar -->
     <nav class="navbar navbar-static-top">
       <!-- Sidebar toggle button-->
@@ -544,13 +540,13 @@ li a {
 
 <script src="http://spp3.intds.com.my/assets/js/formplugins/select2/select2.bundle.js"></script>
 
+
 <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+
+
 	
 <script src="{{ asset('assets/src/js/pages/component-animations-css3.js')}}"></script>
-
-
-{{-- js for bootstrap --}}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.js" integrity="sha512-U2WE1ktpMTuRBPoCFDzomoIorbOyUv0sP8B+INA3EzNAhehbzED1rOJg6bCqPf/Tuposxb5ja/MAUnC8THSbLQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>	
+	
 
 {{-- 
 <script src="{{ asset('assets/src/js/datagrid/datatables/datatables.bundle.js') }}"></script>
