@@ -93,6 +93,17 @@
                 </select>
               </div>
             </div>
+            <div class="col-md-6 mr-3" id="kuliah-card">
+              <div class="form-group">
+                <label class="form-label" for="kuliah">Lectures Status</label>
+                <select class="form-select" id="kuliah" name="kuliah">
+                  <option value="-" selected disabled>-</option>
+                  <option value="1" {{ ($data['student']->student_status == 1) ? 'selected' : '' }}>Holding</option>
+                  <option value="2" {{ ($data['student']->student_status == 2) ? 'selected' : '' }}>Kuliah</option>
+                  <option value="4" {{ ($data['student']->student_status == 4) ? 'selected' : '' }}>Latihan Industri</option>
+                </select>
+              </div>
+          </div>
           </div>
 
           <div class="row mt-3" id="group-card" hidden>
@@ -262,30 +273,36 @@
   var selected_year = "";
   var selected_semester = "";
   var selected_status = "";
+  var selected_kuliah = "";
 
   $(document).on('change', '#year', function(e) {
     selected_year = $(e.target).val();
-    getStudent(selected_program, selected_session, selected_year, selected_semester, selected_status);
+    getStudent(selected_program, selected_session, selected_year, selected_semester, selected_status, selected_kuliah);
   });
 
   $(document).on('change', '#program', function(e) {
     selected_program = $(e.target).val();
-    getStudent(selected_program, selected_session, selected_year, selected_semester, selected_status);
+    getStudent(selected_program, selected_session, selected_year, selected_semester, selected_status, selected_kuliah);
   });
 
   $(document).on('change', '#session', function(e) {
     selected_session = $(e.target).val();
-    getStudent(selected_program, selected_session, selected_year, selected_semester, selected_status);
+    getStudent(selected_program, selected_session, selected_year, selected_semester, selected_status, selected_kuliah);
   });
 
   $(document).on('change', '#semester', function(e) {
     selected_semester = $(e.target).val();
-    getStudent(selected_program, selected_session, selected_year, selected_semester, selected_status);
+    getStudent(selected_program, selected_session, selected_year, selected_semester, selected_status, selected_kuliah);
   });
 
   $(document).on('change', '#status', async function(e) {
     selected_status = $(e.target).val();
-    await getStudent(selected_program, selected_session, selected_year, selected_semester, selected_status);
+    await getStudent(selected_program, selected_session, selected_year, selected_semester, selected_status, selected_kuliah);
+  });
+
+  $(document).on('change', '#kuliah', function(e) {
+    selected_kuliah = $(e.target).val();
+    getStudent(selected_program, selected_session, selected_year, selected_semester, selected_status, selected_kuliah);
   });
 
   // 1) Helper functions to add a custom fill style
@@ -327,13 +344,13 @@ function addCellStyle(cellXfs, fillId) {
 }
 
 
-  function getStudent(program, session, year, semester, status) {
+  function getStudent(program, session, year, semester, status, kuliah) {
     $('#complex_header').DataTable().destroy();
     return $.ajax({
       headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
       url: "{{ url('pendaftar/group/getStudentTableIndex') }}",
       method: 'POST',
-      data: { program: program, session: session, year: year, semester: semester, status: status },
+      data: { program: program, session: session, year: year, semester: semester, status: status, kuliah: kuliah },
       beforeSend: function(xhr) {
         $("#complex_header").LoadingOverlay("show", {
           image: `<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg"

@@ -152,6 +152,11 @@ class PendaftarController extends Controller
             $student->where('students.status', $request->status);
         }
 
+        if(!empty($request->kuliah) && $request->kuliah != '-')
+        {
+            $student->where('students.student_status', $request->kuliah);
+        }
+
         $students = $student->get();
 
         foreach($students as $key => $std)
