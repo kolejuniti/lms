@@ -14740,6 +14740,7 @@ class FinanceController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'student_ic' => 'required|string',
+            'date' => 'nullable|date',
             'discount' => 'required|numeric|min:0|max:100',
             'total_arrears' => 'required|numeric|min:0',
             'received_discount' => 'required|numeric|min:0',
@@ -14762,6 +14763,7 @@ class FinanceController extends Controller
             // Insert discount record
             DB::table('student_discount')->insert([
                 'student_ic' => $request->student_ic,
+                'date' => $request->date,
                 'discount' => $request->discount,
                 'total_arrears' => $request->total_arrears,
                 'received_discount' => $request->received_discount,
@@ -14794,11 +14796,23 @@ class FinanceController extends Controller
 
         // Apply filters
         if ($year && $year !== 'all') {
-            $query->whereYear('student_discount.created_at', $year);
+            $query->where(function($q) use ($year) {
+                $q->whereYear('student_discount.date', $year)
+                  ->orWhere(function($subq) use ($year) {
+                      $subq->whereNull('student_discount.date')
+                           ->whereYear('student_discount.created_at', $year);
+                  });
+            });
         }
 
         if ($month && $month !== 'all') {
-            $query->whereMonth('student_discount.created_at', $month);
+            $query->where(function($q) use ($month) {
+                $q->whereMonth('student_discount.date', $month)
+                  ->orWhere(function($subq) use ($month) {
+                      $subq->whereNull('student_discount.date')
+                           ->whereMonth('student_discount.created_at', $month);
+                  });
+            });
         }
 
         $data['records'] = $query->orderBy('student_discount.id')->get();
@@ -14841,6 +14855,7 @@ class FinanceController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'record_id' => 'required|integer',
+            'date' => 'nullable|date',
             'discount' => 'required|numeric|min:0|max:100',
             'total_arrears' => 'required|numeric|min:0',
             'received_discount' => 'required|numeric|min:0',
@@ -14864,6 +14879,7 @@ class FinanceController extends Controller
             DB::table('student_discount')
                 ->where('id', $request->record_id)
                 ->update([
+                    'date' => $request->date,
                     'discount' => $request->discount,
                     'total_arrears' => $request->total_arrears,
                     'received_discount' => $request->received_discount,

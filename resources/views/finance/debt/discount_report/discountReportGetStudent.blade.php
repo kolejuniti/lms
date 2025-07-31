@@ -50,7 +50,7 @@
                                     {{ number_format($record->payment, 2) }}
                                     @php $totalBayaran += $record->payment; @endphp
                                 </td>
-                                <td>{{ date('d/m/Y', strtotime($record->created_at)) }}</td>
+                                <td>{{ $record->date ? date('d/m/Y', strtotime($record->date)) : date('d/m/Y', strtotime($record->created_at)) }}</td>
                                 <td>
                                     <button class="btn btn-sm btn-warning" onclick="editRecord({{ $record->id }})">
                                         <i class="fa fa-edit"></i>
@@ -99,25 +99,33 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="edit_discount">Discount (%)</label>
-                                <input type="number" step="0.01" class="form-control" id="edit_discount" name="discount" min="0" max="100">
+                                <label for="edit_date">Date</label>
+                                <input type="date" class="form-control" id="edit_date" name="date">
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="edit_total_arrears">Jumlah Tunggakan (RM)</label>
-                                <input type="number" step="0.01" class="form-control" id="edit_total_arrears" name="total_arrears" min="0">
+                                <label for="edit_discount">Discount (%)</label>
+                                <input type="number" step="0.01" class="form-control" id="edit_discount" name="discount" min="0" max="100">
                             </div>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
+                                <label for="edit_total_arrears">Jumlah Tunggakan (RM)</label>
+                                <input type="number" step="0.01" class="form-control" id="edit_total_arrears" name="total_arrears" min="0">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
                                 <label for="edit_received_discount">Terimaan Diskaun (RM)</label>
                                 <input type="number" step="0.01" class="form-control" id="edit_received_discount" name="received_discount" min="0">
                             </div>
                         </div>
-                        <div class="col-md-6">
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
                             <div class="form-group">
                                 <label for="edit_payment">Bayaran Pelajar (RM)</label>
                                 <input type="number" step="0.01" class="form-control" id="edit_payment" name="payment" min="0">
@@ -144,6 +152,7 @@ function editRecord(recordId) {
         success: function(data) {
             if(data.success) {
                 $('#edit_record_id').val(data.record.id);
+                $('#edit_date').val(data.record.date);
                 $('#edit_discount').val(data.record.discount);
                 $('#edit_total_arrears').val(data.record.total_arrears);
                 $('#edit_received_discount').val(data.record.received_discount);
@@ -163,6 +172,7 @@ function editRecord(recordId) {
 function updateRecord() {
     var formData = {
         record_id: $('#edit_record_id').val(),
+        date: $('#edit_date').val(),
         discount: $('#edit_discount').val(),
         total_arrears: $('#edit_total_arrears').val(),
         received_discount: $('#edit_received_discount').val(),

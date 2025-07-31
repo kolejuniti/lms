@@ -88,25 +88,33 @@
                       </div>
                     </div>
                     <div class="row">
-                      <div class="col-md-3">
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label class="form-label" for="discount_date">Date</label>
+                          <input type="date" class="form-control" id="discount_date" name="discount_date" value="{{ date('Y-m-d') }}">
+                        </div>
+                      </div>
+                      <div class="col-md-6">
                         <div class="form-group">
                           <label class="form-label" for="discount_percentage">Discount (%)</label>
                           <input type="number" step="0.01" class="form-control" id="discount_percentage" name="discount_percentage" min="0" max="100">
                         </div>
                       </div>
-                      <div class="col-md-3">
+                    </div>
+                    <div class="row">
+                      <div class="col-md-4">
                         <div class="form-group">
                           <label class="form-label" for="total_arrears">Jumlah Tunggakan (RM)</label>
                           <input type="number" step="0.01" class="form-control" id="total_arrears" name="total_arrears" min="0">
                         </div>
                       </div>
-                      <div class="col-md-3">
+                      <div class="col-md-4">
                         <div class="form-group">
                           <label class="form-label" for="received_discount">Terimaan Diskaun (RM)</label>
                           <input type="number" step="0.01" class="form-control" id="received_discount" name="received_discount" min="0">
                         </div>
                       </div>
-                      <div class="col-md-3">
+                      <div class="col-md-4">
                         <div class="form-group">
                           <label class="form-label" for="payment">Bayaran Pelajar (RM)</label>
                           <input type="number" step="0.01" class="form-control" id="payment" name="payment" min="0">
@@ -213,6 +221,7 @@ function getStudent(search)
 function saveDiscountData()
 {
     var studentIc = $('#student').val();
+    var discountDate = $('#discount_date').val();
     var discountPercentage = $('#discount_percentage').val();
     var totalArrears = $('#total_arrears').val();
     var receivedDiscount = $('#received_discount').val();
@@ -224,8 +233,8 @@ function saveDiscountData()
         return;
     }
 
-    if(!discountPercentage || !totalArrears || !receivedDiscount || !payment) {
-        alert('Please fill in all discount information fields');
+    if(!discountDate || !discountPercentage || !totalArrears || !receivedDiscount || !payment) {
+        alert('Please fill in all discount information fields including date');
         return;
     }
 
@@ -235,6 +244,7 @@ function saveDiscountData()
             method   : 'POST',
             data 	 : {
                 student_ic: studentIc,
+                date: discountDate,
                 discount: discountPercentage,
                 total_arrears: totalArrears,
                 received_discount: receivedDiscount,
@@ -260,6 +270,7 @@ function clearForm()
 {
     $('#search').val('');
     $('#student').html('<option value="-" selected disabled>-</option>');
+    $('#discount_date').val('{{ date('Y-m-d') }}');
     $('#discount_percentage').val('');
     $('#total_arrears').val('');
     $('#received_discount').val('');
