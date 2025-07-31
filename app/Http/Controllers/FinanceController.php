@@ -14801,7 +14801,7 @@ class FinanceController extends Controller
             $query->whereMonth('student_discount.created_at', $month);
         }
 
-        $data['records'] = $query->get();
+        $data['records'] = $query->orderBy('student_discount.id')->get();
 
         // Create filter info string
         $filterInfo = '';
