@@ -293,8 +293,7 @@ function loadDiscountRecords()
                         dom: 'lBfrtip',
                         buttons: [
                             'copy', 'csv', 'excel', 'pdf', 'print'
-                        ],
-                        order: [[ 5, "desc" ]] // Order by created date descending
+                        ],// Order by created date descending
                     });
                 }
             }
