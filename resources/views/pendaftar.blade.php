@@ -98,9 +98,9 @@
                 <label class="form-label" for="kuliah">Lectures Status</label>
                 <select class="form-select" id="kuliah" name="kuliah">
                   <option value="-" selected disabled>-</option>
-                  <option value="1" {{ ($data['student']->student_status == 1) ? 'selected' : '' }}>Holding</option>
-                  <option value="2" {{ ($data['student']->student_status == 2) ? 'selected' : '' }}>Kuliah</option>
-                  <option value="4" {{ ($data['student']->student_status == 4) ? 'selected' : '' }}>Latihan Industri</option>
+                  <option value="1">Holding</option>
+                  <option value="2">Kuliah</option>
+                  <option value="4">Latihan Industri</option>
                 </select>
               </div>
           </div>
