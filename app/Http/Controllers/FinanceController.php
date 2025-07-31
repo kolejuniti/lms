@@ -14817,6 +14817,11 @@ class FinanceController extends Controller
 
         $data['records'] = $query->orderBy('student_discount.id')->get();
 
+        foreach($data['records'] as $key => $record)
+        {
+            $data['year'][$key] = DB::table('tblclaim')->where('student_ic', $record->student_ic)->select(DB::raw('YEAR(date) as year'))->groupBy('year')->first();
+        }
+
         // Create filter info string
         $filterInfo = '';
         if ($year && $year !== 'all') {

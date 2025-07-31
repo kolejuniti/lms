@@ -22,6 +22,7 @@
                             <th style="width: 10%;">Terimaan Diskaun (RM)</th>
                             <th style="width: 10%;">Bayaran Pelajar (RM)</th>
                             <th style="width: 15%;">Tarikh</th>
+                            <th style="width: 10%;">Tahun</th>
                             <th style="width: 10%;">Action</th>
                         </tr>
                     </thead>
@@ -51,6 +52,7 @@
                                     @php $totalBayaran += $record->payment; @endphp
                                 </td>
                                 <td>{{ $record->date ? date('d/m/Y', strtotime($record->date)) : date('d/m/Y', strtotime($record->created_at)) }}</td>
+                                <td>{{ $data['year'][$key]->year ?? 'N/A' }}</td>
                                 <td>
                                     <button class="btn btn-sm btn-warning" onclick="editRecord({{ $record->id }})">
                                         <i class="fa fa-edit"></i>
