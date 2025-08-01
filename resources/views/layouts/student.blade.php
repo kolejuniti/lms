@@ -259,11 +259,11 @@
                   <li>
                     <a id="examSlipLink" href="#" target="_blank">Slip Exam</a>
                   </li>
-                  <li>
+                  {{-- <li>
                     <a href="{{ asset('storage/memo/2025.01.07 - Memo 01 Ketetapan Mod Pengajian Kuliah Kolej UNITI bagi Sesi 20242025-II.pdf') }}" target="_blank">
                       <span>Memo</span>
                     </a>
-                  </li>
+                  </li> --}}
                   <li>
                     <a href="{{ asset('storage/takwim/Takwim Akademik Kolej UNITI Semester I Sesi 20252026 (Kemasukan Jun) - Edaran Pelajar.pdf') }}" target="_blank">
                       <span>Takwim Uniti (June)</span>
@@ -341,11 +341,11 @@
                   <i data-feather="credit-card"></i><span>Payment</span>
                 </a>
               </li>
-              <li>
+              {{-- <li>
                 <a href="{{ asset('storage/finals_schedule/Jadual Pengawasan Peperiksaan Akhir UNITI Semester II Sesi 20242025 (Kemasukan Mac).pdf') }}" target="_blank">
                   <i data-feather="file-text"></i><span>Finals Timetable</span>
                 </a>
-              </li>
+              </li> --}}
               
               <!-- Mini Games -->
               <li class="treeview">
