@@ -264,10 +264,10 @@
             </table>
             </div> 
         </div>
-        <div style="text-align: right; margin-top: 30px;">
-            <img src="{{ asset('storage/signature/signature2.png') }}" alt="Signature" width="90px" height="90px" style="float: right; clear: right; margin-bottom: 8px;">
-            <div style="clear: right; text-align: right; line-height: 1.2;">
-                <b>......................................<br>
+        <div style="text-align: right; margin-top: 30px; position: relative;">
+            <img src="{{ asset('storage/signature/signature2.png') }}" alt="Signature" width="85px" height="85px" style="float: right; clear: right; margin-bottom: 8px;">
+            <div style="clear: right; text-align: right; line-height: 1.2; position: relative; z-index: 1;">
+                <b style="position: relative; top: -10px;">......................................<br>
                 AZHAR BIN ZUNAIDAK<br>
                 PENOLONG PENDAFTAR<br>
                 HAL EHWAL AKADEMIK<br>
