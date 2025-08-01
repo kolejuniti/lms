@@ -265,8 +265,18 @@
                     </a>
                   </li>
                   <li>
-                    <a href="{{ asset('storage/takwim/Takwim Akademik Intake Mac Semester II-20242025 (Kolej UNITI) - Edaran Pelajar.pdf') }}" target="_blank">
-                      <span>Takwim Uniti</span>
+                    <a href="{{ asset('storage/takwim/Takwim Akademik Kolej UNITI Semester I Sesi 20252026 (Kemasukan Jun) - Edaran Pelajar.pdf') }}" target="_blank">
+                      <span>Takwim Uniti (Intake June)</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="{{ asset('storage/takwim/Takwim Akademik Kolej UNITI Semester I Sesi 20252026 (Kemasukan September) - Edaran Pelajar.pdf') }}" target="_blank">
+                      <span>Takwim Uniti (Intake September)</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="{{ asset('storage/takwim/Takwim Akademik Kolej UNITI Semester I Sesi 20252026 (Kemasukan November) - Edaran Pelajar.pdf') }}" target="_blank">
+                      <span>Takwim Uniti (Intake November)</span>
                     </a>
                   </li>
                   <li>
