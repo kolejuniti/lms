@@ -315,7 +315,7 @@
 						<li><a href="{{ route('pendaftar.student.annualStudentReport') }}" class="{{ (route('pendaftar.student.annualStudentReport') == Request::url()) ? 'active' : ''}}">Annual Student Number Report</a></li>
 						<li><a href="{{ route('pendaftar_akademik.leave') }}" class="{{ (route('pendaftar_akademik.leave') == Request::url()) ? 'active' : ''}}">Student Leave</a></li>
 						<li><a href="{{ route('pendaftar_akademik.semester') }}" class="{{ (route('pendaftar_akademik.semester') == Request::url()) ? 'active' : ''}}">Student Semester</a></li>
-						<li><a href="{{ route('pendaftar.student.result') }}" class="{{ (route('pendaftar.student.result') == Request::url()) ? 'active' : ''}}">Student Result</a></li>
+						{{-- <li><a href="{{ route('pendaftar.student.result') }}" class="{{ (route('pendaftar.student.result') == Request::url()) ? 'active' : ''}}">Student Result</a></li> --}}
 						<li><a href="{{ route('finance.statement') }}" class="{{ (route('finance.statement') == Request::url()) ? 'active' : ''}}">Student Account Statement</a></li>
 						<li><a href="{{ route('all.student.announcements') }}" class="{{ (route('all.student.announcements') == Request::url()) ? 'active' : ''}}">Annoucement</a></li>
 					</ul>
@@ -399,6 +399,10 @@
 				  </script>
 				<li>
 					<a href="{{ route('posting.staff') }}" class="{{ (route('posting.staff') == Request::url()) ? 'active' : ''}}"><i data-feather="tv"></i><span>Posting</span></a>
+				</li> 
+
+				<li>
+					<a href="{{ route('all.pdf.export.index') }}" class="{{ (route('all.pdf.export.index') == Request::url()) ? 'active' : ''}}"><i data-feather="file-text"></i><span>PDF Export</span></a>
 				</li> 
 			  </ul>
 			  <div class="sidebar-widgets">

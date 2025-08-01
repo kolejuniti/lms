@@ -345,7 +345,9 @@ li a {
 					<li><a href="{{ route('pendaftar.student.internationalReport') }}" class="{{ (route('pendaftar.student.internationalReport') == Request::url()) ? 'active' : ''}}">International Student Report</a></li>
 					<li><a href="{{ route('pendaftar_akademik.leave') }}" class="{{ (route('pendaftar_akademik.leave') == Request::url()) ? 'active' : ''}}">Student Leave</a></li>
 					<li><a href="{{ route('pendaftar_akademik.semester') }}" class="{{ (route('pendaftar_akademik.semester') == Request::url()) ? 'active' : ''}}">Student Semester</a></li>
+					@if(Auth::user()->email == 'norasiah@uniti.edu.my')
 					<li><a href="{{ route('pendaftar.student.result') }}" class="{{ (route('pendaftar.student.result') == Request::url()) ? 'active' : ''}}">Student Result</a></li>
+					@endif
 					<li><a href="{{ route('pendaftar.student.reportR') }}" class="{{ (route('pendaftar.student.reportR') == Request::url()) ? 'active' : ''}}">Student Report R/R1/R2</a></li>
 					<li><a href="{{ route('all.student.announcements') }}" class="{{ (route('all.student.announcements') == Request::url()) ? 'active' : ''}}">Annoucement</a></li>
 				</ul>
