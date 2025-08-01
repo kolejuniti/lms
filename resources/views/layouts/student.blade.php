@@ -266,17 +266,17 @@
                   </li>
                   <li>
                     <a href="{{ asset('storage/takwim/Takwim Akademik Kolej UNITI Semester I Sesi 20252026 (Kemasukan Jun) - Edaran Pelajar.pdf') }}" target="_blank">
-                      <span>Takwim Uniti (Intake June)</span>
+                      <span>Takwim Uniti (June)</span>
                     </a>
                   </li>
                   <li>
                     <a href="{{ asset('storage/takwim/Takwim Akademik Kolej UNITI Semester I Sesi 20252026 (Kemasukan September) - Edaran Pelajar.pdf') }}" target="_blank">
-                      <span>Takwim Uniti (Intake September)</span>
+                      <span>Takwim Uniti (September)</span>
                     </a>
                   </li>
                   <li>
                     <a href="{{ asset('storage/takwim/Takwim Akademik Kolej UNITI Semester I Sesi 20252026 (Kemasukan November) - Edaran Pelajar.pdf') }}" target="_blank">
-                      <span>Takwim Uniti (Intake November)</span>
+                      <span>Takwim Uniti (November)</span>
                     </a>
                   </li>
                   <li>
