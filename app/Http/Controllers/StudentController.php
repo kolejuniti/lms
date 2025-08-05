@@ -728,9 +728,9 @@ class StudentController extends Controller
             
             $totalstd[] = $group->count();
 
-            $chapters[] = DB::table('classchapter')
-                        ->join('materialsub_dir', 'classchapter.chapterid', 'materialsub_dir.DrID')
-                        ->where('classid', $clss->id)->get();
+            $chapters[] = DB::table('announcement_chapter')
+                        ->join('materialsub_dir', 'announcement_chapter.chapterid', 'materialsub_dir.DrID')
+                        ->where('announcementid', $clss->id)->get();
         }
 
         //dd($totalstd);
