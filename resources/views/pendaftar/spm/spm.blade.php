@@ -524,11 +524,11 @@
                             <label class="form-label" for="class">Field Type</label>
                             <fieldset>
                                 <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="class" id="class5" value="0" {{ old('class', isset($data['skk']) && $data['skk']->in_field == '0' ? '0' : '') == '0' ? 'checked' : '' }}>
+                                    <input class="form-check-input" type="radio" name="class2" id="class5" value="0" {{ old('class2', isset($data['skk']) && $data['skk']->in_field == '0' ? '0' : '') == '0' ? 'checked' : '' }}>
                                     <label for="class5">
                                         In field
                                     </label>
-                                    <input class="form-check-input" type="radio" name="class" id="class6" value="1" {{ old('class', isset($data['skk']) && $data['skk']->in_field == '1' ? '1' : '') == '1' ? 'checked' : '' }}>
+                                    <input class="form-check-input" type="radio" name="class2" id="class6" value="1" {{ old('class2', isset($data['skk']) && $data['skk']->in_field == '1' ? '1' : '') == '1' ? 'checked' : '' }}>
                                     <label for="class6">
                                         Public
                                     </label>
@@ -539,7 +539,7 @@
                       <div class="col-md-6">
                         <div class="form-group">
                             <label class="form-label" for="program">Program</label>
-                            <input type="text" class="form-control" id="program" name="program" value="{{ old('program', isset($data['skk']->program) ? $data['skk']->program : '') }}">
+                            <input type="text" class="form-control" id="program2" name="program2" value="{{ old('program2', isset($data['skk']->program) ? $data['skk']->program : '') }}">
                         </div>
                       </div>
                     </div>
