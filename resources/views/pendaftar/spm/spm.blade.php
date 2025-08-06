@@ -496,6 +496,60 @@
                   </div>
                 </form>
             </div>
+
+            <div class="card card-primary">
+                <div class="card-header">
+                  <h3 class="card-title">SKK Details</h3>
+                </div>
+                <!-- /.card-header -->
+                <!-- form start -->
+                <form action="/pendaftar/spm/{{ request()->ic }}/SKKstore" method="POST">
+                  @csrf
+                  <div class="card-body">
+                    <div class="row mb-4">
+                      <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label" for="registration_no">Registration No.</label>
+                            <input type="text" class="form-control" id="registration_no" name="registration_no" value="{{ old('registration_no', isset($data['skk']->registration_no) ? $data['skk']->registration_no : '') }}">
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label" for="hpnm">HPNM</label>
+                            <input type="text" class="form-control" id="hpnm" name="hpnm" value="{{ old('hpnm', isset($data['skk']->hpnm) ? $data['skk']->hpnm : '') }}">
+                        </div>
+                      </div>
+                      <div class="col-md-9 mt-3" id="payment-card">
+                        <div class="form-group">
+                            <label class="form-label" for="class">Field Type</label>
+                            <fieldset>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="class" id="class3" value="0" {{ old('class', isset($data['skk']) && $data['skk']->in_field == '0' ? '0' : '') == '0' ? 'checked' : '' }}>
+                                    <label for="class3">
+                                        In field
+                                    </label>
+                                    <input class="form-check-input" type="radio" name="class" id="class4" value="1" {{ old('class', isset($data['skk']) && $data['skk']->in_field == '1' ? '1' : '') == '1' ? 'checked' : '' }}>
+                                    <label for="class4">
+                                        Public
+                                    </label>
+                                </div>
+                            </fieldset>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label" for="program">Program</label>
+                            <input type="text" class="form-control" id="program" name="program" value="{{ old('program', isset($data['skk']->program) ? $data['skk']->program : '') }}">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- /.box-body -->
+                  <div class="card-footer">
+                      <button type="submit" class="btn btn-primary pull-right mb-3">Submit</button>
+                  </div>
+                </form>
+            </div>
             <!-- /.card -->
           </div>
         </div>

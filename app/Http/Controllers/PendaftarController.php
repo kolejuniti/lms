@@ -1159,6 +1159,8 @@ class PendaftarController extends Controller
 
         $data['skm'] = DB::table('tblstudent_skm')->where('student_ic', request()->ic)->first();
 
+        $data['skk'] = DB::table('tblstudent_skk')->where('student_ic', request()->ic)->first();
+
  
         return view('pendaftar.spm.spm', compact('data'));
 
@@ -1260,6 +1262,31 @@ class PendaftarController extends Controller
         }
 
             return back()->with('success', 'Successfully saved SKM data')->withInput();
+
+    }
+
+    public function SKKStore(Request $request)
+    {
+
+        if($request->class != null && $request->program != null)
+        {
+
+            DB::table('tblstudent_skk')->updateOrInsert(
+                ['student_ic' => $request->ic], 
+                [
+                    'registration_no' => $request->registration_no,
+                    'hpnm' => $request->hpnm,
+                    'in_field' => $request->class,
+                    'program' => $request->program  
+                ]);
+
+        }else{
+
+            return back()->with('error', 'Please complete the SKK form.')->withInput();
+
+        }
+
+            return back()->with('success', 'Successfully saved SKK data')->withInput();
 
     }
 
