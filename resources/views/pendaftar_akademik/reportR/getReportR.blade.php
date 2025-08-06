@@ -278,73 +278,73 @@
           <tbody>
             <tr>
               <td>&lt;5 days<br><small class="text-muted">({{ $data['dateRanges']['below5']['start'] }} - {{ $data['dateRanges']['below5']['end'] }})</small></td>
-              <td>{{ $data['below5'] }}</td>
-              <td>{{ $data['below5willregister'] }}</td>
-              <td>{{ $data['below5KIV'] }}</td>
-              <td>{{ $data['below5convert'] }}</td>
-              <td>{{ $data['below5active'] }}</td>
-              <td>{{ $data['below5rejected'] }}</td>
-              <td>{{ $data['below5others'] }}</td>
+              <td><span class="clickable-count" data-category="below5" data-status="total" style="cursor: pointer; color: #007bff; text-decoration: underline;">{{ $data['below5'] }}</span></td>
+              <td><span class="clickable-count" data-category="below5" data-status="willregister" style="cursor: pointer; color: #007bff; text-decoration: underline;">{{ $data['below5willregister'] }}</span></td>
+              <td><span class="clickable-count" data-category="below5" data-status="kiv" style="cursor: pointer; color: #007bff; text-decoration: underline;">{{ $data['below5KIV'] }}</span></td>
+              <td><span class="clickable-count" data-category="below5" data-status="convert" style="cursor: pointer; color: #007bff; text-decoration: underline;">{{ $data['below5convert'] }}</span></td>
+              <td><span class="clickable-count" data-category="below5" data-status="active" style="cursor: pointer; color: #007bff; text-decoration: underline;">{{ $data['below5active'] }}</span></td>
+              <td><span class="clickable-count" data-category="below5" data-status="rejected" style="cursor: pointer; color: #007bff; text-decoration: underline;">{{ $data['below5rejected'] }}</span></td>
+              <td><span class="clickable-count" data-category="below5" data-status="others" style="cursor: pointer; color: #007bff; text-decoration: underline;">{{ $data['below5others'] }}</span></td>
             </tr>
             <tr>
               <td>5-9 days<br><small class="text-muted">({{ $data['dateRanges']['below10']['start'] }} - {{ $data['dateRanges']['below10']['end'] }})</small></td>
-              <td>{{ $data['below10'] }}</td>
-              <td>{{ $data['below10willregister'] }}</td>
-              <td>{{ $data['below10KIV'] }}</td>
-              <td>{{ $data['below10convert'] }}</td>
-              <td>{{ $data['below10active'] }}</td>
-              <td>{{ $data['below10rejected'] }}</td>
-              <td>{{ $data['below10others'] }}</td>
+              <td><span class="clickable-count" data-category="below10" data-status="total" style="cursor: pointer; color: #007bff; text-decoration: underline;">{{ $data['below10'] }}</span></td>
+              <td><span class="clickable-count" data-category="below10" data-status="willregister" style="cursor: pointer; color: #007bff; text-decoration: underline;">{{ $data['below10willregister'] }}</span></td>
+              <td><span class="clickable-count" data-category="below10" data-status="kiv" style="cursor: pointer; color: #007bff; text-decoration: underline;">{{ $data['below10KIV'] }}</span></td>
+              <td><span class="clickable-count" data-category="below10" data-status="convert" style="cursor: pointer; color: #007bff; text-decoration: underline;">{{ $data['below10convert'] }}</span></td>
+              <td><span class="clickable-count" data-category="below10" data-status="active" style="cursor: pointer; color: #007bff; text-decoration: underline;">{{ $data['below10active'] }}</span></td>
+              <td><span class="clickable-count" data-category="below10" data-status="rejected" style="cursor: pointer; color: #007bff; text-decoration: underline;">{{ $data['below10rejected'] }}</span></td>
+              <td><span class="clickable-count" data-category="below10" data-status="others" style="cursor: pointer; color: #007bff; text-decoration: underline;">{{ $data['below10others'] }}</span></td>
             </tr>
             <tr>
               <td>10-14 days<br><small class="text-muted">({{ $data['dateRanges']['below15']['start'] }} - {{ $data['dateRanges']['below15']['end'] }})</small></td>
-              <td>{{ $data['below15'] }}</td>
-              <td>{{ $data['below15willregister'] }}</td>
-              <td>{{ $data['below15KIV'] }}</td>
-              <td>{{ $data['below15convert'] }}</td>
-              <td>{{ $data['below15active'] }}</td>
-              <td>{{ $data['below15rejected'] }}</td>
-              <td>{{ $data['below15others'] }}</td>
+              <td><span class="clickable-count" data-category="below15" data-status="total" style="cursor: pointer; color: #007bff; text-decoration: underline;">{{ $data['below15'] }}</span></td>
+              <td><span class="clickable-count" data-category="below15" data-status="willregister" style="cursor: pointer; color: #007bff; text-decoration: underline;">{{ $data['below15willregister'] }}</span></td>
+              <td><span class="clickable-count" data-category="below15" data-status="kiv" style="cursor: pointer; color: #007bff; text-decoration: underline;">{{ $data['below15KIV'] }}</span></td>
+              <td><span class="clickable-count" data-category="below15" data-status="convert" style="cursor: pointer; color: #007bff; text-decoration: underline;">{{ $data['below15convert'] }}</span></td>
+              <td><span class="clickable-count" data-category="below15" data-status="active" style="cursor: pointer; color: #007bff; text-decoration: underline;">{{ $data['below15active'] }}</span></td>
+              <td><span class="clickable-count" data-category="below15" data-status="rejected" style="cursor: pointer; color: #007bff; text-decoration: underline;">{{ $data['below15rejected'] }}</span></td>
+              <td><span class="clickable-count" data-category="below15" data-status="others" style="cursor: pointer; color: #007bff; text-decoration: underline;">{{ $data['below15others'] }}</span></td>
             </tr>
             <tr>
               <td>15-19 days<br><small class="text-muted">({{ $data['dateRanges']['below20']['start'] }} - {{ $data['dateRanges']['below20']['end'] }})</small></td>
-              <td>{{ $data['below20'] }}</td>
-              <td>{{ $data['below20willregister'] }}</td>
-              <td>{{ $data['below20KIV'] }}</td>
-              <td>{{ $data['below20convert'] }}</td>
-              <td>{{ $data['below20active'] }}</td>
-              <td>{{ $data['below20rejected'] }}</td>
-              <td>{{ $data['below20others'] }}</td>
+              <td><span class="clickable-count" data-category="below20" data-status="total" style="cursor: pointer; color: #007bff; text-decoration: underline;">{{ $data['below20'] }}</span></td>
+              <td><span class="clickable-count" data-category="below20" data-status="willregister" style="cursor: pointer; color: #007bff; text-decoration: underline;">{{ $data['below20willregister'] }}</span></td>
+              <td><span class="clickable-count" data-category="below20" data-status="kiv" style="cursor: pointer; color: #007bff; text-decoration: underline;">{{ $data['below20KIV'] }}</span></td>
+              <td><span class="clickable-count" data-category="below20" data-status="convert" style="cursor: pointer; color: #007bff; text-decoration: underline;">{{ $data['below20convert'] }}</span></td>
+              <td><span class="clickable-count" data-category="below20" data-status="active" style="cursor: pointer; color: #007bff; text-decoration: underline;">{{ $data['below20active'] }}</span></td>
+              <td><span class="clickable-count" data-category="below20" data-status="rejected" style="cursor: pointer; color: #007bff; text-decoration: underline;">{{ $data['below20rejected'] }}</span></td>
+              <td><span class="clickable-count" data-category="below20" data-status="others" style="cursor: pointer; color: #007bff; text-decoration: underline;">{{ $data['below20others'] }}</span></td>
             </tr>
             <tr>
               <td>20-24 days<br><small class="text-muted">({{ $data['dateRanges']['below25']['start'] }} - {{ $data['dateRanges']['below25']['end'] }})</small></td>
-              <td>{{ $data['below25'] }}</td>
-              <td>{{ $data['below25willregister'] }}</td>
-              <td>{{ $data['below25KIV'] }}</td>
-              <td>{{ $data['below25convert'] }}</td>
-              <td>{{ $data['below25active'] }}</td>
-              <td>{{ $data['below25rejected'] }}</td>
-              <td>{{ $data['below25others'] }}</td>
+              <td><span class="clickable-count" data-category="below25" data-status="total" style="cursor: pointer; color: #007bff; text-decoration: underline;">{{ $data['below25'] }}</span></td>
+              <td><span class="clickable-count" data-category="below25" data-status="willregister" style="cursor: pointer; color: #007bff; text-decoration: underline;">{{ $data['below25willregister'] }}</span></td>
+              <td><span class="clickable-count" data-category="below25" data-status="kiv" style="cursor: pointer; color: #007bff; text-decoration: underline;">{{ $data['below25KIV'] }}</span></td>
+              <td><span class="clickable-count" data-category="below25" data-status="convert" style="cursor: pointer; color: #007bff; text-decoration: underline;">{{ $data['below25convert'] }}</span></td>
+              <td><span class="clickable-count" data-category="below25" data-status="active" style="cursor: pointer; color: #007bff; text-decoration: underline;">{{ $data['below25active'] }}</span></td>
+              <td><span class="clickable-count" data-category="below25" data-status="rejected" style="cursor: pointer; color: #007bff; text-decoration: underline;">{{ $data['below25rejected'] }}</span></td>
+              <td><span class="clickable-count" data-category="below25" data-status="others" style="cursor: pointer; color: #007bff; text-decoration: underline;">{{ $data['below25others'] }}</span></td>
             </tr>
             <tr>
               <td>25-29 days<br><small class="text-muted">({{ $data['dateRanges']['below30']['start'] }} - {{ $data['dateRanges']['below30']['end'] }})</small></td>
-              <td>{{ $data['below30'] }}</td>
-              <td>{{ $data['below30willregister'] }}</td>
-              <td>{{ $data['below30KIV'] }}</td>
-              <td>{{ $data['below30convert'] }}</td>
-              <td>{{ $data['below30active'] }}</td>
-              <td>{{ $data['below30rejected'] }}</td>
-              <td>{{ $data['below30others'] }}</td>
+              <td><span class="clickable-count" data-category="below30" data-status="total" style="cursor: pointer; color: #007bff; text-decoration: underline;">{{ $data['below30'] }}</span></td>
+              <td><span class="clickable-count" data-category="below30" data-status="willregister" style="cursor: pointer; color: #007bff; text-decoration: underline;">{{ $data['below30willregister'] }}</span></td>
+              <td><span class="clickable-count" data-category="below30" data-status="kiv" style="cursor: pointer; color: #007bff; text-decoration: underline;">{{ $data['below30KIV'] }}</span></td>
+              <td><span class="clickable-count" data-category="below30" data-status="convert" style="cursor: pointer; color: #007bff; text-decoration: underline;">{{ $data['below30convert'] }}</span></td>
+              <td><span class="clickable-count" data-category="below30" data-status="active" style="cursor: pointer; color: #007bff; text-decoration: underline;">{{ $data['below30active'] }}</span></td>
+              <td><span class="clickable-count" data-category="below30" data-status="rejected" style="cursor: pointer; color: #007bff; text-decoration: underline;">{{ $data['below30rejected'] }}</span></td>
+              <td><span class="clickable-count" data-category="below30" data-status="others" style="cursor: pointer; color: #007bff; text-decoration: underline;">{{ $data['below30others'] }}</span></td>
             </tr>
             <tr>
               <td>≥30 days<br><small class="text-muted">({{ $data['dateRanges']['above30']['start'] }})</small></td>
-              <td>{{ $data['above30'] }}</td>
-              <td>{{ $data['above30willregister'] }}</td>
-              <td>{{ $data['above30KIV'] }}</td>
-              <td>{{ $data['above30convert'] }}</td>
-              <td>{{ $data['above30active'] }}</td>
-              <td>{{ $data['above30rejected'] }}</td>
-              <td>{{ $data['above30others'] }}</td>
+              <td><span class="clickable-count" data-category="above30" data-status="total" style="cursor: pointer; color: #007bff; text-decoration: underline;">{{ $data['above30'] }}</span></td>
+              <td><span class="clickable-count" data-category="above30" data-status="willregister" style="cursor: pointer; color: #007bff; text-decoration: underline;">{{ $data['above30willregister'] }}</span></td>
+              <td><span class="clickable-count" data-category="above30" data-status="kiv" style="cursor: pointer; color: #007bff; text-decoration: underline;">{{ $data['above30KIV'] }}</span></td>
+              <td><span class="clickable-count" data-category="above30" data-status="convert" style="cursor: pointer; color: #007bff; text-decoration: underline;">{{ $data['above30convert'] }}</span></td>
+              <td><span class="clickable-count" data-category="above30" data-status="active" style="cursor: pointer; color: #007bff; text-decoration: underline;">{{ $data['above30active'] }}</span></td>
+              <td><span class="clickable-count" data-category="above30" data-status="rejected" style="cursor: pointer; color: #007bff; text-decoration: underline;">{{ $data['above30rejected'] }}</span></td>
+              <td><span class="clickable-count" data-category="above30" data-status="others" style="cursor: pointer; color: #007bff; text-decoration: underline;">{{ $data['above30others'] }}</span></td>
             </tr>
           </tbody>
           <tfoot>
@@ -352,13 +352,13 @@
               <td style="text-align: center">
                 TOTAL STUDENTS
               </td>
-              <td>{{ $data['student']->count() }}</td>
-              <td>{{ $data['below5willregister'] + $data['below10willregister'] + $data['below15willregister'] + $data['below20willregister'] + $data['below25willregister'] + $data['below30willregister'] + $data['above30willregister'] }}</td>
-              <td>{{ $data['below5KIV'] + $data['below10KIV'] + $data['below15KIV'] + $data['below20KIV'] + $data['below25KIV'] + $data['below30KIV'] + $data['above30KIV'] }}</td>
-              <td>{{ $data['below5convert'] + $data['below10convert'] + $data['below15convert'] + $data['below20convert'] + $data['below25convert'] + $data['below30convert'] + $data['above30convert'] }}</td>
-              <td>{{ $data['below5active'] + $data['below10active'] + $data['below15active'] + $data['below20active'] + $data['below25active'] + $data['below30active'] + $data['above30active'] }}</td>
-              <td>{{ $data['below5rejected'] + $data['below10rejected'] + $data['below15rejected'] + $data['below20rejected'] + $data['below25rejected'] + $data['below30rejected'] + $data['above30rejected'] }}</td>
-              <td>{{ $data['below5others'] + $data['below10others'] + $data['below15others'] + $data['below20others'] + $data['below25others'] + $data['below30others'] + $data['above30others'] }}</td>
+              <td><span class="clickable-count" data-category="total" data-status="total" style="cursor: pointer; color: #007bff; text-decoration: underline;">{{ $data['student']->count() }}</span></td>
+              <td><span class="clickable-count" data-category="total" data-status="willregister" style="cursor: pointer; color: #007bff; text-decoration: underline;">{{ $data['below5willregister'] + $data['below10willregister'] + $data['below15willregister'] + $data['below20willregister'] + $data['below25willregister'] + $data['below30willregister'] + $data['above30willregister'] }}</span></td>
+              <td><span class="clickable-count" data-category="total" data-status="kiv" style="cursor: pointer; color: #007bff; text-decoration: underline;">{{ $data['below5KIV'] + $data['below10KIV'] + $data['below15KIV'] + $data['below20KIV'] + $data['below25KIV'] + $data['below30KIV'] + $data['above30KIV'] }}</span></td>
+              <td><span class="clickable-count" data-category="total" data-status="convert" style="cursor: pointer; color: #007bff; text-decoration: underline;">{{ $data['below5convert'] + $data['below10convert'] + $data['below15convert'] + $data['below20convert'] + $data['below25convert'] + $data['below30convert'] + $data['above30convert'] }}</span></td>
+              <td><span class="clickable-count" data-category="total" data-status="active" style="cursor: pointer; color: #007bff; text-decoration: underline;">{{ $data['below5active'] + $data['below10active'] + $data['below15active'] + $data['below20active'] + $data['below25active'] + $data['below30active'] + $data['above30active'] }}</span></td>
+              <td><span class="clickable-count" data-category="total" data-status="rejected" style="cursor: pointer; color: #007bff; text-decoration: underline;">{{ $data['below5rejected'] + $data['below10rejected'] + $data['below15rejected'] + $data['below20rejected'] + $data['below25rejected'] + $data['below30rejected'] + $data['above30rejected'] }}</span></td>
+              <td><span class="clickable-count" data-category="total" data-status="others" style="cursor: pointer; color: #007bff; text-decoration: underline;">{{ $data['below5others'] + $data['below10others'] + $data['below15others'] + $data['below20others'] + $data['below25others'] + $data['below30others'] + $data['above30others'] }}</span></td>
             </tr>
           </tfoot>
         </table>
@@ -366,5 +366,120 @@
     </div>
   </div>
   <!-- /.card-body -->
+</div>
+
+<!-- Custom CSS for aging report modal -->
+<style>
+  .clickable-count:hover {
+    background-color: #e6f3ff !important;
+    border-radius: 3px;
+    padding: 2px 4px;
+    text-decoration: none !important;
+    font-weight: bold;
+  }
+  
+  .modal-xl {
+    max-width: 90% !important;
+  }
+  
+  #modalStudentTable {
+    font-size: 0.9em;
+  }
+  
+  #modalStudentTable th {
+    background-color: #343a40 !important;
+    color: white !important;
+    border-color: #343a40 !important;
+    font-weight: 600;
+    text-align: center;
+  }
+  
+  #modalStudentTable td {
+    vertical-align: middle;
+    border-color: #dee2e6;
+  }
+  
+  #modalStudentTable tbody tr:hover {
+    background-color: #f8f9fa;
+  }
+  
+  .modal-header {
+    background-color: #007bff;
+    color: white;
+  }
+  
+  .modal-header .btn-close {
+    filter: brightness(0) invert(1);
+  }
+  
+  #modalCategoryTitle {
+    color: #495057;
+    font-weight: 600;
+    margin-bottom: 5px;
+  }
+  
+  #modalStudentCount {
+    color: #6c757d;
+    font-size: 0.9em;
+  }
+  
+  .spinner-border {
+    color: #007bff;
+  }
+</style>
+
+<!-- Student List Modal -->
+<div class="modal fade" id="studentListModal" tabindex="-1" aria-labelledby="studentListModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="studentListModalLabel">Student List</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="modalLoadingSpinner" class="text-center" style="display: none;">
+          <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <p class="mt-2">Loading students...</p>
+        </div>
+        
+        <div id="modalErrorMessage" class="alert alert-danger" style="display: none;"></div>
+        
+        <div id="studentListContainer" style="display: none;">
+          <div class="mb-3">
+            <h6 id="modalCategoryTitle"></h6>
+            <p class="text-muted mb-0" id="modalStudentCount"></p>
+          </div>
+          
+          <div class="table-responsive">
+            <table id="modalStudentTable" class="table table-striped table-bordered">
+              <thead class="table-dark">
+                <tr>
+                  <th style="width: 5%">No.</th>
+                  <th style="width: 20%">Name</th>
+                  <th style="width: 15%">IC No.</th>
+                  <th style="width: 15%">Matric No.</th>
+                  <th style="width: 12%">Phone</th>
+                  <th style="width: 10%">Gender</th>
+                  <th style="width: 15%">Program</th>
+                  <th style="width: 8%">Session</th>
+                </tr>
+              </thead>
+              <tbody id="modalStudentTableBody">
+                <!-- Student data will be populated here -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" id="exportModalStudents" style="display: none;">
+          <i class="fa fa-download"></i> Export to Excel
+        </button>
+      </div>
+    </div>
+  </div>
 </div>
 

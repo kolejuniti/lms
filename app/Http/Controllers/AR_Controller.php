@@ -4296,6 +4296,154 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
 
     }
 
+    public function getAgingStudents(Request $request)
+    {
+        // Validate required parameters
+        $validator = Validator::make($request->all(), [
+            'from' => 'required|date',
+            'to' => 'required|date',
+            'category' => 'required|string',
+            'status_type' => 'required|string'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(["message" => "Field Error", "error" => $validator->errors()->all()], 400);
+        }
+
+        try {
+            // Base query - same as the main getStudentReportR method
+            $query = DB::table('tblpayment as p1')
+                ->join('students', 'p1.student_ic', '=', 'students.ic')
+                ->leftjoin('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
+                ->leftjoin('tblsex', 'tblstudent_personal.sex_id', '=', 'tblsex.id')
+                ->leftjoin('sessions', 'students.intake', 'sessions.SessionID')
+                ->leftjoin('tblprogramme', 'students.program', 'tblprogramme.id')
+                ->leftjoin('tbledu_advisor', 'tblstudent_personal.advisor_id', 'tbledu_advisor.id')
+                ->join(DB::raw('(SELECT student_ic, MIN(date) as first_payment_date 
+                        FROM tblpayment 
+                        WHERE process_status_id = 2 
+                        AND process_type_id = 1 
+                        AND semester_id = 1
+                        GROUP BY student_ic) as p2'), function($join) {
+                    $join->on('p1.student_ic', '=', 'p2.student_ic')
+                         ->on('p1.date', '=', 'p2.first_payment_date');
+                })
+                ->where([
+                    ['p1.process_status_id', '=', 2],
+                    ['p1.process_type_id', '=', 1],
+                    ['p1.semester_id', '=', 1],
+                ])->when($request->session != '', function ($query) use ($request){
+                    return $query->where('students.intake', $request->session);
+                })
+                ->when($request->EA != '', function ($query) use ($request){
+                        return $query->where('tblstudent_personal.advisor_id', $request->EA);
+                })
+                ->whereBetween('p1.date', [$request->from, $request->to])
+                ->select('p1.id')
+                ->groupBy('p1.student_ic')
+                ->select('students.*', 'tblstudent_personal.no_tel','tblstudent_personal.qualification', 'tblsex.code AS sex', 'sessions.SessionName', 'tblprogramme.progcode', 'tbledu_advisor.name AS ea', 'p1.date as date_register');
+
+            // Apply filters based on convert and offered parameters (same as main method)
+            if($request->has('convert') && $request->has('offered')) {
+                if($request->convert == "false" && $request->offered == "false") {
+                    // This would be contradictory, so default to showing all
+                } 
+                else if($request->convert == "false") {
+                    $query->where('students.status', '=', 1);
+                }
+                else if($request->offered == "false") {
+                    $query->where('students.status', '!=', 1);
+                }
+            }
+            else if($request->has('convert') && $request->convert == "false") {
+                $query->where('students.status', '=', 1);
+            }
+            else if($request->has('offered') && $request->offered == "false") {
+                $query->where('students.status', '!=', 1);
+            }
+
+            $students = $query->get();
+            
+            // Filter students based on the aging category and status type
+            $filteredStudents = $students->filter(function($student) use ($request) {
+                $daysDiff = Carbon::parse($student->date_add)->diffInDays(now());
+                $category = $request->category;
+                $statusType = $request->status_type;
+                
+                // Check if student falls into the requested day range
+                $inRange = false;
+                switch($category) {
+                    case 'below5':
+                        $inRange = $daysDiff < 5;
+                        break;
+                    case 'below10':
+                        $inRange = $daysDiff >= 5 && $daysDiff < 10;
+                        break;
+                    case 'below15':
+                        $inRange = $daysDiff >= 10 && $daysDiff < 15;
+                        break;
+                    case 'below20':
+                        $inRange = $daysDiff >= 15 && $daysDiff < 20;
+                        break;
+                    case 'below25':
+                        $inRange = $daysDiff >= 20 && $daysDiff < 25;
+                        break;
+                    case 'below30':
+                        $inRange = $daysDiff >= 25 && $daysDiff < 30;
+                        break;
+                    case 'above30':
+                        $inRange = $daysDiff >= 30;
+                        break;
+                    case 'total':
+                        $inRange = true; // Total includes all students
+                        break;
+                }
+                
+                if (!$inRange) {
+                    return false;
+                }
+                
+                // Check if student matches the requested status type
+                switch($statusType) {
+                    case 'total':
+                        return true; // Total includes all students in the range
+                    case 'willregister':
+                        return (now() <= $student->date_offer && $student->status == 1);
+                    case 'kiv':
+                        return (now() > $student->date_offer && $student->status == 1);
+                    case 'convert':
+                        return ($student->status != 1 && $student->status != 14);
+                    case 'active':
+                        return ($student->status == 2);
+                    case 'rejected':
+                        return ($student->status == 14);
+                    case 'others':
+                        return ($student->status != 1 && $student->status != 2 && $student->status != 14);
+                    default:
+                        return false;
+                }
+            });
+
+            // Get qualifications for the filtered students
+            $qualifications = [];
+            foreach($filteredStudents as $student) {
+                if($student->qualification) {
+                    $qualifications[$student->ic] = DB::table('tblqualification_std')->where('id', $student->qualification)->value('name');
+                }
+            }
+
+            return response()->json([
+                'success' => true,
+                'students' => $filteredStudents->values(),
+                'qualifications' => $qualifications,
+                'count' => $filteredStudents->count()
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json(["message" => "Error: " . $e->getMessage()], 500);
+        }
+    }
+
     public function warningLetter()
     {
 

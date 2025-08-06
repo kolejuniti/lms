@@ -230,6 +230,7 @@ Route::get('/AR/semester/getStudentSemester', [App\Http\Controllers\AR_Controlle
 Route::post('/AR/semester/updatesemester', [App\Http\Controllers\AR_Controller::class, 'updateSemester']);
 Route::get('/AR/reportR', [App\Http\Controllers\AR_Controller::class, 'studentReportR'])->name('pendaftar_akademik.reportR');
 Route::get('/AR/reportR/getStudentReportR', [App\Http\Controllers\AR_Controller::class, 'getStudentReportR']);
+Route::post('/AR/reportR/getAgingStudents', [App\Http\Controllers\AR_Controller::class, 'getAgingStudents']);
 Route::get('/AR/student/warningLetter', [App\Http\Controllers\AR_Controller::class, 'warningLetter'])->name('pendaftar_akademik.warningLetter');
 Route::post('/AR/student/getWarningLetter', [App\Http\Controllers\AR_Controller::class, 'getWarningLetter']);
 Route::get('/AR/student/printWarningLetter', [App\Http\Controllers\AR_Controller::class, 'printWarningLetter']);

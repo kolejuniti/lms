@@ -1439,5 +1439,190 @@
       }, 300);
     };
   }
+
+  // Aging Report Modal Functionality
+  $(document).ready(function() {
+    // Handle clicks on clickable counts in aging report
+    $(document).on('click', '.clickable-count', function() {
+      const category = $(this).data('category');
+      const statusType = $(this).data('status');
+      const count = $(this).text().trim();
+      
+      // Only proceed if count is greater than 0
+      if (parseInt(count) === 0) {
+        return;
+      }
+      
+      // Get current filter values
+      const from = $('#from').val();
+      const to = $('#to').val();
+      const session = $('#session').val();
+      const EA = $('#EA').val();
+      const convert = $('#convert').is(':checked');
+      const offered = $('#offered').is(':checked');
+      
+      // Validate required fields
+      if (!from || !to) {
+        alert('Please select date range first');
+        return;
+      }
+      
+      // Show modal
+      $('#studentListModal').modal('show');
+      
+      // Reset modal content
+      $('#modalLoadingSpinner').show();
+      $('#modalErrorMessage').hide();
+      $('#studentListContainer').hide();
+      
+      // Set modal title
+      let categoryTitle = '';
+      let statusTitle = '';
+      
+      switch(category) {
+        case 'below5': categoryTitle = 'Less than 5 days'; break;
+        case 'below10': categoryTitle = '5-9 days'; break;
+        case 'below15': categoryTitle = '10-14 days'; break;
+        case 'below20': categoryTitle = '15-19 days'; break;
+        case 'below25': categoryTitle = '20-24 days'; break;
+        case 'below30': categoryTitle = '25-29 days'; break;
+        case 'above30': categoryTitle = '30+ days'; break;
+        case 'total': categoryTitle = 'All Categories'; break;
+      }
+      
+      switch(statusType) {
+        case 'total': statusTitle = 'All Students'; break;
+        case 'willregister': statusTitle = 'Will Register'; break;
+        case 'kiv': statusTitle = 'KIV Students'; break;
+        case 'convert': statusTitle = 'Convert Students'; break;
+        case 'active': statusTitle = 'Active Students'; break;
+        case 'rejected': statusTitle = 'Rejected Students'; break;
+        case 'others': statusTitle = 'Other Status'; break;
+      }
+      
+      $('#modalCategoryTitle').text(categoryTitle + ' - ' + statusTitle);
+      $('#modalStudentCount').text('Total: ' + count + ' students');
+      
+      // Prepare request data
+      const requestData = {
+        from: from,
+        to: to,
+        category: category,
+        status_type: statusType,
+        _token: $('meta[name="csrf-token"]').attr('content')
+      };
+      
+      // Add optional filters
+      if (session && session !== '-') {
+        requestData.session = session;
+      }
+      if (EA && EA !== '-') {
+        requestData.EA = EA;
+      }
+      if (!convert) {
+        requestData.convert = 'false';
+      }
+      if (!offered) {
+        requestData.offered = 'false';
+      }
+      
+      // Make AJAX request
+      $.ajax({
+        url: '/AR/reportR/getAgingStudents',
+        method: 'POST',
+        data: requestData,
+        success: function(response) {
+          $('#modalLoadingSpinner').hide();
+          
+          if (response.success && response.students) {
+            populateStudentTable(response.students, response.qualifications);
+            $('#studentListContainer').show();
+            $('#exportModalStudents').show();
+          } else {
+            showError('No students found for the selected criteria.');
+            $('#exportModalStudents').hide();
+          }
+        },
+        error: function(xhr) {
+          $('#modalLoadingSpinner').hide();
+          let errorMessage = 'An error occurred while loading student data.';
+          
+          if (xhr.responseJSON && xhr.responseJSON.message) {
+            errorMessage = xhr.responseJSON.message;
+          }
+          
+          showError(errorMessage);
+        }
+      });
+    });
+    
+    function populateStudentTable(students, qualifications) {
+      const tbody = $('#modalStudentTableBody');
+      tbody.empty();
+      
+      if (students.length === 0) {
+        tbody.append('<tr><td colspan="8" class="text-center">No students found</td></tr>');
+        return;
+      }
+      
+      students.forEach((student, index) => {
+        const qualification = qualifications[student.ic] || 'N/A';
+        const phone = student.no_tel || 'N/A';
+        const gender = student.sex || 'N/A';
+        const program = student.progcode || 'N/A';
+        const session = student.SessionName || 'N/A';
+        
+        const row = `
+          <tr>
+            <td>${index + 1}</td>
+            <td>${student.name}</td>
+            <td>${student.ic}</td>
+            <td>${student.no_matric || 'N/A'}</td>
+            <td>${phone}</td>
+            <td>${gender}</td>
+            <td>${program}</td>
+            <td>${session}</td>
+          </tr>
+        `;
+        tbody.append(row);
+      });
+    }
+    
+    function showError(message) {
+      $('#modalErrorMessage').text(message).show();
+      $('#studentListContainer').hide();
+    }
+    
+    // Export functionality for modal
+    $('#exportModalStudents').click(function() {
+      const students = [];
+      $('#modalStudentTable tbody tr').each(function() {
+        const cells = $(this).find('td');
+        if (cells.length > 1) { // Skip "no students found" row
+          const student = [];
+          cells.each(function() {
+            student.push($(this).text().trim());
+          });
+          students.push(student);
+        }
+      });
+      
+      if (students.length === 0) {
+        alert('No data to export');
+        return;
+      }
+      
+      // Create Excel export
+      const headers = ['No.', 'Name', 'IC No.', 'Matric No.', 'Phone', 'Gender', 'Program', 'Session'];
+      const data = [headers, ...students];
+      
+      const ws = XLSX.utils.aoa_to_sheet(data);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Student List');
+      
+      const fileName = 'Aging_Report_Students_' + new Date().toISOString().split('T')[0] + '.xlsx';
+      XLSX.writeFile(wb, fileName);
+    });
+  });
   </script>
 @endsection
