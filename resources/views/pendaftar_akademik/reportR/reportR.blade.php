@@ -1444,12 +1444,17 @@
   $(document).ready(function() {
     // Handle clicks on clickable counts in aging report
     $(document).on('click', '.clickable-count', function() {
+      console.log('Clickable count clicked!'); // Debug log
+      
       const category = $(this).data('category');
       const statusType = $(this).data('status');
       const count = $(this).text().trim();
       
+      console.log('Category:', category, 'Status:', statusType, 'Count:', count); // Debug log
+      
       // Only proceed if count is greater than 0
       if (parseInt(count) === 0) {
+        console.log('Count is 0, returning'); // Debug log
         return;
       }
       
@@ -1675,4 +1680,108 @@
     });
   });
   </script>
+
+<!-- Student List Modal -->
+<div class="modal fade" id="studentListModal" tabindex="-1" aria-labelledby="studentListModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="studentListModalLabel">Student List</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div id="modalLoadingSpinner" class="text-center" style="display: none;">
+          <div class="fa fa-spinner fa-spin fa-2x" role="status"></div>
+          <p class="mt-2">Loading students...</p>
+        </div>
+        
+        <div id="modalErrorMessage" class="alert alert-danger" style="display: none;"></div>
+        
+        <div id="studentListContainer" style="display: none;">
+          <div class="mb-3">
+            <h6 id="modalCategoryTitle"></h6>
+            <p class="text-muted mb-0" id="modalStudentCount"></p>
+          </div>
+          
+          <div class="table-responsive">
+            <table id="modalStudentTable" class="table table-striped table-bordered">
+              <thead class="table-dark">
+                <tr>
+                  <th style="width: 5%">No.</th>
+                  <th style="width: 20%">Name</th>
+                  <th style="width: 15%">IC No.</th>
+                  <th style="width: 15%">Matric No.</th>
+                  <th style="width: 12%">Phone</th>
+                  <th style="width: 10%">Gender</th>
+                  <th style="width: 15%">Program</th>
+                  <th style="width: 8%">Session</th>
+                </tr>
+              </thead>
+              <tbody id="modalStudentTableBody">
+                <!-- Student data will be populated here -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" id="exportModalStudents" style="display: none;">
+          <i class="fa fa-download"></i> Export to Excel
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Custom CSS for aging report modal -->
+<style>
+  .modal-xl {
+    max-width: 90% !important;
+  }
+  
+  #modalStudentTable {
+    font-size: 0.9em;
+  }
+  
+  #modalStudentTable th {
+    background-color: #343a40 !important;
+    color: white !important;
+    border-color: #343a40 !important;
+    font-weight: 600;
+    text-align: center;
+  }
+  
+  #modalStudentTable td {
+    vertical-align: middle;
+    border-color: #dee2e6;
+  }
+  
+  #modalStudentTable tbody tr:hover {
+    background-color: #f8f9fa;
+  }
+  
+  .modal-header {
+    background-color: #007bff;
+    color: white;
+  }
+  
+  .modal-header .close {
+    color: white;
+  }
+  
+  #modalCategoryTitle {
+    color: #495057;
+    font-weight: 600;
+    margin-bottom: 5px;
+  }
+  
+  #modalStudentCount {
+    color: #6c757d;
+    font-size: 0.9em;
+  }
+</style>
+
 @endsection
