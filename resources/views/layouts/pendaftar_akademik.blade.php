@@ -385,6 +385,7 @@ li a {
 						<li><a href="{{ route('pendaftar_akademik.miniTranscript') }}" class="{{ (route('pendaftar_akademik.miniTranscript') == Request::url()) ? 'active' : ''}}">Mini Transcript</a></li>
 						<li><a href="{{ route('pendaftar_akademik.resultOverall') }}" class="{{ (route('pendaftar_akademik.resultOverall') == Request::url()) ? 'active' : ''}}">Result Filter</a></li>
 						<li><a href="{{ route('pendaftar_akademik.assessmentFilter') }}" class="{{ (route('pendaftar_akademik.assessmentFilter') == Request::url()) ? 'active' : ''}}">Assessment Filter</a></li>
+						<li><a href="{{ route('pendaftar_akademik.slipFilter') }}" class="{{ (route('pendaftar_akademik.slipFilter') == Request::url()) ? 'active' : ''}}">Slip Exam Filter</a></li>
 					</ul>
 				</li>
 				<li class="treeview">
@@ -456,6 +457,10 @@ li a {
 				  </script>
 				<li>
 					<a href="{{ route('posting.staff') }}" class="{{ (route('posting.staff') == Request::url()) ? 'active' : ''}}"><i data-feather="tv"></i><span>Posting</span></a>
+				</li> 
+
+				<li>
+					<a href="{{ route('all.pdf.export.index') }}" class="{{ (route('all.pdf.export.index') == Request::url()) ? 'active' : ''}}"><i data-feather="file-text"></i><span>PDF Export</span></a>
 				</li> 
 			  </ul>
 			  <div class="sidebar-widgets">
