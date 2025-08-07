@@ -3130,7 +3130,11 @@ $content .= '</tr>
                                 ['sessionid', Session::get('SessionID')]
                             ])->exists()){
                                 //dd($totalquiz);
-                                $overallquiz[$ky][$keys] = number_format((float)$sumquiz[$ky][$keys] / $totalquiz * $percentquiz->mark_percentage, 2, '.', '');
+                                if ($totalquiz > 0) {
+                                    $overallquiz[$ky][$keys] = number_format((float)$sumquiz[$ky][$keys] / $totalquiz * $percentquiz->mark_percentage, 2, '.', '');
+                                } else {
+                                    $overallquiz[$ky][$keys] = 0;
+                                }
 
                                 $quizcollection = collect($overallquiz[$ky]);
                             }else{
@@ -3186,7 +3190,11 @@ $content .= '</tr>
                                 ['sessionid', Session::get('SessionID')]
                             ])->exists()){
                                 //dd($totaltest);
-                                $overalltest[$ky][$keys] = number_format((float)$sumtest[$ky][$keys] / $totaltest * $percenttest->mark_percentage, 2, '.', '');
+                                if ($totaltest > 0) {
+                                    $overalltest[$ky][$keys] = number_format((float)$sumtest[$ky][$keys] / $totaltest * $percenttest->mark_percentage, 2, '.', '');
+                                } else {
+                                    $overalltest[$ky][$keys] = 0;
+                                }
 
                                 $testcollection = collect($overalltest[$ky]);
                             }else{
@@ -3241,7 +3249,11 @@ $content .= '</tr>
                                 ['sessionid', Session::get('SessionID')]
                             ])->exists()){
                                 //dd($totaltest);
-                                $overalltest2[$ky][$keys] = number_format((float)$sumtest2[$ky][$keys] / $totaltest2 * $percenttest2->mark_percentage, 2, '.', '');
+                                if ($totaltest2 > 0) {
+                                    $overalltest2[$ky][$keys] = number_format((float)$sumtest2[$ky][$keys] / $totaltest2 * $percenttest2->mark_percentage, 2, '.', '');
+                                } else {
+                                    $overalltest2[$ky][$keys] = 0;
+                                }
 
                                 $test2collection = collect($overalltest2[$ky]);
                             }else{
@@ -3301,7 +3313,7 @@ $content .= '</tr>
                                 {
                                     // dd('error detectedsssss');
 
-                                    $overallassign[$ky][$keys] = null; // or any default value or handling logic
+                                    $overallassign[$ky][$keys] = 0; // or any default value or handling logic
                                 }
                                 else{
                                     $overallassign[$ky][$keys] = number_format((float)$sumassign[$ky][$keys] / $totalassign * $percentassign->mark_percentage, 2, '.', '');
@@ -3360,7 +3372,11 @@ $content .= '</tr>
                                 ['sessionid', Session::get('SessionID')]
                             ])->exists()){
                                 //dd($totalextra);
-                                $overallextra[$ky][$keys] = number_format((float)$sumextra[$ky][$keys] / $totalextra * $percentextra->mark_percentage, 2, '.', '');
+                                if ($totalextra > 0) {
+                                    $overallextra[$ky][$keys] = number_format((float)$sumextra[$ky][$keys] / $totalextra * $percentextra->mark_percentage, 2, '.', '');
+                                } else {
+                                    $overallextra[$ky][$keys] = 0;
+                                }
 
                                 $extracollection = collect($overallextra[$ky]);
                             }else{
@@ -3470,7 +3486,11 @@ $content .= '</tr>
                                 ['sessionid', Session::get('SessionID')]
                             ])->exists()){
                                 //dd($totalmidterm);
-                                $overallmidterm[$ky][$keys] = number_format((float)$summidterm[$ky][$keys] / $totalmidterm * $percentmidterm->mark_percentage, 2, '.', '');
+                                if ($totalmidterm > 0) {
+                                    $overallmidterm[$ky][$keys] = number_format((float)$summidterm[$ky][$keys] / $totalmidterm * $percentmidterm->mark_percentage, 2, '.', '');
+                                } else {
+                                    $overallmidterm[$ky][$keys] = 0;
+                                }
 
                                 $midtermcollection = collect($overallmidterm[$ky]);
                             }else{
@@ -3525,14 +3545,18 @@ $content .= '</tr>
                                 ['sessionid', Session::get('SessionID')]
                             ])->exists()){
                                 //dd($totalfinal);
-                                $overallfinal[$ky][$keys] = number_format((float)$sumfinal[$ky][$keys] / $totalfinal * $percentfinal->mark_percentage, 2, '.', '');
+                                if ($totalfinal > 0) {
+                                    $overallfinal[$ky][$keys] = number_format((float)$sumfinal[$ky][$keys] / $totalfinal * $percentfinal->mark_percentage, 2, '.', '');
+                                } else {
+                                    $overallfinal[$ky][$keys] = 0;
+                                }
 
                                 $finalcollection = collect($overallfinal[$ky]);
                             }else{
                                 $overallfinal[$ky][$keys] = 0;
 
                                 $finalcollection = collect($overallfinal[$ky]);
-                            }
+            }
             
                         }else{
                             $overallfinal[$ky][$keys] = 0;
@@ -4651,7 +4675,11 @@ $content .= '</tr>
                                 ['sessionid', $grp->session_id]
                             ])->exists()){
                                 //dd($totalquiz);
-                                $overallquiz[$ky][$keys] = number_format((float)$sumquiz[$ky][$keys] / $totalquiz * $percentquiz->mark_percentage, 2, '.', '');
+                                if ($totalquiz > 0) {
+                                    $overallquiz[$ky][$keys] = number_format((float)$sumquiz[$ky][$keys] / $totalquiz * $percentquiz->mark_percentage, 2, '.', '');
+                                } else {
+                                    $overallquiz[$ky][$keys] = 0;
+                                }
                             }else{
                                 $overallquiz[$ky][$keys] = 0;
                             }
@@ -4698,7 +4726,11 @@ $content .= '</tr>
                                 ['sessionid', $grp->session_id]
                             ])->exists()){
                                 //dd($totaltest);
-                                $overalltest[$ky][$keys] = number_format((float)$sumtest[$ky][$keys] / $totaltest * $percenttest->mark_percentage, 2, '.', '');
+                                if ($totaltest > 0) {
+                                    $overalltest[$ky][$keys] = number_format((float)$sumtest[$ky][$keys] / $totaltest * $percenttest->mark_percentage, 2, '.', '');
+                                } else {
+                                    $overalltest[$ky][$keys] = 0;
+                                }
 
                                 $testcollection = collect($overalltest[$ky]);
                             }else{
@@ -4754,7 +4786,11 @@ $content .= '</tr>
                                 ['sessionid', $grp->session_id]
                             ])->exists()){
                                 //dd($totalassign);
-                                $overallassign[$ky][$keys] = number_format((float)$sumassign[$ky][$keys] / $totalassign * $percentassign->mark_percentage, 2, '.', '');
+                                if ($totalassign > 0) {
+                                    $overallassign[$ky][$keys] = number_format((float)$sumassign[$ky][$keys] / $totalassign * $percentassign->mark_percentage, 2, '.', '');
+                                } else {
+                                    $overallassign[$ky][$keys] = 0;
+                                }
                             }else{
                                $overallassign[$ky][$keys] = 0;
                             }
@@ -4801,7 +4837,11 @@ $content .= '</tr>
                                 ['sessionid', $grp->session_id]
                             ])->exists()){
                                 //dd($totalextra);
-                                $overallextra[$ky][$keys] = number_format((float)$sumextra[$ky][$keys] / $totalextra * $percentextra->mark_percentage, 2, '.', '');
+                                if ($totalextra > 0) {
+                                    $overallextra[$ky][$keys] = number_format((float)$sumextra[$ky][$keys] / $totalextra * $percentextra->mark_percentage, 2, '.', '');
+                                } else {
+                                    $overallextra[$ky][$keys] = 0;
+                                }
                             }else{
                                 $overallextra[$ky][$keys] = 0;
                             }
@@ -4847,7 +4887,11 @@ $content .= '</tr>
                                 ['sessionid', $grp->session_id]
                             ])->exists()){
                                 //dd($totalother);
-                                $overallother[$ky][$keys] = number_format((float)$sumother[$ky][$keys] / $totalother * $percentother->mark_percentage, 2, '.', '');
+                                if ($totalother > 0) {
+                                    $overallother[$ky][$keys] = number_format((float)$sumother[$ky][$keys] / $totalother * $percentother->mark_percentage, 2, '.', '');
+                                } else {
+                                    $overallother[$ky][$keys] = 0;
+                                }
                             }else{
                                 $overallother[$ky][$keys] = 0;
                             }
@@ -4893,7 +4937,11 @@ $content .= '</tr>
                                 ['sessionid', $grp->session_id]
                             ])->exists()){
                                 //dd($totalmidterm);
-                                $overallmidterm[$ky][$keys] = number_format((float)$summidterm[$ky][$keys] / $totalmidterm * $percentmidterm->mark_percentage, 2, '.', '');
+                                if ($totalmidterm > 0) {
+                                    $overallmidterm[$ky][$keys] = number_format((float)$summidterm[$ky][$keys] / $totalmidterm * $percentmidterm->mark_percentage, 2, '.', '');
+                                } else {
+                                    $overallmidterm[$ky][$keys] = 0;
+                                }
                             }else{
                                 $overallmidterm[$ky][$keys] = 0;
                             }
@@ -4940,7 +4988,11 @@ $content .= '</tr>
                                 ['sessionid', $grp->session_id]
                             ])->exists()){
                                 //dd($totalfinal);
-                                $overallfinal[$ky][$keys] = number_format((float)$sumfinal[$ky][$keys] / $totalfinal * $percentfinal->mark_percentage, 2, '.', '');
+                                if ($totalfinal > 0) {
+                                    $overallfinal[$ky][$keys] = number_format((float)$sumfinal[$ky][$keys] / $totalfinal * $percentfinal->mark_percentage, 2, '.', '');
+                                } else {
+                                    $overallfinal[$ky][$keys] = 0;
+                                }
                             }else{
                                 $overallfinal[$ky][$keys] = 0;
                             }
