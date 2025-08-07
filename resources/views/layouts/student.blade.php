@@ -254,11 +254,21 @@
                     </a>
                   </li>
                   @endif
+
+                  @php
+                  $range = DB::table('tblslip_period')->first();
+                  $now = now();
+                  $program_list = DB::table('tblslip_program')->pluck('program_id')->toArray();
+                  $session_list = DB::table('tblslip_session')->pluck('session_id')->toArray();
+                  $semester_list = DB::table('tblslip_semester')->pluck('semester_id')->toArray();
+                  @endphp
                   
+                  @if($now >= $range->Start && $now <= $range->End && in_array(Auth::guard('student')->user()->program, $program_list) && in_array(Auth::guard('student')->user()->session, $session_list) && in_array(Auth::guard('student')->user()->semester, $semester_list))
                   <!-- Exam Slip Link -->
                   <li>
                     <a id="examSlipLink" href="#" target="_blank">Slip Exam</a>
                   </li>
+                  @endif
                   {{-- <li>
                     <a href="{{ asset('storage/memo/2025.01.07 - Memo 01 Ketetapan Mod Pengajian Kuliah Kolej UNITI bagi Sesi 20242025-II.pdf') }}" target="_blank">
                       <span>Memo</span>

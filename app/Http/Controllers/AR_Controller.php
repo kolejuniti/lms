@@ -5994,6 +5994,64 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
 
     }
 
+    public function slipFilter()
+    {
+        $data = [
+            'program' => DB::table('tblprogramme')->get(),
+            'session' => DB::table('sessions')->get(),
+            'semester' => DB::table('semester')->get(),
+            'period' => DB::table('tblslip_period')->first(),
+            'program_data' => DB::table('tblslip_program')->get(),
+            'session_data' => DB::table('tblslip_session')->get(),
+            'semester_data' => DB::table('tblslip_semester')->get()
+        ];
+
+        return view('pendaftar_akademik.student.slip_filter.slipFilter', compact('data'));
+
+    }
+
+    public function slipFilterSubmit(Request $request)
+    {
+
+        $data = json_decode($request->submitData);
+
+        DB::table('tblslip_period')->upsert([
+            'id' => 1,
+            'Start' => $data->from,
+            'END' => $data->to
+        ],['id']);
+
+        DB::table('tblslip_program')->truncate();
+
+        DB::table('tblslip_session')->truncate();
+
+        DB::table('tblslip_semester')->truncate();
+
+        foreach($data->program as $prg)
+        {
+            DB::table('tblslip_program')->insert([
+                'program_id' => $prg
+            ]);
+        }
+
+        foreach($data->session as $ses)
+        {
+            DB::table('tblslip_session')->insert([
+                'session_id' => $ses
+            ]);
+        }
+
+        foreach($data->semester as $sem)
+        {
+            DB::table('tblslip_semester')->insert([
+                'semester_id' => $sem
+            ]);
+        }
+
+        return response()->json(['success' => 'Data has been updated successfully!']);
+
+    }
+
     public function assessmentFilter()
     {
         $data = [
