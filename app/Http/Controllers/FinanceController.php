@@ -12350,6 +12350,8 @@ class FinanceController extends Controller
                 $totalFee = 0;
                 $totalPayment = 0;
                 $totalBalance = 0;
+
+                $bil = 1;
                 
                 foreach($data['student'] as $key => $std){
                     //$registered = ($std->status == 'ACTIVE') ? 'checked' : '';
@@ -12357,7 +12359,7 @@ class FinanceController extends Controller
                     $content .= '
                     <tr>
                         <td>
-                        '. $key+1 .'
+                        '. $bil .'
                         </td>
                         <td>
                         '. $std->name .'
@@ -12432,6 +12434,9 @@ class FinanceController extends Controller
 
                         }
         $content .='</tr>';
+
+                    $bil++;
+                    
                     }
                 
                 // Add totals row
