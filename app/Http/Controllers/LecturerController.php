@@ -3112,6 +3112,8 @@ $content .= '</tr>
                                 ->orderBy('tblclassmarks.id', 'desc')
                                 ->first();
 
+                    dd($percentquiz);
+
                     if($quizs = DB::table('tblclassquiz')
                     ->join('tblclassquiz_group', 'tblclassquiz.id', 'tblclassquiz_group.quizid')
                     ->where([
