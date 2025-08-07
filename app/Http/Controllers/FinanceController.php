@@ -12298,7 +12298,7 @@ class FinanceController extends Controller
                 $content .= '<thead>
                                 <tr>
                                     <th>
-                                        Nozzzz
+                                        No
                                     </th>
                                     <th>
                                         Name
