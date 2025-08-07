@@ -223,6 +223,8 @@
                       $('#complex_header').DataTable({
                         dom: 'lBfrtip', // if you remove this line you will see the show entries dropdown
                         paging: false,
+                        ordering: false, // Disable sorting to preserve manual numbering
+                        info: false, // Hide the "Showing X of Y entries" info
 
                         buttons: [
                             {
