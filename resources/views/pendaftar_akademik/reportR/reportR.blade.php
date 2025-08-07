@@ -1566,7 +1566,7 @@
       tbody.empty();
       
       if (students.length === 0) {
-        tbody.append('<tr><td colspan="8" class="text-center">No students found</td></tr>');
+        tbody.append('<tr><td colspan="9" class="text-center">No students found</td></tr>');
         return;
       }
       
@@ -1576,6 +1576,7 @@
         const gender = student.sex || 'N/A';
         const program = student.progcode || 'N/A';
         const session = student.SessionName || 'N/A';
+        const ea = student.ea || 'N/A';
         
         const row = `
           <tr>
@@ -1587,6 +1588,7 @@
             <td>${gender}</td>
             <td>${program}</td>
             <td>${session}</td>
+            <td>${ea}</td>
           </tr>
         `;
         tbody.append(row);
@@ -1709,14 +1711,15 @@
             <table id="modalStudentTable" class="table table-striped table-bordered">
               <thead class="table-dark">
                 <tr>
-                  <th style="width: 5%">No.</th>
-                  <th style="width: 20%">Name</th>
-                  <th style="width: 15%">IC No.</th>
-                  <th style="width: 15%">Matric No.</th>
-                  <th style="width: 12%">Phone</th>
-                  <th style="width: 10%">Gender</th>
-                  <th style="width: 15%">Program</th>
+                  <th style="width: 4%">No.</th>
+                  <th style="width: 18%">Name</th>
+                  <th style="width: 12%">IC No.</th>
+                  <th style="width: 12%">Matric No.</th>
+                  <th style="width: 10%">Phone</th>
+                  <th style="width: 8%">Gender</th>
+                  <th style="width: 12%">Program</th>
                   <th style="width: 8%">Session</th>
+                  <th style="width: 16%">EA</th>
                 </tr>
               </thead>
               <tbody id="modalStudentTableBody">
