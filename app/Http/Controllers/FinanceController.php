@@ -12298,7 +12298,7 @@ class FinanceController extends Controller
                 $content .= '<thead>
                                 <tr>
                                     <th>
-                                        No
+                                        Nozzzz
                                     </th>
                                     <th>
                                         Name
@@ -12436,7 +12436,7 @@ class FinanceController extends Controller
         $content .='</tr>';
 
                     $bil++;
-                    
+
                     }
                 
                 // Add totals row
