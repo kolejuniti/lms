@@ -136,13 +136,30 @@
                                   <td>
                                         {{ empty($sts) ? '-' : $sts->final_mark }} / {{ $qz->total_mark }}
                                   </td>
-                                  @php
-              
-                                    $period = DB::table('tblassessment_period')->first();
-
-                                  @endphp
+                                                                      @php
+                                      // Get active assessment period for current user and session
+                                      $currentDate = now()->format('Y-m-d');
+                                      $currentUserIc = auth()->user()->ic;
+                                      $currentSessionId = Session::get('SessionID');
+                                      
+                                      $period = null;
+                                      if ($currentSessionId) {
+                                          $period = DB::table('tblassessment_period')
+                                              ->where('Start', '<=', $currentDate)
+                                              ->where('End', '>=', $currentDate)
+                                              ->get()
+                                              ->filter(function ($p) use ($currentUserIc, $currentSessionId) {
+                                                  $userIcs = json_decode($p->user_ic, true) ?: [];
+                                                  $sessions = json_decode($p->session, true) ?: [];
+                                                  
+                                                  return in_array($currentUserIc, $userIcs) && 
+                                                         in_array($currentSessionId, $sessions);
+                                              })
+                                              ->first();
+                                      }
+                                    @endphp
                                   <td class="project-actions text-center" >
-                                    <a class="btn btn-success btn-sm mr-2" href="/lecturer/paperwork/{{ request()->paperwork }}/{{ $sts->userid }}/result" {{ !empty($period) ? ($period && \Carbon\Carbon::parse(now())->format('Y-m-d') >= \Carbon\Carbon::parse($period->Start)->format('Y-m-d') && \Carbon\Carbon::parse(now())->format('Y-m-d') <= \Carbon\Carbon::parse($period->End)->format('Y-m-d') && in_array(auth()->user()->ic, json_decode($period->user_ic)) && in_array(Session::get('SessionID'), json_decode($period->session)) ? '' : 'hidden') : ''}}>
+                                    <a class="btn btn-success btn-sm mr-2" href="/lecturer/paperwork/{{ request()->paperwork }}/{{ $sts->userid }}/result" {{ !empty($period) ? '' : 'hidden' }}>
                                         <i class="ti-user">
                                         </i>
                                         Students

@@ -6057,7 +6057,9 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
         $data = [
             'session' => DB::table('sessions')->get(),
             'lecturer' => DB::table('users')->whereIn('usrtype', ['LCT', 'AO', 'PL'])->get(),
-            'period' => DB::table('tblassessment_period')->first()
+            'periods' => DB::table('tblassessment_period')
+                        ->orderBy('created_at', 'desc')
+                        ->get()
         ];
 
         return view('pendaftar_akademik.student.assessment_filter.assessmentFilter', compact('data'));
@@ -6067,16 +6069,59 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
     {
         $data = json_decode($request->submitData);
 
-        DB::table('tblassessment_period')->upsert([
-            'id' => 1,
+        // Insert new record instead of updating existing one
+        DB::table('tblassessment_period')->insert([
             'Start' => $data->from,
-            'END' => $data->to,
+            'End' => $data->to,
             'session' => json_encode($data->session),
-            'user_ic' => json_encode($data->lecturer)
-        ],['id']);
+            'user_ic' => json_encode($data->lecturer),
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
+
+        return response()->json(['success' => 'Data has been saved successfully!']);
+
+    }
+
+    public function assessmentFilterEdit(Request $request, $id)
+    {
+        $data = json_decode($request->submitData);
+
+        DB::table('tblassessment_period')
+            ->where('id', $id)
+            ->update([
+                'Start' => $data->from,
+                'End' => $data->to,
+                'session' => json_encode($data->session),
+                'user_ic' => json_encode($data->lecturer),
+                'updated_at' => now()
+            ]);
 
         return response()->json(['success' => 'Data has been updated successfully!']);
+    }
 
+    public function assessmentFilterDelete(Request $request, $id)
+    {
+        DB::table('tblassessment_period')
+            ->where('id', $id)
+            ->delete();
+
+        return response()->json(['success' => 'Data has been deleted successfully!']);
+    }
+
+    public function assessmentFilterGet(Request $request, $id)
+    {
+        $period = DB::table('tblassessment_period')
+                    ->where('id', $id)
+                    ->first();
+
+        if ($period) {
+            // Decode JSON data for frontend
+            $period->session = json_decode($period->session);
+            $period->user_ic = json_decode($period->user_ic);
+        }
+
+        return response()->json($period);
     }
 
     public function studentCertificate()

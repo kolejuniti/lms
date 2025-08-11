@@ -257,6 +257,9 @@ Route::get('/AR/student/slipFilter', [App\Http\Controllers\AR_Controller::class,
 Route::post('/AR/student/slipFilter/submit', [App\Http\Controllers\AR_Controller::class, 'slipFilterSubmit']);
 Route::get('/AR/student/assessmentFilter', [App\Http\Controllers\AR_Controller::class, 'assessmentFilter'])->name('pendaftar_akademik.assessmentFilter');
 Route::post('/AR/student/assessmentFilter/submit', [App\Http\Controllers\AR_Controller::class, 'assessmentFilterSubmit']);
+Route::get('/AR/student/assessmentFilter/get/{id}', [App\Http\Controllers\AR_Controller::class, 'assessmentFilterGet']);
+Route::post('/AR/student/assessmentFilter/edit/{id}', [App\Http\Controllers\AR_Controller::class, 'assessmentFilterEdit']);
+Route::delete('/AR/student/assessmentFilter/delete/{id}', [App\Http\Controllers\AR_Controller::class, 'assessmentFilterDelete']);
 Route::get('/AR/student/certificate', [App\Http\Controllers\AR_Controller::class, 'studentCertificate'])->name('pendaftar_akademik.student.certificate');
 Route::post('/AR/student/certificate/search', [App\Http\Controllers\AR_Controller::class, 'searchStudentForCertificate']);
 Route::post('/AR/student/certificate/generate', [App\Http\Controllers\AR_Controller::class, 'generateCertificateNumber']);
