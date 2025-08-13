@@ -175,6 +175,35 @@ class LecturerController extends Controller
 
     }
 
+    /**
+     * Get active assessment period for current user and session
+     */
+    private function getActiveAssessmentPeriod()
+    {
+        $currentDate = now()->format('Y-m-d');
+        $currentUserIc = auth()->user()->ic;
+        $currentSessionId = Session::get('SessionID');
+
+        if (!$currentSessionId) {
+            return null;
+        }
+
+        $period = DB::table('tblassessment_period')
+            ->where('Start', '<=', $currentDate)
+            ->where('End', '>=', $currentDate)
+            ->get()
+            ->filter(function ($period) use ($currentUserIc, $currentSessionId) {
+                $userIcs = json_decode($period->user_ic, true) ?: [];
+                $sessions = json_decode($period->session, true) ?: [];
+                
+                return in_array($currentUserIc, $userIcs) && 
+                       in_array($currentSessionId, $sessions);
+            })
+            ->first();
+
+        return $period;
+    }
+
     public function courseSummary()
     {
         //$group = Auth::user()->subjects()->where('course_id', request()->id)->get();
@@ -3131,7 +3160,7 @@ $content .= '</tr>
                             ])->exists()){
                                 //dd($totalquiz);
                                 if ($totalquiz > 0) {
-                                    $overallquiz[$ky][$keys] = number_format((float)$sumquiz[$ky][$keys] / $totalquiz * $percentquiz->mark_percentage, 2, '.', '');
+                                    $overallquiz[$ky][$keys] = round(number_format((float)$sumquiz[$ky][$keys] / $totalquiz * $percentquiz->mark_percentage, 2, '.', ''), 1);
                                 } else {
                                     $overallquiz[$ky][$keys] = 0;
                                 }
@@ -3191,7 +3220,7 @@ $content .= '</tr>
                             ])->exists()){
                                 //dd($totaltest);
                                 if ($totaltest > 0) {
-                                    $overalltest[$ky][$keys] = number_format((float)$sumtest[$ky][$keys] / $totaltest * $percenttest->mark_percentage, 2, '.', '');
+                                    $overalltest[$ky][$keys] = round(number_format((float)$sumtest[$ky][$keys] / $totaltest * $percenttest->mark_percentage, 2, '.', ''), 1);
                                 } else {
                                     $overalltest[$ky][$keys] = 0;
                                 }
@@ -3250,7 +3279,7 @@ $content .= '</tr>
                             ])->exists()){
                                 //dd($totaltest);
                                 if ($totaltest2 > 0) {
-                                    $overalltest2[$ky][$keys] = number_format((float)$sumtest2[$ky][$keys] / $totaltest2 * $percenttest2->mark_percentage, 2, '.', '');
+                                    $overalltest2[$ky][$keys] = round(number_format((float)$sumtest2[$ky][$keys] / $totaltest2 * $percenttest2->mark_percentage, 2, '.', ''), 1);
                                 } else {
                                     $overalltest2[$ky][$keys] = 0;
                                 }
@@ -3316,7 +3345,7 @@ $content .= '</tr>
                                     $overallassign[$ky][$keys] = 0; // or any default value or handling logic
                                 }
                                 else{
-                                    $overallassign[$ky][$keys] = number_format((float)$sumassign[$ky][$keys] / $totalassign * $percentassign->mark_percentage, 2, '.', '');
+                                    $overallassign[$ky][$keys] = round(number_format((float)$sumassign[$ky][$keys] / $totalassign * $percentassign->mark_percentage, 2, '.', ''), 1);
                                 }
 
                                 $assigncollection = collect($overallassign[$ky]);
@@ -3373,7 +3402,7 @@ $content .= '</tr>
                             ])->exists()){
                                 //dd($totalextra);
                                 if ($totalextra > 0) {
-                                    $overallextra[$ky][$keys] = number_format((float)$sumextra[$ky][$keys] / $totalextra * $percentextra->mark_percentage, 2, '.', '');
+                                    $overallextra[$ky][$keys] = round(number_format((float)$sumextra[$ky][$keys] / $totalextra * $percentextra->mark_percentage, 2, '.', ''), 1);
                                 } else {
                                     $overallextra[$ky][$keys] = 0;
                                 }
@@ -3431,7 +3460,7 @@ $content .= '</tr>
                                 ['sessionid', Session::get('SessionID')]
                             ])->exists()){
                                 //dd($totalother);
-                                $overallother[$ky][$keys] = number_format((float)$sumother[$ky][$keys], 2, '.', '');
+                                $overallother[$ky][$keys] = round(number_format((float)$sumother[$ky][$keys], 2, '.', ''), 1);
 
                                 $othercollection = collect($overallother[$ky]);
                             }else{
@@ -3487,7 +3516,7 @@ $content .= '</tr>
                             ])->exists()){
                                 //dd($totalmidterm);
                                 if ($totalmidterm > 0) {
-                                    $overallmidterm[$ky][$keys] = number_format((float)$summidterm[$ky][$keys] / $totalmidterm * $percentmidterm->mark_percentage, 2, '.', '');
+                                    $overallmidterm[$ky][$keys] = round(number_format((float)$summidterm[$ky][$keys] / $totalmidterm * $percentmidterm->mark_percentage, 2, '.', ''), 1);
                                 } else {
                                     $overallmidterm[$ky][$keys] = 0;
                                 }
@@ -3546,7 +3575,7 @@ $content .= '</tr>
                             ])->exists()){
                                 //dd($totalfinal);
                                 if ($totalfinal > 0) {
-                                    $overallfinal[$ky][$keys] = number_format((float)$sumfinal[$ky][$keys] / $totalfinal * $percentfinal->mark_percentage, 2, '.', '');
+                                    $overallfinal[$ky][$keys] = round(number_format((float)$sumfinal[$ky][$keys] / $totalfinal * $percentfinal->mark_percentage, 2, '.', ''), 1);
                                 } else {
                                     $overallfinal[$ky][$keys] = 0;
                                 }
