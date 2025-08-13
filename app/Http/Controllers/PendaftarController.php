@@ -1732,9 +1732,17 @@ class PendaftarController extends Controller
 
                 }
 
+                if($newsem == 6)
+                {
+                    $newStatus = 4;
+                }else{
+                    $newStatus = $student->student_status;
+                }
+
                 DB::table('students')->where('no_matric', $matric)->update([
                     'session' => $request->session2,
-                    'semester' => $newsem
+                    'semester' => $newsem,
+                    'student_status' => $newStatus
                 ]);
 
                 $userUpt = UserStudent::where('no_matric', $matric)->first();

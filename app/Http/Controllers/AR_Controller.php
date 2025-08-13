@@ -1517,18 +1517,27 @@ class AR_Controller extends Controller
 
                     }
 
+                    if($newsem == 6)
+                    {
+                        $newStatus = 4;
+                    }else{
+                        $newStatus = $student->student_status;
+                    }
+
                     if($request->withheld != 1)
                     {
 
                         DB::table('students')->where('no_matric', $request->no_matric)->update([
                             'session' => $request->session,
-                            'semester' => $newsem
+                            'semester' => $newsem,
+                            'student_status' => $newStatus
                         ]);
 
                     }else{
 
                         DB::table(  'students')->where('no_matric', $request->no_matric)->update([
-                            'session' => $request->session
+                            'session' => $request->session,
+                            'student_status' => $newStatus
                         ]);
 
                     }
