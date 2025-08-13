@@ -1268,7 +1268,7 @@ class PendaftarController extends Controller
     public function SKKStore(Request $request)
     {
 
-        if($request->class != null && $request->program != null)
+        if($request->class3 != null && $request->program2 != null)
         {
 
             DB::table('tblstudent_skk')->updateOrInsert(
@@ -1276,8 +1276,8 @@ class PendaftarController extends Controller
                 [
                     'registration_no' => $request->registration_no,
                     'hpnm' => $request->hpnm,
-                    'in_field' => $request->class,
-                    'program' => $request->program  
+                    'in_field' => $request->class3,
+                    'program' => $request->program2  
                 ]);
 
         }else{

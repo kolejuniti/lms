@@ -524,11 +524,11 @@
                             <label class="form-label" for="class">Field Type</label>
                             <fieldset>
                                 <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="class2" id="class5" value="0" {{ old('class2', isset($data['skk']) && $data['skk']->in_field == '0' ? '0' : '') == '0' ? 'checked' : '' }}>
+                                    <input class="form-check-input" type="radio" name="class3" id="class5" value="0" {{ old('class3', isset($data['skk']) && $data['skk']->in_field == '0' ? '0' : '') == '0' ? 'checked' : '' }}>
                                     <label for="class5">
                                         In field
                                     </label>
-                                    <input class="form-check-input" type="radio" name="class2" id="class6" value="1" {{ old('class2', isset($data['skk']) && $data['skk']->in_field == '1' ? '1' : '') == '1' ? 'checked' : '' }}>
+                                    <input class="form-check-input" type="radio" name="class3" id="class6" value="1" {{ old('class3', isset($data['skk']) && $data['skk']->in_field == '1' ? '1' : '') == '1' ? 'checked' : '' }}>
                                     <label for="class6">
                                         Public
                                     </label>
