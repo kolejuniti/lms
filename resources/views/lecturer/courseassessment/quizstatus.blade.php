@@ -145,15 +145,26 @@
                                               })
                                               ->first();
                                       }
+                                      
+                                      // Determine if buttons should be visible
+                                      $showButtons = false;
+                                      if (!empty($period)) {
+                                          if ($period->subject == 1) {
+                                              $showButtons = true;
+                                          } else {
+                                              $courseName = Session::get('CourseIDS')->course_name ?? '';
+                                              $showButtons = in_array($courseName, ['LATIHAN INDUSTRI', 'LATIHAN PRAKTIKAL']);
+                                          }
+                                      }
                                     @endphp
                                     <td class="project-actions text-center" >
-                                      <a class="btn btn-success btn-sm mr-2" href="/lecturer/quiz/{{ request()->quiz }}/{{ $sts->userid }}/result" {{ !empty($period) ? '' : 'hidden' }}>
+                                      <a class="btn btn-success btn-sm mr-2" href="/lecturer/quiz/{{ request()->quiz }}/{{ $sts->userid }}/result" {{ $showButtons ? '' : 'hidden' }}>
                                           <i class="ti-pencil-alt">
                                           </i>
                                           Answer
                                       </a>
                                       @if(date('Y-m-d H:i:s') >= $qz->date_from && date('Y-m-d H:i:s') <= $qz->date_to)
-                                      <a class="btn btn-danger btn-sm mr-2" onclick="deleteStdQuiz('{{ $sts->id }}')" {{ !empty($period) ? '' : 'hidden' }}>
+                                      <a class="btn btn-danger btn-sm mr-2" onclick="deleteStdQuiz('{{ $sts->id }}')" {{ $showButtons ? '' : 'hidden' }}>
                                           <i class="ti-trash">
                                           </i>
                                           Delete

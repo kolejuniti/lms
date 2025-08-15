@@ -162,8 +162,19 @@
                       })
                       ->first();
               }
+              
+              // Determine if box-footer should be visible
+              $showFooter = false;
+              if (!empty($period)) {
+                  if ($period->subject == 1) {
+                      $showFooter = true;
+                  } else {
+                      $courseName = Session::get('CourseIDS')->course_name ?? '';
+                      $showFooter = in_array($courseName, ['LATIHAN INDUSTRI', 'LATIHAN PRAKTIKAL']);
+                  }
+              }
               @endphp
-              <div class="box-footer" {{ !empty($period) ? '' : 'hidden' }}>
+              <div class="box-footer" {{ $showFooter ? '' : 'hidden' }}>
                 <div class="pull-right">
                     <button id="savebtn" class="btn btn-primary"><i class="ti-trash"></i> Save</button>
                 </div>

@@ -157,9 +157,20 @@
                                               })
                                               ->first();
                                       }
+                                      
+                                      // Determine if buttons should be visible
+                                      $showButtons = false;
+                                      if (!empty($period)) {
+                                          if ($period->subject == 1) {
+                                              $showButtons = true;
+                                          } else {
+                                              $courseName = Session::get('CourseIDS')->course_name ?? '';
+                                              $showButtons = in_array($courseName, ['LATIHAN INDUSTRI', 'LATIHAN PRAKTIKAL']);
+                                          }
+                                      }
                                     @endphp
                                   <td class="project-actions text-center" >
-                                    <a class="btn btn-success btn-sm mr-2" href="/lecturer/paperwork/{{ request()->paperwork }}/{{ $sts->userid }}/result" {{ !empty($period) ? '' : 'hidden' }}>
+                                    <a class="btn btn-success btn-sm mr-2" href="/lecturer/paperwork/{{ request()->paperwork }}/{{ $sts->userid }}/result" {{ $showButtons ? '' : 'hidden' }}>
                                         <i class="ti-user">
                                         </i>
                                         Students
