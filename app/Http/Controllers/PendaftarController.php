@@ -3507,12 +3507,12 @@ class PendaftarController extends Controller
 
             // Use the base query for studentR2
             $data['studentR2'] = ($baseQuery)()
-                ->wherein('students.status', [2,6,16,17])
+                ->wherein('students.status', [2,6,17])
                 ->get();
 
             // Use the base query for studentR2
             $data['withdraw'] = ($baseQuery)()
-                ->wherein('students.status', [4])
+                ->wherein('students.status', [4,16])
                 ->get();
 
             // Use the base query for studentR2
