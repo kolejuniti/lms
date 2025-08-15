@@ -171,7 +171,7 @@
                                       // Determine if buttons should be visible
                                       $showButtons = false;
                                       if (!empty($period)) {
-                                          if ($period->subject == 1) {
+                                          if ($period->subject == 'ALL') {
                                               $showButtons = true;
                                           } else {
                                               $courseName = Session::get('CourseIDS')->course_name ?? '';
