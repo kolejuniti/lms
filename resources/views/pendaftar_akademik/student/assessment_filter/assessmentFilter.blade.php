@@ -41,7 +41,7 @@
           <b>Select Input</b>
         </div>
         <div class="card-body">
-          <div class="row">
+          <div class="row align-items-center">
             <div class="col-md-6">
                 <div class="form-group">
                 <label class="form-label" for="from">FROM</label>
@@ -74,6 +74,7 @@
                 </select>
               </div>
             </div>
+            
           </div>
           <div class="row">
             <div class="col-md-4">
@@ -93,6 +94,19 @@
                         </option>
                     @endforeach
                 </select>
+              </div>
+            </div>
+            <div class="col-md-4 d-flex align-items-center">
+              <div class="form-group ml-4 ms-4">
+                <label for="subject">Subject:</label>
+                <div>
+                    <input type="radio" id="allsubject" name="subject" value="ALL" checked>
+                    <label for="allsubject">All Subject</label>
+                </div>
+                <div>
+                    <input type="radio" id="li" name="subject" value="LI">
+                    <label for="li">LI Only</label>
+                </div>
               </div>
             </div>
           </div>
@@ -116,6 +130,7 @@
                   <th>End Date</th>
                   <th>Sessions</th>
                   <th>Lecturers</th>
+                  <th>Subject</th>
                   <th>Created</th>
                   <th>Actions</th>
                 </tr>
@@ -152,6 +167,7 @@
                     @endphp
                     {{ implode(', ', $lecturerNames) }}
                   </td>
+                  <td>{{ $period->subject ?? '-' }}</td>
                   <td>{{ $period->created_at ? date('Y-m-d H:i', strtotime($period->created_at)) : '-' }}</td>
                   <td>
                     <button type="button" class="btn btn-warning btn-sm" onclick="editRecord({{ $period->id }})">
@@ -198,6 +214,21 @@
               <div class="form-group">
                 <label class="form-label" for="editTo">TO</label>
                 <input type="date" class="form-control" id="editTo" name="editTo">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label class="form-label" for="editSubject">Subject</label>
+                <div>
+                  <input type="radio" id="editSubjectAll" name="editSubject" value="ALL">
+                  <label for="editSubjectAll">All Subject</label>
+                </div>
+                <div>
+                  <input type="radio" id="editSubjectLi" name="editSubject" value="LI">
+                  <label for="editSubjectLi">LI Only</label>
+                </div>
               </div>
             </div>
           </div>
@@ -280,7 +311,8 @@
             from : $('#from').val(),
             to : $('#to').val(),
             session : $('#session').val(),
-            lecturer : $('#lecturer').val()
+            lecturer : $('#lecturer').val(),
+            subject : $('input[name="subject"]:checked').val()
         };
 
         // Simple form validation
@@ -323,6 +355,7 @@
         $('#to').val('');
         $('#session').val([]).trigger('change');
         $('#lecturer').val([]).trigger('change');
+        $('input[name="subject"][value="ALL"]').prop('checked', true);
     }
 
     function editRecord(id) {
@@ -344,6 +377,10 @@
                     
                     // Set selected lecturers
                     $('#editLecturer').val(data.user_ic);
+
+                    // Set subject radios (default to ALL if null)
+                    var subjectVal = data.subject ? data.subject : 'ALL';
+                    $("input[name='editSubject'][value='" + subjectVal + "']").prop('checked', true);
                     
                     $('#editModal').modal('show');
                 } else {
@@ -363,7 +400,8 @@
             from : $('#editFrom').val(),
             to : $('#editTo').val(),
             session : $('#editSession').val(),
-            lecturer : $('#editLecturer').val()
+            lecturer : $('#editLecturer').val(),
+            subject : $('input[name="editSubject"]:checked').val()
         };
 
         // Simple form validation
@@ -433,7 +471,7 @@
             buttons: [
                 'copy', 'csv', 'excel', 'pdf', 'print'
             ],
-            order: [[5, 'desc']] // Sort by created date descending
+            order: [[6, 'desc']]
         });
     });
   </script>

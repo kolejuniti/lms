@@ -6084,6 +6084,7 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
             'End' => $data->to,
             'session' => json_encode($data->session),
             'user_ic' => json_encode($data->lecturer),
+            'subject' => property_exists($data, 'subject') ? $data->subject : null,
             'created_at' => now(),
             'updated_at' => now()
         ]);
@@ -6103,6 +6104,7 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
                 'End' => $data->to,
                 'session' => json_encode($data->session),
                 'user_ic' => json_encode($data->lecturer),
+                'subject' => property_exists($data, 'subject') ? $data->subject : null,
                 'updated_at' => now()
             ]);
 
@@ -6128,6 +6130,7 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
             // Decode JSON data for frontend
             $period->session = json_decode($period->session);
             $period->user_ic = json_decode($period->user_ic);
+            // subject can be null; pass through as-is
         }
 
         return response()->json($period);
