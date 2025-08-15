@@ -5193,14 +5193,14 @@ class FinanceController extends Controller
     public function getReceiptProof(Request $request)
     {
 
-        if(array_intersect([2,3,4,11], (array) $request->type))
+        if(array_intersect([2,3,5,4,11], (array) $request->type))
         {
 
             return redirect()->route('receipt3', ['id' => $request->id]);
 
         }elseif(array_intersect([1,5,6,7,8,9,10,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27], (array) $request->type)){
 
-            if(array_intersect([7,5], (array) $request->type))
+            if(array_intersect([7], (array) $request->type))
             {
 
                 return redirect()->route('receipt2', ['id' => $request->id]);
