@@ -154,8 +154,8 @@
                       ->where('End', '>=', $currentDate)
                       ->get()
                       ->filter(function ($p) use ($currentUserIc, $currentSessionId) {
-                          $userIcs = json_decode($p->user_ic, true) ?: [];
-                          $sessions = json_decode($p->session, true) ?: [];
+                          $userIcs = $p->user_ic;
+                          $sessions = $p->session;
                           
                           return in_array($currentUserIc, $userIcs) && 
                                  in_array($currentSessionId, $sessions);
