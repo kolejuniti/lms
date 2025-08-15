@@ -162,13 +162,11 @@
                       })
                       ->first();
               }
-
-              dd($period);
               
               // Determine if box-footer should be visible
               $showFooter = false;
               if (!empty($period)) {
-                  if ($period->subject == 1) {
+                  if ($period->subject == 'ALL') {
                       $showFooter = true;
                   } else {
                       $courseName = Session::get('CourseIDS')->course_name ?? '';
