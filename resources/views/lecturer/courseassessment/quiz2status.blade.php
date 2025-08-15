@@ -154,14 +154,16 @@
                       ->where('End', '>=', $currentDate)
                       ->get()
                       ->filter(function ($p) use ($currentUserIc, $currentSessionId) {
-                          $userIcs = $p->user_ic;
-                          $sessions = $p->session;
+                          $userIcs = json_decode($p->user_ic, true) ?: [];
+                          $sessions = json_decode($p->session, true) ?: [];
                           
                           return in_array($currentUserIc, $userIcs) && 
                                  in_array($currentSessionId, $sessions);
                       })
                       ->first();
               }
+
+              dd($period);
               
               // Determine if box-footer should be visible
               $showFooter = false;
