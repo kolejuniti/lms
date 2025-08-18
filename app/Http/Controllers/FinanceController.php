@@ -11709,13 +11709,12 @@ class FinanceController extends Controller
                     
                     foreach ($transactionHistory as $transaction) {
                         $typeClass = $transaction->source == 'claim' ? 'text-danger' : 'text-success';
-                        $amountFormat = $transaction->source == 'claim' ? '+' : '-';
                         $content .= '<tr>';
                         $content .= '<td>'. date('d/m/Y', strtotime($transaction->date)) .'</td>';
                         $content .= '<td><span class="'. $typeClass .'">'. ucfirst($transaction->source) .'</span></td>';
                         $content .= '<td>'. $transaction->ref_no .'</td>';
                         $content .= '<td>'. $transaction->name .'</td>';
-                        $content .= '<td class="'. $typeClass .'">'. $amountFormat . number_format($transaction->amount, 2) .'</td>';
+                        $content .= '<td class="'. $typeClass .'">'. number_format($transaction->amount, 2) .'</td>';
                         $content .= '</tr>';
                     }
                     
