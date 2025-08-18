@@ -152,17 +152,15 @@
                   $period = DB::table('tblassessment_period')
                       ->where('Start', '<=', $currentDate)
                       ->where('End', '>=', $currentDate)
-                      ->whereIn('user_ic', [$currentUserIc])
-                      ->whereIn('session', [$currentSessionId])
-                      ->first()
-                      // ->filter(function ($p) use ($currentUserIc, $currentSessionId) {
-                      //     $userIcs = json_decode($p->user_ic, true) ?: [];
-                      //     $sessions = json_decode($p->session, true) ?: [];
+                      ->get()
+                      ->filter(function ($p) use ($currentUserIc, $currentSessionId) {
+                          $userIcs = json_decode($p->user_ic, true) ?: [];
+                          $sessions = json_decode($p->session, true) ?: [];
                           
-                      //     return in_array($currentUserIc, $userIcs) && 
-                      //            in_array($currentSessionId, $sessions);
-                      // })
-                      // ->first();
+                          return in_array($currentUserIc, $userIcs) && 
+                                 in_array($currentSessionId, $sessions);
+                      })
+                      ->first();
               }
               
               // Determine if box-footer should be visible
@@ -172,6 +170,8 @@
                       $showFooter = true;
                   } else {
                       $courseName = Session::get('CourseIDS')->course_name ?? '';
+
+                      dd($courseName);
                       $showFooter = in_array($courseName, ['LATIHAN INDUSTRI', 'LATIHAN PRAKTIKAL', 'LATIHAN PRAKTIKUM', 'LATIHAN AMALI (PRAKTIKAL)']);
                   }
               }
