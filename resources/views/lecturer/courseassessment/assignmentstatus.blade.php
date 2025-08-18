@@ -177,7 +177,7 @@
                                               $course = DB::table('subjek')->where('id', Session::get('CourseIDS'))->first();
 
                       $courseName = $course->course_name ?? '';
-                                              $showButtons = in_array($courseName, ['LATIHAN INDUSTRI', 'LATIHAN PRAKTIKAL', 'LATIHAN PRAKTIKUM', 'LATIHAN AMALI (PRAKTIKAL)']);
+                                              $showButtons = in_array($courseName, ['LATIHAN INDUSTRI', 'LATIHAN PRAKTIKAL', 'LATIHAN PRAKTIKUM', 'LATIHAN AMALI (PRAKTIKAL)', 'INDUSTRIAL TRAINING']);
                                           }
                                       }
                                     @endphp
