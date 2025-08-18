@@ -169,9 +169,10 @@
                   if ($period->subject == 'ALL') {
                       $showFooter = true;
                   } else {
-                      $courseName = Session::get('CourseIDS')->course_name ?? '';
+                      $course = DB::table('subjek')->where('id', Session::get('CourseIDS'))->first();
 
-                      dd(Session::get('CourseIDS'));
+                      $courseName = $course->course_name ?? '';
+
                       $showFooter = in_array($courseName, ['LATIHAN INDUSTRI', 'LATIHAN PRAKTIKAL', 'LATIHAN PRAKTIKUM', 'LATIHAN AMALI (PRAKTIKAL)']);
                   }
               }

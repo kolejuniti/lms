@@ -164,7 +164,9 @@
                                           if ($period->subject == 'ALL') {
                                               $showButtons = true;
                                           } else {
-                                              $courseName = Session::get('CourseIDS')->course_name ?? '';
+                                              $course = DB::table('subjek')->where('id', Session::get('CourseIDS'))->first();
+
+                      $courseName = $course->course_name ?? '';
                                               $showButtons = in_array($courseName, ['LATIHAN INDUSTRI', 'LATIHAN PRAKTIKAL', 'LATIHAN PRAKTIKUM', 'LATIHAN AMALI (PRAKTIKAL)']);
                                           }
                                       }
