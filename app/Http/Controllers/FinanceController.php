@@ -9758,7 +9758,7 @@ class FinanceController extends Controller
                             ->where([
                                 ['tblpayment.process_status_id', 2],
                                 ['tblpayment.sponsor_id', $request->id],
-                                ['students.program', $prg->id]
+                                ['tblpayment.program_id', $prg->id]
                             ])
                             ->select('students.*','tblprogramme.progcode','tblpayment.amount')
                             ->orderBy('students.name')
