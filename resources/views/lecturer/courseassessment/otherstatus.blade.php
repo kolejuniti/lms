@@ -171,7 +171,7 @@
                   } else {
                       $courseName = Session::get('CourseIDS')->course_name ?? '';
 
-                      dd($courseName);
+                      dd(Session::get('CourseIDS'));
                       $showFooter = in_array($courseName, ['LATIHAN INDUSTRI', 'LATIHAN PRAKTIKAL', 'LATIHAN PRAKTIKUM', 'LATIHAN AMALI (PRAKTIKAL)']);
                   }
               }
