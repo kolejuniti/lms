@@ -165,7 +165,7 @@
                                               $showButtons = true;
                                           } else {
                                               $courseName = Session::get('CourseIDS')->course_name ?? '';
-                                              $showButtons = in_array($courseName, ['LATIHAN INDUSTRI', 'LATIHAN PRAKTIKAL']);
+                                              $showButtons = in_array($courseName, ['LATIHAN INDUSTRI', 'LATIHAN PRAKTIKAL', 'LATIHAN PRAKTIKUM']);
                                           }
                                       }
                                     @endphp
