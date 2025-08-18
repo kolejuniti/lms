@@ -11492,6 +11492,62 @@ class FinanceController extends Controller
 
     }
 
+    private function getProgramTransactionHistory($programId, $fromDate, $toDate)
+    {
+        // Get payments as first part of union
+        $record = DB::table('tblpaymentdtl')
+            ->leftJoin('tblpayment', 'tblpaymentdtl.payment_id', 'tblpayment.id')
+            ->leftJoin('tblprocess_type', 'tblpayment.process_type_id', 'tblprocess_type.id')
+            ->leftJoin('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
+            ->leftJoin('tblprogramme', 'tblpayment.program_id', 'tblprogramme.id')
+            ->where([
+                ['tblpayment.program_id', $programId],
+                ['tblpayment.process_status_id', 2], 
+                ['tblstudentclaim.groupid', 1], 
+                ['tblpaymentdtl.amount', '!=', 0]
+            ])
+            ->whereBetween('tblpayment.add_date', [$fromDate, $toDate])
+            ->select(
+                DB::raw("'payment' as source"), 
+                'tblprocess_type.name AS process', 
+                'tblpayment.ref_no',
+                'tblpayment.date', 
+                'tblstudentclaim.name', 
+                'tblpaymentdtl.amount',
+                'tblpayment.process_type_id', 
+                'tblprogramme.progcode AS program', 
+                DB::raw('NULL as remark')
+            );
+
+        // Get claims and union with payments
+        return DB::table('tblclaimdtl')
+            ->leftJoin('tblclaim', 'tblclaimdtl.claim_id', 'tblclaim.id')
+            ->leftJoin('tblprocess_type', 'tblclaim.process_type_id', 'tblprocess_type.id')
+            ->leftJoin('tblstudentclaim', 'tblclaimdtl.claim_package_id', 'tblstudentclaim.id')
+            ->leftJoin('tblprogramme', 'tblclaim.program_id', 'tblprogramme.id')
+            ->where([
+                ['tblclaim.program_id', $programId],
+                ['tblclaim.process_status_id', 2],  
+                ['tblstudentclaim.groupid', 1],
+                ['tblclaimdtl.amount', '!=', 0]
+            ])
+            ->whereBetween('tblclaim.add_date', [$fromDate, $toDate])
+            ->unionAll($record)
+            ->select(
+                DB::raw("'claim' as source"), 
+                'tblprocess_type.name AS process', 
+                'tblclaim.ref_no',
+                'tblclaim.date', 
+                'tblstudentclaim.name', 
+                'tblclaimdtl.amount', 
+                'tblclaim.process_type_id', 
+                'tblprogramme.progcode AS program', 
+                'tblclaim.remark'
+            )
+            ->orderBy('date')
+            ->get();
+    }
+
     public function getProgramAgingReport(Request $request)
     {
         // Validate request
@@ -11536,6 +11592,9 @@ class FinanceController extends Controller
                 $programId = $program->id;
                 $yearlyBalances = [];
                 $lastKnownBalance = 0;
+                
+                // Get transaction history for this program in the date range
+                $transactionHistory = $this->getProgramTransactionHistory($programId, $filter->from, $filter->to);
                 
                 // Get all claims and payments in one query with year extraction
                 $query = DB::select("
@@ -11601,7 +11660,8 @@ class FinanceController extends Controller
                 
                 $results[] = [
                     'program' => $program,
-                    'balances' => $yearlyBalances
+                    'balances' => $yearlyBalances,
+                    'transactionHistory' => $transactionHistory
                 ];
             }
             
@@ -11613,8 +11673,11 @@ class FinanceController extends Controller
                                     Program
                                 </th>
                                 <th colspan="'. count($arrayYears) .'" style="text-align: center">
-                                    AGING REPORT BY PROGRAM AND YEAR from '. $startYear .' UNTIL '. $currentYear; 
+                                    AGING REPORT BY PROGRAM AND YEAR from '. $startYear .' UNTIL '. $currentYear;
             $content .= '</th>
+                                <th rowspan="2">
+                                    Transaction History ('. $filter->from .' to '. $filter->to .')
+                                </th>
                             </tr>
                             <tr>';
                             foreach($arrayYears as $year) {
@@ -11627,13 +11690,41 @@ class FinanceController extends Controller
             foreach ($results as $result) {
                 $program = $result['program'];
                 $balances = $result['balances'];
+                $transactionHistory = $result['transactionHistory'];
                 
                 $content .= '<tr>
                                 <td>'. $program->progcode .' - '. $program->progname .'</td>';
                 
                 foreach ($arrayYears as $year) {
-                    $content .= '<td>'. $balances[$year] .'</td>';
+                    $content .= '<td>'. number_format($balances[$year], 2) .'</td>';
                 }
+                
+                // Build transaction history column
+                $content .= '<td style="max-width: 400px; word-wrap: break-word;">';
+                if (count($transactionHistory) > 0) {
+                    $content .= '<div class="transaction-history" style="max-height: 200px; overflow-y: auto;">';
+                    $content .= '<table class="table table-sm table-bordered">';
+                    $content .= '<thead><tr><th>Date</th><th>Type</th><th>Ref</th><th>Description</th><th>Amount</th></tr></thead>';
+                    $content .= '<tbody>';
+                    
+                    foreach ($transactionHistory as $transaction) {
+                        $typeClass = $transaction->source == 'claim' ? 'text-danger' : 'text-success';
+                        $amountFormat = $transaction->source == 'claim' ? '+' : '-';
+                        $content .= '<tr>';
+                        $content .= '<td>'. date('d/m/Y', strtotime($transaction->date)) .'</td>';
+                        $content .= '<td><span class="'. $typeClass .'">'. ucfirst($transaction->source) .'</span></td>';
+                        $content .= '<td>'. $transaction->ref_no .'</td>';
+                        $content .= '<td>'. $transaction->name .'</td>';
+                        $content .= '<td class="'. $typeClass .'">'. $amountFormat . number_format($transaction->amount, 2) .'</td>';
+                        $content .= '</tr>';
+                    }
+                    
+                    $content .= '</tbody></table>';
+                    $content .= '</div>';
+                } else {
+                    $content .= '<em>No transactions in this period</em>';
+                }
+                $content .= '</td>';
                 
                 $content .= '</tr>';
             }
@@ -11647,6 +11738,7 @@ class FinanceController extends Controller
                 $content .= '<td>'. number_format($yearTotal, 2) .'</td>';
             }
             
+            $content .= '<td><em>All Transactions</em></td>';
             $content .= '</tr>
                         </tfoot>';
             
