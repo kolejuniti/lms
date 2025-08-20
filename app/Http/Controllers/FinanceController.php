@@ -11039,12 +11039,11 @@ class FinanceController extends Controller
 
             }
 
-            $data['sum3_3'][$key] = isset($total3) && !empty($total3) ? end($total3) : 0;
+            $sum3_data3[$key] = isset($total3) && !empty($total3) ? end($total3) : 0;
 
             // Calculate combined balance including fine and other values if requested
             $data['fine_balance'][$key] = isset($data['sum3_2'][$key]) ? $data['sum3_2'][$key] : 0;
-            $data['other_balance'][$key] = isset($data['sum3_3'][$key]) ? $data['sum3_3'][$key] : 0;
-            $data['combined_balance'][$key] = $data['total_balance'][$key] + $data['fine_balance'][$key] + $data['other_balance'][$key];
+            $data['other_balance'][$key] = isset($sum3_data3[$key]) ? $sum3_data3[$key] : 0;
 
         }
 
