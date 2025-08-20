@@ -10962,6 +10962,9 @@ class FinanceController extends Controller
             ->get();
 
             $val1 = 0;
+            $data['sum1_2'] = 0;
+            $data['sum2_2'] = 0;
+            $data['sum3_2'][$key] = 0;
 
             foreach($data['record2'] as $recKey => $req)
             {
@@ -11019,6 +11022,7 @@ class FinanceController extends Controller
             $val2 = 0;
             $data['sum1_3'] = 0;
             $data['sum2_3'] = 0;
+            $data['sum3_3'][$key] = 0;
 
             foreach($data['record3'] as $recKey => $req)
             {
@@ -11045,7 +11049,7 @@ class FinanceController extends Controller
 
             }
 
-            $data['sum3_3'][$key] = 222;
+            $data['sum3_3'][$key] = isset($data['total3']) && !empty($data['total3']) ? end($data['total3']) : 0;
 
             // Calculate combined balance including fine and other values if requested
             $data['fine_balance'][$key] = isset($data['sum3_2'][$key]) ? $data['sum3_2'][$key] : 0;
