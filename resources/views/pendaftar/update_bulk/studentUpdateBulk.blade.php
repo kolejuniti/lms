@@ -137,6 +137,12 @@
     await getStudent(selected_program, selected_session, selected_semester, selected_session2);
   });
 
+  $(document).on('change', '#session2', async function(e){
+    selected_session2 = $(e.target).val();
+
+    await getStudent(selected_program, selected_session, selected_semester, selected_session2);
+  });
+
   function onLeave()
   {
     var leave = [];
