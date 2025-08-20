@@ -10961,7 +10961,7 @@ class FinanceController extends Controller
             ->orderBy('date')
             ->get();
 
-            $val = 0;
+            $val1 = 0;
 
             foreach($data['record2'] as $recKey => $req)
             {
@@ -10969,17 +10969,17 @@ class FinanceController extends Controller
                 if(array_intersect([2,3,4,5,11], (array) $req->process_type_id))
                 {
 
-                    $data['total2'][$recKey] = $val + $req->amount;
+                    $data['total2'][$recKey] = $val1 + $req->amount;
 
-                    $val = $val + $req->amount;
+                    $val1 = $val1 + $req->amount;
                     
 
                 }elseif(array_intersect([1,5,6,7,8,9,10,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27], (array) $req->process_type_id))
                 {
 
-                    $data['total2'][$recKey] = $val - $req->amount;
+                    $data['total2'][$recKey] = $val1 - $req->amount;
 
-                    $val = $val - $req->amount;
+                    $val1 = $val1 - $req->amount;
 
                 }
 
@@ -11016,7 +11016,7 @@ class FinanceController extends Controller
             ->orderBy('date')
             ->get();
 
-            $val = 0;
+            $val2 = 0;
             $data['sum1_3'] = 0;
             $data['sum2_3'] = 0;
 
@@ -11026,18 +11026,18 @@ class FinanceController extends Controller
                 if(array_intersect([2,3,4,5,11], (array) $req->process_type_id))
                 {
 
-                    $data['total3'][$recKey] = $val + $req->amount;
+                    $data['total3'][$recKey] = $val2 + $req->amount;
 
-                    $val = $val + $req->amount;
+                    $val2 = $val2 + $req->amount;
                     
                     $data['sum1_3'] += $req->amount;
 
                 }elseif(array_intersect([1,5,6,7,8,9,10,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27], (array) $req->process_type_id))
                 {
 
-                    $data['total3'][$recKey] = $val - $req->amount;
+                    $data['total3'][$recKey] = $val2 - $req->amount;
 
-                    $val = $val - $req->amount;
+                    $val2 = $val2 - $req->amount;
 
                     $data['sum2_3'] += $req->amount;
 
