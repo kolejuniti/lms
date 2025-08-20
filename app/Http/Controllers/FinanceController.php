@@ -10962,6 +10962,7 @@ class FinanceController extends Controller
             ->get();
 
             $val1 = 0;
+            $data['sum1_2'] = 0;
 
             foreach($data['record2'] as $recKey => $req)
             {
@@ -10969,7 +10970,7 @@ class FinanceController extends Controller
                 if(array_intersect([2,3,4,5,11], (array) $req->process_type_id))
                 {
 
-                    $total2[$recKey] = $val1 + $req->amount;
+                    $data['total2'][$recKey] = $val1 + $req->amount;
 
                     $val1 = $val1 + $req->amount;
                     
@@ -10977,7 +10978,7 @@ class FinanceController extends Controller
                 }elseif(array_intersect([1,5,6,7,8,9,10,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27], (array) $req->process_type_id))
                 {
 
-                    $total2[$recKey] = $val1 - $req->amount;
+                    $data['total2'][$recKey] = $val1 - $req->amount;
 
                     $val1 = $val1 - $req->amount;
 
@@ -10985,7 +10986,7 @@ class FinanceController extends Controller
 
             }
 
-            $data['sum3_2'][$key] = isset($total2) && !empty($total2) ? end($total2) : 0;
+            $data['sum3_2'][$key] = isset($data['total2']) && !empty($data['total2']) ? end($data['total2']) : 0;
 
             //OTHER
 
@@ -11017,6 +11018,7 @@ class FinanceController extends Controller
             ->get();
 
             $val2 = 0;
+            $total3 = [];
 
             foreach($data['record3'] as $recKey => $req)
             {
@@ -11039,11 +11041,12 @@ class FinanceController extends Controller
 
             }
 
-            $sum3_data3[$key] = isset($total3) && !empty($total3) ? end($total3) : 0;
+            $data['sum3_3'][$key] = isset($total3) && !empty($total3) ? end($total3) : 0;
 
             // Calculate combined balance including fine and other values if requested
             $data['fine_balance'][$key] = isset($data['sum3_2'][$key]) ? $data['sum3_2'][$key] : 0;
-            $data['other_balance'][$key] = isset($sum3_data3[$key]) ? $sum3_data3[$key] : 0;
+            $data['other_balance'][$key] = isset($data['sum3_3'][$key]) ? $data['sum3_3'][$key] : 0;
+            $data['combined_balance'][$key] = $data['total_balance'][$key] + $data['fine_balance'][$key] + $data['other_balance'][$key];
 
         }
 
