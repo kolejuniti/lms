@@ -4716,6 +4716,7 @@ class FinanceController extends Controller
         $data['total'] = [];
         $data['total2'] = [];
         $data['total3'] = [];
+        $data['value'] = 0;
 
         $data['student'] = DB::table('students')
                            ->leftjoin('tblstudent_address', 'students.ic', 'tblstudent_address.student_ic')
