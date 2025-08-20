@@ -12366,6 +12366,34 @@ class FinanceController extends Controller
                 
             }
 
+            if($package->package_id == 5)
+            {
+
+                $data['current_balance'] = $data['sum3'];
+
+            }else{
+
+                if($package->payment_type_id == 3 || $package->payment_type_id == 11 || $package->payment_type_id == 14)
+                {
+
+                    if($data['sum3'] <= ($package->amount - $discount))
+                    {
+
+                        $data['current_balance'] = 0.00;
+
+                        $data['total_balance'] = 0.00;
+
+                    }elseif($data['sum3'] > ($package->amount - $discount))
+                    {
+
+                        $data['current_balance'] = $data['sum3'] - ($package->amount - $discount);
+
+                    }
+
+                }
+
+            }
+
             //TNUGGAKAN PEMBIAYAAN KHAS
 
             $stddetail = DB::table('students')->where('ic', $request->student)->select('program', 'semester')->first();
