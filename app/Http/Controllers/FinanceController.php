@@ -10932,7 +10932,125 @@ class FinanceController extends Controller
                                     ->where('tblstudent_address.student_ic', $std->ic)
                                     ->first();
 
+            //FINE
+
+            $record2 = DB::table('tblpaymentdtl')
+            ->leftJoin('tblpayment', 'tblpaymentdtl.payment_id', 'tblpayment.id')
+            ->leftJoin('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
+            ->leftjoin('tblprogramme', 'tblpayment.program_id', 'tblprogramme.id')
+            ->where([
+                ['tblpayment.student_ic', $std->ic],
+                ['tblpayment.process_status_id', 2],  
+                ['tblstudentclaim.groupid', 4],
+                ['tblpaymentdtl.amount', '!=', 0]
+                ])
+            ->select('tblpayment.ref_no','tblpayment.date', 'tblstudentclaim.name', 'tblpaymentdtl.amount', 'tblpayment.process_type_id', 'tblprogramme.progcode AS program');
+
+            $data['record2'] = DB::table('tblclaimdtl')
+            ->leftJoin('tblclaim', 'tblclaimdtl.claim_id', 'tblclaim.id')
+            ->leftJoin('tblstudentclaim', 'tblclaimdtl.claim_package_id', 'tblstudentclaim.id')
+            ->leftjoin('tblprogramme', 'tblclaim.program_id', 'tblprogramme.id')
+            ->where([
+                ['tblclaim.student_ic', $std->ic],
+                ['tblclaim.process_status_id', 2],  
+                ['tblstudentclaim.groupid', 4],
+                ['tblclaimdtl.amount', '!=', 0]
+                ])        
+            ->unionALL($record2)
+            ->select('tblclaim.ref_no','tblclaim.date', 'tblstudentclaim.name', 'tblclaimdtl.amount', 'tblclaim.process_type_id', 'tblprogramme.progcode AS program')
+            ->orderBy('date')
+            ->get();
+
+            $val = 0;
+
+            foreach($data['record2'] as $recKey => $req)
+            {
+
+                if(array_intersect([2,3,4,5,11], (array) $req->process_type_id))
+                {
+
+                    $data['total2'][$recKey] = $val + $req->amount;
+
+                    $val = $val + $req->amount;
+                    
+
+                }elseif(array_intersect([1,5,6,7,8,9,10,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27], (array) $req->process_type_id))
+                {
+
+                    $data['total2'][$recKey] = $val - $req->amount;
+
+                    $val = $val - $req->amount;
+
+                }
+
+            }
+
+            $data['sum3_2'][$key] = isset($data['total2']) && !empty($data['total2']) ? end($data['total2']) : 0;
+
+            //OTHER
+
+            $record3 = DB::table('tblpaymentdtl')
+            ->leftJoin('tblpayment', 'tblpaymentdtl.payment_id', 'tblpayment.id')
+            ->leftJoin('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
+            ->leftjoin('tblprogramme', 'tblpayment.program_id', 'tblprogramme.id')
+            ->where([
+                ['tblpayment.student_ic', $std->ic],
+                ['tblpayment.process_status_id', 2],  
+                ['tblstudentclaim.groupid', 5],
+                ['tblpaymentdtl.amount', '!=', 0]
+                ])
+            ->select('tblpayment.ref_no','tblpayment.date', 'tblstudentclaim.name', 'tblpaymentdtl.amount', 'tblpayment.process_type_id', 'tblprogramme.progcode AS program', 'tblstudentclaim.id as claim_id', DB::raw("'tblpaymentdtl' as source_table"));
+
+            $data['record3'] = DB::table('tblclaimdtl')
+            ->leftJoin('tblclaim', 'tblclaimdtl.claim_id', 'tblclaim.id')
+            ->leftJoin('tblstudentclaim', 'tblclaimdtl.claim_package_id', 'tblstudentclaim.id')
+            ->leftjoin('tblprogramme', 'tblclaim.program_id', 'tblprogramme.id')
+            ->where([
+                ['tblclaim.student_ic', $std->ic],
+                ['tblclaim.process_status_id', 2],  
+                ['tblstudentclaim.groupid', 5],
+                ['tblclaimdtl.amount', '!=', 0]
+                ])        
+            ->unionALL($record3)
+            ->select('tblclaim.ref_no','tblclaim.date', 'tblstudentclaim.name', 'tblclaimdtl.amount', 'tblclaim.process_type_id', 'tblprogramme.progcode AS program', 'tblstudentclaim.id as claim_id', DB::raw("'tblclaimdtl' as source_table"))
+            ->orderBy('date')
+            ->get();
+
+            $val = 0;
+
+            foreach($data['record3'] as $recKey => $req)
+            {
+
+                if(array_intersect([2,3,4,5,11], (array) $req->process_type_id))
+                {
+
+                    $data['total3'][$recKey] = $val + $req->amount;
+
+                    $val = $val + $req->amount;
+                    
+
+                }elseif(array_intersect([1,5,6,7,8,9,10,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27], (array) $req->process_type_id))
+                {
+
+                    $data['total3'][$recKey] = $val - $req->amount;
+
+                    $val = $val - $req->amount;
+
+                }
+
+            }
+
+            $data['sum3_3'][$key] = isset($data['total3']) && !empty($data['total3']) ? end($data['total3']) : 0;
+
+            // Calculate combined balance including fine and other values if requested
+            $data['fine_balance'][$key] = isset($data['sum3_2'][$key]) ? $data['sum3_2'][$key] : 0;
+            $data['other_balance'][$key] = isset($data['sum3_3'][$key]) ? $data['sum3_3'][$key] : 0;
+            $data['combined_balance'][$key] = $data['total_balance'][$key] + $data['fine_balance'][$key] + $data['other_balance'][$key];
+
         }
+
+        // Pass the includeFineOther flag to the view
+        $data['includeFineOther'] = filter_var($request->input('includeFineOther'), FILTER_VALIDATE_BOOLEAN);
 
         return view('finance.debt.monthly_payment_report.monthlyReportGetStudent', compact('data'));
 
