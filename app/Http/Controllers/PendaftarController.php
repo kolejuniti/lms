@@ -1671,7 +1671,7 @@ class PendaftarController extends Controller
         });
 
         $query2 = DB::table('students')->where(function($query2) {
-            $query2->where('campus_id', 0)
+            $query2->where('campus_id', 1)
                   ->where('status', 2)
                   ->where('block_status', '!=', 1);
         });
