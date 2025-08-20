@@ -121,7 +121,33 @@ use Carbon\Carbon;
         <!-- Black Line Divider using Border -->
         <div class="border-line"></div>
 
-        <p>Pelajar seperti berikut hanya dibenarkan mengambil <b>MINI TRANSKRIP</b> sahaja kerana mempunyai baki tunggakan semasa pengajian di Kolej Uniti:-</p>
+        <p>Pelajar seperti berikut hanya dibenarkan mengambil <b>MINI TRANSKRIP</b> sahaja kerana <span style="background-color: #87CEEB; padding: 2px 4px;">masih mempunyai tunggakan kewangan</span> di Kolej Uniti :-</p>
+        
+        <!-- Balance Summary Table -->
+        <div class="col-12 mb-2 mt-2" style="display: flex; justify-content: center;">
+            <table style="border-collapse: collapse; border: 2px solid #000; width: 80%;">
+                <thead>
+                    <tr style="background-color: #87CEEB;">
+                        <th style="border: 1px solid #000; padding: 8px; text-align: center; font-weight: bold;">Yuran Semasa</th>
+                        <th style="border: 1px solid #000; padding: 8px; text-align: center; font-weight: bold;">Pembiayaan Khas</th>
+                        <th style="border: 1px solid #000; padding: 8px; text-align: center; font-weight: bold;">Denda / Saman</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="background-color: #87CEEB;">
+                        <td style="border: 1px solid #000; padding: 8px; text-align: center; font-weight: bold;">RM</td>
+                        <td style="border: 1px solid #000; padding: 8px; text-align: center; font-weight: bold;">RM</td>
+                        <td style="border: 1px solid #000; padding: 8px; text-align: center; font-weight: bold;">RM</td>
+                    </tr>
+                    <tr>
+                        <td style="border: 1px solid #000; padding: 8px; text-align: center;">{{ number_format($data['current_balance'], 2) }}</td>
+                        <td style="border: 1px solid #000; padding: 8px; text-align: center;">{{ number_format($data['pk_balance'], 2) }}</td>
+                        <td style="border: 1px solid #000; padding: 8px; text-align: center;">{{ number_format($data['fine'], 2) }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
         <div class="col-12 mb-1 mt-1">  
             <div style="border: 1px solid white; padding: 10px;">
                 <table>
