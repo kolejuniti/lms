@@ -113,9 +113,6 @@
             ->get();
 
             $val2 = 0;
-            $data['sum1_3'] = 0;
-            $data['sum2_3'] = 0;
-            $data['sum3_3'] = 0;
 
             foreach($data['record3'] as $recKey => $req)
             {
@@ -123,26 +120,22 @@
                 if(array_intersect([2,3,4,5,11], (array) $req->process_type_id))
                 {
 
-                    $data['total3'][$recKey] = $val2 + $req->amount;
+                    $total3[$recKey] = $val2 + $req->amount;
 
                     $val2 = $val2 + $req->amount;
-                    
-                    $data['sum1_3'] += $req->amount;
 
                 }elseif(array_intersect([1,5,6,7,8,9,10,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27], (array) $req->process_type_id))
                 {
 
-                    $data['total3'][$recKey] = $val2 - $req->amount;
+                    $total3[$recKey] = $val2 - $req->amount;
 
                     $val2 = $val2 - $req->amount;
-
-                    $data['sum2_3'] += $req->amount;
 
                 }
 
             }
 
-            $data['sum3_3'] = isset($data['total3']) && !empty($data['total3']) ? end($data['total3']) : 0;
+            $data['sum3_3'] = isset($total3) && !empty($total3) ? end($total3) : 0;
 
                         @endphp
                         @foreach ($data['student'] as $key => $std)
