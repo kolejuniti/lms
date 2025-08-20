@@ -279,7 +279,6 @@
 						</span>
 					</a>
 					<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
-						<li><a href="{{ route('treasurer.payment.credit') }}" class="{{ (route('treasurer.payment.credit') == Request::url()) ? 'active' : ''}}">Credit Note</a></li>
 						<li><a href="{{ route('treasurer.payment.debit') }}" class="{{ (route('treasurer.payment.debit') == Request::url()) ? 'active' : ''}}">Debit Note</a></li>
 					</ul>
 				  </li>
