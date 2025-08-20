@@ -84,64 +84,25 @@
                         </tr>
                     </thead>
                     <tbody id="table">
-                        @php
-            $record3 = DB::table('tblpaymentdtl')
-            ->leftJoin('tblpayment', 'tblpaymentdtl.payment_id', 'tblpayment.id')
-            ->leftJoin('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
-            ->leftjoin('tblprogramme', 'tblpayment.program_id', 'tblprogramme.id')
-            ->where([
-                ['tblpayment.student_ic', '000422100803'],
-                ['tblpayment.process_status_id', 2],  
-                ['tblstudentclaim.groupid', 5],
-                ['tblpaymentdtl.amount', '!=', 0]
-                ])
-            ->select('tblpayment.ref_no','tblpayment.date', 'tblstudentclaim.name', 'tblpaymentdtl.amount', 'tblpayment.process_type_id', 'tblprogramme.progcode AS program', 'tblstudentclaim.id as claim_id', DB::raw("'tblpaymentdtl' as source_table"));
-
-            $data['record3'] = DB::table('tblclaimdtl')
-            ->leftJoin('tblclaim', 'tblclaimdtl.claim_id', 'tblclaim.id')
-            ->leftJoin('tblstudentclaim', 'tblclaimdtl.claim_package_id', 'tblstudentclaim.id')
-            ->leftjoin('tblprogramme', 'tblclaim.program_id', 'tblprogramme.id')
-            ->where([
-                ['tblclaim.student_ic', '000422100803'],
-                ['tblclaim.process_status_id', 2],  
-                ['tblstudentclaim.groupid', 5],
-                ['tblclaimdtl.amount', '!=', 0]
-                ])        
-            ->unionALL($record3)
-            ->select('tblclaim.ref_no','tblclaim.date', 'tblstudentclaim.name', 'tblclaimdtl.amount', 'tblclaim.process_type_id', 'tblprogramme.progcode AS program', 'tblstudentclaim.id as claim_id', DB::raw("'tblclaimdtl' as source_table"))
-            ->orderBy('date')
-            ->get();
-
-            $val2 = 0;
-
-            foreach($data['record3'] as $recKey => $req)
-            {
-
-                if(array_intersect([2,3,4,5,11], (array) $req->process_type_id))
-                {
-
-                    $total3[$recKey] = $val2 + $req->amount;
-
-                    $val2 = $val2 + $req->amount;
-
-                }elseif(array_intersect([1,5,6,7,8,9,10,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27], (array) $req->process_type_id))
-                {
-
-                    $total3[$recKey] = $val2 - $req->amount;
-
-                    $val2 = $val2 - $req->amount;
-
-                }
-
-            }
-
-            $data['sum3_3'] = isset($total3) && !empty($total3) ? end($total3) : 0;
-
-                        @endphp
                         @foreach ($data['student'] as $key => $std)
+                            @php
+                                $showStudent = false;
+                                $mainBalance = $data['total_balance'][$key];
+                                $fineBalance = isset($data['fine_balance'][$key]) ? $data['fine_balance'][$key] : 0;
+                                $otherBalance = isset($data['other_balance'][$key]) ? $data['other_balance'][$key] : 0;
+                                
+                                if (isset($data['includeFineOther']) && $data['includeFineOther']) {
+                                    // Include students with any positive balance (main, fine, or other)
+                                    $showStudent = ($mainBalance > 0 || $fineBalance > 0 || $otherBalance > 0);
+                                } else {
+                                    // Original logic - only show students with positive main balance
+                                    $showStudent = ($mainBalance > 0);
+                                }
+                            @endphp
+                            @if($showStudent)
                             <tr>
                                 <td>
-                                    {{ $data['sum3_3'] }} {{ $data['total_balance'][$key] }}{{ $data['fine_balance'][$key] }} {{ $data['other_balance'][$key] }}
+                                    {{ $key+1 }}
                                 </td>
                                 <td>
                                     {{ $std->name }}
@@ -221,6 +182,7 @@
                                     {{ number_format($data['total_balance'][$key], 2) }}
                                 </td>
                             </tr>
+                            @endif
                         @endforeach 
                     </tbody>
                 </table>
