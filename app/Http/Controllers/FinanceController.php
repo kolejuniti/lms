@@ -5099,6 +5099,8 @@ class FinanceController extends Controller
             $data['remark']->latest_balance = number_format($data['sum3'] - $data['remark']->correction_amount, 2, '.', '');
         }
 
+        $data['value'] = $data['value'] + $data['sum3_2'];
+
         if(isset($request->print))
         {
 
