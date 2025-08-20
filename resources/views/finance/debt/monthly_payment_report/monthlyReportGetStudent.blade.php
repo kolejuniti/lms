@@ -85,21 +85,7 @@
                     </thead>
                     <tbody id="table">
                         @foreach ($data['student'] as $key => $std)
-                            @php
-                                $showStudent = false;
-                                $mainBalance = $data['total_balance'][$key];
-                                $fineBalance = isset($data['fine_balance'][$key]) ? $data['fine_balance'][$key] : 0;
-                                $otherBalance = isset($data['other_balance'][$key]) ? $data['other_balance'][$key] : 0;
-                                
-                                if (isset($data['includeFineOther']) && $data['includeFineOther']) {
-                                    // Include students with any positive balance (main, fine, or other)
-                                    $showStudent = ($mainBalance > 0 || $fineBalance > 0 || $otherBalance > 0);
-                                } else {
-                                    // Original logic - only show students with positive main balance
-                                    $showStudent = ($mainBalance > 0);
-                                }
-                            @endphp
-                            @if($showStudent)
+                          
                             <tr>
                                 <td>
                                     {{ $key+1 }}
@@ -182,7 +168,6 @@
                                     {{ number_format($data['total_balance'][$key], 2) }}
                                 </td>
                             </tr>
-                            @endif
                         @endforeach 
                     </tbody>
                 </table>
