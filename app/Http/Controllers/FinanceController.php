@@ -4926,7 +4926,7 @@ class FinanceController extends Controller
             ['tblstudentclaim.groupid', 5],
             ['tblpaymentdtl.amount', '!=', 0]
             ])
-        ->select('tblpayment.ref_no','tblpayment.date', 'tblstudentclaim.name', 'tblpaymentdtl.amount', 'tblpayment.process_type_id', 'tblprogramme.progcode AS program', 'tblstudentclaim.id as claim_id');
+        ->select('tblpayment.ref_no','tblpayment.date', 'tblstudentclaim.name', 'tblpaymentdtl.amount', 'tblpayment.process_type_id', 'tblprogramme.progcode AS program', 'tblstudentclaim.id as claim_id', DB::raw("'tblpaymentdtl' as source_table"));
 
         $data['record3'] = DB::table('tblclaimdtl')
         ->leftJoin('tblclaim', 'tblclaimdtl.claim_id', 'tblclaim.id')
@@ -4939,7 +4939,7 @@ class FinanceController extends Controller
             ['tblclaimdtl.amount', '!=', 0]
             ])        
         ->unionALL($record3)
-        ->select('tblclaim.ref_no','tblclaim.date', 'tblstudentclaim.name', 'tblclaimdtl.amount', 'tblclaim.process_type_id', 'tblprogramme.progcode AS program', 'tblstudentclaim.id as claim_id')
+        ->select('tblclaim.ref_no','tblclaim.date', 'tblstudentclaim.name', 'tblclaimdtl.amount', 'tblclaim.process_type_id', 'tblprogramme.progcode AS program', 'tblstudentclaim.id as claim_id', DB::raw("'tblclaimdtl' as source_table"))
         ->orderBy('date')
         ->get();
 
@@ -5102,10 +5102,10 @@ class FinanceController extends Controller
 
         $data['value'] = $data['value'] + $data['sum3_2'];
         
-        // Add sum3_3 only for records where tblstudentclaim.id is 47
+        // Add sum3_3 only for records where tblstudentclaim.id is 47 AND from tblclaimdtl table
         $sum3_3_conditional = 0;
         foreach($data['record3'] as $record) {
-            if($record->claim_id == 47) {
+            if($record->claim_id == 47 && $record->source_table == 'tblclaimdtl') {
                 $sum3_3_conditional += $record->amount;
             }
         }
