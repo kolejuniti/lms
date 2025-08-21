@@ -13061,7 +13061,68 @@ class FinanceController extends Controller
 
                     }
 
-                    $data['sum3'] = end($data['total']);
+                    //FINE
+
+                    $record2 = DB::table('tblpaymentdtl')
+                    ->leftJoin('tblpayment', 'tblpaymentdtl.payment_id', 'tblpayment.id')
+                    ->leftJoin('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
+                    ->leftjoin('tblprogramme', 'tblpayment.program_id', 'tblprogramme.id')
+                    ->where([
+                        ['tblpayment.student_ic', $std->ic],
+                        ['tblpayment.process_status_id', 2],  
+                        ['tblstudentclaim.groupid', 4],
+                        ['tblpaymentdtl.amount', '!=', 0]
+                        ])
+                    ->select('tblpayment.ref_no','tblpayment.date', 'tblstudentclaim.name', 'tblpaymentdtl.amount', 'tblpayment.process_type_id', 'tblprogramme.progcode AS program');
+
+                    $data['record2'] = DB::table('tblclaimdtl')
+                    ->leftJoin('tblclaim', 'tblclaimdtl.claim_id', 'tblclaim.id')
+                    ->leftJoin('tblstudentclaim', 'tblclaimdtl.claim_package_id', 'tblstudentclaim.id')
+                    ->leftjoin('tblprogramme', 'tblclaim.program_id', 'tblprogramme.id')
+                    ->where([
+                        ['tblclaim.student_ic', $std->ic],
+                        ['tblclaim.process_status_id', 2],  
+                        ['tblstudentclaim.groupid', 4],
+                        ['tblclaimdtl.amount', '!=', 0]
+                        ])        
+                    ->unionALL($record2)
+                    ->select('tblclaim.ref_no','tblclaim.date', 'tblstudentclaim.name', 'tblclaimdtl.amount', 'tblclaim.process_type_id', 'tblprogramme.progcode AS program')
+                    ->orderBy('date')
+                    ->get();
+
+                    $val = 0;
+                    $data['sum1_2'] = 0;
+                    $data['sum2_2'] = 0;
+
+                    foreach($data['record2'] as $key => $req)
+                    {
+
+                        if(array_intersect([2,3,4,5,11], (array) $req->process_type_id))
+                        {
+
+                            $data['total2'][$key] = $val + $req->amount;
+
+                            $val = $val + $req->amount;
+
+                            $data['sum1_2'] += $req->amount;
+                            
+
+                        }elseif(array_intersect([1,5,6,7,8,9,10,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27], (array) $req->process_type_id))
+                        {
+
+                            $data['total2'][$key] = $val - $req->amount;
+
+                            $val = $val - $req->amount;
+
+                            $data['sum2_2'] += $req->amount;
+
+                        }
+
+                    }
+
+                    $data['sum3_2'] = end($data['total2']);
+
+                    $data['sum3'] = end($data['total']) + $data['sum3_2'];
 
                     if(in_array($std->semester, [7,8]))
                     {
@@ -13127,6 +13188,8 @@ class FinanceController extends Controller
 
                         }
 
+                        $data['value2'] = $data['value'] + $data['sum3_2'];
+
                         // if($std->ic == '060907101120')
                         // {
 
@@ -13138,7 +13201,7 @@ class FinanceController extends Controller
 
                         // }
 
-                        if($data['value'] > 0)
+                        if($data['value2'] > 0)
                         {
 
                             DB::table('students')->where('ic', $std->ic)->update(['block_status' => 1]);
