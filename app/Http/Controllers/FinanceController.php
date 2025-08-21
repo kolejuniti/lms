@@ -11011,8 +11011,8 @@ class FinanceController extends Controller
                 ['tblpayment.student_ic', $std->ic],
                 ['tblpayment.process_status_id', 2],  
                 ['tblstudentclaim.groupid', 5],
-                ['tblpaymentdtl.amount', '!=', 0],
-                ['tblstudentclaim.id', '==', 47]
+                ['tblstudentclaim.id', 47],
+                ['tblpaymentdtl.amount', '!=', 0]
                 ])
             ->select('tblpayment.ref_no','tblpayment.date', 'tblstudentclaim.name', 'tblpaymentdtl.amount', 'tblpayment.process_type_id', 'tblprogramme.progcode AS program', 'tblstudentclaim.id as claim_id', DB::raw("'tblpaymentdtl' as source_table"));
 
@@ -11024,8 +11024,8 @@ class FinanceController extends Controller
                 ['tblclaim.student_ic', $std->ic],
                 ['tblclaim.process_status_id', 2],  
                 ['tblstudentclaim.groupid', 5],
-                ['tblclaimdtl.amount', '!=', 0],
-                ['tblstudentclaim.id', '==', 47]
+                ['tblstudentclaim.id', 47],
+                ['tblclaimdtl.amount', '!=', 0]
                 ])        
             ->unionALL($record3)
             ->select('tblclaim.ref_no','tblclaim.date', 'tblstudentclaim.name', 'tblclaimdtl.amount', 'tblclaim.process_type_id', 'tblprogramme.progcode AS program', 'tblstudentclaim.id as claim_id', DB::raw("'tblclaimdtl' as source_table"))
