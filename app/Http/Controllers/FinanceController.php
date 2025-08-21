@@ -10771,6 +10771,19 @@ class FinanceController extends Controller
                                   ->select('tblsponsor_library.code AS name')
                                   ->first();
 
+            $data['days'][$key] = DB::table('tblpayment')
+                                  ->select('tblpayment.add_date', DB::raw('SUM(tblpaymentdtl.amount) as amount'), DB::raw('DATEDIFF(CURDATE(), tblpayment.add_date) as days'))
+                                  ->leftjoin('tblpaymentdtl', 'tblpayment.id', '=', 'tblpaymentdtl.payment_id')
+                                  ->leftjoin('tblstudentclaim', 'tblpaymentdtl.claim_type_id', '=', 'tblstudentclaim.id')
+                                  ->where('tblpayment.student_ic', $std->ic)
+                                  ->where('tblpayment.process_status_id', 2)
+                                  ->whereIn('tblpayment.process_type_id', [1])
+                                  ->whereIn('tblstudentclaim.groupid', [1])
+                                  ->groupBy('tblpayment.id')
+                                  ->orderBy('tblpayment.add_date', 'desc')
+                                  ->limit(1)
+                                  ->get();
+
             //B
 
             $data['sponsor'][$key] = DB::table('tblpackage_sponsorship')

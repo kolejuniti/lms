@@ -81,6 +81,15 @@
                             <th>
                                 Balance (RM)
                             </th>
+                            <th>
+                                Fine (RM)
+                            </th>
+                            <th>
+                                Other (RM)
+                            </th>
+                            <th>
+                                Days
+                            </th>
                         </tr>
                     </thead>
                     <tbody id="table">
@@ -180,6 +189,17 @@
                                 </td>
                                 <td>
                                     {{ number_format($data['total_balance'][$key], 2) }}
+                                </td>
+                                <td>
+                                    {{ number_format($data['fine_balance'][$key], 2) }}
+                                </td>
+                                <td>
+                                    {{ number_format($data['other_balance'][$key], 2) }}
+                                </td>
+                                <td>
+                                    @foreach($data['days'][$key] as $day)
+                                    {{ $day->days }}
+                                    @endforeach
                                 </td>
                             </tr>
                             @endif
