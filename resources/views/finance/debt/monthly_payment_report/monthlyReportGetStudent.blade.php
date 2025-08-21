@@ -98,9 +98,9 @@
                         @foreach ($data['student'] as $key => $std)
                             @php
                                 $showStudent = false;
-                                $mainBalance = $data['total_balance'][$key];
-                                $fineBalance = isset($data['fine_balance'][$key]) ? $data['fine_balance'][$key] : 0;
-                                $otherBalance = isset($data['other_balance'][$key]) ? $data['other_balance'][$key] : 0;
+                                $mainBalance = {{ number_format($data['total_balance'][$key], 2) }};
+                                $fineBalance = isset($data['fine_balance'][$key]) ? {{ number_format($data['fine_balance'][$key], 2) }} : 0;
+                                $otherBalance = isset($data['other_balance'][$key]) ? {{ number_format($data['other_balance'][$key], 2) }} : 0;
                                 
                                 if ($data['includeFineOther'] == 1) {
                                     // Include students with any positive balance (main, fine, or other)
@@ -113,7 +113,7 @@
                             @if($showStudent)
                             <tr>
                                 <td>
-                                    {{ $key+1 }} {{ $data['total_balance'][$key] }}
+                                    {{ $key+1 }}
                                 </td>
                                 <td>
                                     {{ $std->name }}
