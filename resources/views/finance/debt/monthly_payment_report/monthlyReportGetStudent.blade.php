@@ -81,7 +81,7 @@
                             <th>
                                 Balance (RM)
                             </th>
-                            @if(isset($data['includeFineOther']) && $data['includeFineOther'])
+                            @if(isset($data['includeFineOther']) && $data['includeFineOther'] == 1)
                             <th>
                                 Fine (RM)
                             </th>
@@ -102,7 +102,7 @@
                                 $fineBalance = isset($data['fine_balance'][$key]) ? $data['fine_balance'][$key] : 0;
                                 $otherBalance = isset($data['other_balance'][$key]) ? $data['other_balance'][$key] : 0;
                                 
-                                if (isset($data['includeFineOther']) && $data['includeFineOther']) {
+                                if (isset($data['includeFineOther']) && $data['includeFineOther'] == 1) {
                                     // Include students with any positive balance (main, fine, or other)
                                     $showStudent = ($mainBalance > 0 || $fineBalance > 0 || $otherBalance > 0);
                                 } else {
@@ -113,7 +113,7 @@
                             @if($showStudent)
                             <tr>
                                 <td>
-                                    {{ $key+1 }} {{ $data['includeFineOther'] }}
+                                    {{ $key+1 }}
                                 </td>
                                 <td>
                                     {{ $std->name }}
@@ -192,7 +192,7 @@
                                 <td>
                                     {{ number_format($data['total_balance'][$key], 2) }}
                                 </td>
-                                @if(isset($data['includeFineOther']) && $data['includeFineOther'])
+                                @if(isset($data['includeFineOther']) && $data['includeFineOther'] == 1)
                                 <td>
                                     {{ number_format($data['fine_balance'][$key], 2) }}
                                 </td>
