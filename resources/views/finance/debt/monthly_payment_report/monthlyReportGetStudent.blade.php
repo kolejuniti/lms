@@ -113,7 +113,7 @@
                             @if($showStudent)
                             <tr>
                                 <td>
-                                    {{ $key+1 }}
+                                    {{ $key+1 }} {{ $data['total_balance'][$key] }}
                                 </td>
                                 <td>
                                     {{ $std->name }}
