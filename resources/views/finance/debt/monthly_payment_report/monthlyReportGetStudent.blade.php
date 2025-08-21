@@ -81,12 +81,14 @@
                             <th>
                                 Balance (RM)
                             </th>
+                            @if(isset($data['includeFineOther']) && $data['includeFineOther'])
                             <th>
                                 Fine (RM)
                             </th>
                             <th>
                                 Other (RM)
                             </th>
+                            @endif
                             <th>
                                 Days
                             </th>
@@ -111,7 +113,7 @@
                             @if($showStudent)
                             <tr>
                                 <td>
-                                    {{ $key+1 }}
+                                    {{ $key+1 }} {{ $data['includeFineOther'] }}
                                 </td>
                                 <td>
                                     {{ $std->name }}
@@ -190,12 +192,14 @@
                                 <td>
                                     {{ number_format($data['total_balance'][$key], 2) }}
                                 </td>
+                                @if(isset($data['includeFineOther']) && $data['includeFineOther'])
                                 <td>
                                     {{ number_format($data['fine_balance'][$key], 2) }}
                                 </td>
                                 <td>
                                     {{ number_format($data['other_balance'][$key], 2) }}
                                 </td>
+                                @endif
                                 <td>
                                     @foreach($data['days'][$key] as $day)
                                     {{ $day->days }}
