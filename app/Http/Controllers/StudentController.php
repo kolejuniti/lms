@@ -1589,7 +1589,7 @@ class StudentController extends Controller
                     ['student_transcript.student_ic',  $student->ic],
                 ])
                 // ->whereIn('student_transcript.semester', $semesterArray)
-                ->select('student_transcript.*', 'students.name', 'students.no_matric', 'sessions.SessionName','transcript_status.status_name AS transcript_status_id')
+                ->select('student_transcript.id', 'students.name', 'students.no_matric', 'sessions.SessionName','transcript_status.status_name AS transcript_status_id')
                 ->get();
 
         return view('student.affair.result.studentResult', compact('data'));
