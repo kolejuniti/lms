@@ -202,7 +202,7 @@
             </div>
             <div class="row">
                <div class="col-md-12 text-right identity">
-                  <p>Received By :<br><strong>{{ $data['staff']->name }}</strong></p>
+                  <p>Received By :<br><strong>{{ $data['staff']->name ?? 'N/A' }}</strong></p>
                </div>
             </div>
          </div>

@@ -3444,7 +3444,19 @@ class FinanceController extends Controller
                            ->select('tblclaim.*', 'tblprogramme.progname AS program', 'A2.SessionName AS session')
                            ->first();
 
-        $data['staff'] = DB::table('users')->where('ic', $data['payment']->add_staffID)->first();
+        // Handle case where staff doesn't exist in users table
+        $data['staff'] = null;
+        if (!empty($data['payment']->add_staffID)) {
+            $data['staff'] = DB::table('users')->where('ic', $data['payment']->add_staffID)->first();
+        }
+        
+        // If staff not found, create a default staff object
+        if (!$data['staff']) {
+            $data['staff'] = (object) [
+                'name' => !empty($data['payment']->add_staffID) ? 'Staff Not Found' : 'No Staff Assigned',
+                'ic' => $data['payment']->add_staffID ?? 'N/A'
+            ];
+        }
 
         $data['detail'] = DB::table('tblclaimdtl')
                           ->join('tblstudentclaim', 'tblclaimdtl.claim_package_id', 'tblstudentclaim.id')
