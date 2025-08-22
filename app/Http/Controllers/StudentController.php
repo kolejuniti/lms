@@ -1578,7 +1578,7 @@ class StudentController extends Controller
                            ->join('tblprogramme', 'students.program', 'tblprogramme.id')
                            ->join('sessions AS t1', 'students.intake', 't1.SessionID')
                            ->join('sessions AS t2', 'students.session', 't2.SessionID')
-                           ->select('students.*', 'tblstudent_status.name AS statusName', 'tblprogramme.progname AS program', 'students.program AS progid', 't1.SessionName AS intake_name', 't2.SessionName AS session_name')
+                           ->select('students.name', 'students.ic', 'students.no_matric', 'tblstudent_status.name AS statusName', 'tblprogramme.progname AS program', 'students.program AS progid', 't1.SessionName AS intake_name', 't2.SessionName AS session_name')
                            ->where('ic',  $student->ic)->first();
 
         $data['result'] = DB::table('student_transcript')
