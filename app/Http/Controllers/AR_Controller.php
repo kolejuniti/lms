@@ -4342,8 +4342,8 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
         }
 
         try {
-            // Base query - same as the main getStudentReportR method
-            $query = DB::table('tblpayment as p1')
+            // Query for students with first payment matching criteria
+            $paymentQuery = DB::table('tblpayment as p1')
                 ->join('students', 'p1.student_ic', '=', 'students.ic')
                 ->leftjoin('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
                 ->leftjoin('tblsex', 'tblstudent_personal.sex_id', '=', 'tblsex.id')
@@ -4363,16 +4363,37 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
                     ['p1.process_status_id', '=', 2],
                     ['p1.process_type_id', '=', 1],
                     ['p1.semester_id', '=', 1],
-                ])->when($request->session != '', function ($query) use ($request){
+                ])
+                ->whereBetween('p1.date', [$request->from, $request->to])
+                ->when($request->session != '', function ($query) use ($request){
                     return $query->where('students.intake', $request->session);
                 })
                 ->when($request->EA != '', function ($query) use ($request){
                         return $query->where('tblstudent_personal.advisor_id', $request->EA);
                 })
-                ->whereBetween('p1.date', [$request->from, $request->to])
-                ->select('p1.id')
                 ->groupBy('p1.student_ic')
                 ->select('students.*', 'tblstudent_personal.no_tel','tblstudent_personal.qualification', 'tblsex.code AS sex', 'sessions.SessionName', 'tblprogramme.progcode', 'tbledu_advisor.name AS ea', 'p1.date as date_register');
+
+            // Query for yayasan students (regardless of payment status)
+            $yayasanQuery = DB::table('students')
+                ->leftjoin('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
+                ->leftjoin('tblsex', 'tblstudent_personal.sex_id', '=', 'tblsex.id')
+                ->leftjoin('sessions', 'students.intake', 'sessions.SessionID')
+                ->leftjoin('tblprogramme', 'students.program', 'tblprogramme.id')
+                ->leftjoin('tbledu_advisor', 'tblstudent_personal.advisor_id', 'tbledu_advisor.id')
+                ->where('tblstudent_personal.yayasan', '=', 1)
+                ->when($request->session != '', function ($query) use ($request){
+                    return $query->where('students.intake', $request->session);
+                })
+                ->when($request->EA != '', function ($query) use ($request){
+                        return $query->where('tblstudent_personal.advisor_id', $request->EA);
+                })
+                ->select('students.*', 'tblstudent_personal.no_tel','tblstudent_personal.qualification', 'tblsex.code AS sex', 'sessions.SessionName', 'tblprogramme.progcode', 'tbledu_advisor.name AS ea', DB::raw('NULL as date_register'));
+
+            // Combine both queries using UNION and wrap in a subquery for additional filtering
+            $unionQuery = $paymentQuery->union($yayasanQuery);
+            $query = DB::table(DB::raw("({$unionQuery->toSql()}) as combined_students"))
+                ->setBindings($unionQuery->getBindings());
 
             // Apply filters based on convert and offered parameters (same as main method)
             if($request->has('convert') && $request->has('offered')) {
@@ -4380,20 +4401,20 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
                     // This would be contradictory, so default to showing all
                 } 
                 else if($request->convert == "false") {
-                    $query->where('students.status', '=', 1);
+                    $query->where('combined_students.status', '=', 1);
                 }
                 else if($request->offered == "false") {
-                    $query->where('students.status', '!=', 1);
+                    $query->where('combined_students.status', '!=', 1);
                 }
             }
             else if($request->has('convert') && $request->convert == "false") {
-                $query->where('students.status', '=', 1);
+                $query->where('combined_students.status', '=', 1);
             }
             else if($request->has('offered') && $request->offered == "false") {
-                $query->where('students.status', '!=', 1);
+                $query->where('combined_students.status', '!=', 1);
             }
 
-            $students = $query->get();
+            $students = $query->select('combined_students.*')->get();
             
             // Filter students based on the aging category and status type
             $filteredStudents = $students->filter(function($student) use ($request) {
