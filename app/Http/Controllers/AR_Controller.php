@@ -5951,10 +5951,9 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
             'program' => DB::table('tblprogramme')->get(),
             'session' => DB::table('sessions')->get(),
             'semester' => DB::table('semester')->get(),
-            'period' => DB::table('tblresult_period')->first(),
-            'program_data' => DB::table('tblresult_program')->get(),
-            'session_data' => DB::table('tblresult_session')->get(),
-            'semester_data' => DB::table('tblresult_semester')->get()
+            'periods' => DB::table('tblresult_period')
+                        ->orderBy('created_at', 'desc')
+                        ->get()
         ];
 
         return view('pendaftar_akademik.student.result_overall.resultOverall', compact('data'));
@@ -5963,44 +5962,64 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
 
     public function resultOverallSubmit(Request $request)
     {
-
         $data = json_decode($request->submitData);
 
-        DB::table('tblresult_period')->upsert([
-            'id' => 1,
+        // Insert new record instead of updating existing one
+        DB::table('tblresult_period')->insert([
             'Start' => $data->from,
-            'END' => $data->to
-        ],['id']);
+            'End' => $data->to,
+            'program' => json_encode($data->program),
+            'session' => json_encode($data->session),
+            'semester' => json_encode($data->semester),
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
 
-        DB::table('tblresult_program')->truncate();
+        return response()->json(['success' => 'Data has been saved successfully!']);
 
-        DB::table('tblresult_session')->truncate();
+    }
 
-        DB::table('tblresult_semester')->truncate();
+    public function resultOverallEdit(Request $request, $id)
+    {
+        $data = json_decode($request->submitData);
 
-        foreach($data->program as $prg)
-        {
-            DB::table('tblresult_program')->insert([
-                'program_id' => $prg
+        DB::table('tblresult_period')
+            ->where('id', $id)
+            ->update([
+                'Start' => $data->from,
+                'End' => $data->to,
+                'program' => json_encode($data->program),
+                'session' => json_encode($data->session),
+                'semester' => json_encode($data->semester),
+                'updated_at' => now()
             ]);
-        }
-
-        foreach($data->session as $ses)
-        {
-            DB::table('tblresult_session')->insert([
-                'session_id' => $ses
-            ]);
-        }
-
-        foreach($data->semester as $sem)
-        {
-            DB::table('tblresult_semester')->insert([
-                'semester_id' => $sem
-            ]);
-        }
 
         return response()->json(['success' => 'Data has been updated successfully!']);
+    }
 
+    public function resultOverallDelete(Request $request, $id)
+    {
+        DB::table('tblresult_period')
+            ->where('id', $id)
+            ->delete();
+
+        return response()->json(['success' => 'Data has been deleted successfully!']);
+    }
+
+    public function resultOverallGet(Request $request, $id)
+    {
+        $period = DB::table('tblresult_period')
+                    ->where('id', $id)
+                    ->first();
+
+        if ($period) {
+            // Decode JSON data for frontend
+            $period->program = json_decode($period->program);
+            $period->session = json_decode($period->session);
+            $period->semester = json_decode($period->semester);
+        }
+
+        return response()->json($period);
     }
 
     public function slipFilter()
