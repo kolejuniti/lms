@@ -449,10 +449,10 @@
                         <tbody>
                             <tr>
                                 <td style="text-align:center">
-                                    {{ $data['WM'] }}
+                                    {{ $data['PM'] }}
                                 </td>
                                 <td style="text-align:center">
-                                    {{ $data['WF'] }}
+                                    {{ $data['PF'] }}
                                 </td>
                             </tr>
                         </tbody>
