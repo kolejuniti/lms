@@ -679,6 +679,7 @@ class PendaftarController extends Controller
                 'parlimen' => $request->parlimen,
                 'qualification' => $request->qualification,
                 'oku' => $request->oku,
+                'yayasan' => $request->yayasan,
                 'no_jkm' => $request->jkm
             ]);
 
@@ -1011,6 +1012,7 @@ class PendaftarController extends Controller
             'parlimen' => $request->parlimen,
             'qualification' => $request->qualification,
             'oku' => $request->oku,
+            'yayasan' => $request->yayasan,
             'no_jkm' => $request->jkm
             ]
         );

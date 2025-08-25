@@ -250,7 +250,13 @@
                         </div>
                       </div>
                       <div class="row">
-                        <div class="col-md-6 mt-4">
+                        <div class="col-md-3 mt-4">
+                          <div class="form-group">
+                              <input type="checkbox" id="yayasan" class="filled-in" name="yayasan" value="1">
+                              <label for="yayasan">YAYASAN</label>
+                          </div>
+                        </div>
+                        <div class="col-md-3 mt-4">
                           <div class="form-group">
                               <input type="checkbox" id="oku" class="filled-in" name="oku" value="1">
                               <label for="oku">OKU</label>
