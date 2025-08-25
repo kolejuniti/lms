@@ -31,6 +31,9 @@
                                     <th style="width: 5%">
                                         Amount
                                     </th>
+                                    <th style="width: 5%">
+                                        Remark
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody id="table">
@@ -62,6 +65,9 @@
                                     </td>
                                     <td>
                                     {{ number_format($req->amount, 2, '.', '') }}
+                                    </td>
+                                    <td>
+                                    {{ $req->remark }}
                                     </td>
                                 </tr>
                                 @endforeach

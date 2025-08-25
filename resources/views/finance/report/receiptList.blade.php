@@ -1,5 +1,4 @@
-@extends((Auth::user()->usrtype == "RGS") ? 'layouts.pendaftar' : 'layouts.finance')
-
+@extends((Auth::user()->usrtype == "TS") ? '../layouts.treasurer' : (Auth::user()->usrtype == "FN" ? '../layouts.finance' : (Auth::user()->usrtype == "AR" ? '../layouts.pendaftar_akademik' : (Auth::user()->usrtype == "HEA" ? '../layouts.hea' : (Auth::user()->usrtype == "OTR" ? '../layouts.other_user' : (Auth::user()->usrtype == "RGS") ? 'layouts.pendaftar' : '')))))
 
 @section('main')
 <style>
