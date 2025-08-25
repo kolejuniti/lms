@@ -331,6 +331,7 @@ li a {
 						<li><a href="{{ route('pendaftar') }}" class="{{ (route('pendaftar') == Request::url()) ? 'active' : ''}}">Student List</a></li>
 						<li><a href="{{ route('pendaftar.student.edit') }}" class="{{ (route('pendaftar.student.edit') == Request::url()) ? 'active' : ''}}">Student Info</a></li>
 						<li><a href="{{ route('treasurer.payment.debit') }}" class="{{ (route('treasurer.payment.debit') == Request::url()) ? 'active' : ''}}">Debit Note</a></li>
+						<li><a href="{{ route('finance.receiptList') }}" class="{{ (route('finance.receiptList') == Request::url()) ? 'active' : ''}}">Receipt Report</a></li>
 					</ul>
 				</li>
 				<li class="treeview">
