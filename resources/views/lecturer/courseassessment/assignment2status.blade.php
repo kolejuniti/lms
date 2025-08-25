@@ -172,7 +172,7 @@
                       $course = DB::table('subjek')->where('id', Session::get('CourseIDS'))->first();
 
                       $courseName = $course->course_name ?? '';
-                      $showFooter = in_array($courseName, ['LATIHAN INDUSTRI', 'LATIHAN PRAKTIKAL', 'LATIHAN PRAKTIKUM', 'LATIHAN AMALI (PRAKTIKAL)', 'INDUSTRIAL TRAINING']);
+                      $showFooter = in_array($courseName, ['LATIHAN INDUSTRI', 'LATIHAN PRAKTIKAL', 'LATIHAN PRAKTIKUM', 'LATIHAN AMALI (PRAKTIKAL)', 'INDUSTRIAL TRAINING', 'PRACTICAL TRAINING']);
                   }
               }
               @endphp
