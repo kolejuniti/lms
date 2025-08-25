@@ -3886,36 +3886,43 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
 
         if($request->from && $request->to)
         {
-            $query = DB::table('tblpayment as p1')
-            ->join('students', 'p1.student_ic', '=', 'students.ic')
+            $query = DB::table('students')
             ->leftjoin('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
             ->leftjoin('tblsex', 'tblstudent_personal.sex_id', '=', 'tblsex.id')
             ->leftjoin('sessions', 'students.intake', 'sessions.SessionID')
             ->leftjoin('tblprogramme', 'students.program', 'tblprogramme.id')
             ->leftjoin('tbledu_advisor', 'tblstudent_personal.advisor_id', 'tbledu_advisor.id')
-            ->join(DB::raw('(SELECT student_ic, MIN(date) as first_payment_date 
+            ->leftjoin(DB::raw('(SELECT student_ic, MIN(date) as first_payment_date 
                     FROM tblpayment 
                     WHERE process_status_id = 2 
                     AND process_type_id = 1 
                     AND semester_id = 1
-                    GROUP BY student_ic) as p2'), function($join) {
-                $join->on('p1.student_ic', '=', 'p2.student_ic')
-                     ->on('p1.date', '=', 'p2.first_payment_date');
+                    GROUP BY student_ic) as p2'), 'students.ic', '=', 'p2.student_ic')
+            ->leftjoin('tblpayment as p1', function($join) {
+                $join->on('students.ic', '=', 'p1.student_ic')
+                     ->on('p2.first_payment_date', '=', 'p1.date')
+                     ->where('p1.process_status_id', '=', 2)
+                     ->where('p1.process_type_id', '=', 1)
+                     ->where('p1.semester_id', '=', 1);
             })
-            ->where([
-                ['p1.process_status_id', '=', 2],
-                ['p1.process_type_id', '=', 1],
-                ['p1.semester_id', '=', 1],
-            ])->when($request->session != '', function ($query) use ($request){
+            ->where(function($query) use ($request) {
+                // Either student has yayasan = 1 (no payment requirement)
+                $query->where('tblstudent_personal.yayasan', '=', 1)
+                      // OR student has the required payment within date range
+                      ->orWhere(function($subquery) use ($request) {
+                          $subquery->whereNotNull('p1.id')
+                                   ->whereBetween('p1.date', [$request->from, $request->to]);
+                      });
+            })
+            ->when($request->session != '', function ($query) use ($request){
                 return $query->where('students.intake', $request->session);
             })
             ->when($request->EA != '', function ($query) use ($request){
                     return $query->where('tblstudent_personal.advisor_id', $request->EA);
             })
-            ->whereBetween('p1.date', [$request->from, $request->to])
-            ->select('p1.id')
-            ->groupBy('p1.student_ic')
-            ->select('students.*', 'tblstudent_personal.no_tel','tblstudent_personal.qualification', 'tblsex.code AS sex', 'sessions.SessionName', 'tblprogramme.progcode', 'tbledu_advisor.name AS ea', 'p1.date as date_register');
+            ->groupBy('students.ic')
+            ->select('students.*', 'tblstudent_personal.no_tel','tblstudent_personal.qualification', 'tblsex.code AS sex', 'sessions.SessionName', 'tblprogramme.progcode', 'tbledu_advisor.name AS ea', 
+                DB::raw('COALESCE(p1.date, students.created_at) as date_register'));
 
             // By default, include all statuses (combined)
             // Handle the filter logic based on convert and offered parameters
