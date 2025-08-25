@@ -3477,6 +3477,9 @@ class PendaftarController extends Controller
             $data['R2M'] = 0;
             $data['R2F'] = 0;
 
+            $data['PM'] = 0;
+            $data['PF'] = 0;
+
             $data['WM'] = 0;
             $data['WF'] = 0;
 
@@ -3507,7 +3510,12 @@ class PendaftarController extends Controller
 
             // Use the base query for studentR2
             $data['studentR2'] = ($baseQuery)()
-                ->wherein('students.status', [2,6,17])
+                ->wherein('students.status', [2,17])
+                ->get();
+
+            // Use the base query for studentR2
+            $data['postponed'] = ($baseQuery)()
+                ->wherein('students.status', [6])
                 ->get();
 
             // Use the base query for studentR2
@@ -3595,6 +3603,49 @@ class PendaftarController extends Controller
                 }
 
                 $data['quaR2'][$key] = DB::table('tblqualification_std')->where('id', $student->qualification)->value('name');
+
+            }
+
+            foreach($data['postponed'] as $key => $student)
+            {
+
+                $results = [];
+
+                $data['resultPostponed'][] = DB::table('tblpayment')
+                                ->leftjoin('tblpaymentdtl', 'tblpayment.id', 'tblpaymentdtl.payment_id')
+                                ->leftjoin('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
+                                ->where('tblpayment.student_ic', $student->ic)
+                                ->where('tblpayment.process_status_id', 2)
+                                ->whereNotIn('tblpayment.process_type_id', [8])
+                                ->whereNotIn('tblstudentclaim.groupid', [4,5])
+                                ->select(
+
+                                    DB::raw('CASE
+                                                WHEN IFNULL(SUM(tblpaymentdtl.amount), 0) < 250 THEN "R"
+                                                WHEN IFNULL(SUM(tblpaymentdtl.amount), 0) >= 250 THEN "R1"
+                                            END AS group_alias'),
+                                    DB::raw('IFNULL(SUM(tblpaymentdtl.amount), 0) AS amount')
+
+                                )->first();
+
+                $data['lastPostponed'][$key] = DB::table('tblstudent_log')
+                                              ->where([
+                                                ['student_ic', $student->ic],
+                                                ['status_id', 6]
+                                              ])->orderBy('id', 'DESC')->value('date');
+
+                if($student->sex == 'L')
+                {
+                    $data['PM'] = $data['PM'] + 1;
+
+                }elseif($student->sex == 'P') 
+                {
+
+                    $data['PF'] = $data['PF'] + 1;
+                    
+                }
+
+                $data['quaP'][$key] = DB::table('tblqualification_std')->where('id', $student->qualification)->value('name');
 
             }
 
