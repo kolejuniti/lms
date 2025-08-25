@@ -390,10 +390,12 @@
                                                     "<th style='width: 1%'>No.</th>" +
                                                     "<th style='width: 20%'>Name</th>" +
                                                     "<th style='width: 5%'>No. Ic / Passport</th>" +
-                                                    "<th style='width: 5%'>Credit Semester</th>" +
+                                                    "<th style='width: 5%'>Total Credit Semester</th>" +
+                                                    "<th style='width: 5%'>Passed Credit Semester</th>" +
                                                     "<th style='width: 5%'>Grade Semester</th>" +
                                                     "<th style='width: 5%'>PNGS</th>" +
-                                                    "<th style='width: 5%'>Credit Total</th>" +
+                                                    "<th style='width: 5%'>Total Credit Total</th>" +
+                                                    "<th style='width: 5%'>Passed Credit Total</th>" +
                                                     "<th style='width: 5%'>Grade Total</th>" +
                                                     "<th style='width: 5%'>PNGK</th>" +
                                                     "<th style='width: 5%'>Result</th>" +
@@ -408,10 +410,12 @@
                                     "<td>" + (i+1) + "</td>" +
                                     "<td>" + item.name + "</td>" +
                                     "<td>" + item.student_ic + "</td>" +
+                                    "<td>" + item.total_credit_s + "</td>" +
                                     "<td>" + item.passed_credit_s + "</td>" +
                                     "<td>" + item.grade_pointer_s + "</td>" +
                                     "<td>" + item.gpa + "</td>" +
-                                    "<td>" + item.passed_credit_c+ "</td>" +
+                                    "<td>" + item.count_credit_c + "</td>" +
+                                    "<td>" + item.passed_credit_c + "</td>" +
                                     "<td>" + item.grade_pointer_c + "</td>" +
                                     "<td>" + item.cgpa + "</td>" +
                                     "<td>" + item.transcript_status_id + "</td>" +
@@ -509,10 +513,12 @@
                                               "<th style='width: 1%'>No.</th>" +
                                               "<th style='width: 20%'>Name</th>" +
                                               "<th style='width: 5%'>No. Ic / Passport</th>" +
-                                              "<th style='width: 5%'>Credit Semester</th>" +
+                                              "<th style='width: 5%'>Total Credit Semester</th>" +
+                                              "<th style='width: 5%'>Passed Credit Semester</th>" +
                                               "<th style='width: 5%'>Grade Semester</th>" +
                                               "<th style='width: 5%'>PNGS</th>" +
-                                              "<th style='width: 5%'>Credit Total</th>" +
+                                              "<th style='width: 5%'>Total Credit Total</th>" +
+                                              "<th style='width: 5%'>Passed Credit Total</th>" +
                                               "<th style='width: 5%'>Grade Total</th>" +
                                               "<th style='width: 5%'>PNGK</th>" +
                                               "<th style='width: 5%'>Result</th>" +
@@ -527,9 +533,11 @@
                               "<td>" + (i+1) + "</td>" +
                               "<td>" + item.name + "</td>" +
                               "<td>" + item.student_ic + "</td>" +
+                              "<td>" + item.total_credit_s + "</td>" +
                               "<td>" + item.passed_credit_s + "</td>" +
                               "<td>" + item.grade_pointer_s + "</td>" +
                               "<td>" + item.gpa + "</td>" +
+                              "<td>" + item.count_credit_c + "</td>" +
                               "<td>" + item.passed_credit_c + "</td>" +
                               "<td>" + item.grade_pointer_c + "</td>" +
                               "<td>" + item.cgpa + "</td>" +
