@@ -4345,6 +4345,7 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
             // Query for students with first payment matching criteria
             $paymentQuery = DB::table('tblpayment as p1')
                 ->join('students', 'p1.student_ic', '=', 'students.ic')
+                ->leftjoin('tblstudent_status', 'students.status', 'tblstudent_status.id')
                 ->leftjoin('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
                 ->leftjoin('tblsex', 'tblstudent_personal.sex_id', '=', 'tblsex.id')
                 ->leftjoin('sessions', 'students.intake', 'sessions.SessionID')
@@ -4372,10 +4373,11 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
                         return $query->where('tblstudent_personal.advisor_id', $request->EA);
                 })
                 ->groupBy('p1.student_ic')
-                ->select('students.*', 'tblstudent_personal.no_tel','tblstudent_personal.qualification', 'tblsex.code AS sex', 'sessions.SessionName', 'tblprogramme.progcode', 'tbledu_advisor.name AS ea', 'p1.date as date_register');
+                ->select('students.*', 'tblstudent_personal.no_tel','tblstudent_personal.qualification', 'tblsex.code AS sex', 'sessions.SessionName', 'tblprogramme.progcode', 'tbledu_advisor.name AS ea', 'p1.date as date_register', 'tblstudent_status.name AS status');
 
             // Query for yayasan students (regardless of payment status)
             $yayasanQuery = DB::table('students')
+                ->leftjoin('tblstudent_status', 'students.status', 'tblstudent_status.id')
                 ->leftjoin('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
                 ->leftjoin('tblsex', 'tblstudent_personal.sex_id', '=', 'tblsex.id')
                 ->leftjoin('sessions', 'students.intake', 'sessions.SessionID')
@@ -4388,7 +4390,7 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
                 ->when($request->EA != '', function ($query) use ($request){
                         return $query->where('tblstudent_personal.advisor_id', $request->EA);
                 })
-                ->select('students.*', 'tblstudent_personal.no_tel','tblstudent_personal.qualification', 'tblsex.code AS sex', 'sessions.SessionName', 'tblprogramme.progcode', 'tbledu_advisor.name AS ea', DB::raw('NULL as date_register'));
+                ->select('students.*', 'tblstudent_personal.no_tel','tblstudent_personal.qualification', 'tblsex.code AS sex', 'sessions.SessionName', 'tblprogramme.progcode', 'tbledu_advisor.name AS ea', DB::raw('NULL as date_register'), 'tblstudent_status.name AS status');
 
             // Combine both queries using UNION and wrap in a subquery for additional filtering
             $unionQuery = $paymentQuery->union($yayasanQuery);

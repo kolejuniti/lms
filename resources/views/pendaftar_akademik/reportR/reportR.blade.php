@@ -1577,7 +1577,7 @@
         const program = student.progcode || 'N/A';
         const session = student.SessionName || 'N/A';
         const ea = student.ea || 'N/A';
-        
+        const status = student.status || 'N/A';
         const row = `
           <tr>
             <td>${index + 1}</td>
@@ -1589,6 +1589,7 @@
             <td>${program}</td>
             <td>${session}</td>
             <td>${ea}</td>
+            <td>${status}</td>
           </tr>
         `;
         tbody.append(row);
@@ -1720,6 +1721,7 @@
                   <th style="width: 12%">Program</th>
                   <th style="width: 8%">Session</th>
                   <th style="width: 16%">EA</th>
+                  <th style="width: 16%">Status</th>
                 </tr>
               </thead>
               <tbody id="modalStudentTableBody">
