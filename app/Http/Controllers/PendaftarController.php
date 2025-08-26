@@ -637,6 +637,7 @@ class PendaftarController extends Controller
                 'password' => Hash::make('12345678'),
                 'status' => 1,
                 'campus_id' => 0,
+                'date' => date('Y-m-d'),
                 'date_offer' => $request->dol,
                 'student_status' => 1,
                 'stafID_add' => Auth::user()->ic,
