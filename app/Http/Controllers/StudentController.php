@@ -1557,6 +1557,8 @@ class StudentController extends Controller
 
     public function studentResult()
     {
+
+        dd('test');
         $student = Session::get('StudInfo');
 
         $firstSem = $student->semester;
