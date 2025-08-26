@@ -1540,7 +1540,7 @@
           $('#modalLoadingSpinner').hide();
           
           if (response.success && response.students) {
-            populateStudentTable(response.students, response.qualifications);
+            populateStudentTable(response.students, response.qualifications, response.logDates);
             $('#studentListContainer').show();
             $('#exportModalStudents').show();
           } else {
@@ -1561,12 +1561,12 @@
       });
     });
     
-    function populateStudentTable(students, qualifications) {
+    function populateStudentTable(students, qualifications, logDates) {
       const tbody = $('#modalStudentTableBody');
       tbody.empty();
       
       if (students.length === 0) {
-        tbody.append('<tr><td colspan="9" class="text-center">No students found</td></tr>');
+        tbody.append('<tr><td colspan="11" class="text-center">No students found</td></tr>');
         return;
       }
       
@@ -1578,6 +1578,12 @@
         const session = student.SessionName || 'N/A';
         const ea = student.ea || 'N/A';
         const status_name = student.status_name || 'N/A';
+        
+        // Get log date for status 4 students, show only if available
+        const logDate = (student.status == 4 && logDates && logDates[student.ic]) 
+          ? logDates[student.ic] 
+          : 'N/A';
+        
         const row = `
           <tr>
             <td>${index + 1}</td>
@@ -1590,6 +1596,7 @@
             <td>${session}</td>
             <td>${ea}</td>
             <td>${status_name}</td>
+            <td>${logDate}</td>
           </tr>
         `;
         tbody.append(row);
@@ -1713,15 +1720,16 @@
               <thead class="table-dark">
                 <tr>
                   <th style="width: 4%">No.</th>
-                  <th style="width: 18%">Name</th>
-                  <th style="width: 12%">IC No.</th>
-                  <th style="width: 12%">Matric No.</th>
-                  <th style="width: 10%">Phone</th>
-                  <th style="width: 8%">Gender</th>
-                  <th style="width: 12%">Program</th>
-                  <th style="width: 8%">Session</th>
-                  <th style="width: 16%">EA</th>
-                  <th style="width: 16%">Status</th>
+                  <th style="width: 16%">Name</th>
+                  <th style="width: 11%">IC No.</th>
+                  <th style="width: 11%">Matric No.</th>
+                  <th style="width: 9%">Phone</th>
+                  <th style="width: 7%">Gender</th>
+                  <th style="width: 11%">Program</th>
+                  <th style="width: 7%">Session</th>
+                  <th style="width: 14%">EA</th>
+                  <th style="width: 10%">Status</th>
+                  <th style="width: 10%">Log Date</th>
                 </tr>
               </thead>
               <tbody id="modalStudentTableBody">

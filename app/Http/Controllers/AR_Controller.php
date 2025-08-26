@@ -4479,11 +4479,25 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
                 }
             });
 
-            // Get qualifications for the filtered students
+            // Get qualifications and log dates for the filtered students
             $qualifications = [];
+            $logDates = [];
             foreach($filteredStudents as $student) {
                 if($student->qualification) {
                     $qualifications[$student->ic] = DB::table('tblqualification_std')->where('id', $student->qualification)->value('name');
+                }
+                
+                // For status 4 students in 'others' category, fetch the log date
+                if($request->status_type === 'others' && $student->status == 4) {
+                    $logDate = DB::table('tblstudent_log')
+                        ->where('student_ic', $student->ic)
+                        ->where('status_id', $student->status)
+                        ->orderBy('date', 'desc')
+                        ->value('date');
+                    
+                    if($logDate) {
+                        $logDates[$student->ic] = $logDate;
+                    }
                 }
             }
 
@@ -4491,6 +4505,7 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
                 'success' => true,
                 'students' => $filteredStudents->values(),
                 'qualifications' => $qualifications,
+                'logDates' => $logDates,
                 'count' => $filteredStudents->count()
             ]);
 
