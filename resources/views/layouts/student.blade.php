@@ -295,11 +295,6 @@
                     </a>
                   </li> --}}
                   <li>
-                    <a href="{{ route('student.affair.result') }}" >
-                      Result
-                    </a>
-                  </li>
-                  <li>
                     <a href="{{ asset('storage/takwim/Takwim Akademik Kolej UNITI Semester I Sesi 20252026 (Kemasukan Jun) - Edaran Pelajar.pdf') }}" target="_blank">
                       <span>Takwim Uniti (June)</span>
                     </a>
