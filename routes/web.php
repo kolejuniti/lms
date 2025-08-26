@@ -580,7 +580,7 @@ Route::get('/student/class/announcement/list', [App\Http\Controllers\StudentCont
 Route::get('/student/affair/statement', [App\Http\Controllers\StudentController::class, 'studentStatement'])->name('student.affair.statement');
 
 
-Route::get('/student/affair/result', [App\Http\Controllers\StudentController::class, 'studentResult'])->name('student.affair.result')->middleware('checkResultAccess');
+Route::get('/student/affair/result', [App\Http\Controllers\StudentController::class, 'studentResult'])->name('student.affair.result');
 
 
 Route::get('/student/report/{id}', [App\Http\Controllers\StudentController::class, 'studentreport'])->name('student.report.student');
