@@ -1577,7 +1577,7 @@
         const program = student.progcode || 'N/A';
         const session = student.SessionName || 'N/A';
         const ea = student.ea || 'N/A';
-        const status = student.status || 'N/A';
+        const status_name = student.status_name || 'N/A';
         const row = `
           <tr>
             <td>${index + 1}</td>
@@ -1589,7 +1589,7 @@
             <td>${program}</td>
             <td>${session}</td>
             <td>${ea}</td>
-            <td>${status}</td>
+            <td>${status_name}</td>
           </tr>
         `;
         tbody.append(row);

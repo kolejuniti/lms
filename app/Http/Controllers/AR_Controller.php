@@ -4373,7 +4373,7 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
                         return $query->where('tblstudent_personal.advisor_id', $request->EA);
                 })
                 ->groupBy('p1.student_ic')
-                ->select('students.*', 'tblstudent_personal.no_tel','tblstudent_personal.qualification', 'tblsex.code AS sex', 'sessions.SessionName', 'tblprogramme.progcode', 'tbledu_advisor.name AS ea', 'p1.date as date_register', 'tblstudent_status.name AS status');
+                ->select('students.*', 'tblstudent_personal.no_tel','tblstudent_personal.qualification', 'tblsex.code AS sex', 'sessions.SessionName', 'tblprogramme.progcode', 'tbledu_advisor.name AS ea', 'p1.date as date_register', 'tblstudent_status.name AS status_name');
 
             // Query for yayasan students (regardless of payment status)
             $yayasanQuery = DB::table('students')
@@ -4390,7 +4390,7 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
                 ->when($request->EA != '', function ($query) use ($request){
                         return $query->where('tblstudent_personal.advisor_id', $request->EA);
                 })
-                ->select('students.*', 'tblstudent_personal.no_tel','tblstudent_personal.qualification', 'tblsex.code AS sex', 'sessions.SessionName', 'tblprogramme.progcode', 'tbledu_advisor.name AS ea', DB::raw('NULL as date_register'), 'tblstudent_status.name AS status');
+                ->select('students.*', 'tblstudent_personal.no_tel','tblstudent_personal.qualification', 'tblsex.code AS sex', 'sessions.SessionName', 'tblprogramme.progcode', 'tbledu_advisor.name AS ea', DB::raw('NULL as date_register'), 'tblstudent_status.name AS status_name');
 
             // Combine both queries using UNION and wrap in a subquery for additional filtering
             $unionQuery = $paymentQuery->union($yayasanQuery);
