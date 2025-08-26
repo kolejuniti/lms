@@ -1729,7 +1729,7 @@
                   <th style="width: 7%">Session</th>
                   <th style="width: 14%">EA</th>
                   <th style="width: 10%">Status</th>
-                  <th style="width: 10%">Log Date</th>
+                  <th style="width: 10%">Date Withdraw</th>
                 </tr>
               </thead>
               <tbody id="modalStudentTableBody">
