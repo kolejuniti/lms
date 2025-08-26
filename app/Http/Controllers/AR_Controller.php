@@ -3926,6 +3926,7 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
             ->leftjoin('tblprogramme', 'students.program', 'tblprogramme.id')
             ->leftjoin('tbledu_advisor', 'tblstudent_personal.advisor_id', 'tbledu_advisor.id')
             ->where('tblstudent_personal.yayasan', '=', 1)
+            ->whereBetween('students.date_add', [$request->from, $request->to])
             ->when($request->session != '', function ($query) use ($request){
                 return $query->where('students.intake', $request->session);
             })
