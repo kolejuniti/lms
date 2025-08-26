@@ -295,8 +295,7 @@
                     </a>
                   </li> --}}
                   <li>
-                    <a href="{{ route('student.affair.result') }}" 
-                      class="{{ (route('student.affair.result') == Request::url()) ? 'active' : ''}}">
+                    <a href="{{ route('student.affair.result') }}" >
                       Result
                     </a>
                   </li>
