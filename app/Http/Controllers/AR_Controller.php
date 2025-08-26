@@ -3932,7 +3932,7 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
             ->when($request->EA != '', function ($query) use ($request){
                     return $query->where('tblstudent_personal.advisor_id', $request->EA);
             })
-            ->select('students.*', 'tblstudent_personal.no_tel','tblstudent_personal.qualification', 'tblsex.code AS sex', 'sessions.SessionName', 'tblprogramme.progcode', 'tbledu_advisor.name AS ea', DB::raw('NULL as date_register'));
+            ->select('students.*', 'tblstudent_personal.no_tel','tblstudent_personal.qualification', 'tblsex.code AS sex', 'sessions.SessionName', 'tblprogramme.progcode', 'tbledu_advisor.name AS ea', 'students.date_add as date_register');
 
             // Combine both queries using UNION and wrap in a subquery for additional filtering
             $unionQuery = $paymentQuery->union($yayasanQuery);
