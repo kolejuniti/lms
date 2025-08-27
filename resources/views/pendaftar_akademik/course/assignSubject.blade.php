@@ -91,6 +91,9 @@
                     <a type="button" class="waves-effect waves-light btn btn-info btn-sm" onclick="submit()">
                         <i class="fa fa-plus"></i> <i class="fa fa-object-group"></i> &nbsp Add Course
                     </a>
+                    <a type="button" class="waves-effect waves-light btn btn-success btn-sm ml-2" onclick="showCopyModal()">
+                        <i class="fa fa-copy"></i> &nbsp Copy Structure
+                    </a>
                 </div>
             </div>
         </div>
@@ -139,6 +142,91 @@
       <!-- /.card -->
     </section>
     <!-- /.content -->
+  </div>
+</div>
+
+<!-- Copy Structure Modal -->
+<div class="modal fade" id="copyStructureModal" tabindex="-1" role="dialog" aria-labelledby="copyStructureModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="copyStructureModalLabel">Copy Structure to Different Intake</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label class="form-label" for="copySourceProgram">Program</label>
+              <select class="form-select" id="copySourceProgram" name="copySourceProgram">
+                <option value="-" selected disabled>Select Program</option>
+                @foreach ($data['program'] as $prg)
+                <option value="{{ $prg->id }}">{{ $prg->progname }} ({{ $prg->progcode }})</option> 
+                @endforeach
+              </select>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label class="form-label" for="copySourceStructure">Source Structure</label>
+              <select class="form-select" id="copySourceStructure" name="copySourceStructure">
+                <option value="-" selected disabled>Select Structure</option>
+                @foreach ($data['structure'] as $stc)
+                <option value="{{ $stc->id }}">{{ $stc->structure_name}}</option> 
+                @endforeach
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label class="form-label" for="copySourceIntake">Source Intake</label>
+              <select class="form-select" id="copySourceIntake" name="copySourceIntake">
+                <option value="-" selected disabled>Select Source Intake</option>
+                @foreach ($data['intake'] as $crs)
+                <option value="{{ $crs->SessionID }}">{{ $crs->SessionName }}</option> 
+                @endforeach
+              </select>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label class="form-label" for="copyTargetIntakes">Target Intake(s)</label>
+              <select class="form-select" id="copyTargetIntakes" name="copyTargetIntakes" multiple style="height: 120px">
+                @foreach ($data['intake'] as $crs)
+                <option value="{{ $crs->SessionID }}">{{ $crs->SessionName }}</option> 
+                @endforeach
+              </select>
+              <small class="text-muted">Hold Ctrl/Cmd to select multiple intakes</small>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Preview Section -->
+        <div id="copyPreviewSection" style="display: none;">
+          <hr>
+          <h6>Preview of courses to be copied:</h6>
+          <div id="copyPreviewContent" class="table-responsive" style="max-height: 300px; overflow-y: auto;">
+            <!-- Preview content will be loaded here -->
+          </div>
+          <div id="copyPreviewSummary" class="mt-2">
+            <!-- Summary will be shown here -->
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-info" onclick="loadCopyPreview()">
+          <i class="fa fa-eye"></i> Preview
+        </button>
+        <button type="button" class="btn btn-success" onclick="executeCopy()" id="executeCopyBtn" disabled>
+          <i class="fa fa-copy"></i> Copy Structure
+        </button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -453,6 +541,151 @@
           }
       });
 
+  }
+
+  // Copy Structure Functions
+  function showCopyModal() {
+    $('#copyStructureModal').modal('show');
+    resetCopyModal();
+  }
+
+  function resetCopyModal() {
+    $('#copySourceProgram').val('-');
+    $('#copySourceStructure').val('-');
+    $('#copySourceIntake').val('-');
+    $('#copyTargetIntakes').val([]);
+    $('#copyPreviewSection').hide();
+    $('#executeCopyBtn').prop('disabled', true);
+  }
+
+  function loadCopyPreview() {
+    var program = $('#copySourceProgram').val();
+    var structure = $('#copySourceStructure').val();
+    var intake = $('#copySourceIntake').val();
+    var targetIntakes = $('#copyTargetIntakes').val();
+
+    if (!program || program === '-' || !structure || structure === '-' || 
+        !intake || intake === '-' || !targetIntakes || targetIntakes.length === 0) {
+      alert('Please select all required fields: Program, Source Structure, Source Intake, and Target Intake(s)');
+      return;
+    }
+
+    // Check if source intake is in target intakes
+    if (targetIntakes.includes(intake)) {
+      alert('Source intake cannot be the same as target intake(s)');
+      return;
+    }
+
+    $.ajax({
+      headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+      url: "{{ url('/AR/assignCourse/getStructurePreview') }}",
+      method: 'POST',
+      data: {
+        program: program,
+        structure: structure,
+        intake: intake
+      },
+      beforeSend: function() {
+        $('#copyPreviewContent').html('<div class="text-center"><i class="fa fa-spinner fa-spin"></i> Loading preview...</div>');
+      },
+      error: function(err) {
+        alert("Error loading preview");
+        console.log(err);
+      },
+      success: function(data) {
+        if (data.courses && data.courses.length > 0) {
+          var previewHtml = '<table class="table table-sm table-bordered">';
+          previewHtml += '<thead><tr><th>Course Code</th><th>Course Name</th><th>Semester</th></tr></thead><tbody>';
+          
+          data.courses.forEach(function(course) {
+            previewHtml += '<tr>';
+            previewHtml += '<td>' + course.course_code + '</td>';
+            previewHtml += '<td>' + course.course_name + '</td>';
+            previewHtml += '<td>' + course.semester_id + '</td>';
+            previewHtml += '</tr>';
+          });
+          
+          previewHtml += '</tbody></table>';
+          $('#copyPreviewContent').html(previewHtml);
+          
+          var targetIntakeNames = [];
+          $('#copyTargetIntakes option:selected').each(function() {
+            targetIntakeNames.push($(this).text());
+          });
+          
+          $('#copyPreviewSummary').html(
+            '<div class="alert alert-info">' +
+            '<strong>Summary:</strong> ' + data.count + ' courses will be copied to ' + 
+            targetIntakes.length + ' target intake(s): <em>' + targetIntakeNames.join(', ') + '</em>' +
+            '</div>'
+          );
+          
+          $('#copyPreviewSection').show();
+          $('#executeCopyBtn').prop('disabled', false);
+        } else {
+          $('#copyPreviewContent').html('<div class="alert alert-warning">No courses found in the selected structure and intake.</div>');
+          $('#copyPreviewSummary').html('');
+          $('#copyPreviewSection').show();
+          $('#executeCopyBtn').prop('disabled', true);
+        }
+      }
+    });
+  }
+
+  function executeCopy() {
+    var program = $('#copySourceProgram').val();
+    var sourceStructure = $('#copySourceStructure').val();
+    var sourceIntake = $('#copySourceIntake').val();
+    var targetIntakes = $('#copyTargetIntakes').val();
+
+    if (!program || !sourceStructure || !sourceIntake || !targetIntakes || targetIntakes.length === 0) {
+      alert('Please ensure all fields are selected');
+      return;
+    }
+
+    var copyData = {
+      program: program,
+      sourceStructure: sourceStructure,
+      sourceIntake: sourceIntake,
+      targetIntakes: targetIntakes
+    };
+
+    $.ajax({
+      headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+      url: "{{ url('/AR/assignCourse/copyStructure') }}",
+      method: 'POST',
+      data: {copyData: JSON.stringify(copyData)},
+      beforeSend: function() {
+        $('#executeCopyBtn').prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Copying...');
+      },
+      error: function(err) {
+        alert("Error during copy operation");
+        console.log(err);
+        $('#executeCopyBtn').prop('disabled', false).html('<i class="fa fa-copy"></i> Copy Structure');
+      },
+      success: function(data) {
+        $('#copyStructureModal').modal('hide');
+        
+        if (data.message === 'Copy operation completed successfully') {
+          var message = 'Copy completed successfully!\n';
+          message += 'Copied: ' + data.copiedCount + ' records\n';
+          if (data.skippedCount > 0) {
+            message += 'Skipped: ' + data.skippedCount + ' records (already exist)';
+          }
+          
+          alert(message);
+          
+          // Refresh the current view if filters are applied
+          if (selected_course && selected_structure && selected_intake) {
+            getCourse(selected_course, selected_structure, selected_intake);
+          }
+        } else {
+          alert(data.message || 'Copy operation failed');
+        }
+        
+        $('#executeCopyBtn').prop('disabled', false).html('<i class="fa fa-copy"></i> Copy Structure');
+      }
+    });
   }
   
 

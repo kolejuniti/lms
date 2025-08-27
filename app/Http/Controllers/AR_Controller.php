@@ -518,6 +518,163 @@ class AR_Controller extends Controller
 
     }
 
+    public function copyStructure(Request $request)
+    {
+        try {
+            $data = json_decode($request->copyData);
+            
+            // Validate required fields
+            if (!isset($data->sourceStructure) || !isset($data->sourceIntake) || 
+                !isset($data->targetIntakes) || !is_array($data->targetIntakes) || 
+                empty($data->targetIntakes) || !isset($data->program)) {
+                return response()->json([
+                    'message' => 'Please provide all required fields: source structure, source intake, target intakes, and program'
+                ], 400);
+            }
+
+            $sourceStructure = $data->sourceStructure;
+            $sourceIntake = $data->sourceIntake;
+            $targetIntakes = $data->targetIntakes;
+            $program = $data->program;
+
+            // Get all courses from source structure and intake
+            $sourceCourses = DB::table('subjek_structure')
+                ->where('structure', $sourceStructure)
+                ->where('intake_id', $sourceIntake)
+                ->where('program_id', $program)
+                ->get();
+
+            if ($sourceCourses->isEmpty()) {
+                return response()->json([
+                    'message' => 'No courses found in the source structure and intake'
+                ], 404);
+            }
+
+            $copiedCount = 0;
+            $skippedCount = 0;
+            $copiedRecords = [];
+
+            // Loop through each target intake
+            foreach ($targetIntakes as $targetIntake) {
+                // Skip if target intake is same as source intake
+                if ($targetIntake == $sourceIntake) {
+                    continue;
+                }
+
+                // Loop through each course in source structure
+                foreach ($sourceCourses as $course) {
+                    // Check if record already exists
+                    $exists = DB::table('subjek_structure')
+                        ->where('courseID', $course->courseID)
+                        ->where('structure', $course->structure)
+                        ->where('intake_id', $targetIntake)
+                        ->where('program_id', $course->program_id)
+                        ->where('semester_id', $course->semester_id)
+                        ->exists();
+
+                    if (!$exists) {
+                        // Insert new record
+                        $newId = DB::table('subjek_structure')->insertGetId([
+                            'courseID' => $course->courseID,
+                            'structure' => $course->structure,
+                            'intake_id' => $targetIntake,
+                            'program_id' => $course->program_id,
+                            'semester_id' => $course->semester_id,
+                            'created_at' => now(),
+                            'updated_at' => now()
+                        ]);
+                        
+                        $copiedCount++;
+                        $copiedRecords[] = $newId;
+                    } else {
+                        $skippedCount++;
+                    }
+                }
+            }
+
+            // Get copied records with details for response
+            if (!empty($copiedRecords)) {
+                $copiedData = DB::table('subjek_structure')
+                    ->join('subjek', function($join) {
+                        $join->on('subjek_structure.courseID', 'subjek.sub_id');
+                    })
+                    ->leftjoin('structure', 'subjek_structure.structure', 'structure.id')
+                    ->leftjoin('sessions', 'subjek_structure.intake_id', 'sessions.SessionID')
+                    ->leftjoin('tblprogramme', 'subjek_structure.program_id', 'tblprogramme.id')
+                    ->whereIn('subjek_structure.id', $copiedRecords)
+                    ->select(
+                        'subjek_structure.id', 
+                        'subjek.course_name', 
+                        'subjek.course_code',
+                        'structure.structure_name', 
+                        'subjek_structure.semester_id',
+                        'sessions.SessionName', 
+                        'tblprogramme.progname'
+                    )
+                    ->get();
+            } else {
+                $copiedData = [];
+            }
+
+            return response()->json([
+                'message' => 'Copy operation completed successfully',
+                'copiedCount' => $copiedCount,
+                'skippedCount' => $skippedCount,
+                'data' => $copiedData
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'An error occurred while copying structure: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function getStructurePreview(Request $request)
+    {
+        try {
+            $structure = $request->structure;
+            $intake = $request->intake;
+            $program = $request->program;
+
+            if (!$structure || !$intake || !$program) {
+                return response()->json([
+                    'message' => 'Please provide structure, intake, and program'
+                ], 400);
+            }
+
+            // Get courses in the selected structure and intake
+            $courses = DB::table('subjek_structure')
+                ->join('subjek', function($join) {
+                    $join->on('subjek_structure.courseID', 'subjek.sub_id');
+                })
+                ->leftjoin('structure', 'subjek_structure.structure', 'structure.id')
+                ->leftjoin('sessions', 'subjek_structure.intake_id', 'sessions.SessionID')
+                ->where('subjek_structure.structure', $structure)
+                ->where('subjek_structure.intake_id', $intake)
+                ->where('subjek_structure.program_id', $program)
+                ->select(
+                    'subjek.course_name',
+                    'subjek.course_code',
+                    'subjek_structure.semester_id',
+                    'structure.structure_name',
+                    'sessions.SessionName'
+                )
+                ->orderBy('subjek_structure.semester_id')
+                ->get();
+
+            return response()->json([
+                'courses' => $courses,
+                'count' => $courses->count()
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error fetching structure preview: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
     public function structureReport()
     {
 
