@@ -696,7 +696,7 @@ class AR_Controller extends Controller
                 ->where('program', $program)
                 ->where('intake', $intake)
                 ->where('semester', $semester)
-                ->where('status', 1) // Assuming 1 is active status
+                ->where('status', 2) // Assuming 1 is active status
                 ->get();
 
             if ($students->isEmpty()) {
@@ -821,7 +821,7 @@ class AR_Controller extends Controller
                 ->where('students.program', $program)
                 ->where('students.intake', $intake)
                 ->where('students.semester', $semester)
-                ->where('students.status', 1) // Active students only
+                ->where('students.status', 2) // Active students only
                 ->select(
                     'students.ic',
                     'students.name',
