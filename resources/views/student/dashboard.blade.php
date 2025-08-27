@@ -1485,16 +1485,35 @@
                 
                 <!-- Quick Access Item 3 -->
                 @php
-                $range = DB::table('tblresult_period')->first();
                 $now = now();
                 $block_status = Auth::guard('student')->user()->block_status;
-                $program_list = DB::table('tblresult_program')->pluck('program_id')->toArray();
-                $session_list = DB::table('tblresult_session')->pluck('session_id')->toArray();
-                $semester_list = DB::table('tblresult_semester')->pluck('semester_id')->toArray();
+                $student = Session::get('User');
+                
+                // Check if there are any active result periods that match this student
+                $hasActiveResultPeriod = false;
+                
+                if ($student) {
+                    $activePeriods = DB::table('tblresult_period')
+                        ->where('Start', '<=', $now)
+                        ->where('End', '>=', $now)
+                        ->get();
+                    
+                    foreach ($activePeriods as $period) {
+                        $programs = json_decode($period->program, true) ?: [];
+                        $sessions = json_decode($period->session, true) ?: [];
+                        $semesters = json_decode($period->semester, true) ?: [];
+                        
+                        if (in_array($student->program, $programs) && 
+                            in_array($student->session, $sessions) && 
+                            in_array($student->semester, $semesters)) {
+                            $hasActiveResultPeriod = true;
+                            break;
+                        }
+                    }
+                }
                 @endphp
 
-                @if($now >= $range->Start && $now <= $range->End && in_array(Auth::guard('student')->user()->program, $program_list) && in_array(Auth::guard('student')->user()->session, $session_list) && in_array(Auth::guard('student')->user()->semester, $semester_list) && $block_status == 0)
-                <div class="col-6 col-sm-4">
+                @if($hasActiveResultPeriod && $block_status == 0)                <div class="col-6 col-sm-4">
                   <a href="{{ route('student.affair.result') }}" class="quick-access-item">
                     <div class="icon-container bg-gradient-orange">
                       <i class="mdi mdi-chart-line fs-24"></i>
