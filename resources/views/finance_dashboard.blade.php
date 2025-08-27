@@ -168,7 +168,7 @@
         <div class="col-xl-8 col-12">
           <div class="box">
             <div class="box-header with-border">
-              <h4 class="box-title">Recent Payments</h4>
+              <h4 class="box-title">Pending FPX Payments</h4>
               <div class="box-controls pull-right">
                 <a href="{{ route('finance.receiptList') }}" class="btn btn-sm btn-primary">View All</a>
               </div>
@@ -180,6 +180,7 @@
                     <tr>
                       <th>Receipt No</th>
                       <th>Student</th>
+                      <th>Ic</th>
                       <th>Amount</th>
                       <th>Date</th>
                       <th>Status</th>
@@ -188,19 +189,22 @@
                   <tbody>
                     @php
                       $recentPayments = DB::table('tblpayment')
+                        ->join('tblpaymentmethod', 'tblpayment.payment_method', '=', 'tblpaymentmethod.id')
                         ->join('students', 'tblpayment.student_ic', '=', 'students.ic')
-                        ->select('tblpayment.*', 'students.name')
+                        ->where('tblpaymentmethod.	claim_method_id', '==', 17)
+                        ->select('tblpayment.*', 'students.name', 'students.no_matric', 'students.ic', 'tblpaymentmethod.name as payment_method')
                         ->orderBy('tblpayment.date', 'desc')
-                        ->limit(5)
+                        ->limit(10)
                         ->get();
                     @endphp
                     @forelse($recentPayments as $payment)
                       <tr>
-                        <td>{{ $payment->receiptno ?? 'N/A' }}</td>
-                        <td>{{ $payment->name }}</td>
+                        <td>{{ $payment->ref_no ?? 'N/A' }}</td>
+                        <td>{{ $payment->name }} ({{ $payment->no_matric }})</td>
+                        <td>{{ $payment->ic }}</td>
                         <td>RM {{ number_format($payment->amount, 2) }}</td>
                         <td>{{ date('d/m/Y', strtotime($payment->date)) }}</td>
-                        <td><span class="badge badge-success">Completed</span></td>
+                        <td><span class="badge badge-warning">Pending</span></td>
                       </tr>
                     @empty
                       <tr>
