@@ -11787,7 +11787,7 @@ class FinanceController extends Controller
                 $lastKnownBalance = 0;
                 
                 // Get transaction history for this program in the date range
-                $transactionHistory = $this->getProgramTransactionHistory($programId, $filter->from, $filter->to);
+                // $transactionHistory = $this->getProgramTransactionHistory($programId, $filter->from, $filter->to);
                 
                 // Get all claims and payments in one query with year extraction
                 $query = DB::select("
@@ -11854,7 +11854,7 @@ class FinanceController extends Controller
                 $results[] = [
                     'program' => $program,
                     'balances' => $yearlyBalances,
-                    'transactionHistory' => $transactionHistory
+                    // 'transactionHistory' => $transactionHistory
                 ];
             }
             
@@ -11883,7 +11883,7 @@ class FinanceController extends Controller
             foreach ($results as $result) {
                 $program = $result['program'];
                 $balances = $result['balances'];
-                $transactionHistory = $result['transactionHistory'];
+                // $transactionHistory = $result['transactionHistory'];
                 
                 $content .= '<tr>
                                 <td>'. $program->progcode .' - '. $program->progname .'</td>';
@@ -11892,30 +11892,30 @@ class FinanceController extends Controller
                     $content .= '<td>'. number_format($balances[$year], 2) .'</td>';
                 }
                 
-                // Build transaction history column
-                $content .= '<td style="max-width: 400px; word-wrap: break-word;">';
-                if (count($transactionHistory) > 0) {
-                    $content .= '<div class="transaction-history" style="max-height: 200px; overflow-y: auto;">';
-                    $content .= '<table class="table table-sm table-bordered">';
-                    $content .= '<thead><tr><th>Date</th><th>Type</th><th>Ref</th><th>Description</th><th>Amount</th></tr></thead>';
-                    $content .= '<tbody>';
+                // // Build transaction history column
+                // $content .= '<td style="max-width: 400px; word-wrap: break-word;">';
+                // if (count($transactionHistory) > 0) {
+                //     $content .= '<div class="transaction-history" style="max-height: 200px; overflow-y: auto;">';
+                //     $content .= '<table class="table table-sm table-bordered">';
+                //     $content .= '<thead><tr><th>Date</th><th>Type</th><th>Ref</th><th>Description</th><th>Amount</th></tr></thead>';
+                //     $content .= '<tbody>';
                     
-                    foreach ($transactionHistory as $transaction) {
-                        $typeClass = $transaction->source == 'claim' ? 'text-danger' : 'text-success';
-                        $content .= '<tr>';
-                        $content .= '<td>'. date('d/m/Y', strtotime($transaction->date)) .'</td>';
-                        $content .= '<td><span class="'. $typeClass .'">'. ucfirst($transaction->source) .'</span></td>';
-                        $content .= '<td>'. $transaction->ref_no .'</td>';
-                        $content .= '<td>'. $transaction->name .'</td>';
-                        $content .= '<td class="'. $typeClass .'">'. number_format($transaction->amount, 2) .'</td>';
-                        $content .= '</tr>';
-                    }
+                //     foreach ($transactionHistory as $transaction) {
+                //         $typeClass = $transaction->source == 'claim' ? 'text-danger' : 'text-success';
+                //         $content .= '<tr>';
+                //         $content .= '<td>'. date('d/m/Y', strtotime($transaction->date)) .'</td>';
+                //         $content .= '<td><span class="'. $typeClass .'">'. ucfirst($transaction->source) .'</span></td>';
+                //         $content .= '<td>'. $transaction->ref_no .'</td>';
+                //         $content .= '<td>'. $transaction->name .'</td>';
+                //         $content .= '<td class="'. $typeClass .'">'. number_format($transaction->amount, 2) .'</td>';
+                //         $content .= '</tr>';
+                //     }
                     
-                    $content .= '</tbody></table>';
-                    $content .= '</div>';
-                } else {
-                    $content .= '<em>No transactions in this period</em>';
-                }
+                //     $content .= '</tbody></table>';
+                //     $content .= '</div>';
+                // } else {
+                //     $content .= '<em>No transactions in this period</em>';
+                // }
                 $content .= '</td>';
                 
                 $content .= '</tr>';
