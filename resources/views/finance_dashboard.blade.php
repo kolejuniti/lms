@@ -189,7 +189,7 @@
                   <tbody>
                     @php
                       $recentPayments = DB::table('tblpayment')
-                        ->join('tblpaymentmethod', 'tblpayment.payment_method', '=', 'tblpaymentmethod.id')
+                        ->join('tblpaymentmethod', 'tblpayment.id', '=', 'tblpaymentmethod.payment_id')
                         ->join('students', 'tblpayment.student_ic', '=', 'students.ic')
                         ->where('tblpaymentmethod.claim_method_id', '==', 17)
                         ->select('tblpayment.*', 'students.name', 'students.no_matric', 'students.ic')
