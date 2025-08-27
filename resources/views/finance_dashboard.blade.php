@@ -356,12 +356,17 @@
                     <small>Loading...</small>
                   </div>
                 </div>
-                <div class="d-flex gap-10">
+                <div class="d-flex gap-10 mb-10">
                   <button class="btn btn-sm btn-outline-primary flex-fill" onclick="refreshUnreadStudents()">
-                    <i data-feather="refresh-cw" class="me-5"></i>Refresh
+                    <i data-feather="refresh-cw" class="me-5"></i>Method 1
                   </button>
-                  <a href="/all/massage/user" class="btn btn-sm btn-primary flex-fill">
-                    <i data-feather="message-square" class="me-5"></i>View All
+                  <button class="btn btn-sm btn-outline-secondary flex-fill" onclick="fetchUnreadStudentsAlternative()">
+                    <i data-feather="search" class="me-5"></i>Method 2
+                  </button>
+                </div>
+                <div class="d-flex gap-10">
+                  <a href="/all/massage/user" class="btn btn-sm btn-primary btn-block">
+                    <i data-feather="message-square" class="me-5"></i>View All Messages
                   </a>
                 </div>
               </div>
@@ -600,10 +605,22 @@
       method: 'GET',
       success: function(data) {
         $('#loading-students').hide();
+        console.log('Raw response:', data); // Debug log
         
         // Parse the HTML response to extract student data
         const $response = $(data);
-        const $tbody = $response.find('tbody');
+        console.log('Parsed response:', $response); // Debug log
+        
+        // Try different selectors to find the table body
+        let $tbody = $response.find('tbody#table');
+        if ($tbody.length === 0) {
+          $tbody = $response.find('tbody');
+        }
+        if ($tbody.length === 0) {
+          $tbody = $response.find('#complex_header2 tbody');
+        }
+        
+        console.log('Found tbody:', $tbody, 'Rows count:', $tbody.find('tr').length); // Debug log
         
         if ($tbody.find('tr').length === 0) {
           $('#unread-students-list').html('<div class="text-center text-muted"><small>No unread messages</small></div>');
@@ -611,28 +628,41 @@
         }
         
         let studentsHtml = '';
+        let studentCount = 0;
+        
         $tbody.find('tr').each(function(index) {
-          if (index < 3) { // Show only first 3 students in dashboard
-            const $row = $(this);
-            const name = $row.find('td').eq(1).text().trim();
-            const ic = $row.find('td').eq(2).text().trim();
-            const matric = $row.find('td').eq(3).text().trim();
+          const $row = $(this);
+          console.log('Processing row:', index, $row.html()); // Debug log
+          
+          // Get all td elements
+          const $cells = $row.find('td');
+          console.log('Cells count:', $cells.length); // Debug log
+          
+          if ($cells.length >= 4 && studentCount < 3) { // Show only first 3 students in dashboard
+            const name = $cells.eq(1).text().trim();
+            const ic = $cells.eq(2).text().trim();
+            const matric = $cells.eq(3).text().trim();
             
-            if (name && ic) {
+            console.log('Student data:', {name, ic, matric}); // Debug log
+            
+            if (name && ic && name !== '' && ic !== '') {
               studentsHtml += `
                 <div class="d-flex align-items-center justify-content-between mb-10 p-10 bg-light rounded">
                   <div class="flex-grow-1">
                     <small class="fw-bold">${name}</small><br>
-                    <small class="text-muted">${matric}</small>
+                    <small class="text-muted">${matric || 'No Matric'}</small>
                   </div>
                   <button class="btn btn-sm btn-success" onclick="openChatModal('student', {name: '${name}', no_matric: '${matric}', ic: '${ic}'})">
                     <i data-feather="message-circle"></i>
                   </button>
                 </div>
               `;
+              studentCount++;
             }
           }
         });
+        
+        console.log('Generated HTML:', studentsHtml); // Debug log
         
         if (studentsHtml) {
           $('#unread-students-list').html(studentsHtml);
@@ -641,12 +671,13 @@
             feather.replace();
           }
         } else {
-          $('#unread-students-list').html('<div class="text-center text-muted"><small>No unread messages</small></div>');
+          $('#unread-students-list').html('<div class="text-center text-muted"><small>No student data found</small></div>');
         }
       },
-      error: function() {
+      error: function(xhr, status, error) {
         $('#loading-students').hide();
-        $('#unread-students-list').html('<div class="text-center text-danger"><small>Error loading messages</small></div>');
+        console.error('AJAX Error:', {xhr, status, error}); // Debug log
+        $('#unread-students-list').html('<div class="text-center text-danger"><small>Error loading messages: ' + error + '</small></div>');
       }
     });
   }
@@ -656,6 +687,85 @@
     $('#loading-students').show();
     $('#unread-students-list').html('<div class="text-center text-muted" id="loading-students"><small>Loading...</small></div>');
     fetchUnreadStudents();
+  }
+
+  // Alternative function to fetch students using a different approach
+  function fetchUnreadStudentsAlternative() {
+    // Try to get the student data using jQuery to load the page content
+    $.get("{{ url('/all/massage/user') }}", function(data) {
+      $('#loading-students').hide();
+      console.log('Alternative fetch - Raw response:', data);
+      
+      // Look for the "New Message" section specifically
+      const $response = $(data);
+      const $newMessageTable = $response.find('#complex_header2');
+      
+      if ($newMessageTable.length > 0) {
+        console.log('Found new message table:', $newMessageTable);
+        
+        // Get the tbody content after the table is populated
+        setTimeout(function() {
+          const $tbody = $newMessageTable.find('tbody');
+          console.log('New message tbody:', $tbody, 'Rows:', $tbody.find('tr').length);
+          
+          processStudentRows($tbody);
+        }, 1000);
+      } else {
+        $('#unread-students-list').html('<div class="text-center text-muted"><small>Could not find message data</small></div>');
+      }
+    }).fail(function(xhr, status, error) {
+      $('#loading-students').hide();
+      console.error('Alternative AJAX Error:', {xhr, status, error});
+      $('#unread-students-list').html('<div class="text-center text-danger"><small>Error: ' + error + '</small></div>');
+    });
+  }
+
+  // Function to process student rows
+  function processStudentRows($tbody) {
+    if ($tbody.find('tr').length === 0) {
+      $('#unread-students-list').html('<div class="text-center text-muted"><small>No unread messages found</small></div>');
+      return;
+    }
+    
+    let studentsHtml = '';
+    let studentCount = 0;
+    
+    $tbody.find('tr').each(function(index) {
+      if (studentCount >= 3) return; // Only show first 3
+      
+      const $row = $(this);
+      const $cells = $row.find('td');
+      
+      if ($cells.length >= 4) {
+        const name = $cells.eq(1).text().trim();
+        const ic = $cells.eq(2).text().trim();
+        const matric = $cells.eq(3).text().trim();
+        
+        if (name && ic && name !== '' && ic !== '') {
+          studentsHtml += `
+            <div class="d-flex align-items-center justify-content-between mb-10 p-10 bg-light rounded">
+              <div class="flex-grow-1">
+                <small class="fw-bold">${name}</small><br>
+                <small class="text-muted">${matric || 'No Matric'}</small>
+              </div>
+              <button class="btn btn-sm btn-success" onclick="openChatModal('student', {name: '${name}', no_matric: '${matric}', ic: '${ic}'})">
+                <i data-feather="message-circle"></i>
+              </button>
+            </div>
+          `;
+          studentCount++;
+        }
+      }
+    });
+    
+    if (studentsHtml) {
+      $('#unread-students-list').html(studentsHtml);
+      if (typeof feather !== 'undefined') {
+        feather.replace();
+      }
+    } else {
+      $('#unread-students-list').html('<div class="text-center text-muted"><small>No valid student data found</small></div>');
+    }
   }
 
   // Message count functionality
@@ -688,8 +798,8 @@
     // Initial fetch when page loads
     fetchMessageCount();
     
-    // Also fetch unread students when page loads
-    fetchUnreadStudents();
+    // Also fetch unread students when page loads - try alternative method first
+    fetchUnreadStudentsAlternative();
   });
 </script>
 
