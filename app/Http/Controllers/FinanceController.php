@@ -11889,9 +11889,6 @@ class FinanceController extends Controller
                                 <th colspan="'. count($arrayYears) .'" style="text-align: center">
                                     AGING REPORT BY PROGRAM AND YEAR from '. $startYear .' UNTIL '. $currentYear;
             $content .= '</th>
-                                <th rowspan="2">
-                                    Transaction History ('. $filter->from .' to '. $filter->to .')
-                                </th>
                             </tr>
                             <tr>';
                             foreach($arrayYears as $year) {
