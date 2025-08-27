@@ -640,15 +640,36 @@ class SpotifyWidget {
         document.getElementById('spotify-player-section').style.display = 'block';
     }
     
+    showPlayerReady() {
+        // Update the track info to show player is ready
+        document.getElementById('track-name').textContent = 'Player Ready!';
+        document.getElementById('track-artist').textContent = 'Search for music or click a playlist to start playing';
+        
+        // You could also show a temporary notification here
+        console.log('✅ Spotify player is now ready for playback');
+    }
+    
     async initializePlayer() {
         if (!this.isAuthenticated) return;
         
-        // Get access token
-        await this.refreshAccessToken();
+        console.log('Initializing Spotify Player...');
         
         this.player = new Spotify.Player({
             name: 'EduHub Spotify Player',
-            getOAuthToken: cb => { cb(this.accessToken); },
+            getOAuthToken: async (cb) => {
+                try {
+                    const response = await fetch('/spotify/token');
+                    const data = await response.json();
+                    if (data.access_token) {
+                        console.log('Got access token for player');
+                        cb(data.access_token);
+                    } else {
+                        console.error('No access token received');
+                    }
+                } catch (error) {
+                    console.error('Error getting access token:', error);
+                }
+            },
             volume: this.volume
         });
         
@@ -672,8 +693,11 @@ class SpotifyWidget {
         
         // Ready
         this.player.addListener('ready', ({ device_id }) => {
-            console.log('Spotify Player ready with Device ID', device_id);
+            console.log('🎵 Spotify Player ready with Device ID:', device_id);
             this.deviceId = device_id;
+            
+            // Show a success message
+            this.showPlayerReady();
         });
         
         // Not ready
@@ -694,16 +718,21 @@ class SpotifyWidget {
     
     async refreshAccessToken() {
         try {
-            const response = await fetch('/spotify/refresh', { method: 'POST' });
+            const response = await fetch('/spotify/refresh', { 
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            });
+            
             if (response.ok) {
-                // Token refreshed, get new token from session
-                const checkResponse = await fetch('/spotify/check-auth');
-                const data = await checkResponse.json();
-                this.accessToken = data.access_token;
+                const data = await response.json();
+                return data.success;
             }
         } catch (error) {
             console.error('Error refreshing access token:', error);
         }
+        return false;
     }
     
     updatePlayerState(state) {
@@ -808,19 +837,40 @@ class SpotifyWidget {
     }
     
     async playTrack(uri) {
-        if (!this.player || !this.deviceId) return;
+        if (!this.player || !this.deviceId) {
+            console.error('Player not ready. Player:', !!this.player, 'Device ID:', this.deviceId);
+            return;
+        }
         
         try {
-            await fetch(`https://api.spotify.com/v1/me/player/play?device_id=${this.deviceId}`, {
+            console.log('Playing track:', uri, 'on device:', this.deviceId);
+            
+            // Get fresh access token
+            const tokenResponse = await fetch('/spotify/token');
+            const tokenData = await tokenResponse.json();
+            
+            if (!tokenData.access_token) {
+                console.error('No access token available for playback');
+                return;
+            }
+            
+            const response = await fetch(`https://api.spotify.com/v1/me/player/play?device_id=${this.deviceId}`, {
                 method: 'PUT',
                 headers: {
-                    'Authorization': `Bearer ${this.accessToken}`,
+                    'Authorization': `Bearer ${tokenData.access_token}`,
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
                     uris: [uri]
                 })
             });
+            
+            if (!response.ok) {
+                const errorData = await response.text();
+                console.error('Playback error:', response.status, errorData);
+            } else {
+                console.log('Track playback started successfully');
+            }
         } catch (error) {
             console.error('Error playing track:', error);
         }
@@ -865,19 +915,40 @@ class SpotifyWidget {
     }
     
     async playPlaylist(uri) {
-        if (!this.player || !this.deviceId) return;
+        if (!this.player || !this.deviceId) {
+            console.error('Player not ready for playlist. Player:', !!this.player, 'Device ID:', this.deviceId);
+            return;
+        }
         
         try {
-            await fetch(`https://api.spotify.com/v1/me/player/play?device_id=${this.deviceId}`, {
+            console.log('Playing playlist:', uri, 'on device:', this.deviceId);
+            
+            // Get fresh access token
+            const tokenResponse = await fetch('/spotify/token');
+            const tokenData = await tokenResponse.json();
+            
+            if (!tokenData.access_token) {
+                console.error('No access token available for playlist playback');
+                return;
+            }
+            
+            const response = await fetch(`https://api.spotify.com/v1/me/player/play?device_id=${this.deviceId}`, {
                 method: 'PUT',
                 headers: {
-                    'Authorization': `Bearer ${this.accessToken}`,
+                    'Authorization': `Bearer ${tokenData.access_token}`,
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
                     context_uri: uri
                 })
             });
+            
+            if (!response.ok) {
+                const errorData = await response.text();
+                console.error('Playlist playback error:', response.status, errorData);
+            } else {
+                console.log('Playlist playback started successfully');
+            }
         } catch (error) {
             console.error('Error playing playlist:', error);
         }

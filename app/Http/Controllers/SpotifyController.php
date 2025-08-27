@@ -27,12 +27,12 @@ class SpotifyController extends Controller
     public function authenticate()
     {
         // Debug logging
-        \Log::info('Spotify authenticate method called');
-        \Log::info('Client ID: ' . $this->clientId);
-        \Log::info('Redirect URI: ' . $this->redirectUri);
+        Log::info('Spotify authenticate method called');
+        Log::info('Client ID: ' . $this->clientId);
+        Log::info('Redirect URI: ' . $this->redirectUri);
         
         if (!$this->clientId || !$this->clientSecret) {
-            \Log::error('Spotify credentials not configured');
+            Log::error('Spotify credentials not configured');
             return redirect()->back()->with('error', 'Spotify is not properly configured. Please check your environment variables.');
         }
         
@@ -61,7 +61,7 @@ class SpotifyController extends Controller
         ]);
         
         $authUrl = 'https://accounts.spotify.com/authorize?' . $query;
-        \Log::info('Redirecting to Spotify: ' . $authUrl);
+        Log::info('Redirecting to Spotify: ' . $authUrl);
         
         return redirect($authUrl);
     }
@@ -260,6 +260,22 @@ class SpotifyController extends Controller
         return response()->json([
             'authenticated' => $isAuthenticated,
             'expires_at' => $expiresAt
+        ]);
+    }
+    
+    /**
+     * Get access token for Web Playback SDK
+     */
+    public function getToken()
+    {
+        $accessToken = $this->getValidAccessToken();
+        
+        if (!$accessToken) {
+            return response()->json(['error' => 'Not authenticated'], 401);
+        }
+        
+        return response()->json([
+            'access_token' => $accessToken
         ]);
     }
     

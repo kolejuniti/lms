@@ -45,6 +45,7 @@ Route::group(['prefix' => 'spotify'], function () {
     Route::get('/current', [App\Http\Controllers\SpotifyController::class, 'getCurrentPlayback'])->name('spotify.current');
     Route::post('/disconnect', [App\Http\Controllers\SpotifyController::class, 'disconnect'])->name('spotify.disconnect');
     Route::get('/check-auth', [App\Http\Controllers\SpotifyController::class, 'checkAuth'])->name('spotify.check');
+    Route::get('/token', [App\Http\Controllers\SpotifyController::class, 'getToken'])->name('spotify.token');
 });
 
 Route::get('/SA', [App\Http\Controllers\SuperAdminController::class, 'index']);
