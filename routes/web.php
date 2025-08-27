@@ -1130,3 +1130,15 @@ Route::get('/send-announcement', [App\Http\Controllers\AnnouncementStudentContro
 Route::post("/logout/custom",[App\Http\Controllers\LogoutController::class,"store"])->name('custom_logout');
 
 Route::get('/weather/current', 'App\Http\Controllers\WeatherController@getCurrentWeather');
+
+// Spotify Widget Routes
+Route::group(['prefix' => 'spotify', 'middleware' => 'auth'], function () {
+    Route::get('/auth', [App\Http\Controllers\SpotifyController::class, 'authenticate'])->name('spotify.auth');
+    Route::get('/callback', [App\Http\Controllers\SpotifyController::class, 'callback'])->name('spotify.callback');
+    Route::post('/refresh', [App\Http\Controllers\SpotifyController::class, 'refreshToken'])->name('spotify.refresh');
+    Route::get('/search', [App\Http\Controllers\SpotifyController::class, 'search'])->name('spotify.search');
+    Route::get('/playlists', [App\Http\Controllers\SpotifyController::class, 'getPlaylists'])->name('spotify.playlists');
+    Route::get('/current', [App\Http\Controllers\SpotifyController::class, 'getCurrentPlayback'])->name('spotify.current');
+    Route::post('/disconnect', [App\Http\Controllers\SpotifyController::class, 'disconnect'])->name('spotify.disconnect');
+    Route::get('/check-auth', [App\Http\Controllers\SpotifyController::class, 'checkAuth'])->name('spotify.check');
+});

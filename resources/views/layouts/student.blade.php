@@ -106,6 +106,14 @@
               </a>				
             </li>
             
+            <!-- Spotify Widget Toggle -->
+            <li class="spotify-toggle d-flex align-items-center">
+              <button class="messaging-btn" onclick="toggleSpotifyWidget()" title="Music Player">
+                <i data-feather="music" style="color: #1db954;"></i>
+                <div class="pulse-wave"></div>
+              </button>
+            </li>
+
             <!-- Student Messages Button -->
             <li class="messaging-dropdown d-flex align-items-center">
               <button class="messaging-btn" onclick="toggleMessagingPanel()">
@@ -1718,5 +1726,9 @@
   <script src="{{ asset('assets/src/js/pages/component-animations-css3.js')}}"></script>
   
   @yield('content')
+
+  <!-- Include Spotify Widget -->
+  @include('components.spotify-widget')
+
 </body>
 </html>
