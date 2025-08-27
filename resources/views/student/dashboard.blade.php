@@ -558,6 +558,109 @@
         </div>
       </div>
 
+      <!-- Quick Messaging Widget -->
+      <div class="row">
+        <div class="col-12">
+          <div class="box">
+            <div class="box-header with-border">
+              <h4 class="box-title modern-title">Quick Messages</h4>
+              <div class="box-controls pull-right">
+                <button class="btn btn-sm btn-primary" onclick="toggleMessagingPanel()">
+                  <i class="mdi mdi-message-text me-1"></i> View All
+                </button>
+              </div>
+            </div>
+            <div class="box-body p-0">
+              <div class="row g-0">
+                <!-- Admin Messages Section -->
+                <div class="col-xl-6 col-12">
+                  <div class="quick-message-section border-end">
+                    <div class="section-header">
+                      <h5 class="section-title">
+                        <i class="mdi mdi-account-tie text-primary me-2"></i>
+                        Admin Messages
+                      </h5>
+                    </div>
+                    <div class="admin-messages-container">
+                      <div class="admin-message-item" onclick="getMessage('FN', 'FN')">
+                        <div class="message-avatar bg-info">
+                          <i class="mdi mdi-currency-usd"></i>
+                        </div>
+                        <div class="message-details">
+                          <div class="message-name">UKP (Student Finance)</div>
+                          <div class="message-preview">Financial matters & payments</div>
+                        </div>
+                        <div class="message-badge">
+                          <span id="dashboard-ukp-count" class="count-circle hidden">0</span>
+                        </div>
+                      </div>
+                      
+                      <div class="admin-message-item" onclick="getMessage('RGS', 'RGS')">
+                        <div class="message-avatar bg-warning">
+                          <i class="mdi mdi-file-document"></i>
+                        </div>
+                        <div class="message-details">
+                          <div class="message-name">KRP (Registration)</div>
+                          <div class="message-preview">Course registration & enrollment</div>
+                        </div>
+                        <div class="message-badge">
+                          <span id="dashboard-krp-count" class="count-circle hidden">0</span>
+                        </div>
+                      </div>
+                      
+                      <div class="admin-message-item" onclick="getMessage('HEA', 'HEA')">
+                        <div class="message-avatar bg-success">
+                          <i class="mdi mdi-heart-pulse"></i>
+                        </div>
+                        <div class="message-details">
+                          <div class="message-name">HEP (Health)</div>
+                          <div class="message-preview">Health services & support</div>
+                        </div>
+                        <div class="message-badge">
+                          <span id="dashboard-hep-count" class="count-circle hidden">0</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Student Messages Section -->
+                <div class="col-xl-6 col-12">
+                  <div class="quick-message-section">
+                    <div class="section-header">
+                      <h5 class="section-title">
+                        <i class="mdi mdi-account-group text-primary me-2"></i>
+                        Student Messages
+                      </h5>
+                    </div>
+                    
+                    <!-- Quick Search -->
+                    <div class="student-search-container">
+                      <div class="search-input-group">
+                        <i class="mdi mdi-magnify search-icon"></i>
+                        <input type="text" id="dashboard-student-search" placeholder="Search students..." class="search-input">
+                        <div id="dashboard-search-results" class="search-results"></div>
+                      </div>
+                    </div>
+                    
+                    <!-- Recent Conversations -->
+                    <div class="student-conversations-container">
+                      <div id="dashboard-student-conversations" class="student-conversations">
+                        <div class="empty-message-state">
+                          <i class="mdi mdi-message-outline"></i>
+                          <p>No recent conversations</p>
+                          <span>Search for students to start chatting!</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Add this right after the hostel status section -->
       <div class="row">
         <div class="col-12">
@@ -1330,109 +1433,6 @@
             </div>
           </div>
         </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Quick Messaging Widget -->
-      <div class="row">
-        <div class="col-12">
-          <div class="box">
-            <div class="box-header with-border">
-              <h4 class="box-title modern-title">Quick Messages</h4>
-              <div class="box-controls pull-right">
-                <button class="btn btn-sm btn-primary" onclick="toggleMessagingPanel()">
-                  <i class="mdi mdi-message-text me-1"></i> View All
-                </button>
-              </div>
-            </div>
-            <div class="box-body p-0">
-              <div class="row g-0">
-                <!-- Admin Messages Section -->
-                <div class="col-xl-6 col-12">
-                  <div class="quick-message-section border-end">
-                    <div class="section-header">
-                      <h5 class="section-title">
-                        <i class="mdi mdi-account-tie text-primary me-2"></i>
-                        Admin Messages
-                      </h5>
-                    </div>
-                    <div class="admin-messages-container">
-                      <div class="admin-message-item" onclick="getMessage('FN', 'FN')">
-                        <div class="message-avatar bg-info">
-                          <i class="mdi mdi-currency-usd"></i>
-                        </div>
-                        <div class="message-details">
-                          <div class="message-name">UKP (Student Finance)</div>
-                          <div class="message-preview">Financial matters & payments</div>
-                        </div>
-                        <div class="message-badge">
-                          <span id="dashboard-ukp-count" class="count-circle hidden">0</span>
-                        </div>
-                      </div>
-                      
-                      <div class="admin-message-item" onclick="getMessage('RGS', 'RGS')">
-                        <div class="message-avatar bg-warning">
-                          <i class="mdi mdi-file-document"></i>
-                        </div>
-                        <div class="message-details">
-                          <div class="message-name">KRP (Registration)</div>
-                          <div class="message-preview">Course registration & enrollment</div>
-                        </div>
-                        <div class="message-badge">
-                          <span id="dashboard-krp-count" class="count-circle hidden">0</span>
-                        </div>
-                      </div>
-                      
-                      <div class="admin-message-item" onclick="getMessage('HEA', 'HEA')">
-                        <div class="message-avatar bg-success">
-                          <i class="mdi mdi-heart-pulse"></i>
-                        </div>
-                        <div class="message-details">
-                          <div class="message-name">HEP (Health)</div>
-                          <div class="message-preview">Health services & support</div>
-                        </div>
-                        <div class="message-badge">
-                          <span id="dashboard-hep-count" class="count-circle hidden">0</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                
-                <!-- Student Messages Section -->
-                <div class="col-xl-6 col-12">
-                  <div class="quick-message-section">
-                    <div class="section-header">
-                      <h5 class="section-title">
-                        <i class="mdi mdi-account-group text-primary me-2"></i>
-                        Student Messages
-                      </h5>
-                    </div>
-                    
-                    <!-- Quick Search -->
-                    <div class="student-search-container">
-                      <div class="search-input-group">
-                        <i class="mdi mdi-magnify search-icon"></i>
-                        <input type="text" id="dashboard-student-search" placeholder="Search students..." class="search-input">
-                        <div id="dashboard-search-results" class="search-results"></div>
-                      </div>
-                    </div>
-                    
-                    <!-- Recent Conversations -->
-                    <div class="student-conversations-container">
-                      <div id="dashboard-student-conversations" class="student-conversations">
-                        <div class="empty-message-state">
-                          <i class="mdi mdi-message-outline"></i>
-                          <p>No recent conversations</p>
-                          <span>Search for students to start chatting!</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
