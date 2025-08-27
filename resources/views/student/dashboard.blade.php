@@ -2306,16 +2306,18 @@ background: linear-gradient(135deg, #0ba360 0%, #3cba92 100%);
 }
 
 .dashboard-unread-badge {
-  background: #4f81c7;
+  background: #ff4757;
   color: white;
   border-radius: 50%;
-  min-width: 18px;
-  height: 18px;
-  font-size: 0.7rem;
+  min-width: 24px;
+  height: 24px;
+  font-size: 0.8rem;
   font-weight: bold;
   display: flex;
   align-items: center;
   justify-content: center;
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(255, 71, 87, 0.3);
 }
 
 /* Dashboard-specific count circles - scoped to avoid sidebar conflicts */
@@ -2323,14 +2325,15 @@ background: linear-gradient(135deg, #0ba360 0%, #3cba92 100%);
   background: #ff4757;
   color: white;
   border-radius: 50%;
-  min-width: 18px;
-  height: 18px;
-  font-size: 0.7rem;
+  min-width: 24px;
+  height: 24px;
+  font-size: 0.8rem;
   font-weight: bold;
   display: flex;
   align-items: center;
   justify-content: center;
   border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(255, 71, 87, 0.3);
 }
 
 .quick-message-section .count-circle.hidden {
