@@ -71,7 +71,7 @@
                 </div>
                 <div class="flex-grow-1">
                   <p class="mb-5 text-fade">Today's Payments</p>
-                  <h4 class="mb-0 fw-600">RM {{ number_format(DB::table('tblpayment')->whereDate('created_at', today())->sum('amount'), 2) }}</h4>
+                  <h4 class="mb-0 fw-600">RM {{ number_format(DB::table('tblpayment')->whereDate('date_receive', today())->sum('amount'), 2) }}</h4>
                 </div>
               </div>
             </div>
@@ -87,7 +87,7 @@
                 </div>
                 <div class="flex-grow-1">
                   <p class="mb-5 text-fade">Pending Claims</p>
-                  <h4 class="mb-0 fw-600">{{ DB::table('tblpaymentclaim')->where('status', 'pending')->count() }}</h4>
+                  <h4 class="mb-0 fw-600">{{ DB::table('tblclaim')->where('process_status_id', 1)->count() }}</h4>
                 </div>
               </div>
             </div>
@@ -102,8 +102,8 @@
                   <i data-feather="file-text" class="text-danger"></i>
                 </div>
                 <div class="flex-grow-1">
-                  <p class="mb-5 text-fade">Outstanding Debt</p>
-                  <h4 class="mb-0 fw-600">RM {{ number_format(DB::table('tbldebt')->where('balance', '>', 0)->sum('balance'), 2) }}</h4>
+                  <p class="mb-5 text-fade">Total Payments</p>
+                  <h4 class="mb-0 fw-600">{{ number_format(DB::table('tblpayment')->count()) }}</h4>
                 </div>
               </div>
             </div>
@@ -188,9 +188,9 @@
                   <tbody>
                     @php
                       $recentPayments = DB::table('tblpayment')
-                        ->join('students', 'tblpayment.studentic', '=', 'students.ic')
+                        ->join('students', 'tblpayment.student_ic', '=', 'students.ic')
                         ->select('tblpayment.*', 'students.name')
-                        ->orderBy('tblpayment.created_at', 'desc')
+                        ->orderBy('tblpayment.date_receive', 'desc')
                         ->limit(5)
                         ->get();
                     @endphp
@@ -199,7 +199,7 @@
                         <td>{{ $payment->receiptno ?? 'N/A' }}</td>
                         <td>{{ $payment->name }}</td>
                         <td>RM {{ number_format($payment->amount, 2) }}</td>
-                        <td>{{ date('d/m/Y', strtotime($payment->created_at)) }}</td>
+                        <td>{{ date('d/m/Y', strtotime($payment->date_receive)) }}</td>
                         <td><span class="badge badge-success">Completed</span></td>
                       </tr>
                     @empty
@@ -224,8 +224,8 @@
             <div class="box-body">
               @php
                 $thisMonth = DB::table('tblpayment')
-                  ->whereMonth('created_at', date('m'))
-                  ->whereYear('created_at', date('Y'));
+                  ->whereMonth('date_receive', date('m'))
+                  ->whereYear('date_receive', date('Y'));
                 $monthlyTotal = $thisMonth->sum('amount');
                 $monthlyCount = $thisMonth->count();
               @endphp
@@ -283,8 +283,8 @@
             <div class="box-body">
               <div class="list-group list-group-flush">
                 @php
-                  $pendingClaims = DB::table('tblpaymentclaim')->where('status', 'pending')->count();
-                  $pendingRefunds = DB::table('tblpaymentrefund')->where('status', 'pending')->count();
+                  $pendingClaims = DB::table('tblclaim')->where('process_status_id', 1)->count();
+                  $totalPayments = DB::table('tblpayment')->where('process_status_id', 1)->count();
                 @endphp
                 @if($pendingClaims > 0)
                   <div class="list-group-item d-flex justify-content-between align-items-center">
@@ -295,16 +295,16 @@
                     <span class="badge badge-warning">{{ $pendingClaims }}</span>
                   </div>
                 @endif
-                @if($pendingRefunds > 0)
+                @if($totalPayments > 0)
                   <div class="list-group-item d-flex justify-content-between align-items-center">
                     <div>
-                      <i data-feather="arrow-left-circle" class="text-info me-10"></i>
-                      Pending Refunds
+                      <i data-feather="credit-card" class="text-info me-10"></i>
+                      Pending Payments
                     </div>
-                    <span class="badge badge-info">{{ $pendingRefunds }}</span>
+                    <span class="badge badge-info">{{ $totalPayments }}</span>
                   </div>
                 @endif
-                @if($pendingClaims == 0 && $pendingRefunds == 0)
+                @if($pendingClaims == 0 && $totalPayments == 0)
                   <div class="list-group-item text-center text-muted">
                     <i data-feather="check-circle" class="text-success mb-10"></i>
                     <p class="mb-0">All tasks completed!</p>
@@ -323,18 +323,16 @@
             <div class="box-body">
               <div class="list-group list-group-flush">
                 @php
-                  $overdueStudents = DB::table('tbldebt')
-                    ->where('balance', '>', 0)
-                    ->where('due_date', '<', now())
-                    ->count();
+                  $totalStudents = DB::table('students')->count();
+                  $activeStudents = DB::table('students')->whereNotIn('status', [4,5,6,7,16])->count();
                 @endphp
-                @if($overdueStudents > 0)
+                @if($totalStudents > 0)
                   <div class="list-group-item">
                     <div class="d-flex align-items-center">
-                      <i data-feather="alert-triangle" class="text-danger me-10"></i>
+                      <i data-feather="users" class="text-success me-10"></i>
                       <div>
-                        <p class="mb-0 fw-500">{{ $overdueStudents }} students with overdue payments</p>
-                        <small class="text-muted">Requires immediate attention</small>
+                        <p class="mb-0 fw-500">{{ $activeStudents }} active students</p>
+                        <small class="text-muted">Out of {{ $totalStudents }} total students</small>
                       </div>
                     </div>
                   </div>
