@@ -417,21 +417,9 @@
   </div>
 </div>
 
-<!-- Chat Modal -->
-<div id="chatModal" class="modal fade" tabindex="-1" role="dialog">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h4 class="modal-title">Chat</h4>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body" id="chatModalContent">
-        <div id="app">
-          <example-component></example-component>
-        </div>
-      </div>
-    </div>
-  </div>
+<!-- Vue.js Chat Component Container -->
+<div id="app">
+  <example-component></example-component>
 </div>
 
 <!-- Additional Custom Styles for Finance Dashboard -->
@@ -522,32 +510,7 @@
   margin-right: 10px;
 }
 
-/* Chat Modal Styles */
-#chatModal .modal-dialog {
-  max-width: 800px;
-}
-
-#chatModal .modal-body {
-  min-height: 400px;
-  padding: 20px;
-}
-
-#chatModal .modal-header {
-  background-color: #f8f9fa;
-  border-bottom: 1px solid #dee2e6;
-}
-
-.btn-close {
-  background: transparent;
-  border: none;
-  font-size: 1.25rem;
-  color: #000;
-  opacity: 0.5;
-}
-
-.btn-close:hover {
-  opacity: 0.75;
-}
+/* Vue.js component styles handled by app.js */
 
 /* Student list styles */
 #unread-students-list .bg-light {
@@ -619,27 +582,8 @@
     sessionUserId: '{{ Auth::user()->usrtype }}'
   };
 
-  // Chat modal functions
-  function openChatModal(type, studentData = null) {
-    // Show the modal
-    $('#chatModal').modal('show');
-    
-    // You can customize the modal content based on the type
-    switch(type) {
-      case 'student':
-        $('#chatModal .modal-title').text(`Chat - ${studentData.name} (${studentData.no_matric})`);
-        break;
-      case 'users':
-        $('#chatModal .modal-title').text('Chat - All Users');
-        break;
-      case 'staff':
-        $('#chatModal .modal-title').text('Chat - Staff');
-        break;
-      case 'new':
-        $('#chatModal .modal-title').text('New Message');
-        break;
-    }
-  }
+  // Chat functions using Vue.js component (same as index.blade.php)
+  // The getMessage function is defined globally in app.js
 
   // Function to fetch students with unread messages using the same method as index.blade.php
   function fetchUnreadStudents() {
@@ -725,7 +669,7 @@
                 <small class="fw-bold">${name}</small><br>
                 <small class="text-muted">${matric || 'No Matric'}</small>
               </div>
-              <button class="btn btn-sm btn-success" onclick="openChatModal('student', {name: '${name}', no_matric: '${matric}', ic: '${ic}'})">
+              <button class="btn btn-sm btn-success" onclick="getMessage('${ic}')">
                 <i data-feather="message-circle"></i>
               </button>
             </div>
@@ -814,7 +758,7 @@
                 <small class="fw-bold">${name}</small><br>
                 <small class="text-muted">${matric || 'No Matric'}</small>
               </div>
-              <button class="btn btn-sm btn-success" onclick="openChatModal('student', {name: '${name}', no_matric: '${matric}', ic: '${ic}'})">
+              <button class="btn btn-sm btn-success" onclick="getMessage('${ic}')">
                 <i data-feather="message-circle"></i>
               </button>
             </div>
