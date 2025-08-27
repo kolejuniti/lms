@@ -323,6 +323,52 @@
         </div>
 
         <div class="col-xl-6 col-12">
+          <!-- Messages Widget -->
+          <div class="box">
+            <div class="box-header with-border">
+              <h4 class="box-title">Messages</h4>
+              <div class="box-controls pull-right">
+                <a href="/all/massage/user" class="btn btn-sm btn-primary">View All</a>
+              </div>
+            </div>
+            <div class="box-body">
+              <div class="d-flex align-items-center mb-20">
+                <div class="me-15 bg-warning-light h-50 w-50 l-h-60 rounded text-center">
+                  <i data-feather="message-square" class="text-warning"></i>
+                </div>
+                <div class="flex-grow-1">
+                  <p class="mb-5 text-fade">Unread Messages</p>
+                  <h4 class="mb-0 fw-600" id="dashboard-message-count">0</h4>
+                </div>
+                <div>
+                  <a href="/all/massage/user" class="btn btn-sm btn-outline-primary">
+                    <i data-feather="message-circle" class="me-5"></i>View Messages
+                  </a>
+                </div>
+              </div>
+              
+              <!-- Quick Chat Access -->
+              <div class="border-top pt-15">
+                <h6 class="mb-10">Students with Unread Messages</h6>
+                <div id="unread-students-list" class="mb-15">
+                  <!-- This will be populated by AJAX -->
+                  <div class="text-center text-muted" id="loading-students">
+                    <small>Loading...</small>
+                  </div>
+                </div>
+                <div class="d-flex gap-10">
+                  <button class="btn btn-sm btn-outline-primary flex-fill" onclick="refreshUnreadStudents()">
+                    <i data-feather="refresh-cw" class="me-5"></i>Refresh
+                  </button>
+                  <a href="/all/massage/user" class="btn btn-sm btn-primary flex-fill">
+                    <i data-feather="message-square" class="me-5"></i>View All
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- System Alerts -->
           <div class="box">
             <div class="box-header with-border">
               <h4 class="box-title">System Alerts</h4>
@@ -360,6 +406,23 @@
       </div>
     </section>
     <!-- /.content -->
+  </div>
+</div>
+
+<!-- Chat Modal -->
+<div id="chatModal" class="modal fade" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Chat</h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id="chatModalContent">
+        <div id="app">
+          <example-component></example-component>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -417,6 +480,81 @@
 .text-white-50 {
   color: rgba(255, 255, 255, 0.5) !important;
 }
+
+/* Message widget styles */
+.gap-10 {
+  gap: 10px;
+}
+
+.btn-block {
+  width: 100%;
+}
+
+.border-top {
+  border-top: 1px solid #e9ecef;
+}
+
+.pt-15 {
+  padding-top: 15px;
+}
+
+.mb-20 {
+  margin-bottom: 20px;
+}
+
+.mt-10 {
+  margin-top: 10px;
+}
+
+.me-5 {
+  margin-right: 5px;
+}
+
+/* Chat Modal Styles */
+#chatModal .modal-dialog {
+  max-width: 800px;
+}
+
+#chatModal .modal-body {
+  min-height: 400px;
+  padding: 20px;
+}
+
+#chatModal .modal-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.btn-close {
+  background: transparent;
+  border: none;
+  font-size: 1.25rem;
+  color: #000;
+  opacity: 0.5;
+}
+
+.btn-close:hover {
+  opacity: 0.75;
+}
+
+/* Student list styles */
+#unread-students-list .bg-light {
+  border: 1px solid #e9ecef;
+  transition: all 0.2s ease;
+}
+
+#unread-students-list .bg-light:hover {
+  background-color: #f1f3f4 !important;
+  border-color: #019ff8;
+}
+
+.p-10 {
+  padding: 10px;
+}
+
+.mb-10 {
+  margin-bottom: 10px;
+}
 </style>
 
 <script>
@@ -426,5 +564,135 @@
       feather.replace();
     }
   });
+
+  // Laravel session data for Vue.js
+  window.Laravel = {
+    sessionUserId: '{{ Auth::user()->usrtype }}'
+  };
+
+  // Chat modal functions
+  function openChatModal(type, studentData = null) {
+    // Show the modal
+    $('#chatModal').modal('show');
+    
+    // You can customize the modal content based on the type
+    switch(type) {
+      case 'student':
+        $('#chatModal .modal-title').text(`Chat - ${studentData.name} (${studentData.no_matric})`);
+        break;
+      case 'users':
+        $('#chatModal .modal-title').text('Chat - All Users');
+        break;
+      case 'staff':
+        $('#chatModal .modal-title').text('Chat - Staff');
+        break;
+      case 'new':
+        $('#chatModal .modal-title').text('New Message');
+        break;
+    }
+  }
+
+  // Function to fetch students with unread messages
+  function fetchUnreadStudents() {
+    $.ajax({
+      headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+      url: "{{ url('/all/massage/user/getStudentNewMassage') }}",
+      method: 'GET',
+      success: function(data) {
+        $('#loading-students').hide();
+        
+        // Parse the HTML response to extract student data
+        const $response = $(data);
+        const $tbody = $response.find('tbody');
+        
+        if ($tbody.find('tr').length === 0) {
+          $('#unread-students-list').html('<div class="text-center text-muted"><small>No unread messages</small></div>');
+          return;
+        }
+        
+        let studentsHtml = '';
+        $tbody.find('tr').each(function(index) {
+          if (index < 3) { // Show only first 3 students in dashboard
+            const $row = $(this);
+            const name = $row.find('td').eq(1).text().trim();
+            const ic = $row.find('td').eq(2).text().trim();
+            const matric = $row.find('td').eq(3).text().trim();
+            
+            if (name && ic) {
+              studentsHtml += `
+                <div class="d-flex align-items-center justify-content-between mb-10 p-10 bg-light rounded">
+                  <div class="flex-grow-1">
+                    <small class="fw-bold">${name}</small><br>
+                    <small class="text-muted">${matric}</small>
+                  </div>
+                  <button class="btn btn-sm btn-success" onclick="openChatModal('student', {name: '${name}', no_matric: '${matric}', ic: '${ic}'})">
+                    <i data-feather="message-circle"></i>
+                  </button>
+                </div>
+              `;
+            }
+          }
+        });
+        
+        if (studentsHtml) {
+          $('#unread-students-list').html(studentsHtml);
+          // Re-initialize feather icons for new buttons
+          if (typeof feather !== 'undefined') {
+            feather.replace();
+          }
+        } else {
+          $('#unread-students-list').html('<div class="text-center text-muted"><small>No unread messages</small></div>');
+        }
+      },
+      error: function() {
+        $('#loading-students').hide();
+        $('#unread-students-list').html('<div class="text-center text-danger"><small>Error loading messages</small></div>');
+      }
+    });
+  }
+
+  // Function to refresh unread students list
+  function refreshUnreadStudents() {
+    $('#loading-students').show();
+    $('#unread-students-list').html('<div class="text-center text-muted" id="loading-students"><small>Loading...</small></div>');
+    fetchUnreadStudents();
+  }
+
+  // Message count functionality
+  $(document).ready(function() {
+    function fetchMessageCount() {
+      $.ajax({
+        url: '{{ route("all.massage.student.countMassageAdmin") }}',
+        type: 'GET',
+        success: function(response) {
+          const count = response.count || 0;
+          $('#dashboard-message-count').text(count);
+          
+          // Update the message count display with color based on count
+          if(count > 0) {
+            $('#dashboard-message-count').removeClass('text-muted').addClass('text-warning fw-bold');
+          } else {
+            $('#dashboard-message-count').removeClass('text-warning fw-bold').addClass('text-muted');
+          }
+        },
+        error: function() {
+          console.error('Failed to fetch message count');
+          $('#dashboard-message-count').text('--').addClass('text-muted');
+        }
+      });
+    }
+
+    // Fetch the count every 30 seconds
+    setInterval(fetchMessageCount, 30000);
+
+    // Initial fetch when page loads
+    fetchMessageCount();
+    
+    // Also fetch unread students when page loads
+    fetchUnreadStudents();
+  });
 </script>
+
+<!-- Vue.js App Script -->
+<script src="{{ mix('js/app.js') }}"></script>
 @endsection
