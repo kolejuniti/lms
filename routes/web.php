@@ -1132,6 +1132,10 @@ Route::post("/logout/custom",[App\Http\Controllers\LogoutController::class,"stor
 Route::get('/weather/current', 'App\Http\Controllers\WeatherController@getCurrentWeather');
 
 // Spotify Widget Routes
+Route::get('/spotify-debug', function() {
+    return view('spotify-debug');
+})->middleware('auth');
+
 Route::group(['prefix' => 'spotify', 'middleware' => 'auth'], function () {
     Route::get('/auth', [App\Http\Controllers\SpotifyController::class, 'authenticate'])->name('spotify.auth');
     Route::get('/callback', [App\Http\Controllers\SpotifyController::class, 'callback'])->name('spotify.callback');

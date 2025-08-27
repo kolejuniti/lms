@@ -26,6 +26,16 @@ class SpotifyController extends Controller
      */
     public function authenticate()
     {
+        // Debug logging
+        \Log::info('Spotify authenticate method called');
+        \Log::info('Client ID: ' . $this->clientId);
+        \Log::info('Redirect URI: ' . $this->redirectUri);
+        
+        if (!$this->clientId || !$this->clientSecret) {
+            \Log::error('Spotify credentials not configured');
+            return redirect()->back()->with('error', 'Spotify is not properly configured. Please check your environment variables.');
+        }
+        
         $scopes = [
             'user-read-playback-state',
             'user-modify-playback-state',
@@ -50,7 +60,10 @@ class SpotifyController extends Controller
             'show_dialog' => 'true'
         ]);
         
-        return redirect('https://accounts.spotify.com/authorize?' . $query);
+        $authUrl = 'https://accounts.spotify.com/authorize?' . $query;
+        \Log::info('Redirecting to Spotify: ' . $authUrl);
+        
+        return redirect($authUrl);
     }
     
     /**
@@ -59,11 +72,11 @@ class SpotifyController extends Controller
     public function callback(Request $request)
     {
         if ($request->get('error')) {
-            return redirect()->route('dashboard')->with('error', 'Spotify authentication failed: ' . $request->get('error'));
+            return redirect()->back()->with('error', 'Spotify authentication failed: ' . $request->get('error'));
         }
         
         if ($request->get('state') !== Session::get('spotify_state')) {
-            return redirect()->route('dashboard')->with('error', 'Invalid state parameter');
+            return redirect()->back()->with('error', 'Invalid state parameter');
         }
         
         try {
@@ -83,14 +96,14 @@ class SpotifyController extends Controller
                 Session::put('spotify_refresh_token', $data['refresh_token']);
                 Session::put('spotify_expires_at', now()->addSeconds($data['expires_in']));
                 
-                return redirect()->route('dashboard')->with('success', 'Spotify connected successfully!');
+                return redirect()->back()->with('success', 'Spotify connected successfully!');
             } else {
                 Log::error('Spotify token exchange failed', $response->json());
-                return redirect()->route('dashboard')->with('error', 'Failed to connect to Spotify');
+                return redirect()->back()->with('error', 'Failed to connect to Spotify');
             }
         } catch (\Exception $e) {
             Log::error('Spotify authentication error: ' . $e->getMessage());
-            return redirect()->route('dashboard')->with('error', 'Spotify authentication error');
+            return redirect()->back()->with('error', 'Spotify authentication error');
         }
     }
     

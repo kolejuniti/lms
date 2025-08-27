@@ -552,7 +552,11 @@ class SpotifyWidget {
     bindEvents() {
         // Authentication
         document.getElementById('spotify-connect-btn').addEventListener('click', () => {
-            window.location.href = '/spotify/auth';
+            console.log('Spotify connect button clicked');
+            // Use current domain instead of hardcoded route
+            const authUrl = window.location.origin + '/spotify/auth';
+            console.log('Redirecting to:', authUrl);
+            window.location.href = authUrl;
         });
         
         // Widget controls
