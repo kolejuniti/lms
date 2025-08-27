@@ -658,7 +658,7 @@
     let studentCount = 0;
     
     $rows.each(function(index) {
-      if (studentCount >= 3) return; // Only show first 3 students
+      if (studentCount >= 10) return; // Only show first 3 students
       
       const $row = $(this);
       console.log('Processing row:', index, $row.html()); // Debug log
