@@ -94,6 +94,9 @@
                     <a type="button" class="waves-effect waves-light btn btn-success btn-sm ml-2" onclick="showCopyModal()">
                         <i class="fa fa-copy"></i> &nbsp Copy Structure
                     </a>
+                    <a type="button" class="waves-effect waves-light btn btn-warning btn-sm ml-2" onclick="showStudentSubjectModal()">
+                        <i class="fa fa-users"></i> &nbsp Add Subject to Students
+                    </a>
                 </div>
             </div>
         </div>
@@ -224,6 +227,92 @@
         </button>
         <button type="button" class="btn btn-success" onclick="executeCopy()" id="executeCopyBtn" disabled>
           <i class="fa fa-copy"></i> Copy Structure
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add Subject to Students Modal -->
+<div class="modal fade" id="studentSubjectModal" tabindex="-1" role="dialog" aria-labelledby="studentSubjectModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="studentSubjectModalLabel">Add Subjects to Students</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-4">
+            <div class="form-group">
+              <label class="form-label" for="studentProgram">Program</label>
+              <select class="form-select" id="studentProgram" name="studentProgram">
+                <option value="-" selected disabled>Select Program</option>
+                @foreach ($data['program'] as $prg)
+                <option value="{{ $prg->id }}">{{ $prg->progname }} ({{ $prg->progcode }})</option> 
+                @endforeach
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label class="form-label" for="studentIntake">Intake</label>
+              <select class="form-select" id="studentIntake" name="studentIntake">
+                <option value="-" selected disabled>Select Intake</option>
+                @foreach ($data['intake'] as $crs)
+                <option value="{{ $crs->SessionID }}">{{ $crs->SessionName }}</option> 
+                @endforeach
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label class="form-label" for="studentSemester">Semester</label>
+              <select class="form-select" id="studentSemester" name="studentSemester">
+                <option value="-" selected disabled>Select Semester</option>
+                @foreach ($data['semester'] as $crs)
+                <option value="{{ $crs->id }}">{{ $crs->id }}</option> 
+                @endforeach
+              </select>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Preview Section -->
+        <div id="studentPreviewSection" style="display: none;">
+          <hr>
+          <h6>Students and Subjects Preview:</h6>
+          
+          <!-- Students Section -->
+          <div class="row">
+            <div class="col-md-6">
+              <h6 class="text-info">Students to Process:</h6>
+              <div id="studentsList" class="table-responsive" style="max-height: 200px; overflow-y: auto;">
+                <!-- Students list will be loaded here -->
+              </div>
+            </div>
+            <div class="col-md-6">
+              <h6 class="text-success">Subjects to Assign:</h6>
+              <div id="subjectsList" class="table-responsive" style="max-height: 200px; overflow-y: auto;">
+                <!-- Subjects list will be loaded here -->
+              </div>
+            </div>
+          </div>
+          
+          <div id="studentPreviewSummary" class="mt-3">
+            <!-- Summary will be shown here -->
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-info" onclick="loadStudentPreview()">
+          <i class="fa fa-eye"></i> Preview Students & Subjects
+        </button>
+        <button type="button" class="btn btn-warning" onclick="executeStudentSubjectAssignment()" id="executeStudentBtn" disabled>
+          <i class="fa fa-users"></i> Add Subjects to Students
         </button>
       </div>
     </div>
@@ -684,6 +773,169 @@
         }
         
         $('#executeCopyBtn').prop('disabled', false).html('<i class="fa fa-copy"></i> Copy Structure');
+      }
+    });
+  }
+
+  // Student Subject Assignment Functions
+  function showStudentSubjectModal() {
+    $('#studentSubjectModal').modal('show');
+    resetStudentModal();
+  }
+
+  function resetStudentModal() {
+    $('#studentProgram').val('-');
+    $('#studentIntake').val('-');
+    $('#studentSemester').val('-');
+    $('#studentPreviewSection').hide();
+    $('#executeStudentBtn').prop('disabled', true);
+  }
+
+  function loadStudentPreview() {
+    var program = $('#studentProgram').val();
+    var intake = $('#studentIntake').val();
+    var semester = $('#studentSemester').val();
+
+    if (!program || program === '-' || !intake || intake === '-' || !semester || semester === '-') {
+      alert('Please select all required fields: Program, Intake, and Semester');
+      return;
+    }
+
+    $.ajax({
+      headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+      url: "{{ url('/AR/assignCourse/getStudentPreview') }}",
+      method: 'POST',
+      data: {
+        program: program,
+        intake: intake,
+        semester: semester
+      },
+      beforeSend: function() {
+        $('#studentsList').html('<div class="text-center"><i class="fa fa-spinner fa-spin"></i> Loading students...</div>');
+        $('#subjectsList').html('<div class="text-center"><i class="fa fa-spinner fa-spin"></i> Loading subjects...</div>');
+      },
+      error: function(err) {
+        alert("Error loading preview");
+        console.log(err);
+      },
+      success: function(data) {
+        // Display students to process
+        if (data.studentsToProcess && data.studentsToProcess.length > 0) {
+          var studentsHtml = '<table class="table table-sm table-bordered">';
+          studentsHtml += '<thead><tr><th>IC</th><th>Name</th><th>Matric No</th></tr></thead><tbody>';
+          
+          data.studentsToProcess.forEach(function(student) {
+            studentsHtml += '<tr>';
+            studentsHtml += '<td>' + student.ic + '</td>';
+            studentsHtml += '<td>' + student.name + '</td>';
+            studentsHtml += '<td>' + student.no_matric + '</td>';
+            studentsHtml += '</tr>';
+          });
+          
+          studentsHtml += '</tbody></table>';
+          $('#studentsList').html(studentsHtml);
+        } else {
+          $('#studentsList').html('<div class="alert alert-info">No students without subjects found.</div>');
+        }
+
+        // Display subjects to assign
+        if (data.subjectsToAssign && data.subjectsToAssign.length > 0) {
+          var subjectsHtml = '<table class="table table-sm table-bordered">';
+          subjectsHtml += '<thead><tr><th>Code</th><th>Name</th><th>Credit</th></tr></thead><tbody>';
+          
+          data.subjectsToAssign.forEach(function(subject) {
+            subjectsHtml += '<tr>';
+            subjectsHtml += '<td>' + subject.course_code + '</td>';
+            subjectsHtml += '<td>' + subject.course_name + '</td>';
+            subjectsHtml += '<td>' + subject.course_credit + '</td>';
+            subjectsHtml += '</tr>';
+          });
+          
+          subjectsHtml += '</tbody></table>';
+          $('#subjectsList').html(subjectsHtml);
+        } else {
+          $('#subjectsList').html('<div class="alert alert-warning">No subjects found for this program/intake/semester.</div>');
+        }
+
+        // Display summary
+        var summaryHtml = '<div class="alert alert-info">';
+        summaryHtml += '<strong>Summary:</strong><br>';
+        summaryHtml += 'Total Students: ' + data.totalStudents + '<br>';
+        summaryHtml += 'Students with existing subjects: ' + data.studentsWithSubjects + '<br>';
+        summaryHtml += 'Students to process: ' + data.studentsWithoutSubjects + '<br>';
+        summaryHtml += 'Subjects to assign: ' + data.subjectCount;
+        summaryHtml += '</div>';
+        
+        $('#studentPreviewSummary').html(summaryHtml);
+        
+        $('#studentPreviewSection').show();
+        
+        // Enable execute button only if there are students to process and subjects to assign
+        if (data.studentsWithoutSubjects > 0 && data.subjectCount > 0) {
+          $('#executeStudentBtn').prop('disabled', false);
+        } else {
+          $('#executeStudentBtn').prop('disabled', true);
+        }
+      }
+    });
+  }
+
+  function executeStudentSubjectAssignment() {
+    var program = $('#studentProgram').val();
+    var intake = $('#studentIntake').val();
+    var semester = $('#studentSemester').val();
+
+    if (!program || !intake || !semester) {
+      alert('Please ensure all fields are selected');
+      return;
+    }
+
+    Swal.fire({
+      title: "Are you sure?",
+      text: "This will assign subjects to all eligible students based on the program structure",
+      showCancelButton: true,
+      confirmButtonText: "Yes, proceed!"
+    }).then(function(res) {
+      if (res.isConfirmed) {
+        var studentData = {
+          program: program,
+          intake: intake,
+          semester: semester
+        };
+
+        $.ajax({
+          headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+          url: "{{ url('/AR/assignCourse/addSubjectToStudents') }}",
+          method: 'POST',
+          data: {studentData: JSON.stringify(studentData)},
+          beforeSend: function() {
+            $('#executeStudentBtn').prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Processing...');
+          },
+          error: function(err) {
+            alert("Error during student subject assignment");
+            console.log(err);
+            $('#executeStudentBtn').prop('disabled', false).html('<i class="fa fa-users"></i> Add Subjects to Students');
+          },
+          success: function(data) {
+            $('#studentSubjectModal').modal('hide');
+            
+            if (data.message === 'Subject assignment completed successfully') {
+              var message = 'Subject assignment completed!\n\n';
+              message += 'Total Students Processed: ' + data.totalStudents + '\n';
+              message += 'Students with Subjects Added: ' + data.studentsWithSubjectsAdded + '\n';
+              message += 'Students Already Had Subjects: ' + data.studentsAlreadyHaveSubjects + '\n';
+              if (data.studentsSkipped > 0) {
+                message += 'Students Skipped: ' + data.studentsSkipped;
+              }
+              
+              alert(message);
+            } else {
+              alert(data.message || 'Subject assignment failed');
+            }
+            
+            $('#executeStudentBtn').prop('disabled', false).html('<i class="fa fa-users"></i> Add Subjects to Students');
+          }
+        });
       }
     });
   }

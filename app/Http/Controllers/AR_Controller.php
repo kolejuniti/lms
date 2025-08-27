@@ -675,6 +675,208 @@ class AR_Controller extends Controller
         }
     }
 
+    public function addSubjectToStudents(Request $request)
+    {
+        try {
+            $data = json_decode($request->studentData);
+            
+            // Validate required fields
+            if (!isset($data->program) || !isset($data->intake) || !isset($data->semester)) {
+                return response()->json([
+                    'message' => 'Please provide program, intake, and semester'
+                ], 400);
+            }
+
+            $program = $data->program;
+            $intake = $data->intake;
+            $semester = $data->semester;
+
+            // Find all students matching the criteria
+            $students = DB::table('students')
+                ->where('program', $program)
+                ->where('intake', $intake)
+                ->where('semester', $semester)
+                ->where('status', 1) // Assuming 1 is active status
+                ->get();
+
+            if ($students->isEmpty()) {
+                return response()->json([
+                    'message' => 'No students found matching the criteria'
+                ], 404);
+            }
+
+            $processedCount = 0;
+            $alreadyExistsCount = 0;
+            $addedCount = 0;
+            $errors = [];
+
+            foreach ($students as $student) {
+                $processedCount++;
+                
+                // Check if student already has subjects for this semester
+                if (DB::table('student_subjek')
+                    ->where('student_ic', $student->ic)
+                    ->where('sessionid', $student->session)
+                    ->where('semesterid', $student->semester)
+                    ->exists()) {
+                    
+                    $alreadyExistsCount++;
+                    continue;
+                }
+
+                // Get subjects from structure for this student's program, intake, and semester
+                $subjects = DB::table('subjek')
+                    ->join('subjek_structure', function($join) {
+                        $join->on('subjek.sub_id', 'subjek_structure.courseID');
+                    })
+                    ->where([
+                        ['subjek_structure.program_id', '=', $student->program],
+                        ['subjek_structure.semester_id', '=', $student->semester],
+                        ['subjek_structure.intake_id', $student->intake]
+                    ])
+                    ->select('subjek.*', 'subjek_structure.semester_id')
+                    ->get();
+
+                $studentSubjectsAdded = 0;
+
+                foreach ($subjects as $subject) {
+                    if ($subject->offer == 1) { // Only offered subjects
+                        
+                        if ($subject->prerequisite_id == 881) {
+                            // No prerequisite required
+                            DB::table('student_subjek')->insert([
+                                'student_ic' => $student->ic,
+                                'courseid' => $subject->sub_id,
+                                'sessionid' => $student->session,
+                                'semesterid' => $subject->semester_id,
+                                'course_status_id' => 15,
+                                'status' => 'ACTIVE',
+                                'credit' => $subject->course_credit,
+                                'created_at' => now(),
+                                'updated_at' => now()
+                            ]);
+                            $studentSubjectsAdded++;
+                            
+                        } else {
+                            // Check prerequisite
+                            $check = DB::table('student_subjek')
+                                ->where('student_ic', $student->ic)
+                                ->where('courseid', $subject->prerequisite_id)
+                                ->value('course_status_id');
+
+                            if (isset($check) && $check != 2) { // Prerequisite passed
+                                DB::table('student_subjek')->insert([
+                                    'student_ic' => $student->ic,
+                                    'courseid' => $subject->sub_id,
+                                    'sessionid' => $student->session,
+                                    'semesterid' => $subject->semester_id,
+                                    'course_status_id' => 15,
+                                    'status' => 'ACTIVE',
+                                    'credit' => $subject->course_credit,
+                                    'created_at' => now(),
+                                    'updated_at' => now()
+                                ]);
+                                $studentSubjectsAdded++;
+                            }
+                        }
+                    }
+                }
+
+                if ($studentSubjectsAdded > 0) {
+                    $addedCount++;
+                }
+            }
+
+            return response()->json([
+                'message' => 'Subject assignment completed successfully',
+                'totalStudents' => $processedCount,
+                'studentsWithSubjectsAdded' => $addedCount,
+                'studentsAlreadyHaveSubjects' => $alreadyExistsCount,
+                'studentsSkipped' => $processedCount - $addedCount - $alreadyExistsCount
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'An error occurred while adding subjects to students: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function getStudentPreview(Request $request)
+    {
+        try {
+            $program = $request->program;
+            $intake = $request->intake;
+            $semester = $request->semester;
+
+            if (!$program || !$intake || !$semester) {
+                return response()->json([
+                    'message' => 'Please provide program, intake, and semester'
+                ], 400);
+            }
+
+            // Get students matching criteria
+            $students = DB::table('students')
+                ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
+                ->where('students.program', $program)
+                ->where('students.intake', $intake)
+                ->where('students.semester', $semester)
+                ->where('students.status', 1) // Active students only
+                ->select(
+                    'students.ic',
+                    'students.name',
+                    'students.no_matric',
+                    'tblstudent_status.name as status_name'
+                )
+                ->get();
+
+            // Check which students already have subjects
+            $studentsWithSubjects = [];
+            $studentsWithoutSubjects = [];
+
+            foreach ($students as $student) {
+                $hasSubjects = DB::table('student_subjek')
+                    ->where('student_ic', $student->ic)
+                    ->where('semesterid', $semester)
+                    ->exists();
+
+                if ($hasSubjects) {
+                    $studentsWithSubjects[] = $student;
+                } else {
+                    $studentsWithoutSubjects[] = $student;
+                }
+            }
+
+            // Get subjects that would be assigned
+            $subjects = DB::table('subjek')
+                ->join('subjek_structure', function($join) {
+                    $join->on('subjek.sub_id', 'subjek_structure.courseID');
+                })
+                ->where([
+                    ['subjek_structure.program_id', '=', $program],
+                    ['subjek_structure.semester_id', '=', $semester],
+                    ['subjek_structure.intake_id', $intake]
+                ])
+                ->where('subjek.offer', 1)
+                ->select('subjek.course_code', 'subjek.course_name', 'subjek.course_credit')
+                ->get();
+
+            return response()->json([
+                'totalStudents' => $students->count(),
+                'studentsWithSubjects' => count($studentsWithSubjects),
+                'studentsWithoutSubjects' => count($studentsWithoutSubjects),
+                'studentsToProcess' => $studentsWithoutSubjects,
+                'subjectsToAssign' => $subjects,
+                'subjectCount' => $subjects->count()
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error fetching student preview: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
     public function structureReport()
     {
 
