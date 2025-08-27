@@ -108,6 +108,18 @@
                 </div>
             </div>
             
+            <!-- Player Status & Controls -->
+            <div class="spotify-player-status mt-3">
+                <div id="player-status" class="text-center text-muted mb-2">
+                    <small>Initializing player...</small>
+                </div>
+                <div class="text-center mb-2">
+                    <button id="retry-player-btn" class="btn btn-outline-primary btn-sm" style="display: none;">
+                        <i class="mdi mdi-refresh"></i> Retry Player
+                    </button>
+                </div>
+            </div>
+
             <!-- Disconnect Button -->
             <div class="spotify-disconnect mt-3">
                 <button id="spotify-disconnect-btn" class="btn btn-outline-danger btn-sm">
@@ -515,9 +527,6 @@
 }
 </style>
 
-<!-- Spotify Web Playback SDK -->
-<script src="https://sdk.scdn.co/spotify-player.js"></script>
-
 <!-- Spotify Widget JavaScript -->
 <script>
 class SpotifyWidget {
@@ -533,6 +542,7 @@ class SpotifyWidget {
         this.volume = 0.5;
         this.isMinimized = false;
         this.isDragging = false;
+        this.sdkReady = false;
         
         this.init();
     }
@@ -543,10 +553,60 @@ class SpotifyWidget {
         this.loadWidgetState();
         this.makeWidgetDraggable();
         
-        // Initialize Spotify Web Playback SDK
+        // Load Spotify Web Playback SDK
+        this.loadSpotifySDK();
+    }
+    
+    loadSpotifySDK() {
+        console.log('Loading Spotify Web Playback SDK...');
+        this.updatePlayerStatus('📡 Loading Spotify SDK...', 'info');
+        
+        // Check if SDK is already loaded
+        if (window.Spotify) {
+            console.log('Spotify SDK already loaded');
+            this.onSDKReady();
+            return;
+        }
+        
+        // Set a timeout for SDK loading
+        const sdkTimeout = setTimeout(() => {
+            if (!this.sdkReady) {
+                console.error('Spotify SDK loading timeout');
+                this.updatePlayerStatus('❌ SDK loading timeout - Try refreshing page', 'error');
+            }
+        }, 10000); // 10 second timeout
+        
+        // Define the callback before loading the script
         window.onSpotifyWebPlaybackSDKReady = () => {
-            this.initializePlayer();
+            console.log('Spotify Web Playback SDK Ready!');
+            clearTimeout(sdkTimeout);
+            this.sdkReady = true;
+            this.onSDKReady();
         };
+        
+        // Load the SDK script
+        const script = document.createElement('script');
+        script.src = 'https://sdk.scdn.co/spotify-player.js';
+        script.async = true;
+        script.onload = () => {
+            console.log('Spotify SDK script loaded');
+        };
+        script.onerror = () => {
+            console.error('Failed to load Spotify Web Playback SDK');
+            clearTimeout(sdkTimeout);
+            this.updatePlayerStatus('❌ Failed to load Spotify SDK', 'error');
+        };
+        document.head.appendChild(script);
+    }
+    
+    async onSDKReady() {
+        console.log('SDK Ready, checking authentication...');
+        if (this.isAuthenticated) {
+            console.log('User is authenticated, initializing player...');
+            await this.initializePlayer();
+        } else {
+            console.log('User not authenticated, waiting for authentication');
+        }
     }
     
     bindEvents() {
@@ -610,6 +670,11 @@ class SpotifyWidget {
         document.getElementById('spotify-disconnect-btn').addEventListener('click', () => {
             this.disconnect();
         });
+        
+        // Retry player
+        document.getElementById('retry-player-btn').addEventListener('click', () => {
+            this.retryPlayerInit();
+        });
     }
     
     async checkAuthentication() {
@@ -621,6 +686,12 @@ class SpotifyWidget {
                 this.isAuthenticated = true;
                 this.showPlayerSection();
                 await this.loadPlaylists();
+                
+                // If SDK is ready, initialize player now
+                if (this.sdkReady && window.Spotify) {
+                    console.log('Authentication confirmed, initializing player...');
+                    await this.initializePlayer();
+                }
             } else {
                 this.showAuthSection();
             }
@@ -644,51 +715,117 @@ class SpotifyWidget {
         // Update the track info to show player is ready
         document.getElementById('track-name').textContent = 'Player Ready!';
         document.getElementById('track-artist').textContent = 'Search for music or click a playlist to start playing';
+        this.updatePlayerStatus('✅ Player ready for playback', 'success');
         
         // You could also show a temporary notification here
         console.log('✅ Spotify player is now ready for playback');
     }
     
+    updatePlayerStatus(message, type = 'info') {
+        const statusEl = document.getElementById('player-status');
+        const retryBtn = document.getElementById('retry-player-btn');
+        
+        if (statusEl) {
+            statusEl.innerHTML = `<small class="text-${type === 'success' ? 'success' : type === 'error' ? 'danger' : 'muted'}">${message}</small>`;
+        }
+        
+        // Show retry button for errors
+        if (retryBtn) {
+            retryBtn.style.display = type === 'error' ? 'inline-block' : 'none';
+        }
+    }
+    
+    async retryPlayerInit() {
+        console.log('Retrying player initialization...');
+        this.updatePlayerStatus('🔄 Retrying player initialization...', 'info');
+        
+        // Reset player
+        if (this.player) {
+            try {
+                this.player.disconnect();
+            } catch (e) {
+                console.log('Error disconnecting old player:', e);
+            }
+            this.player = null;
+            this.deviceId = null;
+        }
+        
+        // Try again
+        await this.initializePlayer();
+    }
+    
     async initializePlayer() {
-        if (!this.isAuthenticated) return;
+        if (!this.isAuthenticated) {
+            console.log('Cannot initialize player: not authenticated');
+            this.updatePlayerStatus('❌ Not authenticated', 'error');
+            return;
+        }
+        
+        if (!window.Spotify) {
+            console.error('Spotify SDK not loaded');
+            this.updatePlayerStatus('❌ Spotify SDK not loaded', 'error');
+            return;
+        }
+        
+        if (this.player) {
+            console.log('Player already initialized');
+            return;
+        }
         
         console.log('Initializing Spotify Player...');
+        this.updatePlayerStatus('🎵 Initializing player...', 'info');
         
-        this.player = new Spotify.Player({
-            name: 'EduHub Spotify Player',
-            getOAuthToken: async (cb) => {
-                try {
-                    const response = await fetch('/spotify/token');
-                    const data = await response.json();
-                    if (data.access_token) {
-                        console.log('Got access token for player');
-                        cb(data.access_token);
-                    } else {
-                        console.error('No access token received');
+        try {
+            this.player = new window.Spotify.Player({
+                name: 'EduHub Spotify Player',
+                getOAuthToken: async (cb) => {
+                    try {
+                        console.log('Getting OAuth token for player...');
+                        const response = await fetch('/spotify/token');
+                        const data = await response.json();
+                        if (data.access_token) {
+                            console.log('✅ Got access token for player');
+                            cb(data.access_token);
+                        } else {
+                            console.error('❌ No access token received:', data);
+                            this.updatePlayerStatus('❌ Token error', 'error');
+                        }
+                    } catch (error) {
+                        console.error('❌ Error getting access token:', error);
+                        this.updatePlayerStatus('❌ Token fetch failed', 'error');
                     }
-                } catch (error) {
-                    console.error('Error getting access token:', error);
-                }
-            },
-            volume: this.volume
-        });
+                },
+                volume: this.volume
+            });
+            
+            console.log('Player object created successfully');
+            this.updatePlayerStatus('⏳ Connecting to Spotify...', 'info');
+        } catch (error) {
+            console.error('❌ Error creating Spotify Player:', error);
+            this.updatePlayerStatus('❌ Player creation failed', 'error');
+            return;
+        }
         
         // Error handling
         this.player.addListener('initialization_error', ({ message }) => {
             console.error('Spotify Player initialization error:', message);
+            this.updatePlayerStatus(`❌ Init error: ${message}`, 'error');
         });
         
         this.player.addListener('authentication_error', ({ message }) => {
             console.error('Spotify Player authentication error:', message);
+            this.updatePlayerStatus(`❌ Auth error: ${message}`, 'error');
             this.showAuthSection();
         });
         
         this.player.addListener('account_error', ({ message }) => {
             console.error('Spotify Player account error:', message);
+            this.updatePlayerStatus(`❌ Account error: ${message}`, 'error');
         });
         
         this.player.addListener('playback_error', ({ message }) => {
             console.error('Spotify Player playback error:', message);
+            this.updatePlayerStatus(`❌ Playback error: ${message}`, 'error');
         });
         
         // Ready
