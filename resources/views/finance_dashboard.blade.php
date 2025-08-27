@@ -173,10 +173,13 @@
                 <div class="me-15 bg-warning-light h-50 w-50 l-h-60 rounded text-center">
                   <i data-feather="message-square" class="text-warning"></i>
                 </div>
-                <div class="flex-grow-1">
-                  <p class="mb-5 text-fade">Unread Messages</p>
-                  <h4 class="mb-0 fw-600" id="dashboard-message-count">0</h4>
-                </div>
+                                 <div class="flex-grow-1">
+                   <p class="mb-5 text-fade">Unread Messages</p>
+                   <div class="d-flex align-items-center">
+                     <h4 class="mb-0 fw-600 me-10">Messages</h4>
+                     <span id="dashboard-message-count" class="badge badge-danger notification-badge">0</span>
+                   </div>
+                 </div>
                 <div>
                   <a href="/all/massage/user" class="btn btn-sm btn-outline-primary">
                     <i data-feather="message-circle" class="me-5"></i>View Messages
@@ -515,6 +518,10 @@
   margin-right: 5px;
 }
 
+.me-10 {
+  margin-right: 10px;
+}
+
 /* Chat Modal Styles */
 #chatModal .modal-dialog {
   max-width: 800px;
@@ -559,6 +566,43 @@
 
 .mb-10 {
   margin-bottom: 10px;
+}
+
+/* Notification badge styles */
+.notification-badge {
+  font-size: 14px !important;
+  padding: 6px 12px !important;
+  border-radius: 20px !important;
+  font-weight: bold !important;
+  color: white !important;
+  background-color: #dc3545 !important;
+  border: 2px solid white !important;
+  box-shadow: 0 2px 4px rgba(220, 53, 69, 0.3) !important;
+  min-width: 30px;
+  text-align: center;
+  animation: pulse-notification 2s infinite;
+}
+
+.notification-badge:empty {
+  display: none;
+}
+
+.notification-badge.zero {
+  background-color: #6c757d !important;
+  animation: none;
+}
+
+@keyframes pulse-notification {
+  0% {
+    box-shadow: 0 2px 4px rgba(220, 53, 69, 0.3);
+  }
+  50% {
+    box-shadow: 0 4px 8px rgba(220, 53, 69, 0.6);
+    transform: scale(1.05);
+  }
+  100% {
+    box-shadow: 0 2px 4px rgba(220, 53, 69, 0.3);
+  }
 }
 </style>
 
@@ -798,13 +842,17 @@
         type: 'GET',
         success: function(response) {
           const count = response.count || 0;
-          $('#dashboard-message-count').text(count);
+          const $badge = $('#dashboard-message-count');
           
-          // Update the message count display with color based on count
+          // Update badge text and styling
+          $badge.text(count);
+          
           if(count > 0) {
-            $('#dashboard-message-count').removeClass('text-muted').addClass('text-warning fw-bold');
+            $badge.removeClass('zero').addClass('notification-badge');
+            $badge.show();
           } else {
-            $('#dashboard-message-count').removeClass('text-warning fw-bold').addClass('text-muted');
+            $badge.addClass('zero').removeClass('notification-badge');
+            $badge.text('0');
           }
         },
         error: function() {
