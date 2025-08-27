@@ -53,6 +53,7 @@ class AdminController extends Controller
             'nostaf' => ['required', 'string', 'max:45'],
             'ic' => ['required', 'string', 'max:12'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'no_tel' => ['required', 'string', 'max:15'],
             'usrtype' => ['required'],
             'faculty' => ['required'],
         ]);
@@ -65,6 +66,7 @@ class AdminController extends Controller
             'no_staf' => $data['nostaf'],
             'ic' => $data['ic'],
             'email' => $data['email'],
+            'no_tel' => $data['no_tel'],
             'password' => Hash::make('12345678'),
             'usrtype' => $data['usrtype'],
             'faculty' => $data['faculty'],
@@ -141,6 +143,7 @@ class AdminController extends Controller
             'ic' => 'required',
             'usrtype' => 'required',
             'email' => 'required',
+            'no_tel' => 'required',
         ]);
 
         $data2 = [

@@ -126,6 +126,17 @@
                           <div class="input-focus-border"></div>
                         </div>
                       </div>
+                      
+                      <div class="col-md-6">
+                        <div class="form-group position-relative">
+                          <label class="form-label" for="no_tel">
+                            <i class="fa fa-phone me-2 text-primary"></i>Phone Number
+                          </label>
+                          <input type="tel" class="form-control form-control-lg" id="no_tel" name="no_tel" 
+                                 placeholder="Enter phone number" maxlength="15" required>
+                          <div class="input-focus-border"></div>
+                        </div>
+                      </div>
                     </div>
                   </div>
 

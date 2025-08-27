@@ -138,6 +138,14 @@
                         <input type="email" class="form-control form-control-lg" id="email" name="email" 
                                placeholder="Enter email address" value="{{ $id->email }}" required>
                       </div>
+
+                      <div class="form-group mb-3">
+                        <label class="form-label" for="no_tel">
+                          <i class="fa fa-phone me-2 text-primary"></i>Phone Number
+                        </label>
+                        <input type="tel" class="form-control form-control-lg" id="no_tel" name="no_tel" 
+                               placeholder="Enter phone number" value="{{ $id->no_tel }}" maxlength="15" required>
+                      </div>
                     </div>
                   </div>
                 </div>
