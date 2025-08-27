@@ -1335,7 +1335,7 @@
       </div>
       
       <!-- Today's Classes -->
-      <div class="row" id="today-classes">
+      {{-- <div class="row" id="today-classes">
         <div class="col-12">
           <div class="box">
             <div class="box-header with-border">
@@ -1359,7 +1359,7 @@
             </div>
           </div>
         </div>
-      </div>
+      </div> --}}
       
       <!-- Announcements Banner -->
       <div class="row">
