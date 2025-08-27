@@ -71,7 +71,7 @@
                 </div>
                 <div class="flex-grow-1">
                   <p class="mb-5 text-fade">Today's Payments</p>
-                  <h4 class="mb-0 fw-600">RM {{ number_format(DB::table('tblpayment')->whereDate('date', today())->sum('amount'), 2) }}</h4>
+                  <h4 class="mb-0 fw-600">RM {{ number_format(DB::table('tblpayment')->whereDate('date', today())->where('process_status_id', 2)->sum('amount'), 2) }}</h4>
                 </div>
               </div>
             </div>
@@ -102,8 +102,8 @@
                   <i data-feather="file-text" class="text-danger"></i>
                 </div>
                 <div class="flex-grow-1">
-                  <p class="mb-5 text-fade">Total Payments</p>
-                  <h4 class="mb-0 fw-600">{{ number_format(DB::table('tblpayment')->count()) }}</h4>
+                  <p class="mb-5 text-fade">Total Payments Today</p>
+                  <h4 class="mb-0 fw-600">{{ number_format(DB::table('tblpayment')->whereDate('date', today())->where('process_status_id', 2)->count()) }}</h4>
                 </div>
               </div>
             </div>
@@ -230,6 +230,7 @@
             <div class="box-body">
               @php
                 $thisMonth = DB::table('tblpayment')
+                  ->where('process_status_id', 2)
                   ->whereMonth('date', date('m'))
                   ->whereYear('date', date('Y'));
                 $monthlyTotal = $thisMonth->sum('amount');
@@ -330,7 +331,7 @@
               <div class="list-group list-group-flush">
                 @php
                   $totalStudents = DB::table('students')->count();
-                  $activeStudents = DB::table('students')->whereNotIn('status', [4,5,6,7,16])->count();
+                  $activeStudents = DB::table('students')->whereNotIn('status', [3,4,5,6,7,8,14,15,16])->count();
                 @endphp
                 @if($totalStudents > 0)
                   <div class="list-group-item">
