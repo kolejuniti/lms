@@ -2318,7 +2318,8 @@ background: linear-gradient(135deg, #0ba360 0%, #3cba92 100%);
   justify-content: center;
 }
 
-.count-circle {
+/* Dashboard-specific count circles - scoped to avoid sidebar conflicts */
+.quick-message-section .count-circle {
   background: #ff4757;
   color: white;
   border-radius: 50%;
@@ -2332,7 +2333,7 @@ background: linear-gradient(135deg, #0ba360 0%, #3cba92 100%);
   border: 2px solid white;
 }
 
-.count-circle.hidden {
+.quick-message-section .count-circle.hidden {
   display: none !important;
 }
 
