@@ -845,16 +845,11 @@ $(document).ready(function() {
     }
   });
   
-  // Phone number formatting
+  // Phone number formatting (simple numeric only)
   $('#phone').on('input', function() {
-    let value = $(this).val().replace(/\D/g, '');
-    if (value.length > 0) {
-      if (value.startsWith('60')) {
-        value = '+' + value;
-      } else if (!value.startsWith('+')) {
-        value = '+60' + value;
-      }
-    }
+    let value = $(this).val();
+    // Allow only numbers, spaces, hyphens, and plus sign
+    value = value.replace(/[^0-9\s\-\+]/g, '');
     $(this).val(value);
   });
   
