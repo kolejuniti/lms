@@ -102,6 +102,7 @@ tr:nth-child(even) {
                 <br>
                 <p><strong>PENSYARAH :</strong> {{ Auth::user()->name }}</p>
                 <p><strong>SUBJEK :</strong> {{ $course->course_code }} - {{ $course->course_name }}</p>
+                <p><strong>NO. TELEFON :</strong> {{ (Auth::user()->no_tel != null) ? Auth::user()->no_tel : 'N/A' }}</p>
                 <br>
                 <p>GROUP A</p>
             </div>
