@@ -58,20 +58,53 @@ class LecturerController extends Controller
 
     public function updateSetting(Request $request)
     {
+        $user = Auth::user();
+        
+        // Check form type to determine what to update
+        if ($request->form_type === 'profile') {
+            // Validate profile data
+            $data = $request->validate([
+                'no_tel' => ['required', 'string', 'max:15'],
+            ]);
 
-        $data = $request->validate([
-            'pass' => ['max:10','required'],
-            'conpass' => ['max:10','same:pass']
-        ],[
-            'conpass.same' => 'The Confirm Password and Password must match!'
-        ]);
+            // Update phone number
+            $user->update([
+                'no_tel' => $data['no_tel']
+            ]);
 
-        Auth::user()->update([
-            'password' =>  Hash::make($data['pass'])
-        ]);
+            return redirect()->back()->with('alert', 'Your profile has been updated successfully!');
+            
+        } elseif ($request->form_type === 'security') {
+            // Validate security data
+            $data = $request->validate([
+                'pass' => ['max:10','required'],
+                'conpass' => ['max:10','same:pass']
+            ],[
+                'conpass.same' => 'The Confirm Password and Password must match!'
+            ]);
 
-        return redirect()->back()->with('alert', 'You have successfully updated your setting!');
+            // Update password
+            $user->update([
+                'password' => Hash::make($data['pass'])
+            ]);
 
+            return redirect()->back()->with('alert', 'Your password has been updated successfully!');
+            
+        } else {
+            // Legacy support - if no form_type is specified, assume it's password update
+            $data = $request->validate([
+                'pass' => ['max:10','required'],
+                'conpass' => ['max:10','same:pass']
+            ],[
+                'conpass.same' => 'The Confirm Password and Password must match!'
+            ]);
+
+            $user->update([
+                'password' => Hash::make($data['pass'])
+            ]);
+
+            return redirect()->back()->with('alert', 'You have successfully updated your setting!');
+        }
     }
 
     public function settingTheme(Request $request)
