@@ -613,8 +613,8 @@
                           <i class="mdi mdi-heart-pulse"></i>
                         </div>
                         <div class="message-details">
-                          <div class="message-name">HEP (Health)</div>
-                          <div class="message-preview">Health services & support</div>
+                          <div class="message-name">HEP (Hal Ehwan Pelajar)</div>
+                          <div class="message-preview">Student Events & Well-being</div>
                         </div>
                         <div class="message-badge">
                           <span id="dashboard-hep-count" class="count-circle hidden">0</span>
