@@ -192,7 +192,7 @@
                         ->join('tblpaymentmethod', 'tblpayment.payment_method', '=', 'tblpaymentmethod.id')
                         ->join('students', 'tblpayment.student_ic', '=', 'students.ic')
                         ->where('tblpaymentmethod.	claim_method_id', '==', 17)
-                        ->select('tblpayment.*', 'students.name', 'students.no_matric', 'students.ic', 'tblpaymentmethod.name as payment_method')
+                        ->select('tblpayment.*', 'students.name', 'students.no_matric', 'students.ic')
                         ->orderBy('tblpayment.date', 'desc')
                         ->limit(10)
                         ->get();
