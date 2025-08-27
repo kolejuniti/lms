@@ -71,7 +71,7 @@
                 </div>
                 <div class="flex-grow-1">
                   <p class="mb-5 text-fade">Today's Payments</p>
-                  <h4 class="mb-0 fw-600">RM {{ number_format(DB::table('tblpayment')->whereDate('date_receive', today())->sum('amount'), 2) }}</h4>
+                  <h4 class="mb-0 fw-600">RM {{ number_format(DB::table('tblpayment')->whereDate('date', today())->sum('amount'), 2) }}</h4>
                 </div>
               </div>
             </div>
@@ -190,7 +190,7 @@
                       $recentPayments = DB::table('tblpayment')
                         ->join('students', 'tblpayment.student_ic', '=', 'students.ic')
                         ->select('tblpayment.*', 'students.name')
-                        ->orderBy('tblpayment.date_receive', 'desc')
+                        ->orderBy('tblpayment.date', 'desc')
                         ->limit(5)
                         ->get();
                     @endphp
@@ -199,7 +199,7 @@
                         <td>{{ $payment->receiptno ?? 'N/A' }}</td>
                         <td>{{ $payment->name }}</td>
                         <td>RM {{ number_format($payment->amount, 2) }}</td>
-                        <td>{{ date('d/m/Y', strtotime($payment->date_receive)) }}</td>
+                        <td>{{ date('d/m/Y', strtotime($payment->date)) }}</td>
                         <td><span class="badge badge-success">Completed</span></td>
                       </tr>
                     @empty
@@ -224,8 +224,8 @@
             <div class="box-body">
               @php
                 $thisMonth = DB::table('tblpayment')
-                  ->whereMonth('date_receive', date('m'))
-                  ->whereYear('date_receive', date('Y'));
+                  ->whereMonth('date', date('m'))
+                  ->whereYear('date', date('Y'));
                 $monthlyTotal = $thisMonth->sum('amount');
                 $monthlyCount = $thisMonth->count();
               @endphp
