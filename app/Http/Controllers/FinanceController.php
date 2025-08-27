@@ -11948,7 +11948,7 @@ class FinanceController extends Controller
                 $content .= '<td>'. number_format($yearTotal, 2) .'</td>';
             }
             
-            $content .= '<td><em>All Transactions</em></td>';
+            // $content .= '<td><em>All Transactions</em></td>';
             $content .= '</tr>
                         </tfoot>';
             
