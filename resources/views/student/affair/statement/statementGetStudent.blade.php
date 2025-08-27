@@ -5,32 +5,32 @@
         </div>
         <div class="card-body">
             <div class="row mb-5">
-                <div class="col-md-6">
+                <div class="col-md-6 col-sm-12">
                     <div class="form-group">
-                        <p>Student Name &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ $data['student']->name }}</p>
+                        <p class="student-info-item"><span class="info-label">Student Name:</span> <span class="info-value">{{ $data['student']->name }}</span></p>
                     </div>
                     <div class="form-group">
-                        <p>Status &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ $data['student']->status }}</p>
+                        <p class="student-info-item"><span class="info-label">Status:</span> <span class="info-value">{{ $data['student']->status }}</span></p>
                     </div>
                     <div class="form-group">
-                        <p>Program &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ $data['student']->program }}</p>
+                        <p class="student-info-item"><span class="info-label">Program:</span> <span class="info-value">{{ $data['student']->program }}</span></p>
                     </div>
                     <div class="form-group">
-                        <p>Intake &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ $data['student']->intake_name }}</p>
+                        <p class="student-info-item"><span class="info-label">Intake:</span> <span class="info-value">{{ $data['student']->intake_name }}</span></p>
                     </div>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-6 col-sm-12">
                     <div class="form-group">
-                        <p>No. IC / No. Passport &nbsp; &nbsp;: &nbsp;&nbsp; {{ $data['student']->ic }}</p>
+                        <p class="student-info-item"><span class="info-label">No. IC / No. Passport:</span> <span class="info-value">{{ $data['student']->ic }}</span></p>
                     </div>
                     <div class="form-group">
-                        <p>No. Matric &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ $data['student']->no_matric }}</p>
+                        <p class="student-info-item"><span class="info-label">No. Matric:</span> <span class="info-value">{{ $data['student']->no_matric }}</span></p>
                     </div>
                     <div class="form-group">
-                        <p>Semester &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ $data['student']->semester }}</p>
+                        <p class="student-info-item"><span class="info-label">Semester:</span> <span class="info-value">{{ $data['student']->semester }}</span></p>
                     </div>
                     <div class="form-group">
-                        <p>Session &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ $data['student']->session_name }}</p>
+                        <p class="student-info-item"><span class="info-label">Session:</span> <span class="info-value">{{ $data['student']->session_name }}</span></p>
                     </div>
                 </div>
             </div>
@@ -45,32 +45,33 @@
             <div class="row">
                 <div class="col-md-12 mt-3">
                     <div class="form-group mt-3">
-                        <table class="w-100 table table-bordered display margin-top-10 w-p100">
-                            <thead>
-                                <tr>
-                                    <th style="width: 5%">
-                                        Tarikh
-                                    </th>
-                                    <th style="width: 5%">
-                                        Ref No
-                                    </th>
-                                    <th style="width: 5%">
-                                        Program
-                                    </th>
-                                    <th style="width: 5%">
-                                        Description
-                                    </th>
-                                    <th style="width: 5%">
-                                        Claim (RM)
-                                    </th>
-                                    <th style="width: 5%">
-                                        Payment (RM)
-                                    </th>
-                                    <th style="width: 5%">
-                                        Balance (RM)
-                                    </th>
-                                </tr>
-                            </thead>
+                        <div class="table-responsive">
+                            <table class="table table-bordered display margin-top-10" style="min-width: 700px;">
+                                <thead>
+                                    <tr>
+                                        <th style="min-width: 80px;">
+                                            Tarikh
+                                        </th>
+                                        <th style="min-width: 80px;">
+                                            Ref No
+                                        </th>
+                                        <th style="min-width: 100px;">
+                                            Program
+                                        </th>
+                                        <th style="min-width: 150px;">
+                                            Description
+                                        </th>
+                                        <th style="min-width: 90px;">
+                                            Claim (RM)
+                                        </th>
+                                        <th style="min-width: 100px;">
+                                            Payment (RM)
+                                        </th>
+                                        <th style="min-width: 100px;">
+                                            Balance (RM)
+                                        </th>
+                                    </tr>
+                                </thead>
                             <tbody id="table">
                                 @foreach ($data['record'] as $key => $req)
                                 <tr style="{{ (substr($req->ref_no, 0, 3) == 'INV') ? 'background-color: red' : ''}}">
@@ -135,23 +136,24 @@
                                     <input type="text" class="form-control" name="sum2" id="sum2">
                                 </div> 
                             </tbody>
-                        </table>
+                            </table>
+                        </div>
 
                         <div class="card mb-3" id="stud_info">
                             <div class="card-body">
                                 <div class="row mb-5">
-                                    <div class="col-md-6">
+                                    <div class="col-md-6 col-sm-12">
                                         <div class="form-group">
-                                            <p>PACKAGE &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ isset($data['package']->package) ? $data['package']->package : 0 }}</p>
+                                            <p class="student-info-item"><span class="info-label">PACKAGE:</span> <span class="info-value">{{ isset($data['package']->package) ? $data['package']->package : 0 }}</span></p>
                                         </div>
                                         <div class="form-group">
-                                            <p>METHOD &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ isset($data['package']->type) ? $data['package']->type : 0 }}</p>
+                                            <p class="student-info-item"><span class="info-label">METHOD:</span> <span class="info-value">{{ isset($data['package']->type) ? $data['package']->type : 0 }}</span></p>
                                         </div>
                                         <div class="form-group">
-                                            <p>PAYMENT &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ isset($data['sponsor']->amount) ? number_format($data['sponsor']->amount, 2) : 0.00 }}</p>
+                                            <p class="student-info-item"><span class="info-label">PAYMENT:</span> <span class="info-value">{{ isset($data['sponsor']->amount) ? number_format($data['sponsor']->amount, 2) : 0.00 }}</span></p>
                                         </div>
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="col-md-6 col-sm-12">
                                         {{-- <div class="form-group">
                                             <table class="w-100 table table-bordered display margin-top-10 w-p100">
                                                 <tr>
@@ -174,7 +176,7 @@
                                             </table>
                                         </div> --}}
                                         <div class="form-group">
-                                            <p><b style="color: red;">CURRENT SEMESTER ARREARS &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ isset($data['value']) ? $data['value'] : 0.00 }}</b></p>
+                                            <p class="student-info-item"><b style="color: red;"><span class="info-label">CURRENT SEMESTER ARREARS:</span> <span class="info-value">{{ isset($data['value']) ? $data['value'] : 0.00 }}</span></b></p>
                                         </div>
                                     </div>
                                 </div>
@@ -215,32 +217,33 @@
             <div class="row">
                 <div class="col-md-12 mt-3">
                     <div class="form-group mt-3">
-                        <table class="w-100 table table-bordered display margin-top-10 w-p100">
-                            <thead>
-                                <tr>
-                                    <th style="width: 5%">
-                                        Tarikh
-                                    </th>
-                                    <th style="width: 5%">
-                                        Ref No
-                                    </th>
-                                    <th style="width: 5%">
-                                        Program
-                                    </th>
-                                    <th style="width: 5%">
-                                        Description
-                                    </th>
-                                    <th style="width: 5%">
-                                        Claim (RM)
-                                    </th>
-                                    <th style="width: 5%">
-                                        Payment (RM)
-                                    </th>
-                                    <th style="width: 5%">
-                                        Balance (RM)
-                                    </th>
-                                </tr>
-                            </thead>
+                        <div class="table-responsive">
+                            <table class="table table-bordered display margin-top-10" style="min-width: 700px;">
+                                <thead>
+                                    <tr>
+                                        <th style="min-width: 80px;">
+                                            Tarikh
+                                        </th>
+                                        <th style="min-width: 80px;">
+                                            Ref No
+                                        </th>
+                                        <th style="min-width: 100px;">
+                                            Program
+                                        </th>
+                                        <th style="min-width: 150px;">
+                                            Description
+                                        </th>
+                                        <th style="min-width: 90px;">
+                                            Claim (RM)
+                                        </th>
+                                        <th style="min-width: 100px;">
+                                            Payment (RM)
+                                        </th>
+                                        <th style="min-width: 100px;">
+                                            Balance (RM)
+                                        </th>
+                                    </tr>
+                                </thead>
                             <tbody id="table">
                                 @foreach ($data['record2'] as $key => $req)
                                 <tr>
@@ -299,7 +302,8 @@
                                     <input type="text" class="form-control" name="sum2" id="sum2">
                                 </div> 
                             </tbody>
-                        </table>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -314,32 +318,33 @@
             <div class="row">
                 <div class="col-md-12 mt-3">
                     <div class="form-group mt-3">
-                        <table class="w-100 table table-bordered display margin-top-10 w-p100">
-                            <thead>
-                                <tr>
-                                    <th style="width: 5%">
-                                        Tarikh
-                                    </th>
-                                    <th style="width: 5%">
-                                        Ref No
-                                    </th>
-                                    <th style="width: 5%">
-                                        Program
-                                    </th>
-                                    <th style="width: 5%">
-                                        Description
-                                    </th>
-                                    <th style="width: 5%">
-                                        Claim (RM)
-                                    </th>
-                                    <th style="width: 5%">
-                                        Payment (RM)
-                                    </th>
-                                    <th style="width: 5%">
-                                        Balance (RM)
-                                    </th>
-                                </tr>
-                            </thead>
+                        <div class="table-responsive">
+                            <table class="table table-bordered display margin-top-10" style="min-width: 700px;">
+                                <thead>
+                                    <tr>
+                                        <th style="min-width: 80px;">
+                                            Tarikh
+                                        </th>
+                                        <th style="min-width: 80px;">
+                                            Ref No
+                                        </th>
+                                        <th style="min-width: 100px;">
+                                            Program
+                                        </th>
+                                        <th style="min-width: 150px;">
+                                            Description
+                                        </th>
+                                        <th style="min-width: 90px;">
+                                            Claim (RM)
+                                        </th>
+                                        <th style="min-width: 100px;">
+                                            Payment (RM)
+                                        </th>
+                                        <th style="min-width: 100px;">
+                                            Balance (RM)
+                                        </th>
+                                    </tr>
+                                </thead>
                             <tbody id="table">
                                 @foreach ($data['record3'] as $key => $req)
                                 <tr>
@@ -398,7 +403,8 @@
                                     <input type="text" class="form-control" name="sum2" id="sum2">
                                 </div> 
                             </tbody>
-                        </table>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
