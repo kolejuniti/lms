@@ -26,8 +26,7 @@ class FinanceController extends Controller
 {
     public function dashboard()
     {
-
-        return view('dashboard');
+        return view('finance_dashboard');
     }
     
     public function index()
