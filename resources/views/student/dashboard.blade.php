@@ -1333,6 +1333,109 @@
           </div>
         </div>
       </div>
+
+      <!-- Quick Messaging Widget -->
+      <div class="row">
+        <div class="col-12">
+          <div class="box">
+            <div class="box-header with-border">
+              <h4 class="box-title modern-title">Quick Messages</h4>
+              <div class="box-controls pull-right">
+                <button class="btn btn-sm btn-primary" onclick="toggleMessagingPanel()">
+                  <i class="mdi mdi-message-text me-1"></i> View All
+                </button>
+              </div>
+            </div>
+            <div class="box-body p-0">
+              <div class="row g-0">
+                <!-- Admin Messages Section -->
+                <div class="col-xl-6 col-12">
+                  <div class="quick-message-section border-end">
+                    <div class="section-header">
+                      <h5 class="section-title">
+                        <i class="mdi mdi-account-tie text-primary me-2"></i>
+                        Admin Messages
+                      </h5>
+                    </div>
+                    <div class="admin-messages-container">
+                      <div class="admin-message-item" onclick="getMessage('FN', 'FN')">
+                        <div class="message-avatar bg-info">
+                          <i class="mdi mdi-currency-usd"></i>
+                        </div>
+                        <div class="message-details">
+                          <div class="message-name">UKP (Student Finance)</div>
+                          <div class="message-preview">Financial matters & payments</div>
+                        </div>
+                        <div class="message-badge">
+                          <span id="dashboard-ukp-count" class="count-circle hidden">0</span>
+                        </div>
+                      </div>
+                      
+                      <div class="admin-message-item" onclick="getMessage('RGS', 'RGS')">
+                        <div class="message-avatar bg-warning">
+                          <i class="mdi mdi-file-document"></i>
+                        </div>
+                        <div class="message-details">
+                          <div class="message-name">KRP (Registration)</div>
+                          <div class="message-preview">Course registration & enrollment</div>
+                        </div>
+                        <div class="message-badge">
+                          <span id="dashboard-krp-count" class="count-circle hidden">0</span>
+                        </div>
+                      </div>
+                      
+                      <div class="admin-message-item" onclick="getMessage('HEA', 'HEA')">
+                        <div class="message-avatar bg-success">
+                          <i class="mdi mdi-heart-pulse"></i>
+                        </div>
+                        <div class="message-details">
+                          <div class="message-name">HEP (Health)</div>
+                          <div class="message-preview">Health services & support</div>
+                        </div>
+                        <div class="message-badge">
+                          <span id="dashboard-hep-count" class="count-circle hidden">0</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Student Messages Section -->
+                <div class="col-xl-6 col-12">
+                  <div class="quick-message-section">
+                    <div class="section-header">
+                      <h5 class="section-title">
+                        <i class="mdi mdi-account-group text-primary me-2"></i>
+                        Student Messages
+                      </h5>
+                    </div>
+                    
+                    <!-- Quick Search -->
+                    <div class="student-search-container">
+                      <div class="search-input-group">
+                        <i class="mdi mdi-magnify search-icon"></i>
+                        <input type="text" id="dashboard-student-search" placeholder="Search students..." class="search-input">
+                        <div id="dashboard-search-results" class="search-results"></div>
+                      </div>
+                    </div>
+                    
+                    <!-- Recent Conversations -->
+                    <div class="student-conversations-container">
+                      <div id="dashboard-student-conversations" class="student-conversations">
+                        <div class="empty-message-state">
+                          <i class="mdi mdi-message-outline"></i>
+                          <p>No recent conversations</p>
+                          <span>Search for students to start chatting!</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       
       <!-- Today's Classes -->
       {{-- <div class="row" id="today-classes">
@@ -1880,6 +1983,394 @@ background: linear-gradient(135deg, #0ba360 0%, #3cba92 100%);
   height: 50px;
   border-radius: 15px;
 }
+}
+
+/* Quick Messaging Widget Styles */
+.quick-message-section {
+  padding: 1.5rem;
+  min-height: 350px;
+}
+
+.section-header {
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid #e9ecef;
+  padding-bottom: 0.75rem;
+}
+
+.section-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+  color: #495057;
+  display: flex;
+  align-items: center;
+}
+
+/* Admin Messages Styles */
+.admin-messages-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.admin-message-item {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.admin-message-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 100%;
+  background: linear-gradient(90deg, rgba(79, 129, 199, 0.1), transparent);
+  transition: width 0.3s ease;
+  z-index: 0;
+}
+
+.admin-message-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-color: #4f81c7;
+}
+
+.admin-message-item:hover::before {
+  width: 100%;
+}
+
+.message-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.25rem;
+  margin-right: 1rem;
+  z-index: 1;
+  position: relative;
+}
+
+.message-details {
+  flex: 1;
+  z-index: 1;
+  position: relative;
+}
+
+.message-name {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #333;
+  margin-bottom: 0.25rem;
+}
+
+.message-preview {
+  font-size: 0.8rem;
+  color: #6c757d;
+  line-height: 1.3;
+}
+
+.message-badge {
+  z-index: 1;
+  position: relative;
+}
+
+/* Student Messages Styles */
+.student-search-container {
+  margin-bottom: 1.5rem;
+}
+
+.search-input-group {
+  position: relative;
+  background: #f8f9fa;
+  border-radius: 0.75rem;
+  border: 1px solid #e9ecef;
+  padding: 0.75rem;
+  display: flex;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+.search-input-group:focus-within {
+  border-color: #4f81c7;
+  box-shadow: 0 0 0 0.2rem rgba(79, 129, 199, 0.25);
+}
+
+.search-icon {
+  color: #6c757d;
+  margin-right: 0.75rem;
+  font-size: 1.1rem;
+}
+
+.search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 0.9rem;
+  color: #495057;
+}
+
+.search-input::placeholder {
+  color: #adb5bd;
+}
+
+.search-results {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #e9ecef;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 1000;
+  display: none;
+  margin-top: 0.5rem;
+}
+
+.search-results.active {
+  display: block;
+}
+
+.student-conversations-container {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.student-conversations {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.empty-message-state {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: #6c757d;
+}
+
+.empty-message-state i {
+  font-size: 2rem;
+  margin-bottom: 0.75rem;
+  color: #adb5bd;
+}
+
+.empty-message-state p {
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+  color: #495057;
+}
+
+.empty-message-state span {
+  font-size: 0.85rem;
+  color: #6c757d;
+}
+
+/* Search Result Items */
+.dashboard-search-item {
+  padding: 0.75rem;
+  cursor: pointer;
+  border-bottom: 1px solid #f0f0f0;
+  transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.dashboard-search-item:hover {
+  background-color: #f8f9fa;
+}
+
+.dashboard-search-item:last-child {
+  border-bottom: none;
+}
+
+.dashboard-search-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #4f81c7, #667eea);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+.dashboard-search-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.dashboard-search-name {
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #333;
+  margin-bottom: 0.125rem;
+}
+
+.dashboard-search-info {
+  font-size: 0.75rem;
+  color: #6c757d;
+}
+
+/* Conversation Items */
+.dashboard-conversation-item {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem;
+  cursor: pointer;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
+  gap: 0.75rem;
+  border: 1px solid transparent;
+}
+
+.dashboard-conversation-item:hover {
+  background-color: #f8f9fa;
+  border-color: #e9ecef;
+}
+
+.dashboard-conversation-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #4f81c7, #667eea);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1rem;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.dashboard-conversation-avatar.online::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 12px;
+  height: 12px;
+  background: #2ed573;
+  border: 2px solid white;
+  border-radius: 50%;
+}
+
+.dashboard-conversation-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.dashboard-conversation-name {
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #333;
+  margin-bottom: 0.125rem;
+}
+
+.dashboard-conversation-preview {
+  font-size: 0.75rem;
+  color: #6c757d;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dashboard-conversation-preview.unread {
+  font-weight: 600;
+  color: #333;
+}
+
+.dashboard-conversation-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.dashboard-unread-badge {
+  background: #4f81c7;
+  color: white;
+  border-radius: 50%;
+  min-width: 18px;
+  height: 18px;
+  font-size: 0.7rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.count-circle {
+  background: #ff4757;
+  color: white;
+  border-radius: 50%;
+  min-width: 18px;
+  height: 18px;
+  font-size: 0.7rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid white;
+}
+
+.count-circle.hidden {
+  display: none !important;
+}
+
+/* Responsive Design */
+@media (max-width: 1199px) {
+  .quick-message-section {
+    border-bottom: 1px solid #e9ecef !important;
+    border-right: none !important;
+  }
+  
+  .quick-message-section:last-child {
+    border-bottom: none !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .quick-message-section {
+    padding: 1rem;
+    min-height: 300px;
+  }
+  
+  .admin-message-item {
+    padding: 0.75rem;
+  }
+  
+  .message-avatar {
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+  }
+  
+  .message-name {
+    font-size: 0.85rem;
+  }
+  
+  .message-preview {
+    font-size: 0.75rem;
+  }
 }
 </style>
 
@@ -2808,6 +3299,9 @@ function updateCurrentDateDisplay() {
 // Call this function when the document is loaded
 document.addEventListener('DOMContentLoaded', function() {
   updateCurrentDateDisplay();
+  
+  // Initialize dashboard messaging widget
+  initializeDashboardMessaging();
 });
 
 // Fallback weather data in case API fails
@@ -2893,6 +3387,211 @@ function manualWeatherRefresh() {
       refreshBtn.disabled = false;
     }
   }, 3000);
+}
+
+// Dashboard Messaging Widget Functions
+let dashboardSearchTimeout;
+
+function initializeDashboardMessaging() {
+  console.log('Initializing dashboard messaging widget...');
+  
+  // Initialize admin message counts
+  updateDashboardAdminCounts();
+  
+  // Initialize student search
+  const searchInput = document.getElementById('dashboard-student-search');
+  const searchResults = document.getElementById('dashboard-search-results');
+  
+  if (searchInput && searchResults) {
+    searchInput.addEventListener('input', function() {
+      clearTimeout(dashboardSearchTimeout);
+      const query = this.value.trim();
+      
+      if (query.length < 2) {
+        searchResults.classList.remove('active');
+        return;
+      }
+      
+      dashboardSearchTimeout = setTimeout(() => {
+        searchDashboardStudents(query);
+      }, 300);
+    });
+    
+    // Hide search results when clicking outside
+    document.addEventListener('click', function(e) {
+      if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+        searchResults.classList.remove('active');
+      }
+    });
+  }
+  
+  // Load student conversations
+  loadDashboardStudentConversations();
+  
+  // Set up periodic refresh
+  setInterval(() => {
+    updateDashboardAdminCounts();
+    loadDashboardStudentConversations();
+  }, 5000);
+}
+
+function updateDashboardAdminCounts() {
+  // Update UKP count
+  fetch('/all/massage/student/countMessage?type=FN')
+    .then(response => response.json())
+    .then(data => {
+      const element = document.getElementById('dashboard-ukp-count');
+      if (element) {
+        if (data.count === 0) {
+          element.classList.add('hidden');
+        } else {
+          element.classList.remove('hidden');
+          element.textContent = data.count;
+        }
+      }
+    })
+    .catch(error => console.error('Error updating UKP count:', error));
+  
+  // Update KRP count
+  fetch('/all/massage/student/countMessage?type=RGS')
+    .then(response => response.json())
+    .then(data => {
+      const element = document.getElementById('dashboard-krp-count');
+      if (element) {
+        if (data.count === 0) {
+          element.classList.add('hidden');
+        } else {
+          element.classList.remove('hidden');
+          element.textContent = data.count;
+        }
+      }
+    })
+    .catch(error => console.error('Error updating KRP count:', error));
+  
+  // Update HEP count
+  fetch('/all/massage/student/countMessage?type=HEP')
+    .then(response => response.json())
+    .then(data => {
+      const element = document.getElementById('dashboard-hep-count');
+      if (element) {
+        if (data.count === 0) {
+          element.classList.add('hidden');
+        } else {
+          element.classList.remove('hidden');
+          element.textContent = data.count;
+        }
+      }
+    })
+    .catch(error => console.error('Error updating HEP count:', error));
+}
+
+function searchDashboardStudents(query) {
+  fetch('/all/student/search', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+    },
+    body: JSON.stringify({ search: query })
+  })
+  .then(response => response.json())
+  .then(students => {
+    const searchResults = document.getElementById('dashboard-search-results');
+    
+    if (students.length === 0) {
+      searchResults.innerHTML = '<div class="dashboard-search-item">No students found</div>';
+    } else {
+      searchResults.innerHTML = students.map(student => `
+        <div class="dashboard-search-item" onclick="startDashboardStudentChat('${student.ic}', '${student.name}')">
+          <div class="dashboard-search-avatar">
+            ${student.name.charAt(0).toUpperCase()}
+          </div>
+          <div class="dashboard-search-details">
+            <div class="dashboard-search-name">${student.name}</div>
+            <div class="dashboard-search-info">${student.no_matric} • ${student.progname}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+    
+    searchResults.classList.add('active');
+  })
+  .catch(error => {
+    console.error('Error searching students:', error);
+  });
+}
+
+function startDashboardStudentChat(studentIc, studentName) {
+  // Hide search results and clear search
+  const searchResults = document.getElementById('dashboard-search-results');
+  const searchInput = document.getElementById('dashboard-student-search');
+  if (searchResults) searchResults.classList.remove('active');
+  if (searchInput) searchInput.value = '';
+  
+  // Check if TextBox component is available
+  if (window.textBoxComponent) {
+    window.textBoxComponent.openStudentChat(studentIc, studentName);
+  } else {
+    // Fallback - open messaging panel
+    toggleMessagingPanel();
+  }
+}
+
+function loadDashboardStudentConversations() {
+  fetch('/all/student/conversations')
+    .then(response => response.json())
+    .then(conversations => {
+      const container = document.getElementById('dashboard-student-conversations');
+      
+      if (conversations.length === 0) {
+        container.innerHTML = `
+          <div class="empty-message-state">
+            <i class="mdi mdi-message-outline"></i>
+            <p>No recent conversations</p>
+            <span>Search for students to start chatting!</span>
+          </div>
+        `;
+      } else {
+        // Show only the first 3 conversations for the dashboard widget
+        const recentConversations = conversations.slice(0, 3);
+        
+        container.innerHTML = recentConversations.map(conv => {
+          const lastMessage = conv.last_message;
+          const student = conv.student;
+          const unreadCount = conv.unread_count;
+          
+          // Format message preview
+          let messagePreview = 'No messages yet';
+          if (lastMessage) {
+            if (lastMessage.message && lastMessage.message.trim()) {
+              messagePreview = lastMessage.message;
+            } else if (lastMessage.image_url) {
+              messagePreview = '📷 Photo';
+            }
+          }
+          
+          return `
+            <div class="dashboard-conversation-item" onclick="startDashboardStudentChat('${student.ic}', '${student.name}')">
+              <div class="dashboard-conversation-avatar online">
+                ${student.name.charAt(0).toUpperCase()}
+              </div>
+              <div class="dashboard-conversation-details">
+                <div class="dashboard-conversation-name">${student.name}</div>
+                <div class="dashboard-conversation-preview ${unreadCount > 0 ? 'unread' : ''}">
+                  ${messagePreview}
+                </div>
+              </div>
+              <div class="dashboard-conversation-meta">
+                ${unreadCount > 0 ? `<div class="dashboard-unread-badge">${unreadCount}</div>` : ''}
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+    })
+    .catch(error => {
+      console.error('Error loading dashboard conversations:', error);
+    });
 }
 </script>
 @endsection
