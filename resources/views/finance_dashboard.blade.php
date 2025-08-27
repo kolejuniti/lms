@@ -159,6 +159,56 @@
               </div>
             </div>
           </div>
+
+          <!-- Messages Widget -->
+          <div class="box">
+            <div class="box-header with-border">
+              <h4 class="box-title">Messages</h4>
+              <div class="box-controls pull-right">
+                <a href="/all/massage/user" class="btn btn-sm btn-primary">View All</a>
+              </div>
+            </div>
+            <div class="box-body">
+              <div class="d-flex align-items-center mb-20">
+                <div class="me-15 bg-warning-light h-50 w-50 l-h-60 rounded text-center">
+                  <i data-feather="message-square" class="text-warning"></i>
+                </div>
+                <div class="flex-grow-1">
+                  <p class="mb-5 text-fade">Unread Messages</p>
+                  <h4 class="mb-0 fw-600" id="dashboard-message-count">0</h4>
+                </div>
+                <div>
+                  <a href="/all/massage/user" class="btn btn-sm btn-outline-primary">
+                    <i data-feather="message-circle" class="me-5"></i>View Messages
+                  </a>
+                </div>
+              </div>
+              
+              <!-- Quick Chat Access -->
+              <div class="border-top pt-15">
+                <h6 class="mb-10">Students with Unread Messages</h6>
+                <div id="unread-students-list" class="mb-15">
+                  <!-- This will be populated by AJAX -->
+                  <div class="text-center text-muted" id="loading-students">
+                    <small>Loading...</small>
+                  </div>
+                </div>
+                <div class="d-flex gap-10 mb-10">
+                  <button class="btn btn-sm btn-outline-primary flex-fill" onclick="refreshUnreadStudents()">
+                    <i data-feather="refresh-cw" class="me-5"></i>Method 1
+                  </button>
+                  <button class="btn btn-sm btn-outline-secondary flex-fill" onclick="fetchUnreadStudentsAlternative()">
+                    <i data-feather="search" class="me-5"></i>Method 2
+                  </button>
+                </div>
+                <div class="d-flex gap-10">
+                  <a href="/all/massage/user" class="btn btn-sm btn-primary btn-block">
+                    <i data-feather="message-square" class="me-5"></i>View All Messages
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -323,56 +373,6 @@
         </div>
 
         <div class="col-xl-6 col-12">
-          <!-- Messages Widget -->
-          <div class="box">
-            <div class="box-header with-border">
-              <h4 class="box-title">Messages</h4>
-              <div class="box-controls pull-right">
-                <a href="/all/massage/user" class="btn btn-sm btn-primary">View All</a>
-              </div>
-            </div>
-            <div class="box-body">
-              <div class="d-flex align-items-center mb-20">
-                <div class="me-15 bg-warning-light h-50 w-50 l-h-60 rounded text-center">
-                  <i data-feather="message-square" class="text-warning"></i>
-                </div>
-                <div class="flex-grow-1">
-                  <p class="mb-5 text-fade">Unread Messages</p>
-                  <h4 class="mb-0 fw-600" id="dashboard-message-count">0</h4>
-                </div>
-                <div>
-                  <a href="/all/massage/user" class="btn btn-sm btn-outline-primary">
-                    <i data-feather="message-circle" class="me-5"></i>View Messages
-                  </a>
-                </div>
-              </div>
-              
-              <!-- Quick Chat Access -->
-              <div class="border-top pt-15">
-                <h6 class="mb-10">Students with Unread Messages</h6>
-                <div id="unread-students-list" class="mb-15">
-                  <!-- This will be populated by AJAX -->
-                  <div class="text-center text-muted" id="loading-students">
-                    <small>Loading...</small>
-                  </div>
-                </div>
-                <div class="d-flex gap-10 mb-10">
-                  <button class="btn btn-sm btn-outline-primary flex-fill" onclick="refreshUnreadStudents()">
-                    <i data-feather="refresh-cw" class="me-5"></i>Method 1
-                  </button>
-                  <button class="btn btn-sm btn-outline-secondary flex-fill" onclick="fetchUnreadStudentsAlternative()">
-                    <i data-feather="search" class="me-5"></i>Method 2
-                  </button>
-                </div>
-                <div class="d-flex gap-10">
-                  <a href="/all/massage/user" class="btn btn-sm btn-primary btn-block">
-                    <i data-feather="message-square" class="me-5"></i>View All Messages
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
-
           <!-- System Alerts -->
           <div class="box">
             <div class="box-header with-border">
