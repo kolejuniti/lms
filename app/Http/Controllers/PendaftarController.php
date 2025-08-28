@@ -24,13 +24,18 @@ class PendaftarController extends Controller
 {
     public function dashboard()
     {
+        // Check if user is RGS type
+        if (Auth::user()->usrtype !== "RGS") {
+            return redirect()->route('home')->with('error', 'Access denied. This dashboard is only for Student Registration staff.');
+        }
+
         Session::put('User', Auth::user());
 
+        // Get basic data for existing dashboard functionality
         $data['year'] = DB::table('tblyear')->get();
 
         foreach($data['year'] as $key => $year)
         {
-
             $data['student'][$key] = DB::table('tblstudent_log')
                                      ->where(DB::raw('YEAR(date)'), $year->year)
                                      ->where([
@@ -42,7 +47,59 @@ class PendaftarController extends Controller
 
         $data['status'] = DB::table('tblstudent_status')->get();
 
-        return view('dashboard', compact('data'));
+        // Enhanced dashboard metrics for pendaftar
+        $data['metrics'] = [
+            'total_students' => DB::table('students')->count(),
+            'active_students' => DB::table('students')->whereNotIn('status', [3,4,5,6,7,8,14,15,16,17,19,20])->count(),
+            'new_students_today' => DB::table('students')->whereDate('created_at', today())->count(),
+            'pending_applications' => DB::table('students')->where('status', 1)->count(),
+            'current_session_students' => DB::table('students')
+                ->join('sessions', 'students.session', 'sessions.SessionID')
+                ->where('sessions.Status', 'ACTIVE')
+                ->count(),
+            'programs_count' => DB::table('tblprogramme')->count(),
+            'international_students' => DB::table('students')
+                ->join('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
+                ->where('tblstudent_personal.statelevel_id', '!=', 1)
+                ->count()
+        ];
+
+        // Student status breakdown
+        $data['status_breakdown'] = DB::table('students')
+            ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
+            ->select('tblstudent_status.name', DB::raw('COUNT(*) as count'))
+            ->groupBy('tblstudent_status.name')
+            ->orderBy('count', 'desc')
+            ->get();
+
+        // Program enrollment breakdown
+        $data['program_breakdown'] = DB::table('students')
+            ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+            ->select('tblprogramme.progcode', 'tblprogramme.progname', DB::raw('COUNT(*) as count'))
+            ->groupBy('tblprogramme.progcode', 'tblprogramme.progname')
+            ->orderBy('count', 'desc')
+            ->limit(10)
+            ->get();
+
+        // Recent student activities
+        $data['recent_students'] = DB::table('students')
+            ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+            ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
+            ->select('students.name', 'students.no_matric', 'students.ic', 
+                     'tblprogramme.progcode', 'tblstudent_status.name as status',
+                     'students.date')
+            ->orderBy('students.date', 'desc')
+            ->limit(10)
+            ->get();
+
+        // Quick stats for different student categories
+        $data['student_categories'] = [
+            'holding' => DB::table('students')->where('student_status', 1)->count(),
+            'studying' => DB::table('students')->where('student_status', 2)->count(),
+            'internship' => DB::table('students')->where('student_status', 4)->count(),
+        ];
+
+        return view('pendaftar_dashboard', compact('data'));
     }
 
     public function getCircleData(Request $request)
