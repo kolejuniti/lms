@@ -51,7 +51,7 @@ class PendaftarController extends Controller
         $data['metrics'] = [
             'total_students' => DB::table('students')->count(),
             'active_students' => DB::table('students')->whereNotIn('status', [3,4,5,6,7,8,14,15,16,17,19,20])->count(),
-            'new_students_today' => DB::table('students')->whereDate('created_at', today())->count(),
+            'new_students_today' => DB::table('students')->whereDate('date', today())->count(),
             'pending_applications' => DB::table('students')->where('status', 1)->count(),
             'current_session_students' => DB::table('students')
                 ->join('sessions', 'students.session', 'sessions.SessionID')
