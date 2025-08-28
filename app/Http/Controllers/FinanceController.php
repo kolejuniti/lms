@@ -5953,7 +5953,7 @@ class FinanceController extends Controller
                     }
                 }
 
-            }elseif(($status->id == 2 || $status->id == 5) && $pym->sponsor_id == null && $pym->semester != 1)
+            }elseif(($status->id == 2 || $status->id == 5 || $status->id == 6) && $pym->sponsor_id == null && $pym->semester != 1)
             {
 
                 if($pym->process_type_id == 1)
