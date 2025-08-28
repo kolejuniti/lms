@@ -363,11 +363,11 @@
             <div class="box-body">
               <div class="list-group list-group-flush">
                 <a href="{{ route('pendaftar.student.reportR2') }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-                  Student Achievement Report
+                  Statistik Pencapaian R
                   <i data-feather="chevron-right" class="text-muted"></i>
                 </a>
                 <a href="{{ route('pendaftar.student.reportRA') }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-                  Student Analysis Report
+                  Analysis Student R
                   <i data-feather="chevron-right" class="text-muted"></i>
                 </a>
                 <a href="{{ route('all.student.spm.report') }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
