@@ -4075,6 +4075,7 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
                             ->whereIn('users.usrtype', ['LCT', 'PL', 'AO'])
                             ->whereIn('user_subjek.session_id', $session)
                             ->groupBy('users.ic')
+                            ->orderBy('users.name', 'asc')
                             ->get();
 
         foreach($data['lecturer'] as $key => $lct)
