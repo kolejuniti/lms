@@ -1554,8 +1554,14 @@ $content .= '</tr>
 
         $course = DB::table('subjek')->where('id', Session::get('CourseID'))->first();
         $session = DB::table('sessions')->where('SessionID', Session::get('SessionID'))->first();
+        
+        // Pass group data to view
+        $groupData = [
+            'id' => $group[0],
+            'name' => $group[1]
+        ];
 
-        return view('lecturer.class.printExamination', compact('data', 'course', 'session'));
+        return view('lecturer.class.printExamination', compact('data', 'course', 'session', 'groupData'));
     }
 
     public function getDate(Request $request)
