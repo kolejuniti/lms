@@ -131,13 +131,105 @@
                                                 <div class="info-value fw-bold">{{ $data['student']->session_name }}</div>
                                             </div>
                                         </div>
+                                                                </div>
+                        </div>
+                    </div>
+
+                    <!-- Payment Tutorial Video Card -->
+                    <div class="card border-0 rounded-4 shadow-sm hover-card mb-4 animate__animated animate__fadeInUp" id="payment_tutorial">
+                        <div class="card-header bg-gradient-info rounded-top-4 border-0">
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-icon bg-white text-info rounded-circle p-2 me-3">
+                                    <i class="fas fa-play-circle"></i>
+                                </div>
+                                <h5 class="mb-0 text-white">
+                                    <i class="fas fa-graduation-cap me-2"></i>Payment Tutorial
+                                </h5>
+                                <span class="badge bg-warning ms-2 pulse-help">Watch First!</span>
+                                <div class="ms-auto">
+                                    <button class="btn toggle-card" data-target="tutorial-video-body" data-bs-toggle="tooltip" data-bs-placement="top" title="Show/Hide Tutorial">
+                                        <i class="fas fa-chevron-down"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body p-4" id="tutorial-video-body">
+                            <div class="tutorial-content">
+                                <div class="alert alert-info border-0 rounded-3 mb-4">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-lightbulb fa-2x text-info me-3"></i>
+                                        <div>
+                                            <h6 class="alert-heading mb-1">New to Online Payment?</h6>
+                                            <p class="mb-0">Watch this quick tutorial to learn how to make payments successfully and verify your transactions.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="video-container position-relative rounded-4 overflow-hidden shadow-lg mb-3">
+                                    <video 
+                                        id="payment-tutorial-video"
+                                        class="w-100" 
+                                        controls 
+                                        preload="metadata"
+                                        poster="{{ asset('assets/images/video-thumbnail-payment.jpg') }}"
+                                        style="min-height: 350px; height: 450px; width: 100%; object-fit: contain; background: #000;">
+                                        <source src="{{ asset('assets/videos/cara_membuat_bayaran/cara_membuat_bayaran.mp4') }}" type="video/mp4">
+                                        <p class="text-center mt-3">
+                                            <i class="fas fa-exclamation-triangle text-warning me-2"></i>
+                                            Your browser does not support the video tag. 
+                                            <a href="{{ asset('assets/videos/cara_membuat_bayaran/cara_membuat_bayaran.mp4') }}" class="text-primary" download>
+                                                <i class="fas fa-download me-1"></i>Download the tutorial video
+                                            </a>
+                                        </p>
+                                    </video>
+                                    
+                                    <!-- Video overlay for unplayed state -->
+                                    <div class="video-overlay" id="video-overlay">
+                                        <div class="play-button-large">
+                                            <i class="fas fa-play"></i>
+                                        </div>
+                                        <div class="video-info">
+                                            <h5 class="text-white mb-2">Cara Membuat Bayaran Online</h5>
+                                            <p class="text-white-50 mb-0">Step-by-step payment guide</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="tutorial-actions d-flex flex-wrap gap-2 justify-content-between align-items-center">
+                                    <div class="tutorial-stats">
+                                        <small class="text-muted">
+                                            <i class="fas fa-clock me-1"></i>Duration: ~3 minutes
+                                            <span class="mx-2">|</span>
+                                            <i class="fas fa-eye me-1"></i><span id="view-count">Watch to continue</span>
+                                        </small>
+                                    </div>
+                                    <div class="tutorial-controls">
+                                        <button class="btn btn-sm btn-outline-primary me-2" onclick="restartVideo()">
+                                            <i class="fas fa-redo me-1"></i>Restart
+                                        </button>
+                                        <button class="btn btn-sm btn-primary" onclick="skipTutorial()">
+                                            <i class="fas fa-forward me-1"></i>Skip Tutorial
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <!-- Tutorial completion status -->
+                                <div class="tutorial-status mt-3" id="tutorial-status" style="display: none;">
+                                    <div class="alert alert-success border-0 rounded-3">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-check-circle fa-lg text-success me-3"></i>
+                                            <div>
+                                                <strong>Tutorial Completed!</strong>
+                                                <p class="mb-0 small">You can now proceed with confidence to make your payment.</p>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
 
-                            <!-- Payment Methods Card removed as requested -->
-
-                            <!-- Payment Details Card -->
+                    <!-- Payment Details Card -->
                             <div class="card border-0 rounded-4 shadow-sm hover-card mb-4" id="payment_details">
                                 <div class="card-header bg-light rounded-top-4 border-0">
                                     <div class="d-flex align-items-center">
@@ -284,6 +376,10 @@
     /* Header Styling */
     .bg-gradient-primary {
         background: linear-gradient(45deg, #4e73df, #36b9cc);
+    }
+    
+    .bg-gradient-info {
+        background: linear-gradient(45deg, #17a2b8, #36b9cc) !important;
     }
     
     /* Card Header Styling with Gradient */
@@ -552,6 +648,153 @@
             opacity: 1;
         }
     }
+    
+    /* Video Tutorial Styles */
+    .video-container {
+        position: relative;
+        background: #000;
+        min-height: 350px;
+        width: 100%;
+        border-radius: 1rem;
+    }
+    
+    .video-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, rgba(0,0,0,0.7), rgba(0,0,0,0.4));
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        z-index: 5;
+    }
+    
+    .video-overlay:hover {
+        background: linear-gradient(135deg, rgba(0,0,0,0.8), rgba(0,0,0,0.5));
+    }
+    
+    .play-button-large {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        color: #17a2b8;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        margin-bottom: 1rem;
+    }
+    
+    .play-button-large:hover {
+        transform: scale(1.1);
+        background: rgba(255, 255, 255, 1);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+    }
+    
+    .video-info {
+        text-align: center;
+    }
+    
+    .tutorial-actions {
+        background: #f8f9fa;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        border: 1px solid #e9ecef;
+    }
+    
+    .pulse-help {
+        animation: pulse-help 2s infinite;
+    }
+    
+    @keyframes pulse-help {
+        0% {
+            box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.7);
+        }
+        70% {
+            box-shadow: 0 0 0 10px rgba(255, 193, 7, 0);
+        }
+        100% {
+            box-shadow: 0 0 0 0 rgba(255, 193, 7, 0);
+        }
+    }
+    
+    /* Video player enhancements */
+    #payment-tutorial-video {
+        border-radius: 1rem;
+        background: #000;
+        width: 100% !important;
+        min-height: 350px !important;
+        height: 450px !important;
+        object-fit: contain;
+    }
+    
+    /* Tutorial content wrapper - make video take up more space */
+    .tutorial-content {
+        max-width: 100%;
+    }
+    
+    /* Responsive video */
+    @media (max-width: 768px) {
+        .tutorial-actions {
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .tutorial-controls {
+            width: 100%;
+            text-align: center;
+        }
+        
+        .video-overlay .play-button-large {
+            width: 60px;
+            height: 60px;
+            font-size: 1.5rem;
+        }
+        
+        .video-info h5 {
+            font-size: 1rem;
+        }
+        
+        .video-container {
+            min-height: 280px;
+        }
+        
+        #payment-tutorial-video {
+            min-height: 280px !important;
+            height: 350px !important;
+        }
+    }
+    
+    @media (min-width: 769px) {
+        .video-container {
+            min-height: 400px;
+        }
+        
+        #payment-tutorial-video {
+            min-height: 400px !important;
+            height: 500px !important;
+        }
+    }
+    
+    /* Large screens - even bigger video */
+    @media (min-width: 1200px) {
+        .video-container {
+            min-height: 450px;
+        }
+        
+        #payment-tutorial-video {
+            min-height: 450px !important;
+            height: 550px !important;
+        }
+    }
 </style>
 
 <script>
@@ -585,6 +828,9 @@
         var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
             return new bootstrap.Tooltip(tooltipTriggerEl)
         });
+        
+        // Video tutorial functionality
+        initializeVideoTutorial();
     });
     
     // Calculate sum from payment inputs with enhanced visual feedback
@@ -1084,6 +1330,145 @@
                 toast.remove();
             }, 300);
         }, 5000);
+    }
+    
+    // Video tutorial functionality
+    function initializeVideoTutorial() {
+        const video = document.getElementById('payment-tutorial-video');
+        const overlay = document.getElementById('video-overlay');
+        const viewCount = document.getElementById('view-count');
+        const tutorialStatus = document.getElementById('tutorial-status');
+        
+        // Check if video has been watched from localStorage
+        const hasWatchedTutorial = localStorage.getItem('paymentTutorialWatched');
+        
+        if (hasWatchedTutorial) {
+            showTutorialCompleted();
+        }
+        
+        // Video overlay click to play
+        if (overlay) {
+            overlay.addEventListener('click', function() {
+                video.play();
+                overlay.style.display = 'none';
+            });
+        }
+        
+        // Video event listeners
+        if (video) {
+            video.addEventListener('play', function() {
+                overlay.style.display = 'none';
+                viewCount.textContent = 'Watching...';
+            });
+            
+            video.addEventListener('pause', function() {
+                viewCount.textContent = 'Paused';
+            });
+            
+            video.addEventListener('ended', function() {
+                markTutorialCompleted();
+                showTutorialCompleted();
+                viewCount.textContent = 'Tutorial completed!';
+            });
+            
+            // Track video progress
+            video.addEventListener('timeupdate', function() {
+                const progress = (video.currentTime / video.duration) * 100;
+                if (progress > 80) { // Consider watched if 80% completed
+                    markTutorialCompleted();
+                }
+            });
+        }
+    }
+    
+    function markTutorialCompleted() {
+        localStorage.setItem('paymentTutorialWatched', 'true');
+        localStorage.setItem('paymentTutorialWatchedDate', new Date().toISOString());
+    }
+    
+    function showTutorialCompleted() {
+        const tutorialStatus = document.getElementById('tutorial-status');
+        const helpBadge = document.querySelector('.pulse-help');
+        
+        if (tutorialStatus) {
+            tutorialStatus.style.display = 'block';
+        }
+        
+        if (helpBadge) {
+            helpBadge.textContent = 'Completed';
+            helpBadge.classList.remove('bg-warning', 'pulse-help');
+            helpBadge.classList.add('bg-success');
+        }
+        
+        // Update view count
+        const viewCount = document.getElementById('view-count');
+        if (viewCount) {
+            viewCount.innerHTML = '<i class="fas fa-check-circle text-success me-1"></i>Tutorial completed';
+        }
+    }
+    
+    function restartVideo() {
+        const video = document.getElementById('payment-tutorial-video');
+        const overlay = document.getElementById('video-overlay');
+        
+        if (video) {
+            video.currentTime = 0;
+            video.play();
+            overlay.style.display = 'none';
+        }
+        
+        showToast('Restarting tutorial video...', 'info');
+    }
+    
+    function skipTutorial() {
+        const tutorialBody = document.getElementById('tutorial-video-body');
+        const toggleButton = document.querySelector('[data-target="tutorial-video-body"] i');
+        
+        // Collapse the tutorial section
+        if (tutorialBody) {
+            tutorialBody.style.display = 'none';
+        }
+        
+        // Update toggle button icon
+        if (toggleButton) {
+            toggleButton.classList.remove('fa-chevron-up');
+            toggleButton.classList.add('fa-chevron-down');
+        }
+        
+        // Mark as completed to avoid showing again
+        markTutorialCompleted();
+        showTutorialCompleted();
+        
+        showToast('Tutorial skipped. You can expand it anytime if needed.', 'info');
+        
+        // Smooth scroll to payment details
+        const paymentDetails = document.getElementById('payment_details');
+        if (paymentDetails) {
+            paymentDetails.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }
+    
+    // Add video tutorial accessibility features
+    function toggleVideoSound() {
+        const video = document.getElementById('payment-tutorial-video');
+        if (video) {
+            video.muted = !video.muted;
+            const muteBtn = document.getElementById('mute-toggle');
+            if (muteBtn) {
+                muteBtn.innerHTML = video.muted ? 
+                    '<i class="fas fa-volume-mute"></i>' : 
+                    '<i class="fas fa-volume-up"></i>';
+            }
+        }
+    }
+    
+    // Enhanced tutorial tracking
+    function trackVideoEngagement(action, data = {}) {
+        // This function can be enhanced to send analytics data
+        console.log('Video Tutorial Engagement:', action, data);
+        
+        // Example: Send to analytics service
+        // analytics.track('video_tutorial_' + action, data);
     }
 </script>
 
