@@ -106,7 +106,7 @@
               </a>				
             </li>
             
-t            <!-- Spotify Widget Toggle -->
+           <!-- Spotify Widget Toggle -->
             {{-- <li class="spotify-toggle d-flex align-items-center">
               <button class="messaging-btn" onclick="toggleSpotifyWidget()" title="Music Player">
                 <i data-feather="music" style="color: #1db954;"></i>
