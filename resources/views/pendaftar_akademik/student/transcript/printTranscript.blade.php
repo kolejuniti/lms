@@ -264,6 +264,9 @@
             </table>
             </div> 
         </div>
+        <br>
+        <br>
+        <br>
         <div style="text-align: right; margin-top: 30px; position: relative;">
             <img src="{{ asset('storage/signature/signature2.png') }}" alt="Signature" width="80px" height="80px" style="float: right; clear: right; margin-bottom: 8px; position: relative; right: 15px;">
             <div style="clear: right; text-align: right; line-height: 1.2; position: relative; z-index: 1;">
