@@ -248,6 +248,9 @@
             @endforeach  
         </div>
 
+        <br>
+        <br>
+        <br>
         <div class="col-12 mb-3 mt-1" style="text-align: right;">  
             <div style="border: 1px solid white; padding: 10px;">
             <table style="float: right;">
@@ -264,9 +267,6 @@
             </table>
             </div> 
         </div>
-        <br>
-        <br>
-        <br>
         <div style="text-align: right; margin-top: 30px; position: relative;">
             <img src="{{ asset('storage/signature/signature2.png') }}" alt="Signature" width="80px" height="80px" style="float: right; clear: right; margin-bottom: 8px; position: relative; right: 15px;">
             <div style="clear: right; text-align: right; line-height: 1.2; position: relative; z-index: 1;">
