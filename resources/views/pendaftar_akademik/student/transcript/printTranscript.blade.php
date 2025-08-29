@@ -248,9 +248,11 @@
             @endforeach  
         </div>
 
+        @if(count($data['semesters']) <= 6)
         <br>
         <br>
         <br>
+        @endif
         <div class="col-12 mb-3 mt-1" style="text-align: right;">  
             <div style="border: 1px solid white; padding: 10px;">
             <table style="float: right;">
