@@ -1590,7 +1590,7 @@ class StudentController extends Controller
                 ])
                 // ->whereIn('student_transcript.semester', $semesterArray)
                 ->select('student_transcript.*', 'students.name', 'students.no_matric', 'sessions.SessionName','transcript_status.status_name AS transcript_status_id')
-                ->orderBy('student_transcript.id', 'desc')
+                ->orderBy('student_transcript.semester', 'desc')
                 ->limit(1)
                 ->get();
 
