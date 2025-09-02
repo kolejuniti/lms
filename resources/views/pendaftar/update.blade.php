@@ -18,40 +18,18 @@
   
   .student-profile-image {
       transition: all 0.3s ease;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.2) !important;
+      border: 2px solid #e9ecef !important;
   }
   
   .student-profile-image:hover {
-      transform: scale(1.05);
-      box-shadow: 0 12px 35px rgba(0,0,0,0.3) !important;
-  }
-  
-  .student-image-container::before {
-      content: '';
-      position: absolute;
-      top: -10px;
-      left: -10px;
-      right: -10px;
-      bottom: -10px;
-      background: linear-gradient(45deg, rgba(255,255,255,0.1), rgba(255,255,255,0.3));
-      border-radius: 50%;
-      z-index: -1;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-  }
-  
-  .student-image-container:hover::before {
-      opacity: 1;
-  }
-  
-  .text-white-50 {
-      color: rgba(255, 255, 255, 0.7) !important;
+      transform: scale(1.02);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15) !important;
   }
   
   @media (max-width: 768px) {
       .student-profile-image {
           width: 120px !important;
-          height: 120px !important;
+          height: 144px !important;
       }
   }
 </style>
@@ -89,20 +67,20 @@
               </div>
               <!-- /.card-header -->
               <!-- Student Image Section -->
-              <div class="card-body text-center py-4" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+              <div class="card-body text-center py-4">
                 <div class="row justify-content-center">
                   <div class="col-md-4">
                     <div class="student-image-container">
                       <img src="{{ Storage::disk('linode')->url('storage/student_image/' . $student->ic . '.jpg') }}" 
                            alt="Student Photo" 
-                           class="student-profile-image rounded-circle shadow-lg border border-white"
-                           style="width: 150px; height: 150px; object-fit: cover; border-width: 4px !important;"
+                           class="student-profile-image shadow border"
+                           style="width: 150px; height: 180px; object-fit: cover; border-radius: 15px;"
                            onerror="this.src='{{ asset('assets/images/avatar/avatar-1.png') }}'">
                     </div>
                     <div class="mt-3">
-                      <h4 class="text-white font-weight-bold mb-1">{{ $student->name }}</h4>
-                      <p class="text-white-50 mb-1">{{ $student->no_matric }}</p>
-                      <p class="text-white-50 mb-0">{{ $student->ic }}</p>
+                      <h4 class="font-weight-bold mb-1 text-dark">{{ $student->name }}</h4>
+                      <p class="text-muted mb-1">{{ $student->no_matric }}</p>
+                      <p class="text-muted mb-0">{{ $student->ic }}</p>
                     </div>
                   </div>
                 </div>
