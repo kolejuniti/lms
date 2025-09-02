@@ -73,7 +73,11 @@ class AR_Controller extends Controller
             // Recent Warning Letters
             $data['recent_warnings'] = DB::table('tblstudent_warning')
                 ->join('students', 'tblstudent_warning.student_ic', 'students.ic')
-                ->leftJoin('subjek', 'tblstudent_warning.courseid', 'subjek.sub_id')
+                ->leftJoin('student_subjek', function($join){
+                    $join->on('tblstudent_warning.groupid', 'student_subjek.group_id');
+                    $join->on('tblstudent_warning.groupname', 'student_subjek.group_name');
+                })
+                ->leftJoin('subjek', 'student_subjek.courseid', 'subjek.sub_id')
                 ->select('students.name', 'students.no_matric', 
                         DB::raw('COALESCE(subjek.course_name, "Unknown") as course_name'), 
                         DB::raw('COALESCE(subjek.course_code, "N/A") as course_code'), 
