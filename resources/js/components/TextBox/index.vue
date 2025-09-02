@@ -21,11 +21,64 @@
               <h2>{{ getChatTitle() }}</h2>
             </div>
             <div class="chat-actions">
+              <!-- Reassign button for admin-to-student chats -->
+              <button 
+                v-if="showReassignButton()" 
+                class="action-btn reassign" 
+                @click="toggleReassignDropdown"
+                title="Reassign conversation to another department"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="m3 16 4 4 4-4"></path>
+                  <path d="M7 20V4"></path>
+                  <path d="m21 8-4-4-4 4"></path>
+                  <path d="M17 4v16"></path>
+                </svg>
+              </button>
+              
               <button class="action-btn minimize" @click="toggleChatBox">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <line x1="5" y1="12" x2="19" y2="12"></line>
                 </svg>
               </button>
+            </div>
+            
+            <!-- Reassign Dropdown -->
+            <div v-if="showReassignDropdown" class="reassign-dropdown" ref="reassignDropdown">
+              <div class="reassign-header">
+                <h4>Reassign Conversation</h4>
+                <button @click="toggleReassignDropdown" class="close-reassign">×</button>
+              </div>
+              <div class="reassign-body">
+                <div class="form-group">
+                  <label>From: {{ getDepartmentName(state.messageType) }}</label>
+                </div>
+                <div class="form-group">
+                  <label for="to-department">To Department:</label>
+                  <select id="to-department" v-model="reassignToDepartment" class="form-select">
+                    <option value="">Select Department</option>
+                    <option v-for="dept in getAvailableDepartments()" :key="dept.code" :value="dept.code">
+                      {{ dept.name }}
+                    </option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="reassign-reason">Reason (Optional):</label>
+                  <textarea 
+                    id="reassign-reason" 
+                    v-model="reassignReason" 
+                    placeholder="Enter reason for reassignment..."
+                    class="form-textarea"
+                    rows="3"
+                  ></textarea>
+                </div>
+                <div class="form-actions">
+                  <button @click="handleReassign" :disabled="!reassignToDepartment || isReassigning" class="btn-reassign">
+                    {{ isReassigning ? 'Reassigning...' : 'Reassign' }}
+                  </button>
+                  <button @click="toggleReassignDropdown" class="btn-cancel">Cancel</button>
+                </div>
+              </div>
             </div>
           </div>
   
@@ -190,6 +243,13 @@
       const imageInput = ref(null);
       const imageButton = ref(null);
       const selectedImage = ref(null);
+      
+      // Reassignment refs
+      const showReassignDropdown = ref(false);
+      const reassignDropdown = ref(null);
+      const reassignToDepartment = ref('');
+      const reassignReason = ref('');
+      const isReassigning = ref(false);
   
       // Emoji categories and their emojis
       const emojiCategories = [
@@ -352,6 +412,101 @@
 
       const removeSelectedImage = () => {
         selectedImage.value = null;
+      };
+
+      // Reassignment helper methods
+      const showReassignButton = () => {
+        // Only show for admin-to-student chats (not student-to-student or student-to-admin)
+        return state.ic && state.messageType && 
+               state.messageType !== 'STUDENT_TO_STUDENT' && 
+               state.sessionUserId !== 'STUDENT' &&
+               ['FN', 'RGS', 'HEP', 'AR', 'ADM'].includes(state.messageType);
+      };
+
+      const getDepartmentName = (code) => {
+        const departments = {
+          'FN': 'Finance (UKP)',
+          'RGS': 'Registration (KRP)',
+          'HEP': 'HEP',
+          'AR': 'Academic Registrar',
+          'ADM': 'Admin'
+        };
+        return departments[code] || code;
+      };
+
+      const getAvailableDepartments = () => {
+        const allDepartments = [
+          { code: 'FN', name: 'Finance (UKP)' },
+          { code: 'RGS', name: 'Registration (KRP)' },
+          { code: 'HEP', name: 'HEP' },
+          { code: 'AR', name: 'Academic Registrar' },
+          { code: 'ADM', name: 'Admin' }
+        ];
+        
+        // Filter out the current department
+        return allDepartments.filter(dept => dept.code !== state.messageType);
+      };
+
+      const toggleReassignDropdown = () => {
+        showReassignDropdown.value = !showReassignDropdown.value;
+        if (!showReassignDropdown.value) {
+          // Reset form when closing
+          reassignToDepartment.value = '';
+          reassignReason.value = '';
+        }
+      };
+
+      const handleReassign = async () => {
+        if (!reassignToDepartment.value || isReassigning.value) {
+          return;
+        }
+
+        // Show confirmation dialog
+        if (!confirm(`Are you sure you want to reassign this conversation to ${getDepartmentName(reassignToDepartment.value)}?`)) {
+          return;
+        }
+
+        isReassigning.value = true;
+
+        try {
+          const response = await axios.post('/all/massage/user/reassignConversation', {
+            student_ic: state.ic,
+            from_department: state.messageType,
+            to_department: reassignToDepartment.value,
+            reason: reassignReason.value
+          });
+
+          if (response.data.success) {
+            // Show success message
+            alert(`Conversation successfully reassigned to ${response.data.to_department}`);
+            
+            // Close the dropdown
+            toggleReassignDropdown();
+            
+            // Close the chat box
+            state.isChatBoxOpen = false;
+            
+            // Add a system message to the current conversation
+            const systemMessage = {
+              id: `system-${Date.now()}`,
+              message: `This conversation has been reassigned to ${response.data.to_department}`,
+              user_type: 'SYSTEM',
+              sender: 'system',
+              created_at: new Date().toISOString(),
+              isSystemMessage: true
+            };
+            
+            state.messages.push(systemMessage);
+            
+          } else {
+            alert('Failed to reassign conversation: ' + (response.data.error || 'Unknown error'));
+          }
+        } catch (error) {
+          console.error('Reassignment error:', error);
+          alert('Failed to reassign conversation: ' + (error.response?.data?.error || error.message));
+        } finally {
+          isReassigning.value = false;
+        }
       };
 
       // Handle typing detection to pause polling
@@ -586,7 +741,7 @@
         }
       }, { immediate: true });
       
-      // Close emoji picker when clicking outside
+      // Close emoji picker and reassign dropdown when clicking outside
       const handleClickOutside = (event) => {
         if (showEmojiPicker.value && 
             emojiPicker.value && 
@@ -594,6 +749,15 @@
             emojiButton.value && 
             !emojiButton.value.contains(event.target)) {
           showEmojiPicker.value = false;
+        }
+        
+        if (showReassignDropdown.value && 
+            reassignDropdown.value && 
+            !reassignDropdown.value.contains(event.target)) {
+          showReassignDropdown.value = false;
+          // Reset form when closing
+          reassignToDepartment.value = '';
+          reassignReason.value = '';
         }
       };
   
@@ -853,7 +1017,18 @@
         selectedImage,
         triggerImageUpload,
         handleImageSelect,
-        removeSelectedImage
+        removeSelectedImage,
+        // Reassignment related
+        showReassignDropdown,
+        reassignDropdown,
+        reassignToDepartment,
+        reassignReason,
+        isReassigning,
+        showReassignButton,
+        getDepartmentName,
+        getAvailableDepartments,
+        toggleReassignDropdown,
+        handleReassign
       };
     }
   }
@@ -996,6 +1171,14 @@
   
   .action-btn:hover {
     background-color: rgba(255, 255, 255, 0.2);
+  }
+
+  .action-btn.reassign {
+    margin-right: 0.5rem;
+  }
+
+  .action-btn.reassign:hover {
+    background-color: rgba(255, 255, 255, 0.3);
   }
   
   /* Body styles */
@@ -1306,6 +1489,155 @@
     }
   }
   
+  /* Reassignment Dropdown Styles */
+  .reassign-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 320px;
+    background-color: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    z-index: 1000;
+    border: 1px solid var(--border-color);
+    animation: fadeIn 0.2s ease;
+  }
+
+  .reassign-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    background-color: #f9fafb;
+    border-radius: 0.5rem 0.5rem 0 0;
+  }
+
+  .reassign-header h4 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-color);
+  }
+
+  .close-reassign {
+    background: transparent;
+    border: none;
+    font-size: 1.25rem;
+    cursor: pointer;
+    color: var(--light-text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+  }
+
+  .close-reassign:hover {
+    background-color: var(--border-color);
+  }
+
+  .reassign-body {
+    padding: 1rem;
+  }
+
+  .form-group {
+    margin-bottom: 1rem;
+  }
+
+  .form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-color);
+  }
+
+  .form-select {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    background-color: white;
+    color: var(--text-color);
+    transition: border-color 0.2s;
+  }
+
+  .form-select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px var(--secondary-color);
+  }
+
+  .form-textarea {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    background-color: white;
+    color: var(--text-color);
+    resize: vertical;
+    min-height: 60px;
+    transition: border-color 0.2s;
+    font-family: inherit;
+  }
+
+  .form-textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px var(--secondary-color);
+  }
+
+  .form-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+
+  .btn-reassign {
+    flex: 1;
+    padding: 0.5rem 1rem;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+
+  .btn-reassign:hover:not(:disabled) {
+    background-color: #3730a3;
+  }
+
+  .btn-reassign:disabled {
+    background-color: var(--border-color);
+    cursor: not-allowed;
+  }
+
+  .btn-cancel {
+    flex: 1;
+    padding: 0.5rem 1rem;
+    background-color: transparent;
+    color: var(--light-text);
+    border: 1px solid var(--border-color);
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-cancel:hover {
+    background-color: #f9fafb;
+    border-color: var(--light-text);
+  }
+
   /* Responsive adjustments */
   @media (max-width: 640px) {
     .chat-container {
@@ -1329,6 +1661,15 @@
       width: auto;
       max-width: 100%;
       margin: 0 1rem;
+    }
+
+    .reassign-dropdown {
+      position: fixed;
+      left: 1rem;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      width: auto;
     }
   }
   </style>

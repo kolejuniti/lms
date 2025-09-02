@@ -1486,6 +1486,116 @@ class AllController extends Controller
         return response()->json(['count' => $count]);
     }
 
+    /**
+     * Reassign a student conversation from one department to another
+     * 
+     * @param Request $request Contains student_ic, from_department, to_department, reason
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function reassignConversation(Request $request)
+    {
+        try {
+            // Validate the request
+            $request->validate([
+                'student_ic' => 'required|string',
+                'from_department' => 'required|string',
+                'to_department' => 'required|string|different:from_department',
+                'reason' => 'nullable|string|max:500'
+            ]);
+
+            $studentIc = $request->student_ic;
+            $fromDept = $request->from_department;
+            $toDept = $request->to_department;
+            $reason = $request->reason ?? 'Conversation reassigned by ' . Auth::user()->name;
+
+            // Verify the user has permission to reassign from the source department
+            if (Auth::user()->usrtype !== $fromDept) {
+                return response()->json(['error' => 'You can only reassign conversations from your own department'], 403);
+            }
+
+            // Check if source conversation exists
+            $sourceConversation = DB::table('tblmessage')->where([
+                ['user_type', $fromDept],
+                ['recipient', $studentIc]
+            ])->first();
+
+            if (!$sourceConversation) {
+                return response()->json(['error' => 'Source conversation not found'], 404);
+            }
+
+            // Check if target conversation already exists
+            $targetConversationExists = DB::table('tblmessage')->where([
+                ['user_type', $toDept],
+                ['recipient', $studentIc]
+            ])->exists();
+
+            if (!$targetConversationExists) {
+                // Create new conversation in target department
+                $targetConversationId = DB::table('tblmessage')->insertGetId([
+                    'sender' => Auth::user()->ic,
+                    'user_type' => $toDept,
+                    'recipient' => $studentIc,
+                    'datetime' => now()
+                ]);
+            } else {
+                $targetConversationId = DB::table('tblmessage')->where([
+                    ['user_type', $toDept],
+                    ['recipient', $studentIc]
+                ])->value('id');
+            }
+
+            // Add system message to source conversation about reassignment
+            DB::table('tblmessage_dtl')->insert([
+                'message_id' => $sourceConversation->id,
+                'sender' => Auth::user()->ic,
+                'user_type' => 'SYSTEM',
+                'message' => "This conversation has been reassigned to " . $this->getDepartmentName($toDept) . ". Reason: " . $reason,
+                'status' => 'NEW',
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+
+            // Add system message to target conversation about incoming reassignment
+            DB::table('tblmessage_dtl')->insert([
+                'message_id' => $targetConversationId,
+                'sender' => Auth::user()->ic,
+                'user_type' => 'SYSTEM',
+                'message' => "Conversation reassigned from " . $this->getDepartmentName($fromDept) . " by " . Auth::user()->name . ". Reason: " . $reason,
+                'status' => 'NEW',
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+
+            // Get student details for response
+            $student = DB::table('students')->where('ic', $studentIc)->select('name', 'no_matric')->first();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Conversation successfully reassigned to ' . $this->getDepartmentName($toDept),
+                'student' => $student,
+                'from_department' => $this->getDepartmentName($fromDept),
+                'to_department' => $this->getDepartmentName($toDept)
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Conversation reassignment failed: ' . $e->getMessage());
+            return response()->json(['error' => 'Failed to reassign conversation: ' . $e->getMessage()], 500);
+        }
+    }
+
+    private function getDepartmentName($code)
+    {
+        $departments = [
+            'FN' => 'Finance (UKP)',
+            'RGS' => 'Registration (KRP)',
+            'HEP' => 'HEP',
+            'AR' => 'Academic Registrar',
+            'ADM' => 'Admin'
+        ];
+        
+        return $departments[$code] ?? $code;
+    }
+
     public function getStudentConversations()
     {
         $currentStudentIc = Auth::guard('student')->user()->ic;

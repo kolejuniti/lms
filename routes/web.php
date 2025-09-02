@@ -122,8 +122,8 @@ Route::get('/AO', [App\Http\Controllers\AO_Controller::class, 'index'])->name('p
 
 Route::get('/DN', [App\Http\Controllers\DN_Controller::class, 'index'])->name('dekan');
 
-Route::get('/pendaftar_dashboard', [App\Http\Controllers\PendaftarController::class, 'dashboard'])->name('pendaftar.dashboard');
-Route::post('/pendaftar_dashboard/getCircleData', [App\Http\Controllers\PendaftarController::class, 'getCircleData']);
+Route::get('/pendaftar_dashboard', [App\Http\Controllers\PendaftarController::class, 'dashboard'])->name('pendaftar.dashboard')->middleware('auth');
+Route::post('/pendaftar_dashboard/getCircleData', [App\Http\Controllers\PendaftarController::class, 'getCircleData'])->middleware('auth');
 Route::get('/pendaftar', [App\Http\Controllers\PendaftarController::class, 'index'])->name('pendaftar');
 Route::get('/pendaftar/create', [App\Http\Controllers\PendaftarController::class, 'create'])->name('pendaftar.create');
 Route::post('/pendaftar/create/search', [App\Http\Controllers\PendaftarController::class, 'createSearch'])->name('pendaftar.create.search');
@@ -1084,6 +1084,7 @@ Route::get('/all/massage/user/getStudentOldMassage', [App\Http\Controllers\AllCo
 Route::post('/all/massage/user/sendMassage', [App\Http\Controllers\AllController::class, 'sendMassage']);
 Route::post('/all/massage/user/getMassage', [App\Http\Controllers\AllController::class, 'getMassage']);
 Route::post('/all/massage/user/deleteMassage', [App\Http\Controllers\AllController::class, 'deleteMassage']);
+Route::post('/all/massage/user/reassignConversation', [App\Http\Controllers\AllController::class, 'reassignConversation']);
 Route::get('/all/massage/student/countMessage', [App\Http\Controllers\AllController::class, 'countMessage']);
 Route::get('/all/massage/student/countMassageAdmin', [App\Http\Controllers\AllController::class, 'countMassageAdmin'])->name('all.massage.student.countMassageAdmin');
 
