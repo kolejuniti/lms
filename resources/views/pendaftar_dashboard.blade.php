@@ -704,7 +704,7 @@
                 <small class="fw-bold">${name}</small><br>
                 <small class="text-muted">${matric || 'No Matric'}</small>
               </div>
-              <button class="btn btn-sm btn-success" onclick="getMessage('${ic}', 'RGS', '${name}')"
+              <button class="btn btn-sm btn-success" onclick="getMessage('${ic}', 'RGS', '${name}', '${matric}')"
                 <i data-feather="message-circle"></i>
               </button>
             </div>

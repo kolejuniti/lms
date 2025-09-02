@@ -15,12 +15,13 @@ import ExampleComponent from './components/TextBox/index.vue';
 app.component('example-component', ExampleComponent);
 
 // Define a global method to dispatch a custom event.
-window.getMessage = function(ic, messageType = null, studentName = null) {
+window.getMessage = function(ic, messageType = null, studentName = null, matricNumber = null) {
     const event = new CustomEvent('message-requested', { 
         detail: { 
             ic: ic,
             messageType: messageType || ic, // Use messageType if provided, otherwise fall back to ic for backward compatibility
-            studentName: studentName // Pass student name for admin-to-student chats
+            studentName: studentName, // Pass student name for admin-to-student chats
+            matricNumber: matricNumber // Pass matric number for admin-to-student chats
         } 
     });
     window.dispatchEvent(event);

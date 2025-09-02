@@ -170,6 +170,7 @@
         ic: null,
         messageType: null,
         studentName: '',
+        matricNumber: '',
         sessionUserId: window.Laravel.sessionUserId,
         status: 'online',
         isTyping: false
@@ -229,9 +230,10 @@
           return state.studentName ? `Chat with ${state.studentName}` : 'Student Chat';
         }
         
-        // For admin-to-student chats, show student name if available
+        // For admin-to-student chats, show student name with matric number if available
         if (state.studentName && (state.messageType === 'FN' || state.messageType === 'RGS' || state.messageType === 'HEP' || state.messageType === 'AR' || state.messageType === 'ADM')) {
-          return `Chat with ${state.studentName}`;
+          const matricDisplay = state.matricNumber ? ` (${state.matricNumber})` : '';
+          return `Chat with ${state.studentName}${matricDisplay}`;
         }
         
         const titleMap = {
@@ -252,12 +254,14 @@
         const newIc = event.detail.ic;
         const messageType = event.detail.messageType || newIc; // For backwards compatibility
         const studentName = event.detail.studentName || '';
+        const matricNumber = event.detail.matricNumber || '';
         
         // If switching to a different user/type, clear messages and update details
         if (state.ic !== newIc) {
           state.ic = newIc;
           state.messageType = messageType;
           state.studentName = studentName;
+          state.matricNumber = matricNumber;
           state.messages = [];
           
           // Use nextTick to ensure state is updated before fetching
@@ -265,9 +269,12 @@
             fetchMessages();
           });
         } else {
-          // Same user, just refresh messages but update student name if provided
+          // Same user, just refresh messages but update student info if provided
           if (studentName) {
             state.studentName = studentName;
+          }
+          if (matricNumber) {
+            state.matricNumber = matricNumber;
           }
           fetchMessages();
         }
