@@ -1626,27 +1626,44 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.5rem;
-    border: 1px solid var(--border-color);
-    border-radius: 0.375rem;
+    padding: 0.75rem;
+    border: 2px solid var(--border-color);
+    border-radius: 0.5rem;
     cursor: pointer;
     transition: all 0.2s;
+    background-color: white;
   }
 
   .radio-option:hover {
     background-color: #f8fafc;
     border-color: var(--primary-color);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .radio-option:has(input[type="radio"]:checked) {
+    background-color: var(--secondary-color);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
   }
 
   .radio-option input[type="radio"] {
     margin: 0;
     accent-color: var(--primary-color);
+    width: 18px;
+    height: 18px;
+  }
+
+  .radio-option input[type="radio"]:checked + .radio-label {
+    color: var(--primary-color);
+    font-weight: 600;
   }
 
   .radio-label {
     font-size: 0.875rem;
     color: var(--text-color);
     font-weight: 500;
+    transition: all 0.2s;
   }
 
   .form-select {
