@@ -27,7 +27,7 @@ class AR_Controller extends Controller
     {
         Session::put('User', Auth::user());
 
-        try {
+        // try {
             // Academic Registrar Dashboard Metrics
             $data['metrics'] = [
                 'total_students' => DB::table('students')->count() ?? 0,
@@ -113,37 +113,37 @@ class AR_Controller extends Controller
                 ->limit(10)
                 ->get() ?? collect();
 
-        } catch (\Exception $e) {
-            // Log the error and provide default values
-            Log::error('Dashboard data fetch error: ' . $e->getMessage());
+        // } catch (\Exception $e) {
+        //     // Log the error and provide default values
+        //     Log::error('Dashboard data fetch error: ' . $e->getMessage());
             
-            $data = [
-                'metrics' => [
-                    'total_students' => 2,
-                    'active_students' => 2,
-                    'total_subjects' => 2,
-                    'active_sessions' => 0,
-                    'total_programs' => 0,
-                    'pending_transcripts' => 0,
-                    'certificates_pending' => 0,
-                    'warning_letters_issued' => 0
-                ],
-                'academic_status' => [
-                    'semester_1' => 0, 'semester_2' => 0, 'semester_3' => 0,
-                    'semester_4' => 0, 'semester_5' => 0, 'internship' => 0
-                ],
-                'recent_transcripts' => collect(),
-                'subject_stats' => collect(),
-                'recent_warnings' => collect(),
-                'semester_summary' => [
-                    1 => ['total' => 0, 'active' => 0], 2 => ['total' => 0, 'active' => 0],
-                    3 => ['total' => 0, 'active' => 0], 4 => ['total' => 0, 'active' => 0],
-                    5 => ['total' => 0, 'active' => 0], 6 => ['total' => 0, 'active' => 0]
-                ],
-                'assessment_stats' => ['pending_assessments' => 0, 'completed_today' => 0],
-                'recent_student_subjects' => collect()
-            ];
-        }
+        //     $data = [
+        //         'metrics' => [
+        //             'total_students' => 0,
+        //             'active_students' => 0,
+        //             'total_subjects' => 0,
+        //             'active_sessions' => 0,
+        //             'total_programs' => 0,
+        //             'pending_transcripts' => 0,
+        //             'certificates_pending' => 0,
+        //             'warning_letters_issued' => 0
+        //         ],
+        //         'academic_status' => [
+        //             'semester_1' => 0, 'semester_2' => 0, 'semester_3' => 0,
+        //             'semester_4' => 0, 'semester_5' => 0, 'internship' => 0
+        //         ],
+        //         'recent_transcripts' => collect(),
+        //         'subject_stats' => collect(),
+        //         'recent_warnings' => collect(),
+        //         'semester_summary' => [
+        //             1 => ['total' => 0, 'active' => 0], 2 => ['total' => 0, 'active' => 0],
+        //             3 => ['total' => 0, 'active' => 0], 4 => ['total' => 0, 'active' => 0],
+        //             5 => ['total' => 0, 'active' => 0], 6 => ['total' => 0, 'active' => 0]
+        //         ],
+        //         'assessment_stats' => ['pending_assessments' => 0, 'completed_today' => 0],
+        //         'recent_student_subjects' => collect()
+        //     ];
+        // }
 
         return view('pendaftar_akademik_dashboard', compact('data'));
     }
