@@ -1500,12 +1500,14 @@ class AllController extends Controller
                 'student_ic' => 'required|string',
                 'from_department' => 'required|string',
                 'to_department' => 'required|string|different:from_department',
-                'reason' => 'nullable|string|max:500'
+                'reason' => 'nullable|string|max:500',
+                'transfer_option' => 'required|string|in:none,recent,all'
             ]);
 
             $studentIc = $request->student_ic;
             $fromDept = $request->from_department;
             $toDept = $request->to_department;
+            $transferOption = $request->transfer_option;
             $reason = $request->reason ?? 'Conversation reassigned by ' . Auth::user()->name;
 
             // Verify the user has permission to reassign from the source department
@@ -1562,15 +1564,68 @@ class AllController extends Controller
                 'status' => 'NEW'
             ]);
 
+            // Handle message transfer based on selected option
+            $transferredCount = 0;
+            if ($transferOption !== 'none') {
+                $query = DB::table('tblmessage_dtl')
+                    ->where('message_id', $sourceConversation->id)
+                    ->where('user_type', '!=', 'SYSTEM')
+                    ->orderBy('id', 'desc');
+
+                if ($transferOption === 'recent') {
+                    $query->limit(10);
+                }
+
+                $messagesToTransfer = $query->get();
+                
+                // Transfer messages to target conversation
+                foreach ($messagesToTransfer as $message) {
+                    DB::table('tblmessage_dtl')->insert([
+                        'message_id' => $targetConversationId,
+                        'sender' => $message->sender,
+                        'user_type' => $message->user_type,
+                        'message' => $message->message,
+                        'image_url' => $message->image_url,
+                        'status' => 'NEW', // Mark as new for the target department
+                        'datetime' => $message->datetime,
+                        'created_at' => $message->created_at,
+                        'updated_at' => now()
+                    ]);
+                    $transferredCount++;
+                }
+
+                // Add transfer summary message to target conversation
+                if ($transferredCount > 0) {
+                    $transferSummary = $transferOption === 'all' 
+                        ? "All conversation history transferred ({$transferredCount} messages)"
+                        : "Recent conversation history transferred ({$transferredCount} messages)";
+                    
+                    DB::table('tblmessage_dtl')->insert([
+                        'message_id' => $targetConversationId,
+                        'sender' => Auth::user()->ic,
+                        'user_type' => 'SYSTEM',
+                        'message' => $transferSummary,
+                        'status' => 'NEW'
+                    ]);
+                }
+            }
+
             // Get student details for response
             $student = DB::table('students')->where('ic', $studentIc)->select('name', 'no_matric')->first();
 
+            $responseMessage = 'Conversation successfully reassigned to ' . $this->getDepartmentName($toDept);
+            if ($transferredCount > 0) {
+                $responseMessage .= " with {$transferredCount} messages transferred";
+            }
+
             return response()->json([
                 'success' => true,
-                'message' => 'Conversation successfully reassigned to ' . $this->getDepartmentName($toDept),
+                'message' => $responseMessage,
                 'student' => $student,
                 'from_department' => $this->getDepartmentName($fromDept),
-                'to_department' => $this->getDepartmentName($toDept)
+                'to_department' => $this->getDepartmentName($toDept),
+                'transferred_messages' => $transferredCount,
+                'transfer_option' => $transferOption
             ]);
 
         } catch (\Exception $e) {

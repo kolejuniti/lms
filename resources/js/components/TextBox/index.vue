@@ -190,6 +190,23 @@
               </select>
             </div>
             <div class="form-group">
+              <label class="form-label">Transfer Messages:</label>
+              <div class="radio-group">
+                <label class="radio-option">
+                  <input type="radio" v-model="transferOption" value="none" name="transfer">
+                  <span class="radio-label">No messages (New conversation only)</span>
+                </label>
+                <label class="radio-option">
+                  <input type="radio" v-model="transferOption" value="recent" name="transfer">
+                  <span class="radio-label">Recent messages only (Last 10 messages)</span>
+                </label>
+                <label class="radio-option">
+                  <input type="radio" v-model="transferOption" value="all" name="transfer">
+                  <span class="radio-label">All conversation history</span>
+                </label>
+              </div>
+            </div>
+            <div class="form-group">
               <label for="reassign-reason" class="form-label">Reason (Optional):</label>
               <textarea 
                 id="reassign-reason" 
@@ -254,6 +271,7 @@
       const reassignDropdown = ref(null);
       const reassignToDepartment = ref('');
       const reassignReason = ref('');
+      const transferOption = ref('none');
       const isReassigning = ref(false);
   
       // Emoji categories and their emojis
@@ -458,6 +476,7 @@
           // Reset form when closing
           reassignToDepartment.value = '';
           reassignReason.value = '';
+          transferOption.value = 'none';
         }
       };
 
@@ -478,7 +497,8 @@
             student_ic: state.ic,
             from_department: state.messageType,
             to_department: reassignToDepartment.value,
-            reason: reassignReason.value
+            reason: reassignReason.value,
+            transfer_option: transferOption.value
           });
 
           if (response.data.success) {
@@ -1020,6 +1040,7 @@
         reassignDropdown,
         reassignToDepartment,
         reassignReason,
+        transferOption,
         isReassigning,
         showReassignButton,
         getDepartmentName,
@@ -1593,6 +1614,39 @@
     border-radius: 0.375rem;
     font-weight: 500;
     color: var(--primary-color);
+  }
+
+  .radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .radio-option {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.375rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .radio-option:hover {
+    background-color: #f8fafc;
+    border-color: var(--primary-color);
+  }
+
+  .radio-option input[type="radio"] {
+    margin: 0;
+    accent-color: var(--primary-color);
+  }
+
+  .radio-label {
+    font-size: 0.875rem;
+    color: var(--text-color);
+    font-weight: 500;
   }
 
   .form-select {
