@@ -84,7 +84,7 @@ class AR_Controller extends Controller
                         'tblstudent_warning.warning', 'tblstudent_warning.created_at')
                 ->orderBy('tblstudent_warning.created_at', 'desc')
                 ->limit(8)
-                ->groupBy('students.name', 'students.no_matric', 'subjek.course_name', 'subjek.course_code', 'tblstudent_warning.warning', 'tblstudent_warning.created_at')
+                ->groupBy('students.no_matric','subjek.course_code','tblstudent_warning.warning')
                 ->get() ?? collect();
 
             // Semester Statistics
