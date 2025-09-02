@@ -523,6 +523,41 @@
   border-color: #019ff8;
 }
 
+/* Enhanced student chat row styles */
+.student-chat-row {
+  border: 2px solid #e9ecef !important;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.student-chat-row:hover {
+  background-color: #e3f2fd !important;
+  border-color: #2196f3 !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(33, 150, 243, 0.2);
+}
+
+.student-chat-row .chat-action {
+  opacity: 0.7;
+  transition: opacity 0.3s ease;
+}
+
+.student-chat-row:hover .chat-action {
+  opacity: 1;
+}
+
+.student-chat-row .btn {
+  pointer-events: none; /* Prevent double click */
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.p-15 {
+  padding: 15px;
+}
+
 .p-10 {
   padding: 10px;
 }
@@ -664,14 +699,17 @@
         
         if (name && ic && name !== '' && ic !== '') {
           studentsHtml += `
-            <div class="d-flex align-items-center justify-content-between mb-10 p-10 bg-light rounded">
+            <div class="student-chat-row d-flex align-items-center justify-content-between mb-10 p-15 bg-light rounded cursor-pointer" 
+                 onclick="getMessage('${ic}', 'FN', '${name}', '${matric}')">
               <div class="flex-grow-1">
-                <small class="fw-bold">${name}</small><br>
+                <div class="fw-bold text-dark">${name}</div>
                 <small class="text-muted">${matric || 'No Matric'}</small>
               </div>
-              <button class="btn btn-sm btn-success" onclick="getMessage('${ic}', 'FN', '${name}', '${matric}')"
-                <i data-feather="message-circle"></i>
-              </button>
+              <div class="chat-action">
+                <span class="btn btn-sm btn-primary">
+                  <i data-feather="message-circle" class="me-5"></i>Start Chatting
+                </span>
+              </div>
             </div>
           `;
           studentCount++;
@@ -753,14 +791,17 @@
         
         if (name && ic && name !== '' && ic !== '') {
           studentsHtml += `
-            <div class="d-flex align-items-center justify-content-between mb-10 p-10 bg-light rounded">
+            <div class="student-chat-row d-flex align-items-center justify-content-between mb-10 p-15 bg-light rounded cursor-pointer" 
+                 onclick="getMessage('${ic}', 'FN', '${name}', '${matric}')">
               <div class="flex-grow-1">
-                <small class="fw-bold">${name}</small><br>
+                <div class="fw-bold text-dark">${name}</div>
                 <small class="text-muted">${matric || 'No Matric'}</small>
               </div>
-              <button class="btn btn-sm btn-success" onclick="getMessage('${ic}', 'FN', '${name}', '${matric}')"
-                <i data-feather="message-circle"></i>
-              </button>
+              <div class="chat-action">
+                <span class="btn btn-sm btn-primary">
+                  <i data-feather="message-circle" class="me-5"></i>Start Chatting
+                </span>
+              </div>
             </div>
           `;
           studentCount++;
