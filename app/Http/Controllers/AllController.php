@@ -1550,9 +1550,7 @@ class AllController extends Controller
                 'sender' => Auth::user()->ic,
                 'user_type' => 'SYSTEM',
                 'message' => "This conversation has been reassigned to " . $this->getDepartmentName($toDept) . ". Reason: " . $reason,
-                'status' => 'NEW',
-                'created_at' => now(),
-                'updated_at' => now()
+                'status' => 'NEW'
             ]);
 
             // Add system message to target conversation about incoming reassignment
@@ -1561,9 +1559,7 @@ class AllController extends Controller
                 'sender' => Auth::user()->ic,
                 'user_type' => 'SYSTEM',
                 'message' => "Conversation reassigned from " . $this->getDepartmentName($fromDept) . " by " . Auth::user()->name . ". Reason: " . $reason,
-                'status' => 'NEW',
-                'created_at' => now(),
-                'updated_at' => now()
+                'status' => 'NEW'
             ]);
 
             // Get student details for response

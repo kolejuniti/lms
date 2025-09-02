@@ -43,43 +43,7 @@
               </button>
             </div>
             
-            <!-- Reassign Dropdown -->
-            <div v-if="showReassignDropdown" class="reassign-dropdown" ref="reassignDropdown">
-              <div class="reassign-header">
-                <h4>Reassign Conversation</h4>
-                <button @click="toggleReassignDropdown" class="close-reassign">×</button>
-              </div>
-              <div class="reassign-body">
-                <div class="form-group">
-                  <label>From: {{ getDepartmentName(state.messageType) }}</label>
-                </div>
-                <div class="form-group">
-                  <label for="to-department">To Department:</label>
-                  <select id="to-department" v-model="reassignToDepartment" class="form-select">
-                    <option value="">Select Department</option>
-                    <option v-for="dept in getAvailableDepartments()" :key="dept.code" :value="dept.code">
-                      {{ dept.name }}
-                    </option>
-                  </select>
-                </div>
-                <div class="form-group">
-                  <label for="reassign-reason">Reason (Optional):</label>
-                  <textarea 
-                    id="reassign-reason" 
-                    v-model="reassignReason" 
-                    placeholder="Enter reason for reassignment..."
-                    class="form-textarea"
-                    rows="3"
-                  ></textarea>
-                </div>
-                <div class="form-actions">
-                  <button @click="handleReassign" :disabled="!reassignToDepartment || isReassigning" class="btn-reassign">
-                    {{ isReassigning ? 'Reassigning...' : 'Reassign' }}
-                  </button>
-                  <button @click="toggleReassignDropdown" class="btn-cancel">Cancel</button>
-                </div>
-              </div>
-            </div>
+
           </div>
   
           <div class="chat-body">
@@ -203,6 +167,47 @@
           </div>
         </div>
       </transition>
+
+      <!-- Reassign Modal -->
+      <div v-if="showReassignDropdown" class="reassign-modal-overlay" @click="toggleReassignDropdown">
+        <div class="reassign-modal" @click.stop>
+          <div class="reassign-modal-header">
+            <h3>Reassign Conversation</h3>
+            <button @click="toggleReassignDropdown" class="close-modal">×</button>
+          </div>
+          <div class="reassign-modal-body">
+            <div class="form-group">
+              <label class="form-label">From:</label>
+              <div class="current-department">{{ getDepartmentName(state.messageType) }}</div>
+            </div>
+            <div class="form-group">
+              <label for="to-department" class="form-label">To Department:</label>
+              <select id="to-department" v-model="reassignToDepartment" class="form-select">
+                <option value="">Select Department</option>
+                <option v-for="dept in getAvailableDepartments()" :key="dept.code" :value="dept.code">
+                  {{ dept.name }}
+                </option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="reassign-reason" class="form-label">Reason (Optional):</label>
+              <textarea 
+                id="reassign-reason" 
+                v-model="reassignReason" 
+                placeholder="Enter reason for reassignment..."
+                class="form-textarea"
+                rows="4"
+              ></textarea>
+            </div>
+          </div>
+          <div class="reassign-modal-footer">
+            <button @click="toggleReassignDropdown" class="btn-cancel">Cancel</button>
+            <button @click="handleReassign" :disabled="!reassignToDepartment || isReassigning" class="btn-reassign">
+              {{ isReassigning ? 'Reassigning...' : 'Reassign' }}
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   </template>
   
@@ -741,7 +746,7 @@
         }
       }, { immediate: true });
       
-      // Close emoji picker and reassign dropdown when clicking outside
+      // Close emoji picker when clicking outside
       const handleClickOutside = (event) => {
         if (showEmojiPicker.value && 
             emojiPicker.value && 
@@ -750,15 +755,7 @@
             !emojiButton.value.contains(event.target)) {
           showEmojiPicker.value = false;
         }
-        
-        if (showReassignDropdown.value && 
-            reassignDropdown.value && 
-            !reassignDropdown.value.contains(event.target)) {
-          showReassignDropdown.value = false;
-          // Reset form when closing
-          reassignToDepartment.value = '';
-          reassignReason.value = '';
-        }
+        // Note: Modal handles its own click outside via the overlay
       };
   
       // Handle message deletion
@@ -1186,6 +1183,7 @@
     flex: 1;
     overflow: hidden;
     position: relative;
+    border-radius: 0 0 var(--radius) var(--radius);
   }
   
   .chat-messages {
@@ -1489,70 +1487,112 @@
     }
   }
   
-  /* Reassignment Dropdown Styles */
-  .reassign-dropdown {
-    position: absolute;
-    top: 100%;
+  /* Reassignment Modal Styles */
+  .reassign-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
     right: 0;
-    width: 320px;
-    background-color: white;
-    border-radius: 0.5rem;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    z-index: 1000;
-    border: 1px solid var(--border-color);
-    animation: fadeIn 0.2s ease;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    animation: fadeIn 0.3s ease;
   }
 
-  .reassign-header {
+  .reassign-modal {
+    background-color: white;
+    border-radius: 0.75rem;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    width: 90%;
+    max-width: 480px;
+    max-height: 90vh;
+    overflow: hidden;
+    animation: modalSlideIn 0.3s ease;
+  }
+
+  @keyframes modalSlideIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95) translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+  }
+
+  .reassign-modal-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem;
+    padding: 1.5rem;
     border-bottom: 1px solid var(--border-color);
-    background-color: #f9fafb;
-    border-radius: 0.5rem 0.5rem 0 0;
+    background-color: #f8fafc;
   }
 
-  .reassign-header h4 {
+  .reassign-modal-header h3 {
     margin: 0;
-    font-size: 1rem;
+    font-size: 1.25rem;
     font-weight: 600;
     color: var(--text-color);
   }
 
-  .close-reassign {
+  .close-modal {
     background: transparent;
     border: none;
-    font-size: 1.25rem;
+    font-size: 1.5rem;
     cursor: pointer;
     color: var(--light-text);
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 24px;
-    height: 24px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
     transition: background-color 0.2s;
   }
 
-  .close-reassign:hover {
+  .close-modal:hover {
     background-color: var(--border-color);
   }
 
-  .reassign-body {
-    padding: 1rem;
+  .reassign-modal-body {
+    padding: 1.5rem;
+    max-height: 60vh;
+    overflow-y: auto;
+  }
+
+  .reassign-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    padding: 1.5rem;
+    border-top: 1px solid var(--border-color);
+    background-color: #f8fafc;
   }
 
   .form-group {
     margin-bottom: 1rem;
   }
 
-  .form-group label {
+  .form-label {
     display: block;
     margin-bottom: 0.5rem;
     font-size: 0.875rem;
     font-weight: 500;
     color: var(--text-color);
+  }
+
+  .current-department {
+    padding: 0.75rem;
+    background-color: #f1f5f9;
+    border: 1px solid var(--border-color);
+    border-radius: 0.375rem;
+    font-weight: 500;
+    color: var(--primary-color);
   }
 
   .form-select {
@@ -1599,16 +1639,16 @@
   }
 
   .btn-reassign {
-    flex: 1;
-    padding: 0.5rem 1rem;
+    padding: 0.75rem 1.5rem;
     background-color: var(--primary-color);
     color: white;
     border: none;
-    border-radius: 0.375rem;
+    border-radius: 0.5rem;
     font-size: 0.875rem;
-    font-weight: 500;
+    font-weight: 600;
     cursor: pointer;
     transition: background-color 0.2s;
+    min-width: 100px;
   }
 
   .btn-reassign:hover:not(:disabled) {
@@ -1618,24 +1658,26 @@
   .btn-reassign:disabled {
     background-color: var(--border-color);
     cursor: not-allowed;
+    opacity: 0.6;
   }
 
   .btn-cancel {
-    flex: 1;
-    padding: 0.5rem 1rem;
+    padding: 0.75rem 1.5rem;
     background-color: transparent;
     color: var(--light-text);
     border: 1px solid var(--border-color);
-    border-radius: 0.375rem;
+    border-radius: 0.5rem;
     font-size: 0.875rem;
-    font-weight: 500;
+    font-weight: 600;
     cursor: pointer;
     transition: all 0.2s;
+    min-width: 100px;
   }
 
   .btn-cancel:hover {
     background-color: #f9fafb;
-    border-color: var(--light-text);
+    border-color: var(--text-color);
+    color: var(--text-color);
   }
 
   /* Responsive adjustments */
