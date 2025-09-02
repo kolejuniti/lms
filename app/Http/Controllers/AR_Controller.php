@@ -107,7 +107,15 @@ class AR_Controller extends Controller
             ];
 
             // Recent Student Registrations
-            $data['recent_student_subjects'] = collect();
+            $data['recent_student_subjects'] = DB::table('student_subjek')
+                ->join('students', 'student_subjek.student_ic', 'students.ic')
+                ->join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
+                ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
+                ->where('sessions.Status', 'ACTIVE')
+                ->select('students.name', 'students.no_matric', 'subjek.course_code', 'subjek.course_name', 'student_subjek.semesterid', 'student_subjek.created_at')
+                ->orderBy('student_subjek.created_at', 'desc')
+                ->limit(10)
+                ->get() ?? collect();
 
         } catch (\Exception $e) {
             // Log the error and provide default values
