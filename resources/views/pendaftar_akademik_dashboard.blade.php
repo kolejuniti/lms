@@ -46,7 +46,7 @@
 
       <!-- Quick Stats Row -->
       <div class="row">
-        <div class="col-xl-3 col-md-6 col-12">
+        {{-- <div class="col-xl-3 col-md-6 col-12">
           <div class="box">
             <div class="box-body">
               <div class="d-flex align-items-center">
@@ -60,7 +60,7 @@
               </div>
             </div>
           </div>
-        </div>
+        </div> --}}
         
         <div class="col-xl-3 col-md-6 col-12">
           <div class="box">

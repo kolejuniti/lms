@@ -30,7 +30,7 @@ class AR_Controller extends Controller
         try {
             // Academic Registrar Dashboard Metrics
             $data['metrics'] = [
-                'total_students' => 0,
+                // 'total_students' => DB::table('students')->count() ?? 0,
                 'active_students' => DB::table('students')->whereNotIn('status', [3,4,5,6,7,8,14,15,16])->count() ?? 0,
                 'total_subjects' => DB::table('subjek')->count() ?? 0,
                 'active_sessions' => DB::table('sessions')->where('Status', 'ACTIVE')->count() ?? 0,
