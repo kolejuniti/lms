@@ -27,17 +27,16 @@ class AR_Controller extends Controller
     {
         Session::put('User', Auth::user());
 
-        // try {
+        try {
             // Academic Registrar Dashboard Metrics
             $data['metrics'] = [
-                'total_students' => DB::table('students')->count() ?? 0,
-                'active_students' => DB::table('students')->whereNotIn('status', [3,4,5,6,7,8,14,15,16])->count() ?? 0,
-                'total_subjects' => DB::table('subjek')->count() ?? 0,
-                'active_sessions' => DB::table('sessions')->where('Status', 'ACTIVE')->count() ?? 0,
-                'total_programs' => DB::table('tblprogramme')->count() ?? 0,
-                'pending_transcripts' => DB::table('student_transcript')->where('transcript_status_id', 1)->count() ?? 0,
-                'certificates_pending' => DB::table('student_certificate')->where('status', 'NEW')->count() ?? 0,
-                'warning_letters_issued' => DB::table('tblstudent_warning')->whereDate('created_at', today())->count() ?? 0
+                'total_students' => 0,
+                'active_students' => 0,
+                'total_subjects' => 0,
+                'active_sessions' => 0,
+                'total_programs' => 0,
+                'certificates_pending' => 0,
+                'warning_letters_issued' => 0
             ];
 
             // Academic Status Breakdown
@@ -107,47 +106,39 @@ class AR_Controller extends Controller
             ];
 
             // Recent Student Registrations
-            $data['recent_student_subjects'] = DB::table('student_subjek')
-                ->join('students', 'student_subjek.student_ic', 'students.ic')
-                ->join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
-                ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
-                ->where('sessions.Status', 'ACTIVE')
-                ->select('students.name', 'students.no_matric', 'subjek.course_code', 'subjek.course_name', 'student_subjek.semesterid', 'student_subjek.created_at')
-                ->orderBy('student_subjek.created_at', 'desc')
-                ->limit(10)
-                ->get() ?? collect();
+            $data['recent_student_subjects'] = collect();
 
-        // } catch (\Exception $e) {
-        //     // Log the error and provide default values
-        //     Log::error('Dashboard data fetch error: ' . $e->getMessage());
+        } catch (\Exception $e) {
+            // Log the error and provide default values
+            Log::error('Dashboard data fetch error: ' . $e->getMessage());
             
-        //     $data = [
-        //         'metrics' => [
-        //             'total_students' => 0,
-        //             'active_students' => 0,
-        //             'total_subjects' => 0,
-        //             'active_sessions' => 0,
-        //             'total_programs' => 0,
-        //             'pending_transcripts' => 0,
-        //             'certificates_pending' => 0,
-        //             'warning_letters_issued' => 0
-        //         ],
-        //         'academic_status' => [
-        //             'semester_1' => 0, 'semester_2' => 0, 'semester_3' => 0,
-        //             'semester_4' => 0, 'semester_5' => 0, 'internship' => 0
-        //         ],
-        //         'recent_transcripts' => collect(),
-        //         'subject_stats' => collect(),
-        //         'recent_warnings' => collect(),
-        //         'semester_summary' => [
-        //             1 => ['total' => 0, 'active' => 0], 2 => ['total' => 0, 'active' => 0],
-        //             3 => ['total' => 0, 'active' => 0], 4 => ['total' => 0, 'active' => 0],
-        //             5 => ['total' => 0, 'active' => 0], 6 => ['total' => 0, 'active' => 0]
-        //         ],
-        //         'assessment_stats' => ['pending_assessments' => 0, 'completed_today' => 0],
-        //         'recent_student_subjects' => collect()
-        //     ];
-        // }
+            $data = [
+                'metrics' => [
+                    'total_students' => 0,
+                    'active_students' => 0,
+                    'total_subjects' => 0,
+                    'active_sessions' => 0,
+                    'total_programs' => 0,
+                    'pending_transcripts' => 0,
+                    'certificates_pending' => 0,
+                    'warning_letters_issued' => 0
+                ],
+                'academic_status' => [
+                    'semester_1' => 0, 'semester_2' => 0, 'semester_3' => 0,
+                    'semester_4' => 0, 'semester_5' => 0, 'internship' => 0
+                ],
+                'recent_transcripts' => collect(),
+                'subject_stats' => collect(),
+                'recent_warnings' => collect(),
+                'semester_summary' => [
+                    1 => ['total' => 0, 'active' => 0], 2 => ['total' => 0, 'active' => 0],
+                    3 => ['total' => 0, 'active' => 0], 4 => ['total' => 0, 'active' => 0],
+                    5 => ['total' => 0, 'active' => 0], 6 => ['total' => 0, 'active' => 0]
+                ],
+                'assessment_stats' => ['pending_assessments' => 0, 'completed_today' => 0],
+                'recent_student_subjects' => collect()
+            ];
+        }
 
         return view('pendaftar_akademik_dashboard', compact('data'));
     }
