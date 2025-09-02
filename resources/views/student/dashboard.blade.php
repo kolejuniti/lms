@@ -608,6 +608,19 @@
                         </div>
                       </div>
                       
+                      <div class="admin-message-item" onclick="getMessage('AR', 'AR')">
+                        <div class="message-avatar bg-primary">
+                          <i class="mdi mdi-school"></i>
+                        </div>
+                        <div class="message-details">
+                          <div class="message-name">Academic Registrar</div>
+                          <div class="message-preview">Academic matters & transcripts</div>
+                        </div>
+                        <div class="message-badge">
+                          <span id="dashboard-ar-count" class="count-circle hidden">0</span>
+                        </div>
+                      </div>
+                      
                       <div class="admin-message-item" onclick="getMessage('HEA', 'HEA')">
                         <div class="message-avatar bg-success">
                           <i class="mdi mdi-heart-pulse"></i>
@@ -3471,6 +3484,22 @@ function updateDashboardAdminCounts() {
       }
     })
     .catch(error => console.error('Error updating KRP count:', error));
+  
+  // Update AR count
+  fetch('/all/massage/student/countMessage?type=AR')
+    .then(response => response.json())
+    .then(data => {
+      const element = document.getElementById('dashboard-ar-count');
+      if (element) {
+        if (data.count === 0) {
+          element.classList.add('hidden');
+        } else {
+          element.classList.remove('hidden');
+          element.textContent = data.count;
+        }
+      }
+    })
+    .catch(error => console.error('Error updating AR count:', error));
   
   // Update HEP count
   fetch('/all/massage/student/countMessage?type=HEP')

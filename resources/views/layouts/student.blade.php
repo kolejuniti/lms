@@ -338,6 +338,7 @@
                 <ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
                   <li><a href="#" onclick="getMessage('FN', 'FN')">UKP (Student Finance)<span id="ukp-count" class="count-circle">0</span></a></li>
                   <li><a href="#" onclick="getMessage('RGS', 'RGS')">KRP (Registration)<span id="krp-count" class="count-circle">0</span></a></li>
+                  <li><a href="#" onclick="getMessage('AR', 'AR')">Academic Registrar<span id="ar-count" class="count-circle hidden">0</span></a></li>
                   <li><a href="#" onclick="getMessage('HEA', 'HEA')">HEP <span id="hep-count" class="count-circle hidden">0</span></a></li>
                 </ul>
               </li>
@@ -1200,6 +1201,7 @@
     // Message count updates
     let previousUkpCount = 0;
     let previousKrpCount = 0;
+    let previousArCount = 0;
     let previousHepCount = 0;
     let totalCount = 0;
     
@@ -1228,6 +1230,11 @@
               totalCount = totalCount - previousKrpCount + count;
               previousKrpCount = count;
             }
+          } else if (type === 'AR') {
+            if (previousArCount !== count) {
+              totalCount = totalCount - previousArCount + count;
+              previousArCount = count;
+            }
           } else if (type === 'HEP') {
             if (previousHepCount !== count) {
               totalCount = totalCount - previousHepCount + count;
@@ -1251,6 +1258,7 @@
     setInterval(() => {
       updateMessageCount('FN', 'ukp-count');
       updateMessageCount('RGS', 'krp-count');
+      updateMessageCount('AR', 'ar-count');
       updateMessageCount('HEP', 'hep-count');
     }, 1000);
     
