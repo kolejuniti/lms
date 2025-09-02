@@ -1588,8 +1588,6 @@ class AllController extends Controller
                         'image_url' => $message->image_url,
                         'status' => 'NEW', // Mark as new for the target department
                         'datetime' => $message->datetime,
-                        'created_at' => $message->created_at,
-                        'updated_at' => now()
                     ]);
                     $transferredCount++;
                 }
