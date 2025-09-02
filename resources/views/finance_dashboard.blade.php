@@ -669,7 +669,7 @@
                 <small class="fw-bold">${name}</small><br>
                 <small class="text-muted">${matric || 'No Matric'}</small>
               </div>
-              <button class="btn btn-sm btn-success" onclick="getMessage('${ic}')">
+              <button class="btn btn-sm btn-success" onclick="getMessage('${ic}', 'FN', '${name}')"
                 <i data-feather="message-circle"></i>
               </button>
             </div>
@@ -758,7 +758,7 @@
                 <small class="fw-bold">${name}</small><br>
                 <small class="text-muted">${matric || 'No Matric'}</small>
               </div>
-              <button class="btn btn-sm btn-success" onclick="getMessage('${ic}')">
+              <button class="btn btn-sm btn-success" onclick="getMessage('${ic}', 'FN', '${name}')"
                 <i data-feather="message-circle"></i>
               </button>
             </div>

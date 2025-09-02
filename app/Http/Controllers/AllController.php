@@ -594,7 +594,7 @@ class AllController extends Controller
 
             
                 $content .= '<td class="project-actions text-right" >
-                                <a class="btn btn-secondary btn-sm btn-sm mr-2 mb-2" href="#" onclick="getMessage(\''. $student->ic .'\')">
+                                <a class="btn btn-secondary btn-sm btn-sm mr-2 mb-2" href="#" onclick="getMessage(\''. $student->ic .'\', \''. Auth::user()->usrtype .'\', \''. addslashes($student->name) .'\')">
                                     <i class="ti-eye">
                                     </i>
                                     Massage
@@ -691,7 +691,7 @@ class AllController extends Controller
 
             
                 $content .= '<td class="project-actions text-right" >
-                                <a class="btn btn-secondary btn-sm btn-sm mr-2 mb-2" href="#" onclick="getMessage(\''. $student->ic .'\')">
+                                <a class="btn btn-secondary btn-sm btn-sm mr-2 mb-2" href="#" onclick="getMessage(\''. $student->ic .'\', \''. Auth::user()->usrtype .'\', \''. addslashes($student->name) .'\')">
                                     <i class="ti-eye">
                                     </i>
                                     Massage
@@ -788,7 +788,7 @@ class AllController extends Controller
 
             
                 $content .= '<td class="project-actions text-right" >
-                                <a class="btn btn-secondary btn-sm btn-sm mr-2 mb-2" href="#" onclick="getMessage(\''. $student->ic .'\')">
+                                <a class="btn btn-secondary btn-sm btn-sm mr-2 mb-2" href="#" onclick="getMessage(\''. $student->ic .'\', \''. Auth::user()->usrtype .'\', \''. addslashes($student->name) .'\')">
                                     <i class="ti-eye">
                                     </i>
                                     Massage

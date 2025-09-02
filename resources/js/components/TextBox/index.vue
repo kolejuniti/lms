@@ -229,10 +229,17 @@
           return state.studentName ? `Chat with ${state.studentName}` : 'Student Chat';
         }
         
+        // For admin-to-student chats, show student name if available
+        if (state.studentName && (state.messageType === 'FN' || state.messageType === 'RGS' || state.messageType === 'HEP' || state.messageType === 'AR' || state.messageType === 'ADM')) {
+          return `Chat with ${state.studentName}`;
+        }
+        
         const titleMap = {
           'FN': 'Chat with UKP',
           'RGS': 'Chat with KRP', 
-          'HEP': 'Chat with HEP'
+          'HEP': 'Chat with HEP',
+          'AR': 'Chat with Academic Registrar',
+          'ADM': 'Chat with Admin'
         };
         
         return titleMap[state.messageType] || 'Chat';
@@ -244,12 +251,13 @@
       const getMessage = (event) => {
         const newIc = event.detail.ic;
         const messageType = event.detail.messageType || newIc; // For backwards compatibility
+        const studentName = event.detail.studentName || '';
         
         // If switching to a different user/type, clear messages and update details
         if (state.ic !== newIc) {
           state.ic = newIc;
           state.messageType = messageType;
-          state.studentName = event.detail.studentName || '';
+          state.studentName = studentName;
           state.messages = [];
           
           // Use nextTick to ensure state is updated before fetching
@@ -257,7 +265,10 @@
             fetchMessages();
           });
         } else {
-          // Same user, just refresh messages
+          // Same user, just refresh messages but update student name if provided
+          if (studentName) {
+            state.studentName = studentName;
+          }
           fetchMessages();
         }
         
