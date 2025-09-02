@@ -35,8 +35,9 @@ class AR_Controller extends Controller
                 'total_subjects' => 0,
                 'active_sessions' => 0,
                 'total_programs' => 0,
-                'certificates_pending' => 0,
-                'warning_letters_issued' => 0
+                'pending_transcripts' => DB::table('student_transcript')->where('transcript_status_id', 1)->count() ?? 0,
+                'certificates_pending' => DB::table('student_certificate')->where('status', 'NEW')->count() ?? 0,
+                'warning_letters_issued' => DB::table('tblstudent_warning')->whereDate('created_at', today())->count() ?? 0
             ];
 
             // Academic Status Breakdown
