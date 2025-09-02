@@ -72,20 +72,19 @@ class AR_Controller extends Controller
 
             // Recent Warning Letters
             $data['recent_warnings'] = DB::table('tblstudent_warning')
-                ->join('students', 'tblstudent_warning.student_ic', 'students.ic')
-                ->leftJoin('student_subjek', function($join){
-                    $join->on('tblstudent_warning.groupid', 'student_subjek.group_id');
-                    $join->on('tblstudent_warning.groupname', 'student_subjek.group_name');
-                })
-                ->leftJoin('subjek', 'student_subjek.courseid', 'subjek.sub_id')
-                ->select('students.name', 'students.no_matric', 
-                        DB::raw('COALESCE(subjek.course_name, "Unknown") as course_name'), 
-                        DB::raw('COALESCE(subjek.course_code, "N/A") as course_code'), 
-                        'tblstudent_warning.warning', 'tblstudent_warning.created_at')
-                ->orderBy('tblstudent_warning.created_at', 'desc')
-                ->limit(8)
-                ->groupBy('students.no_matric','subjek.course_code','tblstudent_warning.warning')
-                ->get() ?? collect();
+            ->join('student_subjek', function($join){
+                 $join->on('tblstudent_warning.groupid', 'student_subjek.group_id');
+                 $join->on('tblstudent_warning.groupname', 'student_subjek.group_name');
+            })
+            ->join('user_subjek', 'student_subjek.group_id', 'user_subjek.id')
+            ->join('users', 'user_subjek.user_ic', 'users.ic')
+            ->join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
+            ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
+            ->orderBy('tblstudent_warning.created_at', 'desc')
+            ->groupBy('tblstudent_warning.id')
+            ->limit(8)
+            ->select('tblstudent_warning.*', 'subjek.course_name', 'subjek.course_code', 'sessions.SessionName', 'users.name AS lecturer')
+            ->get() ?? collect();
 
             // Semester Statistics
             $activeSessions = DB::table('sessions')->where('Status', 'ACTIVE')->pluck('SessionID')->toArray() ?? [];
