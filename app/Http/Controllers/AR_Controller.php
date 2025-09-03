@@ -2852,7 +2852,7 @@ class AR_Controller extends Controller
                 return [
                     'id' => $event->id,
                     'title' => $event->code . ' - ' . $event->subject . ' (' . $event->group_name . ')',
-                    'description' => $programs . " (" . $event->session . ")" . "<br>" . strtoupper($event->room) . "<br>" . 'Total Student: ' . $count,
+                    'description' => $programs . " (" . $event->session . ")" . "<br>" . strtoupper($event->room) . " | " . 'Total Student: ' . $count,
                     'startTime' => $carbonStart->format('H:i'),
                     'endTime' => $carbonEnd->format('H:i'),
                     'duration' => $carbonStart->diff($carbonEnd)->format('%H:%I'),
@@ -2981,7 +2981,7 @@ class AR_Controller extends Controller
                 return [
                     'id' => $event->id,
                     'title' => $event->code . ' - ' . $event->subject . ' (' . $event->group_name . ')',
-                    'description' => $programs . " (" . $event->session . ")" . "<br>" . strtoupper($event->room) . "<br>" . 'Total Student: ' . $count,
+                    'description' => $programs . " (" . $event->session . ")" . "<br>" . strtoupper($event->room) . " | " . 'Total Student: ' . $count,
                     'startTime' => $carbonStart->format('H:i'),
                     'endTime' => $carbonEnd->format('H:i'),
                     'duration' => $carbonStart->diff($carbonEnd)->format('%H:%I'),
@@ -3083,7 +3083,7 @@ class AR_Controller extends Controller
                 return [
                     'id' => $event->id,
                     'title' => $event->code . ' - ' . $event->subject . ' (' . $event->group_name . ')',
-                    'description' => $programs . " (" . $event->session . ")" . "<br>" . strtoupper($event->room) . "<br>" . 'Total Student: ' . $count,
+                    'description' => $programs . " (" . $event->session . ")" . "<br>" . strtoupper($event->room) . " | " . 'Total Student: ' . $count,
                     'startTime' => $carbonStart->format('H:i'),
                     'endTime' => $carbonEnd->format('H:i'),
                     'duration' => $carbonStart->diff($carbonEnd)->format('%H:%I'),
@@ -3476,7 +3476,7 @@ class AR_Controller extends Controller
                                     'event' => [
                                         'id' => $events->id,
                                         'title' => $events->code . ' - ' . $events->subject . ' (' . $events->group_name . ')', 
-                                        'description' => $programInfo . " (" . $events->session . ")" . "<br>" . strtoupper($events->room) . "<br>" . 'Total Student: ' . $count->total_student,
+                                        'description' => $programInfo . " (" . $events->session . ")" . "<br>" . strtoupper($events->room) . " | " . 'Total Student: ' . $count->total_student,
                                         'start' => $events->start,
                                         'end' => $events->end,
                                         'programInfo' => $programInfo // Add program info to the event object
@@ -3742,7 +3742,7 @@ class AR_Controller extends Controller
             return [
                 'id' => $event->id,
                 'title' => $event->code . ' - ' . $event->subject . ' (' . $event->group_name . ')',
-                'description' => $programInfo . " (" . $event->session . ")" . "<br>" . strtoupper($event->room) . "<br>" . 'Total Student: ' . $count->total_student,
+                'description' => $programInfo . " (" . $event->session . ")" . "<br>" . strtoupper($event->room) . " | " . 'Total Student: ' . $count->total_student,
                 'startTime' => date('H:i', strtotime($event->start)),
                 'endTime' => date('H:i', strtotime($event->end)),
                 'duration' => gmdate('H:i', strtotime($event->end) - strtotime($event->start)),

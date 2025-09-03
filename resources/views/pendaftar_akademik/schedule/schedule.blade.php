@@ -1170,7 +1170,7 @@ document.addEventListener('DOMContentLoaded', function () {
             var titleElement = document.createElement('div');
             titleElement.classList.add('event-title');
             titleElement.style.fontWeight = 'bold';
-            titleElement.style.fontSize = '0.85rem';
+            titleElement.style.fontSize = '0.75rem';
             titleElement.style.padding = '2px 0';
             titleElement.textContent = arg.event.title;
 
@@ -1189,7 +1189,8 @@ document.addEventListener('DOMContentLoaded', function () {
             descriptionElement.style.opacity = '0.8';
             descriptionElement.style.whiteSpace = 'normal';
             descriptionElement.style.overflow = 'visible';
-            descriptionElement.textContent = arg.event.extendedProps.description;
+            descriptionElement.style.lineHeight = '1.3';
+            descriptionElement.innerHTML = arg.event.extendedProps.description;
             arrayOfDomNodes.push(descriptionElement);
             }
 
@@ -1789,7 +1790,7 @@ function showEventDetails(event) {
         html: `
             <div class="event-details">
                 <p><strong>Time:</strong> ${event.start.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} - ${event.end ? event.end.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'N/A'}</p>
-                ${event.extendedProps.description ? `<p><strong>Description:</strong> ${event.extendedProps.description}</p>` : ''}
+                ${event.extendedProps.description ? `<p><strong>Description:</strong><br>${event.extendedProps.description}</p>` : ''}
                 ${event.extendedProps.programInfo ? `<p><strong>Program:</strong> ${event.extendedProps.programInfo}</p>` : ''}
             </div>
         `,
@@ -2064,8 +2065,10 @@ function printScheduleTable(name, ic, staffNo, email) {
             }
             .event-description {
                 color: #333333;
-                font-size: 8px;
+                font-size: 10px;
                 font-weight: 500;
+                line-height: 1.3;
+                white-space: normal;
             }
             .rehat-cell {
                 background-color: #ffcccf;
