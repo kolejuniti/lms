@@ -917,9 +917,6 @@ function deleteLog(id) {
 // Session change event - fetch subjects
 $('#ses').change(function() {
     var sessionID = $(this).val();
-
-    console.log(sessionID);
-    console.log('{{ request()->id }}');
     
     // Add visual feedback
     $(this).addClass('border-primary');
@@ -969,6 +966,9 @@ $('#ses').change(function() {
 // Subject change event - fetch groups
 $('#subject').change(function() {
     var groupID = $(this).val();
+
+    console.log(groupID);
+    console.log('{{ request()->id }}');
     
     // Add visual feedback
     $(this).addClass('border-primary');
