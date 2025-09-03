@@ -941,7 +941,7 @@ $('#ses').change(function() {
                 } else {
                     $.each(data, function(key, value) {
                         $('#subject').append(
-                            `<option value="${value.id}">${value.name} (${value.code})</option>`
+                            `<option value="${value.id}|${value.Type}">${value.name} (${value.code})</option>`
                         );
                     });
                 }
@@ -968,7 +968,6 @@ $('#subject').change(function() {
     var groupID = $(this).val();
 
     console.log(groupID);
-    console.log('{{ request()->id }}');
     
     // Add visual feedback
     $(this).addClass('border-primary');
