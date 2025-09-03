@@ -2681,9 +2681,11 @@ class AR_Controller extends Controller
 
         $lecture = DB::table('tbllecture')->where('id', $request->id)->first();
 
+        $groups = explode('|', $request->groupID);
+        
         $group = DB::table('student_subjek')
                  ->where([
-                    ['student_subjek.group_id', $request->groupID]
+                    ['student_subjek.group_id', $groups[0]]
                  ])->groupBy('group_name')->get();
 
         return response()->json($group);
