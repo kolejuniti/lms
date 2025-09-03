@@ -267,50 +267,6 @@
         font-weight: bold;
     }
 
-    /* Enhanced event content styling */
-    .fc-event-title-container {
-        padding: 0 !important;
-    }
-
-    .fc-event-title {
-        padding: 0 !important;
-    }
-
-    .fc-event-main {
-        padding: 0 !important;
-    }
-
-    .fc-event {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        min-height: 60px;
-    }
-
-    /* Custom event content classes */
-    .event-time {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        letter-spacing: 0.5px;
-    }
-
-    .event-course {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        text-shadow: 0 1px 2px rgba(0,0,0,0.3);
-    }
-
-    .event-room {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        font-style: italic;
-    }
-
-    .event-program {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-
-    .event-students {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        font-weight: 500;
-    }
-
     .table {
         border-collapse: separate;
         border-spacing: 0;
@@ -1211,98 +1167,33 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Event content customization
         eventContent: function(arg) {
-            // Create main container for centered content
-            var containerElement = document.createElement('div');
-            containerElement.style.textAlign = 'center';
-            containerElement.style.padding = '5px';
-            containerElement.style.height = '100%';
-            containerElement.style.display = 'flex';
-            containerElement.style.flexDirection = 'column';
-            containerElement.style.justifyContent = 'center';
-            containerElement.style.lineHeight = '1.2';
+            var titleElement = document.createElement('div');
+            titleElement.classList.add('event-title');
+            titleElement.style.fontWeight = 'bold';
+            titleElement.style.fontSize = '0.85rem';
+            titleElement.style.padding = '2px 0';
+            titleElement.textContent = arg.event.title;
 
-            // Time element (e.g., "09:30-10:30")
             var timeElement = document.createElement('div');
             timeElement.classList.add('event-time');
-            timeElement.style.fontWeight = 'bold';
-            timeElement.style.fontSize = '0.9rem';
-            timeElement.style.marginBottom = '3px';
-            timeElement.style.color = '#ffffff';
-            
-            // Format time from startTime and endTime
-            var startTime = arg.event.extendedProps.startTime || '00:00';
-            var endTime = arg.event.extendedProps.endTime || '00:00';
-            timeElement.textContent = startTime + '-' + endTime;
+            timeElement.style.fontSize = '0.75rem';
+            timeElement.style.opacity = '0.9';
+            timeElement.textContent = arg.timeText; 
 
-            // Course info element (e.g., "MPU 2323 - KURSUS INTEGRITI DAN ANTIRASUAH (A)")
-            var courseElement = document.createElement('div');
-            courseElement.classList.add('event-course');
-            courseElement.style.fontSize = '0.8rem';
-            courseElement.style.fontWeight = 'bold';
-            courseElement.style.marginBottom = '2px';
-            courseElement.style.color = '#ffffff';
-            courseElement.style.wordWrap = 'break-word';
-            
-            // Extract course info from description
-            var description = arg.event.extendedProps.description || '';
-            var coursePart = description.split(' | ')[0] || '';
-            courseElement.textContent = coursePart;
+            var arrayOfDomNodes = [timeElement, titleElement];
 
-            // Room info element (e.g., "ONLINE CLASS 10")
-            var roomElement = document.createElement('div');
-            roomElement.classList.add('event-room');
-            roomElement.style.fontSize = '0.75rem';
-            roomElement.style.marginBottom = '2px';
-            roomElement.style.color = '#ffffff';
-            roomElement.style.opacity = '0.9';
-            
-            // Extract room from title (remove session info in parentheses)
-            var title = arg.event.title || '';
-            var roomPart = title.replace(/\s*\([^)]*\)$/, '');
-            roomElement.textContent = roomPart;
-
-            // Program info element (e.g., "DIGD, DPP (SEP 2025/2026)")
-            var programElement = document.createElement('div');
-            programElement.classList.add('event-program');
-            programElement.style.fontSize = '0.7rem';
-            programElement.style.marginBottom = '2px';
-            programElement.style.color = '#ffffff';
-            programElement.style.opacity = '0.85';
-            
-            // Get program info and session from title
-            var sessionMatch = title.match(/\(([^)]*)\)$/);
-            var session = sessionMatch ? sessionMatch[1] : '';
-            var programInfo = arg.event.extendedProps.programInfo || '';
-            
-            if (programInfo && session) {
-                programElement.textContent = programInfo + ' (' + session + ')';
-            } else if (session) {
-                programElement.textContent = '(' + session + ')';
-            } else if (programInfo) {
-                programElement.textContent = programInfo;
+            if (arg.event.extendedProps.description) {
+            var descriptionElement = document.createElement('div');
+            descriptionElement.classList.add('event-description');
+            descriptionElement.style.fontSize = '0.7rem';
+            descriptionElement.style.opacity = '0.8';
+            descriptionElement.style.whiteSpace = 'normal';
+            descriptionElement.style.overflow = 'visible';
+            descriptionElement.textContent = arg.event.extendedProps.description;
+            arrayOfDomNodes.push(descriptionElement);
             }
 
-            // Student count element (e.g., "Total Student: 34")
-            var studentElement = document.createElement('div');
-            studentElement.classList.add('event-students');
-            studentElement.style.fontSize = '0.7rem';
-            studentElement.style.color = '#ffffff';
-            studentElement.style.opacity = '0.8';
-            
-            // Extract student count from description
-            var studentMatch = description.match(/Total Student:\s*(\d+)/);
-            if (studentMatch) {
-                studentElement.textContent = 'Total Student: ' + studentMatch[1];
-            }
-
-            // Append all elements to container
-            containerElement.appendChild(timeElement);
-            containerElement.appendChild(courseElement);
-            containerElement.appendChild(roomElement);
-            containerElement.appendChild(programElement);
-            containerElement.appendChild(studentElement);
-
-            return { domNodes: [containerElement] };
+            return { domNodes: arrayOfDomNodes };
         },
 
         // Event click handling
