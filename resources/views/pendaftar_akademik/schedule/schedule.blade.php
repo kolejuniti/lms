@@ -941,7 +941,7 @@ $('#ses').change(function() {
                 } else {
                     $.each(data, function(key, value) {
                         $('#subject').append(
-                            `<option value="${value.id}|${value.Type}">${value.name} (${value.code})</option>`
+                            `<option value="${value.id}">${value.name} (${value.code})</option>`
                         );
                     });
                 }
