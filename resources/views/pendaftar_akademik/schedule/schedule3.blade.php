@@ -234,7 +234,13 @@
                 var arrayOfDomNodes = [timeElement, titleElement];
                 if (arg.event.extendedProps.description) {
                     var descriptionElement = document.createElement('div');
-                    descriptionElement.textContent = arg.event.extendedProps.description;
+                    descriptionElement.classList.add('event-description');
+                    descriptionElement.style.fontSize = '0.7rem';
+                    descriptionElement.style.opacity = '0.8';
+                    descriptionElement.style.whiteSpace = 'normal';
+                    descriptionElement.style.overflow = 'visible';
+                    descriptionElement.style.lineHeight = '1.3';
+                    descriptionElement.innerHTML = arg.event.extendedProps.description;
                     arrayOfDomNodes.push(descriptionElement);
                 }
                 return { domNodes: arrayOfDomNodes };
