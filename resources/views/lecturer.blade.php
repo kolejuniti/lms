@@ -447,7 +447,7 @@
             <div id="courselist">
                 <div class="row">
                     @foreach ($data as $key)
-                    <div class="col-md-4 mb-2 course-item">
+                    <div class="col-md-4 mb-4 course-item">
                         <div class="course-card">
                             <div class="course-image">
                                 <img 
