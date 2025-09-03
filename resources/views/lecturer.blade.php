@@ -447,10 +447,13 @@
             <div id="courselist">
                 <div class="row">
                     @foreach ($data as $key)
-                    <div class="col-md-4 course-item">
+                    <div class="col-md-4 mb-2 course-item">
                         <div class="course-card">
                             <div class="course-image">
-                                <img src="{{ asset('assets/images/uniti.jpg') }}" onerror="this.onerror=null;this.src='{{ asset('assets/images/uniti.jpg') }}';" alt="{{ $key->course_name }}">
+                                <img 
+                                src="{{ asset('assets/images/course_image/' . $key->progcode . '/' . str_replace(' ', '_', $key->course_code) . '.jpg') ?? asset('assets/images/uniti.jpg') }}" 
+                                onerror="this.onerror=null;this.src='{{ asset('assets/images/uniti.jpg') }}';" 
+                                alt="{{ $key->course_name }}">                              
                                 <div class="fx-overlay">
                                     <ul class="fx-info">
                                         <li>
@@ -468,6 +471,7 @@
                                 </div>
                                 <div class="course-detail">
                                     <strong>Code:</strong> {{ ucwords($key->course_code) }}
+                                                                    assets/images/course_image/{{ $key->progcode}}/{{ str_replace(' ', '_', $key->course_code) }}
                                 </div>
                                 <div class="course-detail">
                                     <strong>Session:</strong> {{ ucwords($key->SessionName) }}
