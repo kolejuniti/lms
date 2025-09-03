@@ -919,6 +919,7 @@ $('#ses').change(function() {
     var sessionID = $(this).val();
 
     console.log(sessionID);
+    console.log('{{ request()->id }}');
     
     // Add visual feedback
     $(this).addClass('border-primary');
