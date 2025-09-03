@@ -917,6 +917,9 @@ function deleteLog(id) {
 // Session change event - fetch subjects
 $('#ses').change(function() {
     var sessionID = $(this).val();
+
+    alert(sessionID);
+    alert(request()->id);
     
     // Add visual feedback
     $(this).addClass('border-primary');
