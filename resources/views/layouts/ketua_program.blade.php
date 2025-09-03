@@ -336,6 +336,17 @@
 				<li>
 					<a href="{{ route('posting.staff') }}" class="{{ (route('posting.staff') == Request::url()) ? 'active' : ''}}"><i data-feather="tv"></i><span>Posting</span></a>
 				</li> 
+				<li class="treeview">
+					<a href="#"><i data-feather="clipboard"></i><span>Replacement Class</span>
+						<span class="pull-right-container">
+							<i class="fa fa-angle-left pull-right"></i>
+						</span>
+					</a>
+					<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
+						<li><a href="{{ route('kp.replacement_class.pending') }}" class="{{ (route('kp.replacement_class.pending') == Request::url()) ? 'active' : ''}}">Pending Applications</a></li>
+						<li><a href="{{ route('kp.replacement_class.all') }}" class="{{ (route('kp.replacement_class.all') == Request::url()) ? 'active' : ''}}">All Applications</a></li>
+					</ul>
+				</li>
 				<li>
 					<a href="{{ Storage::disk('linode')->url('classschedule/index.htm') }}" target="_blank"><i data-feather="layout"></i><span>Timetable Old</span></a>
 				</li> 

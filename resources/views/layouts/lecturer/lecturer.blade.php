@@ -346,6 +346,14 @@
 							</ul>
 						</li>
 						<li class="treeview">
+							<a href="#"><span>Replacement Class</span>
+							</a>
+							<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
+							<li><a href="/lecturer/class/replacement_class" class="">Apply for Replacement</a></li>
+							<li><a href="/lecturer/class/replacement_class/list" class="">Applications List</a></li>
+							</ul>
+						</li>
+						<li class="treeview">
 									<a href="#"><span>Online Class</span>
 									</a>
 							<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">

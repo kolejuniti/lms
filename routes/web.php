@@ -118,6 +118,11 @@ Route::get('/KP/assign/meetingHour', [App\Http\Controllers\KP_Controller::class,
 Route::post('/KP/assign/getMeetingHour', [App\Http\Controllers\KP_Controller::class, 'getMeetingHour']);
 Route::post('/KP/assign/submitMeetingHour', [App\Http\Controllers\KP_Controller::class, 'submitMeetingHour']);
 
+// KP Replacement Class Routes
+Route::get('/KP/replacement_class/pending', [App\Http\Controllers\KP_Controller::class, 'replacementClassPending'])->name('kp.replacement_class.pending');
+Route::get('/KP/replacement_class/all', [App\Http\Controllers\KP_Controller::class, 'replacementClassAll'])->name('kp.replacement_class.all');
+Route::post('/KP/replacement_class/update_status', [App\Http\Controllers\KP_Controller::class, 'updateReplacementClassStatus'])->name('kp.replacement_class.update_status');
+
 Route::get('/AO', [App\Http\Controllers\AO_Controller::class, 'index'])->name('pegawai_takbir');
 
 Route::get('/DN', [App\Http\Controllers\DN_Controller::class, 'index'])->name('dekan');
@@ -385,6 +390,14 @@ Route::get('/lecturer/report/{id}/{student}', [App\Http\Controllers\LecturerCont
 Route::get('/lecturer/class/schedule', [App\Http\Controllers\LecturerController::class, 'classSchedule'])->name('lecturer.class.schedule');
 Route::get('/lecturer/class/schedule/fetch', [App\Http\Controllers\LecturerController::class, 'fetchEvents']);
 
+// Replacement Class Routes
+Route::get('/lecturer/class/replacement_class', [App\Http\Controllers\LecturerController::class, 'replacementClass'])->name('lecturer.class.replacement_class');
+Route::get('/lecturer/class/replacement_class/list', [App\Http\Controllers\LecturerController::class, 'replacementClassList'])->name('lecturer.class.replacement_class.list');
+Route::get('/lecturer/class/replacement_class/getGroup', [App\Http\Controllers\LecturerController::class, 'replacementClassGetGroup']);
+Route::post('/lecturer/class/replacement_class/getStudentProgram', [App\Http\Controllers\LecturerController::class, 'replacementClassGetStudentProgram']);
+Route::post('/lecturer/class/replacement_class/getWakilPelajar', [App\Http\Controllers\LecturerController::class, 'replacementClassGetWakilPelajar']);
+Route::get('/lecturer/class/replacement_class/getLectureRooms', [App\Http\Controllers\LecturerController::class, 'replacementClassGetLectureRooms']);
+Route::post('/lecturer/class/replacement_class/store', [App\Http\Controllers\LecturerController::class, 'storeReplacementClass'])->name('lecturer.replacement_class.store');
 
 Route::post('/update-data', [App\Http\Controllers\LecturerController::class, 'autoudateData']);
 

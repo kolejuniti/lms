@@ -1450,4 +1450,144 @@ $content .= '<tr>
         return response()->json(['success' => true, 'message' => 'Successfully updated subject\'s meeting hour!']);
 
     }
+
+    public function replacementClassPending()
+    {
+        $user = Auth::user();
+        
+        // Get programs handled by this KP
+        $programs = DB::table('user_program')
+            ->join('tblprogramme', 'user_program.program_id', 'tblprogramme.id')
+            ->where('user_ic', $user->ic)
+            ->pluck('user_program.program_id');
+
+        if ($programs->isEmpty()) {
+            return view('ketua_program.replacement_class.pending', [
+                'applications' => collect(),
+                'message' => 'You are not assigned to any programs.'
+            ]);
+        }
+
+        // Get replacement class applications for lecturers under this KP's programs
+        $applications = $this->getReplacementApplicationsForKP($programs, 'PENDING');
+
+        return view('ketua_program.replacement_class.pending', compact('applications'));
+    }
+
+    public function replacementClassAll()
+    {
+        $user = Auth::user();
+        
+        // Get programs handled by this KP
+        $programs = DB::table('user_program')
+            ->join('tblprogramme', 'user_program.program_id', 'tblprogramme.id')
+            ->where('user_ic', $user->ic)
+            ->pluck('user_program.program_id');
+
+        if ($programs->isEmpty()) {
+            return view('ketua_program.replacement_class.all', [
+                'applications' => collect(),
+                'message' => 'You are not assigned to any programs.'
+            ]);
+        }
+
+        // Get all replacement class applications for lecturers under this KP's programs
+        $applications = $this->getReplacementApplicationsForKP($programs);
+
+        return view('ketua_program.replacement_class.all', compact('applications'));
+    }
+
+    private function getReplacementApplicationsForKP($programs, $status = null)
+    {
+        $query = DB::table('replacement_class')
+            ->join('user_subjek', 'replacement_class.user_subjek_id', '=', 'user_subjek.id')
+            ->join('subjek', 'user_subjek.course_id', '=', 'subjek.sub_id')
+            ->join('subjek_structure', 'subjek.sub_id', '=', 'subjek_structure.courseID')
+            ->join('users', 'user_subjek.user_ic', '=', 'users.ic')
+            ->join('sessions', 'user_subjek.session_id', '=', 'sessions.SessionID')
+            ->leftJoin('tbllecture_room', 'replacement_class.lecture_room_id', '=', 'tbllecture_room.id')
+            ->leftJoin('users as kp_user', 'replacement_class.kp_ic', '=', 'kp_user.ic')
+            ->whereIn('subjek_structure.program_id', $programs);
+
+        if ($status) {
+            $query->where('replacement_class.is_verified', $status);
+        }
+
+        $applications = $query->select(
+                'replacement_class.*',
+                'subjek.course_code',
+                'subjek.course_name',
+                'users.name as lecturer_name',
+                'users.email as lecturer_email',
+                'sessions.SessionName',
+                'tbllecture_room.name as room_name',
+                'kp_user.name as kp_name',
+                'kp_user.email as kp_email'
+            )
+            ->orderBy('replacement_class.created_at', 'desc')
+            ->groupBy('replacement_class.id')
+            ->get();
+
+        // Get selected programs for each application
+        foreach ($applications as $application) {
+            $selectedPrograms = json_decode($application->selected_programs, true);
+            $programNames = DB::table('tblprogramme')
+                ->whereIn('id', $selectedPrograms)
+                ->pluck('progcode')
+                ->toArray();
+            $application->programs = $programNames;
+        }
+
+        return $applications;
+    }
+
+    public function updateReplacementClassStatus(Request $request)
+    {
+        $request->validate([
+            'application_id' => 'required|exists:replacement_class,id',
+            'status' => 'required|in:YES,NO',
+            'rejection_reason' => 'nullable|string|max:500',
+            'next_date' => 'nullable|date|after:today'
+        ]);
+
+        $user = Auth::user();
+        
+        // Verify KP has permission to update this application
+        $application = DB::table('replacement_class')
+            ->join('user_subjek', 'replacement_class.user_subjek_id', '=', 'user_subjek.id')
+            ->join('subjek', 'user_subjek.course_id', '=', 'subjek.sub_id')
+            ->join('subjek_structure', 'subjek.sub_id', '=', 'subjek_structure.courseID')
+            ->join('user_program', 'subjek_structure.program_id', '=', 'user_program.program_id')
+            ->where('replacement_class.id', $request->application_id)
+            ->where('user_program.user_ic', $user->ic)
+            ->first();
+
+        if (!$application) {
+            return response()->json(['error' => 'You do not have permission to update this application.'], 403);
+        }
+
+        $updateData = [
+            'is_verified' => $request->status,
+            'kp_ic' => $user->ic,
+            'updated_at' => now()
+        ];
+
+        if ($request->status === 'NO') {
+            $updateData['rejection_reason'] = $request->rejection_reason;
+            $updateData['next_date'] = $request->next_date;
+        } else {
+            // Clear rejection fields if approved
+            $updateData['rejection_reason'] = null;
+            $updateData['next_date'] = null;
+        }
+
+        DB::table('replacement_class')
+            ->where('id', $request->application_id)
+            ->update($updateData);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Application status updated successfully.'
+        ]);
+    }
 }

@@ -5166,6 +5166,242 @@ $content .= '</tr>
         return response()->json($formattedEvents);
     }
 
+    // Replacement Class Methods
+    public function replacementClass()
+    {
+        // Load lecture rooms directly to avoid AJAX issues
+        try {
+            $lectureRooms = DB::table('tbllecture_room')
+                              ->orderBy('name')
+                              ->get();
+        } catch (\Exception $e) {
+            $lectureRooms = collect(); // Empty collection if table doesn't exist
+        }
+        
+        return view('lecturer.class.replacement_class', compact('lectureRooms'));
+    }
+
+    public function replacementClassGetGroup()
+    {
+        $courseid = Session::get('CourseID');
+        $lecturer = Auth::user();
+
+        $group = subject::join('student_subjek', 'user_subjek.id', 'student_subjek.group_id')
+        ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+        ->where([
+            ['subjek.id', $courseid],
+            ['user_subjek.session_id', Session::get('SessionID')],
+            ['user_subjek.user_ic', $lecturer->ic]
+        ])->groupBy('student_subjek.group_name')
+        ->select('user_subjek.*','student_subjek.group_name')->get();
+
+        $content = "";
+        $content .= "<option value='0' selected disabled>-</option>";
+        foreach($group as $grp){
+            $lecturer = User::where('ic', $grp->user_ic)->first();
+            $content .= '<option data-style="btn-inverse"
+            data-content=\'<div class="row" >
+                <div class="col-md-2">
+                <div class="d-flex justify-content-center">
+                    <img src="" 
+                        height="auto" width="70%" class="bg-light ms-0 me-2 rounded-circle">
+                        </div>
+                </div>
+                <div class="col-md-10 align-self-center lh-lg">
+                    <span><strong>'. $grp->group_name .'</strong></span><br>
+                    <span><strong>'. htmlentities($lecturer->name, ENT_QUOTES) .'</strong></span><br>
+                    <span>'. $lecturer->email .' | <strong class="text-fade"">'.$lecturer->faculty .'</strong></span><br>
+                    <span class="text-fade"></span>
+                </div>
+            </div>\' value='. $grp->id . '|' . $grp->group_name .' ></option>';
+        }
+        
+        return $content;
+    }
+
+    public function replacementClassGetStudentProgram(Request $request)
+    {
+        $group = explode('|', $request->group);
+
+        $program = student::join('students', 'student_subjek.student_ic', 'students.ic')
+                    ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+                    ->where('student_subjek.group_id', $group[0])->where('student_subjek.group_name', $group[1])
+                    ->where('student_subjek.sessionid', Session::get('SessionID'))
+                    ->whereNotIn('students.status', [4,5,6,7,16])
+                    ->groupBy('tblprogramme.id')
+                    ->select('tblprogramme.*')
+                    ->get();
+
+        $content = "";
+        $content .= "<option value='0' selected disabled>-</option>";
+        foreach($program as $prg){
+            $content .= '<option data-style="btn-inverse" value="'. $prg->id .'" >'. $prg->progname .' ('. $prg->progcode .')</option>';
+        }
+        
+        return $content;
+    }
+
+    public function replacementClassGetWakilPelajar(Request $request)
+    {
+        $group = explode('|', $request->group);
+
+        $students = student::join('students', 'student_subjek.student_ic', 'students.ic')
+                    ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+                    ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
+                    ->leftJoin('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
+                    ->where('group_id', $group[0])->where('group_name', $group[1])
+                    ->where('student_subjek.sessionid', Session::get('SessionID'))
+                    ->whereNotIn('students.status', [4,5,6,7,16]);
+
+        if(isset($request->program) && count($request->program) > 0) {
+            $students->whereIn('students.program', $request->program);
+        }
+
+        $students = $students->select('students.ic', 'students.name', 'students.no_matric', 'tblstudent_personal.no_tel', 'tblstudent_personal.no_tel2')
+                    ->orderBy('students.name')->get();
+
+        $content = "";
+        $content .= "<option value='0' selected disabled>-</option>";
+        foreach($students as $student){
+            // Get phone number - prioritize no_tel, fallback to no_tel2
+            $phoneNumber = $student->no_tel ?: $student->no_tel2;
+            
+            $content .= '<option value="'. $student->ic .'" data-name="'. htmlentities($student->name, ENT_QUOTES) .'" data-phone="'. ($phoneNumber ?: '') .'" >'. $student->name .' ('. $student->no_matric .')</option>';
+        }
+        
+        return $content;
+    }
+
+    public function replacementClassGetLectureRooms()
+    {
+        try {
+            // Debug: Check if table exists and has data
+            $tableExists = DB::getSchemaBuilder()->hasTable('tbllecture_room');
+            if (!$tableExists) {
+                return "<option value='' disabled selected>Lecture room table not found</option>";
+            }
+
+            $rooms = DB::table('tbllecture_room')
+                       ->orderBy('name')
+                       ->get();
+
+            if ($rooms->isEmpty()) {
+                return "<option value='' disabled selected>No lecture rooms available</option>";
+            }
+
+            $content = "";
+            $content .= "<option value='' disabled selected>Choose a room...</option>";
+            foreach($rooms as $room){
+                $content .= '<option value="'. $room->id .'" >'. htmlentities($room->name, ENT_QUOTES) .'</option>';
+            }
+            
+            return $content;
+        } catch (\Exception $e) {
+            \Log::error('Error fetching lecture rooms: ' . $e->getMessage());
+            return "<option value='' disabled selected>Error: " . $e->getMessage() . "</option>";
+        }
+    }
+
+    public function storeReplacementClass(Request $request)
+    {
+        $data = $request->validate([
+            'group' => ['required'],
+            'program' => ['required', 'array'],
+            'tarikh_kuliah_dibatalkan' => ['required', 'date'],
+            'sebab_kuliah_dibatalkan' => ['required', 'string'],
+            'maklumat_kuliah' => ['required', 'string'],
+            'wakil_pelajar' => ['required'],
+            'wakil_pelajar_nama' => ['required', 'string'],
+            'wakil_pelajar_no_tel' => ['required', 'string'],
+            'maklumat_kuliah_gantian_tarikh' => ['required', 'date'],
+            'maklumat_kuliah_gantian_hari_masa' => ['required', 'string'],
+            'lecture_room_id' => ['required', 'integer']
+        ]);
+
+        $group = explode('|', $data['group']);
+        $user = Auth::user();
+        
+        // Get the user_subjek record
+        $userSubjek = DB::table('user_subjek')
+            ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+            ->where([
+                ['user_subjek.user_ic', $user->ic],
+                ['user_subjek.session_id', Session::get('SessionID')],
+                ['subjek.id', Session::get('CourseID')],
+                ['user_subjek.id', $group[0]]
+            ])
+            ->select('user_subjek.id')
+            ->first();
+
+        if (!$userSubjek) {
+            return redirect()->back()->with('error', 'Invalid group selection!');
+        }
+
+        DB::table('replacement_class')->insert([
+            'user_subjek_id' => $userSubjek->id,
+            'tarikh_kuliah_dibatalkan' => $data['tarikh_kuliah_dibatalkan'],
+            'sebab_kuliah_dibatalkan' => $data['sebab_kuliah_dibatalkan'],
+            'maklumat_kuliah' => $data['maklumat_kuliah'],
+            'wakil_pelajar_nama' => $data['wakil_pelajar_nama'],
+            'wakil_pelajar_no_tel' => $data['wakil_pelajar_no_tel'],
+            'maklumat_kuliah_gantian_tarikh' => $data['maklumat_kuliah_gantian_tarikh'],
+            'maklumat_kuliah_gantian_hari_masa' => $data['maklumat_kuliah_gantian_hari_masa'],
+            'lecture_room_id' => $data['lecture_room_id'],
+            'group_id' => $group[0],
+            'group_name' => $group[1],
+            'selected_programs' => json_encode($data['program']),
+            'student_ic' => $data['wakil_pelajar'],
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
+
+        return redirect()->back()->with('message', 'Replacement class application has been submitted successfully!');
+    }
+
+    public function replacementClassList()
+    {
+        $user = Auth::user();
+        $courseid = Session::get('CourseID');
+        $sessionid = Session::get('SessionID');
+
+        // Get replacement class applications for current lecturer and course
+        $applications = DB::table('replacement_class')
+            ->join('user_subjek', 'replacement_class.user_subjek_id', 'user_subjek.id')
+            ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+            ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
+            ->join('students', 'replacement_class.student_ic', 'students.ic')
+            ->join('tbllecture_room', 'replacement_class.lecture_room_id', 'tbllecture_room.id')
+            ->leftJoin('users as kp_user', 'replacement_class.kp_ic', 'kp_user.ic')
+            ->where([
+                ['user_subjek.user_ic', $user->ic],
+                ['user_subjek.session_id', $sessionid],
+                ['subjek.id', $courseid]
+            ])
+            ->select(
+                'replacement_class.*',
+                'subjek.course_name',
+                'subjek.course_code', 
+                'sessions.SessionName',
+                'students.name as student_name',
+                'students.no_matric',
+                'tbllecture_room.name as room_name',
+                'kp_user.name as kp_name',
+                'kp_user.email as kp_email'
+            )
+            ->orderBy('replacement_class.created_at', 'desc')
+            ->paginate(10);
+
+        // Get program details for each application
+        foreach($applications as $app) {
+            $programs = DB::table('tblprogramme')
+                ->whereIn('id', json_decode($app->selected_programs))
+                ->get();
+            $app->programs = $programs;
+        }
+
+        return view('lecturer.class.replacement_class_list', compact('applications'));
+    }
+
   
 }
 
