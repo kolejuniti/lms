@@ -2679,8 +2679,6 @@ class AR_Controller extends Controller
     public function getGroupSchedule(Request $request)
     {
 
-        $lecture = DB::table('tbllecture')->where('id', $request->id)->first();
-
         $group = DB::table('student_subjek')
                  ->where([
                     ['student_subjek.group_id', $request->groupID]
