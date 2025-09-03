@@ -918,8 +918,7 @@ function deleteLog(id) {
 $('#ses').change(function() {
     var sessionID = $(this).val();
 
-    alert(sessionID);
-    alert(request()->id);
+    console.log(sessionID);
     
     // Add visual feedback
     $(this).addClass('border-primary');
