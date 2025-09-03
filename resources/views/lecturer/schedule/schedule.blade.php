@@ -743,7 +743,8 @@
                     descriptionElement.style.whiteSpace = 'normal';
                     descriptionElement.style.overflow = 'visible';
                     descriptionElement.style.marginBottom = '5px';
-                    descriptionElement.textContent = arg.event.extendedProps.description;
+                    descriptionElement.style.lineHeight = '1.3';
+                    descriptionElement.innerHTML = arg.event.extendedProps.description;
                     container.appendChild(descriptionElement);
                 }
 
@@ -795,7 +796,7 @@
             html: `
                 <div class="event-details">
                     <p><strong>Time:</strong> ${event.start.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} - ${event.end ? event.end.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'N/A'}</p>
-                    ${event.extendedProps.description ? `<p><strong>Description:</strong> ${event.extendedProps.description}</p>` : ''}
+                    ${event.extendedProps.description ? `<p><strong>Description:</strong><br>${event.extendedProps.description}</p>` : ''}
                     ${event.extendedProps.programInfo ? `<p><strong>Program:</strong> ${event.extendedProps.programInfo}</p>` : ''}
                 </div>
             `,

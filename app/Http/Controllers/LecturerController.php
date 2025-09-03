@@ -5153,8 +5153,8 @@ $content .= '</tr>
 
             return [
                 'id' => $event->id,
-                'title' => strtoupper($event->room) . ' (' . $event->session . ')',
-                'description' => $event->code. ' - ' . $event->subject . ' (' . $event->group_name .') ' . '|' . ' Total Student :' . ' ' .$count->total_student,
+                'title' => $event->code . ' - ' . $event->subject . ' (' . $event->group_name . ')',
+                'description' => $programInfo . " (" . $event->session . ")" . "<br>" . strtoupper($event->room) . " | " . 'Total Student: ' . $count->total_student,
                 'startTime' => date('H:i', strtotime($event->start)),
                 'endTime' => date('H:i', strtotime($event->end)),
                 'duration' => gmdate('H:i', strtotime($event->end) - strtotime($event->start)),
