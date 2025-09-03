@@ -1791,7 +1791,7 @@ class PendaftarController extends Controller
 
                 }
 
-                if($newsem == 6)
+                if($newsem >= 6)
                 {
                     $newStatus = 4;
                 }else{

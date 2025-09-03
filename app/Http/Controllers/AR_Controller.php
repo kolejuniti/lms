@@ -71,19 +71,19 @@ class AR_Controller extends Controller
                 ->get() ?? collect();
 
             // Recent Warning Letters
-            $data['recent_warnings'] = DB::table('tblstudent_warning')
-            ->join('student_subjek', function($join){
-                 $join->on('tblstudent_warning.groupid', 'student_subjek.group_id');
-                 $join->on('tblstudent_warning.groupname', 'student_subjek.group_name');
-            })
-            ->join('students', 'tblstudent_warning.student_ic', 'students.ic')
-            ->join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
-            ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
-            ->orderBy('tblstudent_warning.created_at', 'desc')
-            ->groupBy('tblstudent_warning.id')
-            ->limit(8)
-            ->select('tblstudent_warning.*', 'subjek.course_name', 'subjek.course_code', 'sessions.SessionName', 'students.name', 'students.no_matric')
-            ->get() ?? collect();
+            // $data['recent_warnings'] = DB::table('tblstudent_warning')
+            // ->join('student_subjek', function($join){
+            //      $join->on('tblstudent_warning.groupid', 'student_subjek.group_id');
+            //      $join->on('tblstudent_warning.groupname', 'student_subjek.group_name');
+            // })
+            // ->join('students', 'tblstudent_warning.student_ic', 'students.ic')
+            // ->join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
+            // ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
+            // ->orderBy('tblstudent_warning.created_at', 'desc')
+            // ->groupBy('tblstudent_warning.id')
+            // ->limit(2)
+            // ->select('tblstudent_warning.*', 'subjek.course_name', 'subjek.course_code', 'sessions.SessionName', 'students.name', 'students.no_matric')
+            // ->get() ?? collect();
 
             // Semester Statistics
             $activeSessions = DB::table('sessions')->where('Status', 'ACTIVE')->pluck('SessionID')->toArray() ?? [];
@@ -1997,7 +1997,7 @@ class AR_Controller extends Controller
 
                     }
 
-                    if($newsem == 6)
+                    if($newsem >= 6)
                     {
                         $newStatus = 4;
                     }else{
@@ -2851,8 +2851,8 @@ class AR_Controller extends Controller
                 
                 return [
                     'id' => $event->id,
-                    'title' => strtoupper($event->room) . ' (' . $event->session . ')',
-                    'description' => $event->code . ' - ' . $event->subject . ' (' . $event->group_name . ') | Total Student: ' . $count . ' | Programs: ' . $programs,
+                    'title' => $event->code . ' - ' . $event->subject . ' (' . $event->group_name . ')',
+                    'description' => $programs . " (" . $event->session . ")" . "<br>" . strtoupper($event->room) . "<br>" . 'Total Student: ' . $count,
                     'startTime' => $carbonStart->format('H:i'),
                     'endTime' => $carbonEnd->format('H:i'),
                     'duration' => $carbonStart->diff($carbonEnd)->format('%H:%I'),
@@ -2980,8 +2980,8 @@ class AR_Controller extends Controller
                 
                 return [
                     'id' => $event->id,
-                    'title' => strtoupper($event->room) . ' (' . $event->session . ')',
-                    'description' => $event->code . ' - ' . $event->subject . ' (' . $event->group_name . ') | Total Student: ' . $count,
+                    'title' => $event->code . ' - ' . $event->subject . ' (' . $event->group_name . ')',
+                    'description' => $programs . " (" . $event->session . ")" . "<br>" . strtoupper($event->room) . "<br>" . 'Total Student: ' . $count,
                     'startTime' => $carbonStart->format('H:i'),
                     'endTime' => $carbonEnd->format('H:i'),
                     'duration' => $carbonStart->diff($carbonEnd)->format('%H:%I'),
@@ -3082,8 +3082,8 @@ class AR_Controller extends Controller
                 
                 return [
                     'id' => $event->id,
-                    'title' => strtoupper($event->room) . ' (' . $event->session . ')',
-                    'description' => $event->code . ' - ' . $event->subject . ' (' . $event->group_name . ') | Total Student: ' . $count,
+                    'title' => $event->code . ' - ' . $event->subject . ' (' . $event->group_name . ')',
+                    'description' => $programs . " (" . $event->session . ")" . "<br>" . strtoupper($event->room) . "<br>" . 'Total Student: ' . $count,
                     'startTime' => $carbonStart->format('H:i'),
                     'endTime' => $carbonEnd->format('H:i'),
                     'duration' => $carbonStart->diff($carbonEnd)->format('%H:%I'),
@@ -3475,8 +3475,8 @@ class AR_Controller extends Controller
 
                                     'event' => [
                                         'id' => $events->id,
-                                        'title' => strtoupper($events->room) . ' (' . $events->session . ')', 
-                                        'description' => $events->code . ' - ' . $events->subject . ' (' . $events->group_name .') ' . '|' . ' Total Student :' . ' ' .$count->total_student,
+                                        'title' => $events->code . ' - ' . $events->subject . ' (' . $events->group_name . ')', 
+                                        'description' => $programInfo . " (" . $events->session . ")" . "<br>" . strtoupper($events->room) . "<br>" . 'Total Student: ' . $count->total_student,
                                         'start' => $events->start,
                                         'end' => $events->end,
                                         'programInfo' => $programInfo // Add program info to the event object
@@ -3741,8 +3741,8 @@ class AR_Controller extends Controller
 
             return [
                 'id' => $event->id,
-                'title' => strtoupper($event->room) . ' (' . $event->session . ')',
-                'description' => $event->code . ' - ' . $event->subject . ' (' . $event->group_name . ') | Total Student: ' . $count->total_student,
+                'title' => $event->code . ' - ' . $event->subject . ' (' . $event->group_name . ')',
+                'description' => $programInfo . " (" . $event->session . ")" . "<br>" . strtoupper($event->room) . "<br>" . 'Total Student: ' . $count->total_student,
                 'startTime' => date('H:i', strtotime($event->start)),
                 'endTime' => date('H:i', strtotime($event->end)),
                 'duration' => gmdate('H:i', strtotime($event->end) - strtotime($event->start)),
