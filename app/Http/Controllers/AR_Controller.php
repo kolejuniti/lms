@@ -71,19 +71,19 @@ class AR_Controller extends Controller
                 ->get() ?? collect();
 
             // Recent Warning Letters
-            // $data['recent_warnings'] = DB::table('tblstudent_warning')
-            // ->join('student_subjek', function($join){
-            //      $join->on('tblstudent_warning.groupid', 'student_subjek.group_id');
-            //      $join->on('tblstudent_warning.groupname', 'student_subjek.group_name');
-            // })
-            // ->join('students', 'tblstudent_warning.student_ic', 'students.ic')
-            // ->join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
-            // ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
-            // ->orderBy('tblstudent_warning.created_at', 'desc')
-            // ->groupBy('tblstudent_warning.id')
-            // ->limit(2)
-            // ->select('tblstudent_warning.*', 'subjek.course_name', 'subjek.course_code', 'sessions.SessionName', 'students.name', 'students.no_matric')
-            // ->get() ?? collect();
+            $data['recent_warnings'] = DB::table('tblstudent_warning')
+            ->join('student_subjek', function($join){
+                 $join->on('tblstudent_warning.groupid', 'student_subjek.group_id');
+                 $join->on('tblstudent_warning.groupname', 'student_subjek.group_name');
+            })
+            ->join('students', 'tblstudent_warning.student_ic', 'students.ic')
+            ->join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
+            ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
+            ->orderBy('tblstudent_warning.created_at', 'desc')
+            ->groupBy('tblstudent_warning.id')
+            ->limit(8)
+            ->select('tblstudent_warning.*', 'subjek.course_name', 'subjek.course_code', 'sessions.SessionName', 'students.name', 'students.no_matric')
+            ->get() ?? collect();
 
             // Semester Statistics
             $activeSessions = DB::table('sessions')->where('Status', 'ACTIVE')->pluck('SessionID')->toArray() ?? [];
