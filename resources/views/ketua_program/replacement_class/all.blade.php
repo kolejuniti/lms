@@ -2,6 +2,10 @@
 
 @section('main')
 
+<!-- DataTables CSS -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.bootstrap5.min.css">
+
 <style>
   .applications-container {
     background: #f8f9fa;
@@ -198,6 +202,147 @@
     margin-bottom: 1rem;
   }
 
+  .applications-table {
+    background: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    border: 1px solid #e9ecef;
+  }
+
+  .applications-table .table {
+    margin-bottom: 0;
+  }
+
+  .applications-table .table thead th {
+    background: #ffffff;
+    color: #495057;
+    border-bottom: 2px solid #dee2e6;
+    padding: 1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 0.85rem;
+  }
+
+  .applications-table .table tbody td {
+    padding: 1rem;
+    vertical-align: middle;
+    border-color: #f8f9fa;
+  }
+
+  .applications-table .table tbody tr:hover {
+    background-color: #f8f9fa;
+    transition: all 0.3s ease;
+  }
+
+  .lecturer-info {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0.25rem;
+  }
+
+  .course-info {
+    color: #6c757d;
+    font-size: 0.9rem;
+  }
+
+  .date-info {
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+  }
+
+  .reason-info {
+    color: #6c757d;
+    font-size: 0.85rem;
+    font-style: italic;
+  }
+
+  .student-info {
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+  }
+
+  .phone-info {
+    color: #6c757d;
+    font-size: 0.85rem;
+  }
+
+  .compact-programs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+  }
+
+  .compact-program-badge {
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    color: white;
+    padding: 0.15rem 0.5rem;
+    border-radius: 10px;
+    font-size: 0.7rem;
+    font-weight: 600;
+  }
+
+  .kp-info {
+    font-size: 0.85rem;
+    color: #6c757d;
+  }
+
+  .rejection-compact {
+    background: #fff5f5;
+    border: 1px solid #fed7d7;
+    border-radius: 5px;
+    padding: 0.5rem;
+    margin-top: 0.25rem;
+    font-size: 0.8rem;
+  }
+
+  /* DataTables Custom Styling */
+  .dataTables_wrapper .dataTables_length,
+  .dataTables_wrapper .dataTables_filter,
+  .dataTables_wrapper .dataTables_info,
+  .dataTables_wrapper .dataTables_paginate {
+    margin-bottom: 1rem;
+  }
+
+  .dataTables_wrapper .dataTables_filter input {
+    border-radius: 25px;
+    border: 2px solid #e9ecef;
+    padding: 0.5rem 1rem;
+    margin-left: 0.5rem;
+  }
+
+  .dataTables_wrapper .dataTables_filter input:focus {
+    border-color: #667eea;
+    outline: none;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+  }
+
+  .dataTables_wrapper .dataTables_length select {
+    border-radius: 15px;
+    border: 2px solid #e9ecef;
+    padding: 0.25rem 0.5rem;
+    margin: 0 0.5rem;
+  }
+
+  .page-link {
+    border-radius: 20px !important;
+    margin: 0 2px;
+    border: 1px solid #667eea;
+    color: #667eea;
+  }
+
+  .page-link:hover {
+    background-color: #667eea;
+    border-color: #667eea;
+    color: white;
+  }
+
+  .page-item.active .page-link {
+    background-color: #667eea;
+    border-color: #667eea;
+  }
+
 
 </style>
 
@@ -301,56 +446,67 @@
             </div>
           </div>
 
-          <!-- Filter Section -->
-          <div class="filter-section">
-            <div class="row">
-              <div class="col-md-8">
-                <div class="input-group">
-                  <input type="text" class="form-control search-input" 
-                         placeholder="Search by lecturer name, course code, or application ID..."
-                         id="searchInput" onkeyup="filterApplications()">
-                  <div class="input-group-append">
-                    <button class="btn btn-primary" type="button" style="border-radius: 0 25px 25px 0;">
-                      <i class="mdi mdi-magnify"></i>
-                    </button>
-                  </div>
-                </div>
-              </div>
-              <div class="col-md-4">
-                <select class="form-select" id="statusFilter" onchange="filterApplications()" 
-                        style="border-radius: 25px; padding: 0.75rem 1.5rem;">
-                  <option value="">All Status</option>
-                  <option value="PENDING">Pending</option>
-                  <option value="YES">Approved</option>
-                  <option value="NO">Rejected</option>
-                </select>
-              </div>
-            </div>
-          </div>
 
-          <!-- Applications List -->
-          <div class="row" id="applicationsContainer">
-            @foreach($applications as $key => $app)
-            <div class="col-lg-6 application-item animate-fadeInUp" 
-                 style="animation-delay: {{ 0.1 * ($key + 1) }}s;"
-                 data-lecturer="{{ strtolower($app->lecturer_name) }}"
-                 data-course="{{ strtolower($app->course_code) }}"
-                 data-id="{{ $app->id }}"
-                 data-status="{{ $app->is_verified }}">
-              <div class="application-card">
-                <div class="application-header">
-                  <div class="row align-items-center position-relative" style="z-index: 1;">
-                    <div class="col">
-                      <h5 class="mb-1">
-                        <i class="mdi mdi-swap-horizontal me-2"></i>
-                        Application #{{ $app->id }}
-                      </h5>
-                      <p class="mb-0 opacity-75">
-                        <i class="mdi mdi-calendar me-1"></i>
-                        Submitted: {{ \Carbon\Carbon::parse($app->created_at)->format('d M Y, g:i A') }}
-                      </p>
-                    </div>
-                    <div class="col-auto">
+          <!-- Applications Table -->
+          <div class="applications-table" id="applicationsContainer">
+            <div class="table-responsive">
+              <table class="table" id="applications-table">
+                <thead>
+                  <tr>
+                    <th width="6%"># ID</th>
+                    <th width="16%">Lecturer & Course</th>
+                    <th width="12%">Cancelled Class</th>
+                    <th width="12%">Replacement Class</th>
+                    <th width="10%">Student Rep</th>
+                    <th width="8%">Status</th>
+                    <th width="8%">Submitted</th>
+                    <th width="14%">Verification</th>
+                    <th width="14%">Details</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @foreach($applications as $key => $app)
+                  <tr class="application-item" 
+                      data-lecturer="{{ strtolower($app->lecturer_name) }}"
+                      data-course="{{ strtolower($app->course_code) }}"
+                      data-id="{{ $app->id }}"
+                      data-status="{{ $app->is_verified }}"
+                      data-submitted="{{ $app->created_at }}">
+                    <td>
+                      <strong class="text-primary">#{{ $app->id }}</strong>
+                    </td>
+                    <td>
+                      <div class="lecturer-info">{{ $app->lecturer_name }}</div>
+                      <div class="course-info">
+                        <strong>{{ $app->course_code }}</strong> - {{ Str::limit($app->course_name, 20) }}<br>
+                        Group: {{ $app->group_name }}<br>
+                        <div class="compact-programs mt-1">
+                          @if(is_array($app->programs))
+                            @foreach($app->programs as $program)
+                              <span class="compact-program-badge">{{ $program }}</span>
+                            @endforeach
+                          @endif
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="date-info">{{ \Carbon\Carbon::parse($app->tarikh_kuliah_dibatalkan)->format('d M Y') }}</div>
+                      <div class="reason-info">{{ Str::limit($app->sebab_kuliah_dibatalkan, 30) }}</div>
+                    </td>
+                    <td>
+                      <div class="date-info">{{ \Carbon\Carbon::parse($app->maklumat_kuliah_gantian_tarikh)->format('d M Y') }}</div>
+                      <div class="reason-info">
+                        {{ $app->maklumat_kuliah_gantian_hari_masa }}<br>
+                        <i class="mdi mdi-map-marker me-1"></i>{{ Str::limit($app->room_name, 15) }}
+                      </div>
+                    </td>
+                    <td>
+                      <div class="student-info">{{ $app->wakil_pelajar_nama }}</div>
+                      <div class="phone-info">
+                        <i class="mdi mdi-phone me-1"></i>{{ $app->wakil_pelajar_no_tel }}
+                      </div>
+                    </td>
+                    <td>
                       <span class="status-badge status-{{ strtolower($app->is_verified) === 'pending' ? 'pending' : (strtolower($app->is_verified) === 'yes' ? 'approved' : 'rejected') }}">
                         @if(strtolower($app->is_verified) === 'pending')
                           <i class="mdi mdi-clock-outline me-1"></i>Pending
@@ -360,151 +516,65 @@
                           <i class="mdi mdi-close me-1"></i>Rejected
                         @endif
                       </span>
-                    </div>
-                  </div>
-                </div>
-                
-                <div class="application-body">
-                  <!-- Lecturer & Course Info -->
-                  <div class="mb-3">
-                    <h6 class="text-muted mb-2">
-                      <i class="mdi mdi-account-tie me-1"></i>
-                      Lecturer & Course
-                    </h6>
-                    <p class="mb-1"><strong>{{ $app->lecturer_name }}</strong></p>
-                    <p class="mb-1"><strong>{{ $app->course_code }}</strong> - {{ $app->course_name }}</p>
-                    <p class="mb-1"><strong>Session:</strong> {{ $app->SessionName }}</p>
-                    <p class="mb-1"><strong>Group:</strong> {{ $app->group_name }}</p>
-                    <div>
-                      <strong>Programs:</strong>
-                      @if(is_array($app->programs))
-                        @foreach($app->programs as $program)
-                          <span class="program-badge">{{ $program }}</span>
-                        @endforeach
-                      @endif
-                    </div>
-                  </div>
-
-                  <!-- Grid Layout for Key Information -->
-                  <div class="info-grid">
-                    <!-- Cancellation Details -->
-                    <div class="info-section">
-                      <div class="info-title">
-                        <i class="mdi mdi-calendar-remove me-2"></i>
-                        Cancelled Class
-                      </div>
-                      <div class="info-content">
-                        <strong>Date:</strong> {{ \Carbon\Carbon::parse($app->tarikh_kuliah_dibatalkan)->format('d M Y') }}<br>
-                        <strong>Reason:</strong> {{ $app->sebab_kuliah_dibatalkan }}
-                      </div>
-                    </div>
-
-                    <!-- Replacement Details -->
-                    <div class="info-section">
-                      <div class="info-title">
-                        <i class="mdi mdi-calendar-plus me-2"></i>
-                        Replacement Class
-                      </div>
-                      <div class="info-content">
-                        <strong>Date:</strong> {{ \Carbon\Carbon::parse($app->maklumat_kuliah_gantian_tarikh)->format('d M Y') }}<br>
-                        <strong>Time:</strong> {{ $app->maklumat_kuliah_gantian_hari_masa }}<br>
-                        <strong>Venue:</strong> {{ $app->room_name }}
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Student Representative -->
-                  <div class="mb-3">
-                    <h6 class="text-muted mb-2">
-                      <i class="mdi mdi-account me-1"></i>
-                      Student Representative
-                    </h6>
-                    <p class="mb-0">
-                      <strong>{{ $app->wakil_pelajar_nama }}</strong><br>
-                      <i class="mdi mdi-phone me-1"></i>{{ $app->wakil_pelajar_no_tel }}
-                    </p>
-                  </div>
-
-                  <!-- Additional Information -->
-                  @if($app->maklumat_kuliah)
-                  <div class="mb-3">
-                    <h6 class="text-muted mb-2">
-                      <i class="mdi mdi-information me-1"></i>
-                      Additional Information
-                    </h6>
-                    <div style="background: white; border-radius: 8px; padding: 1rem; border: 1px solid #e9ecef;">
-                      {{ $app->maklumat_kuliah }}
-                    </div>
-                  </div>
-                  @endif
-
-                  <!-- KP Verification Info -->
-                  @if($app->is_verified !== 'PENDING')
-                  <div class="kp-verification">
-                    <h6 class="text-muted mb-2">
-                      <i class="mdi mdi-account-check me-1"></i>
-                      Verification Details
-                    </h6>
-                    @if($app->kp_name)
-                      <p class="mb-1">
-                        <strong>Verified by:</strong> {{ $app->kp_name }}<br>
-                        <i class="mdi mdi-email me-1"></i>{{ $app->kp_email }}
-                      </p>
-                    @else
-                      <p class="mb-1"><em>KP information not available</em></p>
-                    @endif
-                    
-                    @if($app->is_verified === 'NO')
-                      <div class="rejection-details">
-                        @if($app->next_date)
-                        <p class="mb-1 text-danger">
-                          <strong><i class="mdi mdi-calendar-alert me-1"></i>Next Available Date:</strong> 
-                          {{ \Carbon\Carbon::parse($app->next_date)->format('d M Y') }}
-                        </p>
+                    </td>
+                    <td>
+                      <div class="date-info">{{ \Carbon\Carbon::parse($app->created_at)->format('d M Y') }}</div>
+                      <div class="reason-info">{{ \Carbon\Carbon::parse($app->created_at)->format('g:i A') }}</div>
+                    </td>
+                    <td>
+                      @if($app->is_verified !== 'PENDING')
+                        @if($app->kp_name)
+                          <div class="kp-info">
+                            <strong>{{ $app->kp_name }}</strong><br>
+                            <i class="mdi mdi-email me-1"></i>{{ Str::limit($app->kp_email, 15) }}
+                          </div>
+                        @else
+                          <em class="text-muted">KP info N/A</em>
                         @endif
-                        @if($app->rejection_reason)
-                        <p class="mb-0 text-danger">
-                          <strong><i class="mdi mdi-comment-alert me-1"></i>Rejection Reason:</strong> 
-                          {{ $app->rejection_reason }}
-                        </p>
+                        
+                        @if($app->is_verified === 'NO')
+                          <div class="rejection-compact">
+                            @if($app->next_date)
+                            <div class="text-danger">
+                              <strong>Next Date:</strong><br>
+                              {{ \Carbon\Carbon::parse($app->next_date)->format('d M Y') }}
+                            </div>
+                            @endif
+                          </div>
                         @endif
-                      </div>
-                    @endif
-                  </div>
-                  @endif
-                </div>
-
-                <div class="application-footer">
-                  <div class="row align-items-center">
-                    <div class="col">
-                      <small class="text-muted">
-                        <i class="mdi mdi-clock me-1"></i>
-                        Last updated: {{ \Carbon\Carbon::parse($app->updated_at)->diffForHumans() }}
-                      </small>
-                    </div>
-                    <div class="col-auto">
-                      @if($app->is_verified === 'PENDING')
-                        <span class="badge bg-warning">
-                          <i class="mdi mdi-clock me-1"></i>
-                          Awaiting Review
-                        </span>
-                      @elseif($app->is_verified === 'YES')
-                        <span class="badge bg-success">
-                          <i class="mdi mdi-check me-1"></i>
-                          Approved
-                        </span>
                       @else
-                        <span class="badge bg-danger">
-                          <i class="mdi mdi-close me-1"></i>
-                          Rejected
-                        </span>
+                        <span class="text-muted">Awaiting review</span>
                       @endif
-                    </div>
-                  </div>
-                </div>
-              </div>
+                    </td>
+                    <td>
+                      <button class="btn btn-sm btn-outline-info" 
+                              onclick="viewFullDetails({{ $app->id }})" 
+                              data-app='@json($app)'
+                              title="View Full Details">
+                        <i class="mdi mdi-eye"></i>
+                      </button>
+                      @if($app->maklumat_kuliah)
+                      <button class="btn btn-sm btn-outline-secondary mt-1" 
+                              onclick="viewAdditionalInfo({{ $app->id }})" 
+                              data-info="{{ $app->maklumat_kuliah }}"
+                              title="Additional Info">
+                        <i class="mdi mdi-information"></i>
+                      </button>
+                      @endif
+                      @if($app->is_verified === 'NO' && $app->rejection_reason)
+                      <button class="btn btn-sm btn-outline-danger mt-1" 
+                              onclick="viewRejectionReason({{ $app->id }})" 
+                              data-reason="{{ $app->rejection_reason }}"
+                              title="Rejection Reason">
+                        <i class="mdi mdi-comment-alert"></i>
+                      </button>
+                      @endif
+                    </td>
+                  </tr>
+                  @endforeach
+                </tbody>
+              </table>
             </div>
-            @endforeach
           </div>
         @endif
       </div>
@@ -512,29 +582,205 @@
   </div>
 </div>
 
+<!-- DataTables JS -->
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.bootstrap5.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.print.min.js"></script>
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
-function filterApplications() {
-    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-    const statusFilter = document.getElementById('statusFilter').value;
-    const applications = document.querySelectorAll('.application-item');
-    
-    applications.forEach(function(app) {
-        const lecturer = app.getAttribute('data-lecturer');
-        const course = app.getAttribute('data-course');
-        const id = app.getAttribute('data-id');
-        const status = app.getAttribute('data-status');
-        
-        const matchesSearch = lecturer.includes(searchTerm) || 
-                             course.includes(searchTerm) || 
-                             id.includes(searchTerm);
-        
-        const matchesStatus = statusFilter === '' || status === statusFilter;
-        
-        if (matchesSearch && matchesStatus) {
-            app.style.display = 'block';
-        } else {
-            app.style.display = 'none';
+$(document).ready(function() {
+    // Initialize DataTable
+    $('#applications-table').DataTable({
+        "responsive": true,
+        "pageLength": 10,
+        "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+        "order": [[6, "desc"]], // Sort by submitted date (desc)
+        "columnDefs": [
+            {
+                "targets": [8], // Details column (actions)
+                "orderable": false,
+                "searchable": false
+            }
+        ],
+        "dom": '<"row"<"col-md-6"l><"col-md-6"f>>' +
+               '<"row"<"col-md-12"B>>' +
+               '<"row"<"col-md-12"tr>>' +
+               '<"row"<"col-md-5"i><"col-md-7"p>>',
+        "buttons": [
+            {
+                extend: 'copy',
+                className: 'btn btn-outline-secondary btn-sm me-1',
+                text: '<i class="mdi mdi-content-copy me-1"></i>Copy'
+            },
+            {
+                extend: 'excel',
+                className: 'btn btn-outline-success btn-sm me-1',
+                text: '<i class="mdi mdi-file-excel me-1"></i>Excel',
+                title: 'All Replacement Class Applications',
+                exportOptions: {
+                    columns: [0, 1, 2, 3, 4, 5, 6, 7] // Exclude details column
+                }
+            },
+            {
+                extend: 'pdf',
+                className: 'btn btn-outline-danger btn-sm me-1',
+                text: '<i class="mdi mdi-file-pdf me-1"></i>PDF',
+                title: 'All Replacement Class Applications',
+                exportOptions: {
+                    columns: [0, 1, 2, 3, 4, 5, 6, 7] // Exclude details column
+                }
+            },
+            {
+                extend: 'print',
+                className: 'btn btn-outline-info btn-sm',
+                text: '<i class="mdi mdi-printer me-1"></i>Print',
+                title: 'All Replacement Class Applications',
+                exportOptions: {
+                    columns: [0, 1, 2, 3, 4, 5, 6, 7] // Exclude details column
+                }
+            }
+        ],
+        "language": {
+            "search": "_INPUT_",
+            "searchPlaceholder": "Search all applications...",
+            "lengthMenu": "Show _MENU_ entries",
+            "info": "Showing _START_ to _END_ of _TOTAL_ applications",
+            "infoEmpty": "Showing 0 to 0 of 0 applications",
+            "infoFiltered": "(filtered from _MAX_ total applications)",
+            "emptyTable": "No applications found",
+            "zeroRecords": "No matching applications found"
         }
+    });
+});
+
+// View full details function
+function viewFullDetails(applicationId) {
+    // Get the data from the button's data attribute
+    const button = event.target.closest('button');
+    const appData = JSON.parse(button.getAttribute('data-app'));
+    let programsHtml = '';
+    if (Array.isArray(appData.programs)) {
+        programsHtml = appData.programs.map(program => `<span class="badge bg-primary me-1">${program}</span>`).join('');
+    }
+    
+    let verificationHtml = '';
+    if (appData.is_verified !== 'PENDING') {
+        verificationHtml = `
+            <div class="mt-3">
+                <h6 class="text-start"><i class="mdi mdi-account-check me-1"></i>Verification Details</h6>
+                <div class="text-start">
+                    ${appData.kp_name ? 
+                        `<p><strong>Verified by:</strong> ${appData.kp_name}<br>
+                         <i class="mdi mdi-email me-1"></i>${appData.kp_email}</p>` : 
+                        '<p><em>KP information not available</em></p>'}
+                    
+                    ${appData.is_verified === 'NO' ? `
+                        <div class="alert alert-danger text-start">
+                            ${appData.next_date ? `<p><strong><i class="mdi mdi-calendar-alert me-1"></i>Next Available Date:</strong> ${new Date(appData.next_date).toLocaleDateString()}</p>` : ''}
+                            ${appData.rejection_reason ? `<p><strong><i class="mdi mdi-comment-alert me-1"></i>Rejection Reason:</strong> ${appData.rejection_reason}</p>` : ''}
+                        </div>
+                    ` : appData.is_verified === 'YES' ? `
+                        <div class="alert alert-success text-start">
+                            <p><strong><i class="mdi mdi-check-circle me-1"></i>Status:</strong> Application Approved</p>
+                        </div>
+                    ` : ''}
+                </div>
+            </div>
+        `;
+    }
+    
+    Swal.fire({
+        title: `Application #${applicationId} - Complete Details`,
+        html: `
+            <div class="text-start">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <h6><i class="mdi mdi-account-tie me-1"></i>Lecturer Information</h6>
+                        <p><strong>Name:</strong> ${appData.lecturer_name}<br>
+                        <strong>Course:</strong> ${appData.course_code} - ${appData.course_name}<br>
+                        <strong>Session:</strong> ${appData.SessionName || 'N/A'}<br>
+                        <strong>Group:</strong> ${appData.group_name}<br>
+                        <strong>Programs:</strong> ${programsHtml}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6><i class="mdi mdi-account me-1"></i>Student Representative</h6>
+                        <p><strong>Name:</strong> ${appData.wakil_pelajar_nama}<br>
+                        <i class="mdi mdi-phone me-1"></i><strong>Phone:</strong> ${appData.wakil_pelajar_no_tel}</p>
+                        
+                        <h6><i class="mdi mdi-flag me-1"></i>Current Status</h6>
+                        <p><span class="badge ${appData.is_verified === 'YES' ? 'bg-success' : appData.is_verified === 'NO' ? 'bg-danger' : 'bg-warning'} fs-6">
+                            ${appData.is_verified === 'YES' ? 'Approved' : appData.is_verified === 'NO' ? 'Rejected' : 'Pending Review'}
+                        </span></p>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <h6><i class="mdi mdi-calendar-remove me-1"></i>Cancelled Class</h6>
+                        <p><strong>Date:</strong> ${new Date(appData.tarikh_kuliah_dibatalkan).toLocaleDateString()}<br>
+                        <strong>Reason:</strong> ${appData.sebab_kuliah_dibatalkan}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6><i class="mdi mdi-calendar-plus me-1"></i>Replacement Class</h6>
+                        <p><strong>Date:</strong> ${new Date(appData.maklumat_kuliah_gantian_tarikh).toLocaleDateString()}<br>
+                        <strong>Time:</strong> ${appData.maklumat_kuliah_gantian_hari_masa}<br>
+                        <strong>Venue:</strong> ${appData.room_name}</p>
+                    </div>
+                </div>
+                
+                ${appData.maklumat_kuliah ? `
+                    <div class="mb-3">
+                        <h6><i class="mdi mdi-information me-1"></i>Additional Information</h6>
+                        <div class="alert alert-info text-start">${appData.maklumat_kuliah}</div>
+                    </div>
+                ` : ''}
+                
+                <div class="mb-3">
+                    <h6><i class="mdi mdi-clock me-1"></i>Application Timeline</h6>
+                    <p><strong>Submitted:</strong> ${new Date(appData.created_at).toLocaleString()}<br>
+                    <strong>Last Updated:</strong> ${new Date(appData.updated_at).toLocaleString()}</p>
+                </div>
+                
+                ${verificationHtml}
+            </div>
+        `,
+        width: '900px',
+        confirmButtonText: 'Close',
+        customClass: {
+            popup: 'swal-wide'
+        }
+    });
+}
+
+// View additional info function
+function viewAdditionalInfo(applicationId) {
+    const button = event.target.closest('button');
+    const info = button.getAttribute('data-info');
+    Swal.fire({
+        title: `Additional Information - App #${applicationId}`,
+        text: info,
+        icon: 'info',
+        confirmButtonText: 'Close'
+    });
+}
+
+// View rejection reason function
+function viewRejectionReason(applicationId) {
+    const button = event.target.closest('button');
+    const reason = button.getAttribute('data-reason');
+    Swal.fire({
+        title: `Rejection Reason - App #${applicationId}`,
+        text: reason,
+        icon: 'error',
+        confirmButtonText: 'Close'
     });
 }
 </script>
