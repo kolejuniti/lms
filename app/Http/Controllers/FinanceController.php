@@ -5427,8 +5427,10 @@ class FinanceController extends Controller
         $data['fine'] = [];
 
         $payment = DB::table('tblpayment')
+                   ->join('tblpaymentdtl', 'tblpayment.id', 'tblpaymentdtl.payment_id')
+                   ->join('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
                    ->join('students', 'tblpayment.student_ic', 'students.ic')
-                   ->select('tblpayment.*', 'students.name', 'students.ic', 'students.no_matric', 'students.status', 'students.program', 'students.semester', 'tblpayment.add_date')
+                   ->select('tblpayment.*', 'students.name', 'students.ic', 'students.no_matric', 'students.status', 'students.program', 'students.semester', 'tblpayment.add_date', 'tblstudentclaim.groupid')
                    ->whereBetween('tblpayment.add_date', [$request->from, $request->to])
                    ->where('tblpayment.process_status_id', 2)
                    ->whereNotNull('tblpayment.ref_no')
@@ -5436,8 +5438,10 @@ class FinanceController extends Controller
                    ->get();
 
         $sponsor = DB::table('tblpayment')
+                   ->join('tblpaymentdtl', 'tblpayment.id', 'tblpaymentdtl.payment_id')
+                   ->join('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
                    ->join('students', 'tblpayment.student_ic', 'students.ic')
-                   ->select('tblpayment.*', 'students.name', 'students.ic', 'students.no_matric', 'students.status', 'students.program', 'students.semester', 'tblpayment.add_date')
+                   ->select('tblpayment.*', 'students.name', 'students.ic', 'students.no_matric', 'students.status', 'students.program', 'students.semester', 'tblpayment.add_date', 'tblstudentclaim.groupid')
                    ->whereBetween('tblpayment.add_date', [$request->from, $request->to])
                    ->where('tblpayment.process_status_id', 2)
                    ->whereNotNull('tblpayment.student_ic')
@@ -5625,7 +5629,8 @@ class FinanceController extends Controller
                     }
                 }
 
-            }elseif(($status->id == 2 || $status->id == 5 || $status->id == 6) && $pym->sponsor_id == null && $pym->semester == 1)
+            }elseif((($status->id == 2 || $status->id == 5 || $status->id == 6) && $pym->sponsor_id == null && $pym->semester == 1)
+                    || ($pym->sponsor_id == 4 && $pym->sponsor_id != null && $pym->semester == 1 && $pym->groupid == 5))
             {
 
                 //newstudent
@@ -5953,7 +5958,8 @@ class FinanceController extends Controller
                     }
                 }
 
-            }elseif(($status->id == 2 || $status->id == 5 || $status->id == 6) && $pym->sponsor_id == null && $pym->semester != 1)
+            }elseif((($status->id == 2 || $status->id == 5 || $status->id == 6) && $pym->sponsor_id == null && $pym->semester != 1)
+                    || ($pym->sponsor_id == 4 && $pym->sponsor_id != null && $pym->semester != 1 && $pym->groupid == 5))
             {
 
                 if($pym->process_type_id == 1)
