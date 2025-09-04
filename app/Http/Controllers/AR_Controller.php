@@ -14,12 +14,12 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use League\Flysystem\AwsS3V3\PortableVisibilityConverter;
-use Illuminate\Support\Facades\Cache;
 
 class AR_Controller extends Controller
 {
@@ -70,51 +70,118 @@ class AR_Controller extends Controller
                 ->limit(8)
                 ->get() ?? collect();
 
-            // Recent Warning Letters
-            $data['recent_warnings'] = DB::table('tblstudent_warning')
-            ->join('student_subjek', function($join){
-                 $join->on('tblstudent_warning.groupid', 'student_subjek.group_id');
-                 $join->on('tblstudent_warning.groupname', 'student_subjek.group_name');
-            })
-            ->join('students', 'tblstudent_warning.student_ic', 'students.ic')
-            ->join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
-            ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
-            ->orderBy('tblstudent_warning.created_at', 'desc')
-            ->groupBy('tblstudent_warning.id')
-            ->limit(8)
-            ->select('tblstudent_warning.*', 'subjek.course_name', 'subjek.course_code', 'sessions.SessionName', 'students.name', 'students.no_matric')
-            ->get() ?? collect();
+            // Recent Warning Letters - High Performance Query with Caching
+            $data['recent_warnings'] = Cache::remember('recent_warnings_dashboard', 300, function () {
+                // First get the most recent warnings with minimal data
+                $recentWarnings = DB::table('tblstudent_warning')
+                    ->select('id', 'student_ic', 'groupid', 'groupname', 'warning', 'created_at')
+                    ->whereNotNull('created_at')
+                    ->orderBy('created_at', 'desc')
+                    ->limit(8)
+                    ->get();
 
-            // Semester Statistics
-            $activeSessions = DB::table('sessions')->where('Status', 'ACTIVE')->pluck('SessionID')->toArray() ?? [];
-            $data['semester_summary'] = [];
-            for($i = 1; $i <= 6; $i++) {
-                $data['semester_summary'][$i] = [
-                    'total' => !empty($activeSessions) ? DB::table('students')->where('semester', $i)->whereIn('session', $activeSessions)->count() : 0,
-                    'active' => !empty($activeSessions) ? DB::table('students')->where('semester', $i)->whereIn('session', $activeSessions)->where('status', 2)->count() : 0
+                if ($recentWarnings->isEmpty()) {
+                    return collect();
+                }
+
+                // Get student names in a separate optimized query
+                $studentData = DB::table('students')
+                    ->select('ic', 'name', 'no_matric')
+                    ->whereIn('ic', $recentWarnings->pluck('student_ic'))
+                    ->get()
+                    ->keyBy('ic');
+
+                // Get group and subject data
+                $groupData = DB::table('student_subjek as ss')
+                    ->join('subjek as subj', 'ss.courseid', '=', 'subj.sub_id')
+                    ->join('sessions as sess', 'ss.sessionid', '=', 'sess.SessionID')
+                    ->select(
+                        'ss.group_id', 
+                        'ss.group_name', 
+                        'subj.course_name', 
+                        'subj.course_code', 
+                        'sess.SessionName'
+                    )
+                    ->whereIn(DB::raw('CONCAT(ss.group_id, "-", ss.group_name)'), 
+                        $recentWarnings->map(fn($w) => $w->groupid . '-' . $w->groupname))
+                    ->get()
+                    ->keyBy(fn($item) => $item->group_id . '-' . $item->group_name);
+
+                // Combine the data efficiently
+                return $recentWarnings->map(function ($warning) use ($studentData, $groupData) {
+                    $student = $studentData->get($warning->student_ic);
+                    $group = $groupData->get($warning->groupid . '-' . $warning->groupname);
+                    
+                    return (object) array_merge((array) $warning, [
+                        'name' => $student->name ?? 'Unknown',
+                        'no_matric' => $student->no_matric ?? 'Unknown',
+                        'course_name' => $group->course_name ?? 'Unknown',
+                        'course_code' => $group->course_code ?? 'Unknown',
+                        'SessionName' => $group->SessionName ?? 'Unknown'
+                    ]);
+                });
+            });
+
+            // Semester Statistics - Optimized with single query
+            $data['semester_summary'] = Cache::remember('semester_summary_dashboard', 300, function () {
+                $activeSessions = DB::table('sessions')->where('Status', 'ACTIVE')->pluck('SessionID')->toArray();
+                
+                if (empty($activeSessions)) {
+                    return array_fill(1, 6, ['total' => 0, 'active' => 0]);
+                }
+
+                // Single query to get all semester data at once
+                $semesterData = DB::table('students')
+                    ->select('semester', 'status', DB::raw('COUNT(*) as count'))
+                    ->whereIn('session', $activeSessions)
+                    ->whereBetween('semester', [1, 6])
+                    ->groupBy('semester', 'status')
+                    ->get()
+                    ->groupBy('semester');
+
+                $summary = [];
+                for($i = 1; $i <= 6; $i++) {
+                    $semesterStats = $semesterData->get($i, collect());
+                    $summary[$i] = [
+                        'total' => $semesterStats->sum('count'),
+                        'active' => $semesterStats->where('status', 2)->sum('count')
+                    ];
+                }
+                
+                return $summary;
+            });
+
+            // Assessment Statistics - Optimized with caching
+            $data['assessment_stats'] = Cache::remember('assessment_stats_dashboard', 300, function () {
+                $today = today();
+                
+                // Get all counts in parallel queries for better performance
+                $pendingQuiz = DB::table('tblclassquiz')->where('status', 1)->count();
+                $pendingTest = DB::table('tblclasstest')->where('status', 1)->count();
+                $pendingAssign = DB::table('tblclassassign')->where('status', 1)->count();
+                
+                $completedQuizToday = DB::table('tblclassquiz')->whereDate('created_at', $today)->where('status', 2)->count();
+                $completedTestToday = DB::table('tblclasstest')->whereDate('created_at', $today)->where('status', 2)->count();
+                $completedAssignToday = DB::table('tblclassassign')->whereDate('created_at', $today)->where('status', 2)->count();
+                
+                return [
+                    'pending_assessments' => $pendingQuiz + $pendingTest + $pendingAssign,
+                    'completed_today' => $completedQuizToday + $completedTestToday + $completedAssignToday
                 ];
-            }
+            });
 
-            // Assessment Statistics
-            $data['assessment_stats'] = [
-                'pending_assessments' => (DB::table('tblclassquiz')->where('status', 1)->count() ?? 0) +
-                                       (DB::table('tblclasstest')->where('status', 1)->count() ?? 0) +
-                                       (DB::table('tblclassassign')->where('status', 1)->count() ?? 0),
-                'completed_today' => (DB::table('tblclassquiz')->whereDate('created_at', today())->where('status', 2)->count() ?? 0) +
-                                   (DB::table('tblclasstest')->whereDate('created_at', today())->where('status', 2)->count() ?? 0) +
-                                   (DB::table('tblclassassign')->whereDate('created_at', today())->where('status', 2)->count() ?? 0)
-            ];
-
-            // Recent Student Registrations
-            $data['recent_student_subjects'] = DB::table('student_subjek')
-                ->join('students', 'student_subjek.student_ic', 'students.ic')
-                ->join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
-                ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
-                ->where('sessions.Status', 'ACTIVE')
-                ->select('students.name', 'students.no_matric', 'subjek.course_code', 'subjek.course_name', 'student_subjek.semesterid', 'student_subjek.created_at')
-                ->orderBy('student_subjek.created_at', 'desc')
-                ->limit(10)
-                ->get() ?? collect();
+            // Recent Student Registrations - Optimized with caching
+            $data['recent_student_subjects'] = Cache::remember('recent_student_subjects_dashboard', 300, function () {
+                return DB::table('student_subjek as ss')
+                    ->join('students as st', 'ss.student_ic', '=', 'st.ic')
+                    ->join('subjek as subj', 'ss.courseid', '=', 'subj.sub_id')
+                    ->join('sessions as sess', 'ss.sessionid', '=', 'sess.SessionID')
+                    ->where('sess.Status', 'ACTIVE')
+                    ->select('st.name', 'st.no_matric', 'subj.course_code', 'subj.course_name', 'ss.semesterid', 'ss.created_at')
+                    ->orderBy('ss.created_at', 'desc')
+                    ->limit(10)
+                    ->get();
+            }) ?? collect();
 
         } catch (\Exception $e) {
             // Log the error and provide default values
