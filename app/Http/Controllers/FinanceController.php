@@ -5630,7 +5630,7 @@ class FinanceController extends Controller
                 }
 
             }elseif((($status->id == 2 || $status->id == 5 || $status->id == 6) && $pym->sponsor_id == null && $pym->semester == 1)
-                    || ($pym->id == 4 && $pym->sponsor_id != null && $pym->semester == 1 && $pym->groupid == 5))
+                    || ($status->id == 4 && $pym->sponsor_id != null && $pym->semester == 1 && $pym->groupid == 5))
             {
 
                 //newstudent
@@ -5959,7 +5959,7 @@ class FinanceController extends Controller
                 }
 
             }elseif((($status->id == 2 || $status->id == 5 || $status->id == 6) && $pym->sponsor_id == null && $pym->semester != 1)
-                    || ($pym->id == 4 && $pym->sponsor_id != null && $pym->semester != 1 && $pym->groupid == 5))
+                    || ($status->id == 4 && $pym->sponsor_id != null && $pym->semester != 1 && $pym->groupid == 5))
             {
 
                 if($pym->process_type_id == 1)
