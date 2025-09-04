@@ -5435,6 +5435,7 @@ class FinanceController extends Controller
                    ->where('tblpayment.process_status_id', 2)
                    ->whereNotNull('tblpayment.ref_no')
                    ->orderByRaw('CAST(SUBSTRING(tblpayment.ref_no, 2) AS UNSIGNED) ASC')
+                   ->groupBy('tblpayment.id')
                    ->get();
 
         $sponsor = DB::table('tblpayment')
@@ -5447,6 +5448,7 @@ class FinanceController extends Controller
                    ->whereNotNull('tblpayment.student_ic')
                    ->whereNotNull('tblpayment.payment_sponsor_id')
                    ->orderByRaw('CAST(SUBSTRING(tblpayment.ref_no, 2) AS UNSIGNED) ASC')
+                   ->groupBy('tblpayment.id')
                    ->get();
 
         $data['program'] = DB::table('tblprogramme')->orderBy('program_ID')->get();
