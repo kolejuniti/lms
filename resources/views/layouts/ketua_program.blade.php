@@ -363,8 +363,8 @@
 						<li><a href="{{ route('lecturer.class.schedule') }}" class="{{ (route('lecturer.class.schedule') == Request::url()) ? 'active' : ''}}">Lecturer Timetable</a></li>
 						{{-- @if(Auth::user()->usrtype == 'PL' || Auth::user()->usrtype == 'AO')
 						<li><a href="/AR/schedule/lecturer?type=lct" class="{{ (route('pendaftar_akademik.schedule.lecturer') == Request::url()) ? 'active' : ''}}">Lecturer Timetable</a></li>
-						@endif
-						<li><a href="/AR/schedule/lecture?type=lcr" class="{{ (route('pendaftar_akademik.schedule.lecture') == Request::url()) ? 'active' : ''}}">Lecture Room Timetable</a></li> --}}
+						@endif --}}
+						<li><a href="/AR/schedule/lecture?type=lcr" class="{{ (route('pendaftar_akademik.schedule.lecture') == Request::url()) ? 'active' : ''}}">Lecture Room Timetable</a></li>
 					</ul>
 				</li>
 				<li>
