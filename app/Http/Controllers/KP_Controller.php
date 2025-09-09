@@ -1551,16 +1551,44 @@ $content .= '<tr>
         ]);
 
         $user = Auth::user();
+
+        if($user->usrtype == 'KP')
+        {
         
-        // Verify KP has permission to update this application
-        $application = DB::table('replacement_class')
-            ->join('user_subjek', 'replacement_class.user_subjek_id', '=', 'user_subjek.id')
-            ->join('subjek', 'user_subjek.course_id', '=', 'subjek.sub_id')
-            ->join('subjek_structure', 'subjek.sub_id', '=', 'subjek_structure.courseID')
-            ->join('user_program', 'subjek_structure.program_id', '=', 'user_program.program_id')
-            ->where('replacement_class.id', $request->application_id)
-            ->where('user_program.user_ic', $user->ic)
-            ->first();
+            // Verify KP has permission to update this application
+            $application = DB::table('replacement_class')
+                ->join('user_subjek', 'replacement_class.user_subjek_id', '=', 'user_subjek.id')
+                ->join('subjek', 'user_subjek.course_id', '=', 'subjek.sub_id')
+                ->join('subjek_structure', 'subjek.sub_id', '=', 'subjek_structure.courseID')
+                ->join('user_program', 'subjek_structure.program_id', '=', 'user_program.program_id')
+                ->where('replacement_class.id', $request->application_id)
+                ->where('user_program.user_ic', $user->ic)
+                ->first();
+
+        }elseif($user->usrtype == 'AO')
+        {
+            
+            $application = DB::table('replacement_class')
+                ->join('user_subjek', 'replacement_class.user_subjek_id', '=', 'user_subjek.id')
+                ->join('users', 'user_subjek.user_ic', '=', 'users.ic')
+                ->join('subjek', 'user_subjek.course_id', '=', 'subjek.sub_id')
+                ->join('subjek_structure', 'subjek.sub_id', '=', 'subjek_structure.courseID')
+                ->where('replacement_class.id', $request->application_id)
+                ->where('users.usrtype', 'KP')
+                ->first();
+
+        }elseif($user->usrtype == 'DN'){
+
+            $application = DB::table('replacement_class')
+                ->join('user_subjek', 'replacement_class.user_subjek_id', '=', 'user_subjek.id')
+                ->join('users', 'user_subjek.user_ic', '=', 'users.ic')
+                ->join('subjek', 'user_subjek.course_id', '=', 'subjek.sub_id')
+                ->join('subjek_structure', 'subjek.sub_id', '=', 'subjek_structure.courseID')
+                ->where('replacement_class.id', $request->application_id)
+                ->where('users.usrtype', 'AO')
+                ->first();
+            
+        }
 
         if (!$application) {
             return response()->json(['error' => 'You do not have permission to update this application.'], 403);

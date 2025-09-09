@@ -1,4 +1,12 @@
-@extends('layouts.ketua_program')
+@php
+    $layoutMap = [
+        'KP'   => 'layouts.ketua_program',
+        'DN'   => 'layouts.ketua_program',
+        'AO'   => 'layouts.ketua_program',
+    ];
+    $userType = Auth::user()->usrtype ?? '';
+    $layout = $layoutMap[$userType] ?? '';
+@endphp
 
 @section('main')
 
