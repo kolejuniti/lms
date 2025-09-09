@@ -4399,11 +4399,12 @@ $content .= '</tr>
 
         $quiz = DB::table('tblclassquiz')
                 ->join('tblclassquizstatus', 'tblclassquiz.status', 'tblclassquizstatus.id')
+                ->join('sessions', 'tblclassquiz.sessionid', 'sessions.SessionID')
                 ->where([
                     ['tblclassquiz.addby', $request->ic],
                     ['tblclassquiz.classid', Session::get('CourseID')]
                 ])
-                ->select('tblclassquiz.*', 'tblclassquizstatus.statusname')->get();
+                ->select('tblclassquiz.*', 'tblclassquizstatus.statusname', 'sessions.SessionName')->get();
 
 
         return view('lecturer.library.getQuiz', compact('quiz'));
@@ -4415,11 +4416,12 @@ $content .= '</tr>
 
         $test = DB::table('tblclasstest')
                 ->join('tblclassteststatus', 'tblclasstest.status', 'tblclassteststatus.id')
+                ->join('sessions', 'tblclasstest.sessionid', 'sessions.SessionID')
                 ->where([
                     ['tblclasstest.addby', $request->ic],
                     ['tblclasstest.classid', Session::get('CourseID')]
                 ])
-                ->select('tblclasstest.*', 'tblclassteststatus.statusname')->get();
+                ->select('tblclasstest.*', 'tblclassteststatus.statusname', 'sessions.SessionName')->get();
 
 
         return view('lecturer.library.getTest', compact('test'));
@@ -4431,11 +4433,12 @@ $content .= '</tr>
 
         $assign = DB::table('tblclassassign')
                 ->join('tblclassassignstatus', 'tblclassassign.status', 'tblclassassignstatus.id')
+                ->join('sessions', 'tblclassassign.sessionid', 'sessions.SessionID')
                 ->where([
                     ['tblclassassign.addby', $request->ic],
                     ['tblclassassign.classid', Session::get('CourseID')]
                 ])
-                ->select('tblclassassign.*', 'tblclassassignstatus.statusname')->get();
+                ->select('tblclassassign.*', 'tblclassassignstatus.statusname', 'sessions.SessionName')->get();
 
 
         return view('lecturer.library.getAssignment', compact('assign'));
@@ -4447,11 +4450,12 @@ $content .= '</tr>
 
         $midterm = DB::table('tblclassmidterm')
                 ->join('tblclassmidtermstatus', 'tblclassmidterm.status', 'tblclassmidtermstatus.id')
+                ->join('sessions', 'tblclassmidterm.sessionid', 'sessions.SessionID')
                 ->where([
                     ['tblclassmidterm.addby', $request->ic],
                     ['tblclassmidterm.classid', Session::get('CourseID')]
                 ])
-                ->select('tblclassmidterm.*', 'tblclassmidtermstatus.statusname')->get();
+                ->select('tblclassmidterm.*', 'tblclassmidtermstatus.statusname', 'sessions.SessionName')->get();
 
     }
 
@@ -4460,11 +4464,12 @@ $content .= '</tr>
 
         $final = DB::table('tblclassfinal')
                 ->join('tblclassfinalstatus', 'tblclassfinal.status', 'tblclassfinalstatus.id')
+                ->join('sessions', 'tblclassfinal.sessionid', 'sessions.SessionID')
                 ->where([
                     ['tblclassfinal.addby', $request->ic],
                     ['tblclassfinal.classid', Session::get('CourseID')]
                 ])
-                ->select('tblclassfinal.*', 'tblclassfinalstatus.statusname')->get();
+                ->select('tblclassfinal.*', 'tblclassfinalstatus.statusname', 'sessions.SessionName')->get();
 
 
         return view('lecturer.library.getFinal', compact('final'));

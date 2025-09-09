@@ -10,6 +10,13 @@
                         </span>
                     </div>
 
+                    <!-- Session Badge -->
+                    <div class="position-absolute top-0 start-0 m-3" style="z-index: 10;">
+                        <span class="badge bg-warning text-dark px-3 py-2 rounded-pill shadow">
+                            <i class="fa fa-calendar me-1"></i>{{ $ts->SessionName }}
+                        </span>
+                    </div>
+
                     <!-- Card Header -->
                     <div class="quiz-card-header p-4 text-center">
                         <div class="quiz-icon mb-3">
