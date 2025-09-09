@@ -1,6 +1,12 @@
-@extends('layouts.ketua_program')
-
-@section('main')
+@php
+    $layoutMap = [
+        'PL'   => 'layouts.ketua_program',
+        'DN'   => 'layouts.ketua_program',
+        'AO'   => 'layouts.ketua_program',
+    ];
+    $userType = Auth::user()->usrtype ?? '';
+    $layout = $layoutMap[$userType] ?? '';
+@endphp
 
 <!-- DataTables CSS -->
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
@@ -597,7 +603,6 @@
 
 <script>
 $(document).ready(function() {
-  alert('{{ Auth::user()->usrtype }}');
     // Initialize DataTable
     $('#applications-table').DataTable({
         "responsive": true,

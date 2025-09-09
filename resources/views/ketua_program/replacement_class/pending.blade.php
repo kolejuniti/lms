@@ -1,6 +1,6 @@
 @php
     $layoutMap = [
-        'KP'   => 'layouts.ketua_program',
+        'PL'   => 'layouts.ketua_program',
         'DN'   => 'layouts.ketua_program',
         'AO'   => 'layouts.ketua_program',
     ];
