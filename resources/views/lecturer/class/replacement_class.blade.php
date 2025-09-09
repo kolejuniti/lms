@@ -4,28 +4,44 @@
 
 <style>
   .form-container {
-    background: #f8f9fa;
+    background: var(--bs-body-bg, #f8f9fa);
     min-height: 100vh;
     padding: 2rem 0;
   }
   
+  .dark-skin .form-container {
+    background: #171e32;
+  }
+  
   .form-header {
-    background: #ffffff;
+    background: var(--bs-card-bg, #ffffff);
     border-radius: 15px;
     padding: 2rem;
     margin-bottom: 2rem;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    border: 1px solid #e9ecef;
+    border: 1px solid var(--bs-border-color, #e9ecef);
+  }
+  
+  .dark-skin .form-header {
+    background: #293146;
+    border-color: #3c3d54;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
   }
   
   .form-step {
-    background: #ffffff;
+    background: var(--bs-card-bg, #ffffff);
     border-radius: 15px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     margin-bottom: 2rem;
     overflow: hidden;
     transition: all 0.3s ease;
-    border: 1px solid #e9ecef;
+    border: 1px solid var(--bs-border-color, #e9ecef);
+  }
+  
+  .dark-skin .form-step {
+    background: #293146;
+    border-color: #3c3d54;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
   }
   
   .form-step:hover {
@@ -89,60 +105,97 @@
   }
 
   .modern-label {
-    color: #555;
+    color: var(--bs-body-color, #555);
     font-weight: 500;
     margin-bottom: 0.5rem;
     font-size: 0.95rem;
   }
 
+  .dark-skin .modern-label {
+    color: rgba(255, 255, 255, 0.85);
+  }
+
   .modern-input {
-    border: 2px solid #e9ecef;
+    border: 2px solid var(--bs-border-color, #e9ecef);
     border-radius: 8px;
     padding: 0.75rem 1rem;
     font-size: 0.95rem;
     transition: all 0.3s ease;
-    background: #fafbfc;
+    background: var(--bs-tertiary-bg, #fafbfc);
+    color: var(--bs-body-color, #495057);
+  }
+
+  .dark-skin .modern-input {
+    background: #191d33;
+    border-color: #3c3d54;
+    color: #a1a4b5;
   }
 
   .modern-input:focus {
     border-color: #667eea;
     box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.15);
-    background: white;
+    background: var(--bs-card-bg, white);
     transform: translateY(-1px);
   }
 
+  .dark-skin .modern-input:focus {
+    background: #293146;
+  }
+
   .modern-select {
-    border: 2px solid #e9ecef;
+    border: 2px solid var(--bs-border-color, #e9ecef);
     border-radius: 8px;
     padding: 0.75rem 1rem;
     font-size: 0.95rem;
     transition: all 0.3s ease;
-    background: #fafbfc;
+    background: var(--bs-tertiary-bg, #fafbfc);
+    color: var(--bs-body-color, #495057);
+  }
+
+  .dark-skin .modern-select {
+    background: #191d33;
+    border-color: #3c3d54;
+    color: #a1a4b5;
   }
 
   .modern-select:focus {
     border-color: #667eea;
     box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.15);
-    background: white;
+    background: var(--bs-card-bg, white);
     transform: translateY(-1px);
   }
 
+  .dark-skin .modern-select:focus {
+    background: #293146;
+  }
+
   .modern-textarea {
-    border: 2px solid #e9ecef;
+    border: 2px solid var(--bs-border-color, #e9ecef);
     border-radius: 8px;
     padding: 0.75rem 1rem;
     font-size: 0.95rem;
     transition: all 0.3s ease;
-    background: #fafbfc;
+    background: var(--bs-tertiary-bg, #fafbfc);
+    color: var(--bs-body-color, #495057);
     resize: vertical;
     min-height: 100px;
+  }
+
+  .dark-skin .modern-textarea {
+    background: #191d33;
+    border-color: #3c3d54;
+    color: #a1a4b5;
   }
 
   .modern-textarea:focus {
     border-color: #667eea;
     box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.15);
-    background: white;
+    background: var(--bs-card-bg, white);
     transform: translateY(-1px);
+  }
+
+  .dark-skin .modern-textarea:focus {
+    background: #293146;
   }
 
   .tag-auto {

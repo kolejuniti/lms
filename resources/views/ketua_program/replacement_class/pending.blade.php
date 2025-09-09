@@ -18,19 +18,29 @@
 
 <style>
   .applications-container {
-    background: #f8f9fa;
+    background: var(--bs-body-bg, #f8f9fa);
     min-height: 100vh;
     padding: 2rem 0;
   }
   
+  .dark-skin .applications-container {
+    background: #171e32;
+  }
+  
   .application-card {
-    background: #ffffff;
+    background: var(--bs-card-bg, #ffffff);
     border-radius: 15px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     margin-bottom: 2rem;
     overflow: hidden;
     transition: all 0.3s ease;
-    border: 1px solid #e9ecef;
+    border: 1px solid var(--bs-border-color, #e9ecef);
+  }
+  
+  .dark-skin .application-card {
+    background: #293146;
+    border-color: #3c3d54;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
   }
   
   .application-card:hover {
@@ -215,21 +225,32 @@
   }
 
   .applications-table {
-    background: #ffffff;
+    background: var(--bs-card-bg, #ffffff);
     border-radius: 15px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     overflow: hidden;
-    border: 1px solid #e9ecef;
+    border: 1px solid var(--bs-border-color, #e9ecef);
+  }
+
+  .dark-skin .applications-table {
+    background: #293146;
+    border-color: #3c3d54;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
   }
 
   .applications-table .table {
     margin-bottom: 0;
+    color: var(--bs-body-color, #495057);
+  }
+
+  .dark-skin .applications-table .table {
+    color: rgba(255, 255, 255, 0.85);
   }
 
   .applications-table .table thead th {
-    background: #ffffff;
-    color: #495057;
-    border-bottom: 2px solid #dee2e6;
+    background: var(--bs-card-bg, #ffffff);
+    color: var(--bs-body-color, #495057);
+    border-bottom: 2px solid var(--bs-border-color, #dee2e6);
     padding: 1rem;
     font-weight: 600;
     text-transform: uppercase;
@@ -237,47 +258,87 @@
     font-size: 0.85rem;
   }
 
+  .dark-skin .applications-table .table thead th {
+    background: #293146;
+    color: rgba(255, 255, 255, 0.85);
+    border-bottom-color: #3c3d54;
+  }
+
   .applications-table .table tbody td {
     padding: 1rem;
     vertical-align: middle;
-    border-color: #f8f9fa;
+    border-color: var(--bs-border-color-translucent, #f8f9fa);
+  }
+
+  .dark-skin .applications-table .table tbody td {
+    border-color: #3c3d54;
   }
 
   .applications-table .table tbody tr:hover {
-    background-color: #f8f9fa;
+    background-color: var(--bs-tertiary-bg, #f8f9fa);
     transition: all 0.3s ease;
+  }
+
+  .dark-skin .applications-table .table tbody tr:hover {
+    background-color: #212744;
   }
 
   .lecturer-info {
     font-weight: 600;
-    color: #495057;
+    color: var(--bs-body-color, #495057);
     margin-bottom: 0.25rem;
   }
 
+  .dark-skin .lecturer-info {
+    color: rgba(255, 255, 255, 0.85);
+  }
+
   .course-info {
-    color: #6c757d;
+    color: var(--bs-secondary-color, #6c757d);
     font-size: 0.9rem;
+  }
+
+  .dark-skin .course-info {
+    color: #a1a4b5;
   }
 
   .date-info {
     font-weight: 500;
     margin-bottom: 0.25rem;
+    color: var(--bs-body-color, #495057);
+  }
+
+  .dark-skin .date-info {
+    color: rgba(255, 255, 255, 0.85);
   }
 
   .reason-info {
-    color: #6c757d;
+    color: var(--bs-secondary-color, #6c757d);
     font-size: 0.85rem;
     font-style: italic;
+  }
+
+  .dark-skin .reason-info {
+    color: #a1a4b5;
   }
 
   .student-info {
     font-weight: 500;
     margin-bottom: 0.25rem;
+    color: var(--bs-body-color, #495057);
+  }
+
+  .dark-skin .student-info {
+    color: rgba(255, 255, 255, 0.85);
   }
 
   .phone-info {
-    color: #6c757d;
+    color: var(--bs-secondary-color, #6c757d);
     font-size: 0.85rem;
+  }
+
+  .dark-skin .phone-info {
+    color: #a1a4b5;
   }
 
   .compact-programs {
@@ -364,12 +425,18 @@
     }
     
     .mobile-app-card {
-      background: #ffffff;
+      background: var(--bs-card-bg, #ffffff);
       border-radius: 15px;
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
       margin-bottom: 1.5rem;
       padding: 1.5rem;
-      border: 1px solid #e9ecef;
+      border: 1px solid var(--bs-border-color, #e9ecef);
+    }
+    
+    .dark-skin .mobile-app-card {
+      background: #293146;
+      border-color: #3c3d54;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
     }
     
     .mobile-app-header {
@@ -378,7 +445,11 @@
       align-items: center;
       margin-bottom: 1rem;
       padding-bottom: 1rem;
-      border-bottom: 1px solid #e9ecef;
+      border-bottom: 1px solid var(--bs-border-color, #e9ecef);
+    }
+    
+    .dark-skin .mobile-app-header {
+      border-bottom-color: #3c3d54;
     }
     
     .mobile-app-id {
@@ -396,26 +467,38 @@
     
     .mobile-info-label {
       font-weight: 600;
-      color: #495057;
+      color: var(--bs-body-color, #495057);
       font-size: 0.9rem;
     }
     
+    .dark-skin .mobile-info-label {
+      color: rgba(255, 255, 255, 0.85);
+    }
+    
     .mobile-info-value {
-      color: #6c757d;
+      color: var(--bs-secondary-color, #6c757d);
       font-size: 0.9rem;
       text-align: right;
       flex: 1;
       margin-left: 1rem;
     }
     
+    .dark-skin .mobile-info-value {
+      color: #a1a4b5;
+    }
+    
     .mobile-actions {
       margin-top: 1rem;
       padding-top: 1rem;
-      border-top: 1px solid #e9ecef;
+      border-top: 1px solid var(--bs-border-color, #e9ecef);
       display: flex;
       flex-wrap: wrap;
       gap: 0.5rem;
       justify-content: center;
+    }
+    
+    .dark-skin .mobile-actions {
+      border-top-color: #3c3d54;
     }
     
     .mobile-actions .btn {
