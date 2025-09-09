@@ -8,6 +8,8 @@
     $layout = $layoutMap[$userType] ?? '';
 @endphp
 
+@extends($layout)
+
 @section('main')
 
 <!-- DataTables CSS -->
