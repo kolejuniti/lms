@@ -706,9 +706,12 @@ class QuizController extends Controller
                     $question_number = $matches[1];
                     $i = 0;
                     
-                    // Get and process correct answer(s)
-                    $correct_answer_raw = $original_quizformdata[$index + 1]->label;
-                    $correct_answers = explode(",", $correct_answer_raw);
+                    // Get and process correct answer(s) - check if correct answer exists
+                    $correct_answer_raw = '';
+                    if(isset($original_quizformdata[$index + 1]) && isset($original_quizformdata[$index + 1]->label)){
+                        $correct_answer_raw = $original_quizformdata[$index + 1]->label;
+                    }
+                    $correct_answers = !empty($correct_answer_raw) ? explode(",", $correct_answer_raw) : [];
                     
                     // Trim whitespace from each correct answer
                     $correct_answers = array_map('trim', $correct_answers);
@@ -740,9 +743,12 @@ class QuizController extends Controller
                     $question_number = $matches[1];
                     $i = 0;
                     
-                    // Get and process correct answer(s)
-                    $correct_answer_raw = $original_quizformdata[$index + 1]->label;
-                    $correct_answers = explode(",", $correct_answer_raw);
+                    // Get and process correct answer(s) - check if correct answer exists
+                    $correct_answer_raw = '';
+                    if(isset($original_quizformdata[$index + 1]) && isset($original_quizformdata[$index + 1]->label)){
+                        $correct_answer_raw = $original_quizformdata[$index + 1]->label;
+                    }
+                    $correct_answers = !empty($correct_answer_raw) ? explode(",", $correct_answer_raw) : [];
                     
                     // Trim whitespace from each correct answer
                     $correct_answers = array_map('trim', $correct_answers);
@@ -1219,9 +1225,12 @@ class QuizController extends Controller
                     $question_number = $matches[1];
                     $i = 0;
                     
-                    // Get and process correct answer(s)
-                    $correct_answer_raw = $original_quizformdata[$index + 1]->label;
-                    $correct_answers = explode(",", $correct_answer_raw);
+                    // Get and process correct answer(s) - check if correct answer exists
+                    $correct_answer_raw = '';
+                    if(isset($original_quizformdata[$index + 1]) && isset($original_quizformdata[$index + 1]->label)){
+                        $correct_answer_raw = $original_quizformdata[$index + 1]->label;
+                    }
+                    $correct_answers = !empty($correct_answer_raw) ? explode(",", $correct_answer_raw) : [];
                     
                     // Trim whitespace from each correct answer
                     $correct_answers = array_map('trim', $correct_answers);
@@ -1253,9 +1262,12 @@ class QuizController extends Controller
                     $question_number = $matches[1];
                     $i = 0;
                     
-                    // Get and process correct answer(s)
-                    $correct_answer_raw = $original_quizformdata[$index + 1]->label;
-                    $correct_answers = explode(",", $correct_answer_raw);
+                    // Get and process correct answer(s) - check if correct answer exists
+                    $correct_answer_raw = '';
+                    if(isset($original_quizformdata[$index + 1]) && isset($original_quizformdata[$index + 1]->label)){
+                        $correct_answer_raw = $original_quizformdata[$index + 1]->label;
+                    }
+                    $correct_answers = !empty($correct_answer_raw) ? explode(",", $correct_answer_raw) : [];
                     
                     // Trim whitespace from each correct answer
                     $correct_answers = array_map('trim', $correct_answers);
