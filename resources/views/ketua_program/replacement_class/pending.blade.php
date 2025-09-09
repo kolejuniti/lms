@@ -557,24 +557,24 @@
                     <td>
                       @if($app->revised_date && $app->revised_status === 'PENDING')
                         <div class="action-buttons-compact">
-                          <button type="button" class="btn btn-success btn-action-sm" onclick="approveRevisedDate({{ $app->id }})" title="Approve Revised Date">
+                          <button type="button" class="btn btn-success btn-action-sm" onclick="approveRevisedDate({{ $app->id }})" title="Verify Revised Date">
                             <i class="mdi mdi-check me-1"></i>
-                            Approve Revised
+                            Verify Revised
                           </button>
-                          <button type="button" class="btn btn-danger btn-action-sm" onclick="rejectRevisedDate({{ $app->id }})" title="Reject Revised Date">
+                          <button type="button" class="btn btn-danger btn-action-sm" onclick="rejectRevisedDate({{ $app->id }})" title="Unverify Revised Date">
                             <i class="mdi mdi-close me-1"></i>
-                            Reject Revised
+                            Unverify Revised
                           </button>
                         </div>
                       @else
                         <div class="action-buttons-compact">
-                          <button type="button" class="btn btn-success btn-action-sm" onclick="approveApplication({{ $app->id }})" title="Approve">
+                          <button type="button" class="btn btn-success btn-action-sm" onclick="approveApplication({{ $app->id }})" title="Verify">
                             <i class="mdi mdi-check me-1"></i>
-                            Approve
+                            Verify
                           </button>
-                          <button type="button" class="btn btn-danger btn-action-sm" onclick="rejectApplication({{ $app->id }})" title="Reject">
+                          <button type="button" class="btn btn-danger btn-action-sm" onclick="rejectApplication({{ $app->id }})" title="Unverify">
                             <i class="mdi mdi-close me-1"></i>
-                            Reject
+                            Unverify
                           </button>
                         </div>
                       @endif
@@ -651,18 +651,18 @@
               
               <div class="mobile-actions">
                 @if($app->revised_date && $app->revised_status === 'PENDING')
-                  <button type="button" class="btn btn-success btn-sm" onclick="approveRevisedDate({{ $app->id }})" title="Approve Revised Date">
-                    <i class="mdi mdi-check me-1"></i>Approve Revised
+                  <button type="button" class="btn btn-success btn-sm" onclick="approveRevisedDate({{ $app->id }})" title="Verify Revised Date">
+                    <i class="mdi mdi-check me-1"></i>Verify Revised
                   </button>
-                  <button type="button" class="btn btn-danger btn-sm" onclick="rejectRevisedDate({{ $app->id }})" title="Reject Revised Date">
-                    <i class="mdi mdi-close me-1"></i>Reject Revised
+                  <button type="button" class="btn btn-danger btn-sm" onclick="rejectRevisedDate({{ $app->id }})" title="Unverify Revised Date">
+                    <i class="mdi mdi-close me-1"></i>Unverify Revised
                   </button>
                 @else
-                  <button type="button" class="btn btn-success btn-sm" onclick="approveApplication({{ $app->id }})" title="Approve">
-                    <i class="mdi mdi-check me-1"></i>Approve
+                  <button type="button" class="btn btn-success btn-sm" onclick="approveApplication({{ $app->id }})" title="Verify">
+                    <i class="mdi mdi-check me-1"></i>Verify
                   </button>
-                  <button type="button" class="btn btn-danger btn-sm" onclick="rejectApplication({{ $app->id }})" title="Reject">
-                    <i class="mdi mdi-close me-1"></i>Reject
+                  <button type="button" class="btn btn-danger btn-sm" onclick="rejectApplication({{ $app->id }})" title="Unverify">
+                    <i class="mdi mdi-close me-1"></i>Unverify
                   </button>
                 @endif
                 <button type="button" class="btn btn-outline-info btn-sm" 
@@ -681,26 +681,26 @@
   </div>
 </div>
 
-<!-- Rejection Modal -->
+<!-- Unverifyion Modal -->
 <div class="modal fade" id="rejectionModal" tabindex="-1" aria-labelledby="rejectionModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="rejectionModalLabel">
           <i class="mdi mdi-close-circle me-2"></i>
-          Reject Application
+          Unverify Application
         </h5>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <form id="rejectionForm" onsubmit="event.preventDefault(); submitRejection();">
+        <form id="rejectionForm" onsubmit="event.preventDefault(); submitUnverifyion();">
           <input type="hidden" id="rejectionApplicationId" name="application_id">
           <input type="hidden" name="status" value="NO">
           
           <div class="mb-3">
             <label for="rejectionReason" class="form-label">
               <i class="mdi mdi-comment-text me-1"></i>
-              Reason for Rejection <span class="text-danger">*</span>
+              Reason for Unverifyion <span class="text-danger">*</span>
             </label>
             <textarea class="form-control" id="rejectionReason" name="rejection_reason" rows="4" 
                       placeholder="Please provide a detailed reason for rejecting this application..." required></textarea>
@@ -713,9 +713,9 @@
           <i class="mdi mdi-cancel me-1"></i>
           Cancel
         </button>
-        <button type="button" class="btn btn-danger" onclick="submitRejection()">
+        <button type="button" class="btn btn-danger" onclick="submitUnverifyion()">
           <i class="mdi mdi-close me-1"></i>
-          Reject Application
+          Unverify Application
         </button>
       </div>
     </div>
@@ -854,7 +854,7 @@ function viewFullDetails(applicationId) {
                                 <strong>New Time:</strong> ${appData.revised_time}<br>
                                 <strong>New Venue:</strong> ${appData.revised_room_name || 'N/A'}<br>
                                 <strong>Status:</strong> <span class="badge ${appData.revised_status === 'YES' ? 'bg-success' : appData.revised_status === 'NO' ? 'bg-danger' : 'bg-warning'}">${appData.revised_status === 'YES' ? 'Verified' : appData.revised_status === 'NO' ? 'Not-Verified' : 'Pending Review'}</span></p>
-                                ${appData.revised_rejection_reason ? `<p><strong>Rejection Reason:</strong> ${appData.revised_rejection_reason}</p>` : ''}
+                                ${appData.revised_rejection_reason ? `<p><strong>Unverifyion Reason:</strong> ${appData.revised_rejection_reason}</p>` : ''}
                             </div>
                         </div>
                     </div>
@@ -877,8 +877,8 @@ function viewFullDetails(applicationId) {
         width: '900px',
         showCancelButton: true,
         showDenyButton: true,
-        confirmButtonText: '<i class="mdi mdi-check me-1"></i> Approve Application',
-        denyButtonText: '<i class="mdi mdi-close me-1"></i> Reject Application',
+        confirmButtonText: '<i class="mdi mdi-check me-1"></i> Verify Application',
+        denyButtonText: '<i class="mdi mdi-close me-1"></i> Unverify Application',
         cancelButtonText: 'Close',
         confirmButtonColor: '#28a745',
         denyButtonColor: '#dc3545',
@@ -890,10 +890,10 @@ function viewFullDetails(applicationId) {
         }
     }).then((result) => {
         if (result.isConfirmed) {
-            // Approve the application
+            // Verify the application
             updateApplicationStatus(applicationId, 'YES');
         } else if (result.isDenied) {
-            // Reject the application - show rejection modal
+            // Unverify the application - show rejection modal
             Swal.close();
             rejectApplication(applicationId);
         }
@@ -915,13 +915,13 @@ function viewAdditionalInfo(applicationId, info) {
 
 function approveApplication(applicationId) {
     Swal.fire({
-        title: 'Approve Application?',
+        title: 'Verify Application?',
         text: 'Are you sure you want to approve this replacement class application?',
         icon: 'question',
         showCancelButton: true,
         confirmButtonColor: '#28a745',
         cancelButtonColor: '#6c757d',
-        confirmButtonText: '<i class="mdi mdi-check"></i> Yes, Approve',
+        confirmButtonText: '<i class="mdi mdi-check"></i> Yes, Verify',
         cancelButtonText: '<i class="mdi mdi-cancel"></i> Cancel'
     }).then((result) => {
         if (result.isConfirmed) {
@@ -935,7 +935,7 @@ function rejectApplication(applicationId) {
     $('#rejectionModal').modal('show');
 }
 
-function submitRejection() {
+function submitUnverifyion() {
     const form = document.getElementById('rejectionForm');
     const formData = new FormData(form);
     
@@ -1011,16 +1011,16 @@ $('#rejectionModal').on('hidden.bs.modal', function () {
     $('#rejectionForm')[0].reset();
 });
 
-// Approve revised date function
+// Verify revised date function
 function approveRevisedDate(applicationId) {
     Swal.fire({
-        title: 'Approve Revised Date?',
+        title: 'Verify Revised Date?',
         text: 'Are you sure you want to approve this revised replacement class date?',
         icon: 'question',
         showCancelButton: true,
         confirmButtonColor: '#28a745',
         cancelButtonColor: '#6c757d',
-        confirmButtonText: '<i class="mdi mdi-check"></i> Yes, Approve Revised Date',
+        confirmButtonText: '<i class="mdi mdi-check"></i> Yes, Verify Revised Date',
         cancelButtonText: '<i class="mdi mdi-cancel"></i> Cancel'
     }).then((result) => {
         if (result.isConfirmed) {
@@ -1029,12 +1029,12 @@ function approveRevisedDate(applicationId) {
     });
 }
 
-// Reject revised date function
+// Unverify revised date function
 function rejectRevisedDate(applicationId) {
     Swal.fire({
-        title: 'Reject Revised Date',
+        title: 'Unverify Revised Date',
         input: 'textarea',
-        inputLabel: 'Reason for Rejection',
+        inputLabel: 'Reason for Unverifyion',
         inputPlaceholder: 'Please provide a reason for rejecting the revised date...',
         inputAttributes: {
             'aria-label': 'Type your rejection reason here'
@@ -1042,7 +1042,7 @@ function rejectRevisedDate(applicationId) {
         showCancelButton: true,
         confirmButtonColor: '#dc3545',
         cancelButtonColor: '#6c757d',
-        confirmButtonText: '<i class="mdi mdi-close"></i> Reject Revised Date',
+        confirmButtonText: '<i class="mdi mdi-close"></i> Unverify Revised Date',
         cancelButtonText: '<i class="mdi mdi-cancel"></i> Cancel',
         inputValidator: (value) => {
             if (!value) {
