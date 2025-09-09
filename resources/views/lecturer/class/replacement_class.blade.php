@@ -33,9 +33,11 @@
     border-radius: 15px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     margin-bottom: 2rem;
-    overflow: hidden;
+    overflow: visible;
     transition: all 0.3s ease;
     border: 1px solid var(--bs-border-color, #e9ecef);
+    position: relative;
+    z-index: 1;
   }
   
   .dark-skin .form-step {
@@ -167,6 +169,43 @@
 
   .dark-skin .modern-select:focus {
     background: #293146;
+  }
+
+  /* Ensure dropdown options are visible */
+  .modern-form-group {
+    position: relative;
+    z-index: 10;
+  }
+
+  .modern-select {
+    position: relative;
+    z-index: 10;
+  }
+
+  /* Increase z-index for step 1 which contains the main dropdowns */
+  .form-step:first-of-type {
+    z-index: 100;
+  }
+
+  /* Override any bootstrap select styling that might interfere */
+  .bootstrap-select .dropdown-menu {
+    z-index: 1060 !important;
+    max-height: 300px !important;
+    overflow-y: auto !important;
+  }
+
+  /* Ensure parent containers don't clip dropdowns */
+  .content-wrapper,
+  .container-full,
+  .container-fluid {
+    overflow: visible !important;
+  }
+
+  /* Fix for native select dropdowns on mobile/some browsers */
+  select.modern-select {
+    appearance: auto;
+    -webkit-appearance: menulist;
+    -moz-appearance: menulist;
   }
 
   .modern-textarea {
