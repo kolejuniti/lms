@@ -13,6 +13,12 @@ use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
+use Smalot\PdfParser\Parser;
+use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Notification;
+use App\Notifications\MyCustomNotification;
+use App\Models\UserStudent;
 
 class TestController extends Controller
 {
@@ -475,6 +481,30 @@ class TestController extends Controller
             "content" => $updated_content
         ]);
 
+        $allUsers = collect();
+
+        foreach($group as $grp) {
+            $gp = explode('|', $grp);
+
+            $users = UserStudent::join('student_subjek', 'students.ic', '=', 'student_subjek.student_ic')
+                ->where([
+                    ['student_subjek.group_id', $gp[0]],
+                    ['student_subjek.group_name', $gp[1]]
+                ])
+                ->select('students.*')
+                ->get();
+
+            $allUsers = $allUsers->merge($users);
+        }
+
+        $message = "A new online test titled " . $title . " has been created.";
+        $url = url('/student/test/' . $classid . '?session=' . $sessionid);
+        $icon = "fa-puzzle-piece fa-lg";
+        $iconColor = "#8803a0"; // Example: set to a bright orange
+
+        Notification::send($allUsers, new MyCustomNotification($message, $url, $icon, $iconColor));
+
+
         return true;
 
     }
@@ -603,12 +633,12 @@ class TestController extends Controller
                         <td>' . (empty($sts) ? '-' : $sts->status) . '</td>
                         <td>' . (empty($sts) ? '-' : $sts->final_mark) . ' / ' . $qz->total_mark . '</td>
                         <td class="project-actions text-center">
-                            <a class="btn btn-success btn-sm mr-2" href="/lecturer/quiz/' . request()->quiz . '/' . $sts->userid . '/result">
+                            <a class="btn btn-success btn-sm mr-2" href="/lecturer/test/' . request()->test . '/' . $sts->userid . '/result">
                                 <i class="ti-pencil-alt"></i> Answer
                             </a>';
                     if (date('Y-m-d H:i:s') >= $qz->date_from && date('Y-m-d H:i:s') <= $qz->date_to) {
                         $content .= '
-                            <a class="btn btn-danger btn-sm mr-2" onclick="deleteStdQuiz(\'' . $sts->id . '\')">
+                            <a class="btn btn-danger btn-sm mr-2" onclick="deleteStdTest(\'' . $sts->id . '\')">
                                 <i class="ti-trash"></i> Delete
                             </a>';
                     }
@@ -683,7 +713,12 @@ class TestController extends Controller
 
                 if($original_testformdata[$index]->name == "radio-question".$count){
                     $i =0;
-                    $correct_answer = $original_testformdata[$index + 1]->label;
+                    // Get and process correct answer(s) - check if correct answer exists
+                    $correct_answer_raw = '';
+                    if(isset($original_testformdata[$index + 1]) && isset($original_testformdata[$index + 1]->label)){
+                        $correct_answer_raw = $original_testformdata[$index + 1]->label;
+                    }
+                    $correct_answer = !empty($correct_answer_raw) ? $correct_answer_raw : '';
                     $correct_answer = preg_replace('/\s+/', '', $correct_answer );
                     $correct_answer = explode(",", $correct_answer);
                     
@@ -708,7 +743,12 @@ class TestController extends Controller
                 
                 if($original_testformdata[$index]->name == "checkbox-question".$count){
                     $i =0;
-                    $correct_answer = $original_testformdata[$index + 1]->label;
+                    // Get and process correct answer(s) - check if correct answer exists
+                    $correct_answer_raw = '';
+                    if(isset($original_testformdata[$index + 1]) && isset($original_testformdata[$index + 1]->label)){
+                        $correct_answer_raw = $original_testformdata[$index + 1]->label;
+                    }
+                    $correct_answer = !empty($correct_answer_raw) ? $correct_answer_raw : '';
                     $correct_answer = preg_replace('/\s+/', '', $correct_answer );
                     $correct_answer = explode(",", $correct_answer);
                     
@@ -825,6 +865,16 @@ class TestController extends Controller
                 "comments" => $comments,
                 "status" => 3
             ]);
+
+        $message = "Lecturer has marked your test.";
+        $url = url('/student/test/' . $test . '/' . $participant . '/result');
+        $icon = "fa-check fa-lg";
+        $iconColor = "#2b74f3"; // Example: set to a bright orange
+
+        $participant = UserStudent::where('ic', $participant)->first();
+
+        Notification::send($participant, new MyCustomNotification($message, $url, $icon, $iconColor));
+    
         
         return true;
     }
@@ -1175,7 +1225,12 @@ class TestController extends Controller
 
                 if($original_testformdata[$index]->name == "radio-question".$count){
                     $i =0;
-                    $correct_answer = $original_testformdata[$index + 1]->label;
+                    // Get and process correct answer(s) - check if correct answer exists
+                    $correct_answer_raw = '';
+                    if(isset($original_testformdata[$index + 1]) && isset($original_testformdata[$index + 1]->label)){
+                        $correct_answer_raw = $original_testformdata[$index + 1]->label;
+                    }
+                    $correct_answer = !empty($correct_answer_raw) ? $correct_answer_raw : '';
                     $correct_answer = preg_replace('/\s+/', '', $correct_answer );
                     $correct_answer = explode(",", $correct_answer);
                     
@@ -1200,7 +1255,12 @@ class TestController extends Controller
                 
                 if($original_testformdata[$index]->name == "checkbox-question".$count){
                     $i =0;
-                    $correct_answer = $original_testformdata[$index + 1]->label;
+                    // Get and process correct answer(s) - check if correct answer exists
+                    $correct_answer_raw = '';
+                    if(isset($original_testformdata[$index + 1]) && isset($original_testformdata[$index + 1]->label)){
+                        $correct_answer_raw = $original_testformdata[$index + 1]->label;
+                    }
+                    $correct_answer = !empty($correct_answer_raw) ? $correct_answer_raw : '';
                     $correct_answer = preg_replace('/\s+/', '', $correct_answer );
                     $correct_answer = explode(",", $correct_answer);
                     
@@ -1526,6 +1586,32 @@ class TestController extends Controller
 
             }
 
+            $allUsers = collect();
+
+            foreach($request->group as $grp) {
+                $gp = explode('|', $grp);
+
+                $users = UserStudent::join('student_subjek', 'students.ic', '=', 'student_subjek.student_ic')
+                    ->where([
+                        ['student_subjek.group_id', $gp[0]],
+                        ['student_subjek.group_name', $gp[1]]
+                    ])
+                    ->select('students.*')
+                    ->get();
+
+                $allUsers = $allUsers->merge($users);
+            }
+
+            //dd($allUsers);
+
+            $message = "A new offline test titled " . $title . " has been created.";
+            $url = url('/student/test2/' . $classid . '?session=' . $sessionid);
+            $icon = "fa-puzzle-piece fa-lg";
+            $iconColor = "#8803a0"; // Example: set to a bright orange
+
+            Notification::send($allUsers, new MyCustomNotification($message, $url, $icon, $iconColor));
+
+
         }else{
 
             return redirect()->back()->withErrors(['Please fill in the group and sub-chapter checkbox !']);
@@ -1745,6 +1831,11 @@ class TestController extends Controller
        
         $upsert = [];
         foreach($marks as $key => $mrk){
+            $existingMark = DB::table('tblclassstudenttest')
+            ->where('userid', $ics[$key])
+            ->where('testid', $testid)
+            ->value('final_mark');
+
             array_push($upsert, [
             'userid' => $ics[$key],
             'testid' => $testid,
@@ -1752,6 +1843,17 @@ class TestController extends Controller
             'final_mark' => $mrk,
             'status' => 1
             ]);
+
+            if ($mrk != 0 && $mrk != $existingMark) {
+            $message = "Lecturer has marked your offline test.";
+            $url = url('/student/test2/' . $limitpercen->classid . '?session=' . $limitpercen->sessionid);
+            $icon = "fa-check fa-lg";
+            $iconColor = "#2b74f3"; // Example: set to a bright orange
+
+            $participant = UserStudent::where('ic', $ics[$key])->first();
+
+            Notification::send($participant, new MyCustomNotification($message, $url, $icon, $iconColor));
+            }
         }
 
         DB::table('tblclassstudenttest')->upsert($upsert, ['userid', 'testid']);
