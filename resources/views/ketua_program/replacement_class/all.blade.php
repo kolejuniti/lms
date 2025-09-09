@@ -69,8 +69,8 @@
   
   .status-badge {
     padding: 0.5rem 1rem;
-    border-radius: 15px;
-    font-size: 0.85rem;
+    border-radius: 10px;
+    font-size: 0.70rem;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
