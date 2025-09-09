@@ -853,7 +853,7 @@ function viewFullDetails(applicationId) {
                                 <p><strong>New Date:</strong> ${new Date(appData.revised_date).toLocaleDateString()}<br>
                                 <strong>New Time:</strong> ${appData.revised_time}<br>
                                 <strong>New Venue:</strong> ${appData.revised_room_name || 'N/A'}<br>
-                                <strong>Status:</strong> <span class="badge ${appData.revised_status === 'YES' ? 'bg-success' : appData.revised_status === 'NO' ? 'bg-danger' : 'bg-warning'}">${appData.revised_status === 'YES' ? 'Approved' : appData.revised_status === 'NO' ? 'Rejected' : 'Pending Review'}</span></p>
+                                <strong>Status:</strong> <span class="badge ${appData.revised_status === 'YES' ? 'bg-success' : appData.revised_status === 'NO' ? 'bg-danger' : 'bg-warning'}">${appData.revised_status === 'YES' ? 'Verified' : appData.revised_status === 'NO' ? 'Not-Verified' : 'Pending Review'}</span></p>
                                 ${appData.revised_rejection_reason ? `<p><strong>Rejection Reason:</strong> ${appData.revised_rejection_reason}</p>` : ''}
                             </div>
                         </div>

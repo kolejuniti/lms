@@ -82,13 +82,13 @@
     border: 1px solid #ffeaa7;
   }
   
-  .status-approved {
+  .status-verified {
     background: #d4edda;
     color: #155724;
     border: 1px solid #00b894;
   }
   
-  .status-rejected {
+  .status-not-verified {
     background: #f8d7da;
     color: #721c24;
     border: 1px solid #e74c3c;
@@ -505,7 +505,7 @@
                 <span class="stats-number">{{ $applications->where('is_verified', 'YES')->count() }}</span>
                 <div class="stats-label">
                   <i class="mdi mdi-check me-1"></i>
-                  Approved
+                  Verified
                 </div>
               </div>
             </div>
@@ -523,7 +523,7 @@
                 <span class="stats-number">{{ $applications->where('is_verified', 'NO')->count() }}</span>
                 <div class="stats-label">
                   <i class="mdi mdi-close me-1"></i>
-                  Rejected
+                  Not-Verified
                 </div>
               </div>
             </div>
@@ -599,13 +599,13 @@
                       </div>
                     </td>
                     <td>
-                      <span class="status-badge status-{{ strtolower($app->is_verified) === 'pending' ? 'pending' : (strtolower($app->is_verified) === 'yes' ? 'approved' : 'rejected') }}">
+                      <span class="status-badge status-{{ strtolower($app->is_verified) === 'pending' ? 'pending' : (strtolower($app->is_verified) === 'yes' ? 'verified' : 'not-verified') }}">
                         @if(strtolower($app->is_verified) === 'pending')
                           <i class="mdi mdi-clock-outline me-1"></i>Pending
                         @elseif(strtolower($app->is_verified) === 'yes')
-                          <i class="mdi mdi-check me-1"></i>Approved
+                          <i class="mdi mdi-check me-1"></i>Verified
                         @else
-                          <i class="mdi mdi-close me-1"></i>Rejected
+                          <i class="mdi mdi-close me-1"></i>Not-Verified
                         @endif
                       </span>
                     </td>
@@ -675,13 +675,13 @@
             <div class="mobile-app-card">
               <div class="mobile-app-header">
                 <div class="mobile-app-id">#{{ $app->id }}</div>
-                <span class="status-badge status-{{ strtolower($app->is_verified) === 'pending' ? 'pending' : (strtolower($app->is_verified) === 'yes' ? 'approved' : 'rejected') }}">
+                <span class="status-badge status-{{ strtolower($app->is_verified) === 'pending' ? 'pending' : (strtolower($app->is_verified) === 'yes' ? 'verified' : 'not-verified') }}">
                   @if(strtolower($app->is_verified) === 'pending')
                     <i class="mdi mdi-clock-outline me-1"></i>Pending
                   @elseif(strtolower($app->is_verified) === 'yes')
-                    <i class="mdi mdi-check me-1"></i>Approved
+                    <i class="mdi mdi-check me-1"></i>Verified
                   @else
-                    <i class="mdi mdi-close me-1"></i>Rejected
+                    <i class="mdi mdi-close me-1"></i>Not-Verified
                   @endif
                 </span>
               </div>
@@ -868,7 +868,7 @@ function viewFullDetails(applicationId) {
                         </div>
                     ` : appData.is_verified === 'YES' ? `
                         <div class="alert alert-success text-start">
-                            <p><strong><i class="mdi mdi-check-circle me-1"></i>Status:</strong> Application Approved</p>
+                            <p><strong><i class="mdi mdi-check-circle me-1"></i>Status:</strong> Application Verified</p>
                         </div>
                     ` : ''}
                 </div>
@@ -896,7 +896,7 @@ function viewFullDetails(applicationId) {
                         
                         <h6><i class="mdi mdi-flag me-1"></i>Current Status</h6>
                         <p><span class="badge ${appData.is_verified === 'YES' ? 'bg-success' : appData.is_verified === 'NO' ? 'bg-danger' : 'bg-warning'} fs-6">
-                            ${appData.is_verified === 'YES' ? 'Approved' : appData.is_verified === 'NO' ? 'Rejected' : 'Pending Review'}
+                            ${appData.is_verified === 'YES' ? 'Verified' : appData.is_verified === 'NO' ? 'Not-Verified' : 'Pending Review'}
                         </span></p>
                     </div>
                 </div>
@@ -923,7 +923,7 @@ function viewFullDetails(applicationId) {
                                 <p><strong>New Date:</strong> ${new Date(appData.revised_date).toLocaleDateString()}<br>
                                 <strong>New Time:</strong> ${appData.revised_time}<br>
                                 <strong>New Venue:</strong> ${appData.revised_room_name || 'N/A'}<br>
-                                <strong>Status:</strong> <span class="badge ${appData.revised_status === 'YES' ? 'bg-success' : appData.revised_status === 'NO' ? 'bg-danger' : 'bg-warning'}">${appData.revised_status === 'YES' ? 'Approved' : appData.revised_status === 'NO' ? 'Rejected' : 'Pending Review'}</span></p>
+                                <strong>Status:</strong> <span class="badge ${appData.revised_status === 'YES' ? 'bg-success' : appData.revised_status === 'NO' ? 'bg-danger' : 'bg-warning'}">${appData.revised_status === 'YES' ? 'Verified' : appData.revised_status === 'NO' ? 'Not-Verified' : 'Pending Review'}</span></p>
                                 ${appData.revised_rejection_reason ? `<p><strong>Rejection Reason:</strong> ${appData.revised_rejection_reason}</p>` : ''}
                             </div>
                         </div>
