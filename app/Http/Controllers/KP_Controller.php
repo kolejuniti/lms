@@ -1513,7 +1513,12 @@ $content .= '<tr>
 
     private function getReplacementApplicationsForKP($programs, $status = null, $revisedStatus = null)
     {
-        $query = DB::table('replacement_class')
+        $user = Auth::user();
+
+        if($user->usrtype == 'PL')
+        {
+
+            $query = DB::table('replacement_class')
             ->join('user_subjek', 'replacement_class.user_subjek_id', '=', 'user_subjek.id')
             ->join('subjek', 'user_subjek.course_id', '=', 'subjek.sub_id')
             ->join('subjek_structure', 'subjek.sub_id', '=', 'subjek_structure.courseID')
@@ -1523,6 +1528,43 @@ $content .= '<tr>
             ->leftJoin('tbllecture_room as revised_room', 'replacement_class.revised_room_id', '=', 'revised_room.id')
             ->leftJoin('users as kp_user', 'replacement_class.kp_ic', '=', 'kp_user.ic')
             ->whereIn('subjek_structure.program_id', $programs);
+            
+        }elseif($user->usrtype == 'AO')
+        {
+            
+            $query = DB::table('replacement_class')
+            ->join('user_subjek', 'replacement_class.user_subjek_id', '=', 'user_subjek.id')
+            ->join('subjek', 'user_subjek.course_id', '=', 'subjek.sub_id')
+            ->join('subjek_structure', 'subjek.sub_id', '=', 'subjek_structure.courseID')
+            ->join('users', 'user_subjek.user_ic', '=', 'users.ic')
+            ->join('sessions', 'user_subjek.session_id', '=', 'sessions.SessionID')
+            ->leftJoin('tbllecture_room', 'replacement_class.lecture_room_id', '=', 'tbllecture_room.id')
+            ->leftJoin('tbllecture_room as revised_room', 'replacement_class.revised_room_id', '=', 'revised_room.id')
+            ->leftJoin('users as kp_user', 'replacement_class.kp_ic', '=', 'kp_user.ic')
+            ->where('users.usrtype', 'KP');
+            
+        }elseif($user->usrtype == 'DN')
+        {
+
+            $query = DB::table('replacement_class')
+            ->join('user_subjek', 'replacement_class.user_subjek_id', '=', 'user_subjek.id')
+            ->join('subjek', 'user_subjek.course_id', '=', 'subjek.sub_id')
+            ->join('subjek_structure', 'subjek.sub_id', '=', 'subjek_structure.courseID')
+            ->join('users', 'user_subjek.user_ic', '=', 'users.ic')
+            ->join('sessions', 'user_subjek.session_id', '=', 'sessions.SessionID')
+            ->leftJoin('tbllecture_room', 'replacement_class.lecture_room_id', '=', 'tbllecture_room.id')
+            ->leftJoin('tbllecture_room as revised_room', 'replacement_class.revised_room_id', '=', 'revised_room.id')
+            ->leftJoin('users as kp_user', 'replacement_class.kp_ic', '=', 'kp_user.ic')
+            ->where('users.usrtype', 'AO');
+
+        } else {
+            return response()->json(['error' => 'Unauthorized user type.'], 403);
+        }
+
+        if (!$query) {
+            return response()->json(['error' => 'You do not have permission to view this application.'], 403);
+        }
+        
 
         if ($status) {
             $query->where('replacement_class.is_verified', $status);
