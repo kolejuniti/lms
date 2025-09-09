@@ -543,7 +543,7 @@
                     <th width="10%">Student Rep</th>
                     <th width="8%">Status</th>
                     <th width="8%">Submitted</th>
-                    <th width="14%">Verification</th>
+                    <th width="14%">Verified By</th>
                     <th width="14%">Details</th>
                   </tr>
                 </thead>
