@@ -681,7 +681,7 @@
   </div>
 </div>
 
-<!-- Unverifyion Modal -->
+<!-- Unverification Modal -->
 <div class="modal fade" id="rejectionModal" tabindex="-1" aria-labelledby="rejectionModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
@@ -693,14 +693,14 @@
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <form id="rejectionForm" onsubmit="event.preventDefault(); submitUnverifyion();">
+        <form id="rejectionForm" onsubmit="event.preventDefault(); submitUnverification();">
           <input type="hidden" id="rejectionApplicationId" name="application_id">
           <input type="hidden" name="status" value="NO">
           
           <div class="mb-3">
             <label for="rejectionReason" class="form-label">
               <i class="mdi mdi-comment-text me-1"></i>
-              Reason for Unverifyion <span class="text-danger">*</span>
+              Reason for Unverification <span class="text-danger">*</span>
             </label>
             <textarea class="form-control" id="rejectionReason" name="rejection_reason" rows="4" 
                       placeholder="Please provide a detailed reason for rejecting this application..." required></textarea>
@@ -713,7 +713,7 @@
           <i class="mdi mdi-cancel me-1"></i>
           Cancel
         </button>
-        <button type="button" class="btn btn-danger" onclick="submitUnverifyion()">
+        <button type="button" class="btn btn-danger" onclick="submitUnverification()">
           <i class="mdi mdi-close me-1"></i>
           Unverify Application
         </button>
@@ -854,7 +854,7 @@ function viewFullDetails(applicationId) {
                                 <strong>New Time:</strong> ${appData.revised_time}<br>
                                 <strong>New Venue:</strong> ${appData.revised_room_name || 'N/A'}<br>
                                 <strong>Status:</strong> <span class="badge ${appData.revised_status === 'YES' ? 'bg-success' : appData.revised_status === 'NO' ? 'bg-danger' : 'bg-warning'}">${appData.revised_status === 'YES' ? 'Verified' : appData.revised_status === 'NO' ? 'Not-Verified' : 'Pending Review'}</span></p>
-                                ${appData.revised_rejection_reason ? `<p><strong>Unverifyion Reason:</strong> ${appData.revised_rejection_reason}</p>` : ''}
+                                ${appData.revised_rejection_reason ? `<p><strong>Unverification Reason:</strong> ${appData.revised_rejection_reason}</p>` : ''}
                             </div>
                         </div>
                     </div>
@@ -935,7 +935,7 @@ function rejectApplication(applicationId) {
     $('#rejectionModal').modal('show');
 }
 
-function submitUnverifyion() {
+function submitUnverification() {
     const form = document.getElementById('rejectionForm');
     const formData = new FormData(form);
     
@@ -1034,7 +1034,7 @@ function rejectRevisedDate(applicationId) {
     Swal.fire({
         title: 'Unverify Revised Date',
         input: 'textarea',
-        inputLabel: 'Reason for Unverifyion',
+        inputLabel: 'Reason for Unverification',
         inputPlaceholder: 'Please provide a reason for rejecting the revised date...',
         inputAttributes: {
             'aria-label': 'Type your rejection reason here'
