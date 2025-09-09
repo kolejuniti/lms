@@ -916,7 +916,7 @@ function viewAdditionalInfo(applicationId, info) {
 function approveApplication(applicationId) {
     Swal.fire({
         title: 'Verify Application?',
-        text: 'Are you sure you want to approve this replacement class application?',
+        text: 'Are you sure you want to verify this replacement class application?',
         icon: 'question',
         showCancelButton: true,
         confirmButtonColor: '#28a745',
@@ -1015,7 +1015,7 @@ $('#rejectionModal').on('hidden.bs.modal', function () {
 function approveRevisedDate(applicationId) {
     Swal.fire({
         title: 'Verify Revised Date?',
-        text: 'Are you sure you want to approve this revised replacement class date?',
+        text: 'Are you sure you want to verify this revised replacement class date?',
         icon: 'question',
         showCancelButton: true,
         confirmButtonColor: '#28a745',
