@@ -597,6 +597,7 @@
 
 <script>
 $(document).ready(function() {
+  alert('{{ Auth::user()->usrtype }}');
     // Initialize DataTable
     $('#applications-table').DataTable({
         "responsive": true,
