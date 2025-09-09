@@ -122,6 +122,7 @@ Route::post('/KP/assign/submitMeetingHour', [App\Http\Controllers\KP_Controller:
 Route::get('/KP/replacement_class/pending', [App\Http\Controllers\KP_Controller::class, 'replacementClassPending'])->name('kp.replacement_class.pending');
 Route::get('/KP/replacement_class/all', [App\Http\Controllers\KP_Controller::class, 'replacementClassAll'])->name('kp.replacement_class.all');
 Route::post('/KP/replacement_class/update_status', [App\Http\Controllers\KP_Controller::class, 'updateReplacementClassStatus'])->name('kp.replacement_class.update_status');
+Route::post('/KP/replacement_class/update_revised_status', [App\Http\Controllers\KP_Controller::class, 'updateRevisedDateStatus'])->name('kp.replacement_class.update_revised_status');
 
 Route::get('/AO', [App\Http\Controllers\AO_Controller::class, 'index'])->name('pegawai_takbir');
 
@@ -398,6 +399,8 @@ Route::post('/lecturer/class/replacement_class/getStudentProgram', [App\Http\Con
 Route::post('/lecturer/class/replacement_class/getWakilPelajar', [App\Http\Controllers\LecturerController::class, 'replacementClassGetWakilPelajar']);
 Route::get('/lecturer/class/replacement_class/getLectureRooms', [App\Http\Controllers\LecturerController::class, 'replacementClassGetLectureRooms']);
 Route::post('/lecturer/class/replacement_class/store', [App\Http\Controllers\LecturerController::class, 'storeReplacementClass'])->name('lecturer.replacement_class.store');
+Route::get('/lecturer/class/replacement_class/getRooms', [App\Http\Controllers\LecturerController::class, 'getLectureRooms'])->name('lecturer.replacement_class.getLectureRooms');
+Route::post('/lecturer/replacement_class/suggest_date', [App\Http\Controllers\LecturerController::class, 'suggestRevisedDate'])->name('lecturer.replacement_class.suggest_date');
 
 Route::post('/update-data', [App\Http\Controllers\LecturerController::class, 'autoudateData']);
 

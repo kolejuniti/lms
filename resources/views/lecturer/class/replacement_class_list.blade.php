@@ -345,6 +345,88 @@
     background-color: #667eea;
     border-color: #667eea;
   }
+
+  /* Mobile Responsive Styles */
+  @media (max-width: 768px) {
+    .applications-table {
+      display: none;
+    }
+    
+    .mobile-applications {
+      display: block;
+    }
+    
+    .mobile-app-card {
+      background: #ffffff;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      margin-bottom: 1.5rem;
+      padding: 1.5rem;
+      border: 1px solid #e9ecef;
+    }
+    
+    .mobile-app-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #e9ecef;
+    }
+    
+    .mobile-app-id {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #667eea;
+    }
+    
+    .mobile-status-section {
+      text-align: right;
+      flex-shrink: 0;
+    }
+    
+    .mobile-info-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+      padding: 0.5rem 0;
+    }
+    
+    .mobile-info-label {
+      font-weight: 600;
+      color: #495057;
+      font-size: 0.9rem;
+    }
+    
+    .mobile-info-value {
+      color: #6c757d;
+      font-size: 0.9rem;
+      text-align: right;
+      flex: 1;
+      margin-left: 1rem;
+    }
+    
+    .mobile-actions {
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid #e9ecef;
+      text-align: center;
+    }
+    
+    .page-header .me-auto {
+      margin-bottom: 1rem;
+    }
+    
+    .page-header .ms-auto {
+      margin-left: 0 !important;
+    }
+  }
+  
+  @media (min-width: 769px) {
+    .mobile-applications {
+      display: none;
+    }
+  }
 </style>
 
 
@@ -442,11 +524,20 @@
                     <div class="reason-info">{{ Str::limit($app->sebab_kuliah_dibatalkan, 40) }}</div>
                   </td>
                   <td>
-                    <div class="date-info">{{ \Carbon\Carbon::parse($app->maklumat_kuliah_gantian_tarikh)->format('d M Y') }}</div>
-                    <div class="reason-info">
-                      {{ $app->maklumat_kuliah_gantian_hari_masa }}<br>
-                      <i class="mdi mdi-map-marker me-1"></i>{{ $app->room_name }}
-                    </div>
+                    @if($app->revised_date && $app->revised_status === 'YES')
+                      <div class="badge bg-success mb-1">Final: Revised Date</div>
+                      <div class="date-info">{{ \Carbon\Carbon::parse($app->revised_date)->format('d M Y') }}</div>
+                      <div class="reason-info">
+                        {{ $app->revised_time }}<br>
+                        <i class="mdi mdi-map-marker me-1"></i>{{ $app->revised_room_name ?? 'Room N/A' }}
+                      </div>
+                    @else
+                      <div class="date-info">{{ \Carbon\Carbon::parse($app->maklumat_kuliah_gantian_tarikh)->format('d M Y') }}</div>
+                      <div class="reason-info">
+                        {{ $app->maklumat_kuliah_gantian_hari_masa }}<br>
+                        <i class="mdi mdi-map-marker me-1"></i>{{ $app->room_name }}
+                      </div>
+                    @endif
                   </td>
                   <td>
                     <div class="student-info">{{ $app->student_name }}</div>
@@ -464,6 +555,27 @@
                         <i class="mdi mdi-close me-1"></i>Rejected
                       @endif
                     </span>
+                    @if(strtolower($app->is_verified) === 'no' && !$app->revised_date)
+                      <div class="mt-1">
+                        <button class="btn btn-sm btn-warning" 
+                                onclick="suggestNewDate({{ $app->id }})" 
+                                title="Suggest New Date">
+                          <i class="mdi mdi-calendar-plus me-1"></i>Suggest New Date
+                        </button>
+                      </div>
+                    @elseif($app->revised_date)
+                      <div class="mt-1">
+                        <span class="badge bg-info">
+                          @if($app->revised_status === 'PENDING')
+                            <i class="mdi mdi-clock me-1"></i>Revised Date Pending
+                          @elseif($app->revised_status === 'YES')
+                            <i class="mdi mdi-check me-1"></i>Revised Date Approved
+                          @else
+                            <i class="mdi mdi-close me-1"></i>Revised Date Rejected
+                          @endif
+                        </span>
+                      </div>
+                    @endif
                   </td>
                   <td>
                     <div class="date-info">{{ \Carbon\Carbon::parse($app->created_at)->format('d M Y') }}</div>
@@ -483,9 +595,183 @@
             </table>
           </div>
         </div>
+        
+        <!-- Mobile Applications View -->
+        <div class="mobile-applications">
+          @foreach($applications as $key => $app)
+          <div class="mobile-app-card">
+            <div class="mobile-app-header">
+              <div class="mobile-app-id">#{{ $app->id }}</div>
+              <div class="mobile-status-section">
+                <span class="status-badge status-{{ strtolower($app->is_verified) === 'pending' ? 'pending' : (strtolower($app->is_verified) === 'yes' ? 'approved' : 'rejected') }}">
+                  @if(strtolower($app->is_verified) === 'pending')
+                    <i class="mdi mdi-clock-outline me-1"></i>Pending
+                  @elseif(strtolower($app->is_verified) === 'yes')
+                    <i class="mdi mdi-check me-1"></i>Approved
+                  @else
+                    <i class="mdi mdi-close me-1"></i>Rejected
+                  @endif
+                </span>
+                @if(strtolower($app->is_verified) === 'no' && !$app->revised_date)
+                  <div class="mt-1">
+                    <button class="btn btn-sm btn-warning" 
+                            onclick="suggestNewDate({{ $app->id }})" 
+                            title="Suggest New Date">
+                      <i class="mdi mdi-calendar-plus me-1"></i>Suggest New Date
+                    </button>
+                  </div>
+                @elseif($app->revised_date)
+                  <div class="mt-1">
+                    <span class="badge bg-info">
+                      @if($app->revised_status === 'PENDING')
+                        <i class="mdi mdi-clock me-1"></i>Revised Date Pending
+                      @elseif($app->revised_status === 'YES')
+                        <i class="mdi mdi-check me-1"></i>Revised Date Approved
+                      @else
+                        <i class="mdi mdi-close me-1"></i>Revised Date Rejected
+                      @endif
+                    </span>
+                  </div>
+                @endif
+              </div>
+            </div>
+            
+            <div class="mobile-info-row">
+              <div class="mobile-info-label">Course:</div>
+              <div class="mobile-info-value">{{ $app->course_code }}</div>
+            </div>
+            
+            <div class="mobile-info-row">
+              <div class="mobile-info-label">Group:</div>
+              <div class="mobile-info-value">{{ $app->group_name }}</div>
+            </div>
+            
+            <div class="mobile-info-row">
+              <div class="mobile-info-label">Programs:</div>
+              <div class="mobile-info-value">
+                @foreach($app->programs as $program)
+                  <span class="compact-program-badge">{{ $program->progcode }}</span>
+                @endforeach
+              </div>
+            </div>
+            
+            <div class="mobile-info-row">
+              <div class="mobile-info-label">Cancelled Date:</div>
+              <div class="mobile-info-value">{{ \Carbon\Carbon::parse($app->tarikh_kuliah_dibatalkan)->format('d M Y') }}</div>
+            </div>
+            
+            <div class="mobile-info-row">
+              <div class="mobile-info-label">Replacement Date:</div>
+              <div class="mobile-info-value">
+                @if($app->revised_date && $app->revised_status === 'YES')
+                  <div class="badge bg-success mb-1">Final: Revised Date</div>
+                  {{ \Carbon\Carbon::parse($app->revised_date)->format('d M Y') }}
+                @else
+                  {{ \Carbon\Carbon::parse($app->maklumat_kuliah_gantian_tarikh)->format('d M Y') }}
+                @endif
+              </div>
+            </div>
+            
+            <div class="mobile-info-row">
+              <div class="mobile-info-label">Student Rep:</div>
+              <div class="mobile-info-value">{{ $app->student_name }}</div>
+            </div>
+            
+            <div class="mobile-info-row">
+              <div class="mobile-info-label">Contact:</div>
+              <div class="mobile-info-value">{{ $app->wakil_pelajar_no_tel }}</div>
+            </div>
+            
+            <div class="mobile-info-row">
+              <div class="mobile-info-label">Submitted:</div>
+              <div class="mobile-info-value">{{ \Carbon\Carbon::parse($app->created_at)->format('d M Y') }}</div>
+            </div>
+            
+            <div class="mobile-actions">
+              <button class="btn btn-sm btn-outline-primary" 
+                      onclick="viewDetails({{ $app->id }})" 
+                      data-app='@json($app)'
+                      title="View Details">
+                <i class="mdi mdi-eye me-1"></i>View Details
+              </button>
+            </div>
+          </div>
+          @endforeach
+        </div>
         @endif
       </div>
     </section>
+  </div>
+</div>
+
+<!-- Suggest New Date Modal -->
+<div class="modal fade" id="suggestDateModal" tabindex="-1" aria-labelledby="suggestDateModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header" style="background: linear-gradient(45deg, #ff9500, #ff6b35); color: white;">
+        <h5 class="modal-title" id="suggestDateModalLabel">
+          <i class="mdi mdi-calendar-plus me-2"></i>
+          Suggest New Replacement Date
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="suggestDateForm">
+          <input type="hidden" id="suggestApplicationId" name="application_id">
+          
+          <div class="row">
+            <div class="col-md-4">
+              <div class="mb-3">
+                <label for="revisedDate" class="form-label">
+                  <i class="mdi mdi-calendar me-1"></i>
+                  New Replacement Date <span class="text-danger">*</span>
+                </label>
+                <input type="date" class="form-control" id="revisedDate" name="revised_date" 
+                       min="{{ date('Y-m-d', strtotime('+1 day')) }}" required>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="mb-3">
+                <label for="revisedTime" class="form-label">
+                  <i class="mdi mdi-clock me-1"></i>
+                  Time <span class="text-danger">*</span>
+                </label>
+                <input type="text" class="form-control" id="revisedTime" name="revised_time" 
+                       placeholder="e.g., Monday, 2:00 PM - 4:00 PM" required>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="mb-3">
+                <label for="revisedRoom" class="form-label">
+                  <i class="mdi mdi-map-marker me-1"></i>
+                  Venue <span class="text-danger">*</span>
+                </label>
+                <select class="form-control" id="revisedRoom" name="revised_room_id" required>
+                  <option value="" disabled selected>Choose a room...</option>
+                  <!-- Rooms will be loaded via AJAX -->
+                </select>
+              </div>
+            </div>
+          </div>
+          
+          <div class="alert alert-info">
+            <i class="mdi mdi-information me-2"></i>
+            <strong>Note:</strong> Your suggested new date will be sent for approval by the program coordinator. 
+            You will be notified once the decision is made.
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          <i class="mdi mdi-cancel me-1"></i>
+          Cancel
+        </button>
+        <button type="button" class="btn btn-warning" onclick="submitSuggestedDate()">
+          <i class="mdi mdi-send me-1"></i>
+          Submit Suggestion
+        </button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -625,12 +911,27 @@ $(document).ready(function() {
                             <strong>Reason:</strong> ${appData.sebab_kuliah_dibatalkan}</p>
                         </div>
                         <div class="col-md-6">
-                            <h6><i class="mdi mdi-calendar-plus me-1"></i>Replacement Class</h6>
+                            <h6><i class="mdi mdi-calendar-plus me-1"></i>Original Replacement Class</h6>
                             <p><strong>Date:</strong> ${new Date(appData.maklumat_kuliah_gantian_tarikh).toLocaleDateString()}<br>
                             <strong>Time:</strong> ${appData.maklumat_kuliah_gantian_hari_masa}<br>
                             <strong>Venue:</strong> ${appData.room_name}</p>
                         </div>
                     </div>
+                    
+                    ${appData.revised_date ? `
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <h6><i class="mdi mdi-calendar-edit me-1"></i>Revised Replacement Class</h6>
+                                <div class="alert alert-warning">
+                                    <p><strong>New Date:</strong> ${new Date(appData.revised_date).toLocaleDateString()}<br>
+                                    <strong>New Time:</strong> ${appData.revised_time}<br>
+                                    <strong>New Venue:</strong> ${appData.revised_room_name || 'N/A'}<br>
+                                    <strong>Status:</strong> <span class="badge ${appData.revised_status === 'YES' ? 'bg-success' : appData.revised_status === 'NO' ? 'bg-danger' : 'bg-warning'}">${appData.revised_status === 'YES' ? 'Approved' : appData.revised_status === 'NO' ? 'Rejected' : 'Pending Review'}</span></p>
+                                    ${appData.revised_rejection_reason ? `<p><strong>Rejection Reason:</strong> ${appData.revised_rejection_reason}</p>` : ''}
+                                </div>
+                            </div>
+                        </div>
+                    ` : ''}
                     
                     ${appData.maklumat_kuliah ? `
                         <div class="mb-3">
@@ -655,6 +956,89 @@ $(document).ready(function() {
             }
         });
     };
+    
+    // Suggest new date function
+    window.suggestNewDate = function(applicationId) {
+        $('#suggestApplicationId').val(applicationId);
+        
+        // Load lecture rooms
+        $.ajax({
+            url: '{{ route("lecturer.replacement_class.getLectureRooms") }}',
+            method: 'GET',
+            success: function(data) {
+                $('#revisedRoom').html(data);
+            },
+            error: function() {
+                console.error('Failed to load lecture rooms');
+            }
+        });
+        
+        $('#suggestDateModal').modal('show');
+    };
+    
+    // Submit suggested date function
+    window.submitSuggestedDate = function() {
+        const form = document.getElementById('suggestDateForm');
+        const formData = new FormData(form);
+        
+        // Validate required fields
+        if (!formData.get('revised_date') || !formData.get('revised_time') || !formData.get('revised_room_id')) {
+            Swal.fire({
+                title: 'Validation Error',
+                text: 'Please fill in all required fields.',
+                icon: 'error'
+            });
+            return;
+        }
+        
+        // Submit the suggestion
+        $.ajax({
+            url: '{{ route("lecturer.replacement_class.suggest_date") }}',
+            method: 'POST',
+            data: {
+                application_id: formData.get('application_id'),
+                revised_date: formData.get('revised_date'),
+                revised_time: formData.get('revised_time'),
+                revised_room_id: formData.get('revised_room_id'),
+                _token: '{{ csrf_token() }}'
+            },
+            success: function(response) {
+                if (response.success) {
+                    $('#suggestDateModal').modal('hide');
+                    Swal.fire({
+                        title: 'Success!',
+                        text: response.message,
+                        icon: 'success',
+                        timer: 2000,
+                        showConfirmButton: false
+                    }).then(() => {
+                        location.reload();
+                    });
+                }
+            },
+            error: function(xhr) {
+                $('#suggestDateModal').modal('hide');
+                let errorMessage = 'An error occurred while submitting the suggestion.';
+                
+                if (xhr.responseJSON && xhr.responseJSON.error) {
+                    errorMessage = xhr.responseJSON.error;
+                } else if (xhr.responseJSON && xhr.responseJSON.errors) {
+                    errorMessage = Object.values(xhr.responseJSON.errors).flat().join('\n');
+                }
+                
+                Swal.fire({
+                    title: 'Error!',
+                    text: errorMessage,
+                    icon: 'error'
+                });
+            }
+        });
+    };
+    
+    // Clear form when modal is hidden
+    $('#suggestDateModal').on('hidden.bs.modal', function () {
+        $('#suggestDateForm')[0].reset();
+    });
 });
 </script>
 @endsection

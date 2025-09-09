@@ -353,6 +353,83 @@
     border-color: #667eea;
   }
 
+  /* Mobile Responsive Styles */
+  @media (max-width: 768px) {
+    .applications-table {
+      display: none;
+    }
+    
+    .mobile-applications {
+      display: block;
+    }
+    
+    .mobile-app-card {
+      background: #ffffff;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      margin-bottom: 1.5rem;
+      padding: 1.5rem;
+      border: 1px solid #e9ecef;
+    }
+    
+    .mobile-app-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #e9ecef;
+    }
+    
+    .mobile-app-id {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #667eea;
+    }
+    
+    .mobile-info-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+      padding: 0.5rem 0;
+    }
+    
+    .mobile-info-label {
+      font-weight: 600;
+      color: #495057;
+      font-size: 0.9rem;
+    }
+    
+    .mobile-info-value {
+      color: #6c757d;
+      font-size: 0.9rem;
+      text-align: right;
+      flex: 1;
+      margin-left: 1rem;
+    }
+    
+    .mobile-actions {
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid #e9ecef;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: center;
+    }
+    
+    .mobile-actions .btn {
+      flex: 1;
+      min-width: 120px;
+    }
+  }
+  
+  @media (min-width: 769px) {
+    .mobile-applications {
+      display: none;
+    }
+  }
+
 
 </style>
 
@@ -452,11 +529,20 @@
                       <div class="reason-info">{{ Str::limit($app->sebab_kuliah_dibatalkan, 35) }}</div>
                     </td>
                     <td>
-                      <div class="date-info">{{ \Carbon\Carbon::parse($app->maklumat_kuliah_gantian_tarikh)->format('d M Y') }}</div>
-                      <div class="reason-info">
-                        {{ $app->maklumat_kuliah_gantian_hari_masa }}<br>
-                        <i class="mdi mdi-map-marker me-1"></i>{{ $app->room_name }}
-                      </div>
+                      @if($app->revised_date && $app->revised_status === 'PENDING')
+                        <div class="badge bg-warning mb-1">Revised Date Pending</div>
+                        <div class="date-info">{{ \Carbon\Carbon::parse($app->revised_date)->format('d M Y') }}</div>
+                        <div class="reason-info">
+                          {{ $app->revised_time }}<br>
+                          <i class="mdi mdi-map-marker me-1"></i>{{ $app->revised_room_name ?? 'Room N/A' }}
+                        </div>
+                      @else
+                        <div class="date-info">{{ \Carbon\Carbon::parse($app->maklumat_kuliah_gantian_tarikh)->format('d M Y') }}</div>
+                        <div class="reason-info">
+                          {{ $app->maklumat_kuliah_gantian_hari_masa }}<br>
+                          <i class="mdi mdi-map-marker me-1"></i>{{ $app->room_name }}
+                        </div>
+                      @endif
                     </td>
                     <td>
                       <div class="student-info">{{ $app->wakil_pelajar_nama }}</div>
@@ -469,16 +555,29 @@
                       <div class="reason-info">{{ \Carbon\Carbon::parse($app->created_at)->format('g:i A') }}</div>
                     </td>
                     <td>
-                      <div class="action-buttons-compact">
-                        <button type="button" class="btn btn-success btn-action-sm" onclick="approveApplication({{ $app->id }})" title="Approve">
-                          <i class="mdi mdi-check me-1"></i>
-                          Approve
-                        </button>
-                        <button type="button" class="btn btn-danger btn-action-sm" onclick="rejectApplication({{ $app->id }})" title="Reject">
-                          <i class="mdi mdi-close me-1"></i>
-                          Reject
-                        </button>
-                      </div>
+                      @if($app->revised_date && $app->revised_status === 'PENDING')
+                        <div class="action-buttons-compact">
+                          <button type="button" class="btn btn-success btn-action-sm" onclick="approveRevisedDate({{ $app->id }})" title="Approve Revised Date">
+                            <i class="mdi mdi-check me-1"></i>
+                            Approve Revised
+                          </button>
+                          <button type="button" class="btn btn-danger btn-action-sm" onclick="rejectRevisedDate({{ $app->id }})" title="Reject Revised Date">
+                            <i class="mdi mdi-close me-1"></i>
+                            Reject Revised
+                          </button>
+                        </div>
+                      @else
+                        <div class="action-buttons-compact">
+                          <button type="button" class="btn btn-success btn-action-sm" onclick="approveApplication({{ $app->id }})" title="Approve">
+                            <i class="mdi mdi-check me-1"></i>
+                            Approve
+                          </button>
+                          <button type="button" class="btn btn-danger btn-action-sm" onclick="rejectApplication({{ $app->id }})" title="Reject">
+                            <i class="mdi mdi-close me-1"></i>
+                            Reject
+                          </button>
+                        </div>
+                      @endif
                       <button type="button" class="btn btn-outline-info btn-action-sm" 
                               onclick="viewFullDetails({{ $app->id }})" 
                               data-app='@json($app)'
@@ -491,6 +590,90 @@
                 </tbody>
               </table>
             </div>
+          </div>
+          
+          <!-- Mobile Applications View -->
+          <div class="mobile-applications">
+            @foreach($applications as $key => $app)
+            <div class="mobile-app-card">
+              <div class="mobile-app-header">
+                <div class="mobile-app-id">#{{ $app->id }}</div>
+                <span class="badge bg-warning">
+                  @if($app->revised_date && $app->revised_status === 'PENDING')
+                    <i class="mdi mdi-clock me-1"></i>Revised Date Pending
+                  @else
+                    <i class="mdi mdi-clock me-1"></i>Pending Review
+                  @endif
+                </span>
+              </div>
+              
+              <div class="mobile-info-row">
+                <div class="mobile-info-label">Lecturer:</div>
+                <div class="mobile-info-value">{{ $app->lecturer_name }}</div>
+              </div>
+              
+              <div class="mobile-info-row">
+                <div class="mobile-info-label">Course:</div>
+                <div class="mobile-info-value">{{ $app->course_code }}</div>
+              </div>
+              
+              <div class="mobile-info-row">
+                <div class="mobile-info-label">Group:</div>
+                <div class="mobile-info-value">{{ $app->group_name }}</div>
+              </div>
+              
+              <div class="mobile-info-row">
+                <div class="mobile-info-label">Cancelled Date:</div>
+                <div class="mobile-info-value">{{ \Carbon\Carbon::parse($app->tarikh_kuliah_dibatalkan)->format('d M Y') }}</div>
+              </div>
+              
+              <div class="mobile-info-row">
+                <div class="mobile-info-label">Replacement Date:</div>
+                <div class="mobile-info-value">
+                  @if($app->revised_date && $app->revised_status === 'PENDING')
+                    <div class="badge bg-warning mb-1">Revised Date</div>
+                    {{ \Carbon\Carbon::parse($app->revised_date)->format('d M Y') }}
+                  @else
+                    {{ \Carbon\Carbon::parse($app->maklumat_kuliah_gantian_tarikh)->format('d M Y') }}
+                  @endif
+                </div>
+              </div>
+              
+              <div class="mobile-info-row">
+                <div class="mobile-info-label">Student Rep:</div>
+                <div class="mobile-info-value">{{ $app->wakil_pelajar_nama }}</div>
+              </div>
+              
+              <div class="mobile-info-row">
+                <div class="mobile-info-label">Submitted:</div>
+                <div class="mobile-info-value">{{ \Carbon\Carbon::parse($app->created_at)->format('d M Y') }}</div>
+              </div>
+              
+              <div class="mobile-actions">
+                @if($app->revised_date && $app->revised_status === 'PENDING')
+                  <button type="button" class="btn btn-success btn-sm" onclick="approveRevisedDate({{ $app->id }})" title="Approve Revised Date">
+                    <i class="mdi mdi-check me-1"></i>Approve Revised
+                  </button>
+                  <button type="button" class="btn btn-danger btn-sm" onclick="rejectRevisedDate({{ $app->id }})" title="Reject Revised Date">
+                    <i class="mdi mdi-close me-1"></i>Reject Revised
+                  </button>
+                @else
+                  <button type="button" class="btn btn-success btn-sm" onclick="approveApplication({{ $app->id }})" title="Approve">
+                    <i class="mdi mdi-check me-1"></i>Approve
+                  </button>
+                  <button type="button" class="btn btn-danger btn-sm" onclick="rejectApplication({{ $app->id }})" title="Reject">
+                    <i class="mdi mdi-close me-1"></i>Reject
+                  </button>
+                @endif
+                <button type="button" class="btn btn-outline-info btn-sm" 
+                        onclick="viewFullDetails({{ $app->id }})" 
+                        data-app='@json($app)'
+                        title="View Full Details">
+                  <i class="mdi mdi-eye me-1"></i>Details
+                </button>
+              </div>
+            </div>
+            @endforeach
           </div>
         @endif
       </div>
@@ -510,7 +693,7 @@
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <form id="rejectionForm">
+        <form id="rejectionForm" onsubmit="event.preventDefault(); submitRejection();">
           <input type="hidden" id="rejectionApplicationId" name="application_id">
           <input type="hidden" name="status" value="NO">
           
@@ -521,16 +704,7 @@
             </label>
             <textarea class="form-control" id="rejectionReason" name="rejection_reason" rows="4" 
                       placeholder="Please provide a detailed reason for rejecting this application..." required></textarea>
-          </div>
-          
-          <div class="mb-3">
-            <label for="nextDate" class="form-label">
-              <i class="mdi mdi-calendar me-1"></i>
-              Suggested Next Available Date
-            </label>
-            <input type="date" class="form-control" id="nextDate" name="next_date" 
-                   min="{{ date('Y-m-d', strtotime('+1 day')) }}">
-            <small class="form-text text-muted">Optional: Suggest an alternative date for the replacement class.</small>
+            <small class="form-text text-muted">The lecturer will be able to suggest a new date after this rejection.</small>
           </div>
         </form>
       </div>
@@ -664,12 +838,27 @@ function viewFullDetails(applicationId) {
                         <strong>Reason:</strong> ${appData.sebab_kuliah_dibatalkan}</p>
                     </div>
                     <div class="col-md-6">
-                        <h6><i class="mdi mdi-calendar-plus me-1"></i>Replacement Class</h6>
+                        <h6><i class="mdi mdi-calendar-plus me-1"></i>Original Replacement Class</h6>
                         <p><strong>Date:</strong> ${new Date(appData.maklumat_kuliah_gantian_tarikh).toLocaleDateString()}<br>
                         <strong>Time:</strong> ${appData.maklumat_kuliah_gantian_hari_masa}<br>
                         <strong>Venue:</strong> ${appData.room_name}</p>
                     </div>
                 </div>
+                
+                ${appData.revised_date ? `
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <h6><i class="mdi mdi-calendar-edit me-1"></i>Revised Replacement Class</h6>
+                            <div class="alert alert-warning">
+                                <p><strong>New Date:</strong> ${new Date(appData.revised_date).toLocaleDateString()}<br>
+                                <strong>New Time:</strong> ${appData.revised_time}<br>
+                                <strong>New Venue:</strong> ${appData.revised_room_name || 'N/A'}<br>
+                                <strong>Status:</strong> <span class="badge ${appData.revised_status === 'YES' ? 'bg-success' : appData.revised_status === 'NO' ? 'bg-danger' : 'bg-warning'}">${appData.revised_status === 'YES' ? 'Approved' : appData.revised_status === 'NO' ? 'Rejected' : 'Pending Review'}</span></p>
+                                ${appData.revised_rejection_reason ? `<p><strong>Rejection Reason:</strong> ${appData.revised_rejection_reason}</p>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                ` : ''}
                 
                 ${appData.maklumat_kuliah ? `
                     <div class="mb-3">
@@ -761,8 +950,7 @@ function submitRejection() {
     
     const applicationId = formData.get('application_id');
     updateApplicationStatus(applicationId, 'NO', {
-        rejection_reason: formData.get('rejection_reason'),
-        next_date: formData.get('next_date')
+        rejection_reason: formData.get('rejection_reason')
     });
 }
 
@@ -774,9 +962,16 @@ function updateApplicationStatus(applicationId, status, additionalData = {}) {
         ...additionalData
     };
     
+    console.log('Making AJAX request with data:', data);
+    console.log('URL:', '{{ route("kp.replacement_class.update_status") }}');
+    
     $.ajax({
         url: '{{ route("kp.replacement_class.update_status") }}',
         method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
         data: data,
         success: function(response) {
             if (response.success) {
@@ -815,6 +1010,101 @@ function updateApplicationStatus(applicationId, status, additionalData = {}) {
 $('#rejectionModal').on('hidden.bs.modal', function () {
     $('#rejectionForm')[0].reset();
 });
+
+// Approve revised date function
+function approveRevisedDate(applicationId) {
+    Swal.fire({
+        title: 'Approve Revised Date?',
+        text: 'Are you sure you want to approve this revised replacement class date?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#28a745',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: '<i class="mdi mdi-check"></i> Yes, Approve Revised Date',
+        cancelButtonText: '<i class="mdi mdi-cancel"></i> Cancel'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            updateRevisedDateStatus(applicationId, 'YES');
+        }
+    });
+}
+
+// Reject revised date function
+function rejectRevisedDate(applicationId) {
+    Swal.fire({
+        title: 'Reject Revised Date',
+        input: 'textarea',
+        inputLabel: 'Reason for Rejection',
+        inputPlaceholder: 'Please provide a reason for rejecting the revised date...',
+        inputAttributes: {
+            'aria-label': 'Type your rejection reason here'
+        },
+        showCancelButton: true,
+        confirmButtonColor: '#dc3545',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: '<i class="mdi mdi-close"></i> Reject Revised Date',
+        cancelButtonText: '<i class="mdi mdi-cancel"></i> Cancel',
+        inputValidator: (value) => {
+            if (!value) {
+                return 'You need to provide a reason for rejection!'
+            }
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            updateRevisedDateStatus(applicationId, 'NO', {
+                rejection_reason: result.value
+            });
+        }
+    });
+}
+
+// Update revised date status function
+function updateRevisedDateStatus(applicationId, status, additionalData = {}) {
+    const data = {
+        application_id: applicationId,
+        status: status,
+        _token: '{{ csrf_token() }}',
+        ...additionalData
+    };
+    
+    $.ajax({
+        url: '{{ route("kp.replacement_class.update_revised_status") }}',
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        data: data,
+        success: function(response) {
+            if (response.success) {
+                Swal.fire({
+                    title: 'Success!',
+                    text: response.message,
+                    icon: 'success',
+                    timer: 2000,
+                    showConfirmButton: false
+                }).then(() => {
+                    location.reload();
+                });
+            }
+        },
+        error: function(xhr) {
+            let errorMessage = 'An error occurred while updating the revised date status.';
+            
+            if (xhr.responseJSON && xhr.responseJSON.error) {
+                errorMessage = xhr.responseJSON.error;
+            } else if (xhr.responseJSON && xhr.responseJSON.errors) {
+                errorMessage = Object.values(xhr.responseJSON.errors).flat().join('\n');
+            }
+            
+            Swal.fire({
+                title: 'Error!',
+                text: errorMessage,
+                icon: 'error'
+            });
+        }
+    });
+}
 </script>
 
 @endsection

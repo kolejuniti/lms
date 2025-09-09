@@ -353,6 +353,79 @@
     border-color: #667eea;
   }
 
+  /* Mobile Responsive Styles */
+  @media (max-width: 768px) {
+    .applications-table {
+      display: none;
+    }
+    
+    .mobile-applications {
+      display: block;
+    }
+    
+    .mobile-app-card {
+      background: #ffffff;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      margin-bottom: 1.5rem;
+      padding: 1.5rem;
+      border: 1px solid #e9ecef;
+    }
+    
+    .mobile-app-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #e9ecef;
+    }
+    
+    .mobile-app-id {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #667eea;
+    }
+    
+    .mobile-info-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+      padding: 0.5rem 0;
+    }
+    
+    .mobile-info-label {
+      font-weight: 600;
+      color: #495057;
+      font-size: 0.9rem;
+    }
+    
+    .mobile-info-value {
+      color: #6c757d;
+      font-size: 0.9rem;
+      text-align: right;
+      flex: 1;
+      margin-left: 1rem;
+    }
+    
+    .mobile-actions {
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid #e9ecef;
+      text-align: center;
+    }
+    
+    .stats-row .col-md-3 {
+      margin-bottom: 1rem;
+    }
+  }
+  
+  @media (min-width: 769px) {
+    .mobile-applications {
+      display: none;
+    }
+  }
+
 
 </style>
 
@@ -504,11 +577,20 @@
                       <div class="reason-info">{{ Str::limit($app->sebab_kuliah_dibatalkan, 30) }}</div>
                     </td>
                     <td>
-                      <div class="date-info">{{ \Carbon\Carbon::parse($app->maklumat_kuliah_gantian_tarikh)->format('d M Y') }}</div>
-                      <div class="reason-info">
-                        {{ $app->maklumat_kuliah_gantian_hari_masa }}<br>
-                        <i class="mdi mdi-map-marker me-1"></i>{{ Str::limit($app->room_name, 15) }}
-                      </div>
+                      @if($app->revised_date && $app->revised_status === 'YES')
+                        <div class="badge bg-success mb-1">Final: Revised Date</div>
+                        <div class="date-info">{{ \Carbon\Carbon::parse($app->revised_date)->format('d M Y') }}</div>
+                        <div class="reason-info">
+                          {{ $app->revised_time }}<br>
+                          <i class="mdi mdi-map-marker me-1"></i>{{ Str::limit($app->revised_room_name ?? 'Room N/A', 15) }}
+                        </div>
+                      @else
+                        <div class="date-info">{{ \Carbon\Carbon::parse($app->maklumat_kuliah_gantian_tarikh)->format('d M Y') }}</div>
+                        <div class="reason-info">
+                          {{ $app->maklumat_kuliah_gantian_hari_masa }}<br>
+                          <i class="mdi mdi-map-marker me-1"></i>{{ Str::limit($app->room_name, 15) }}
+                        </div>
+                      @endif
                     </td>
                     <td>
                       <div class="student-info">{{ $app->wakil_pelajar_nama }}</div>
@@ -585,6 +667,93 @@
                 </tbody>
               </table>
             </div>
+          </div>
+          
+          <!-- Mobile Applications View -->
+          <div class="mobile-applications">
+            @foreach($applications as $key => $app)
+            <div class="mobile-app-card">
+              <div class="mobile-app-header">
+                <div class="mobile-app-id">#{{ $app->id }}</div>
+                <span class="status-badge status-{{ strtolower($app->is_verified) === 'pending' ? 'pending' : (strtolower($app->is_verified) === 'yes' ? 'approved' : 'rejected') }}">
+                  @if(strtolower($app->is_verified) === 'pending')
+                    <i class="mdi mdi-clock-outline me-1"></i>Pending
+                  @elseif(strtolower($app->is_verified) === 'yes')
+                    <i class="mdi mdi-check me-1"></i>Approved
+                  @else
+                    <i class="mdi mdi-close me-1"></i>Rejected
+                  @endif
+                </span>
+              </div>
+              
+              <div class="mobile-info-row">
+                <div class="mobile-info-label">Lecturer:</div>
+                <div class="mobile-info-value">{{ $app->lecturer_name }}</div>
+              </div>
+              
+              <div class="mobile-info-row">
+                <div class="mobile-info-label">Course:</div>
+                <div class="mobile-info-value">{{ $app->course_code }}</div>
+              </div>
+              
+              <div class="mobile-info-row">
+                <div class="mobile-info-label">Group:</div>
+                <div class="mobile-info-value">{{ $app->group_name }}</div>
+              </div>
+              
+              <div class="mobile-info-row">
+                <div class="mobile-info-label">Cancelled Date:</div>
+                <div class="mobile-info-value">{{ \Carbon\Carbon::parse($app->tarikh_kuliah_dibatalkan)->format('d M Y') }}</div>
+              </div>
+              
+              <div class="mobile-info-row">
+                <div class="mobile-info-label">Replacement Date:</div>
+                <div class="mobile-info-value">
+                  @if($app->revised_date && $app->revised_status === 'YES')
+                    <div class="badge bg-success mb-1">Final: Revised</div>
+                    {{ \Carbon\Carbon::parse($app->revised_date)->format('d M Y') }}
+                  @else
+                    {{ \Carbon\Carbon::parse($app->maklumat_kuliah_gantian_tarikh)->format('d M Y') }}
+                  @endif
+                </div>
+              </div>
+              
+              <div class="mobile-info-row">
+                <div class="mobile-info-label">Student Rep:</div>
+                <div class="mobile-info-value">{{ $app->wakil_pelajar_nama }}</div>
+              </div>
+              
+              <div class="mobile-info-row">
+                <div class="mobile-info-label">Submitted:</div>
+                <div class="mobile-info-value">{{ \Carbon\Carbon::parse($app->created_at)->format('d M Y') }}</div>
+              </div>
+              
+              <div class="mobile-actions">
+                <button class="btn btn-sm btn-outline-info" 
+                        onclick="viewFullDetails({{ $app->id }})" 
+                        data-app='@json($app)'
+                        title="View Full Details">
+                  <i class="mdi mdi-eye me-1"></i>View Details
+                </button>
+                @if($app->maklumat_kuliah)
+                <button class="btn btn-sm btn-outline-secondary ms-1" 
+                        onclick="viewAdditionalInfo({{ $app->id }})" 
+                        data-info="{{ $app->maklumat_kuliah }}"
+                        title="Additional Info">
+                  <i class="mdi mdi-information me-1"></i>Additional Info
+                </button>
+                @endif
+                @if($app->is_verified === 'NO' && $app->rejection_reason)
+                <button class="btn btn-sm btn-outline-danger ms-1" 
+                        onclick="viewRejectionReason({{ $app->id }})" 
+                        data-reason="{{ $app->rejection_reason }}"
+                        title="Rejection Reason">
+                  <i class="mdi mdi-comment-alert me-1"></i>Rejection
+                </button>
+                @endif
+              </div>
+            </div>
+            @endforeach
           </div>
         @endif
       </div>
@@ -739,12 +908,27 @@ function viewFullDetails(applicationId) {
                         <strong>Reason:</strong> ${appData.sebab_kuliah_dibatalkan}</p>
                     </div>
                     <div class="col-md-6">
-                        <h6><i class="mdi mdi-calendar-plus me-1"></i>Replacement Class</h6>
+                        <h6><i class="mdi mdi-calendar-plus me-1"></i>Original Replacement Class</h6>
                         <p><strong>Date:</strong> ${new Date(appData.maklumat_kuliah_gantian_tarikh).toLocaleDateString()}<br>
                         <strong>Time:</strong> ${appData.maklumat_kuliah_gantian_hari_masa}<br>
                         <strong>Venue:</strong> ${appData.room_name}</p>
                     </div>
                 </div>
+                
+                ${appData.revised_date ? `
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <h6><i class="mdi mdi-calendar-edit me-1"></i>Revised Replacement Class</h6>
+                            <div class="alert alert-warning">
+                                <p><strong>New Date:</strong> ${new Date(appData.revised_date).toLocaleDateString()}<br>
+                                <strong>New Time:</strong> ${appData.revised_time}<br>
+                                <strong>New Venue:</strong> ${appData.revised_room_name || 'N/A'}<br>
+                                <strong>Status:</strong> <span class="badge ${appData.revised_status === 'YES' ? 'bg-success' : appData.revised_status === 'NO' ? 'bg-danger' : 'bg-warning'}">${appData.revised_status === 'YES' ? 'Approved' : appData.revised_status === 'NO' ? 'Rejected' : 'Pending Review'}</span></p>
+                                ${appData.revised_rejection_reason ? `<p><strong>Rejection Reason:</strong> ${appData.revised_rejection_reason}</p>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                ` : ''}
                 
                 ${appData.maklumat_kuliah ? `
                     <div class="mb-3">

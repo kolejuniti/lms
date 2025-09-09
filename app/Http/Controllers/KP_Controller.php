@@ -1468,8 +1468,22 @@ $content .= '<tr>
             ]);
         }
 
-        // Get replacement class applications for lecturers under this KP's programs
+        // Get replacement class applications for lecturers under this KP's programs  
+        // Include both pending applications and applications with pending revised dates
         $applications = $this->getReplacementApplicationsForKP($programs, 'PENDING');
+        
+        // Also get applications with pending revised dates (rejected but have revised date pending)
+        $revisedApplications = $this->getReplacementApplicationsForKP($programs, 'NO', 'PENDING');
+        
+        // Merge applications  
+        $allApplications = collect($applications);
+        foreach($revisedApplications as $app) {
+            if (!$allApplications->contains('id', $app->id)) {
+                $allApplications->push($app);
+            }
+        }
+        
+        $applications = $allApplications;
 
         return view('ketua_program.replacement_class.pending', compact('applications'));
     }
@@ -1497,7 +1511,7 @@ $content .= '<tr>
         return view('ketua_program.replacement_class.all', compact('applications'));
     }
 
-    private function getReplacementApplicationsForKP($programs, $status = null)
+    private function getReplacementApplicationsForKP($programs, $status = null, $revisedStatus = null)
     {
         $query = DB::table('replacement_class')
             ->join('user_subjek', 'replacement_class.user_subjek_id', '=', 'user_subjek.id')
@@ -1506,11 +1520,16 @@ $content .= '<tr>
             ->join('users', 'user_subjek.user_ic', '=', 'users.ic')
             ->join('sessions', 'user_subjek.session_id', '=', 'sessions.SessionID')
             ->leftJoin('tbllecture_room', 'replacement_class.lecture_room_id', '=', 'tbllecture_room.id')
+            ->leftJoin('tbllecture_room as revised_room', 'replacement_class.revised_room_id', '=', 'revised_room.id')
             ->leftJoin('users as kp_user', 'replacement_class.kp_ic', '=', 'kp_user.ic')
             ->whereIn('subjek_structure.program_id', $programs);
 
         if ($status) {
             $query->where('replacement_class.is_verified', $status);
+        }
+        
+        if ($revisedStatus) {
+            $query->where('replacement_class.revised_status', $revisedStatus);
         }
 
         $applications = $query->select(
@@ -1521,6 +1540,7 @@ $content .= '<tr>
                 'users.email as lecturer_email',
                 'sessions.SessionName',
                 'tbllecture_room.name as room_name',
+                'revised_room.name as revised_room_name',
                 'kp_user.name as kp_name',
                 'kp_user.email as kp_email'
             )
@@ -1543,16 +1563,17 @@ $content .= '<tr>
 
     public function updateReplacementClassStatus(Request $request)
     {
-        $request->validate([
-            'application_id' => 'required|exists:replacement_class,id',
-            'status' => 'required|in:YES,NO',
-            'rejection_reason' => 'nullable|string|max:500',
-            'next_date' => 'nullable|date|after:today'
-        ]);
+        try {
+            $request->validate([
+                'application_id' => 'required|exists:replacement_class,id',
+                'status' => 'required|in:YES,NO',
+                'rejection_reason' => 'required_if:status,NO|string|max:500'
+            ]);
 
-        $user = Auth::user();
+            $user = Auth::user();
+            $application = null;
 
-        if($user->usrtype == 'KP')
+        if($user->usrtype == 'PL')
         {
         
             // Verify KP has permission to update this application
@@ -1588,6 +1609,8 @@ $content .= '<tr>
                 ->where('users.usrtype', 'AO')
                 ->first();
             
+        } else {
+            return response()->json(['error' => 'Unauthorized user type.'], 403);
         }
 
         if (!$application) {
@@ -1602,20 +1625,99 @@ $content .= '<tr>
 
         if ($request->status === 'NO') {
             $updateData['rejection_reason'] = $request->rejection_reason;
-            $updateData['next_date'] = $request->next_date;
         } else {
             // Clear rejection fields if approved
             $updateData['rejection_reason'] = null;
-            $updateData['next_date'] = null;
         }
 
         DB::table('replacement_class')
             ->where('id', $request->application_id)
             ->update($updateData);
 
+            return response()->json([
+                'success' => true,
+                'message' => 'Application status updated successfully.'
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error updating replacement class status: ' . $e->getMessage());
+            \Log::error('Request data: ' . json_encode($request->all()));
+            
+            return response()->json([
+                'error' => 'An error occurred while updating the application status: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function updateRevisedDateStatus(Request $request)
+    {
+        $request->validate([
+            'application_id' => 'required|exists:replacement_class,id',
+            'status' => 'required|in:YES,NO',
+            'rejection_reason' => 'required_if:status,NO|string|max:500'
+        ]);
+
+        $user = Auth::user();
+        $application = null;
+
+        // Verify KP has permission to update this application
+        if($user->usrtype == 'PL') {
+            $application = DB::table('replacement_class')
+                ->join('user_subjek', 'replacement_class.user_subjek_id', '=', 'user_subjek.id')
+                ->join('subjek', 'user_subjek.course_id', '=', 'subjek.sub_id')
+                ->join('subjek_structure', 'subjek.sub_id', '=', 'subjek_structure.courseID')
+                ->join('user_program', 'subjek_structure.program_id', '=', 'user_program.program_id')
+                ->where('replacement_class.id', $request->application_id)
+                ->where('user_program.user_ic', $user->ic)
+                ->first();
+        } elseif($user->usrtype == 'AO') {
+            $application = DB::table('replacement_class')
+                ->join('user_subjek', 'replacement_class.user_subjek_id', '=', 'user_subjek.id')
+                ->join('users', 'user_subjek.user_ic', '=', 'users.ic')
+                ->join('subjek', 'user_subjek.course_id', '=', 'subjek.sub_id')
+                ->join('subjek_structure', 'subjek.sub_id', '=', 'subjek_structure.courseID')
+                ->where('replacement_class.id', $request->application_id)
+                ->where('users.usrtype', 'KP')
+                ->first();
+        } elseif($user->usrtype == 'DN') {
+            $application = DB::table('replacement_class')
+                ->join('user_subjek', 'replacement_class.user_subjek_id', '=', 'user_subjek.id')
+                ->join('users', 'user_subjek.user_ic', '=', 'users.ic')
+                ->join('subjek', 'user_subjek.course_id', '=', 'subjek.sub_id')
+                ->join('subjek_structure', 'subjek.sub_id', '=', 'subjek_structure.courseID')
+                ->where('replacement_class.id', $request->application_id)
+                ->where('users.usrtype', 'AO')
+                ->first();
+        } else {
+            return response()->json(['error' => 'Unauthorized user type.'], 403);
+        }
+
+        if (!$application) {
+            return response()->json(['error' => 'You do not have permission to update this application.'], 403);
+        }
+
+        $updateData = [
+            'revised_status' => $request->status,
+            'updated_at' => now()
+        ];
+
+        if ($request->status === 'NO') {
+            $updateData['revised_rejection_reason'] = $request->rejection_reason;
+        } else {
+            // Clear rejection reason if approved and update main application status
+            $updateData['revised_rejection_reason'] = null;
+            $updateData['is_verified'] = 'YES';
+            $updateData['kp_ic'] = $user->ic;
+        }
+
+        DB::table('replacement_class')
+            ->where('id', $request->application_id)
+            ->update($updateData);
+
+        $message = $request->status === 'YES' ? 'Revised date approved successfully.' : 'Revised date rejected.';
+
         return response()->json([
             'success' => true,
-            'message' => 'Application status updated successfully.'
+            'message' => $message
         ]);
     }
 }

@@ -5376,6 +5376,7 @@ $content .= '</tr>
             ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
             ->join('students', 'replacement_class.student_ic', 'students.ic')
             ->join('tbllecture_room', 'replacement_class.lecture_room_id', 'tbllecture_room.id')
+            ->leftJoin('tbllecture_room as revised_room', 'replacement_class.revised_room_id', 'revised_room.id')
             ->leftJoin('users as kp_user', 'replacement_class.kp_ic', 'kp_user.ic')
             ->where([
                 ['user_subjek.user_ic', $user->ic],
@@ -5390,6 +5391,7 @@ $content .= '</tr>
                 'students.name as student_name',
                 'students.no_matric',
                 'tbllecture_room.name as room_name',
+                'revised_room.name as revised_room_name',
                 'kp_user.name as kp_name',
                 'kp_user.email as kp_email'
             )
@@ -5405,6 +5407,62 @@ $content .= '</tr>
         }
 
         return view('lecturer.class.replacement_class_list', compact('applications'));
+    }
+
+    public function getLectureRooms()
+    {
+        $rooms = DB::table('tbllecture_room')->get();
+        $html = '<option value="" disabled selected>Choose a room...</option>';
+        foreach($rooms as $room) {
+            $html .= '<option value="'.$room->id.'">'.$room->name.'</option>';
+        }
+        return $html;
+    }
+
+    public function suggestRevisedDate(Request $request)
+    {
+        $request->validate([
+            'application_id' => 'required|exists:replacement_class,id',
+            'revised_date' => 'required|date|after:today',
+            'revised_time' => 'required|string|max:255',
+            'revised_room_id' => 'required|exists:tbllecture_room,id'
+        ]);
+
+        $user = Auth::user();
+
+        // Verify lecturer owns this application
+        $application = DB::table('replacement_class')
+            ->join('user_subjek', 'replacement_class.user_subjek_id', '=', 'user_subjek.id')
+            ->where('replacement_class.id', $request->application_id)
+            ->where('user_subjek.user_ic', $user->ic)
+            ->first();
+
+        if (!$application) {
+            return response()->json(['error' => 'You do not have permission to update this application.'], 403);
+        }
+
+        // Check if application is rejected and no revised date has been submitted yet
+        if ($application->is_verified !== 'NO' || $application->revised_date) {
+            return response()->json(['error' => 'Cannot suggest revised date for this application.'], 400);
+        }
+
+        $updateData = [
+            'revised_date' => $request->revised_date,
+            'revised_time' => $request->revised_time,
+            'revised_room_id' => $request->revised_room_id,
+            'revised_status' => 'PENDING',
+            'revised_rejection_reason' => null,
+            'updated_at' => now()
+        ];
+
+        DB::table('replacement_class')
+            ->where('id', $request->application_id)
+            ->update($updateData);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Revised date submitted successfully and is pending approval.'
+        ]);
     }
 
   
