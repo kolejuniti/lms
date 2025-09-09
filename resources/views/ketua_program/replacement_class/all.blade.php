@@ -8,6 +8,10 @@
     $layout = $layoutMap[$userType] ?? '';
 @endphp
 
+@extends($layout)
+
+@section('main')
+
 <!-- DataTables CSS -->
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.bootstrap5.min.css">
