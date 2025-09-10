@@ -58,8 +58,8 @@
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label class="form-label" for="course2">Course</label>
-                                    <select class="form-select" id="course2" name="course2">
-                                    <option value="" selected disabled>-</option>
+                                    <select class="form-select select2" id="course2" name="course2">
+                                    <option value="" selected disabled>Search for a course...</option>
                                       @foreach ($data['course'] as $crs)
                                       <option value="{{ $crs->id }}">{{ $crs->course_code }} - {{ $crs->course_name }}</option> 
                                       @endforeach
@@ -277,4 +277,14 @@
     if (error != '') {
         alert(error);
     }
+
+    // Initialize Select2 for searchable dropdown
+    $(document).ready(function() {
+        $('#course2').select2({
+            placeholder: 'Search for a course...',
+            allowClear: true,
+            width: '100%',
+            theme: 'bootstrap-5' // Use bootstrap-5 theme for better styling
+        });
+    });
 </script>
