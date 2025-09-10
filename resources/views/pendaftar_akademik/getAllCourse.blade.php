@@ -284,7 +284,42 @@
             placeholder: 'Search for a course...',
             allowClear: true,
             width: '100%',
-            theme: 'bootstrap-5' // Use bootstrap-5 theme for better styling
+            minimumResultsForSearch: 0, // Always show search box
+            dropdownAutoWidth: true
         });
     });
 </script>
+
+<style>
+    /* Custom styling to match original dropdown appearance */
+    .select2-container--default .select2-selection--single {
+        height: 38px !important;
+        border: 1px solid #ced4da !important;
+        border-radius: 0.375rem !important;
+        padding: 6px 12px !important;
+    }
+    
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        color: #495057 !important;
+        line-height: 26px !important;
+        padding-left: 0 !important;
+    }
+    
+    .select2-container--default .select2-selection--single .select2-selection__placeholder {
+        color: #6c757d !important;
+    }
+    
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+        height: 36px !important;
+        right: 10px !important;
+    }
+    
+    .select2-dropdown {
+        border: 1px solid #ced4da !important;
+        border-radius: 0.375rem !important;
+    }
+    
+    .select2-container--default .select2-results__option--highlighted[aria-selected] {
+        background-color: #007bff !important;
+    }
+</style>
