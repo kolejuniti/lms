@@ -47,6 +47,7 @@
          background: transparent;
          font-size: 10px; /* reduce font-size */
          table-layout: fixed;
+         font-family: 'Courier New', monospace;
       }
       h2,h3,p {
          margin: 0;
@@ -56,6 +57,7 @@
          vertical-align: baseline;
          background: transparent;
          font-size: 10px; /* reduce font-size */
+         font-family: 'Courier New', monospace;
       }
       .container {
          transform: scale(0.1); /* scale down everything */
