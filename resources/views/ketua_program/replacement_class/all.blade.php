@@ -1025,7 +1025,7 @@ function viewFullDetails(applicationId) {
                     </div>
                 ` : ''}
                 
-                ${appData.maklumat_kuliah ? `
+                ${appData.maklumat_kuliah && appData.maklumat_kuliah.trim() ? `
                     <div class="mb-3">
                         <h6><i class="mdi mdi-information me-1"></i>Additional Information</h6>
                         <div class="alert alert-info text-start">${appData.maklumat_kuliah}</div>

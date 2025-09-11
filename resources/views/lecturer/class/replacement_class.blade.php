@@ -434,9 +434,8 @@
                 <div class="modern-form-group">
                   <label class="modern-label" for="maklumat_kuliah">
                     <i class="fa fa-info-circle me-2"></i>Additional Class Information
-                    <span class="text-danger">*</span>
                   </label>
-                  <textarea class="form-control modern-textarea" id="maklumat_kuliah" name="maklumat_kuliah" placeholder="Provide any additional details about the cancelled class..." required></textarea>
+                  <textarea class="form-control modern-textarea" id="maklumat_kuliah" name="maklumat_kuliah" placeholder="Provide any additional details about the cancelled class..."></textarea>
                 </div>
               </div>
             </div>
