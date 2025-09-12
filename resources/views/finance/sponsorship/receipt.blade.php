@@ -46,7 +46,6 @@
          vertical-align: baseline;
          background: transparent;
          font-size: 10px; /* reduce font-size */
-         /* font-family: 'Courier New', monospace; */
       }
       h2,h3,p {
          margin: 0;
@@ -57,7 +56,6 @@
          vertical-align: baseline;
          background: transparent;
          font-size: 10px; /* reduce font-size */
-         /* font-family: 'Courier New', monospace; */
       }
       .container {
          transform: scale(0.8); /* scale down everything */
@@ -69,23 +67,6 @@
       td, th {
          width: 50%; /* Adjust the width as needed */
          padding: 2px; /* Reduce padding */
-      }
-      .info-row {
-         display: flex;
-         margin-bottom: 2px;
-      }
-      .info-label {
-         width: 200px;
-         display: inline-block;
-      }
-      .info-colon {
-         width: 20px;
-         display: inline-block;
-         text-align: center;
-      }
-      .info-value {
-         flex: 1;
-         display: inline-block;
       }
    </style>
  </head>
@@ -128,66 +109,22 @@
                <div class="d-flex p-2">
                   <div class="col-md-6" style="margin-right: 10px">
                      <div class="form-group">
-                           <div class="info-row">
-                              <span class="info-label">Name</span>
-                              <span class="info-colon">:</span>
-                              <span class="info-value">{{ $data['student']->name }}</span>
-                           </div>
-                           <div class="info-row">
-                              <span class="info-label">No. Resit</span>
-                              <span class="info-colon">:</span>
-                              <span class="info-value">{{ (isset($invois)) ? $data['payment']->ref_no : $data['payment']->id }}</span>
-                           </div>
-                           <div class="info-row">
-                              <span class="info-label">No. KP / No. Passport</span>
-                              <span class="info-colon">:</span>
-                              <span class="info-value">{{ $data['student']->ic }}</span>
-                           </div>
-                           <div class="info-row">
-                              <span class="info-label">Sesi Kemasukan</span>
-                              <span class="info-colon">:</span>
-                              <span class="info-value">{{ $data['student']->intake }}</span>
-                           </div>
-                           <div class="info-row">
-                              <span class="info-label">Sesi Semasa</span>
-                              <span class="info-colon">:</span>
-                              <span class="info-value">{{ $data['payment']->session }}</span>
-                           </div>
-                           <div class="info-row">
-                              <span class="info-label">No. Matriks</span>
-                              <span class="info-colon">:</span>
-                              <span class="info-value">{{ $data['student']->no_matric }}</span>
-                           </div>
-                           <div class="info-row">
-                              <span class="info-label">Program</span>
-                              <span class="info-colon">:</span>
-                              <span class="info-value">{{ $data['payment']->program }}</span>
-                           </div>
+                           <p>Name &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ $data['student']->name }}</p>
+                           <p>No. Resit &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ (isset($invois)) ? $data['payment']->ref_no : $data['payment']->id }}</p>
+                           <p>No. KP / No. Passport &thinsp;&thinsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ $data['student']->ic }}</p>
+                           <p>Sesi Kemasukan &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ $data['student']->intake }}</p>
+                           <p>Sesi Semasa &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ $data['payment']->session }}</p>
+                           <p>No. Matriks &thinsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ $data['student']->no_matric }}</p>
+                           <p>Program &thinsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ $data['payment']->program }}</p>
                      </div>
                   </div>
                   <div class="col-md-4">
                      <div class="form-group">
-                           <div class="info-row">
-                              <span class="info-label">Tarikh</span>
-                              <span class="info-colon">:</span>
-                              <span class="info-value">{{ $data['date'] }}</span>
-                           </div>
-                           {{-- <div class="info-row">
-                              <span class="info-label">Status</span>
-                              <span class="info-colon">:</span>
-                              <span class="info-value">{{ $data['student']->status }}</span>
-                           </div> --}}
-                           <div class="info-row">
-                              <span class="info-label">Semester</span>
-                              <span class="info-colon">:</span>
-                              <span class="info-value">{{ $data['payment']->semester_id }}</span>
-                           </div>
+                           <p>Tarikh &thinsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ $data['date'] }}</p>
+                           {{-- <p>Status &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ $data['student']->status }}</p> --}}
+                           <p>Semester &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ $data['payment']->semester_id }}</p>
                            @if(!empty($data['payment']->remark))
-                           <div class="info-row">
-                              <span class="info-label">Remark</span>
-                              <span class="info-colon">:</span>
-                              <span class="info-value">{{ $data['payment']->remark }}</span>
-                           </div>
+                           <p>Remark &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ $data['payment']->remark }}</p>
                            @endif
                      </div>
                   </div>
