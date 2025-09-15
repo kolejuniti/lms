@@ -1692,7 +1692,7 @@
                       @csrf
                       <div class="row">
                         <div class="col-md-4">
-                          <label>Category</label>
+                          <label>Category <span class="text-danger">*</span></label>
                           <select class="form-control" name="category" id="materialCategory" required>
                             <option value="">Select Category</option>
                             <option value="Rubrik">Rubrik</option>
