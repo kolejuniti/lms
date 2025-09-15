@@ -1939,7 +1939,7 @@
                                     <td>${formatDate(material.created_at)}</td>
                                     <td>${material.description || '-'}</td>
                                     <td>
-                                        <a href="{{ url('lecturer/materials/download') }}/${material.id}" class="btn btn-sm btn-success" title="Download">
+                                        <a href="{{ url('lecturer/materials/download') }}/${material.id}" class="btn btn-sm btn-success" title="Download" target="_blank">
                                             <i class="fa fa-download"></i>
                                         </a>
                                         <button class="btn btn-sm btn-danger" onclick="deleteMaterial(${material.id})" title="Delete">
