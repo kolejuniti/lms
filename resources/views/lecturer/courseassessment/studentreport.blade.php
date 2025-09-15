@@ -1690,9 +1690,9 @@
                     <!-- Upload Form -->
                     <form id="materialUploadForm" enctype="multipart/form-data">
                       @csrf
-                      <div class="row">
-                        <div class="col-md-4 d-flex flex-column">
-                          <label class="mb-1" style="display: flex; align-items: center;">
+                      <div class="form-row align-items-end">
+                        <div class="form-group col-md-4 mb-0">
+                          <label for="materialCategory" class="mb-1" style="display: flex; align-items: center;">
                             Category
                             <span class="text-danger" style="margin-left: 4px;">*</span>
                           </label>
@@ -1703,15 +1703,14 @@
                             <option value="Others">Others</option>
                           </select>
                         </div>
-                        <div class="col-md-6">
-                          <label class="mb-1" style="display: flex; align-items: center;">
+                        <div class="form-group col-md-6 mb-0">
+                          <label for="materialDescription" class="mb-1" style="display: flex; align-items: center;">
                             Description (Optional)
                           </label>
                           <input type="text" class="form-control" name="description" id="materialDescription" placeholder="Brief description of the materials">
                         </div>
-                        <div class="col-md-2">
-                          <label>&nbsp;</label>
-                          <button type="button" class="btn btn-primary btn-block" id="uploadBtn">
+                        <div class="form-group col-md-2 mb-0 d-flex align-items-end">
+                          <button type="button" class="btn btn-primary btn-block w-100" id="uploadBtn" style="margin-top: 8px;">
                             <i class="fa fa-upload"></i> Upload Files
                           </button>
                         </div>
