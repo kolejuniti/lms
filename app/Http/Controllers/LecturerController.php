@@ -5465,6 +5465,169 @@ $content .= '</tr>
         ]);
     }
 
+    /**
+     * Get lecturer materials for current course
+     */
+    public function getLecturerMaterials()
+    {
+        $user = Auth::user();
+        $courseId = Session::get('CourseID');
+        $sessionId = Session::get('SessionID');
+
+        // Get user_subjek.id
+        $userSubjek = DB::table('user_subjek')
+            ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+            ->where([
+                ['user_subjek.user_ic', $user->ic],
+                ['user_subjek.session_id', $sessionId],
+                ['subjek.id', $courseId]
+            ])
+            ->select('user_subjek.id')
+            ->first();
+
+        if (!$userSubjek) {
+            return response()->json(['materials' => []]);
+        }
+
+        $materials = DB::table('lecturer_materials')
+            ->where('user_subjek_id', $userSubjek->id)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return response()->json(['materials' => $materials]);
+    }
+
+    /**
+     * Upload lecturer materials
+     */
+    public function uploadLecturerMaterials(Request $request)
+    {
+        $request->validate([
+            'files.*' => 'required|file|max:10240|mimes:pdf,doc,docx,xls,xlsx,ppt,pptx,txt,zip,rar,7z,jpg,jpeg,png,gif,bmp', // 10MB max per file
+            'category' => 'required|in:Rubrik,Rowscore,Others',
+            'description' => 'nullable|string|max:500'
+        ]);
+
+        $user = Auth::user();
+        $courseId = Session::get('CourseID');
+        $sessionId = Session::get('SessionID');
+
+        // Get user_subjek.id
+        $userSubjek = DB::table('user_subjek')
+            ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+            ->where([
+                ['user_subjek.user_ic', $user->ic],
+                ['user_subjek.session_id', $sessionId],
+                ['subjek.id', $courseId]
+            ])
+            ->select('user_subjek.id')
+            ->first();
+
+        if (!$userSubjek) {
+            return response()->json(['success' => false, 'message' => 'Invalid course selection']);
+        }
+
+        $uploadedFiles = [];
+        $files = $request->file('files', []);
+
+        foreach ($files as $file) {
+            $originalName = $file->getClientOriginalName();
+            $extension = $file->getClientOriginalExtension();
+            $fileSize = $file->getSize();
+            
+            // Generate unique filename
+            $fileName = time() . '_' . uniqid() . '.' . $extension;
+            
+            // Store file in public/storage/materials/{user_subjek_id}
+            $filePath = $file->storeAs(
+                'materials/' . $userSubjek->id,
+                $fileName,
+                'public'
+            );
+
+            // Save to database
+            $materialId = DB::table('lecturer_materials')->insertGetId([
+                'user_subjek_id' => $userSubjek->id,
+                'file_name' => $originalName,
+                'file_path' => $filePath,
+                'file_type' => $extension,
+                'file_size' => $fileSize,
+                'category' => $request->category,
+                'description' => $request->description,
+                'uploaded_by' => $user->ic,
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+
+            $uploadedFiles[] = [
+                'id' => $materialId,
+                'name' => $originalName,
+                'size' => $fileSize,
+                'category' => $request->category
+            ];
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => count($uploadedFiles) . ' file(s) uploaded successfully',
+            'files' => $uploadedFiles
+        ]);
+    }
+
+    /**
+     * Delete lecturer material
+     */
+    public function deleteLecturerMaterial(Request $request)
+    {
+        $request->validate([
+            'material_id' => 'required|integer'
+        ]);
+
+        $user = Auth::user();
+        $material = DB::table('lecturer_materials')
+            ->where('id', $request->material_id)
+            ->where('uploaded_by', $user->ic)
+            ->first();
+
+        if (!$material) {
+            return response()->json(['success' => false, 'message' => 'Material not found or unauthorized']);
+        }
+
+        // Delete file from storage
+        if (Storage::disk('public')->exists($material->file_path)) {
+            Storage::disk('public')->delete($material->file_path);
+        }
+
+        // Delete from database
+        DB::table('lecturer_materials')->where('id', $request->material_id)->delete();
+
+        return response()->json(['success' => true, 'message' => 'Material deleted successfully']);
+    }
+
+    /**
+     * Download lecturer material
+     */
+    public function downloadLecturerMaterial($materialId)
+    {
+        $user = Auth::user();
+        $material = DB::table('lecturer_materials')
+            ->where('id', $materialId)
+            ->where('uploaded_by', $user->ic)
+            ->first();
+
+        if (!$material) {
+            abort(404, 'Material not found or unauthorized');
+        }
+
+        $filePath = storage_path('app/public/' . $material->file_path);
+        
+        if (!file_exists($filePath)) {
+            abort(404, 'File not found');
+        }
+
+        return response()->download($filePath, $material->file_name);
+    }
+
   
 }
 

@@ -388,6 +388,12 @@ Route::patch('/lecturer/class/announcement/list/update/{id}', [App\Http\Controll
 
 Route::get('/lecturer/report/{id}', [App\Http\Controllers\LecturerController::class, 'assessmentreport'])->name('lecturer.report');
 Route::get('/lecturer/report/{id}/{student}', [App\Http\Controllers\LecturerController::class, 'studentreport'])->name('lecturer.report.student');
+
+// Lecturer Materials Routes
+Route::get('/lecturer/materials/get', [App\Http\Controllers\LecturerController::class, 'getLecturerMaterials'])->name('lecturer.materials.get');
+Route::post('/lecturer/materials/upload', [App\Http\Controllers\LecturerController::class, 'uploadLecturerMaterials'])->name('lecturer.materials.upload');
+Route::delete('/lecturer/materials/delete', [App\Http\Controllers\LecturerController::class, 'deleteLecturerMaterial'])->name('lecturer.materials.delete');
+Route::get('/lecturer/materials/download/{id}', [App\Http\Controllers\LecturerController::class, 'downloadLecturerMaterial'])->name('lecturer.materials.download');
 Route::get('/lecturer/class/schedule', [App\Http\Controllers\LecturerController::class, 'classSchedule'])->name('lecturer.class.schedule');
 Route::get('/lecturer/class/schedule/fetch', [App\Http\Controllers\LecturerController::class, 'fetchEvents']);
 

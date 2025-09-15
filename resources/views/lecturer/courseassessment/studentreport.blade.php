@@ -14,6 +14,21 @@
     float: right;
     margin-left:10px;
     }
+
+    /* File icon colors */
+    .text-purple {
+        color: #6f42c1 !important;
+    }
+    
+    /* File icon styling */
+    .fa-file-pdf-o { color: #dc3545 !important; }
+    .fa-file-word-o { color: #007bff !important; }
+    .fa-file-excel-o { color: #28a745 !important; }
+    .fa-file-powerpoint-o { color: #ffc107 !important; }
+    .fa-file-text-o { color: #6c757d !important; }
+    .fa-file-archive-o { color: #17a2b8 !important; }
+    .fa-file-image-o { color: #6f42c1 !important; }
+    .fa-file-o { color: #6c757d !important; }
 </style>
 
 <!-- Content Wrapper. Contains page content -->
@@ -1661,6 +1676,98 @@
             @endif
           </div>
         </div>
+
+        <!-- Lecturer Documents Section -->
+        <div class="row">
+          <div class="col-12">
+            <div class="box">
+              <div class="box-header with-border">
+                <h4 class="box-title"><i class="fa fa-folder-open"></i> Lecturer Documents (Rubrik/Rowscore/Others)</h4>
+              </div>
+              <div class="box-body">
+                <div class="row mb-20">
+                  <div class="col-md-12">
+                    <!-- Upload Form -->
+                    <form id="materialUploadForm" enctype="multipart/form-data">
+                      @csrf
+                      <div class="row">
+                        <div class="col-md-4">
+                          <label>Category</label>
+                          <select class="form-control" name="category" id="materialCategory" required>
+                            <option value="">Select Category</option>
+                            <option value="Rubrik">Rubrik</option>
+                            <option value="Rowscore">Rowscore</option>
+                            <option value="Others">Others</option>
+                          </select>
+                        </div>
+                        <div class="col-md-6">
+                          <label>Description (Optional)</label>
+                          <input type="text" class="form-control" name="description" id="materialDescription" placeholder="Brief description of the materials">
+                        </div>
+                        <div class="col-md-2">
+                          <label>&nbsp;</label>
+                          <button type="button" class="btn btn-primary btn-block" id="uploadBtn">
+                            <i class="fa fa-upload"></i> Upload Files
+                          </button>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+
+                <!-- Dropzone Area -->
+                <div class="row mb-20">
+                  <div class="col-md-12">
+                    <div id="materialDropzone" class="dropzone" style="border: 2px dashed #007bff; border-radius: 10px; text-align: center; padding: 40px; background-color: #f8f9fa; cursor: pointer;">
+                      <div class="dz-message">
+                        <i class="fa fa-cloud-upload fa-3x text-muted mb-10"></i>
+                        <h4 class="text-muted">Drop files here or click to upload</h4>
+                        <p class="text-muted">Support for PDF, Word, Excel, PowerPoint, Images, Text & Archive files (Max 10MB per file)</p>
+                      </div>
+                    </div>
+                    <input type="file" id="fileInput" multiple style="display: none;" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.zip,.rar,.7z,.jpg,.jpeg,.png,.gif,.bmp">
+                  </div>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="row mb-20" id="uploadProgress" style="display: none;">
+                  <div class="col-md-12">
+                    <div class="progress">
+                      <div class="progress-bar progress-bar-striped progress-bar-animated" id="progressBar" role="progressbar" style="width: 0%"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Materials List -->
+                <div class="row">
+                  <div class="col-md-12">
+                    <h5><i class="fa fa-list"></i> Uploaded Materials</h5>
+                    <div class="table-responsive">
+                      <table class="table table-bordered table-hover" id="materialsTable">
+                        <thead class="bg-light">
+                          <tr>
+                            <th>#</th>
+                            <th>File Name</th>
+                            <th>Category</th>
+                            <th>Size</th>
+                            <th>Upload Date</th>
+                            <th>Description</th>
+                            <th>Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody id="materialsTableBody">
+                          <!-- Materials will be loaded here -->
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- End Lecturer Documents Section -->
+
       </section>
         <!-- /.content -->
     
@@ -1713,6 +1820,236 @@
         });
 
     }
+
+    // Lecturer Materials Management
+    $(document).ready(function() {
+        loadMaterials();
+
+        // Dropzone click handler
+        $('#materialDropzone, #uploadBtn').click(function() {
+            $('#fileInput').click();
+        });
+
+        // Drag and drop handlers
+        $('#materialDropzone').on('dragover', function(e) {
+            e.preventDefault();
+            $(this).addClass('bg-light');
+        }).on('dragleave', function(e) {
+            e.preventDefault();
+            $(this).removeClass('bg-light');
+        }).on('drop', function(e) {
+            e.preventDefault();
+            $(this).removeClass('bg-light');
+            
+            const files = e.originalEvent.dataTransfer.files;
+            if (files.length > 0) {
+                $('#fileInput')[0].files = files;
+                uploadFiles();
+            }
+        });
+
+        // File input change handler
+        $('#fileInput').change(function() {
+            if (this.files.length > 0) {
+                uploadFiles();
+            }
+        });
+
+        function uploadFiles() {
+            const category = $('#materialCategory').val();
+            const description = $('#materialDescription').val();
+            const files = $('#fileInput')[0].files;
+
+            if (!category) {
+                alert('Please select a category first');
+                return;
+            }
+
+            if (files.length === 0) {
+                alert('Please select files to upload');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('category', category);
+            formData.append('description', description);
+            formData.append('_token', $('meta[name="csrf-token"]').attr('content'));
+
+            for (let i = 0; i < files.length; i++) {
+                formData.append('files[]', files[i]);
+            }
+
+            // Show progress bar
+            $('#uploadProgress').show();
+            $('#progressBar').css('width', '0%');
+
+            $.ajax({
+                url: '{{ route("lecturer.materials.upload") }}',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                xhr: function() {
+                    const xhr = new window.XMLHttpRequest();
+                    xhr.upload.addEventListener("progress", function(evt) {
+                        if (evt.lengthComputable) {
+                            const percentComplete = evt.loaded / evt.total * 100;
+                            $('#progressBar').css('width', percentComplete + '%');
+                        }
+                    }, false);
+                    return xhr;
+                },
+                success: function(response) {
+                    $('#uploadProgress').hide();
+                    $('#progressBar').css('width', '0%');
+                    
+                    if (response.success) {
+                        alert(response.message);
+                        $('#materialUploadForm')[0].reset();
+                        $('#fileInput').val('');
+                        loadMaterials();
+                    } else {
+                        alert('Upload failed: ' + response.message);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    $('#uploadProgress').hide();
+                    $('#progressBar').css('width', '0%');
+                    alert('Upload failed: ' + error);
+                }
+            });
+        }
+
+        function loadMaterials() {
+            $.ajax({
+                url: '{{ route("lecturer.materials.get") }}',
+                type: 'GET',
+                success: function(response) {
+                    const tbody = $('#materialsTableBody');
+                    tbody.empty();
+
+                    if (response.materials && response.materials.length > 0) {
+                        response.materials.forEach(function(material, index) {
+                            const row = `
+                                <tr>
+                                    <td>${index + 1}</td>
+                                    <td>${getFileIcon(material.file_type)} ${material.file_name}</td>
+                                    <td><span class="badge badge-info">${material.category}</span></td>
+                                    <td>${formatFileSize(material.file_size)}</td>
+                                    <td>${formatDate(material.created_at)}</td>
+                                    <td>${material.description || '-'}</td>
+                                    <td>
+                                        <a href="{{ url('lecturer/materials/download') }}/${material.id}" class="btn btn-sm btn-success" title="Download">
+                                            <i class="fa fa-download"></i>
+                                        </a>
+                                        <button class="btn btn-sm btn-danger" onclick="deleteMaterial(${material.id})" title="Delete">
+                                            <i class="fa fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            `;
+                            tbody.append(row);
+                        });
+                    } else {
+                        tbody.append('<tr><td colspan="7" class="text-center text-muted">No materials uploaded yet</td></tr>');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Failed to load materials:', error);
+                }
+            });
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+        }
+
+        function getFileIcon(fileType) {
+            const extension = fileType.toLowerCase();
+            let iconClass = '';
+            let iconColor = '';
+
+            switch (extension) {
+                case 'pdf':
+                    iconClass = 'fa fa-file-pdf-o';
+                    iconColor = 'text-danger'; // Red for PDF
+                    break;
+                case 'doc':
+                case 'docx':
+                    iconClass = 'fa fa-file-word-o';
+                    iconColor = 'text-primary'; // Blue for Word
+                    break;
+                case 'xls':
+                case 'xlsx':
+                    iconClass = 'fa fa-file-excel-o';
+                    iconColor = 'text-success'; // Green for Excel
+                    break;
+                case 'ppt':
+                case 'pptx':
+                    iconClass = 'fa fa-file-powerpoint-o';
+                    iconColor = 'text-warning'; // Orange for PowerPoint
+                    break;
+                case 'txt':
+                    iconClass = 'fa fa-file-text-o';
+                    iconColor = 'text-muted'; // Gray for text files
+                    break;
+                case 'zip':
+                case 'rar':
+                case '7z':
+                    iconClass = 'fa fa-file-archive-o';
+                    iconColor = 'text-info'; // Light blue for archives
+                    break;
+                case 'jpg':
+                case 'jpeg':
+                case 'png':
+                case 'gif':
+                case 'bmp':
+                    iconClass = 'fa fa-file-image-o';
+                    iconColor = 'text-purple'; // Purple for images
+                    break;
+                default:
+                    iconClass = 'fa fa-file-o';
+                    iconColor = 'text-muted'; // Default gray
+                    break;
+            }
+
+            return `<i class="${iconClass} ${iconColor}"></i>`;
+        }
+
+        // Global function for delete button
+        window.deleteMaterial = function(materialId) {
+            if (confirm('Are you sure you want to delete this material?')) {
+                $.ajax({
+                    url: '{{ route("lecturer.materials.delete") }}',
+                    type: 'DELETE',
+                    data: {
+                        material_id: materialId,
+                        _token: $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            alert(response.message);
+                            loadMaterials();
+                        } else {
+                            alert('Delete failed: ' + response.message);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        alert('Delete failed: ' + error);
+                    }
+                });
+            }
+        };
+    });
 
 
 </script>
