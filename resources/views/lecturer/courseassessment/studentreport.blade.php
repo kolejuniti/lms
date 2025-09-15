@@ -1704,7 +1704,10 @@
                           </select>
                         </div>
                         <div class="col-md-6">
-                          <label>Description (Optional)</label>
+                          <label class="mb-1" style="display: flex; align-items: center;">
+                            Description (Optional)
+                            <span class="text-danger" style="margin-left: 4px;">*</span>
+                          </label>
                           <input type="text" class="form-control" name="description" id="materialDescription" placeholder="Brief description of the materials">
                         </div>
                         <div class="col-md-2">
