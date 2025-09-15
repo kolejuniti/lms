@@ -44,10 +44,23 @@
                 <div class="row align-items-center">
                   <div class="col-md-3 text-center">
                     <div class="profile-image-container">
-                      <div class="profile-avatar">
+                      <div class="profile-avatar position-relative">
                         <img src="{{ (Auth::user()->image != null) ? Storage::disk('linode')->url(Auth::user()->image) : asset('assets/images/1.jpg')}}" 
                              class="profile-image rounded-circle" 
-                             alt="Profile Image">
+                             alt="Profile Image"
+                             id="profileImageDisplay">
+                        <div class="profile-image-overlay">
+                          <button type="button" class="btn btn-sm btn-primary rounded-circle profile-edit-btn" 
+                                  onclick="document.getElementById('profileImageInput').click()">
+                            <i class="fa fa-camera"></i>
+                          </button>
+                        </div>
+                        <form id="profileImageForm" action="/lecturer/update" method="POST" enctype="multipart/form-data" style="display: none;">
+                          @csrf
+                          @method('POST')
+                          <input type="hidden" name="form_type" value="profile_image">
+                          <input type="file" id="profileImageInput" name="image" accept="image/*" onchange="previewAndUploadImage(this)">
+                        </form>
                       </div>
                     </div>
                   </div>
@@ -279,6 +292,44 @@
   object-fit: cover;
   border: 4px solid white;
   transition: all 0.3s ease;
+}
+
+.profile-image-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  cursor: pointer;
+}
+
+.profile-avatar:hover .profile-image-overlay {
+  opacity: 1;
+}
+
+.profile-edit-btn {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: #007bff;
+  color: white;
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+
+.profile-edit-btn:hover {
+  background: #0056b3;
+  transform: scale(1.1);
 }
 
 .profile-info {
@@ -872,6 +923,73 @@ $(document).ready(function() {
       confirmButtonColor: '#4361ee'
     });
   @endif
+  
+  // Profile image upload functionality
+  window.previewAndUploadImage = function(input) {
+    if (input.files && input.files[0]) {
+      const file = input.files[0];
+      
+      // Validate file type
+      if (!file.type.match('image.*')) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Invalid File Type',
+          text: 'Please select an image file (jpg, jpeg, png, gif).',
+          confirmButtonColor: '#4361ee'
+        });
+        return;
+      }
+      
+      // Validate file size (5MB limit)
+      if (file.size > 5 * 1024 * 1024) {
+        Swal.fire({
+          icon: 'error',
+          title: 'File Too Large',
+          text: 'Please select an image smaller than 5MB.',
+          confirmButtonColor: '#4361ee'
+        });
+        return;
+      }
+      
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        // Preview the image
+        document.getElementById('profileImageDisplay').src = e.target.result;
+        
+        // Show upload confirmation
+        Swal.fire({
+          title: 'Update Profile Picture?',
+          text: "Do you want to upload this new profile picture?",
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonColor: '#4361ee',
+          cancelButtonColor: '#f62d51',
+          confirmButtonText: 'Yes, upload it!',
+          cancelButtonText: 'Cancel'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            // Show loading
+            Swal.fire({
+              title: 'Uploading...',
+              text: 'Please wait while we upload your new profile picture.',
+              allowOutsideClick: false,
+              didOpen: () => {
+                Swal.showLoading();
+              }
+            });
+            
+            // Submit the form
+            document.getElementById('profileImageForm').submit();
+          } else {
+            // Reset the image if cancelled
+            input.value = '';
+            location.reload(); // Reload to restore original image
+          }
+        });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 });
 </script>
 @endsection

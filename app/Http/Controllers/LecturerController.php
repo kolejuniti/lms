@@ -19,6 +19,7 @@ use Mail;
 use PDF;
 use Twilio\Rest\Client;
 use Illuminate\Validation\ValidationException;
+use Intervention\Image\Facades\Image;
 
 class LecturerController extends Controller
 {
@@ -73,6 +74,45 @@ class LecturerController extends Controller
             ]);
 
             return redirect()->back()->with('alert', 'Your profile has been updated successfully!');
+            
+        } elseif ($request->form_type === 'profile_image') {
+            // Validate image upload
+            $request->validate([
+                'image' => ['required', 'image', 'mimes:jpeg,png,jpg,gif', 'max:5120'], // 5MB max
+            ]);
+
+            $imageArray = [];
+            
+            // Handle image upload
+            if ($request->hasFile('image')) {
+                $imageName = $request->file('image')->getClientOriginalName();
+                $filepath = "storage/";
+
+                // Store image in Linode Object Storage
+                Storage::disk('linode')->putFileAs(
+                    $filepath,
+                    $request->file('image'),
+                    $imageName,
+                    'public'
+                );
+
+                $imagePath = $filepath . $imageName;
+
+                // Resize image using Intervention Image
+                try {
+                    $image = Image::make(Storage::disk('linode')->url($imagePath))->fit(1000, 1000);
+                    $image->save($imagePath);
+                } catch (\Exception $e) {
+                    // If image processing fails, continue without resizing
+                }
+
+                $imageArray = ['image' => $imagePath];
+            }
+
+            // Update user image
+            $user->update($imageArray);
+
+            return redirect()->back()->with('alert', 'Your profile picture has been updated successfully!');
             
         } elseif ($request->form_type === 'security') {
             // Validate security data
