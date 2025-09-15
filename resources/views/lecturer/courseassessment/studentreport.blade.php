@@ -1690,29 +1690,35 @@
                     <!-- Upload Form -->
                     <form id="materialUploadForm" enctype="multipart/form-data">
                       @csrf
-                      <div class="form-row align-items-end">
-                        <div class="form-group col-md-4 mb-0">
-                          <label for="materialCategory" class="mb-1" style="display: flex; align-items: center;">
-                            Category
-                            <span class="text-danger" style="margin-left: 4px;">*</span>
-                          </label>
-                          <select class="form-control" name="category" id="materialCategory" required>
-                            <option value="">Select Category</option>
-                            <option value="Rubrik">Rubrik</option>
-                            <option value="Rowscore">Rowscore</option>
-                            <option value="Others">Others</option>
-                          </select>
+                      <div class="row align-items-end">
+                        <div class="col-md-4">
+                          <div class="form-group mb-0">
+                            <label class="form-label mb-2">
+                              Category <span class="text-danger">*</span>
+                            </label>
+                            <select class="form-control" name="category" id="materialCategory" required>
+                              <option value="">Select Category</option>
+                              <option value="Rubrik">Rubrik</option>
+                              <option value="Rowscore">Rowscore</option>
+                              <option value="Others">Others</option>
+                            </select>
+                          </div>
                         </div>
-                        <div class="form-group col-md-6 mb-0">
-                          <label for="materialDescription" class="mb-1" style="display: flex; align-items: center;">
-                            Description (Optional)
-                          </label>
-                          <input type="text" class="form-control" name="description" id="materialDescription" placeholder="Brief description of the materials">
+                        <div class="col-md-6">
+                          <div class="form-group mb-0">
+                            <label class="form-label mb-2">
+                              Description (Optional)
+                            </label>
+                            <input type="text" class="form-control" name="description" id="materialDescription" placeholder="Brief description of the materials">
+                          </div>
                         </div>
-                        <div class="form-group col-md-2 mb-0 d-flex align-items-end">
-                          <button type="button" class="btn btn-primary btn-block w-100" id="uploadBtn" style="margin-top: 8px;">
-                            <i class="fa fa-upload"></i> Upload Files
-                          </button>
+                        <div class="col-md-2">
+                          <div class="form-group mb-0">
+                            <label class="form-label mb-2" style="visibility: hidden;">Upload</label>
+                            <button type="button" class="btn btn-primary btn-block" id="uploadBtn">
+                              <i class="fa fa-upload"></i> Upload Files
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </form>
