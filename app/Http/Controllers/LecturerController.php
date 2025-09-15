@@ -5544,11 +5544,22 @@ $content .= '</tr>
             $actualDisk = $storageDisk;
             
             try {
-                $filePath = $file->storeAs(
-                    'materials/' . $userSubjek->id,
-                    $fileName,
-                    $storageDisk
-                );
+                if ($storageDisk === 'linode') {
+                    // For Linode, use putFileAs with public visibility
+                    $filePath = Storage::disk('linode')->putFileAs(
+                        'materials/' . $userSubjek->id,
+                        $file,
+                        $fileName,
+                        'public'
+                    );
+                } else {
+                    // For local storage
+                    $filePath = $file->storeAs(
+                        'materials/' . $userSubjek->id,
+                        $fileName,
+                        $storageDisk
+                    );
+                }
             } catch (\Exception $e) {
                 // Fallback to public disk if linode fails
                 $actualDisk = 'public';
@@ -5609,8 +5620,9 @@ $content .= '</tr>
         }
 
         // Delete file from storage
-        if (Storage::disk('public')->exists($material->file_path)) {
-            Storage::disk('public')->delete($material->file_path);
+        $storageDisk = $material->storage_disk ?? 'public';
+        if (Storage::disk($storageDisk)->exists($material->file_path)) {
+            Storage::disk($storageDisk)->delete($material->file_path);
         }
 
         // Delete from database
@@ -5722,6 +5734,7 @@ $content .= '</tr>
             $debug = [
                 'material_id' => $materialId,
                 'file_path' => $material->file_path,
+                'storage_disk' => $material->storage_disk ?? 'unknown',
                 'storage_paths' => [
                     'public_disk_exists' => Storage::disk('public')->exists($material->file_path),
                     'local_disk_exists' => Storage::disk('local')->exists($material->file_path),
@@ -5739,10 +5752,50 @@ $content .= '</tr>
                 $debug['storage_paths']['public_disk_path'] = Storage::disk('public')->path($material->file_path);
             }
 
+            if (Storage::disk('linode')->exists($material->file_path)) {
+                $debug['storage_paths']['linode_url'] = Storage::disk('linode')->url($material->file_path);
+            }
+
             return response()->json($debug);
         }
         
         abort(404);
+    }
+
+    /**
+     * Fix existing private files by making them public (one-time fix)
+     */
+    public function fixPrivateFiles()
+    {
+        if (config('app.env') !== 'production') {
+            return response()->json(['error' => 'Only available in production']);
+        }
+
+        $materials = DB::table('lecturer_materials')
+            ->where('storage_disk', 'linode')
+            ->get();
+
+        $fixed = 0;
+        $errors = [];
+
+        foreach ($materials as $material) {
+            try {
+                if (Storage::disk('linode')->exists($material->file_path)) {
+                    // Set file visibility to public
+                    Storage::disk('linode')->setVisibility($material->file_path, 'public');
+                    $fixed++;
+                }
+            } catch (\Exception $e) {
+                $errors[] = "Material ID {$material->id}: " . $e->getMessage();
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'fixed_count' => $fixed,
+            'total_materials' => count($materials),
+            'errors' => $errors
+        ]);
     }
 
   
