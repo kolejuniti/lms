@@ -1527,6 +1527,7 @@ $content .= '<tr>
             ->leftJoin('tbllecture_room', 'replacement_class.lecture_room_id', '=', 'tbllecture_room.id')
             ->leftJoin('tbllecture_room as revised_room', 'replacement_class.revised_room_id', '=', 'revised_room.id')
             ->leftJoin('users as kp_user', 'replacement_class.kp_ic', '=', 'kp_user.ic')
+            ->where('users.usrtype', 'LCT')
             ->whereIn('subjek_structure.program_id', $programs);
             
         }elseif($user->usrtype == 'AO')
