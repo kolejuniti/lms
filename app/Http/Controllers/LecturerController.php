@@ -5538,18 +5538,33 @@ $content .= '</tr>
             // Generate unique filename
             $fileName = time() . '_' . uniqid() . '.' . $extension;
             
-            // Store file in public/storage/materials/{user_subjek_id}
-            $filePath = $file->storeAs(
-                'materials/' . $userSubjek->id,
-                $fileName,
-                'public'
-            );
+            // Store file in materials/{user_subjek_id}
+            // Try to use the same storage disk as other files in the application
+            $storageDisk = config('app.env') === 'production' ? 'linode' : 'public';
+            $actualDisk = $storageDisk;
+            
+            try {
+                $filePath = $file->storeAs(
+                    'materials/' . $userSubjek->id,
+                    $fileName,
+                    $storageDisk
+                );
+            } catch (\Exception $e) {
+                // Fallback to public disk if linode fails
+                $actualDisk = 'public';
+                $filePath = $file->storeAs(
+                    'materials/' . $userSubjek->id,
+                    $fileName,
+                    'public'
+                );
+            }
 
             // Save to database
             $materialId = DB::table('lecturer_materials')->insertGetId([
                 'user_subjek_id' => $userSubjek->id,
                 'file_name' => $originalName,
                 'file_path' => $filePath,
+                'storage_disk' => $actualDisk,
                 'file_type' => $extension,
                 'file_size' => $fileSize,
                 'category' => $request->category,
@@ -5609,23 +5624,125 @@ $content .= '</tr>
      */
     public function downloadLecturerMaterial($materialId)
     {
-        $user = Auth::user();
-        $material = DB::table('lecturer_materials')
-            ->where('id', $materialId)
-            ->where('uploaded_by', $user->ic)
-            ->first();
+        try {
+            $user = Auth::user();
+            $material = DB::table('lecturer_materials')
+                ->where('id', $materialId)
+                ->where('uploaded_by', $user->ic)
+                ->first();
 
-        if (!$material) {
-            abort(404, 'Material not found or unauthorized');
+            if (!$material) {
+                abort(404, 'Material not found or unauthorized');
+            }
+
+            // First try the stored disk if available
+            $preferredDisk = $material->storage_disk ?? 'public';
+            $filePath = null;
+            $disk = null;
+
+            // Try the preferred disk first
+            if (Storage::disk($preferredDisk)->exists($material->file_path)) {
+                $disk = $preferredDisk;
+                
+                // For linode (S3-compatible), get URL instead of path
+                if ($preferredDisk === 'linode') {
+                    $fileUrl = Storage::disk($preferredDisk)->url($material->file_path);
+                    return redirect($fileUrl);
+                } else {
+                    $filePath = Storage::disk($preferredDisk)->path($material->file_path);
+                }
+            } else {
+                // Fallback: Try multiple storage locations for compatibility
+                $storageDisks = ['linode', 'public', 'local'];
+                
+                foreach ($storageDisks as $diskName) {
+                    if ($diskName !== $preferredDisk && Storage::disk($diskName)->exists($material->file_path)) {
+                        $disk = $diskName;
+                        
+                        // For linode (S3-compatible), get URL instead of path
+                        if ($diskName === 'linode') {
+                            $fileUrl = Storage::disk($diskName)->url($material->file_path);
+                            return redirect($fileUrl);
+                        } else {
+                            $filePath = Storage::disk($diskName)->path($material->file_path);
+                        }
+                        break;
+                    }
+                }
+            }
+
+            // If not found in storage disks, try absolute path
+            if (!$filePath) {
+                $absolutePath = storage_path('app/public/' . $material->file_path);
+                if (file_exists($absolutePath)) {
+                    $filePath = $absolutePath;
+                }
+            }
+
+            // Last resort: try public path
+            if (!$filePath) {
+                $publicPath = public_path('storage/' . $material->file_path);
+                if (file_exists($publicPath)) {
+                    $filePath = $publicPath;
+                }
+            }
+
+            if (!$filePath || !file_exists($filePath)) {
+                \Log::error("File not found for material ID: {$materialId}, Path: {$material->file_path}");
+                abort(404, 'File not found on server');
+            }
+
+            // Set appropriate headers
+            $headers = [
+                'Content-Type' => mime_content_type($filePath),
+                'Content-Disposition' => 'attachment; filename="' . $material->file_name . '"',
+                'Content-Length' => filesize($filePath),
+            ];
+
+            return response()->download($filePath, $material->file_name, $headers);
+
+        } catch (\Exception $e) {
+            \Log::error("Download error for material ID {$materialId}: " . $e->getMessage());
+            abort(500, 'Error downloading file: ' . $e->getMessage());
         }
+    }
 
-        $filePath = storage_path('app/public/' . $material->file_path);
+    /**
+     * Debug storage paths for materials (remove this method after fixing the issue)
+     */
+    public function debugMaterialStorage($materialId)
+    {
+        if (config('app.env') !== 'production') {
+            $material = DB::table('lecturer_materials')->where('id', $materialId)->first();
+            
+            if (!$material) {
+                return response()->json(['error' => 'Material not found']);
+            }
+
+            $debug = [
+                'material_id' => $materialId,
+                'file_path' => $material->file_path,
+                'storage_paths' => [
+                    'public_disk_exists' => Storage::disk('public')->exists($material->file_path),
+                    'local_disk_exists' => Storage::disk('local')->exists($material->file_path),
+                    'linode_disk_exists' => Storage::disk('linode')->exists($material->file_path),
+                    'absolute_path' => storage_path('app/public/' . $material->file_path),
+                    'absolute_exists' => file_exists(storage_path('app/public/' . $material->file_path)),
+                    'public_path' => public_path('storage/' . $material->file_path),
+                    'public_exists' => file_exists(public_path('storage/' . $material->file_path)),
+                ],
+                'environment' => config('app.env'),
+                'app_url' => config('app.url'),
+            ];
+
+            if (Storage::disk('public')->exists($material->file_path)) {
+                $debug['storage_paths']['public_disk_path'] = Storage::disk('public')->path($material->file_path);
+            }
+
+            return response()->json($debug);
+        }
         
-        if (!file_exists($filePath)) {
-            abort(404, 'File not found');
-        }
-
-        return response()->download($filePath, $material->file_name);
+        abort(404);
     }
 
   

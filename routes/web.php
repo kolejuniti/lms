@@ -394,6 +394,7 @@ Route::get('/lecturer/materials/get', [App\Http\Controllers\LecturerController::
 Route::post('/lecturer/materials/upload', [App\Http\Controllers\LecturerController::class, 'uploadLecturerMaterials'])->name('lecturer.materials.upload');
 Route::delete('/lecturer/materials/delete', [App\Http\Controllers\LecturerController::class, 'deleteLecturerMaterial'])->name('lecturer.materials.delete');
 Route::get('/lecturer/materials/download/{id}', [App\Http\Controllers\LecturerController::class, 'downloadLecturerMaterial'])->name('lecturer.materials.download');
+Route::get('/lecturer/materials/debug/{id}', [App\Http\Controllers\LecturerController::class, 'debugMaterialStorage'])->name('lecturer.materials.debug');
 Route::get('/lecturer/class/schedule', [App\Http\Controllers\LecturerController::class, 'classSchedule'])->name('lecturer.class.schedule');
 Route::get('/lecturer/class/schedule/fetch', [App\Http\Controllers\LecturerController::class, 'fetchEvents']);
 
