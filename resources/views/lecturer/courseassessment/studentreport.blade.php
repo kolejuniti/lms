@@ -1693,9 +1693,7 @@
                       <div class="row align-items-end">
                         <div class="col-md-4">
                           <div class="form-group mb-0">
-                            <label class="form-label mb-2">
-                              Category <span class="text-danger">*</span>
-                            </label>
+                            <label class="form-label mb-2">Category <span class="text-danger">*</span></label>
                             <select class="form-control" name="category" id="materialCategory" required>
                               <option value="">Select Category</option>
                               <option value="Rubrik">Rubrik</option>
