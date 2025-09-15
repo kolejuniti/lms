@@ -1691,8 +1691,11 @@
                     <form id="materialUploadForm" enctype="multipart/form-data">
                       @csrf
                       <div class="row">
-                        <div class="col-md-4">
-                          <label>Category <span class="text-danger">*</span></label>
+                        <div class="col-md-4 d-flex flex-column">
+                          <label class="mb-1" style="display: flex; align-items: center;">
+                            Category
+                            <span class="text-danger" style="margin-left: 4px;">*</span>
+                          </label>
                           <select class="form-control" name="category" id="materialCategory" required>
                             <option value="">Select Category</option>
                             <option value="Rubrik">Rubrik</option>
