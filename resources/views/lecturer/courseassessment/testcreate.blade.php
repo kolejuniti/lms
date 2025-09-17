@@ -12,6 +12,147 @@
     #fb-rendered-form button {
         float: right;
     }
+    
+    /* Read-only form styling */
+    .test-readonly {
+        background-color: #f8f9fa !important;
+        border: 2px solid #6c757d !important;
+        border-radius: 8px !important;
+        position: relative;
+    }
+    
+    .test-readonly::before {
+        content: "READ-ONLY MODE";
+        position: absolute;
+        top: -15px;
+        right: 15px;
+        background: #6c757d;
+        color: white;
+        padding: 2px 8px;
+        font-size: 12px;
+        border-radius: 4px;
+        z-index: 1000;
+    }
+
+    /* Print Styles for Exam Paper */
+    @media print {
+        body * {
+            visibility: hidden;
+        }
+        .exam-paper, .exam-paper * {
+            visibility: visible;
+        }
+        .exam-paper {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+        }
+        @page {
+            margin: 2cm;
+            size: A4;
+        }
+    }
+
+    .exam-paper {
+        font-family: 'Times New Roman', serif;
+        line-height: 1.6;
+        color: #000;
+        background: white;
+        padding: 20px;
+        max-width: 210mm;
+        margin: 0 auto;
+    }
+
+    .exam-header {
+        text-align: center;
+        border-bottom: 2px solid #000;
+        padding-bottom: 15px;
+        margin-bottom: 25px;
+    }
+
+    .exam-title {
+        font-size: 18px;
+        font-weight: bold;
+        margin: 10px 0;
+    }
+
+    .exam-info {
+        font-size: 12px;
+        margin: 5px 0;
+    }
+
+    .exam-instructions {
+        margin: 20px 0;
+        padding: 10px;
+        background: #f8f9fa;
+        border-left: 4px solid #007bff;
+    }
+
+    .question-section {
+        margin-bottom: 25px;
+    }
+
+    .question-number {
+        font-weight: bold;
+        margin-right: 10px;
+    }
+
+    .question-text {
+        margin-bottom: 15px;
+        line-height: 1.8;
+    }
+
+    .question-image {
+        max-width: 100%;
+        height: auto;
+        margin: 10px 0;
+        border: 1px solid #ddd;
+    }
+
+    .question-options {
+        margin-left: 20px;
+    }
+
+    .option-item {
+        margin: 8px 0;
+        display: flex;
+        align-items: flex-start;
+    }
+
+    .option-letter {
+        font-weight: bold;
+        margin-right: 10px;
+        min-width: 20px;
+    }
+
+    .correct-answer {
+        background-color: #d4edda !important;
+        border: 2px solid #28a745 !important;
+        border-radius: 3px;
+        padding: 2px 5px;
+    }
+
+    .answer-key {
+        margin-top: 30px;
+        padding: 15px;
+        background: #f8f9fa;
+        border: 2px solid #6c757d;
+    }
+
+    .answer-key h4 {
+        color: #495057;
+        border-bottom: 1px solid #6c757d;
+        padding-bottom: 5px;
+    }
+
+    .subjective-answer {
+        margin-top: 10px;
+        padding: 10px;
+        background: #fff3cd;
+        border: 1px solid #ffeaa7;
+        border-radius: 5px;
+    }
 </style>
 
 <link rel="stylesheet" href="{{ asset('css/customCSS.css') }}">
@@ -150,7 +291,7 @@
                                     </div>
                                     
                                     <!-- AI Generate Test Card -->
-                                    <div class="col-md-12">
+                                    <div class="col-md-12 hide-published-element">
                                         <div class="card ai-generate-card">
                                             <div class="card-header">
                                                 <h5><i class="fa fa-magic me-2"></i> Generate Test from Document</h5>
@@ -1563,6 +1704,9 @@ You can paste from clipboard or type directly here."></textarea>
                                         <button id="save-test"  class="btn btn-primary pull-right m-1"><i class="mdi mdi-content-save"></i> Save</button>
                                         <button class="btn btn-primary-light edit-form pull-right m-1"><i class="mdi mdi-edit"></i> Edit</button>
                                     </div>
+                                    <div class="col-md-9 show-published-element" style="display: none;">
+                                        <button id="print-test" class="btn btn-success pull-right m-1"><i class="mdi mdi-printer"></i> Print Exam Paper</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -1579,6 +1723,23 @@ You can paste from clipboard or type directly here."></textarea>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jQuery-formBuilder/3.4.2/form-builder.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jQuery-formBuilder/3.4.2/form-render.min.js"></script>
+
+<!-- Ensure formRender is available -->
+<script>
+$(document).ready(function() {
+    // Wait for formRender to be available
+    var checkFormRender = function() {
+        if (typeof $.fn.formRender === 'function') {
+            console.log('formRender is now available');
+            window.formRenderReady = true;
+        } else {
+            console.log('Waiting for formRender...');
+            setTimeout(checkFormRender, 100);
+        }
+    };
+    checkFormRender();
+});
+</script>
 
 <script>
 var selected_from = '';
@@ -1716,6 +1877,12 @@ var i = 0;
 var imageDataUrls = {};
 var currentImageDataUrl;
 
+// Debug information
+console.log('Initial variables:');
+console.log('reuse:', reuse);
+console.log('test:', test);
+console.log('test_status:', test_status);
+
 var formRenderInstance;
 
 jQuery(function($) {
@@ -1730,18 +1897,50 @@ jQuery(function($) {
 
     if(reuse == '')
     {
-        if(test_status == 2){
+        console.log('Checking test status. Current status:', test_status, 'Type:', typeof test_status);
+        
+        if(test_status == 2 || test_status === "2"){
 
-            Swal.fire({
-                title: "Test is already started!",
-                text: "You are not allowed to edit anymore once published",
-                confirmButtonText: "Ok"
-            }).then(function(res){
-                renderForm(testFormData);
+            console.log('Test Status is 2 - showing read-only form');
+            console.log('Test data available:', test);
+            console.log('Test FormData:', testFormData);
+            
+            // Hide the form builder and AI generation
+            $('#fb-editor').hide();
+            $('.hide-published-element').hide();
+            $('.show-published-element').show();
+            
+            if(testFormData && testFormData.length > 0) {
+                console.log('Rendering form with data');
+                // Show the rendered form in read-only mode without SweetAlert interruption
+                // Add a small delay to ensure scripts are loaded
+                setTimeout(function() {
+                    renderForm(testFormData, true);
+                    $('#fb-rendered-form').show();
+                    $('.header-setting *').attr('disabled', 'disabled');
+                }, 300);
+                
+                // Show notification that test is published
+                Swal.fire({
+                    title: "Test is Published",
+                    text: "This test has been published and is now in read-only mode",
+                    icon: "info",
+                    confirmButtonText: "OK"
+                });
+            } else {
+                console.log('No test content found, showing placeholder');
+                // No test content found
                 $('#fb-rendered-form').show();
+                $('#fb-render').html('<div class="alert alert-info"><h4>No Test Content</h4><p>This test has no content to display.</p></div>');
                 $('.header-setting *').attr('disabled', 'disabled');
-                $('.hide-published-element').hide();
-            });
+                
+                Swal.fire({
+                    title: "Test is Published",
+                    text: "This test is published but has no content to display",
+                    icon: "warning",
+                    confirmButtonText: "OK"
+                });
+            }
 
         }else{
 
@@ -2684,6 +2883,12 @@ function createQuestionWithOptions(questionType, customOptions, correctAnswers, 
         }, 500);
     });
 
+    // Print Test Event Handler
+    $(document).on('click', '#print-test', function(e){
+        e.preventDefault();
+        printExamPaper();
+    });
+
     /* On Keyups */
     $(document).on('keyup', '#question-index', function(e){
         questionnum  = $('#question-index').val();
@@ -2775,18 +2980,642 @@ $('.btn.btn-primary.save-template.save-template').html("Done");
 
 
 
-function renderForm(formdata){
-    jQuery(function($) {
-        const fbRender = document.getElementById("fb-render");
-        const originalFormData = formdata;
+function renderForm(formdata, readonly = false){
+    console.log('renderForm called with:', formdata, 'readonly:', readonly);
+    
+    const fbRender = document.getElementById("fb-render");
+    const originalFormData = formdata;
 
+    if (!originalFormData || originalFormData.length === 0) {
+        console.log('No form data to render');
+        $(fbRender).html('<div class="alert alert-warning"><h4>No Content</h4><p>No test content available to display.</p></div>');
+        return;
+    }
+
+    // Check if formRender is available, with retry mechanism
+    var tryRender = function(retries = 0) {
+        if (typeof $.fn.formRender !== 'function') {
+            if (retries < 10) {
+                console.log('formRender not available, retrying... (' + retries + '/10)');
+                setTimeout(function() {
+                    tryRender(retries + 1);
+                }, 200);
+                return;
+            } else {
+                console.error('formRender is not available after retries, falling back to manual rendering');
+                renderFormManually(formdata, readonly);
+                return;
+            }
+        }
+        
+        // formRender is available, proceed with rendering
+        performFormRender(originalFormData, readonly);
+    };
+    
+    tryRender();
+}
+
+function performFormRender(originalFormData, readonly) {
+    const fbRender = document.getElementById("fb-render");
+    
+    try {
         var formRenderOptions = {
             datatype: 'json',
             formData: JSON.stringify(originalFormData)
         };
 
-        $(fbRender).formRender(formRenderOptions );
+        console.log('Form render options:', formRenderOptions);
+        $(fbRender).formRender(formRenderOptions);
+        
+        // If readonly mode, disable all form interactions
+        if(readonly) {
+            setTimeout(function() {
+                $('#fb-render').find('input, select, textarea, button').prop('disabled', true);
+                $('#fb-render').find('input[type="radio"], input[type="checkbox"]').prop('disabled', true);
+                $('#fb-render').css('pointer-events', 'none');
+                $('#fb-render').css('opacity', '0.8');
+                $('#fb-rendered-form').addClass('test-readonly');
+                console.log('Applied readonly styles');
+            }, 200);
+        }
+    } catch (error) {
+        console.error('Error rendering form:', error);
+        console.log('Falling back to manual rendering');
+        renderFormManually(originalFormData, readonly);
+    }
+}
+
+function renderFormManually(formdata, readonly = false) {
+    console.log('Manual rendering started');
+    const fbRender = document.getElementById("fb-render");
+    let html = '<div class="manual-form-render">';
+    
+    if (!formdata || formdata.length === 0) {
+        html += '<div class="alert alert-info"><h4>No Test Questions</h4><p>This test has no questions to display.</p></div>';
+    } else {
+        html += '<h4>Test Content (Read-Only)</h4>';
+        formdata.forEach((field, index) => {
+            html += renderField(field, index, readonly);
+        });
+    }
+    
+    html += '</div>';
+    $(fbRender).html(html);
+    
+    if(readonly) {
+        $('#fb-rendered-form').addClass('test-readonly');
+    }
+}
+
+function renderField(field, index, readonly) {
+    let html = `<div class="form-group mb-3" data-field-index="${index}">`;
+    
+    switch(field.type) {
+        case 'header':
+            html += `<${field.subtype || 'h3'}>${field.label || 'Header'}</${field.subtype || 'h3'}>`;
+            break;
+        case 'paragraph':
+            html += `<p>${field.label || 'Paragraph text'}</p>`;
+            break;
+        case 'radio-group':
+            html += `<label class="form-label"><strong>${field.label || 'Radio Question'}</strong></label>`;
+            if (field.values) {
+                field.values.forEach((option, i) => {
+                    const checked = field.userData && field.userData[0] === option.value ? 'checked' : '';
+                    html += `<div class="form-check">
+                        <input class="form-check-input" type="radio" name="field_${index}" value="${option.value}" ${checked} ${readonly ? 'disabled' : ''}>
+                        <label class="form-check-label">${option.label}</label>
+                    </div>`;
+                });
+            }
+            break;
+        case 'checkbox-group':
+            html += `<label class="form-label"><strong>${field.label || 'Checkbox Question'}</strong></label>`;
+            if (field.values) {
+                field.values.forEach((option, i) => {
+                    const checked = field.userData && field.userData.includes(option.value) ? 'checked' : '';
+                    html += `<div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="field_${index}[]" value="${option.value}" ${checked} ${readonly ? 'disabled' : ''}>
+                        <label class="form-check-label">${option.label}</label>
+                    </div>`;
+                });
+            }
+            break;
+        case 'text':
+        case 'textarea':
+            const inputType = field.type === 'textarea' ? 'textarea' : 'input';
+            const value = field.userData && field.userData[0] ? field.userData[0] : '';
+            html += `<label class="form-label"><strong>${field.label || 'Text Input'}</strong></label>`;
+            if (inputType === 'textarea') {
+                html += `<textarea class="form-control" name="field_${index}" ${readonly ? 'readonly' : ''}>${value}</textarea>`;
+            } else {
+                html += `<input type="text" class="form-control" name="field_${index}" value="${value}" ${readonly ? 'readonly' : ''}>`;
+            }
+            break;
+        case 'file':
+            // Skip file fields in manual render as they are handled in the main print function
+            break;
+        default:
+            html += `<div class="alert alert-secondary">Unsupported field type: ${field.type}</div>`;
+    }
+    
+    html += '</div>';
+    return html;
+}
+
+// Print Test Function
+function printExamPaper() {
+    console.log('Generating exam paper for printing...');
+    console.log('Test form data:', testFormData);
+    
+    if (!testFormData || testFormData.length === 0) {
+        alert('No test content available to print.');
+        return;
+    }
+
+    // Create exam paper HTML
+    const examPaperHtml = generateExamPaperHTML(testFormData);
+    
+    // Create a new window for printing
+    const printWindow = window.open('', '_blank', 'width=800,height=600');
+    printWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Exam Paper - ${test.title || 'Test'}</title>
+            <style>
+                ${getExamPaperStyles()}
+            </style>
+        </head>
+        <body>
+            ${examPaperHtml}
+        </body>
+        </html>
+    `);
+    
+    printWindow.document.close();
+    
+    // Wait for images to load before printing
+    setTimeout(() => {
+        printWindow.print();
+        // printWindow.close(); // Uncomment if you want to auto-close
+    }, 1000);
+}
+
+function generateExamPaperHTML(formData) {
+    let html = '<div class="exam-paper">';
+    
+    // Header
+    html += `
+        <div class="exam-header">
+            <h1 class="exam-title">${test.title || 'Test Examination'}</h1>
+            <div class="exam-info">Course: ${test.course_name || 'Course Name'}</div>
+            <div class="exam-info">Date: ${new Date().toLocaleDateString()}</div>
+            <div class="exam-info">Duration: ${test.duration || 'Not specified'} minutes</div>
+            <div class="exam-info">Total Marks: ${test.total_mark || 'Not specified'}</div>
+        </div>
+    `;
+    
+    // Instructions
+    html += `
+        <div class="exam-instructions">
+            <h4>Instructions:</h4>
+            <ul>
+                <li>Read all questions carefully before answering.</li>
+                <li>Answer all questions.</li>
+                <li>Write clearly and legibly.</li>
+                <li>Manage your time effectively.</li>
+            </ul>
+        </div>
+    `;
+    
+    // Process questions in sequential order following the data structure
+    let multipleChoiceQuestions = [];
+    let subjectiveQuestions = [];
+    let answerKey = [];
+    
+    // Parse questions sequentially based on the JSON structure pattern
+    let i = 0;
+    console.log('Starting to parse form data, total elements:', formData.length);
+    
+    while (i < formData.length) {
+        // Look for question header
+        if (formData[i].type === 'header' && formData[i].label && formData[i].label.includes('Question')) {
+            console.log('Found question header at index', i, ':', formData[i].label);
+            const questionData = parseQuestionSequence(formData, i);
+            console.log('Parsed question data:', questionData);
+            
+            if (questionData.answerType === 'radio-group' || questionData.answerType === 'checkbox-group') {
+                multipleChoiceQuestions.push(questionData);
+                console.log('Added to multiple choice questions');
+            } else if (questionData.answerType === 'textarea') {
+                subjectiveQuestions.push(questionData);
+                console.log('Added to subjective questions');
+            }
+            
+            // Add to answer key
+            if (questionData.correctAnswer) {
+                answerKey.push({
+                    number: questionData.questionNumber,
+                    type: questionData.answerType === 'radio-group' ? 'Single Choice' : 
+                          questionData.answerType === 'checkbox-group' ? 'Multiple Choice' : 'Subjective',
+                    answers: Array.isArray(questionData.correctAnswer) ? questionData.correctAnswer : [questionData.correctAnswer],
+                    marks: questionData.marks
+                });
+            }
+            
+            i = questionData.nextIndex;
+        } else {
+            i++;
+        }
+    }
+    
+    console.log('Parsing complete. Multiple choice questions:', multipleChoiceQuestions.length, 'Subjective questions:', subjectiveQuestions.length);
+    
+    // Part I: Multiple Choice Questions
+    if (multipleChoiceQuestions.length > 0) {
+        html += `
+            <h3>Part I: Multiple Choice Questions</h3>
+            <p><strong>Instructions:</strong> Choose the best answer for each question. Mark your answer clearly.</p>
+        `;
+        
+        multipleChoiceQuestions.forEach(question => {
+            html += question.html;
+        });
+    }
+    
+    // Part II: Subjective Questions
+    if (subjectiveQuestions.length > 0) {
+        html += `
+            <h3>Part II: Written Questions</h3>
+            <p><strong>Instructions:</strong> Answer the following questions in the space provided.</p>
+        `;
+        
+        subjectiveQuestions.forEach(question => {
+            html += question.html;
+        });
+    }
+    
+    // Answer Key
+    if (answerKey.length > 0) {
+        html += generateAnswerKey(answerKey);
+    }
+    
+    html += '</div>';
+    return html;
+}
+
+function parseQuestionSequence(formData, startIndex) {
+    let questionData = {
+        questionNumber: null,
+        questionText: '',
+        questionImage: null,
+        answerType: null,
+        options: [],
+        correctAnswer: null,
+        marks: null,
+        html: '',
+        nextIndex: startIndex + 1
+    };
+    
+    let currentIndex = startIndex;
+    
+    // Step 1: Extract question number from header
+    if (formData[currentIndex].type === 'header') {
+        const headerLabel = formData[currentIndex].label;
+        const questionMatch = headerLabel.match(/Question\s+(\d+)/i);
+        questionData.questionNumber = questionMatch ? parseInt(questionMatch[1]) : null;
+        currentIndex++;
+    }
+    
+    // Step 2: Check for image (file type with image URL)
+    if (currentIndex < formData.length && formData[currentIndex].type === 'file' && formData[currentIndex].name) {
+        questionData.questionImage = formData[currentIndex].name;
+        console.log('Found image for question', questionData.questionNumber, ':', questionData.questionImage);
+        currentIndex++;
+    } else {
+        console.log('No image found for question', questionData.questionNumber);
+    }
+    
+    // Step 3: Extract question text from paragraph
+    if (currentIndex < formData.length && formData[currentIndex].type === 'paragraph') {
+        questionData.questionText = formData[currentIndex].label || '';
+        currentIndex++;
+    }
+    
+    // Step 4: Extract answer input (radio-group, checkbox-group, or textarea)
+    if (currentIndex < formData.length) {
+        const answerField = formData[currentIndex];
+        if (answerField.type === 'radio-group' || answerField.type === 'checkbox-group') {
+            questionData.answerType = answerField.type;
+            questionData.options = answerField.values || [];
+            currentIndex++;
+        } else if (answerField.type === 'textarea') {
+            questionData.answerType = 'textarea';
+            currentIndex++;
+        }
+    }
+    
+    // Step 5: Extract correct answer (paragraph with "correct-answer" class)
+    if (currentIndex < formData.length && formData[currentIndex].type === 'paragraph' && 
+        formData[currentIndex].className && formData[currentIndex].className.includes('correct-answer')) {
+        questionData.correctAnswer = formData[currentIndex].label;
+        currentIndex++;
+    }
+    
+    // Step 6: Extract marks (checkbox-group with "collected-marks" class)
+    if (currentIndex < formData.length && formData[currentIndex].type === 'checkbox-group' && 
+        formData[currentIndex].className && formData[currentIndex].className.includes('collected-marks')) {
+        if (formData[currentIndex].values && formData[currentIndex].values.length > 0) {
+            questionData.marks = formData[currentIndex].values.map(v => v.label).join(', ');
+        }
+        currentIndex++;
+    }
+    
+    // Skip other fields (inputmark, feedback-text, etc.) until next question or end
+    while (currentIndex < formData.length && 
+           !(formData[currentIndex].type === 'header' && formData[currentIndex].label && formData[currentIndex].label.includes('Question'))) {
+        currentIndex++;
+    }
+    
+    questionData.nextIndex = currentIndex;
+    
+    // Generate HTML based on question type
+    if (questionData.answerType === 'radio-group' || questionData.answerType === 'checkbox-group') {
+        questionData.html = generateMultipleChoiceHTML(questionData);
+    } else if (questionData.answerType === 'textarea') {
+        questionData.html = generateSubjectiveHTML(questionData);
+    }
+    
+    return questionData;
+}
+
+function generateMultipleChoiceHTML(questionData) {
+    let html = `
+        <div class="question-section">
+            <div class="question-text">
+                <span class="question-number">${questionData.questionNumber}.</span>
+                ${questionData.questionText}
+            </div>
+    `;
+    
+    // Add image if exists with standard size
+    if (questionData.questionImage && questionData.questionImage.trim() !== '') {
+        html += `<div style="text-align: center; margin: 15px 0;">
+            <img src="${questionData.questionImage}" alt="" class="question-image" style="width: 300px; height: 200px; object-fit: contain; border: 1px solid #ddd; background-color: #f8f9fa;">
+        </div>`;
+    }
+    
+    if (questionData.options && questionData.options.length > 0) {
+        html += '<div class="question-options">';
+        
+        questionData.options.forEach((option, index) => {
+            const letter = String.fromCharCode(65 + index); // A, B, C, D...
+            html += `
+                <div class="option-item">
+                    <span class="option-letter">${letter}.</span>
+                    <span class="option-text">${option.label || option.value}</span>
+                </div>
+            `;
+        });
+        
+        html += '</div>';
+    }
+    
+    html += '</div>';
+    return html;
+}
+
+function generateSubjectiveHTML(questionData) {
+    let html = `
+        <div class="question-section">
+            <div class="question-text">
+                <span class="question-number">${questionData.questionNumber}.</span>
+                ${questionData.questionText}
+            </div>
+    `;
+    
+    // Add image if exists with standard size
+    if (questionData.questionImage && questionData.questionImage.trim() !== '') {
+        html += `<div style="text-align: center; margin: 15px 0;">
+            <img src="${questionData.questionImage}" alt="" class="question-image" style="width: 300px; height: 200px; object-fit: contain; border: 1px solid #ddd; background-color: #f8f9fa;">
+        </div>`;
+    }
+    
+    html += `
+            <div style="border: 1px solid #ddd; min-height: 100px; margin-top: 15px; padding: 10px;">
+                <em style="color: #666;">Write your answer here:</em>
+                <br><br><br><br>
+            </div>
+        </div>
+    `;
+    return html;
+}
+
+function processMultipleChoiceQuestion(field, questionNumber) {
+    let questionHtml = `
+        <div class="question-section">
+            <div class="question-text">
+                <span class="question-number">${questionNumber}.</span>
+                ${field.label || 'Question'}
+            </div>
+    `;
+    
+    // Add image if exists
+    if (field.name && field.name.startsWith('http')) {
+        questionHtml += `<img src="${field.name}" alt="" class="question-image">`;
+    }
+    
+    if (field.values && field.values.length > 0) {
+        questionHtml += '<div class="question-options">';
+        
+        field.values.forEach((option, index) => {
+            const letter = String.fromCharCode(65 + index); // A, B, C, D...
+            questionHtml += `
+                <div class="option-item">
+                    <span class="option-letter">${letter}.</span>
+                    <span class="option-text">${option.label || option.value}</span>
+                </div>
+            `;
+        });
+        
+        questionHtml += '</div>';
+    }
+    
+    questionHtml += '</div>';
+    
+    return { html: questionHtml, type: field.type };
+}
+
+function processSubjectiveQuestion(field, questionNumber) {
+    let questionHtml = `
+        <div class="question-section">
+            <div class="question-text">
+                <span class="question-number">${questionNumber}.</span>
+                ${field.label || 'Question'}
+            </div>
+    `;
+    
+    // Add image if exists
+    if (field.name && field.name.startsWith('http')) {
+        questionHtml += `<img src="${field.name}" alt="" class="question-image">`;
+    }
+    
+    // Add answer space
+    questionHtml += `
+            <div style="border: 1px solid #ddd; min-height: 100px; margin-top: 15px; padding: 10px;">
+                <em style="color: #666;">Write your answer here:</em>
+                <br><br><br><br>
+            </div>
+        </div>
+    `;
+    
+    return { html: questionHtml, type: field.type };
+}
+
+function getCorrectAnswers(field, formData, currentIndex) {
+    // Look for the next element which might contain correct answers
+    for (let i = currentIndex + 1; i < formData.length; i++) {
+        const nextField = formData[i];
+        if (nextField.className && nextField.className.includes('correct-answer')) {
+            if (nextField.label) {
+                return nextField.label.split(',').map(answer => answer.trim());
+            }
+        }
+        // Stop looking if we hit another question
+        if (nextField.type === 'radio-group' || nextField.type === 'checkbox-group' || 
+            nextField.type === 'text' || nextField.type === 'textarea') {
+            break;
+        }
+    }
+    return [];
+}
+
+function getSampleAnswer(field, formData, currentIndex) {
+    // Look for feedback or sample answer in subsequent fields
+    for (let i = currentIndex + 1; i < formData.length; i++) {
+        const nextField = formData[i];
+        if (nextField.className && 
+            (nextField.className.includes('feedback-text') || 
+             nextField.className.includes('sample-answer'))) {
+            return nextField.label || nextField.userData?.[0] || '';
+        }
+        // Stop looking if we hit another question
+        if (nextField.type === 'radio-group' || nextField.type === 'checkbox-group' || 
+            nextField.type === 'text' || nextField.type === 'textarea') {
+            break;
+        }
+    }
+    return '';
+}
+
+function generateAnswerKey(answerKey) {
+    let html = `
+        <div class="answer-key">
+            <h4>Answer Key (For Instructor Use Only)</h4>
+    `;
+    
+    answerKey.forEach(answer => {
+        html += `
+            <div style="margin: 10px 0; border-bottom: 1px solid #ddd; padding-bottom: 8px;">
+                <strong>Question ${answer.number} (${answer.type}):</strong>
+                <br>
+                <span style="margin-left: 20px;">Answer: ${answer.answers.join(', ')}</span>
+                ${answer.marks ? `<br><span style="margin-left: 20px;">Marks: ${answer.marks}</span>` : ''}
+            </div>
+        `;
     });
+    
+    html += '</div>';
+    return html;
+}
+
+function getExamPaperStyles() {
+    return `
+        body {
+            font-family: 'Times New Roman', serif;
+            line-height: 1.6;
+            color: #000;
+            background: white;
+            margin: 0;
+            padding: 20px;
+        }
+        .exam-paper {
+            max-width: 100%;
+            margin: 0;
+        }
+        .exam-header {
+            text-align: center;
+            border-bottom: 2px solid #000;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+        .exam-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .exam-info {
+            font-size: 14px;
+            margin: 5px 0;
+        }
+        .exam-instructions {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border: 1px solid #ccc;
+        }
+        .question-section {
+            margin-bottom: 25px;
+            page-break-inside: avoid;
+        }
+        .question-number {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .question-text {
+            margin-bottom: 15px;
+            line-height: 1.8;
+            font-size: 14px;
+        }
+        .question-image {
+            width: 300px;
+            height: 200px;
+            object-fit: contain;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            background-color: #f8f9fa;
+        }
+        .question-options {
+            margin-left: 20px;
+        }
+        .option-item {
+            margin: 8px 0;
+            display: flex;
+            align-items: flex-start;
+        }
+        .option-letter {
+            font-weight: bold;
+            margin-right: 10px;
+            min-width: 25px;
+        }
+        .answer-key {
+            margin-top: 30px;
+            padding: 15px;
+            background: #f8f9fa;
+            border: 2px solid #6c757d;
+            page-break-before: always;
+        }
+        .answer-key h4 {
+            color: #495057;
+            border-bottom: 1px solid #6c757d;
+            padding-bottom: 5px;
+        }
+        @media print {
+            body { print-color-adjust: exact; }
+            .exam-paper { padding: 0; }
+        }
+    `;
 }
 
 var imageDataUrls = [];
