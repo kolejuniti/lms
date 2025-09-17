@@ -547,29 +547,37 @@ function updateCertificateStatus(certificateId, newStatus)
 
 // Bulk Certificate Functions
 function exportBulkTemplate() {
-    // Data to be exported with Malaysian IC examples
-    const data = [
-        { student_ic: '' }
-    ];
-
-    // Convert data to worksheet
-    const ws = XLSX.utils.json_to_sheet(data);
+    // Create worksheet manually to better control formatting
+    const ws = XLSX.utils.aoa_to_sheet([
+        ['student_ic'],
+        ['911017045043'],
+        ['030401110460'],
+        ['701031001121'],
+        ['']
+    ]);
 
     // Set column width for better visibility
     ws['!cols'] = [{ width: 20 }];
 
-    // Format the student_ic column as text to prevent scientific notation
+    // Format all cells in column A as text to preserve leading zeros
     const range = XLSX.utils.decode_range(ws['!ref']);
     for (let R = range.s.r; R <= range.e.r; ++R) {
         const cellAddress = XLSX.utils.encode_cell({ r: R, c: 0 });
         if (ws[cellAddress]) {
             ws[cellAddress].t = 's'; // Set cell type to string
-            // Add a prefix apostrophe to force text format
-            if (ws[cellAddress].v && ws[cellAddress].v !== 'student_ic') {
-                ws[cellAddress].v = "'" + ws[cellAddress].v;
-            }
+            ws[cellAddress].z = '@'; // Set number format to text
         }
     }
+
+    // Add instructions as comments or additional sheet
+    const instructionText = 'Instructions:\n' +
+                           '1. Replace example ICs with actual student IC numbers\n' +
+                           '2. Ensure all ICs are 12 digits (pad with leading zeros if needed)\n' +
+                           '3. Examples: 911017045043, 030401110460, 701031001121\n' +
+                           '4. Save and upload the file';
+    
+    // Add instruction cell
+    ws['B1'] = { v: instructionText, t: 's' };
 
     // Create a new workbook
     const wb = XLSX.utils.book_new();

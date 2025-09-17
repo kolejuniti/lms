@@ -6992,6 +6992,28 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
                     continue; // Skip empty rows
                 }
 
+                // Clean and format IC number - remove any non-digit characters and ensure proper length
+                $studentIc = preg_replace('/[^0-9]/', '', $studentIc);
+                
+                // Ensure IC is 12 digits - pad with leading zeros if needed
+                if (strlen($studentIc) < 12 && strlen($studentIc) > 0) {
+                    $studentIc = str_pad($studentIc, 12, '0', STR_PAD_LEFT);
+                }
+                
+                // Validate IC length
+                if (strlen($studentIc) !== 12) {
+                    $results[] = [
+                        'student_ic' => $row[0], // Show original value
+                        'student_name' => 'Invalid IC',
+                        'serial_no' => null,
+                        'status' => null,
+                        'success' => false,
+                        'message' => 'Invalid IC format. Must be 12 digits.'
+                    ];
+                    $errorCount++;
+                    continue;
+                }
+
                 // Get student information
                 $student = DB::table('students')
                     ->join('tblprogramme', 'students.program', 'tblprogramme.id')
