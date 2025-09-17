@@ -550,9 +550,6 @@ function exportBulkTemplate() {
     // Create worksheet manually to better control formatting
     const ws = XLSX.utils.aoa_to_sheet([
         ['student_ic'],
-        ['911017045043'],
-        ['030401110460'],
-        ['701031001121'],
         ['']
     ]);
 
