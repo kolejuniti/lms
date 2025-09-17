@@ -6959,6 +6959,207 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
         }
     }
 
+    public function bulkGenerateCertificates(Request $request)
+    {
+        try {
+            // Validate the uploaded file
+            $request->validate([
+                'file' => 'required|mimes:xlsx,xls',
+                'certificate_type' => 'required|in:NEW,RECLAIMED'
+            ]);
+
+            $certificateType = $request->certificate_type;
+
+            // Load the uploaded file using PhpSpreadsheet
+            $file = $request->file('file');
+            $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($file->getRealPath());
+
+            // Get the first sheet of the Excel file
+            $sheet = $spreadsheet->getActiveSheet();
+            $rows = $sheet->toArray();
+
+            $results = [];
+            $successCount = 0;
+            $errorCount = 0;
+
+            // Iterate over the rows starting from the second row (to skip the header)
+            foreach ($rows as $index => $row) {
+                if ($index == 0) continue; // Skip header row
+
+                $studentIc = trim($row[0]); // Assuming the first column is student_ic
+                
+                if (empty($studentIc)) {
+                    continue; // Skip empty rows
+                }
+
+                // Get student information
+                $student = DB::table('students')
+                    ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+                    ->select('students.*', 'tblprogramme.progname AS program')
+                    ->where('students.ic', $studentIc)
+                    ->first();
+
+                if (!$student) {
+                    $results[] = [
+                        'student_ic' => $studentIc,
+                        'student_name' => 'Not Found',
+                        'serial_no' => null,
+                        'status' => null,
+                        'success' => false,
+                        'message' => 'Student not found in database'
+                    ];
+                    $errorCount++;
+                    continue;
+                }
+
+                // Generate certificate for this student
+                $certificateResult = $this->generateIndividualCertificate($studentIc, $certificateType);
+                
+                if ($certificateResult['success']) {
+                    $results[] = [
+                        'student_ic' => $studentIc,
+                        'student_name' => $student->name,
+                        'serial_no' => $certificateResult['serial_no'],
+                        'status' => $certificateResult['status'],
+                        'success' => true,
+                        'message' => 'Certificate generated successfully'
+                    ];
+                    $successCount++;
+                } else {
+                    $results[] = [
+                        'student_ic' => $studentIc,
+                        'student_name' => $student->name,
+                        'serial_no' => null,
+                        'status' => null,
+                        'success' => false,
+                        'message' => $certificateResult['message']
+                    ];
+                    $errorCount++;
+                }
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => "Bulk generation completed. Success: {$successCount}, Errors: {$errorCount}",
+                'results' => $results,
+                'summary' => [
+                    'total' => count($results),
+                    'success' => $successCount,
+                    'errors' => $errorCount
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error processing bulk generation: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    private function generateIndividualCertificate($studentIc, $certificateType)
+    {
+        try {
+            DB::beginTransaction();
+
+            if ($certificateType === 'NEW') {
+                // Check if student already has a certificate with status 'NEW'
+                $existingNewCertificate = DB::table('student_certificate')
+                    ->where('student_ic', $studentIc)
+                    ->where('status', 'NEW')
+                    ->first();
+
+                if ($existingNewCertificate) {
+                    DB::rollback();
+                    return [
+                        'success' => false,
+                        'message' => 'Student already has a pending certificate (Status: NEW)'
+                    ];
+                }
+
+                $status = 'NEW';
+            } else if ($certificateType === 'RECLAIMED') {
+                // Check if student has a CLAIMED certificate (required for RECLAIMED)
+                $claimedCertificate = DB::table('student_certificate')
+                    ->where('student_ic', $studentIc)
+                    ->where('status', 'CLAIMED')
+                    ->first();
+
+                if (!$claimedCertificate) {
+                    DB::rollback();
+                    return [
+                        'success' => false,
+                        'message' => 'Cannot generate reclaimed certificate. Student must have a claimed certificate first.'
+                    ];
+                }
+
+                // Check if student already has a certificate with status 'NEW'
+                $existingNewCertificate = DB::table('student_certificate')
+                    ->where('student_ic', $studentIc)
+                    ->where('status', 'NEW')
+                    ->first();
+
+                if ($existingNewCertificate) {
+                    DB::rollback();
+                    return [
+                        'success' => false,
+                        'message' => 'Cannot generate reclaimed certificate while there is a pending NEW certificate'
+                    ];
+                }
+
+                $status = 'RECLAIMED';
+            } else {
+                DB::rollback();
+                return [
+                    'success' => false,
+                    'message' => 'Invalid certificate type'
+                ];
+            }
+
+            // Get current counter
+            $counter = DB::table('certificate_counter')->where('id', 1)->first();
+            $currentCount = intval($counter->count);
+            $newCount = $currentCount + 1;
+            $newCountFormatted = str_pad($newCount, 4, '0', STR_PAD_LEFT);
+
+            // Update counter
+            DB::table('certificate_counter')
+                ->where('id', 1)
+                ->update([
+                    'count' => $newCountFormatted,
+                    'updated_at' => now()
+                ]);
+
+            // Generate serial number
+            $serialNo = 'CERT-' . date('Y') . '-' . $newCountFormatted;
+
+            // Insert new certificate record
+            DB::table('student_certificate')->insert([
+                'student_ic' => $studentIc,
+                'serial_no' => $serialNo,
+                'status' => $status,
+                'date' => now(),
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+
+            DB::commit();
+
+            return [
+                'success' => true,
+                'serial_no' => $serialNo,
+                'status' => $status
+            ];
+
+        } catch (\Exception $e) {
+            DB::rollback();
+            return [
+                'success' => false,
+                'message' => 'Error generating certificate: ' . $e->getMessage()
+            ];
+        }
+    }
+
     public function bulkStudentCertificate()
     {
         return view('pendaftar_akademik.student.certificate.bulkStudentCertificate');

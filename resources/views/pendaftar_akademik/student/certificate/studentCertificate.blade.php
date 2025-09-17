@@ -33,9 +33,10 @@
                 <h3 class="card-title">Generate Student Certificate</h3>
               </div>
               <!-- /.card-header -->
+              <!-- Individual Certificate Generation -->
               <div class="card mb-3">
                 <div class="card-header">
-                  <b>Search Student</b>
+                  <b>Individual Certificate Generation</b>
                 </div>
                 <div class="card-body">
                     <div class="row">
@@ -54,6 +55,41 @@
                             </div>
                         </div>
                     </div>
+                </div>
+              </div>
+
+              <!-- Bulk Certificate Generation -->
+              <div class="card mb-3">
+                <div class="card-header">
+                  <b>Bulk Certificate Generation</b>
+                </div>
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label class="form-label" for="excelFile">File Import (Excel)</label>
+                        <input type="file" class="form-control" id="excelFile" name="excelFile" accept=".xlsx, .xls" />
+                        <small class="text-muted">Upload Excel file with student IC numbers</small>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label class="form-label" for="certificateType">Certificate Type</label>
+                        <select class="form-select" id="certificateType" name="certificateType">
+                          <option value="NEW">New Certificate</option>
+                          <option value="RECLAIMED">Reclaimed Certificate</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="mt-3">
+                    <button class="btn btn-info me-2" id="importBulkButton">
+                      <i class="fa fa-upload"></i> Import & Generate Certificates
+                    </button>
+                    <button type="button" class="btn btn-success" onclick="exportBulkTemplate()">
+                      <i class="fa fa-download"></i> Download Template
+                    </button>
+                  </div>
                 </div>
               </div>
               <div id="form-student" style="display: none;">
@@ -149,6 +185,33 @@
                   </div>
                 </div>
               </div>
+              <div id="bulk-certificate-result" style="display: none;">
+                <div class="card mb-3">
+                  <div class="card-header">
+                    <b>Bulk Certificate Generation Results</b>
+                  </div>
+                  <div class="card-body">
+                    <div id="bulk-summary" class="alert alert-info mb-3">
+                      <!-- Summary will be populated by JavaScript -->
+                    </div>
+                    <div class="table-responsive">
+                      <table class="table table-bordered table-striped" id="bulk-certificate-table">
+                        <thead>
+                          <tr>
+                            <th>Student IC</th>
+                            <th>Student Name</th>
+                            <th>Serial Number</th>
+                            <th>Status</th>
+                            <th>Result</th>
+                          </tr>
+                        </thead>
+                        <tbody id="bulk-certificate-body">
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
             <!-- /.card -->
           </div>
@@ -159,6 +222,7 @@
   </div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script type="text/javascript">
 
 $('#search').keyup(function(event){
@@ -479,6 +543,135 @@ function updateCertificateStatus(certificateId, newStatus)
                 }
             }
         });
+}
+
+// Bulk Certificate Functions
+function exportBulkTemplate() {
+    // Data to be exported
+    const data = [
+        { student_ic: '' }
+    ];
+
+    // Convert data to worksheet
+    const ws = XLSX.utils.json_to_sheet(data);
+
+    // Create a new workbook
+    const wb = XLSX.utils.book_new();
+
+    // Append the worksheet to the workbook
+    XLSX.utils.book_append_sheet(wb, ws, 'Students');
+
+    // Generate Excel file and trigger download
+    XLSX.writeFile(wb, 'certificate_template.xlsx');
+}
+
+$('#importBulkButton').on('click', function() {
+    var fileInput = $('#excelFile')[0];
+    if (fileInput.files.length === 0) {
+        alert('Please select a file.');
+        return;
+    }
+
+    var certificateType = $('#certificateType').val();
+    
+    var formData = new FormData();
+    formData.append('file', fileInput.files[0]);
+    formData.append('certificate_type', certificateType);
+
+    // Show loading state
+    $(this).prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Processing...');
+
+    $.ajax({
+        url: "{{ url('AR/student/certificate/bulkGenerate') }}",
+        method: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        success: function(response) {
+            displayBulkResults(response);
+            
+            // Show success message
+            $.toast({
+                heading: 'Bulk Generation Complete',
+                text: response.message,
+                position: 'top-right',
+                loaderBg: '#ff6849',
+                icon: 'success',
+                hideAfter: 3500
+            });
+        },
+        error: function(xhr, status, error) {
+            let errorMessage = xhr.status + ': ' + xhr.statusText;
+            if (xhr.responseJSON && xhr.responseJSON.message) {
+                errorMessage = xhr.responseJSON.message;
+            }
+            
+            // Show error message
+            $.toast({
+                heading: 'Error',
+                text: 'Error - ' + errorMessage,
+                position: 'top-right',
+                loaderBg: '#ff6849',
+                icon: 'error',
+                hideAfter: 3500
+            });
+        },
+        complete: function() {
+            // Reset button state
+            $('#importBulkButton').prop('disabled', false).html('<i class="fa fa-upload"></i> Import & Generate Certificates');
+        }
+    });
+});
+
+function displayBulkResults(response) {
+    var tbody = $('#bulk-certificate-body');
+    tbody.empty();
+    
+    var successCount = 0;
+    var errorCount = 0;
+    
+    if(response.results && response.results.length > 0) {
+        $.each(response.results, function(index, result) {
+            var statusBadge = '';
+            var resultText = '';
+            
+            if(result.success) {
+                successCount++;
+                statusBadge = '<span class="badge bg-success">' + result.status + '</span>';
+                resultText = '<span class="text-success"><i class="fa fa-check"></i> Generated</span>';
+            } else {
+                errorCount++;
+                statusBadge = '<span class="badge bg-danger">Error</span>';
+                resultText = '<span class="text-danger"><i class="fa fa-times"></i> ' + result.message + '</span>';
+            }
+            
+            var row = '<tr>' +
+                        '<td>' + result.student_ic + '</td>' +
+                        '<td>' + (result.student_name || 'N/A') + '</td>' +
+                        '<td>' + (result.serial_no || '-') + '</td>' +
+                        '<td>' + statusBadge + '</td>' +
+                        '<td>' + resultText + '</td>' +
+                      '</tr>';
+            tbody.append(row);
+        });
+        
+        // Update summary
+        var summaryHtml = '<h6>Bulk Generation Summary</h6>' +
+                         '<p><strong>Total Processed:</strong> ' + response.results.length + '</p>' +
+                         '<p><strong>Successfully Generated:</strong> <span class="text-success">' + successCount + '</span></p>' +
+                         '<p><strong>Errors:</strong> <span class="text-danger">' + errorCount + '</span></p>';
+        
+        $('#bulk-summary').html(summaryHtml);
+        $('#bulk-certificate-result').show();
+        
+        // Hide individual forms when showing bulk results
+        $('#form-student').hide();
+        $('#certificate-history').hide();
+        $('#certificate-result').hide();
+    }
 }
 
 </script>

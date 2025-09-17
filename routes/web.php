@@ -295,6 +295,7 @@ Route::post('/AR/student/certificate/search', [App\Http\Controllers\AR_Controlle
 Route::post('/AR/student/certificate/generate', [App\Http\Controllers\AR_Controller::class, 'generateCertificateNumber']);
 Route::post('/AR/student/certificate/history', [App\Http\Controllers\AR_Controller::class, 'getCertificateHistory']);
 Route::post('/AR/student/certificate/updateStatus', [App\Http\Controllers\AR_Controller::class, 'updateCertificateStatus']);
+Route::post('/AR/student/certificate/bulkGenerate', [App\Http\Controllers\AR_Controller::class, 'bulkGenerateCertificates']);
 Route::get('/AR/student/certificate/bulk', [App\Http\Controllers\AR_Controller::class, 'bulkStudentCertificate'])->name('pendaftar_akademik.student.certificate.bulk');
 Route::post('/AR/student/certificate/bulk/getNewCertificates', [App\Http\Controllers\AR_Controller::class, 'getNewCertificates']);
 Route::post('/AR/student/certificate/bulk/claimCertificates', [App\Http\Controllers\AR_Controller::class, 'bulkClaimCertificates']);
