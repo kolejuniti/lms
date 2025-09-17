@@ -547,13 +547,29 @@ function updateCertificateStatus(certificateId, newStatus)
 
 // Bulk Certificate Functions
 function exportBulkTemplate() {
-    // Data to be exported
+    // Data to be exported with Malaysian IC examples
     const data = [
         { student_ic: '' }
     ];
 
     // Convert data to worksheet
     const ws = XLSX.utils.json_to_sheet(data);
+
+    // Set column width for better visibility
+    ws['!cols'] = [{ width: 20 }];
+
+    // Format the student_ic column as text to prevent scientific notation
+    const range = XLSX.utils.decode_range(ws['!ref']);
+    for (let R = range.s.r; R <= range.e.r; ++R) {
+        const cellAddress = XLSX.utils.encode_cell({ r: R, c: 0 });
+        if (ws[cellAddress]) {
+            ws[cellAddress].t = 's'; // Set cell type to string
+            // Add a prefix apostrophe to force text format
+            if (ws[cellAddress].v && ws[cellAddress].v !== 'student_ic') {
+                ws[cellAddress].v = "'" + ws[cellAddress].v;
+            }
+        }
+    }
 
     // Create a new workbook
     const wb = XLSX.utils.book_new();
