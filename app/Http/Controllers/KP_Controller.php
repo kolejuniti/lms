@@ -1454,18 +1454,23 @@ $content .= '<tr>
     public function replacementClassPending()
     {
         $user = Auth::user();
-        
-        // Get programs handled by this KP
-        $programs = DB::table('user_program')
-            ->join('tblprogramme', 'user_program.program_id', 'tblprogramme.id')
-            ->where('user_ic', $user->ic)
-            ->pluck('user_program.program_id');
 
-        if ($programs->isEmpty()) {
-            return view('ketua_program.replacement_class.pending', [
-                'applications' => collect(),
-                'message' => 'You are not assigned to any programs.'
-            ]);
+        if($user->usrtype == 'PL')
+        {
+        
+            // Get programs handled by this KP
+            $programs = DB::table('user_program')
+                ->join('tblprogramme', 'user_program.program_id', 'tblprogramme.id')
+                ->where('user_ic', $user->ic)
+                ->pluck('user_program.program_id');
+
+            if ($programs->isEmpty()) {
+                return view('ketua_program.replacement_class.pending', [
+                    'applications' => collect(),
+                    'message' => 'You are not assigned to any programs.'
+                ]);
+            }
+
         }
 
         // Get replacement class applications for lecturers under this KP's programs  
