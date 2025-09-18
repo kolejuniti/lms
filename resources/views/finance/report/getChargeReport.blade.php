@@ -685,6 +685,9 @@
                   No.Matric
               </th>
               <th>
+                  Student ID
+              </th>
+              <th>
                   Program
               </th>
               <th>
@@ -721,6 +724,9 @@
           </td>
           <td>
           {{ $rgs->no_matric }}
+          </td>
+          <td>
+          {{ $rgs->student_id }}
           </td>
           <td>
           {{ $rgs->progname }}

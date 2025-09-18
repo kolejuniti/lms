@@ -6804,7 +6804,8 @@ class FinanceController extends Controller
                   ->where('tblclaim.ref_no', '!=', null)
                   ->whereBetween('tblclaim.add_date', [$request->from, $request->to])
                   ->select('tblclaim.*', 
-                            DB::raw('SUM(tblclaimdtl.amount) AS amount'), 
+                            DB::raw('SUM(tblclaimdtl.amount) AS amount'),
+                            'students.id AS student_id', 
                             'students.name', 'students.program', 
                             'students.no_matric', 
                             'students.status', 
