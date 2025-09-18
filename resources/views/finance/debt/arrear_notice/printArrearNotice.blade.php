@@ -123,7 +123,7 @@ use Carbon\Carbon;
         <p class="mt-2"><i>Assalamualaikum WRT. WBT.</i></p>
         <p class="mt-2"><b>NOTIS TUNGGAKAN YURAN PENGAJIAN PELAJAR {{ strtoupper($data['student']->name) }} - {{ $data['student']->ic }}</b></p>
         <p class="mt-2">Dengan segala hormatnya, perkara di atas adalah dirujuk.</p>
-        <p class="mt-2">2. &nbsp;&nbsp;&nbsp;&nbsp;Mengikut rekod Kolej Uniti Sdn Bhd sehingga <b>{{ $data['originalDate'] }}</b>, jumlah tunggakan pembiayaan pelajaran tuan/puan dengan pihak Kolej Uniti Sdn Bhd adalah berjumlah <b>RM{{ number_format($data['balance']->balance, 0) }}</b></p>
+        <p class="mt-2">2. &nbsp;&nbsp;&nbsp;&nbsp;Mengikut rekod Kolej Uniti Sdn Bhd sehingga <b>{{ $data['originalDate'] }}</b>, jumlah tunggakan pembiayaan pelajaran tuan/puan dengan pihak Kolej Uniti Sdn Bhd adalah berjumlah <b>RM{{ number_format($data['balance']->balance, 2) }}</b></p>
         <p class="mt-2">3. &nbsp;&nbsp;&nbsp;&nbsp;Seperti persetujuan dalam pakej kewangan pelajar yang telah dipersetujui pihak tuan/puan, dikehendaki membayar tunggakan tersebut secara ansuran selepas 6 bulan menamatkan tempoh pengajian seperti berikut:</p>
         <div class="col-md-12 mt-2">
             <table class="custom-table">
@@ -138,8 +138,8 @@ use Carbon\Carbon;
                 </thead>
                 <tbody>
                     <tr>
-                        <td class="text-center">RM{{ number_format($data['balance']->balance, 0) }}</td>
-                        <td class="text-center">RM{{ number_format($data['details']['money'], 0) }}</td>
+                        <td class="text-center">RM{{ number_format($data['balance']->balance, 2) }}</td>
+                        <td class="text-center">RM{{ number_format($data['details']['money'], 2) }}</td>
                         <td class="text-center">{{ $data['details']['period'] }} BULAN</td>
                         <td class="text-center">{{ $data['startDate'] }}</td>
                         <td class="text-center">{{ $data['endDate'] }}</td>
@@ -213,7 +213,7 @@ use Carbon\Carbon;
                     </tr>
                     <tr>
                         <td>Baki Tunggakan</td>
-                        <td>&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp;&nbsp;&nbsp;<b>RM{{ number_format($data['balance']->balance, 0) }}</b></td>
+                        <td>&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp;&nbsp;&nbsp;<b>RM{{ number_format($data['balance']->balance, 2) }}</b></td>
                     </tr>
                     <tr>
                         <td>Rujukan Kami</td>
@@ -223,7 +223,7 @@ use Carbon\Carbon;
             </div> 
         </div>
 
-        <p class="mt-2">3. &nbsp;&nbsp;&nbsp;&nbsp;Dengan ini, saya bersetuju untuk membuat bayaran seperti yang termaktub di dalam perjanjian iaitu sebanyak <b>RM{{ number_format($data['details']['money'], 0) }} sebulan selama {{ $data['details']['period'] }} bulan</b> bermula <b>{{ $data['startDate'] }}</b>.</p>
+        <p class="mt-2">3. &nbsp;&nbsp;&nbsp;&nbsp;Dengan ini, saya bersetuju untuk membuat bayaran seperti yang termaktub di dalam perjanjian iaitu sebanyak <b>RM{{ number_format($data['details']['money'], 2) }} sebulan selama {{ $data['details']['period'] }} bulan</b> bermula <b>{{ $data['startDate'] }}</b>.</p>
         <p class="mt-1 mb-1">Sekian, terima kasih.</p>
         <br>
         <br>
