@@ -1,6 +1,9 @@
 @extends('layouts.pendaftar_akademik')
 
 @section('main')
+<!-- DataTables CSS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.bootstrap5.min.css">
 <!-- Content Header (Page header) -->
 <div class="content-wrapper" style="min-height: 695.8px;">
   <div class="container-full">
@@ -122,7 +125,19 @@
   </div>
 </div>
 
+<!-- DataTables JS -->
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.bootstrap5.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.print.min.js"></script>
+
 <script type="text/javascript">
+var dataTable;
 
 $(document).ready(function() {
     loadNewCertificates();
@@ -134,7 +149,17 @@ $('#refresh-certificates').on('click', function() {
 
 $('#select-all, #select-all-header').on('change', function() {
     var isChecked = $(this).is(':checked');
-    $('.certificate-checkbox').prop('checked', isChecked);
+    
+    // Handle DataTable pagination - select all visible rows
+    if (dataTable) {
+        dataTable.rows({page: 'current'}).every(function() {
+            var checkbox = $(this.node()).find('.certificate-checkbox');
+            checkbox.prop('checked', isChecked);
+        });
+    } else {
+        $('.certificate-checkbox').prop('checked', isChecked);
+    }
+    
     $('#select-all').prop('checked', isChecked);
     $('#select-all-header').prop('checked', isChecked);
     updateSelectedCount();
@@ -190,6 +215,12 @@ function loadNewCertificates() {
 }
 
 function displayCertificates(certificates) {
+    // Destroy existing DataTable if it exists
+    if (dataTable) {
+        dataTable.destroy();
+        dataTable = null;
+    }
+    
     var tbody = $('#certificates-table-body');
     tbody.empty();
     
@@ -214,6 +245,88 @@ function displayCertificates(certificates) {
             tbody.append(row);
         });
         
+        // Initialize DataTable with export buttons
+        dataTable = $('#certificates-table').DataTable({
+            "responsive": true,
+            "pageLength": 25,
+            "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+            "order": [[7, "desc"]], // Sort by date generated (desc)
+            "columnDefs": [
+                {
+                    "targets": [0], // Checkbox column
+                    "orderable": false,
+                    "searchable": false
+                }
+            ],
+            "dom": '<"row"<"col-md-6"l><"col-md-6"f>>' +
+                   '<"row"<"col-md-12"B>>' +
+                   '<"row"<"col-md-12"tr>>' +
+                   '<"row"<"col-md-5"i><"col-md-7"p>>',
+            "buttons": [
+                {
+                    extend: 'copy',
+                    className: 'btn btn-outline-secondary btn-sm me-1',
+                    text: '<i class="fa fa-copy me-1"></i>Copy',
+                    exportOptions: {
+                        columns: [1, 2, 3, 4, 5, 6, 7] // Exclude checkbox column
+                    }
+                },
+                {
+                    extend: 'excel',
+                    className: 'btn btn-outline-success btn-sm me-1',
+                    text: '<i class="fa fa-file-excel-o me-1"></i>Excel',
+                    title: 'Student Certificates - ' + new Date().toLocaleDateString(),
+                    exportOptions: {
+                        columns: [1, 2, 3, 4, 5, 6, 7] // Exclude checkbox column
+                    }
+                },
+                {
+                    extend: 'pdf',
+                    className: 'btn btn-outline-danger btn-sm me-1',
+                    text: '<i class="fa fa-file-pdf-o me-1"></i>PDF',
+                    title: 'Student Certificates - ' + new Date().toLocaleDateString(),
+                    orientation: 'landscape',
+                    pageSize: 'A4',
+                    exportOptions: {
+                        columns: [1, 2, 3, 4, 5, 6, 7] // Exclude checkbox column
+                    }
+                },
+                {
+                    extend: 'print',
+                    className: 'btn btn-outline-info btn-sm',
+                    text: '<i class="fa fa-print me-1"></i>Print',
+                    title: 'Student Certificates - ' + new Date().toLocaleDateString(),
+                    exportOptions: {
+                        columns: [1, 2, 3, 4, 5, 6, 7] // Exclude checkbox column
+                    }
+                }
+            ],
+            "language": {
+                "search": "_INPUT_",
+                "searchPlaceholder": "Search certificates...",
+                "lengthMenu": "Show _MENU_ entries",
+                "info": "Showing _START_ to _END_ of _TOTAL_ certificates",
+                "infoEmpty": "Showing 0 to 0 of 0 certificates",
+                "infoFiltered": "(filtered from _MAX_ total certificates)",
+                "emptyTable": "No certificates with NEW status found",
+                "zeroRecords": "No matching certificates found"
+            }
+        });
+        
+        // Add event listener for page changes to update select all state
+        dataTable.on('page.dt', function() {
+            setTimeout(function() {
+                updateSelectAllState();
+            }, 100);
+        });
+        
+        // Add event listener for search to update select all state
+        dataTable.on('search.dt', function() {
+            setTimeout(function() {
+                updateSelectAllState();
+            }, 100);
+        });
+        
         $('#certificates-section').show();
         updateSelectedCount();
     } else {
@@ -233,8 +346,22 @@ function updateSelectedCount() {
 }
 
 function updateSelectAllState() {
-    var totalCheckboxes = $('.certificate-checkbox').length;
-    var checkedCheckboxes = $('.certificate-checkbox:checked').length;
+    var totalCheckboxes, checkedCheckboxes;
+    
+    if (dataTable) {
+        // Count checkboxes in currently visible page
+        totalCheckboxes = dataTable.rows({page: 'current'}).nodes().length;
+        checkedCheckboxes = 0;
+        dataTable.rows({page: 'current'}).every(function() {
+            var checkbox = $(this.node()).find('.certificate-checkbox');
+            if (checkbox.is(':checked')) {
+                checkedCheckboxes++;
+            }
+        });
+    } else {
+        totalCheckboxes = $('.certificate-checkbox').length;
+        checkedCheckboxes = $('.certificate-checkbox:checked').length;
+    }
     
     var selectAllState = false;
     if (totalCheckboxes > 0 && checkedCheckboxes === totalCheckboxes) {
