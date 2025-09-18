@@ -367,10 +367,10 @@
                                                     <i class="mdi mdi-pencil text-primary"></i>
                                                 </button>
                                                     
-                                                <button onclick="deleteMaterial('{{ $fold->DrID }}')" 
+                                                {{-- <button onclick="deleteMaterial('{{ $fold->DrID }}')" 
                                                     class="btn btn-floating" data-bs-toggle="tooltip" title="Delete">
                                                     <i class="mdi mdi-delete text-danger"></i>
-                                                </button>
+                                                </button> --}}
                                             </div>
 
                                             <form method="post" name="form-rename" id="form-rename" class="px-3 pb-3"> 

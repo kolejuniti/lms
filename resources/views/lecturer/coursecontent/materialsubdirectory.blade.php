@@ -677,10 +677,10 @@
                                                     <i class="mdi mdi-pencil text-primary"></i>
                                                 </button>
                                                     
-                                                <button onclick="deleteMaterial('{{ $fold->DrID }}')" 
+                                                {{-- <button onclick="deleteMaterial('{{ $fold->DrID }}')" 
                                                     class="btn btn-floating" data-bs-toggle="tooltip" title="Delete">
                                                     <i class="mdi mdi-delete text-danger"></i>
-                                                </button>
+                                                </button> --}}
                                             </div>
 
                                             <form method="post" name="form-rename" id="form-rename" class="px-3 pb-3"> 
@@ -743,10 +743,10 @@
                                                     <i class="mdi mdi-pencil text-primary"></i>
                                                 </button>
                                                     
-                                                <button onclick="deleteMaterialfile('{{ $mats }}')" 
+                                                {{-- <button onclick="deleteMaterialfile('{{ $mats }}')" 
                                                     class="btn btn-floating" data-bs-toggle="tooltip" title="Delete">
                                                     <i class="mdi mdi-delete text-danger"></i>
-                                                </button>
+                                                </button> --}}
                                             </div>
 
                                             <form method="post" name="form-rename" id="form-rename" class="px-3 pb-3"> 
@@ -787,9 +787,9 @@
                                                         <button type="button" class="btn btn-info-floating" id="infoButton{{ $key }}" data-bs-toggle="tooltip" title="View Description">
                                                             <i class="fa fa-info"></i>
                                                         </button>
-                                                        <button type="button" class="btn btn-floating" onclick="deleteUrl('{{ $ul->DrID }}')" data-bs-toggle="tooltip" title="Delete">
+                                                        {{-- <button type="button" class="btn btn-floating" onclick="deleteUrl('{{ $ul->DrID }}')" data-bs-toggle="tooltip" title="Delete">
                                                             <i class="mdi mdi-delete text-danger"></i>
-                                                        </button>
+                                                        </button> --}}
                                                     </div>
                                                 </div>
                                                 
