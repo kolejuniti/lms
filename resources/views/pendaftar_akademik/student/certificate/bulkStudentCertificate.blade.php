@@ -22,11 +22,19 @@
 /* Style the buttons container */
 .dt-buttons {
     margin-bottom: 10px;
+    display: inline-block;
+    text-align: left;
 }
 
 .dt-buttons .btn {
     margin-right: 5px;
     margin-bottom: 5px;
+}
+
+/* Force buttons to stay on the left */
+.dataTables_wrapper .dt-buttons {
+    float: none !important;
+    text-align: left !important;
 }
 
 /* Responsive adjustments */
@@ -58,21 +66,54 @@
 /* Force table to use full container width */
 .dataTables_wrapper .row {
     margin: 0;
+    width: 100%;
 }
 
 .dataTables_wrapper .row [class*="col-"] {
     padding: 0 5px;
 }
 
+/* Fix DataTables button positioning */
+.dataTables_wrapper .row:first-child {
+    margin-bottom: 15px;
+}
+
+.dataTables_wrapper .row:first-child .dt-buttons {
+    text-align: left !important;
+    float: none !important;
+    display: inline-block;
+}
+
+/* Ensure proper table layout */
+.dataTables_wrapper {
+    position: relative;
+    clear: both;
+}
+
+/* Remove responsive features that break column alignment */
+.dataTables_wrapper .dataTables_scroll {
+    overflow-x: auto;
+}
+
+.dataTables_wrapper .dataTables_scrollHead {
+    overflow: hidden;
+}
+
+.dataTables_wrapper .dataTables_scrollBody {
+    overflow: auto;
+}
+
 /* Ensure table cells don't wrap unnecessarily */
 #certificates-table td, #certificates-table th {
     white-space: nowrap;
+    padding: 8px 12px;
 }
 
 /* Make program column allow text wrapping since it can be long */
 #certificates-table td:nth-child(6), #certificates-table th:nth-child(6) {
     white-space: normal;
     max-width: 200px;
+    word-wrap: break-word;
 }
 
 /* Ensure the table container takes full width */
@@ -80,9 +121,23 @@
     padding: 15px;
 }
 
-.dataTables_wrapper .dataTables_scroll {
-    width: 100%;
+/* Fix table header and body alignment */
+#certificates-table thead th {
+    position: sticky;
+    top: 0;
+    background-color: #f8f9fa;
+    z-index: 10;
 }
+
+/* Ensure consistent column widths */
+#certificates-table th:nth-child(1) { width: 50px; }   /* Checkbox */
+#certificates-table th:nth-child(2) { width: 120px; }  /* Serial Number */
+#certificates-table th:nth-child(3) { width: 200px; }  /* Student Name */
+#certificates-table th:nth-child(4) { width: 120px; }  /* IC Number */
+#certificates-table th:nth-child(5) { width: 100px; }  /* Matric Number */
+#certificates-table th:nth-child(6) { width: 200px; }  /* Program */
+#certificates-table th:nth-child(7) { width: 80px; }   /* Status */
+#certificates-table th:nth-child(8) { width: 120px; }  /* Date Generated */
 </style>
 <!-- Content Header (Page header) -->
 <div class="content-wrapper" style="min-height: 695.8px;">
@@ -327,21 +382,50 @@ function displayCertificates(certificates) {
         
         // Initialize DataTable with export buttons
         dataTable = $('#certificates-table').DataTable({
-            "responsive": true,
+            "responsive": false,
             "pageLength": 25,
             "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
             "order": [[7, "desc"]], // Sort by date generated (desc)
             "scrollX": true,
             "autoWidth": false,
+            "fixedHeader": false,
             "columnDefs": [
                 {
                     "targets": [0], // Checkbox column
                     "orderable": false,
                     "searchable": false,
                     "width": "50px"
+                },
+                {
+                    "targets": [1], // Serial Number
+                    "width": "120px"
+                },
+                {
+                    "targets": [2], // Student Name
+                    "width": "200px"
+                },
+                {
+                    "targets": [3], // IC Number
+                    "width": "120px"
+                },
+                {
+                    "targets": [4], // Matric Number
+                    "width": "100px"
+                },
+                {
+                    "targets": [5], // Program
+                    "width": "200px"
+                },
+                {
+                    "targets": [6], // Status
+                    "width": "80px"
+                },
+                {
+                    "targets": [7], // Date Generated
+                    "width": "120px"
                 }
             ],
-            "dom": '<"row"<"col-md-6"B><"col-md-3"l><"col-md-3"f>>' +
+            "dom": '<"row"<"col-md-8"B><"col-md-2"l><"col-md-2"f>>' +
                    '<"row"<"col-md-12"tr>>' +
                    '<"row"<"col-md-5"i><"col-md-7"p>>',
             "buttons": [
