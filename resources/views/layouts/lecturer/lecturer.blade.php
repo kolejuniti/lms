@@ -296,7 +296,7 @@
 						</ul>
 					</li>
 					<li class="treeview">
-						<a href="#"><span>Test</span>
+						<a href="#"><span>Test 1</span>
 						</a>
 						<ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
 						<li><a href="/lecturer/test/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Online</a></li>
