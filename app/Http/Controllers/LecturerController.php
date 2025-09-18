@@ -5243,6 +5243,11 @@ $content .= '</tr>
         $content = "";
         $content .= "<option value='0' selected disabled>-</option>";
         foreach($group as $grp){
+            // Skip if group_name is empty or null
+            if(empty($grp->group_name)) {
+                continue;
+            }
+            
             $lecturer = User::where('ic', $grp->user_ic)->first();
             $content .= '<option data-style="btn-inverse"
             data-content=\'<div class="row" >
@@ -5253,12 +5258,12 @@ $content .= '</tr>
                         </div>
                 </div>
                 <div class="col-md-10 align-self-center lh-lg">
-                    <span><strong>'. $grp->group_name .'</strong></span><br>
+                    <span><strong>'. htmlspecialchars($grp->group_name) .'</strong></span><br>
                     <span><strong>'. htmlentities($lecturer->name, ENT_QUOTES) .'</strong></span><br>
                     <span>'. $lecturer->email .' | <strong class="text-fade"">'.$lecturer->faculty .'</strong></span><br>
                     <span class="text-fade"></span>
                 </div>
-            </div>\' value='. $grp->id . '|' . $grp->group_name .' ></option>';
+            </div>\' value="'. $grp->id . '|' . htmlspecialchars($grp->group_name) .'" ></option>';
         }
         
         return $content;
@@ -5267,6 +5272,11 @@ $content .= '</tr>
     public function replacementClassGetStudentProgram(Request $request)
     {
         $group = explode('|', $request->group);
+        
+        // Validate that we have both group_id and group_name
+        if(count($group) < 2) {
+            return "<option value='0' selected disabled>Invalid group data</option>";
+        }
 
         $program = student::join('students', 'student_subjek.student_ic', 'students.ic')
                     ->join('tblprogramme', 'students.program', 'tblprogramme.id')
@@ -5289,6 +5299,11 @@ $content .= '</tr>
     public function replacementClassGetWakilPelajar(Request $request)
     {
         $group = explode('|', $request->group);
+        
+        // Validate that we have both group_id and group_name
+        if(count($group) < 2) {
+            return "<option value='0' selected disabled>Invalid group data</option>";
+        }
 
         $students = student::join('students', 'student_subjek.student_ic', 'students.ic')
                     ->join('tblprogramme', 'students.program', 'tblprogramme.id')

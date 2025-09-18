@@ -616,22 +616,29 @@ $(document).ready(function(){
         success  : function(data){
             $('#group').html(data);
             
-            // Set the existing group
-            $('#group').val(existingApplication.group_id);
-            
-            // Load programs for existing group
-            if(existingApplication.group_id) {
-                getProgram(existingApplication.group_id, function() {
+            // Set the existing group (need to find the option that contains the group_id and group_name)
+            if(existingApplication.group_id && existingApplication.group_name) {
+                var groupValue = existingApplication.group_id + '|' + existingApplication.group_name;
+                $('#group').val(groupValue);
+                
+                // Load programs for existing group
+                getProgram(groupValue, function() {
                     // After programs are loaded, select the existing programs
-                    var selectedPrograms = JSON.parse(existingApplication.selected_programs);
-                    $('#program').val(selectedPrograms);
-                    
-                    // Load students for existing group and programs
-                    getWakilPelajar(existingApplication.group_id, selectedPrograms, function() {
-                        // Set existing student
-                        $('#wakil_pelajar').val(existingApplication.student_ic);
-                    });
+                    if(existingApplication.selected_programs) {
+                        var selectedPrograms = JSON.parse(existingApplication.selected_programs);
+                        $('#program').val(selectedPrograms);
+                        
+                        // Load students for existing group and programs
+                        getWakilPelajar(groupValue, selectedPrograms, function() {
+                            // Set existing student
+                            if(existingApplication.student_ic) {
+                                $('#wakil_pelajar').val(existingApplication.student_ic);
+                            }
+                        });
+                    }
                 });
+            } else {
+                console.error('Missing group_id or group_name in application data:', existingApplication);
             }
         }
     });
