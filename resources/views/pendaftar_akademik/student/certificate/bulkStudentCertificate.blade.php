@@ -239,14 +239,17 @@ function loadNewCertificates() {
 }
 
 function displayCertificates(certificates) {
-    var tbody = $('#certificates-table-body');
-    tbody.empty();
-    
     // Destroy existing DataTable if it exists
     if (certificatesDataTable) {
         certificatesDataTable.destroy();
         certificatesDataTable = null;
     }
+    
+    var tbody = $('#certificates-table-body');
+    tbody.empty();
+    
+    // Clear the entire table to prevent artifacts
+    $('#certificates-table').removeClass('dataTable');
     
     if (certificates.length > 0) {
         $.each(certificates, function(index, cert) {
@@ -271,12 +274,13 @@ function displayCertificates(certificates) {
         
         // Initialize DataTables
         certificatesDataTable = $('#certificates-table').DataTable({
-            responsive: true,
+            responsive: false, // Disable responsive to prevent header issues
             pageLength: 25,
             lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
             order: [[1, 'asc']], // Sort by Serial Number
             scrollX: true, // Enable horizontal scrolling
             autoWidth: false, // Disable automatic column width calculation
+            fixedHeader: false, // Disable fixed header to prevent layout issues
             columnDefs: [
                 {
                     targets: 0, // Checkbox column
@@ -376,7 +380,28 @@ function displayCertificates(certificates) {
             },
             initComplete: function() {
                 // Force column width recalculation after initialization
-                this.api().columns.adjust().draw();
+                var api = this.api();
+                
+                // Remove any existing width styles that might be causing issues
+                $('#certificates-table').removeAttr('style');
+                $('#certificates-table thead').removeAttr('style');
+                $('#certificates-table tbody').removeAttr('style');
+                
+                // Force table to use full width
+                $('#certificates-table').css('width', '100%');
+                
+                // Recalculate columns
+                api.columns.adjust();
+                api.draw();
+                
+                // Additional adjustment after a short delay
+                setTimeout(function() {
+                    api.columns.adjust();
+                }, 100);
+            },
+            drawCallback: function() {
+                // Ensure table maintains full width after each redraw
+                $('#certificates-table').css('width', '100%');
             }
         });
         
@@ -640,6 +665,20 @@ table.dataTable thead .sorting_desc:after {
     width: 100% !important;
 }
 
+/* Fix header table width specifically */
+.dataTables_scrollHead table,
+.dataTables_scrollBody table,
+.dataTables_scrollFoot table {
+    width: 100% !important;
+    table-layout: fixed !important;
+}
+
+/* Ensure header cells match body cells */
+.dataTables_scrollHead th {
+    padding: 8px !important;
+    border: 1px solid #dee2e6 !important;
+}
+
 /* Make sure table headers and cells don't wrap unnecessarily */
 #certificates-table th,
 #certificates-table td {
@@ -732,6 +771,28 @@ table.dataTable {
 .dataTables_wrapper .dataTables_scroll {
     clear: both;
     position: relative;
+}
+
+/* Force scrollHead container to full width */
+.dataTables_scrollHeadInner {
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.dataTables_scrollHeadInner table {
+    width: 100% !important;
+    margin: 0 !important;
+}
+
+/* Prevent any margin or padding issues */
+.dataTables_wrapper .dataTables_scroll div {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* Override any Bootstrap table responsive issues */
+.table-responsive .dataTables_wrapper {
+    overflow: visible !important;
 }
 </style>
 
