@@ -1,144 +1,11 @@
 @extends('layouts.pendaftar_akademik')
 
 @section('main')
+
 <!-- DataTables CSS -->
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
-<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.bootstrap5.min.css">
-
-<style>
-/* Ensure table takes full width */
-#certificates-table {
-    width: 100% !important;
-}
-
-.dataTables_wrapper {
-    width: 100% !important;
-}
-
-.table-responsive {
-    width: 100% !important;
-}
-
-/* Style the buttons container */
-.dt-buttons {
-    margin-bottom: 10px;
-    display: inline-block;
-    text-align: left;
-}
-
-.dt-buttons .btn {
-    margin-right: 5px;
-    margin-bottom: 5px;
-}
-
-/* Force buttons to stay on the left */
-.dataTables_wrapper .dt-buttons {
-    float: none !important;
-    text-align: left !important;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .dt-buttons .btn {
-        font-size: 12px;
-        padding: 5px 10px;
-    }
-    
-    .dt-buttons .btn i {
-        margin-right: 3px !important;
-    }
-}
-
-/* Ensure proper spacing in DataTables controls */
-.dataTables_length {
-    margin-bottom: 10px;
-}
-
-.dataTables_filter {
-    margin-bottom: 10px;
-}
-
-/* Make sure the wrapper doesn't constrain width */
-.card-body .table-responsive {
-    overflow-x: auto;
-}
-
-/* Force table to use full container width */
-.dataTables_wrapper .row {
-    margin: 0;
-    width: 100%;
-}
-
-.dataTables_wrapper .row [class*="col-"] {
-    padding: 0 5px;
-}
-
-/* Fix DataTables button positioning */
-.dataTables_wrapper .row:first-child {
-    margin-bottom: 15px;
-}
-
-.dataTables_wrapper .row:first-child .dt-buttons {
-    text-align: left !important;
-    float: none !important;
-    display: inline-block;
-}
-
-/* Ensure proper table layout */
-.dataTables_wrapper {
-    position: relative;
-    clear: both;
-}
-
-/* Remove responsive features that break column alignment */
-.dataTables_wrapper .dataTables_scroll {
-    overflow-x: auto;
-}
-
-.dataTables_wrapper .dataTables_scrollHead {
-    overflow: hidden;
-}
-
-.dataTables_wrapper .dataTables_scrollBody {
-    overflow: auto;
-}
-
-/* Ensure table cells don't wrap unnecessarily */
-#certificates-table td, #certificates-table th {
-    white-space: nowrap;
-    padding: 8px 12px;
-}
-
-/* Make program column allow text wrapping since it can be long */
-#certificates-table td:nth-child(6), #certificates-table th:nth-child(6) {
-    white-space: normal;
-    max-width: 200px;
-    word-wrap: break-word;
-}
-
-/* Ensure the table container takes full width */
-.card .card-body {
-    padding: 15px;
-}
-
-/* Fix table header and body alignment */
-#certificates-table thead th {
-    position: sticky;
-    top: 0;
-    background-color: #f8f9fa;
-    z-index: 10;
-}
-
-/* Ensure consistent column widths */
-#certificates-table th:nth-child(1) { width: 50px; }   /* Checkbox */
-#certificates-table th:nth-child(2) { width: 120px; }  /* Serial Number */
-#certificates-table th:nth-child(3) { width: 200px; }  /* Student Name */
-#certificates-table th:nth-child(4) { width: 120px; }  /* IC Number */
-#certificates-table th:nth-child(5) { width: 100px; }  /* Matric Number */
-#certificates-table th:nth-child(6) { width: 200px; }  /* Program */
-#certificates-table th:nth-child(7) { width: 80px; }   /* Status */
-#certificates-table th:nth-child(8) { width: 120px; }  /* Date Generated */
-</style>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.2.2/css/buttons.bootstrap4.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.bootstrap4.min.css">
 <!-- Content Header (Page header) -->
 <div class="content-wrapper" style="min-height: 695.8px;">
   <div class="container-full">
@@ -214,6 +81,25 @@
                     </div>
                   </div>
                   <div class="card-body">
+                    <!-- Export Buttons Row -->
+                    <div class="mb-3" id="export-buttons-row" style="display: none;">
+                      <button class="btn btn-info btn-sm" id="export-excel">
+                        <i class="fa fa-file-excel-o"></i> Export Excel
+                      </button>
+                      <button class="btn btn-danger btn-sm" id="export-pdf">
+                        <i class="fa fa-file-pdf-o"></i> Export PDF
+                      </button>
+                      <button class="btn btn-secondary btn-sm" id="export-print">
+                        <i class="fa fa-print"></i> Print
+                      </button>
+                      <button class="btn btn-success btn-sm" id="export-csv">
+                        <i class="fa fa-file-text-o"></i> Export CSV
+                      </button>
+                      <button class="btn btn-warning btn-sm" id="export-copy">
+                        <i class="fa fa-copy"></i> Copy
+                      </button>
+                    </div>
+                    
                     <div class="table-responsive">
                       <table class="table table-bordered table-striped" id="certificates-table">
                         <thead>
@@ -260,19 +146,26 @@
   </div>
 </div>
 
-<!-- DataTables JS -->
-<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.bootstrap5.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<!-- DataTables JavaScript Dependencies -->
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap4.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.2.9/js/dataTables.responsive.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.2.9/js/responsive.bootstrap4.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.bootstrap4.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.print.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.print.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.colVis.min.js"></script>
+
+<!-- SheetJS (XLSX) for better Excel export -->
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
 <script type="text/javascript">
-var dataTable;
+
+var certificatesDataTable = null;
 
 $(document).ready(function() {
     loadNewCertificates();
@@ -282,23 +175,7 @@ $('#refresh-certificates').on('click', function() {
     loadNewCertificates();
 });
 
-$('#select-all, #select-all-header').on('change', function() {
-    var isChecked = $(this).is(':checked');
-    
-    // Handle DataTable pagination - select all visible rows
-    if (dataTable) {
-        dataTable.rows({page: 'current'}).every(function() {
-            var checkbox = $(this.node()).find('.certificate-checkbox');
-            checkbox.prop('checked', isChecked);
-        });
-    } else {
-        $('.certificate-checkbox').prop('checked', isChecked);
-    }
-    
-    $('#select-all').prop('checked', isChecked);
-    $('#select-all-header').prop('checked', isChecked);
-    updateSelectedCount();
-});
+// Removed - replaced with DataTables-compatible version below
 
 $(document).on('change', '.certificate-checkbox', function() {
     updateSelectedCount();
@@ -307,9 +184,21 @@ $(document).on('change', '.certificate-checkbox', function() {
 
 $('#bulk-claim-selected').on('click', function() {
     var selectedIds = [];
-    $('.certificate-checkbox:checked').each(function() {
-        selectedIds.push($(this).val());
-    });
+    
+    if (certificatesDataTable) {
+        // Collect IDs from all pages
+        certificatesDataTable.rows().every(function() {
+            var row = this.node();
+            var checkbox = $(row).find('.certificate-checkbox');
+            if (checkbox.is(':checked')) {
+                selectedIds.push(checkbox.val());
+            }
+        });
+    } else {
+        $('.certificate-checkbox:checked').each(function() {
+            selectedIds.push($(this).val());
+        });
+    }
     
     if (selectedIds.length === 0) {
         alert('Please select at least one certificate to claim.');
@@ -350,14 +239,14 @@ function loadNewCertificates() {
 }
 
 function displayCertificates(certificates) {
-    // Destroy existing DataTable if it exists
-    if (dataTable) {
-        dataTable.destroy();
-        dataTable = null;
-    }
-    
     var tbody = $('#certificates-table-body');
     tbody.empty();
+    
+    // Destroy existing DataTable if it exists
+    if (certificatesDataTable) {
+        certificatesDataTable.destroy();
+        certificatesDataTable = null;
+    }
     
     if (certificates.length > 0) {
         $.each(certificates, function(index, cert) {
@@ -380,128 +269,107 @@ function displayCertificates(certificates) {
             tbody.append(row);
         });
         
-        // Initialize DataTable with export buttons
-        dataTable = $('#certificates-table').DataTable({
-            "responsive": false,
-            "pageLength": 25,
-            "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
-            "order": [[7, "desc"]], // Sort by date generated (desc)
-            "scrollX": true,
-            "autoWidth": false,
-            "fixedHeader": false,
-            "columnDefs": [
+        // Initialize DataTables
+        certificatesDataTable = $('#certificates-table').DataTable({
+            responsive: true,
+            pageLength: 25,
+            lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+            order: [[1, 'asc']], // Sort by Serial Number
+            columnDefs: [
                 {
-                    "targets": [0], // Checkbox column
-                    "orderable": false,
-                    "searchable": false,
-                    "width": "50px"
-                },
-                {
-                    "targets": [1], // Serial Number
-                    "width": "120px"
-                },
-                {
-                    "targets": [2], // Student Name
-                    "width": "200px"
-                },
-                {
-                    "targets": [3], // IC Number
-                    "width": "120px"
-                },
-                {
-                    "targets": [4], // Matric Number
-                    "width": "100px"
-                },
-                {
-                    "targets": [5], // Program
-                    "width": "200px"
-                },
-                {
-                    "targets": [6], // Status
-                    "width": "80px"
-                },
-                {
-                    "targets": [7], // Date Generated
-                    "width": "120px"
+                    targets: 0, // Checkbox column
+                    orderable: false,
+                    searchable: false,
+                    width: "50px"
                 }
             ],
-            "dom": '<"row"<"col-md-8"B><"col-md-2"l><"col-md-2"f>>' +
-                   '<"row"<"col-md-12"tr>>' +
-                   '<"row"<"col-md-5"i><"col-md-7"p>>',
-            "buttons": [
-                {
-                    extend: 'copy',
-                    className: 'btn btn-outline-secondary btn-sm me-1',
-                    text: '<i class="fa fa-copy me-1"></i>Copy',
-                    exportOptions: {
-                        columns: [1, 2, 3, 4, 5, 6, 7] // Exclude checkbox column
-                    }
-                },
+            dom: 'lBfrtip',
+            buttons: [
                 {
                     extend: 'excel',
-                    className: 'btn btn-outline-success btn-sm me-1',
-                    text: '<i class="fa fa-file-excel-o me-1"></i>Excel',
-                    title: 'Student Certificates - ' + new Date().toLocaleDateString(),
+                    text: '<i class="fa fa-file-excel-o"></i> Excel',
+                    className: 'btn btn-info btn-sm',
                     exportOptions: {
-                        columns: [1, 2, 3, 4, 5, 6, 7] // Exclude checkbox column
-                    }
+                        columns: ':not(:first-child)' // Exclude checkbox column
+                    },
+                    title: 'Bulk Student Certificates - NEW Status',
+                    filename: 'bulk_certificates_new_status'
                 },
                 {
                     extend: 'pdf',
-                    className: 'btn btn-outline-danger btn-sm me-1',
-                    text: '<i class="fa fa-file-pdf-o me-1"></i>PDF',
-                    title: 'Student Certificates - ' + new Date().toLocaleDateString(),
-                    orientation: 'landscape',
-                    pageSize: 'A4',
+                    text: '<i class="fa fa-file-pdf-o"></i> PDF',
+                    className: 'btn btn-danger btn-sm',
                     exportOptions: {
-                        columns: [1, 2, 3, 4, 5, 6, 7] // Exclude checkbox column
-                    }
+                        columns: ':not(:first-child)' // Exclude checkbox column
+                    },
+                    title: 'Bulk Student Certificates - NEW Status',
+                    filename: 'bulk_certificates_new_status',
+                    orientation: 'landscape'
                 },
                 {
                     extend: 'print',
-                    className: 'btn btn-outline-info btn-sm',
-                    text: '<i class="fa fa-print me-1"></i>Print',
-                    title: 'Student Certificates - ' + new Date().toLocaleDateString(),
+                    text: '<i class="fa fa-print"></i> Print',
+                    className: 'btn btn-secondary btn-sm',
                     exportOptions: {
-                        columns: [1, 2, 3, 4, 5, 6, 7] // Exclude checkbox column
-                    }
+                        columns: ':not(:first-child)' // Exclude checkbox column
+                    },
+                    title: 'Bulk Student Certificates - NEW Status'
+                },
+                {
+                    extend: 'csv',
+                    text: '<i class="fa fa-file-text-o"></i> CSV',
+                    className: 'btn btn-success btn-sm',
+                    exportOptions: {
+                        columns: ':not(:first-child)' // Exclude checkbox column
+                    },
+                    title: 'Bulk Student Certificates - NEW Status',
+                    filename: 'bulk_certificates_new_status'
+                },
+                {
+                    extend: 'copy',
+                    text: '<i class="fa fa-copy"></i> Copy',
+                    className: 'btn btn-warning btn-sm',
+                    exportOptions: {
+                        columns: ':not(:first-child)' // Exclude checkbox column
+                    },
+                    title: 'Bulk Student Certificates - NEW Status'
                 }
             ],
-            "language": {
-                "search": "_INPUT_",
-                "searchPlaceholder": "Search certificates...",
-                "lengthMenu": "Show _MENU_ entries",
-                "info": "Showing _START_ to _END_ of _TOTAL_ certificates",
-                "infoEmpty": "Showing 0 to 0 of 0 certificates",
-                "infoFiltered": "(filtered from _MAX_ total certificates)",
-                "emptyTable": "No certificates with NEW status found",
-                "zeroRecords": "No matching certificates found"
+            language: {
+                search: "Search certificates:",
+                lengthMenu: "Show _MENU_ certificates per page",
+                info: "Showing _START_ to _END_ of _TOTAL_ certificates",
+                infoEmpty: "Showing 0 to 0 of 0 certificates",
+                infoFiltered: "(filtered from _MAX_ total certificates)",
+                zeroRecords: "No certificates found",
+                emptyTable: "No certificates available"
             }
         });
         
-        // Add event listener for page changes to update select all state
-        dataTable.on('page.dt', function() {
-            setTimeout(function() {
-                updateSelectAllState();
-            }, 100);
-        });
-        
-        // Add event listener for search to update select all state
-        dataTable.on('search.dt', function() {
-            setTimeout(function() {
-                updateSelectAllState();
-            }, 100);
-        });
-        
         $('#certificates-section').show();
+        $('#export-buttons-row').show();
         updateSelectedCount();
     } else {
         $('#no-certificates-message').show();
+        $('#export-buttons-row').hide();
     }
 }
 
 function updateSelectedCount() {
-    var selectedCount = $('.certificate-checkbox:checked').length;
+    var selectedCount = 0;
+    
+    if (certificatesDataTable) {
+        // Count checked checkboxes across all pages
+        certificatesDataTable.rows().every(function() {
+            var row = this.node();
+            if ($(row).find('.certificate-checkbox').is(':checked')) {
+                selectedCount++;
+            }
+        });
+    } else {
+        selectedCount = $('.certificate-checkbox:checked').length;
+    }
+    
     $('#selected-count').text(selectedCount);
     
     if (selectedCount > 0) {
@@ -512,15 +380,15 @@ function updateSelectedCount() {
 }
 
 function updateSelectAllState() {
-    var totalCheckboxes, checkedCheckboxes;
+    var totalCheckboxes = 0;
+    var checkedCheckboxes = 0;
     
-    if (dataTable) {
-        // Count checkboxes in currently visible page
-        totalCheckboxes = dataTable.rows({page: 'current'}).nodes().length;
-        checkedCheckboxes = 0;
-        dataTable.rows({page: 'current'}).every(function() {
-            var checkbox = $(this.node()).find('.certificate-checkbox');
-            if (checkbox.is(':checked')) {
+    if (certificatesDataTable) {
+        // Count checkboxes across all pages
+        certificatesDataTable.rows().every(function() {
+            var row = this.node();
+            totalCheckboxes++;
+            if ($(row).find('.certificate-checkbox').is(':checked')) {
                 checkedCheckboxes++;
             }
         });
@@ -537,6 +405,64 @@ function updateSelectAllState() {
     $('#select-all').prop('checked', selectAllState);
     $('#select-all-header').prop('checked', selectAllState);
 }
+
+// Export button event handlers
+$(document).on('click', '#export-excel', function() {
+    if (certificatesDataTable) {
+        certificatesDataTable.button('.buttons-excel').trigger();
+    }
+});
+
+$(document).on('click', '#export-pdf', function() {
+    if (certificatesDataTable) {
+        certificatesDataTable.button('.buttons-pdf').trigger();
+    }
+});
+
+$(document).on('click', '#export-print', function() {
+    if (certificatesDataTable) {
+        certificatesDataTable.button('.buttons-print').trigger();
+    }
+});
+
+$(document).on('click', '#export-csv', function() {
+    if (certificatesDataTable) {
+        certificatesDataTable.button('.buttons-csv').trigger();
+    }
+});
+
+$(document).on('click', '#export-copy', function() {
+    if (certificatesDataTable) {
+        certificatesDataTable.button('.buttons-copy').trigger();
+    }
+});
+
+// Handle select all functionality with DataTables
+$(document).on('change', '#select-all, #select-all-header', function() {
+    var isChecked = $(this).is(':checked');
+    
+    if (certificatesDataTable) {
+        // Select all rows across all pages
+        certificatesDataTable.rows().every(function() {
+            var row = this.node();
+            $(row).find('.certificate-checkbox').prop('checked', isChecked);
+        });
+        
+        // Redraw to update visible checkboxes
+        certificatesDataTable.draw('page');
+    } else {
+        $('.certificate-checkbox').prop('checked', isChecked);
+    }
+    
+    $('#select-all').prop('checked', isChecked);
+    $('#select-all-header').prop('checked', isChecked);
+    updateSelectedCount();
+});
+
+// Update select all state when changing pages or searching
+$(document).on('draw.dt', '#certificates-table', function() {
+    updateSelectAllState();
+});
 
 function bulkClaimCertificates(certificateIds) {
     $('#bulk-claim-selected').prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Processing...');
@@ -607,5 +533,90 @@ function bulkClaimCertificates(certificateIds) {
 }
 
 </script>
+
+<!-- Custom CSS for DataTables Integration -->
+<style>
+/* Hide DataTables default buttons since we're using custom ones */
+.dt-buttons {
+    display: none !important;
+}
+
+/* Style the export buttons */
+#export-buttons-row .btn {
+    margin-right: 5px;
+    margin-bottom: 5px;
+}
+
+/* DataTables responsive styling */
+table.dataTable thead .sorting,
+table.dataTable thead .sorting_asc,
+table.dataTable thead .sorting_desc {
+    background-image: none;
+}
+
+table.dataTable thead .sorting:after,
+table.dataTable thead .sorting_asc:after,
+table.dataTable thead .sorting_desc:after {
+    opacity: 0.5;
+}
+
+/* Ensure consistent table styling */
+#certificates-table.dataTable {
+    border-collapse: separate !important;
+}
+
+/* Style the search box */
+.dataTables_filter {
+    margin-bottom: 10px;
+}
+
+.dataTables_filter input {
+    margin-left: 5px;
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+/* Style the pagination */
+.dataTables_paginate .paginate_button {
+    padding: 0.375rem 0.75rem;
+    margin-left: -1px;
+    color: #495057;
+    background-color: #fff;
+    border: 1px solid #dee2e6;
+}
+
+.dataTables_paginate .paginate_button:hover {
+    color: #495057;
+    background-color: #e9ecef;
+    border-color: #dee2e6;
+}
+
+.dataTables_paginate .paginate_button.current {
+    color: #fff;
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    #export-buttons-row .btn {
+        margin-bottom: 10px;
+        width: 100%;
+    }
+    
+    .dataTables_length,
+    .dataTables_filter {
+        text-align: center;
+        margin-bottom: 15px;
+    }
+}
+
+/* Info text styling */
+.dataTables_info {
+    margin-top: 10px;
+    color: #6c757d;
+}
+</style>
 
 @endsection 
