@@ -5505,6 +5505,168 @@ $content .= '</tr>
         ]);
     }
 
+    public function editReplacementClass($id)
+    {
+        $user = Auth::user();
+        $courseid = Session::get('CourseID');
+        $sessionid = Session::get('SessionID');
+
+        // Get the replacement class application with all related data
+        $application = DB::table('replacement_class')
+            ->join('user_subjek', 'replacement_class.user_subjek_id', 'user_subjek.id')
+            ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+            ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
+            ->join('students', 'replacement_class.student_ic', 'students.ic')
+            ->join('tbllecture_room', 'replacement_class.lecture_room_id', 'tbllecture_room.id')
+            ->where([
+                ['replacement_class.id', $id],
+                ['user_subjek.user_ic', $user->ic],
+                ['user_subjek.session_id', $sessionid],
+                ['subjek.id', $courseid]
+            ])
+            ->select(
+                'replacement_class.*',
+                'subjek.course_name',
+                'subjek.course_code',
+                'sessions.SessionName',
+                'students.name as student_name',
+                'students.no_matric',
+                'tbllecture_room.name as room_name'
+            )
+            ->first();
+
+        if (!$application) {
+            return redirect()->route('lecturer.class.replacement_class.list')
+                ->with('error', 'Application not found or you do not have permission to edit it.');
+        }
+
+        // Check if application can be edited (not verified or has been verified)
+        if ($application->is_verified !== 'PENDING' || ($application->revised_status && $application->revised_status !== 'PENDING')) {
+            return redirect()->route('lecturer.class.replacement_class.list')
+                ->with('error', 'Cannot edit application that has been verified or rejected.');
+        }
+
+        // Get programs for this application
+        $programs = DB::table('tblprogramme')
+            ->whereIn('id', json_decode($application->selected_programs))
+            ->get();
+        $application->programs = $programs;
+
+        // Get all lecture rooms
+        $lectureRooms = DB::table('tbllecture_room')->get();
+
+        return view('lecturer.class.replacement_class_edit', compact('application', 'lectureRooms'));
+    }
+
+    public function updateReplacementClass(Request $request, $id)
+    {
+        $request->validate([
+            'group' => 'required',
+            'program' => 'required|array|min:1',
+            'tarikh_kuliah_dibatalkan' => 'required|date',
+            'sebab_kuliah_dibatalkan' => 'required|string|max:255',
+            'maklumat_kuliah' => 'nullable|string',
+            'wakil_pelajar' => 'required',
+            'wakil_pelajar_nama' => 'required|string|max:255',
+            'wakil_pelajar_no_tel' => 'required|string|max:20',
+            'maklumat_kuliah_gantian_tarikh' => 'required|date|after:tarikh_kuliah_dibatalkan',
+            'maklumat_kuliah_gantian_hari_masa' => 'required|string|max:255',
+            'lecture_room_id' => 'required|exists:tbllecture_room,id'
+        ]);
+
+        $user = Auth::user();
+        $courseid = Session::get('CourseID');
+        $sessionid = Session::get('SessionID');
+
+        // Verify lecturer owns this application and it can be edited
+        $application = DB::table('replacement_class')
+            ->join('user_subjek', 'replacement_class.user_subjek_id', '=', 'user_subjek.id')
+            ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+            ->where([
+                ['replacement_class.id', $id],
+                ['user_subjek.user_ic', $user->ic],
+                ['user_subjek.session_id', $sessionid],
+                ['subjek.id', $courseid]
+            ])
+            ->select('replacement_class.*')
+            ->first();
+
+        if (!$application) {
+            return redirect()->route('lecturer.class.replacement_class.list')
+                ->with('error', 'Application not found or you do not have permission to edit it.');
+        }
+
+        // Check if application can be edited
+        if ($application->is_verified !== 'PENDING' || ($application->revised_status && $application->revised_status !== 'PENDING')) {
+            return redirect()->route('lecturer.class.replacement_class.list')
+                ->with('error', 'Cannot edit application that has been verified or rejected.');
+        }
+
+        $updateData = [
+            'tarikh_kuliah_dibatalkan' => $request->tarikh_kuliah_dibatalkan,
+            'sebab_kuliah_dibatalkan' => $request->sebab_kuliah_dibatalkan,
+            'maklumat_kuliah' => $request->maklumat_kuliah ?? '',
+            'wakil_pelajar_nama' => $request->wakil_pelajar_nama,
+            'wakil_pelajar_no_tel' => $request->wakil_pelajar_no_tel,
+            'maklumat_kuliah_gantian_tarikh' => $request->maklumat_kuliah_gantian_tarikh,
+            'maklumat_kuliah_gantian_hari_masa' => $request->maklumat_kuliah_gantian_hari_masa,
+            'lecture_room_id' => $request->lecture_room_id,
+            'group_id' => $request->group,
+            'selected_programs' => json_encode($request->program),
+            'student_ic' => $request->wakil_pelajar,
+            'updated_at' => now()
+        ];
+
+        DB::table('replacement_class')
+            ->where('id', $id)
+            ->update($updateData);
+
+        return redirect()->route('lecturer.class.replacement_class.list')
+            ->with('message', 'Replacement class application has been updated successfully!');
+    }
+
+    public function deleteReplacementClass($id)
+    {
+        $user = Auth::user();
+        $courseid = Session::get('CourseID');
+        $sessionid = Session::get('SessionID');
+
+        // Verify lecturer owns this application and it can be deleted
+        $application = DB::table('replacement_class')
+            ->join('user_subjek', 'replacement_class.user_subjek_id', '=', 'user_subjek.id')
+            ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+            ->where([
+                ['replacement_class.id', $id],
+                ['user_subjek.user_ic', $user->ic],
+                ['user_subjek.session_id', $sessionid],
+                ['subjek.id', $courseid]
+            ])
+            ->select('replacement_class.*')
+            ->first();
+
+        if (!$application) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Application not found or you do not have permission to delete it.'
+            ], 403);
+        }
+
+        // Check if application can be deleted
+        if ($application->is_verified !== 'PENDING' || ($application->revised_status && $application->revised_status !== 'PENDING')) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Cannot delete application that has been verified or rejected.'
+            ], 400);
+        }
+
+        DB::table('replacement_class')->where('id', $id)->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Replacement class application has been deleted successfully!'
+        ]);
+    }
+
     /**
      * Get lecturer materials for current course
      */

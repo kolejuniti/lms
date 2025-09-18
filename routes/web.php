@@ -410,6 +410,9 @@ Route::get('/lecturer/class/replacement_class/getLectureRooms', [App\Http\Contro
 Route::post('/lecturer/class/replacement_class/store', [App\Http\Controllers\LecturerController::class, 'storeReplacementClass'])->name('lecturer.replacement_class.store');
 Route::get('/lecturer/class/replacement_class/getRooms', [App\Http\Controllers\LecturerController::class, 'getLectureRooms'])->name('lecturer.replacement_class.getLectureRooms');
 Route::post('/lecturer/replacement_class/suggest_date', [App\Http\Controllers\LecturerController::class, 'suggestRevisedDate'])->name('lecturer.replacement_class.suggest_date');
+Route::get('/lecturer/class/replacement_class/{id}/edit', [App\Http\Controllers\LecturerController::class, 'editReplacementClass'])->name('lecturer.replacement_class.edit');
+Route::put('/lecturer/class/replacement_class/{id}', [App\Http\Controllers\LecturerController::class, 'updateReplacementClass'])->name('lecturer.replacement_class.update');
+Route::delete('/lecturer/class/replacement_class/{id}', [App\Http\Controllers\LecturerController::class, 'deleteReplacementClass'])->name('lecturer.replacement_class.delete');
 
 Route::post('/update-data', [App\Http\Controllers\LecturerController::class, 'autoudateData']);
 

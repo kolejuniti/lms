@@ -570,14 +570,14 @@
             <table class="table" id="applications-table">
               <thead>
                 <tr>
-                  <th width="8%"># ID</th>
-                  <th width="20%">Course & Group</th>
-                  <th width="15%">Cancelled Class</th>
-                  <th width="15%">Replacement Class</th>
+                  <th width="6%"># ID</th>
+                  <th width="18%">Course & Group</th>
+                  <th width="13%">Cancelled Class</th>
+                  <th width="13%">Replacement Class</th>
                   <th width="12%">Student Rep</th>
                   <th width="10%">Status</th>
-                  <th width="12%">Submitted</th>
-                  <th width="8%">Actions</th>
+                  <th width="10%">Submitted</th>
+                  <th width="18%">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -665,12 +665,28 @@
                     <div class="reason-info">{{ \Carbon\Carbon::parse($app->created_at)->format('g:i A') }}</div>
                   </td>
                   <td>
-                    <button class="btn btn-sm btn-outline-primary" 
-                            onclick="viewDetails({{ $app->id }})" 
-                            data-app='@json($app)'
-                            title="View Details">
-                      <i class="mdi mdi-eye"></i>
-                    </button>
+                    <div class="d-flex gap-1">
+                      <button class="btn btn-sm btn-outline-primary" 
+                              onclick="viewDetails({{ $app->id }})" 
+                              data-app='@json($app)'
+                              title="View Details">
+                        <i class="mdi mdi-eye"></i>
+                      </button>
+                      
+                      @if($app->is_verified === 'PENDING' && (!$app->revised_status || $app->revised_status === 'PENDING'))
+                        <a href="{{ route('lecturer.replacement_class.edit', $app->id) }}" 
+                           class="btn btn-sm btn-outline-warning" 
+                           title="Edit Application">
+                          <i class="mdi mdi-pencil"></i>
+                        </a>
+                        
+                        <button class="btn btn-sm btn-outline-danger" 
+                                onclick="confirmDelete({{ $app->id }})" 
+                                title="Delete Application">
+                          <i class="mdi mdi-delete"></i>
+                        </button>
+                      @endif
+                    </div>
                   </td>
                 </tr>
                 @endforeach
@@ -777,6 +793,20 @@
                       title="View Details">
                 <i class="mdi mdi-eye me-1"></i>View Details
               </button>
+              
+              @if($app->is_verified === 'PENDING' && (!$app->revised_status || $app->revised_status === 'PENDING'))
+                <a href="{{ route('lecturer.replacement_class.edit', $app->id) }}" 
+                   class="btn btn-sm btn-outline-warning" 
+                   title="Edit Application">
+                  <i class="mdi mdi-pencil me-1"></i>Edit
+                </a>
+                
+                <button class="btn btn-sm btn-outline-danger" 
+                        onclick="confirmDelete({{ $app->id }})" 
+                        title="Delete Application">
+                  <i class="mdi mdi-delete me-1"></i>Delete
+                </button>
+              @endif
             </div>
           </div>
           @endforeach
@@ -1016,7 +1046,7 @@ $(document).ready(function() {
                         </div>
                     ` : ''}
                     
-                    ${appData.maklumat_kuliah ? `
+                    ${appData.maklumat_kuliah && appData.maklumat_kuliah.trim() ? `
                         <div class="mb-3">
                             <h6><i class="mdi mdi-information me-1"></i>Additional Information</h6>
                             <div class="alert alert-info text-start">${appData.maklumat_kuliah}</div>
@@ -1123,5 +1153,79 @@ $(document).ready(function() {
         $('#suggestDateForm')[0].reset();
     });
 });
+
+// Delete confirmation function with SweetAlert
+function confirmDelete(applicationId) {
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "This will permanently delete the replacement class application. You won't be able to recover it!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, delete it!',
+        cancelButtonText: 'Cancel',
+        reverseButtons: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Show loading state
+            Swal.fire({
+                title: 'Deleting...',
+                text: 'Please wait while we delete your application.',
+                icon: 'info',
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                willOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+            
+            // Perform delete request
+            $.ajax({
+                url: `/lecturer/class/replacement_class/${applicationId}`,
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(response) {
+                    if (response.success) {
+                        Swal.fire({
+                            title: 'Deleted!',
+                            text: response.message,
+                            icon: 'success',
+                            timer: 2000,
+                            showConfirmButton: false
+                        }).then(() => {
+                            location.reload();
+                        });
+                    } else {
+                        Swal.fire({
+                            title: 'Error!',
+                            text: response.message || 'Failed to delete the application.',
+                            icon: 'error'
+                        });
+                    }
+                },
+                error: function(xhr) {
+                    let errorMessage = 'An error occurred while deleting the application.';
+                    
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMessage = xhr.responseJSON.message;
+                    } else if (xhr.status === 403) {
+                        errorMessage = 'You do not have permission to delete this application.';
+                    } else if (xhr.status === 400) {
+                        errorMessage = 'This application cannot be deleted because it has been verified or rejected.';
+                    }
+                    
+                    Swal.fire({
+                        title: 'Error!',
+                        text: errorMessage,
+                        icon: 'error'
+                    });
+                }
+            });
+        }
+    });
+}
 </script>
 @endsection
