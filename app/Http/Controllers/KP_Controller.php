@@ -1497,9 +1497,9 @@ $content .= '<tr>
     {
         $user = Auth::user();
 
+        $programs = null;
         if($user->usrtype == 'PL')
         {
-        
             // Get programs handled by this KP
             $programs = DB::table('user_program')
                 ->join('tblprogramme', 'user_program.program_id', 'tblprogramme.id')
@@ -1512,7 +1512,6 @@ $content .= '<tr>
                     'message' => 'You are not assigned to any programs.'
                 ]);
             }
-
         }
 
         // Get all replacement class applications for lecturers under this KP's programs
