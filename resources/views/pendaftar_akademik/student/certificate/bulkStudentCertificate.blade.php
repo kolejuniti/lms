@@ -104,7 +104,7 @@
                       <table class="table table-bordered table-striped" id="certificates-table">
                         <thead>
                           <tr>
-                            <th width="50">
+                            <th>
                               <input type="checkbox" id="select-all-header" class="filled-in">
                             </th>
                             <th>Serial Number</th>
@@ -275,12 +275,42 @@ function displayCertificates(certificates) {
             pageLength: 25,
             lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
             order: [[1, 'asc']], // Sort by Serial Number
+            scrollX: true, // Enable horizontal scrolling
+            autoWidth: false, // Disable automatic column width calculation
             columnDefs: [
                 {
                     targets: 0, // Checkbox column
                     orderable: false,
                     searchable: false,
                     width: "50px"
+                },
+                {
+                    targets: 1, // Serial Number
+                    width: "12%"
+                },
+                {
+                    targets: 2, // Student Name
+                    width: "20%"
+                },
+                {
+                    targets: 3, // IC Number
+                    width: "12%"
+                },
+                {
+                    targets: 4, // Matric Number
+                    width: "12%"
+                },
+                {
+                    targets: 5, // Program
+                    width: "15%"
+                },
+                {
+                    targets: 6, // Status
+                    width: "8%"
+                },
+                {
+                    targets: 7, // Date Generated
+                    width: "11%"
                 }
             ],
             dom: 'lBfrtip',
@@ -343,6 +373,10 @@ function displayCertificates(certificates) {
                 infoFiltered: "(filtered from _MAX_ total certificates)",
                 zeroRecords: "No certificates found",
                 emptyTable: "No certificates available"
+            },
+            initComplete: function() {
+                // Force column width recalculation after initialization
+                this.api().columns.adjust().draw();
             }
         });
         
@@ -547,6 +581,20 @@ function bulkClaimCertificates(certificateIds) {
     margin-bottom: 5px;
 }
 
+/* Ensure card and containers use full width */
+#certificates-section .card,
+#certificates-section .card-body {
+    width: 100% !important;
+}
+
+/* Remove any max-width constraints */
+.container-fluid,
+.row,
+.col-md-12 {
+    max-width: none !important;
+    width: 100% !important;
+}
+
 /* DataTables responsive styling */
 table.dataTable thead .sorting,
 table.dataTable thead .sorting_asc,
@@ -563,6 +611,51 @@ table.dataTable thead .sorting_desc:after {
 /* Ensure consistent table styling */
 #certificates-table.dataTable {
     border-collapse: separate !important;
+    width: 100% !important;
+    table-layout: fixed !important;
+}
+
+/* Force table container to use full width */
+.table-responsive {
+    width: 100% !important;
+}
+
+/* DataTables wrapper adjustments */
+.dataTables_wrapper {
+    width: 100% !important;
+}
+
+.dataTables_wrapper .row {
+    margin: 0;
+}
+
+/* Ensure DataTables scroll container uses full width */
+.dataTables_scrollHead,
+.dataTables_scrollBody,
+.dataTables_scrollFoot {
+    width: 100% !important;
+}
+
+.dataTables_scroll {
+    width: 100% !important;
+}
+
+/* Make sure table headers and cells don't wrap unnecessarily */
+#certificates-table th,
+#certificates-table td {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 8px !important;
+}
+
+/* Allow specific columns to wrap if needed */
+#certificates-table th:nth-child(3), /* Student Name */
+#certificates-table td:nth-child(3),
+#certificates-table th:nth-child(6), /* Program */
+#certificates-table td:nth-child(6) {
+    white-space: normal;
+    word-wrap: break-word;
 }
 
 /* Style the search box */
@@ -616,6 +709,29 @@ table.dataTable thead .sorting_desc:after {
 .dataTables_info {
     margin-top: 10px;
     color: #6c757d;
+}
+
+/* Fix DataTables width issues */
+.dataTables_wrapper .dataTables_scroll div.dataTables_scrollBody table {
+    width: 100% !important;
+}
+
+/* Ensure table fills available space */
+.dataTables_wrapper {
+    overflow-x: auto;
+}
+
+/* Force table layout */
+table.dataTable {
+    margin: 0 !important;
+    clear: both !important;
+    border-spacing: 0 !important;
+}
+
+/* Fix responsive wrapper */
+.dataTables_wrapper .dataTables_scroll {
+    clear: both;
+    position: relative;
 }
 </style>
 
