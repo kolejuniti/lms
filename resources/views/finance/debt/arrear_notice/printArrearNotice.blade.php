@@ -105,7 +105,7 @@ use Carbon\Carbon;
         <br>
         <br>
         <br>
-        <p>Ruj. Kami : KUSB/UPTP/TAMATPENGAJIAN/2024/{{ $data['student']->no_matric }}</p>
+        <p>Ruj. Kami : KUSB/UPTP/TAMATPENGAJIAN/2025/{{ $data['student']->no_matric }}</p>
         <p>Tarikh &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : {{ $data['originalDate'] }}</p>
         <div class="col-12 mb-1 mt-1">  
             <div style="border: 1px solid white; padding: 10px;">
@@ -188,7 +188,7 @@ use Carbon\Carbon;
         <p>Tuan/Puan,</p>
         <p class="mt-2"><i>Assalamualaikum WRT. WBT.</i></p>
         <p class="mt-2"><b>MAKLUMBALAS PENGESAHAN BAKI TUNGGAKAN YURAN PENGAJIAN DI KOLEJ UNITI</b></p>
-        <p><b>(Rujukan Tuan/Puan : <span style="background-color: black; color: white; padding: 2px;">KUSB/UPTP/TAMATPENGAJIAN/2024/{{ $data['student']->no_matric }}</span>)</b></p>
+        <p><b>(Rujukan Tuan/Puan : <span style="background-color: black; color: white; padding: 2px;">KUSB/UPTP/TAMATPENGAJIAN/2025/{{ $data['student']->no_matric }}</span>)</b></p>
         <hr>
         <p class="mt-2">Dengan segala hormatnya, saya merujuk kepada perkara di atas.</p>
         <p class="mt-2">2. &nbsp;&nbsp;&nbsp;&nbsp;Saya sedia maklum akan tunggakan yuran di Kolej Uniti seperti berikut :-</p>
@@ -217,7 +217,7 @@ use Carbon\Carbon;
                     </tr>
                     <tr>
                         <td>Rujukan Kami</td>
-                        <td>&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp;&nbsp;&nbsp;<b>KUSB/UPTP/TAMATPENGAJIAN/2024/{{ $data['student']->no_matric }}</b></td>
+                        <td>&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp;&nbsp;&nbsp;<b>KUSB/UPTP/TAMATPENGAJIAN/2025/{{ $data['student']->no_matric }}</b></td>
                     </tr>
                 </table>
             </div> 
