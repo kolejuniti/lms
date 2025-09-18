@@ -4,6 +4,86 @@
 <!-- DataTables CSS -->
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
 <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.bootstrap5.min.css">
+
+<style>
+/* Ensure table takes full width */
+#certificates-table {
+    width: 100% !important;
+}
+
+.dataTables_wrapper {
+    width: 100% !important;
+}
+
+.table-responsive {
+    width: 100% !important;
+}
+
+/* Style the buttons container */
+.dt-buttons {
+    margin-bottom: 10px;
+}
+
+.dt-buttons .btn {
+    margin-right: 5px;
+    margin-bottom: 5px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .dt-buttons .btn {
+        font-size: 12px;
+        padding: 5px 10px;
+    }
+    
+    .dt-buttons .btn i {
+        margin-right: 3px !important;
+    }
+}
+
+/* Ensure proper spacing in DataTables controls */
+.dataTables_length {
+    margin-bottom: 10px;
+}
+
+.dataTables_filter {
+    margin-bottom: 10px;
+}
+
+/* Make sure the wrapper doesn't constrain width */
+.card-body .table-responsive {
+    overflow-x: auto;
+}
+
+/* Force table to use full container width */
+.dataTables_wrapper .row {
+    margin: 0;
+}
+
+.dataTables_wrapper .row [class*="col-"] {
+    padding: 0 5px;
+}
+
+/* Ensure table cells don't wrap unnecessarily */
+#certificates-table td, #certificates-table th {
+    white-space: nowrap;
+}
+
+/* Make program column allow text wrapping since it can be long */
+#certificates-table td:nth-child(6), #certificates-table th:nth-child(6) {
+    white-space: normal;
+    max-width: 200px;
+}
+
+/* Ensure the table container takes full width */
+.card .card-body {
+    padding: 15px;
+}
+
+.dataTables_wrapper .dataTables_scroll {
+    width: 100%;
+}
+</style>
 <!-- Content Header (Page header) -->
 <div class="content-wrapper" style="min-height: 695.8px;">
   <div class="container-full">
@@ -251,15 +331,17 @@ function displayCertificates(certificates) {
             "pageLength": 25,
             "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
             "order": [[7, "desc"]], // Sort by date generated (desc)
+            "scrollX": true,
+            "autoWidth": false,
             "columnDefs": [
                 {
                     "targets": [0], // Checkbox column
                     "orderable": false,
-                    "searchable": false
+                    "searchable": false,
+                    "width": "50px"
                 }
             ],
-            "dom": '<"row"<"col-md-6"l><"col-md-6"f>>' +
-                   '<"row"<"col-md-12"B>>' +
+            "dom": '<"row"<"col-md-6"B><"col-md-3"l><"col-md-3"f>>' +
                    '<"row"<"col-md-12"tr>>' +
                    '<"row"<"col-md-5"i><"col-md-7"p>>',
             "buttons": [
