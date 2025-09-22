@@ -2308,20 +2308,36 @@ $content .= '</tr>
             }
         }
 
-        //check warning - same logic as storeAttendance()
-
+        //Enhanced warning check system - handles both new warnings and adjustment of existing warnings
+        
         $IC = (isset($data['student'])) ? $data['student'] : [];
-
         $MC = (isset($data['mc'])) ? $data['mc'] : [];
-
         $LC = (isset($data['lc'])) ? $data['lc'] : [];
+        
+        // Get excuse array and filter for non-null values
+        $excuses = (isset($data['excuse'])) ? array_filter($data['excuse'], function($value) { 
+            return !is_null($value) && $value !== ''; 
+        }) : [];
+        
+        // Get corresponding ICs for excuses
+        $excuse_ics = [];
+        if(isset($data['ic']) && count($excuses) > 0) {
+            foreach($data['excuse'] as $key => $excuse) {
+                if(!is_null($excuse) && $excuse !== '' && isset($data['ic'][$key])) {
+                    $excuse_ics[] = $data['ic'][$key];
+                }
+            }
+        }
 
-        $exists = array_merge($IC,$MC,$LC);
+        $exists = array_merge($IC, $MC, $LC);
 
-        $absent = DB::table('student_subjek')->where([
+        // Get all students in this group
+        $all_students = DB::table('student_subjek')->where([
             ['group_id', $group[0]],
             ['group_name', $group[1]]
-        ])->whereNotIn('student_ic', $exists)->pluck('student_ic');
+        ])->pluck('student_ic');
+
+        $absent = $all_students->diff($exists);
 
         $totalclass = DB::table('tblclassattendance')
                  ->where([
@@ -2332,221 +2348,133 @@ $content .= '</tr>
         $course_credit = DB::table('subjek')->where('id', Session::get('CourseID'))
                   ->select('course_credit', DB::raw('(course_credit * 14) as total'))->first();
 
-
-        //try to get the total credit -> total credit (47) (2 x 14) - amount of student absent time (4)
-
         if($totalclass > 0){  
             
-            if(count($absent) > 0)
-            {
+            // STEP 1: Check and clean up warnings for students who are now present/MC/excuse
+            foreach($all_students as $student_ic) {
+                
+                // Calculate current attendance for this student
+                $subQuery = DB::table('tblclassattendance')
+                                ->select('tblclassattendance.classdate')
+                                ->where([
+                                    ['tblclassattendance.groupid', $group[0]],
+                                    ['tblclassattendance.groupname', $group[1]],
+                                    ['tblclassattendance.student_ic', $student_ic]
+                                ])
+                                ->groupBy('tblclassattendance.classdate');
 
-                foreach($absent as $key => $abs)
-                {
+                $total_absent_classes = DB::table('tblclassattendance')
+                ->select(
+                    'tblclassattendance.classdate',
+                    'tblclassattendance.classend',
+                    DB::raw('HOUR(TIMEDIFF(tblclassattendance.classend, tblclassattendance.classdate)) as raw_diff')
+                )
+                ->where([
+                    ['tblclassattendance.groupid', $group[0]],
+                    ['tblclassattendance.groupname', $group[1]]
+                ])
+                ->whereNotIn('tblclassattendance.classdate', $subQuery)
+                ->groupBy('tblclassattendance.classdate', 'tblclassattendance.classdate', 'tblclassattendance.classend')
+                ->get();
 
-                    $subQuery = DB::table('tblclassattendance')
-                                    ->select('tblclassattendance.classdate')
-                                    ->where([
-                                        ['tblclassattendance.groupid', $group[0]],
-                                        ['tblclassattendance.groupname', $group[1]],
-                                        ['tblclassattendance.student_ic', $abs]
-                                    ])
-                                    ->groupBy('tblclassattendance.classdate');
-
-                    $total_absent = DB::table('tblclassattendance')
-                    ->select(
-                        'tblclassattendance.classdate',
-                        'tblclassattendance.classend',
-                        DB::raw('HOUR(TIMEDIFF(tblclassattendance.classend, tblclassattendance.classdate)) as raw_diff')
-                    )
-                    ->where([
-                        ['tblclassattendance.groupid', $group[0]],
-                        ['tblclassattendance.groupname', $group[1]]
-                    ])
-                    ->whereNotIn('tblclassattendance.classdate', $subQuery)
-                    ->groupBy('tblclassattendance.classdate', 'tblclassattendance.classdate', 'tblclassattendance.classend')
-                    ->get();
-
-                    $totalhours = 0; // Initialize totalhours to 0 before the loop
-
-                    foreach ($total_absent as $ttl) {
-                        $totalhours += $ttl->raw_diff; // Correct operator usage for adding values
-                    }
-
-                    $total_absent = $course_credit->total - $totalhours;
-
-                    if(DB::table('tblstudent_warning')->where([['student_ic', $abs],['groupid', $group[0]],['groupname', $group[1]]])->exists())
-                    {
-
-                        if(DB::table('tblstudent_warning')->where([['student_ic', $abs],['groupid', $group[0]],['groupname', $group[1]]])->count() == 1)
-                        {
-
-                            $threshold = $course_credit->total - ($course_credit->course_credit * 2);
-
-                            if($total_absent <= $threshold)
-                            {
-
-                                $percentage = ($total_absent / $course_credit->total) * 100;
-
-                                //dd($percentage);
-
-                                DB::table('tblstudent_warning')->insert([
-                                    'student_ic' => $abs,
-                                    'groupid' => $group[0],
-                                    'groupname' => $group[1],
-                                    'balance_attendance' => $total_absent,
-                                    'percentage_attendance' => $percentage,
-                                    'warning' => 2
-                                ]);
-
-                                //dd('try');
-
-                                // $view = view('lecturer.class.surat_amaran.surat_amaran'); // Replace 'your_view_name' with the name of your HTML view
-
-                                // //dd($view);
-                                // $pdf = PDF::loadHTML($view->render())->stream();
-
-                                // // Save the PDF to a temporary file
-                                // $pdfPath = storage_path('app/public/tmp_pdf_' . time() . '.pdf');
-                                // file_put_contents($pdfPath, $pdf->output());
-
-                                // $publicPath = asset('storage/tmp_pdf_' . time() . '.pdf');
-
-                                //dd('try');
-
-                                // // Send to WhatsApp
-                                // $sid    = env('TWILIO_SID');
-                                // $token  = env('TWILIO_TOKEN');
-                                // $twilio = new Client($sid, $token);
-
-                                // $message = $twilio->messages->create(
-                                //     'whatsapp:+60162667041', // the recipient's Whatsapp number
-                                //     [
-                                //         "from" => env('TWILIO_WHATSAPP_FROM'),
-                                //         "body" => 'Here is your PDF document:'
-                                //     ]
-                                // );
-
-                                // Cleanup: Delete the temporary PDF
-                                // unlink($pdfPath);
-
-                            }
-
-                        }elseif(DB::table('tblstudent_warning')->where([['student_ic', $abs],['groupid', $group[0]],['groupname', $group[1]]])->count() == 2)
-                        {
-
-                            $threshold = $course_credit->total - ($course_credit->course_credit * 3);
-
-                            if($total_absent <= $threshold)
-                            {
-
-                                $percentage = ($total_absent / $course_credit->total) * 100;
-
-                                //dd($percentage);
-
-                                DB::table('tblstudent_warning')->insert([
-                                    'student_ic' => $abs,
-                                    'groupid' => $group[0],
-                                    'groupname' => $group[1],
-                                    'balance_attendance' => $total_absent,
-                                    'percentage_attendance' => $percentage,
-                                    'warning' => 3
-                                ]);
-
-                                //dd('try');
-
-                                // $view = view('lecturer.class.surat_amaran.surat_amaran'); // Replace 'your_view_name' with the name of your HTML view
-
-                                // //dd($view);
-                                // $pdf = PDF::loadHTML($view->render())->stream();
-
-                                // // Save the PDF to a temporary file
-                                // $pdfPath = storage_path('app/public/tmp_pdf_' . time() . '.pdf');
-                                // file_put_contents($pdfPath, $pdf->output());
-
-                                // $publicPath = asset('storage/tmp_pdf_' . time() . '.pdf');
-
-                                //dd('try');
-
-                                // // Send to WhatsApp
-                                // $sid    = env('TWILIO_SID');
-                                // $token  = env('TWILIO_TOKEN');
-                                // $twilio = new Client($sid, $token);
-
-                                // $message = $twilio->messages->create(
-                                //     'whatsapp:+60162667041', // the recipient's Whatsapp number
-                                //     [
-                                //         "from" => env('TWILIO_WHATSAPP_FROM'),
-                                //         "body" => 'Here is your PDF document:'
-                                //     ]
-                                // );
-
-                                // Cleanup: Delete the temporary PDF
-                                // unlink($pdfPath);
-
-                            }
-
-                        }
-
-
-                    }else{
-
-                        $threshold = $course_credit->total - $course_credit->course_credit;
-
-                        if($total_absent <= $threshold)
-                        {
-
-                            $percentage = ($total_absent / $course_credit->total) * 100;
-
-                            //dd($percentage);
-
-                            DB::table('tblstudent_warning')->insert([
-                                'student_ic' => $abs,
-                                'groupid' => $group[0],
-                                'groupname' => $group[1],
-                                'balance_attendance' => $total_absent,
-                                'percentage_attendance' => $percentage,
-                                'warning' => 1
-                            ]);
-
-                            //dd('try');
-
-                            // $view = view('lecturer.class.surat_amaran.surat_amaran'); // Replace 'your_view_name' with the name of your HTML view
-
-                            // //dd($view);
-                            // $pdf = PDF::loadHTML($view->render())->stream();
-
-                            // // Save the PDF to a temporary file
-                            // $pdfPath = storage_path('app/public/tmp_pdf_' . time() . '.pdf');
-                            // file_put_contents($pdfPath, $pdf->output());
-
-                            // $publicPath = asset('storage/tmp_pdf_' . time() . '.pdf');
-
-                            //dd('try');
-
-                            // // Send to WhatsApp
-                            // $sid    = env('TWILIO_SID');
-                            // $token  = env('TWILIO_TOKEN');
-                            // $twilio = new Client($sid, $token);
-
-                            // $message = $twilio->messages->create(
-                            //     'whatsapp:+60162667041', // the recipient's Whatsapp number
-                            //     [
-                            //         "from" => env('TWILIO_WHATSAPP_FROM'),
-                            //         "body" => 'Here is your PDF document:'
-                            //     ]
-                            // );
-
-                            // Cleanup: Delete the temporary PDF
-                            // unlink($pdfPath);
-
-                        }
-
-                    }
-
+                $totalhours = 0;
+                foreach ($total_absent_classes as $ttl) {
+                    $totalhours += $ttl->raw_diff;
                 }
 
-            }
+                $student_attendance_balance = $course_credit->total - $totalhours;
+                
+                // Define thresholds
+                $threshold_1st = $course_credit->total - $course_credit->course_credit;      // 1st warning threshold
+                $threshold_2nd = $course_credit->total - ($course_credit->course_credit * 2); // 2nd warning threshold  
+                $threshold_3rd = $course_credit->total - ($course_credit->course_credit * 3); // 3rd warning threshold
 
+                // Get existing warnings for this student
+                $existing_warnings = DB::table('tblstudent_warning')
+                    ->where([
+                        ['student_ic', $student_ic],
+                        ['groupid', $group[0]],
+                        ['groupname', $group[1]]
+                    ])
+                    ->orderBy('warning', 'desc')
+                    ->get();
+
+                $warning_count = $existing_warnings->count();
+                $highest_warning = $warning_count > 0 ? $existing_warnings->first()->warning : 0;
+
+                // Determine what warning level should be based on current attendance
+                $should_have_warning = 0;
+                if($student_attendance_balance <= $threshold_3rd) {
+                    $should_have_warning = 3;
+                } elseif($student_attendance_balance <= $threshold_2nd) {
+                    $should_have_warning = 2;
+                } elseif($student_attendance_balance <= $threshold_1st) {
+                    $should_have_warning = 1;
+                }
+
+                // CASE 1: Student improved attendance - remove excessive warnings
+                if($highest_warning > $should_have_warning) {
+                    
+                    if($should_have_warning == 0) {
+                        // Remove all warnings - student attendance is now good
+                        DB::table('tblstudent_warning')
+                            ->where([
+                                ['student_ic', $student_ic],
+                                ['groupid', $group[0]],
+                                ['groupname', $group[1]]
+                            ])
+                            ->delete();
+                            
+                    } else {
+                        // Remove warnings higher than what student should have
+                        DB::table('tblstudent_warning')
+                            ->where([
+                                ['student_ic', $student_ic],
+                                ['groupid', $group[0]],
+                                ['groupname', $group[1]]
+                            ])
+                            ->where('warning', '>', $should_have_warning)
+                            ->delete();
+                    }
+                }
+                
+                // CASE 2: Student needs new warning (attendance got worse)
+                elseif($should_have_warning > $highest_warning) {
+                    
+                    // Only add the next warning level (progressive warnings)
+                    $next_warning_level = $highest_warning + 1;
+                    
+                    if($next_warning_level <= $should_have_warning) {
+                        $percentage = ($student_attendance_balance / $course_credit->total) * 100;
+
+                        DB::table('tblstudent_warning')->insert([
+                            'student_ic' => $student_ic,
+                            'groupid' => $group[0],
+                            'groupname' => $group[1],
+                            'balance_attendance' => $student_attendance_balance,
+                            'percentage_attendance' => $percentage,
+                            'warning' => $next_warning_level
+                        ]);
+                    }
+                }
+                
+                // CASE 3: Update existing warning data if attendance balance changed
+                elseif($should_have_warning == $highest_warning && $should_have_warning > 0) {
+                    $percentage = ($student_attendance_balance / $course_credit->total) * 100;
+                    
+                    DB::table('tblstudent_warning')
+                        ->where([
+                            ['student_ic', $student_ic],
+                            ['groupid', $group[0]],
+                            ['groupname', $group[1]],
+                            ['warning', $highest_warning]
+                        ])
+                        ->update([
+                            'balance_attendance' => $student_attendance_balance,
+                            'percentage_attendance' => $percentage
+                        ]);
+                }
+            }
         }
 
         return redirect()->back()->with('message', 'Student attendance has been updated!');
