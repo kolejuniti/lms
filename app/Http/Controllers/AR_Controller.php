@@ -6846,29 +6846,31 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
 
             // Handle serial number generation
             if ($isManual && $manualSerialNumber) {
-                // Validate manual serial number format and uniqueness
-                $manualSerialNumber = trim($manualSerialNumber);
+                // Validate manual serial number suffix and uniqueness
+                $manualSerialSuffix = trim($manualSerialNumber);
                 
-                if (empty($manualSerialNumber)) {
+                if (empty($manualSerialSuffix)) {
                     return response()->json([
                         'success' => false,
-                        'message' => 'Manual serial number cannot be empty'
+                        'message' => 'Manual serial number suffix cannot be empty'
                     ]);
                 }
 
-                // Check if manual serial number already exists
+                // Combine with standard prefix format
+                $serialNo = 'CERT-' . date('Y') . '-' . $manualSerialSuffix;
+
+                // Check if the complete manual serial number already exists
                 $existingSerial = DB::table('student_certificate')
-                    ->where('serial_no', $manualSerialNumber)
+                    ->where('serial_no', $serialNo)
                     ->first();
 
                 if ($existingSerial) {
                     return response()->json([
                         'success' => false,
-                        'message' => 'Serial number already exists. Please use a different serial number.'
+                        'message' => 'Serial number ' . $serialNo . ' already exists. Please use a different suffix.'
                     ]);
                 }
 
-                $serialNo = $manualSerialNumber;
                 $message = $message . ' (Manual Serial Number)';
             } else {
                 // Auto-generate serial number using counter

@@ -140,8 +140,11 @@
                         <div id="manual-serial-input" style="display: none;" class="mb-3">
                           <div class="form-group">
                             <label class="form-label" for="manualSerialNumber">Manual Serial Number</label>
-                            <input type="text" class="form-control" id="manualSerialNumber" placeholder="Enter custom serial number (e.g., CERT-2024-CUSTOM-001)">
-                            <small class="text-muted">This will not increment the automatic counter</small>
+                            <div class="input-group">
+                              <span class="input-group-text" id="serial-prefix">CERT-<span id="current-year"></span>-</span>
+                              <input type="text" class="form-control" id="manualSerialNumber" placeholder="0001" maxlength="20" pattern="[A-Za-z0-9\-]+" title="Only letters, numbers, and hyphens are allowed">
+                            </div>
+                            <small class="text-muted">Enter only the last part of the serial number (e.g., 0001, CUSTOM-001, etc.). This will not increment the automatic counter.</small>
                           </div>
                         </div>
                         
@@ -257,6 +260,8 @@ $('#student').on('change', function(){
 // Handle manual serial number toggle
 $('#manualSerialToggle').on('change', function(){
     if($(this).is(':checked')) {
+        // Update the current year in the prefix
+        $('#current-year').text(new Date().getFullYear());
         $('#manual-serial-input').show();
     } else {
         $('#manual-serial-input').hide();
