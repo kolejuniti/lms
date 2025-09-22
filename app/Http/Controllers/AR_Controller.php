@@ -6789,6 +6789,8 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
 
             $studentIc = $request->student_ic;
             $certificateType = $request->certificate_type ?? 'NEW'; // 'NEW' or 'RECLAIMED'
+            $isManual = $request->boolean('is_manual', false);
+            $manualSerialNumber = $request->manual_serial_number;
 
             if ($certificateType === 'NEW') {
                 // Check if student already has a certificate with status 'NEW'
@@ -6842,22 +6844,50 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
                 ]);
             }
 
-            // Get current counter
-            $counter = DB::table('certificate_counter')->where('id', 1)->first();
-            $currentCount = intval($counter->count);
-            $newCount = $currentCount + 1;
-            $newCountFormatted = str_pad($newCount, 4, '0', STR_PAD_LEFT);
+            // Handle serial number generation
+            if ($isManual && $manualSerialNumber) {
+                // Validate manual serial number format and uniqueness
+                $manualSerialNumber = trim($manualSerialNumber);
+                
+                if (empty($manualSerialNumber)) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Manual serial number cannot be empty'
+                    ]);
+                }
 
-            // Update counter
-            DB::table('certificate_counter')
-                ->where('id', 1)
-                ->update([
-                    'count' => $newCountFormatted,
-                    'updated_at' => now()
-                ]);
+                // Check if manual serial number already exists
+                $existingSerial = DB::table('student_certificate')
+                    ->where('serial_no', $manualSerialNumber)
+                    ->first();
 
-            // Generate serial number (you can customize this format)
-            $serialNo = 'CERT-' . date('Y') . '-' . $newCountFormatted;
+                if ($existingSerial) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Serial number already exists. Please use a different serial number.'
+                    ]);
+                }
+
+                $serialNo = $manualSerialNumber;
+                $message = $message . ' (Manual Serial Number)';
+            } else {
+                // Auto-generate serial number using counter
+                $counter = DB::table('certificate_counter')->where('id', 1)->first();
+                $currentCount = intval($counter->count);
+                $newCount = $currentCount + 1;
+                $newCountFormatted = str_pad($newCount, 4, '0', STR_PAD_LEFT);
+
+                // Update counter only for auto-generated certificates
+                DB::table('certificate_counter')
+                    ->where('id', 1)
+                    ->update([
+                        'count' => $newCountFormatted,
+                        'updated_at' => now()
+                    ]);
+
+                // Generate auto serial number
+                $serialNo = 'CERT-' . date('Y') . '-' . $newCountFormatted;
+            }
 
             // Insert new certificate record
             DB::table('student_certificate')->insert([

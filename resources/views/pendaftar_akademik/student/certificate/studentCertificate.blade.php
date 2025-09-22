@@ -128,6 +128,23 @@
                     </div>
                     <div class="row mt-3">
                       <div class="col-md-12">
+                        <div class="form-group mb-3">
+                          <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="manualSerialToggle">
+                            <label class="form-check-label" for="manualSerialToggle">
+                              Manual Serial Number Entry
+                            </label>
+                          </div>
+                        </div>
+                        
+                        <div id="manual-serial-input" style="display: none;" class="mb-3">
+                          <div class="form-group">
+                            <label class="form-label" for="manualSerialNumber">Manual Serial Number</label>
+                            <input type="text" class="form-control" id="manualSerialNumber" placeholder="Enter custom serial number (e.g., CERT-2024-CUSTOM-001)">
+                            <small class="text-muted">This will not increment the automatic counter</small>
+                          </div>
+                        </div>
+                        
                         <button type="button" class="btn btn-primary me-2" id="generate-certificate">
                           <i class="fa fa-certificate"></i> Generate Certificate Number
                         </button>
@@ -237,22 +254,50 @@ $('#student').on('change', function(){
     getStudInfo(selectedStudent);
 });
 
+// Handle manual serial number toggle
+$('#manualSerialToggle').on('change', function(){
+    if($(this).is(':checked')) {
+        $('#manual-serial-input').show();
+    } else {
+        $('#manual-serial-input').hide();
+        $('#manualSerialNumber').val('');
+    }
+});
+
 $('#generate-certificate').on('click', function(){
     var studentIc = $('#student_ic').val();
-    if(studentIc) {
-        generateCertificate(studentIc, 'NEW');
-    } else {
+    var isManual = $('#manualSerialToggle').is(':checked');
+    var manualSerial = $('#manualSerialNumber').val();
+    
+    if(!studentIc) {
         alert('Please select a student first');
+        return;
     }
+    
+    if(isManual && !manualSerial.trim()) {
+        alert('Please enter a manual serial number or disable manual entry');
+        return;
+    }
+    
+    generateCertificate(studentIc, 'NEW', isManual, manualSerial);
 });
 
 $('#generate-reclaimed').on('click', function(){
     var studentIc = $('#student_ic').val();
-    if(studentIc) {
-        generateCertificate(studentIc, 'RECLAIMED');
-    } else {
+    var isManual = $('#manualSerialToggle').is(':checked');
+    var manualSerial = $('#manualSerialNumber').val();
+    
+    if(!studentIc) {
         alert('Please select a student first');
+        return;
     }
+    
+    if(isManual && !manualSerial.trim()) {
+        alert('Please enter a manual serial number or disable manual entry');
+        return;
+    }
+    
+    generateCertificate(studentIc, 'RECLAIMED', isManual, manualSerial);
 });
 
 function getStudent(search)
@@ -287,6 +332,10 @@ function getStudInfo(ic)
         $('#form-student').hide();
         $('#certificate-result').hide();
         $('#certificate-history').hide();
+        // Reset manual serial input
+        $('#manualSerialToggle').prop('checked', false);
+        $('#manual-serial-input').hide();
+        $('#manualSerialNumber').val('');
         return;
     }
 
@@ -316,16 +365,23 @@ function getStudInfo(ic)
         });
 }
 
-function generateCertificate(studentIc, certificateType)
+function generateCertificate(studentIc, certificateType, isManual, manualSerial)
 {
+    var requestData = {
+        student_ic: studentIc,
+        certificate_type: certificateType
+    };
+    
+    if(isManual && manualSerial) {
+        requestData.is_manual = true;
+        requestData.manual_serial_number = manualSerial.trim();
+    }
+    
     return $.ajax({
             headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
             url      : "{{ url('AR/student/certificate/generate') }}",
             method   : 'POST',
-            data 	 : {
-                student_ic: studentIc,
-                certificate_type: certificateType
-            },
+            data 	 : requestData,
             error:function(err){
                 alert("Error");
                 console.log(err);
@@ -336,6 +392,13 @@ function generateCertificate(studentIc, certificateType)
                     $('#certificate-status').text(data.status);
                     $('#date-generated').text(new Date().toLocaleDateString());
                     $('#certificate-result').show();
+                    
+                    // Clear manual serial input if it was used
+                    if($('#manualSerialToggle').is(':checked')) {
+                        $('#manualSerialNumber').val('');
+                        $('#manualSerialToggle').prop('checked', false);
+                        $('#manual-serial-input').hide();
+                    }
                     
                     // Refresh certificate history
                     getCertificateHistory(studentIc);
