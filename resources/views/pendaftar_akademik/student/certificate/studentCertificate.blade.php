@@ -140,11 +140,22 @@
                         <div id="manual-serial-input" style="display: none;" class="mb-3">
                           <div class="form-group">
                             <label class="form-label" for="manualSerialNumber">Manual Serial Number</label>
-                            <div class="input-group">
-                              <span class="input-group-text" id="serial-prefix">CERT-<span id="current-year"></span>-</span>
-                              <input type="text" class="form-control" id="manualSerialNumber" placeholder="0001" maxlength="20" pattern="[A-Za-z0-9\-]+" title="Only letters, numbers, and hyphens are allowed">
+                            <div class="row">
+                              <div class="col-md-4">
+                                <label class="form-label" for="manualYear">Year</label>
+                                <select class="form-select" id="manualYear" name="manualYear">
+                                  <!-- Years will be populated by JavaScript -->
+                                </select>
+                              </div>
+                              <div class="col-md-8">
+                                <label class="form-label" for="manualSerialNumber">Serial Suffix</label>
+                                <div class="input-group">
+                                  <span class="input-group-text" id="serial-prefix">CERT-<span id="selected-year"></span>-</span>
+                                  <input type="text" class="form-control" id="manualSerialNumber" placeholder="0001" maxlength="20" pattern="[A-Za-z0-9\-]+" title="Only letters, numbers, and hyphens are allowed">
+                                </div>
+                              </div>
                             </div>
-                            <small class="text-muted">Enter only the last part of the serial number (e.g., 0001, CUSTOM-001, etc.). This will not increment the automatic counter.</small>
+                            <small class="text-muted">Select the year and enter the serial suffix (e.g., 0001, CUSTOM-001, etc.). This will not increment the automatic counter.</small>
                           </div>
                         </div>
                         
@@ -260,49 +271,88 @@ $('#student').on('change', function(){
 // Handle manual serial number toggle
 $('#manualSerialToggle').on('change', function(){
     if($(this).is(':checked')) {
-        // Update the current year in the prefix
-        $('#current-year').text(new Date().getFullYear());
+        // Populate year dropdown
+        populateYearDropdown();
         $('#manual-serial-input').show();
     } else {
         $('#manual-serial-input').hide();
         $('#manualSerialNumber').val('');
+        $('#manualYear').val('');
     }
 });
+
+// Handle year selection change
+$('#manualYear').on('change', function(){
+    var selectedYear = $(this).val();
+    $('#selected-year').text(selectedYear);
+});
+
+// Function to populate year dropdown
+function populateYearDropdown() {
+    var currentYear = new Date().getFullYear();
+    var startYear = currentYear - 10; // Show 10 years back
+    var endYear = currentYear + 5;    // Show 5 years forward
+    
+    $('#manualYear').empty();
+    $('#manualYear').append('<option value="" selected disabled>Select Year</option>');
+    
+    for (var year = endYear; year >= startYear; year--) {
+        var selected = year === currentYear ? 'selected' : '';
+        $('#manualYear').append('<option value="' + year + '" ' + selected + '>' + year + '</option>');
+    }
+    
+    // Update the prefix display with current year as default
+    $('#selected-year').text(currentYear);
+}
 
 $('#generate-certificate').on('click', function(){
     var studentIc = $('#student_ic').val();
     var isManual = $('#manualSerialToggle').is(':checked');
     var manualSerial = $('#manualSerialNumber').val();
+    var manualYear = $('#manualYear').val();
     
     if(!studentIc) {
         alert('Please select a student first');
         return;
     }
     
-    if(isManual && !manualSerial.trim()) {
-        alert('Please enter a manual serial number or disable manual entry');
-        return;
+    if(isManual) {
+        if(!manualYear) {
+            alert('Please select a year for the manual serial number');
+            return;
+        }
+        if(!manualSerial.trim()) {
+            alert('Please enter a serial suffix for the manual serial number');
+            return;
+        }
     }
     
-    generateCertificate(studentIc, 'NEW', isManual, manualSerial);
+    generateCertificate(studentIc, 'NEW', isManual, manualSerial, manualYear);
 });
 
 $('#generate-reclaimed').on('click', function(){
     var studentIc = $('#student_ic').val();
     var isManual = $('#manualSerialToggle').is(':checked');
     var manualSerial = $('#manualSerialNumber').val();
+    var manualYear = $('#manualYear').val();
     
     if(!studentIc) {
         alert('Please select a student first');
         return;
     }
     
-    if(isManual && !manualSerial.trim()) {
-        alert('Please enter a manual serial number or disable manual entry');
-        return;
+    if(isManual) {
+        if(!manualYear) {
+            alert('Please select a year for the manual serial number');
+            return;
+        }
+        if(!manualSerial.trim()) {
+            alert('Please enter a serial suffix for the manual serial number');
+            return;
+        }
     }
     
-    generateCertificate(studentIc, 'RECLAIMED', isManual, manualSerial);
+    generateCertificate(studentIc, 'RECLAIMED', isManual, manualSerial, manualYear);
 });
 
 function getStudent(search)
@@ -341,6 +391,7 @@ function getStudInfo(ic)
         $('#manualSerialToggle').prop('checked', false);
         $('#manual-serial-input').hide();
         $('#manualSerialNumber').val('');
+        $('#manualYear').val('');
         return;
     }
 
@@ -370,16 +421,17 @@ function getStudInfo(ic)
         });
 }
 
-function generateCertificate(studentIc, certificateType, isManual, manualSerial)
+function generateCertificate(studentIc, certificateType, isManual, manualSerial, manualYear)
 {
     var requestData = {
         student_ic: studentIc,
         certificate_type: certificateType
     };
     
-    if(isManual && manualSerial) {
+    if(isManual && manualSerial && manualYear) {
         requestData.is_manual = true;
         requestData.manual_serial_number = manualSerial.trim();
+        requestData.manual_year = manualYear;
     }
     
     return $.ajax({
@@ -401,6 +453,7 @@ function generateCertificate(studentIc, certificateType, isManual, manualSerial)
                     // Clear manual serial input if it was used
                     if($('#manualSerialToggle').is(':checked')) {
                         $('#manualSerialNumber').val('');
+                        $('#manualYear').val('');
                         $('#manualSerialToggle').prop('checked', false);
                         $('#manual-serial-input').hide();
                     }

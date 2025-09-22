@@ -6791,6 +6791,7 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
             $certificateType = $request->certificate_type ?? 'NEW'; // 'NEW' or 'RECLAIMED'
             $isManual = $request->boolean('is_manual', false);
             $manualSerialNumber = $request->manual_serial_number;
+            $manualYear = $request->manual_year;
 
             if ($certificateType === 'NEW') {
                 // Check if student already has a certificate with status 'NEW'
@@ -6845,8 +6846,8 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
             }
 
             // Handle serial number generation
-            if ($isManual && $manualSerialNumber) {
-                // Validate manual serial number suffix and uniqueness
+            if ($isManual && $manualSerialNumber && $manualYear) {
+                // Validate manual serial number suffix and year
                 $manualSerialSuffix = trim($manualSerialNumber);
                 
                 if (empty($manualSerialSuffix)) {
@@ -6856,8 +6857,16 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
                     ]);
                 }
 
-                // Combine with standard prefix format
-                $serialNo = 'CERT-' . date('Y') . '-' . $manualSerialSuffix;
+                // Validate year format (should be 4 digits)
+                if (!preg_match('/^\d{4}$/', $manualYear)) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Year must be a valid 4-digit year'
+                    ]);
+                }
+
+                // Combine with standard prefix format using selected year
+                $serialNo = 'CERT-' . $manualYear . '-' . $manualSerialSuffix;
 
                 // Check if the complete manual serial number already exists
                 $existingSerial = DB::table('student_certificate')
