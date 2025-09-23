@@ -1246,7 +1246,7 @@
       </thead>
       <tbody id="table">
       @php
-      $totalOtherALL = 0;
+      $totalHostelALL = 0;
       @endphp
       @foreach ($data['hostel'] as $key => $rgs)
         <tr>
@@ -1366,7 +1366,7 @@
       </thead>
       <tbody id="table">
       @php
-      $totalOtherALL = 0;
+      $totalConvoALL = 0;
       @endphp
       @foreach ($data['convo'] as $key => $rgs)
         <tr>
@@ -1486,7 +1486,7 @@
       </thead>
       <tbody id="table">
       @php
-      $totalOtherALL = 0;
+      $totalFineALL = 0;
       @endphp
       @foreach ($data['fine'] as $key => $rgs)
         <tr>
