@@ -671,6 +671,8 @@ function exportBulkTemplate() {
     // Create worksheet manually to better control formatting
     const ws = XLSX.utils.aoa_to_sheet([
         ['student_ic'],
+        ['030208120632'],
+        ['C0588435'],
         ['']
     ]);
 
@@ -689,10 +691,12 @@ function exportBulkTemplate() {
 
     // Add instructions as comments or additional sheet
     const instructionText = 'Instructions:\n' +
-                           '1. Replace example ICs with actual student IC numbers\n' +
-                           '2. Ensure all ICs are 12 digits (pad with leading zeros if needed)\n' +
-                           '3. Examples: 911017045043, 030401110460, 701031001121\n' +
-                           '4. Save and upload the file';
+                           '1. Replace example values with actual student IC/Passport numbers\n' +
+                           '2. For IC numbers: Ensure 12 digits (pad with leading zeros if needed)\n' +
+                           '3. IC Examples: 030208120632, 911017045043, 030401110460\n' +
+                           '4. For Passport numbers: Use alphanumeric format\n' +
+                           '5. Passport Examples: C0588435, A12345678, E9876543\n' +
+                           '6. Save and upload the file';
     
     // Add instruction cell
     ws['B1'] = { v: instructionText, t: 's' };
