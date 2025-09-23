@@ -6882,10 +6882,10 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
 
                 $message = $message . ' (Manual Serial Number)';
             } else {
-                // Auto-generate serial number using counter with skip logic
+                // Auto-generate serial number using counter
                 $counter = DB::table('certificate_counter')->where('id', 1)->first();
                 $currentCount = intval($counter->count);
-                $newCount = $this->getNextValidCertificateNumber($currentCount);
+                $newCount = $currentCount + 1;
                 $newCountFormatted = str_pad($newCount, 4, '0', STR_PAD_LEFT);
 
                 // Update counter only for auto-generated certificates
@@ -7179,10 +7179,10 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
                 ];
             }
 
-            // Get current counter with skip logic
+            // Get current counter
             $counter = DB::table('certificate_counter')->where('id', 1)->first();
             $currentCount = intval($counter->count);
-            $newCount = $this->getNextValidCertificateNumber($currentCount);
+            $newCount = $currentCount + 1;
             $newCountFormatted = str_pad($newCount, 4, '0', STR_PAD_LEFT);
 
             // Update counter
@@ -7310,37 +7310,6 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
                 'message' => 'Error bulk claiming certificates: ' . $e->getMessage()
             ]);
         }
-    }
-
-    /**
-     * Get the next valid certificate number, skipping x71-x00 ranges
-     * This means for ranges like 671-700, 771-800, etc., we skip the last 30 numbers
-     * 
-     * @param int $currentCount
-     * @return int
-     */
-    private function getNextValidCertificateNumber($currentCount)
-    {
-        $nextCount = $currentCount + 1;
-        
-        // Check if the next number falls within a skip range (x71-x00)
-        // Get the last two digits
-        $lastTwoDigits = $nextCount % 100;
-        
-        // If last two digits are between 71-00 (71,72,73...99,00), skip to x01
-        if ($lastTwoDigits >= 71 || $lastTwoDigits == 0) {
-            // Calculate the next valid number (x01 of the next hundred)
-            $hundredBase = intval($nextCount / 100) * 100;
-            
-            // If we're in 71-99 range, go to next hundred + 1
-            if ($lastTwoDigits >= 71) {
-                $nextCount = $hundredBase + 101; // Next hundred + 01
-            } else { // $lastTwoDigits == 0 (x00)
-                $nextCount = $hundredBase + 1; // Same hundred + 01
-            }
-        }
-        
-        return $nextCount;
     }
 
 }
