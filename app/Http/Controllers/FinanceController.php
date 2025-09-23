@@ -5412,19 +5412,25 @@ class FinanceController extends Controller
         $data['failStudDetail'] = [];
         $data['failTotals'] = [];
 
-        $data['hostelStudent'] = [];
-        $data['hostelStudMethod'] = [];
-        $data['hostelStudDetail'] = [];
-        $data['hostelTotals'] = [];
-
         $data['other'] = [];
         $data['otherStudMethod'] = [];
         $data['otherStudDetail'] = [];
         $data['otherTotals'] = [];
 
         $data['hostel'] = [];
+        $data['hostelStudMethod'] = [];
+        $data['hostelStudDetail'] = [];
+        $data['hostelTotals'] = [];
+
         $data['convo'] = [];
+        $data['convoStudMethod'] = [];
+        $data['convoStudDetail'] = [];
+        $data['convoTotals'] = [];
+        
         $data['fine'] = [];
+        $data['fineStudMethod'] = [];
+        $data['fineStudDetail'] = [];
+        $data['fineTotals'] = [];
 
         $payment = DB::table('tblpayment')
                    ->join('tblpaymentdtl', 'tblpayment.id', 'tblpaymentdtl.payment_id')
@@ -6678,27 +6684,39 @@ class FinanceController extends Controller
         ->select('id', 'payment_id', 'claim_method_id', 'bank_id', 'no_document');
         
         // Main query with join modifications
+        // $other = DB::table('tblpayment')
+        // ->join('tblpaymentdtl as dtl', 'dtl.payment_id', '=', 'tblpayment.id')
+        // ->join('tblpaymentmethod as method', 'method.payment_id', '=', 'tblpayment.id')
+        // ->join('tblstudentclaim', 'dtl.claim_type_id', '=', 'tblstudentclaim.id')
+        // ->leftJoin('tblpayment_bank', 'method.bank_id', '=', 'tblpayment_bank.id')
+        // ->join('tblpayment_method', 'method.claim_method_id', '=', 'tblpayment_method.id')
+        // ->whereBetween('tblpayment.add_date', [$request->from, $request->to])
+        // ->where('tblpayment.process_status_id', 2)
+        // ->select(
+        //     'tblpayment.*',
+        //     'tblstudentclaim.groupid',
+        //     'tblstudentclaim.name AS type',
+        //     'dtl.amount',
+        //     'dtl.claim_type_id',
+        //     'dtl.id AS dtl_id',
+        //     'method.no_document',
+        //     'tblpayment_method.name AS method',
+        //     'tblpayment_bank.name AS bank'
+        // )
+        // ->orderBy('tblpayment.ref_no', 'asc')
+        // ->get();
+
         $other = DB::table('tblpayment')
-        ->join('tblpaymentdtl as dtl', 'dtl.payment_id', '=', 'tblpayment.id')
-        ->join('tblpaymentmethod as method', 'method.payment_id', '=', 'tblpayment.id')
-        ->join('tblstudentclaim', 'dtl.claim_type_id', '=', 'tblstudentclaim.id')
-        ->leftJoin('tblpayment_bank', 'method.bank_id', '=', 'tblpayment_bank.id')
-        ->join('tblpayment_method', 'method.claim_method_id', '=', 'tblpayment_method.id')
-        ->whereBetween('tblpayment.add_date', [$request->from, $request->to])
-        ->where('tblpayment.process_status_id', 2)
-        ->select(
-            'tblpayment.*',
-            'tblstudentclaim.groupid',
-            'tblstudentclaim.name AS type',
-            'dtl.amount',
-            'dtl.claim_type_id',
-            'dtl.id AS dtl_id',
-            'method.no_document',
-            'tblpayment_method.name AS method',
-            'tblpayment_bank.name AS bank'
-        )
-        ->orderBy('tblpayment.ref_no', 'asc')
-        ->get();
+                   ->join('tblpaymentdtl', 'tblpayment.id', 'tblpaymentdtl.payment_id')
+                   ->join('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
+                   ->join('students', 'tblpayment.student_ic', 'students.ic')
+                   ->select('tblpayment.*', 'students.name', 'students.ic', 'students.no_matric', 'students.status', 'students.program', 'students.semester', 'tblpayment.add_date', 'tblstudentclaim.groupid')
+                   ->whereBetween('tblpayment.add_date', [$request->from, $request->to])
+                   ->where('tblpayment.process_status_id', 2)
+                   ->whereNotNull('tblpayment.ref_no')
+                   ->orderByRaw('CAST(SUBSTRING(tblpayment.ref_no, 2) AS UNSIGNED) ASC')
+                   ->groupBy('tblpayment.id')
+                   ->get();
 
         foreach($other as $ot)
         {
@@ -6706,13 +6724,58 @@ class FinanceController extends Controller
             {
                 $data['hostel'][] = $ot;
 
+                $data['hostelStudDetail'][] = DB::table('tblpaymentdtl')
+                                            ->join('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
+                                            ->where('tblpaymentdtl.payment_id', $ot->id)
+                                            ->where('tblpaymentdtl.amount', '!=', 0)
+                                            ->select('tblpaymentdtl.*', 'tblstudentclaim.name AS type')
+                                            ->get();
+
+                $data['hostelStudMethod'][] = DB::table('tblpaymentmethod')
+                                        ->leftjoin('tblpayment_bank', 'tblpaymentmethod.bank_id', 'tblpayment_bank.id')
+                                        ->leftjoin('tblpayment_method', 'tblpaymentmethod.claim_method_id', 'tblpayment_method.id')
+                                        ->where('tblpaymentmethod.payment_id', $ot->id)
+                                        ->groupBy('tblpaymentmethod.id')
+                                        ->select('tblpaymentmethod.*', 'tblpayment_bank.name AS bank', 'tblpayment_method.name AS method')
+                                        ->get();
+
             }elseif(array_intersect([8,1], (array) $ot->process_type_id) && array_intersect([5], (array) $ot->groupid) && $ot->amount != 0 && $ot->claim_type_id == 47)
             {
                 $data['convo'][] = $ot;
 
+                $data['convoStudDetail'][] = DB::table('tblpaymentdtl')
+                                            ->join('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
+                                            ->where('tblpaymentdtl.payment_id', $ot->id)
+                                            ->where('tblpaymentdtl.amount', '!=', 0)
+                                            ->select('tblpaymentdtl.*', 'tblstudentclaim.name AS type')
+                                            ->get();
+
+                $data['convoStudMethod'][] = DB::table('tblpaymentmethod')
+                                        ->leftjoin('tblpayment_bank', 'tblpaymentmethod.bank_id', 'tblpayment_bank.id')
+                                        ->leftjoin('tblpayment_method', 'tblpaymentmethod.claim_method_id', 'tblpayment_method.id')
+                                        ->where('tblpaymentmethod.payment_id', $ot->id)
+                                        ->groupBy('tblpaymentmethod.id')
+                                        ->select('tblpaymentmethod.*', 'tblpayment_bank.name AS bank', 'tblpayment_method.name AS method')
+                                        ->get();
+
             }elseif(array_intersect([4], (array) $ot->groupid) && $ot->amount != 0)
             {
                 $data['fine'][] = $ot;
+
+                $data['fineStudDetail'][] = DB::table('tblpaymentdtl')
+                                            ->join('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
+                                            ->where('tblpaymentdtl.payment_id', $ot->id)
+                                            ->where('tblpaymentdtl.amount', '!=', 0)
+                                            ->select('tblpaymentdtl.*', 'tblstudentclaim.name AS type')
+                                            ->get();
+
+                $data['fineStudMethod'][] = DB::table('tblpaymentmethod')
+                                        ->leftjoin('tblpayment_bank', 'tblpaymentmethod.bank_id', 'tblpayment_bank.id')
+                                        ->leftjoin('tblpayment_method', 'tblpaymentmethod.claim_method_id', 'tblpayment_method.id')
+                                        ->where('tblpaymentmethod.payment_id', $ot->id)
+                                        ->groupBy('tblpaymentmethod.id')
+                                        ->select('tblpaymentmethod.*', 'tblpayment_bank.name AS bank', 'tblpayment_method.name AS method')
+                                        ->get();
 
             }
 
