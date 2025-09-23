@@ -6710,7 +6710,10 @@ class FinanceController extends Controller
                    ->join('tblpaymentdtl', 'tblpayment.id', 'tblpaymentdtl.payment_id')
                    ->join('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
                    ->join('students', 'tblpayment.student_ic', 'students.ic')
-                   ->select('tblpayment.*', 'students.name', 'students.ic', 'students.no_matric', 'students.status', 'students.program', 'students.semester', 'tblpayment.add_date', 'tblstudentclaim.groupid')
+                   ->select('tblpayment.*', 'students.name', 'students.ic', 
+                                     'students.no_matric', 'students.status', 'students.program', 
+                                     'students.semester', 'tblpayment.add_date', 'tblstudentclaim.groupid',
+                                     'tblpaymentdtl.claim_type_id')
                    ->whereBetween('tblpayment.add_date', [$request->from, $request->to])
                    ->where('tblpayment.process_status_id', 2)
                    ->whereNotNull('tblpayment.ref_no')
