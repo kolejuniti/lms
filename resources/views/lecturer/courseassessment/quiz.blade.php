@@ -43,6 +43,9 @@
                 <div class="row mb-3">
                     <div class="col-md-12 mb-3">
                         <div class="pull-right">
+                            <button id="autoMarkAll" class="waves-effect waves-light btn btn-success btn-sm mr-2">
+                                <i class="fa fa-check"></i> <i class="fa fa-magic"></i> &nbsp Auto Mark All
+                            </button>
                             <button id="newFolder" class="waves-effect waves-light btn btn-primary btn-sm">
                                 <i class="fa fa-plus"></i> <i class="fa fa-folder"></i> &nbsp New Quiz
                             </button>
@@ -175,6 +178,69 @@ $(document).ready( function () {
 
     $(document).on('click', '#newFolder', function() {
         location.href = "/lecturer/quiz/{{ Session::get('CourseID') }}/create";
+    })
+
+    $(document).on('click', '#autoMarkAll', function() {
+        Swal.fire({
+            title: "Auto Mark All Quizzes?",
+            text: "This will automatically mark all submitted quizzes that contain only radio button questions. Quizzes with multiple choice or subjective questions will be skipped.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, auto mark them!"
+        }).then(function(result) {
+            if (result.isConfirmed) {
+                // Show loading
+                Swal.fire({
+                    title: 'Processing...',
+                    text: 'Auto marking quizzes in progress',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading()
+                    }
+                });
+
+                $.ajax({
+                    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                    url: "{{ url('lecturer/quiz/automark') }}",
+                    method: 'POST',
+                    data: {
+                        course_id: "{{ Session::get('CourseIDS') }}",
+                        session_id: "{{ Session::get('SessionIDS') }}"
+                    },
+                    error: function(err) {
+                        console.log(err);
+                        let errorMessage = "An error occurred while auto marking.";
+                        if (err.responseJSON && err.responseJSON.message) {
+                            errorMessage = err.responseJSON.message;
+                        }
+                        Swal.fire({
+                            title: "Error!",
+                            text: errorMessage,
+                            icon: "error"
+                        });
+                    },
+                    success: function(data) {
+                        if (data.success) {
+                            Swal.fire({
+                                title: "Success!",
+                                text: data.message,
+                                icon: "success"
+                            }).then(() => {
+                                window.location.reload();
+                            });
+                        } else {
+                            Swal.fire({
+                                title: "Warning!",
+                                text: data.message,
+                                icon: "warning"
+                            });
+                        }
+                    }
+                });
+            }
+        });
     })
 
     function deleteQuiz(id){     

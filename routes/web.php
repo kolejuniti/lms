@@ -424,6 +424,7 @@ Route::post('/lecturer/quiz/{id}/generate-ai-quiz', [App\Http\Controllers\QuizCo
 Route::post('/lecturer/quiz/insert', [App\Http\Controllers\QuizController::class, 'insertquiz']);
 Route::post('/lecturer/quiz/getStatus', [App\Http\Controllers\QuizController::class, 'getStatus']);
 Route::post('/lecturer/quiz/updatequizresult', [App\Http\Controllers\QuizController::class, 'updatequizresult']);
+Route::post('/lecturer/quiz/automark', [App\Http\Controllers\QuizController::class, 'autoMarkQuiz']);
 Route::get('/lecturer/quiz/{id}/{quiz}', [App\Http\Controllers\QuizController::class, 'lecturerquizstatus'])->name('lecturer.quiz.status');
 Route::post('/lecturer/quiz/{id}/{quiz}/getGroup', [App\Http\Controllers\QuizController::class, 'quizGetGroup']);
 Route::delete('/lecturer/quiz/status/delete', [App\Http\Controllers\QuizController::class, 'deletequizstatus']);

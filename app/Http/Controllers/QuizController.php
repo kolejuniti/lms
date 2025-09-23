@@ -893,6 +893,236 @@ class QuizController extends Controller
         return true;
     }
 
+    public function autoMarkQuiz(Request $request)
+    {
+        try {
+            $user = Auth::user();
+            $classid = $request->course_id;
+            $sessionid = $request->session_id;
+            
+            // Get all quizzes for this lecturer and course that are published
+            $quizzes = DB::table('tblclassquiz')
+                ->where([
+                    ['classid', $classid],
+                    ['sessionid', $sessionid], 
+                    ['addby', $user->ic],
+                    ['status', 2], // Published status
+                    ['content', '!=', null]
+                ])->get();
+
+            if ($quizzes->isEmpty()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No published quizzes found for auto marking.'
+                ]);
+            }
+
+            $autoMarkedCount = 0;
+            $skippedCount = 0;
+            $skippedReasons = [];
+
+            foreach ($quizzes as $quiz) {
+                // Check if quiz contains only radio questions
+                $quizContent = json_decode($quiz->content);
+                if (!$quizContent || !isset($quizContent->formData)) {
+                    $skippedCount++;
+                    $skippedReasons[] = "Quiz '{$quiz->title}' - Invalid quiz format";
+                    continue;
+                }
+
+                $hasOnlyRadioQuestions = $this->checkIfOnlyRadioQuestions($quizContent->formData);
+                
+                if (!$hasOnlyRadioQuestions['isOnlyRadio']) {
+                    $skippedCount++;
+                    $skippedReasons[] = "Quiz '{$quiz->title}' - {$hasOnlyRadioQuestions['reason']}";
+                    continue;
+                }
+
+                // Get all submitted quizzes for this quiz that are not yet marked
+                $submittedQuizzes = DB::table('tblclassstudentquiz')
+                    ->where([
+                        ['quizid', $quiz->id],
+                        ['status', 2] // Submitted but not marked
+                    ])->get();
+
+                foreach ($submittedQuizzes as $submittedQuiz) {
+                    $markedSuccessfully = $this->autoMarkSingleQuiz($quiz, $submittedQuiz);
+                    if ($markedSuccessfully) {
+                        $autoMarkedCount++;
+                    }
+                }
+            }
+
+            $message = "Auto marking completed! ";
+            $message .= "Successfully auto-marked: {$autoMarkedCount} quiz submissions. ";
+            
+            if ($skippedCount > 0) {
+                $message .= "Skipped: {$skippedCount} quizzes. ";
+                if (count($skippedReasons) <= 3) {
+                    $message .= "Reasons: " . implode("; ", $skippedReasons);
+                } else {
+                    $message .= "Reasons include: Contains multiple choice or subjective questions, invalid format, etc.";
+                }
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => $message,
+                'auto_marked' => $autoMarkedCount,
+                'skipped' => $skippedCount
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Auto mark quiz error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Error during auto marking: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    private function checkIfOnlyRadioQuestions($formData)
+    {
+        $hasRadioQuestions = false;
+        
+        foreach ($formData as $item) {
+            // Skip non-question elements (like paragraph, header, etc.)
+            if (!isset($item->name)) {
+                continue;
+            }
+
+            // Check for radio questions
+            if (preg_match('/^radio-question(\d+)$/', $item->name)) {
+                $hasRadioQuestions = true;
+                continue;
+            }
+
+            // Check for checkbox questions  
+            if (preg_match('/^checkbox-question(\d+)$/', $item->name)) {
+                return [
+                    'isOnlyRadio' => false,
+                    'reason' => 'Contains multiple choice (checkbox) questions'
+                ];
+            }
+
+            // Check for subjective questions
+            if (preg_match('/^subjective-text(\d+)$/', $item->name)) {
+                return [
+                    'isOnlyRadio' => false,
+                    'reason' => 'Contains subjective questions'
+                ];
+            }
+
+            // Check for other input types that might be subjective
+            if (isset($item->type) && in_array($item->type, ['textarea', 'text', 'file'])) {
+                return [
+                    'isOnlyRadio' => false,
+                    'reason' => 'Contains subjective or file upload questions'
+                ];
+            }
+        }
+
+        if (!$hasRadioQuestions) {
+            return [
+                'isOnlyRadio' => false,
+                'reason' => 'No radio button questions found'
+            ];
+        }
+
+        return [
+            'isOnlyRadio' => true,
+            'reason' => 'Quiz contains only radio button questions'
+        ];
+    }
+
+    private function autoMarkSingleQuiz($quiz, $submittedQuiz)
+    {
+        try {
+            $quizformdata = json_decode($submittedQuiz->content)->formData;
+            $original_quizformdata = json_decode($quiz->content)->formData;
+            
+            $totalMarks = 0;
+            $gainedMarks = 0;
+            $count = 1;
+            
+            // Process each form element
+            foreach ($original_quizformdata as $index => $originalItem) {
+                if (!empty($originalItem->name)) {
+                    // Handle radio questions only
+                    if (preg_match('/^radio-question(\d+)$/', $originalItem->name, $matches)) {
+                        $question_number = $matches[1];
+                        
+                        // Get correct answer
+                        $correct_answer_raw = '';
+                        if (isset($original_quizformdata[$index + 1]) && isset($original_quizformdata[$index + 1]->label)) {
+                            $correct_answer_raw = $original_quizformdata[$index + 1]->label;
+                        }
+                        $correct_answers = !empty($correct_answer_raw) ? explode(",", $correct_answer_raw) : [];
+                        $correct_answers = array_map('trim', $correct_answers);
+                        
+                        // Get user's answer
+                        $userData = !empty($quizformdata[$index]->userData[0]) ? trim($quizformdata[$index]->userData[0]) : null;
+                        
+                        // Check if answer is correct
+                        $isCorrect = $userData && in_array($userData, $correct_answers);
+                        
+                        if ($question_number == $count) {
+                            $count++;
+                        }
+                    }
+                }
+                
+                // Handle marking elements
+                if (!empty($originalItem->className) && str_contains($originalItem->className, "collected-marks")) {
+                    $mark = $originalItem->values[0]->value;
+                    $totalMarks += floatval($mark);
+                    
+                    // Set the mark based on previous question's correctness
+                    if (isset($isCorrect) && $isCorrect) {
+                        $gainedMarks += floatval($mark);
+                        // Update the quiz data to mark this as correct
+                        $quizformdata[$index]->userData = [$mark];
+                    } else {
+                        // Mark as incorrect (0 marks)
+                        $quizformdata[$index]->userData = ["0"];
+                    }
+                    
+                    // Reset for next question
+                    unset($isCorrect);
+                }
+            }
+            
+            // Update the quiz submission with marks
+            $updatedContent = json_encode(['formData' => $quizformdata]);
+            
+            DB::table('tblclassstudentquiz')
+                ->where('id', $submittedQuiz->id)
+                ->update([
+                    'content' => $updatedContent,
+                    'final_mark' => $gainedMarks . ' Mark',
+                    'comments' => 'Auto-marked by system',
+                    'status' => 3 // Marked status
+                ]);
+
+            // Send notification to student
+            $message = "Your quiz has been auto-marked by the system.";
+            $url = url('/student/quiz/' . $quiz->id . '/' . $submittedQuiz->userid . '/result');
+            $icon = "fa-check fa-lg";
+            $iconColor = "#2b74f3";
+
+            $student = UserStudent::where('ic', $submittedQuiz->userid)->first();
+            if ($student) {
+                Notification::send($student, new MyCustomNotification($message, $url, $icon, $iconColor));
+            }
+
+            return true;
+
+        } catch (\Exception $e) {
+            Log::error('Error auto marking single quiz: ' . $e->getMessage());
+            return false;
+        }
+    }
+
 
 
 
