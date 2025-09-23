@@ -425,6 +425,7 @@ Route::post('/lecturer/quiz/insert', [App\Http\Controllers\QuizController::class
 Route::post('/lecturer/quiz/getStatus', [App\Http\Controllers\QuizController::class, 'getStatus']);
 Route::post('/lecturer/quiz/updatequizresult', [App\Http\Controllers\QuizController::class, 'updatequizresult']);
 Route::post('/lecturer/quiz/automark', [App\Http\Controllers\QuizController::class, 'autoMarkQuiz']);
+Route::post('/lecturer/quiz/test-validation', [App\Http\Controllers\QuizController::class, 'testQuizValidation']);
 Route::get('/lecturer/quiz/{id}/{quiz}', [App\Http\Controllers\QuizController::class, 'lecturerquizstatus'])->name('lecturer.quiz.status');
 Route::post('/lecturer/quiz/{id}/{quiz}/getGroup', [App\Http\Controllers\QuizController::class, 'quizGetGroup']);
 Route::delete('/lecturer/quiz/status/delete', [App\Http\Controllers\QuizController::class, 'deletequizstatus']);

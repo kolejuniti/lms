@@ -43,9 +43,6 @@
                 <div class="row mb-3">
                     <div class="col-md-12 mb-3">
                         <div class="pull-right">
-                            <button id="autoMarkAll" class="waves-effect waves-light btn btn-success btn-sm mr-2">
-                                <i class="fa fa-check"></i> <i class="fa fa-magic"></i> &nbsp Auto Mark All
-                            </button>
                             <button id="newFolder" class="waves-effect waves-light btn btn-primary btn-sm">
                                 <i class="fa fa-plus"></i> <i class="fa fa-folder"></i> &nbsp New Quiz
                             </button>
@@ -124,6 +121,13 @@
                                     </i>
                                     Students
                                 </a>
+                                @if($dt->statusname == 'published')
+                                <a class="btn btn-primary btn-sm mr-2" href="#" onclick="autoMarkQuiz('{{ $dt->id }}', '{{ $dt->title }}')">
+                                    <i class="fa fa-check">
+                                    </i>
+                                    Auto Mark
+                                </a>
+                                @endif
                                 <a class="btn btn-info btn-sm btn-sm mr-2" href="/lecturer/quiz/{{ Session::get('CourseID') }}/create?quizid={{ $dt->id }}">
                                     <i class="ti-pencil-alt">
                                     </i>
@@ -180,21 +184,21 @@ $(document).ready( function () {
         location.href = "/lecturer/quiz/{{ Session::get('CourseID') }}/create";
     })
 
-    $(document).on('click', '#autoMarkAll', function() {
+    function autoMarkQuiz(quizId, quizTitle) {
         Swal.fire({
-            title: "Auto Mark All Quizzes?",
-            text: "This will automatically mark all submitted quizzes that contain only radio button questions. Quizzes with multiple choice or subjective questions will be skipped.",
+            title: `Auto Mark "${quizTitle}"?`,
+            text: "This will automatically mark all student submissions for this quiz if it contains only radio button questions. Submissions will be skipped if the quiz has multiple choice or subjective questions.",
             icon: "warning",
             showCancelButton: true,
             confirmButtonColor: "#3085d6",
             cancelButtonColor: "#d33",
-            confirmButtonText: "Yes, auto mark them!"
+            confirmButtonText: "Yes, auto mark this quiz!"
         }).then(function(result) {
             if (result.isConfirmed) {
                 // Show loading
                 Swal.fire({
                     title: 'Processing...',
-                    text: 'Auto marking quizzes in progress',
+                    text: 'Auto marking quiz submissions in progress',
                     allowOutsideClick: false,
                     didOpen: () => {
                         Swal.showLoading()
@@ -206,6 +210,7 @@ $(document).ready( function () {
                     url: "{{ url('lecturer/quiz/automark') }}",
                     method: 'POST',
                     data: {
+                        quiz_id: quizId,
                         course_id: "{{ Session::get('CourseIDS') }}",
                         session_id: "{{ Session::get('SessionIDS') }}"
                     },
@@ -241,7 +246,7 @@ $(document).ready( function () {
                 });
             }
         });
-    })
+    }
 
     function deleteQuiz(id){     
       Swal.fire({

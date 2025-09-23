@@ -897,79 +897,84 @@ class QuizController extends Controller
     {
         try {
             $user = Auth::user();
+            $quizId = $request->quiz_id;
             $classid = $request->course_id;
             $sessionid = $request->session_id;
             
-            // Get all quizzes for this lecturer and course that are published
-            $quizzes = DB::table('tblclassquiz')
+            // Get the specific quiz
+            $quiz = DB::table('tblclassquiz')
                 ->where([
+                    ['id', $quizId],
                     ['classid', $classid],
                     ['sessionid', $sessionid], 
                     ['addby', $user->ic],
                     ['status', 2], // Published status
                     ['content', '!=', null]
-                ])->get();
+                ])->first();
 
-            if ($quizzes->isEmpty()) {
+            if (!$quiz) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'No published quizzes found for auto marking.'
+                    'message' => 'Quiz not found or not available for auto marking.'
+                ]);
+            }
+
+            // Check if quiz contains only radio questions
+            $quizContent = json_decode($quiz->content);
+            if (!$quizContent || !isset($quizContent->formData)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "Quiz '{$quiz->title}' has invalid format and cannot be auto-marked."
+                ]);
+            }
+
+            $hasOnlyRadioQuestions = $this->checkIfOnlyRadioQuestions($quizContent->formData);
+            
+            if (!$hasOnlyRadioQuestions['isOnlyRadio']) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "Quiz '{$quiz->title}' cannot be auto-marked. {$hasOnlyRadioQuestions['reason']}."
+                ]);
+            }
+
+            // Get all submitted quizzes for this specific quiz that are not yet marked
+            $submittedQuizzes = DB::table('tblclassstudentquiz')
+                ->where([
+                    ['quizid', $quiz->id],
+                    ['status', 2] // Submitted but not marked
+                ])->get();
+
+            if ($submittedQuizzes->isEmpty()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "No ungraded submissions found for quiz '{$quiz->title}'."
                 ]);
             }
 
             $autoMarkedCount = 0;
-            $skippedCount = 0;
-            $skippedReasons = [];
+            $failedCount = 0;
 
-            foreach ($quizzes as $quiz) {
-                // Check if quiz contains only radio questions
-                $quizContent = json_decode($quiz->content);
-                if (!$quizContent || !isset($quizContent->formData)) {
-                    $skippedCount++;
-                    $skippedReasons[] = "Quiz '{$quiz->title}' - Invalid quiz format";
-                    continue;
-                }
-
-                $hasOnlyRadioQuestions = $this->checkIfOnlyRadioQuestions($quizContent->formData);
-                
-                if (!$hasOnlyRadioQuestions['isOnlyRadio']) {
-                    $skippedCount++;
-                    $skippedReasons[] = "Quiz '{$quiz->title}' - {$hasOnlyRadioQuestions['reason']}";
-                    continue;
-                }
-
-                // Get all submitted quizzes for this quiz that are not yet marked
-                $submittedQuizzes = DB::table('tblclassstudentquiz')
-                    ->where([
-                        ['quizid', $quiz->id],
-                        ['status', 2] // Submitted but not marked
-                    ])->get();
-
-                foreach ($submittedQuizzes as $submittedQuiz) {
-                    $markedSuccessfully = $this->autoMarkSingleQuiz($quiz, $submittedQuiz);
-                    if ($markedSuccessfully) {
-                        $autoMarkedCount++;
-                    }
+            foreach ($submittedQuizzes as $submittedQuiz) {
+                $markedSuccessfully = $this->autoMarkSingleQuiz($quiz, $submittedQuiz);
+                if ($markedSuccessfully) {
+                    $autoMarkedCount++;
+                } else {
+                    $failedCount++;
                 }
             }
 
-            $message = "Auto marking completed! ";
-            $message .= "Successfully auto-marked: {$autoMarkedCount} quiz submissions. ";
+            $message = "Auto marking completed for quiz '{$quiz->title}'! ";
+            $message .= "Successfully auto-marked: {$autoMarkedCount} student submission(s).";
             
-            if ($skippedCount > 0) {
-                $message .= "Skipped: {$skippedCount} quizzes. ";
-                if (count($skippedReasons) <= 3) {
-                    $message .= "Reasons: " . implode("; ", $skippedReasons);
-                } else {
-                    $message .= "Reasons include: Contains multiple choice or subjective questions, invalid format, etc.";
-                }
+            if ($failedCount > 0) {
+                $message .= " Failed to mark: {$failedCount} submission(s).";
             }
 
             return response()->json([
                 'success' => true,
                 'message' => $message,
                 'auto_marked' => $autoMarkedCount,
-                'skipped' => $skippedCount
+                'failed' => $failedCount
             ]);
 
         } catch (\Exception $e) {
@@ -984,41 +989,56 @@ class QuizController extends Controller
     private function checkIfOnlyRadioQuestions($formData)
     {
         $hasRadioQuestions = false;
+        $questionTypes = [];
         
         foreach ($formData as $item) {
-            // Skip non-question elements (like paragraph, header, etc.)
-            if (!isset($item->name)) {
+            // Skip elements without type or name
+            if (!isset($item->type)) {
                 continue;
             }
 
-            // Check for radio questions
-            if (preg_match('/^radio-question(\d+)$/', $item->name)) {
+            // Check for radio-group questions (single choice)
+            if ($item->type === 'radio-group' && isset($item->name) && preg_match('/^radio-question\d+$/', $item->name)) {
                 $hasRadioQuestions = true;
+                $questionTypes[] = 'radio';
                 continue;
             }
 
-            // Check for checkbox questions  
-            if (preg_match('/^checkbox-question(\d+)$/', $item->name)) {
+            // Check for checkbox-group questions (multiple choice) 
+            if ($item->type === 'checkbox-group' && isset($item->name) && preg_match('/^checkbox-question\d+$/', $item->name)) {
+                $questionTypes[] = 'checkbox';
                 return [
                     'isOnlyRadio' => false,
                     'reason' => 'Contains multiple choice (checkbox) questions'
                 ];
             }
 
-            // Check for subjective questions
-            if (preg_match('/^subjective-text(\d+)$/', $item->name)) {
+            // Check for subjective questions (textarea)
+            if ($item->type === 'textarea' && isset($item->name) && preg_match('/^subjective-text\d+$/', $item->name)) {
+                $questionTypes[] = 'subjective';
                 return [
                     'isOnlyRadio' => false,
-                    'reason' => 'Contains subjective questions'
+                    'reason' => 'Contains subjective (textarea) questions'
                 ];
             }
 
-            // Check for other input types that might be subjective
-            if (isset($item->type) && in_array($item->type, ['textarea', 'text', 'file'])) {
+            // Check for text input questions (also subjective)
+            if ($item->type === 'text' && isset($item->name) && preg_match('/^subjective-text\d+$/', $item->name)) {
+                $questionTypes[] = 'text-subjective';
                 return [
                     'isOnlyRadio' => false,
-                    'reason' => 'Contains subjective or file upload questions'
+                    'reason' => 'Contains subjective (text input) questions'
                 ];
+            }
+
+            // Skip non-question elements (headers, paragraphs, files, etc.)
+            // Elements with className containing 'correct-answer', 'collected-marks', 'feedback-text' are not actual questions
+            if (isset($item->className)) {
+                if (str_contains($item->className, 'correct-answer') || 
+                    str_contains($item->className, 'collected-marks') || 
+                    str_contains($item->className, 'feedback-text')) {
+                    continue;
+                }
             }
         }
 
@@ -1035,6 +1055,62 @@ class QuizController extends Controller
         ];
     }
 
+    // Test method to validate the quiz structure - can be removed after testing
+    public function testQuizValidation(Request $request)
+    {
+        $sampleData = json_decode($request->quiz_data);
+        
+        if (!$sampleData || !isset($sampleData->formData)) {
+            return response()->json([
+                'error' => 'Invalid quiz data format'
+            ]);
+        }
+        
+        $result = $this->checkIfOnlyRadioQuestions($sampleData->formData);
+        
+        return response()->json([
+            'isOnlyRadio' => $result['isOnlyRadio'],
+            'reason' => $result['reason'],
+            'quiz_analysis' => $this->analyzeQuizStructure($sampleData->formData)
+        ]);
+    }
+    
+    private function analyzeQuizStructure($formData)
+    {
+        $analysis = [
+            'total_elements' => count($formData),
+            'question_elements' => [],
+            'support_elements' => []
+        ];
+        
+        foreach ($formData as $index => $item) {
+            $elementInfo = [
+                'index' => $index,
+                'type' => $item->type ?? 'unknown',
+                'name' => $item->name ?? 'no-name',
+                'className' => $item->className ?? 'no-class'
+            ];
+            
+            if (isset($item->type)) {
+                if ($item->type === 'radio-group' && isset($item->name) && preg_match('/^radio-question\d+$/', $item->name)) {
+                    $elementInfo['category'] = 'radio-question';
+                    $analysis['question_elements'][] = $elementInfo;
+                } elseif ($item->type === 'checkbox-group' && isset($item->name) && preg_match('/^checkbox-question\d+$/', $item->name)) {
+                    $elementInfo['category'] = 'checkbox-question';
+                    $analysis['question_elements'][] = $elementInfo;
+                } elseif ($item->type === 'textarea' && isset($item->name) && preg_match('/^subjective-text\d+$/', $item->name)) {
+                    $elementInfo['category'] = 'subjective-question';
+                    $analysis['question_elements'][] = $elementInfo;
+                } else {
+                    $elementInfo['category'] = 'support-element';
+                    $analysis['support_elements'][] = $elementInfo;
+                }
+            }
+        }
+        
+        return $analysis;
+    }
+
     private function autoMarkSingleQuiz($quiz, $submittedQuiz)
     {
         try {
@@ -1043,9 +1119,10 @@ class QuizController extends Controller
             
             $totalMarks = 0;
             $gainedMarks = 0;
+            $gain_mark = false;
             $count = 1;
             
-            // Process each form element
+            // Process each form element - same logic as quizresult method
             foreach ($original_quizformdata as $index => $originalItem) {
                 if (!empty($originalItem->name)) {
                     // Handle radio questions only
@@ -1064,7 +1141,9 @@ class QuizController extends Controller
                         $userData = !empty($quizformdata[$index]->userData[0]) ? trim($quizformdata[$index]->userData[0]) : null;
                         
                         // Check if answer is correct
-                        $isCorrect = $userData && in_array($userData, $correct_answers);
+                        if ($userData && in_array($userData, $correct_answers)) {
+                            $gain_mark = true;
+                        }
                         
                         if ($question_number == $count) {
                             $count++;
@@ -1072,23 +1151,27 @@ class QuizController extends Controller
                     }
                 }
                 
-                // Handle marking elements
+                // Handle marking elements - using same logic as quizresult method
                 if (!empty($originalItem->className) && str_contains($originalItem->className, "collected-marks")) {
+                    $mark_label = $originalItem->values[0]->label;
                     $mark = $originalItem->values[0]->value;
-                    $totalMarks += floatval($mark);
                     
-                    // Set the mark based on previous question's correctness
-                    if (isset($isCorrect) && $isCorrect) {
-                        $gainedMarks += floatval($mark);
-                        // Update the quiz data to mark this as correct
+                    // Auto correct answer on mcq by matching user answer with original answer
+                    $quizformdata[$index] = $original_quizformdata[$index];
+                    
+                    if ($gain_mark) {
+                        $quizformdata[$index]->values[0]->selected = true;
+                        // Set userData to the mark value so the checkbox appears checked when published
                         $quizformdata[$index]->userData = [$mark];
+                        $gainedMarks += floatval($mark);
                     } else {
-                        // Mark as incorrect (0 marks)
-                        $quizformdata[$index]->userData = ["0"];
+                        $quizformdata[$index]->values[0]->selected = false;
+                        // Set userData to empty/0 so the checkbox appears unchecked when published
+                        $quizformdata[$index]->userData = [""];
                     }
                     
-                    // Reset for next question
-                    unset($isCorrect);
+                    $totalMarks += floatval($mark);
+                    $gain_mark = false; // Reset for next question
                 }
             }
             
