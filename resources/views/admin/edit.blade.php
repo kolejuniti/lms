@@ -693,11 +693,32 @@ $(document).ready(function() {
   var status = $("#status").val();
 
   // Initialize CKEditor for comments
-  if (document.querySelector('#comments')) {
-    ClassicEditor
-      .create(document.querySelector('#comments'), { height: '200px' })
-      .then(newEditor => { editor = newEditor; })
-      .catch(error => { console.log(error); });
+  let commentsEditor = null;
+  
+  function initializeCKEditor() {
+    if (document.querySelector('#comments') && !commentsEditor) {
+      ClassicEditor
+        .create(document.querySelector('#comments'), { 
+          height: '200px',
+          placeholder: 'Enter description or reason for account status...'
+        })
+        .then(newEditor => { 
+          commentsEditor = newEditor;
+          // Handle validation for CKEditor
+          newEditor.model.document.on('change:data', () => {
+            const content = newEditor.getData();
+            if (content.trim()) {
+              $('#comments').removeClass('is-invalid').addClass('is-valid');
+            }
+          });
+        })
+        .catch(error => { console.log(error); });
+    }
+  }
+  
+  // Initialize CKEditor if comments section is visible
+  if ($('#comment-card').is(':visible')) {
+    initializeCKEditor();
   }
 
   // Handle user type logic
@@ -713,8 +734,10 @@ $(document).ready(function() {
 
   // Handle status logic
   if (status == 'NOTACTIVE') {
-    $('#comment-card').slideDown(300);
-    $('#comments').prop('required', true);
+    $('#comment-card').slideDown(300, function() {
+      // Initialize CKEditor after the section is visible
+      initializeCKEditor();
+    });
   } else {
     $('#comment-card').slideUp(300);
     $('#comments').prop('required', false);
@@ -753,12 +776,21 @@ $(document).ready(function() {
     var statusIndicator = $('.status-indicator');
     
     if (status == 'NOTACTIVE') {
-      $('#comment-card').slideDown(300);
-      $('#comments').prop('required', true);
+      $('#comment-card').slideDown(300, function() {
+        // Initialize CKEditor after the section is visible
+        initializeCKEditor();
+      });
+      // Don't set required on the original textarea as CKEditor handles it
       statusIndicator.removeClass('status-active').addClass('status-inactive');
       statusIndicator.html('<i class="fa fa-times-circle"></i><span>Current Status: INACTIVE</span>');
     } else {
       $('#comment-card').slideUp(300);
+      // Destroy CKEditor instance when hiding
+      if (commentsEditor) {
+        commentsEditor.destroy().then(() => {
+          commentsEditor = null;
+        });
+      }
       $('#comments').prop('required', false);
       statusIndicator.removeClass('status-inactive').addClass('status-active');
       statusIndicator.html('<i class="fa fa-check-circle"></i><span>Current Status: ACTIVE</span>');
@@ -797,6 +829,28 @@ $(document).ready(function() {
 
   // Form submission
   $('#editLecturerForm').submit(function(e) {
+    // Check if CKEditor is required and validate its content
+    if ($('#comment-card').is(':visible') && commentsEditor) {
+      const editorContent = commentsEditor.getData().trim();
+      if (!editorContent) {
+        e.preventDefault();
+        // Show validation error
+        if (typeof Swal !== 'undefined') {
+          Swal.fire({
+            icon: 'error',
+            title: 'Validation Error',
+            text: 'Comments are required when account status is inactive.',
+            confirmButtonColor: '#4361ee'
+          });
+        } else {
+          alert('Comments are required when account status is inactive.');
+        }
+        return false;
+      }
+      // Update the hidden textarea with CKEditor content before submission
+      $('#comments').val(editorContent);
+    }
+    
     // Show loading state
     $('#saveBtn').html('<i class="fa fa-spinner fa-spin me-2"></i>Saving Changes...');
     $('#saveBtn').prop('disabled', true);
