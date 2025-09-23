@@ -5412,6 +5412,11 @@ class FinanceController extends Controller
         $data['failStudDetail'] = [];
         $data['failTotals'] = [];
 
+        $data['expulsionStudent'] = [];
+        $data['expulsionStudMethod'] = [];
+        $data['expulsionStudDetail'] = [];
+        $data['expulsionTotals'] = [];
+
         $data['other'] = [];
         $data['otherStudMethod'] = [];
         $data['otherStudDetail'] = [];
@@ -6495,6 +6500,67 @@ class FinanceController extends Controller
                             }
 
                             $data['failTotals'][$key] =+ array_sum($data['failTotal'][$key]);
+
+                        }
+
+                    }
+                    
+                }
+
+            }elseif($status->id == 7 && $pym->sponsor_id == null)
+            {
+
+                if(($pym->process_type_id == 1 || $pym->process_type_id == 8) && $pym->process_status_id == 2)
+                {
+
+                    //expulsion
+
+                    if(DB::table('tblpaymentdtl')
+                    ->join('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
+                    ->where('tblpaymentdtl.payment_id', $pym->id)
+                    ->where('tblpaymentdtl.amount', '!=', 0)
+                    ->whereIn('tblstudentclaim.groupid', [1])->exists())
+                    {
+
+                        $data['expulsionStudent'][] = $pym;
+
+                        $data['expulsionStudDetail'][] = DB::table('tblpaymentdtl')
+                                                        ->join('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
+                                                        ->where('tblpaymentdtl.payment_id', $pym->id)
+                                                        ->whereIn('tblstudentclaim.groupid', [1])
+                                                        ->where('tblpaymentdtl.amount', '!=', 0)
+                                                        ->select('tblpaymentdtl.*', 'tblstudentclaim.name AS type')
+                                                        ->get();
+                        
+                        $data['expulsionStudMethod'][] = DB::table('tblpaymentmethod')
+                                                        ->leftjoin('tblpayment_bank', 'tblpaymentmethod.bank_id', 'tblpayment_bank.id')
+                                                        ->leftjoin('tblpayment_method', 'tblpaymentmethod.claim_method_id', 'tblpayment_method.id')
+                                                        ->where('tblpaymentmethod.payment_id', $pym->id)
+                                                        ->groupBy('tblpaymentmethod.id')
+                                                        ->select('tblpaymentmethod.*', 'tblpayment_bank.name AS bank', 'tblpayment_method.name AS method')
+                                                        ->get();
+
+                        //program
+
+                        foreach($data['program'] as $key => $prg)
+                        {
+                            foreach($data['expulsionStudent'] as $keys => $rs)
+                            {
+
+                                if($rs->program == $prg->id)
+                                {
+
+                                    $data['expulsionTotal'][$key][$keys] =+  collect($data['expulsionStudDetail'][$keys])->sum('amount');
+
+                                }else{
+
+                                    $data['expulsionTotal'][$key][$keys] = null;
+
+                                }
+
+                            }
+
+                            $data['expulsionTotals'][$key] =+ array_sum($data['expulsionTotal'][$key]);
 
                         }
 

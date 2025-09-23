@@ -775,6 +775,118 @@ tr:hover {
                 </div>
                 <!-- /.card-body -->
             </div>
+
+            <!-- expulsion student -->
+            <div class="card mb-3" id="stud_info">
+                <div class="card-header">
+                <b>Expulsion Student</b>
+                </div>
+                <div class="card-body p-0">
+                <table class="w-100 table table-bordered display margin-top-10 w-p100">
+                    <thead>
+                        <tr>
+                            <th style="width: 1%">
+                                No.
+                            </th>
+                            <th style="width: 15%">
+                                Name
+                            </th>
+                            <th style="width: 5%">
+                                No.Matric
+                            </th>
+                            <th style="width: 5%">
+                                Date
+                            </th>
+                            <th style="width: 5%">
+                                No. Resit
+                            </th>
+                            <th style="width: 5%">
+                                Method
+                            </th>
+                            <th style="width: 5%">
+                                Bank
+                            </th>
+                            <th style="width: 5%">
+                                No. Document
+                            </th>
+                            <th style="width: 5%">
+                                Amount
+                            </th>
+                            <th style="width: 5%">
+                                Total
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="table">
+                    @php
+                    $totalExpulsionALL = 0;
+                    @endphp
+                    @foreach ($data['expulsionStudent'] as $key => $rgs)
+                    <tr>
+                        <td>
+                        {{ $key+1 }}
+                        </td>
+                        <td>
+                        {{ $rgs->name }}
+                        </td>
+                        <td>
+                        {{ $rgs->no_matric }}
+                        </td>
+                        <td>
+                        {{ $rgs->date }}
+                        </td>
+                        <td>
+                        {{ $rgs->ref_no }}
+                        </td>
+                        <td>
+                        @foreach ($data['expulsionStudMethod'][$key] as $mth)
+                        <div>{{ $mth->method }}</div>
+                        @endforeach
+                        </td>
+                        <td>
+                        @foreach ($data['expulsionStudMethod'][$key] as $mth)
+                        <div>{{ $mth->bank }}</div>
+                        @endforeach
+                        </td>
+                        <td>
+                        @foreach ($data['expulsionStudMethod'][$key] as $mth)
+                        <div>{{ $mth->no_document }}</div>
+                        @endforeach
+                        </td>
+                        <td>
+                        @php
+                            $totalExpulsion = 0;
+                        @endphp
+                        @foreach ($data['expulsionStudDetail'][$key] as $mth)
+                        <div>{{ $mth->amount }}</div>
+                        @php
+                            $totalExpulsion += $mth->amount;
+                        @endphp
+                        @endforeach
+                        </td>
+                        <td>
+                        <div>{{  number_format($totalExpulsion, 2) }}</div>
+                        @php
+                            $totalExpulsionALL += $totalExpulsion;
+                        @endphp
+                        </td>
+                    </tr>
+                    @endforeach
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="9" style="text-align: center">
+                                TOTAL
+                            </td>
+                            <td>
+                                {{  number_format($totalExpulsionALL, 2) }}
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+                </div>
+                <!-- /.card-body -->
+            </div>
             
             <div class="row justify-content-center">
                 <!-- pecahan -->
@@ -1065,6 +1177,53 @@ tr:hover {
                                             </tfoot>
                                         </table>
                                     </td>
+                                    <td>
+                                        <table class="table-fit-content">
+                                            <thead>
+                                                <tr>
+                                                    <th colspan="3" style="text-align: center">
+                                                        Expulsion
+                                                    </th>
+                                                </tr>
+                                                <tr>
+                                                    <th style="width: 1%">
+                                                        No.
+                                                    </th>
+                                                    <th style="width: 2%">
+                                                        PROGRAM
+                                                    </th>
+                                                    <th style="width: 2%">
+                                                        QUOTE
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="table">
+                                            @foreach ($data['program'] as $key => $prg)
+                                            <tr>
+                                                <td>
+                                                {{ $prg->program_ID }}
+                                                </td>
+                                                <td>
+                                                {{ $prg->progcode }}
+                                                </td>
+                                                <td>
+                                                {{ (!empty($data['expulsionTotals'])) ? $data['expulsionTotals'][$key] : 0}}
+                                                </td>
+                                            </tr>
+                                            @endforeach
+                                            </tbody>
+                                            <tfoot>
+                                                <tr>
+                                                    <td colspan="2" style="text-align: center">
+                                                        TOTAL
+                                                    </td>
+                                                    <td>
+                                                        {{ number_format(array_sum($data['expulsionTotals']), 2) }}
+                                                    </td>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
@@ -1075,7 +1234,7 @@ tr:hover {
 
             <br>
             
-            <!-- hostel student -->
+            {{-- <!-- hostel student -->
             <div class="card mb-3" id="stud_info">
                 <div class="card-header">
                 <b>Hostel Collection</b>
@@ -1295,6 +1454,366 @@ tr:hover {
                             </td>
                             <td>
                                 {{ number_format(array_sum(array_column((array) $data['fine'], 'amount')), 2) }}
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+                </div>
+                <!-- /.card-body -->
+            </div> --}}
+
+            <!-- hostel student -->
+            <div class="card mb-3" id="stud_info">
+                <div class="card-header">
+                <b>Hostel Collection</b>
+                </div>
+                <div class="card-body p-0">
+                <table class="w-100 table table-bordered display margin-top-10 w-p100">
+                    <thead>
+                        <tr>
+                            <th style="width: 1%">
+                                No.
+                            </th>
+                            <th style="width: 15%">
+                                Name
+                            </th>
+                            <th style="width: 5%">
+                                No.Matric
+                            </th>
+                            <th style="width: 5%">
+                                Date
+                            </th>
+                            <th style="width: 5%">
+                                No. Resit
+                            </th>
+                            <th style="width: 5%">
+                                Type
+                            </th>
+                            <th style="width: 5%">
+                                Method
+                            </th>
+                            <th style="width: 5%">
+                                Bank
+                            </th>
+                            <th style="width: 5%">
+                                No. Document
+                            </th>
+                            <th style="width: 5%">
+                                Amount
+                            </th>
+                            <th style="width: 5%">
+                                Total
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="table">
+                    @php
+                    $totalHostelALL = 0;
+                    @endphp
+                    @foreach ($data['hostel'] as $key => $rgs)
+                    <tr>
+                        <td>
+                        {{ $key+1 }}
+                        </td>
+                        <td>
+                        {{ $rgs->name }}
+                        </td>
+                        <td>
+                        {{ $rgs->no_matric }}
+                        </td>
+                        <td>
+                        {{ $rgs->date }}
+                        </td>
+                        <td>
+                        {{ $rgs->ref_no }}
+                        </td>
+                        <td>
+                        @foreach ($data['hostelStudDetail'][$key] as $mth)
+                        <div>{{ $mth->type }}</div>
+                        @endforeach
+                        </td>
+                        <td>
+                        @foreach ($data['hostelStudMethod'][$key] as $mth)
+                        <div>{{ $mth->method }}</div>
+                        @endforeach
+                        </td>
+                        <td>
+                        @foreach ($data['hostelStudMethod'][$key] as $mth)
+                        <div>{{ $mth->bank }}</div>
+                        @endforeach
+                        </td>
+                        <td>
+                        @foreach ($data['hostelStudMethod'][$key] as $mth)
+                        <div>{{ $mth->no_document }}</div>
+                        @endforeach
+                        </td>
+                        <td>
+                        @php
+                            $totalHostel = 0;
+                        @endphp
+                        @foreach ($data['hostelStudDetail'][$key] as $mth)
+                        <div>{{ $mth->amount }}</div>
+                        @php
+                            $totalHostel += $mth->amount;
+                        @endphp
+                        @endforeach
+                        </td>
+                        <td>
+                        <div>{{ number_format($totalHostel, 2) }}</div>
+                        @php
+                            $totalHostelALL += $totalHostel;
+                        @endphp
+                        </td>
+                    </tr>
+                    @endforeach
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="10" style="text-align: center">
+                                TOTAL
+                            </td>
+                            <td>
+                                {{ number_format($totalHostelALL, 2) }}
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+                </div>
+                <!-- /.card-body -->
+            </div>
+
+            <!-- convo student -->
+            <div class="card mb-3" id="stud_info">
+                <div class="card-header">
+                <b>Convocation Collection</b>
+                </div>
+                <div class="card-body p-0">
+                <table class="w-100 table table-bordered display margin-top-10 w-p100">
+                    <thead>
+                        <tr>
+                            <th style="width: 1%">
+                                No.
+                            </th>
+                            <th style="width: 15%">
+                                Name
+                            </th>
+                            <th style="width: 5%">
+                                No.Matric
+                            </th>
+                            <th style="width: 5%">
+                                Date
+                            </th>
+                            <th style="width: 5%">
+                                No. Resit
+                            </th>
+                            <th style="width: 5%">
+                                Type
+                            </th>
+                            <th style="width: 5%">
+                                Method
+                            </th>
+                            <th style="width: 5%">
+                                Bank
+                            </th>
+                            <th style="width: 5%">
+                                No. Document
+                            </th>
+                            <th style="width: 5%">
+                                Amount
+                            </th>
+                            <th style="width: 5%">
+                                Total
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="table">
+                    @php
+                    $totalConvoALL = 0;
+                    @endphp
+                    @foreach ($data['convo'] as $key => $rgs)
+                    <tr>
+                        <td>
+                        {{ $key+1 }}
+                        </td>
+                        <td>
+                        {{ $rgs->name }}
+                        </td>
+                        <td>
+                        {{ $rgs->no_matric }}
+                        </td>
+                        <td>
+                        {{ $rgs->date }}
+                        </td>
+                        <td>
+                        {{ $rgs->ref_no }}
+                        </td>
+                        <td>
+                        @foreach ($data['convoStudDetail'][$key] as $mth)
+                        <div>{{ $mth->type }}</div>
+                        @endforeach
+                        </td>
+                        <td>
+                        @foreach ($data['convoStudMethod'][$key] as $mth)
+                        <div>{{ $mth->method }}</div>
+                        @endforeach
+                        </td>
+                        <td>
+                        @foreach ($data['convoStudMethod'][$key] as $mth)
+                        <div>{{ $mth->bank }}</div>
+                        @endforeach
+                        </td>
+                        <td>
+                        @foreach ($data['convoStudMethod'][$key] as $mth)
+                        <div>{{ $mth->no_document }}</div>
+                        @endforeach
+                        </td>
+                        <td>
+                        @php
+                            $totalConvo = 0;
+                        @endphp
+                        @foreach ($data['convoStudDetail'][$key] as $mth)
+                        <div>{{ $mth->amount }}</div>
+                        @php
+                            $totalConvo += $mth->amount;
+                        @endphp
+                        @endforeach
+                        </td>
+                        <td>
+                        <div>{{ number_format($totalConvo, 2) }}</div>
+                        @php
+                            $totalConvoALL += $totalConvo;
+                        @endphp
+                        </td>
+                    </tr>
+                    @endforeach
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="10" style="text-align: center">
+                                TOTAL
+                            </td>
+                            <td>
+                                {{ number_format($totalConvoALL, 2) }}
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+                </div>
+                <!-- /.card-body -->
+            </div>
+
+            <!-- fine student -->
+            <div class="card mb-3" id="stud_info">
+                <div class="card-header">
+                <b>Fine Collection</b>
+                </div>
+                <div class="card-body p-0">
+                <table class="w-100 table table-bordered display margin-top-10 w-p100">
+                    <thead>
+                        <tr>
+                            <th style="width: 1%">
+                                No.
+                            </th>
+                            <th style="width: 15%">
+                                Name
+                            </th>
+                            <th style="width: 5%">
+                                No.Matric
+                            </th>
+                            <th style="width: 5%">
+                                Date
+                            </th>
+                            <th style="width: 5%">
+                                No. Resit
+                            </th>
+                            <th style="width: 5%">
+                                Type
+                            </th>
+                            <th style="width: 5%">
+                                Method
+                            </th>
+                            <th style="width: 5%">
+                                Bank
+                            </th>
+                            <th style="width: 5%">
+                                No. Document
+                            </th>
+                            <th style="width: 5%">
+                                Amount
+                            </th>
+                            <th style="width: 5%">
+                                Total
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="table">
+                    @php
+                    $totalFineALL = 0;
+                    @endphp
+                    @foreach ($data['fine'] as $key => $rgs)
+                    <tr>
+                        <td>
+                        {{ $key+1 }}
+                        </td>
+                        <td>
+                        {{ $rgs->name }}
+                        </td>
+                        <td>
+                        {{ $rgs->no_matric }}
+                        </td>
+                        <td>
+                        {{ $rgs->date }}
+                        </td>
+                        <td>
+                        {{ $rgs->ref_no }}
+                        </td>
+                        <td>
+                        @foreach ($data['fineStudDetail'][$key] as $mth)
+                        <div>{{ $mth->type }}</div>
+                        @endforeach
+                        </td>
+                        <td>
+                        @foreach ($data['fineStudMethod'][$key] as $mth)
+                        <div>{{ $mth->method }}</div>
+                        @endforeach
+                        </td>
+                        <td>
+                        @foreach ($data['fineStudMethod'][$key] as $mth)
+                        <div>{{ $mth->bank }}</div>
+                        @endforeach
+                        </td>
+                        <td>
+                        @foreach ($data['fineStudMethod'][$key] as $mth)
+                        <div>{{ $mth->no_document }}</div>
+                        @endforeach
+                        </td>
+                        <td>
+                        @php
+                            $totalFine = 0;
+                        @endphp
+                        @foreach ($data['fineStudDetail'][$key] as $mth)
+                        <div>{{ $mth->amount }}</div>
+                        @php
+                            $totalFine += $mth->amount;
+                        @endphp
+                        @endforeach
+                        </td>
+                        <td>
+                        <div>{{ number_format($totalFine, 2) }}</div>
+                        @php
+                            $totalFineALL += $totalFine;
+                        @endphp
+                        </td>
+                    </tr>
+                    @endforeach
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="10" style="text-align: center">
+                                TOTAL
+                            </td>
+                            <td>
+                                {{ number_format($totalFineALL, 2) }}
                             </td>
                         </tr>
                     </tfoot>
