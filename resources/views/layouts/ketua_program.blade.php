@@ -17,7 +17,7 @@
 	{{-- <link rel="stylesheet" media="screen, print" href="{{ asset('assets/src/css/datagrid/datatables/datatables.bundle.css') }}"> --}}
 	{{-- <link rel="stylesheet" href="{{ asset('assets/assets/vendor_components/datatable/datatables.css') }}"> --}}
 	<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-	{{-- <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" /> --}}
+	<link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
 
 	{{-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/css-skeletons@1.0.3/css/css-skeletons.min.css"/> --}}
 	<link rel="stylesheet" href="https://unpkg.com/css-skeletons@1.0.3/css/css-skeletons.min.css" />
@@ -117,6 +117,24 @@
 		height: 97%; /* or whatever height you prefer */
 		overflow-y: auto; /* Enables vertical scrolling */
 		overflow-x: hidden; /* Hides horizontal scrollbar */
+	}
+
+	.count-circle {
+		background-color: red;      /* Red background */
+		color: white;               /* White text */
+		border-radius: 50%;         /* Makes the element a circle */
+		padding: 5px 10px;          /* Padding to make the circle look good */
+		font-size: 12px;            /* Font size */
+		min-width: 24px;            /* Minimum width to keep a circular shape */
+		text-align: center;         /* Center the text */
+		line-height: 1;             /* Align the text vertically */
+		position: absolute;         /* Position to adjust its placement */
+		top: -5px;                  /* Adjust top positioning */
+		right: -10px;               /* Adjust right positioning */
+	}
+
+	li a {
+		position: relative; /* Parent positioning so the count is correctly placed */
 	}
 </style>
 
@@ -342,6 +360,7 @@
 				</li> 
 				<li class="treeview">
 					<a href="#"><i data-feather="clipboard"></i><span>Replacement Class</span>
+						<span id="replacement-count" class="count-circle">0</span>
 						<span class="pull-right-container">
 							<i class="fa fa-angle-left pull-right"></i>
 						</span>
@@ -576,6 +595,33 @@
 			});
 	
 	}
+
+	// Replacement Class Count functionality
+	$(document).ready(function() {
+		function fetchReplacementClassCount() {
+			$.ajax({
+				url: '{{ route("kp.replacement_class.count_pending") }}',
+				type: 'GET',
+				success: function(response) {
+					if(response.count > 0) {
+						$('#replacement-count').text(response.count);
+						$('#replacement-count').show();
+					} else {
+						$('#replacement-count').hide();
+					}
+				},
+				error: function() {
+					console.error('Failed to fetch replacement class count');
+				}
+			});
+		}
+
+		// Fetch the count every 30 seconds
+		setInterval(fetchReplacementClassCount, 30000);
+
+		// Initial fetch when page loads
+		fetchReplacementClassCount();
+	});
 	
 	</script>
 

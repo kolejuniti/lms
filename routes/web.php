@@ -121,6 +121,7 @@ Route::post('/KP/assign/submitMeetingHour', [App\Http\Controllers\KP_Controller:
 // KP Replacement Class Routes
 Route::get('/KP/replacement_class/pending', [App\Http\Controllers\KP_Controller::class, 'replacementClassPending'])->name('kp.replacement_class.pending');
 Route::get('/KP/replacement_class/all', [App\Http\Controllers\KP_Controller::class, 'replacementClassAll'])->name('kp.replacement_class.all');
+Route::get('/KP/replacement_class/count_pending', [App\Http\Controllers\KP_Controller::class, 'countPendingReplacementClasses'])->name('kp.replacement_class.count_pending');
 Route::post('/KP/replacement_class/update_status', [App\Http\Controllers\KP_Controller::class, 'updateReplacementClassStatus'])->name('kp.replacement_class.update_status');
 Route::post('/KP/replacement_class/update_revised_status', [App\Http\Controllers\KP_Controller::class, 'updateRevisedDateStatus'])->name('kp.replacement_class.update_revised_status');
 

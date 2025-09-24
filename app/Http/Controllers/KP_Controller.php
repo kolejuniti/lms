@@ -1493,6 +1493,34 @@ $content .= '<tr>
         return view('ketua_program.replacement_class.pending', compact('applications'));
     }
 
+    public function countPendingReplacementClasses()
+    {
+        $user = Auth::user();
+
+        if($user->usrtype == 'PL')
+        {
+            // Get programs handled by this KP
+            $programs = DB::table('user_program')
+                ->join('tblprogramme', 'user_program.program_id', 'tblprogramme.id')
+                ->where('user_ic', $user->ic)
+                ->pluck('user_program.program_id');
+
+            if ($programs->isEmpty()) {
+                return response()->json(['count' => 0]);
+            }
+
+            // Count pending applications and applications with pending revised dates
+            $pendingCount = $this->getReplacementApplicationsForKP($programs, 'PENDING')->count();
+            $revisedPendingCount = $this->getReplacementApplicationsForKP($programs, 'NO', 'PENDING')->count();
+            
+            $totalCount = $pendingCount + $revisedPendingCount;
+
+            return response()->json(['count' => $totalCount]);
+        }
+
+        return response()->json(['count' => 0]);
+    }
+
     public function replacementClassAll()
     {
         $user = Auth::user();
