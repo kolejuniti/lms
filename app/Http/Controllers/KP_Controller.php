@@ -1473,24 +1473,45 @@ $content .= '<tr>
                 ]);
             }
 
-        }
-
-        // Get replacement class applications for lecturers under this KP's programs  
-        // Include both pending applications and applications with pending revised dates
-        $applications = $this->getReplacementApplicationsForKP($programs, 'PENDING');
-        
-        // Also get applications with pending revised dates (rejected but have revised date pending)
-        $revisedApplications = $this->getReplacementApplicationsForKP($programs, 'NO', 'PENDING');
-        
-        // Merge applications  
-        $allApplications = collect($applications);
-        foreach($revisedApplications as $app) {
-            if (!$allApplications->contains('id', $app->id)) {
-                $allApplications->push($app);
+            // Get replacement class applications for lecturers under this KP's programs  
+            // Include both pending applications and applications with pending revised dates
+            $applications = $this->getReplacementApplicationsForKP($programs, 'PENDING');
+            
+            // Also get applications with pending revised dates (rejected but have revised date pending)
+            $revisedApplications = $this->getReplacementApplicationsForKP($programs, 'NO', 'PENDING');
+            
+            // Merge applications  
+            $allApplications = collect($applications);
+            foreach($revisedApplications as $app) {
+                if (!$allApplications->contains('id', $app->id)) {
+                    $allApplications->push($app);
+                }
             }
+            
+            $applications = $allApplications;
+
+        } elseif($user->usrtype == 'AO' || $user->usrtype == 'DN') {
+            // AO and DN users don't need programs - they use different logic in getReplacementApplicationsForKP
+            // Get replacement class applications with pending status
+            $applications = $this->getReplacementApplicationsForKP(null, 'PENDING');
+            
+            // Also get applications with pending revised dates (rejected but have revised date pending)
+            $revisedApplications = $this->getReplacementApplicationsForKP(null, 'NO', 'PENDING');
+            
+            // Merge applications  
+            $allApplications = collect($applications);
+            foreach($revisedApplications as $app) {
+                if (!$allApplications->contains('id', $app->id)) {
+                    $allApplications->push($app);
+                }
+            }
+            
+            $applications = $allApplications;
+
+        } else {
+            // For other user types, return empty applications
+            $applications = collect();
         }
-        
-        $applications = $allApplications;
 
         return view('ketua_program.replacement_class.pending', compact('applications'));
     }
@@ -1519,6 +1540,17 @@ $content .= '<tr>
 
             return response()->json(['count' => $totalCount]);
         }
+        elseif($user->usrtype == 'AO' || $user->usrtype == 'DN')
+        {
+            // AO and DN users don't need programs - they use different logic in getReplacementApplicationsForKP
+            // Count pending applications and applications with pending revised dates
+            $pendingCount = $this->getReplacementApplicationsForKP(null, 'PENDING')->count();
+            $revisedPendingCount = $this->getReplacementApplicationsForKP(null, 'NO', 'PENDING')->count();
+            
+            $totalCount = $pendingCount + $revisedPendingCount;
+
+            return response()->json(['count' => $totalCount]);
+        }
 
         return response()->json(['count' => 0]);
     }
@@ -1542,10 +1574,18 @@ $content .= '<tr>
                     'message' => 'You are not assigned to any programs.'
                 ]);
             }
-        }
 
-        // Get all replacement class applications for lecturers under this KP's programs
-        $applications = $this->getReplacementApplicationsForKP($programs);
+            // Get all replacement class applications for lecturers under this KP's programs
+            $applications = $this->getReplacementApplicationsForKP($programs);
+
+        } elseif($user->usrtype == 'AO' || $user->usrtype == 'DN') {
+            // AO and DN users don't need programs - they use different logic in getReplacementApplicationsForKP
+            $applications = $this->getReplacementApplicationsForKP(null);
+            
+        } else {
+            // For other user types, return empty applications
+            $applications = collect();
+        }
 
         return view('ketua_program.replacement_class.all', compact('applications'));
     }
