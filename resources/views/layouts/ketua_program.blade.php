@@ -358,6 +358,7 @@
 				<li>
 					<a href="{{ route('posting.staff') }}" class="{{ (route('posting.staff') == Request::url()) ? 'active' : ''}}"><i data-feather="tv"></i><span>Posting</span></a>
 				</li> 
+				@if(Auth::user()->usrtype == 'PL' || Auth::user()->usrtype == 'AO' || Auth::user()->usrtype == 'DN')
 				<li class="treeview">
 					<a href="#"><i data-feather="clipboard"></i><span>Replacement Class</span>
 						<span id="replacement-count" class="count-circle">0</span>
@@ -370,6 +371,7 @@
 						<li><a href="{{ route('kp.replacement_class.all') }}" class="{{ (route('kp.replacement_class.all') == Request::url()) ? 'active' : ''}}">All Applications</a></li>
 					</ul>
 				</li>
+				@endif
 				<li>
 					<a href="{{ Storage::disk('linode')->url('classschedule/index.htm') }}" target="_blank"><i data-feather="layout"></i><span>Timetable Old</span></a>
 				</li> 
