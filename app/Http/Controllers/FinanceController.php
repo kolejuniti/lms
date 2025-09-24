@@ -10742,7 +10742,7 @@ class FinanceController extends Controller
                            ->join('students', 'tblpayment.student_ic', 'students.ic')
                            ->whereBetween('tblpayment.add_date', [$request->from, $request->to])
                            ->where('students.semester', '!=', 1)
-                           ->where('tblpayment.process_type_id', 1)
+                           ->whereIn('tblpayment.process_type_id', [1,8])
                            ->where('tblpayment.process_status_id', 2)
                            ->where('tblpayment.sponsor_id', null)
                            ->select('students.name', 'students.ic', 'students.no_matric', 'tblpayment.id AS pym_id', 'tblpayment.add_date')
