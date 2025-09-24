@@ -1319,7 +1319,7 @@ $content .= '<tr>
 
         $faculty = DB::table('tblfaculty')->where('id', $user->faculty)->get();
 
-        $usrtype = ['LCT', 'KP'];
+        $usrtype = ['LCT', 'PL'];
 
         foreach($faculty as $key => $fcl)
         {
@@ -1677,7 +1677,7 @@ $content .= '<tr>
                 ->join('subjek', 'user_subjek.course_id', '=', 'subjek.sub_id')
                 ->join('subjek_structure', 'subjek.sub_id', '=', 'subjek_structure.courseID')
                 ->where('replacement_class.id', $request->application_id)
-                ->where('users.usrtype', 'KP')
+                ->where('users.usrtype', 'PL')
                 ->first();
 
         }elseif($user->usrtype == 'DN'){
@@ -1758,7 +1758,7 @@ $content .= '<tr>
                 ->join('subjek', 'user_subjek.course_id', '=', 'subjek.sub_id')
                 ->join('subjek_structure', 'subjek.sub_id', '=', 'subjek_structure.courseID')
                 ->where('replacement_class.id', $request->application_id)
-                ->where('users.usrtype', 'KP')
+                ->where('users.usrtype', 'PL')
                 ->first();
         } elseif($user->usrtype == 'DN') {
             $application = DB::table('replacement_class')
