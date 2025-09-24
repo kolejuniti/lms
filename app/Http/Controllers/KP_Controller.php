@@ -1455,6 +1455,8 @@ $content .= '<tr>
     {
         $user = Auth::user();
 
+        $programs = null;
+
         if($user->usrtype == 'PL')
         {
         
