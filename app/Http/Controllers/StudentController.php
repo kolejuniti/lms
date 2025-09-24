@@ -106,7 +106,7 @@ class StudentController extends Controller
                         ['subjek_structure.program_id', $student->program]
                         ])
                    ->select('subjek.id','subjek.course_name','subjek.course_code','student_subjek.group_id','student_subjek.courseid','sessions.SessionName','sessions.SessionID')
-                   ->groupBy('student_subjek.courseid')
+                   ->groupBy('student_subjek.courseid', 'student_subjek.sessionid')
                    ->get();
 
         foreach($subject as $key => $sub)
