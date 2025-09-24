@@ -211,7 +211,7 @@ class StudentController extends Controller
             ->where('student_subjek.sessionid','LIKE','%'.$request->session.'%')
             ->where('subjek.course_name','LIKE','%'.$request->search."%")
             ->select('subjek.id','subjek.course_name','subjek.course_code','student_subjek.courseid','sessions.SessionName','sessions.SessionID')
-            ->groupBy('student_subjek.courseid')
+            ->groupBy('student_subjek.courseid', 'student_subjek.sessionid')
             ->get();
 
             foreach($data as $key => $sub)
@@ -243,7 +243,7 @@ class StudentController extends Controller
                     ])
             ->where('subjek.course_name','LIKE','%'.$request->search."%")
             ->select('subjek.id','subjek.course_name','subjek.course_code','student_subjek.courseid','sessions.SessionName','sessions.SessionID')
-            ->groupBy('student_subjek.courseid')
+            ->groupBy('student_subjek.courseid', 'student_subjek.sessionid')
             ->get();
 
             foreach($data as $key => $sub)
@@ -276,7 +276,7 @@ class StudentController extends Controller
                     ])
             ->where('student_subjek.sessionid','LIKE','%'.$request->session.'%')
             ->select('subjek.id','subjek.course_name','subjek.course_code','student_subjek.courseid','sessions.SessionName','sessions.SessionID')
-            ->groupBy('student_subjek.courseid')
+            ->groupBy('student_subjek.courseid', 'student_subjek.sessionid')
             ->get();
 
             foreach($data as $key => $sub)
@@ -306,7 +306,7 @@ class StudentController extends Controller
                     ['subjek_structure.program_id', $student->program]
                     ])
             ->select('subjek.id','subjek.course_name','subjek.course_code','student_subjek.courseid','sessions.SessionName','sessions.SessionID')
-            ->groupBy('student_subjek.courseid')
+            ->groupBy('student_subjek.courseid', 'student_subjek.sessionid')
             ->get();
 
             foreach($data as $key => $sub)

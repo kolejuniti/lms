@@ -459,6 +459,9 @@
                                 <div class="course-detail">
                                     <strong>Lecturer:</strong> {{ (isset($lecturer[$ky]->name)) ? ucwords($lecturer[$ky]->name) : 'NOT ASSIGNED' }}
                                 </div>
+                                <div class="course-detail">
+                                    <strong>Session:</strong> {{ $key->SessionName }}
+                                </div>
                             </div>
                         </div>
                     </div>
