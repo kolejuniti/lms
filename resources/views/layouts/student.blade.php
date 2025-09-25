@@ -284,15 +284,31 @@
                   @endif
 
                   @php
-                  $range = DB::table('tblslip_period')->first();
-                  $now = now();
-                  $program_list = DB::table('tblslip_program')->pluck('program_id')->toArray();
-                  $session_list = DB::table('tblslip_session')->pluck('session_id')->toArray();
-                  $semester_list = DB::table('tblslip_semester')->pluck('semester_id')->toArray();
-                  @endphp
+                  // Check if there are any active slip periods that match this student
+                  $hasActiveSlipPeriod = false;
                   
-                  @if($now >= $range->Start && $now <= $range->End && in_array(Auth::guard('student')->user()->program, $program_list) && in_array(Auth::guard('student')->user()->session, $session_list) && in_array(Auth::guard('student')->user()->semester, $semester_list))
-                  <!-- Exam Slip Link -->
+                  if ($student) {
+                      $activePeriods = DB::table('tblslip_period')
+                          ->where('Start', '<=', $now)
+                          ->where('End', '>=', $now)
+                          ->get();
+                      
+                      foreach ($activePeriods as $period) {
+                          $programs = json_decode($period->program, true) ?: [];
+                          $sessions = json_decode($period->session, true) ?: [];
+                          $semesters = json_decode($period->semester, true) ?: [];
+                          
+                          if (in_array($student->program, $programs) && 
+                              in_array($student->session, $sessions) && 
+                              in_array($student->semester, $semesters)) {
+                              $hasActiveSlipPeriod = true;
+                              break;
+                          }
+                      }
+                  }
+                  @endphp
+
+                  @if($hasActiveSlipPeriod && $block_status == 0)
                   <li>
                     <a id="examSlipLink" href="#" target="_blank">Slip Exam</a>
                   </li>
