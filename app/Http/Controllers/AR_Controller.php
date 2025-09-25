@@ -2663,6 +2663,8 @@ class AR_Controller extends Controller
 
             }else{
 
+                dd('AR');
+
                 $id = DB::table('tblevents_second')
                         ->join('sessions', 'tblevents_second.session_id', '=', 'sessions.SessionID')
                         ->where([
