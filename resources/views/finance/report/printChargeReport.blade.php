@@ -858,7 +858,7 @@ tr:hover {
                         {{ $rgs->no_matric }}
                         </td>
                         <td>
-                        {{ $rgs->student_id }}
+                        {{ $rgs->student_id ? str_pad($rgs->student_id, strlen($rgs->student_id) + 1, '1', STR_PAD_LEFT) : '' }}
                         </td>
                         <td>
                         {{ $rgs->progname }}
