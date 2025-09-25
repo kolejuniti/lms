@@ -2663,7 +2663,7 @@ class AR_Controller extends Controller
 
             }else{
 
-                dd('AR');
+                dd('KP');
 
                 $id = DB::table('tblevents_second')
                         ->join('sessions', 'tblevents_second.session_id', '=', 'sessions.SessionID')
