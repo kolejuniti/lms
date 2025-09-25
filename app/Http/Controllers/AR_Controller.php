@@ -2622,8 +2622,6 @@ class AR_Controller extends Controller
             if(Auth::user()->usrtype === 'AR')
             {
 
-                dd('AR');
-
                 $id = DB::table('tblevents')
                         ->join('sessions', 'tblevents.session_id', '=', 'sessions.SessionID')
                         ->where([
@@ -2662,8 +2660,6 @@ class AR_Controller extends Controller
                 ];
 
             }else{
-
-                dd('KP');
 
                 $id = DB::table('tblevents_second')
                         ->join('sessions', 'tblevents_second.session_id', '=', 'sessions.SessionID')
@@ -6653,10 +6649,9 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
             'program' => DB::table('tblprogramme')->get(),
             'session' => DB::table('sessions')->get(),
             'semester' => DB::table('semester')->get(),
-            'period' => DB::table('tblslip_period')->first(),
-            'program_data' => DB::table('tblslip_program')->get(),
-            'session_data' => DB::table('tblslip_session')->get(),
-            'semester_data' => DB::table('tblslip_semester')->get()
+            'periods' => DB::table('tblslip_period')
+                        ->orderBy('created_at', 'desc')
+                        ->get()
         ];
 
         return view('pendaftar_akademik.student.slip_filter.slipFilter', compact('data'));
@@ -6665,44 +6660,64 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
 
     public function slipFilterSubmit(Request $request)
     {
-
         $data = json_decode($request->submitData);
 
-        DB::table('tblslip_period')->upsert([
-            'id' => 1,
+        // Insert new record instead of updating existing one
+        DB::table('tblslip_period')->insert([
             'Start' => $data->from,
-            'END' => $data->to
-        ],['id']);
+            'End' => $data->to,
+            'program' => json_encode($data->program),
+            'session' => json_encode($data->session),
+            'semester' => json_encode($data->semester),
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
 
-        DB::table('tblslip_program')->truncate();
+        return response()->json(['success' => 'Data has been saved successfully!']);
 
-        DB::table('tblslip_session')->truncate();
+    }
 
-        DB::table('tblslip_semester')->truncate();
+    public function slipFilterEdit(Request $request, $id)
+    {
+        $data = json_decode($request->submitData);
 
-        foreach($data->program as $prg)
-        {
-            DB::table('tblslip_program')->insert([
-                'program_id' => $prg
+        DB::table('tblslip_period')
+            ->where('id', $id)
+            ->update([
+                'Start' => $data->from,
+                'End' => $data->to,
+                'program' => json_encode($data->program),
+                'session' => json_encode($data->session),
+                'semester' => json_encode($data->semester),
+                'updated_at' => now()
             ]);
-        }
-
-        foreach($data->session as $ses)
-        {
-            DB::table('tblslip_session')->insert([
-                'session_id' => $ses
-            ]);
-        }
-
-        foreach($data->semester as $sem)
-        {
-            DB::table('tblslip_semester')->insert([
-                'semester_id' => $sem
-            ]);
-        }
 
         return response()->json(['success' => 'Data has been updated successfully!']);
+    }
 
+    public function slipFilterDelete(Request $request, $id)
+    {
+        DB::table('tblslip_period')
+            ->where('id', $id)
+            ->delete();
+
+        return response()->json(['success' => 'Data has been deleted successfully!']);
+    }
+
+    public function slipFilterGet(Request $request, $id)
+    {
+        $period = DB::table('tblslip_period')
+                    ->where('id', $id)
+                    ->first();
+
+        if ($period) {
+            // Decode JSON data for frontend
+            $period->program = json_decode($period->program);
+            $period->session = json_decode($period->session);
+            $period->semester = json_decode($period->semester);
+        }
+
+        return response()->json($period);
     }
 
     public function assessmentFilter()
