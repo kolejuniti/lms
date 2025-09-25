@@ -2619,72 +2619,88 @@ class AR_Controller extends Controller
         if(request()->type == 'lct')
         {
 
-            $id = DB::table('tblevents')
-                    ->join('sessions', 'tblevents.session_id', '=', 'sessions.SessionID')
-                    ->where([
-                        ['tblevents.user_ic', request()->id],
-                        ['sessions.Status', '=', 'ACTIVE']
-                    ])
-                    ->groupBy(
-                        DB::raw('TIME(tblevents.start)'),      // Group by time part of start
-                        DB::raw('TIME(tblevents.end)'),        // Group by time part of end
-                        DB::raw('DAYNAME(tblevents.start)')    // Group by day name (e.g., "Wednesday")
-                    )
-                    ->pluck('tblevents.id'); // Retrieve the ids of grouped rows
+            if(Auth::user()->usrtype === 'AR')
+            {
+
+                dd('AR');
+
+                $id = DB::table('tblevents')
+                        ->join('sessions', 'tblevents.session_id', '=', 'sessions.SessionID')
+                        ->where([
+                            ['tblevents.user_ic', request()->id],
+                            ['sessions.Status', '=', 'ACTIVE']
+                        ])
+                        ->groupBy(
+                            DB::raw('TIME(tblevents.start)'),      // Group by time part of start
+                            DB::raw('TIME(tblevents.end)'),        // Group by time part of end
+                            DB::raw('DAYNAME(tblevents.start)')    // Group by day name (e.g., "Wednesday")
+                        )
+                        ->pluck('tblevents.id'); // Retrieve the ids of grouped rows
 
 
-                //dd($id);
+                $data = [
+                    'lecturerInfo' => DB::table('users')->where('ic', request()->id)->first(),
+                    'session' => DB::table('sessions')->where('Status', 'ACTIVE')->get(),
+                    'lecture_room' => DB::table('tbllecture_room')->get(),
+                    'details' => DB::table('user_subjek')
+                                ->join('subjek_structure', 'user_subjek.course_id', 'subjek_structure.courseID')
+                                ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
+                                ->where([
+                                    ['user_subjek.user_ic', request()->id],
+                                    ['sessions.Status', 'ACTIVE']
+                                    ])
+                                ->select(DB::raw('SUM(subjek_structure.meeting_hour) AS total_hour'))
+                                ->groupBy('user_subjek.id')
+                                ->get(),
 
-            $data = [
-                // 'lectureInfo' => DB::table('tbllecture')
-                //                  ->join('tbllecture_room', 'tbllecture.room_id', 'tbllecture_room.id')
-                //                  ->join('sessions', 'tbllecture.session_id', 'sessions.SessionID')
-                //                  ->select('tbllecture_room.*', 'sessions.SessionName AS session')
-                //                  ->where('tbllecture.id', request()->id)
-                //                  ->first(),
-                // 'totalBooking' => DB::table('tblevents')->where('lecture_id', request()->id)
-                //                   ->select(DB::raw('COUNT(tblevents.id) AS total_booking'))
-                //                   ->first(),
-                // 'lecturer' => DB::table('users')
-                //               ->whereIn('usrtype', ['LCT', 'PL', 'AO'])
-                //               ->get(),
-                'lecturerInfo' => DB::table('users')->where('ic', request()->id)->first(),
-                'session' => DB::table('sessions')->where('Status', 'ACTIVE')->get(),
-                'lecture_room' => DB::table('tbllecture_room')->get(),
-                'details' => DB::table('user_subjek')
-                             ->join('subjek_structure', 'user_subjek.course_id', 'subjek_structure.courseID')
-                             ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
-                             ->where([
-                                ['user_subjek.user_ic', request()->id],
-                                ['sessions.Status', 'ACTIVE']
-                                ])
-                             ->select(DB::raw('SUM(subjek_structure.meeting_hour) AS total_hour'))
-                             ->groupBy('user_subjek.id')
-                             ->get(),
-                // 'used' => DB::table('tblevents')
-                //           ->join('user_subjek', function($join){
-                //             $join->on('tblevents.group_id', 'user_subjek.id');
-                //             $join->on('tblevents.session_id', 'user_subjek.session_id');
-                //           })
-                //           ->join('subjek_structure', 'user_subjek.course_id', 'subjek_structure.courseID')
-                //           ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
-                //           ->where([
-                //             ['tblevents.user_ic', request()->id],
-                //             ['sessions.Status', 'ACTIVE']
-                //           ])
-                //           ->select(DB::raw('SUM(subjek_structure.meeting_hour) AS total_hour'))
-                //           ->groupBy('user_subjek.id')
-                //           ->get(),
+                    'used' => DB::table('tblevents')
+                                ->join('sessions', 'tblevents.session_id', '=', 'sessions.SessionID')
+                                ->whereIn('tblevents.id', $id)
+                                ->select(DB::raw('SUM(TIMESTAMPDIFF(HOUR, tblevents.start, tblevents.end)) as total_hours'))
+                                ->get(),
+                    'time' => DB::table('tblevents_second')->where('user_ic', request()->id)->value('timestamps'),
+                ];
 
-                'used' => DB::table('tblevents')
-                            ->join('sessions', 'tblevents.session_id', '=', 'sessions.SessionID')
-                            ->whereIn('tblevents.id', $id)
-                            ->select(DB::raw('SUM(TIMESTAMPDIFF(HOUR, tblevents.start, tblevents.end)) as total_hours'))
-                            ->get(),
-                'time' => DB::table('tblevents_second')->where('user_ic', request()->id)->value('timestamps'),
-            ];
+            }else{
 
-            //dd($data['used']);
+                $id = DB::table('tblevents_second')
+                        ->join('sessions', 'tblevents_second.session_id', '=', 'sessions.SessionID')
+                        ->where([
+                            ['tblevents_second.user_ic', request()->id],
+                            ['sessions.Status', '=', 'ACTIVE']
+                        ])
+                        ->groupBy(
+                            DB::raw('TIME(tblevents_second.start)'),      // Group by time part of start
+                            DB::raw('TIME(tblevents_second.end)'),        // Group by time part of end
+                            DB::raw('DAYNAME(tblevents_second.start)')    // Group by day name (e.g., "Wednesday")
+                        )
+                        ->pluck('tblevents_second.id'); // Retrieve the ids of grouped rows
+
+
+                $data = [
+                    'lecturerInfo' => DB::table('users')->where('ic', request()->id)->first(),
+                    'session' => DB::table('sessions')->where('Status', 'ACTIVE')->get(),
+                    'lecture_room' => DB::table('tbllecture_room')->get(),
+                    'details' => DB::table('user_subjek')
+                                ->join('subjek_structure', 'user_subjek.course_id', 'subjek_structure.courseID')
+                                ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
+                                ->where([
+                                    ['user_subjek.user_ic', request()->id],
+                                    ['sessions.Status', 'ACTIVE']
+                                    ])
+                                ->select(DB::raw('SUM(subjek_structure.meeting_hour) AS total_hour'))
+                                ->groupBy('user_subjek.id')
+                                ->get(),
+
+                    'used' => DB::table('tblevents_second')
+                                ->join('sessions', 'tblevents_second.session_id', '=', 'sessions.SessionID')
+                                ->whereIn('tblevents_second.id', $id)
+                                ->select(DB::raw('SUM(TIMESTAMPDIFF(HOUR, tblevents_second.start, tblevents_second.end)) as total_hours'))
+                                ->get(),
+                    'time' => DB::table('tblevents_second')->where('user_ic', request()->id)->value('timestamps'),
+                ];
+
+            }
 
             return view('pendaftar_akademik.schedule.schedule', compact('data'));
 
