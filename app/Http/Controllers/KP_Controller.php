@@ -1608,7 +1608,7 @@ $content .= '<tr>
             ->where('users.usrtype', 'LCT')
             ->where(function($query) use ($programs) {
                 foreach($programs as $program) {
-                    $query->orWhereJsonContains('replacement_class.selected_programs', $program);
+                    $query->orWhereJsonContains('replacement_class.selected_programs', (string)$program);
                 }
             });
             
