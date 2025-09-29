@@ -1600,6 +1600,7 @@ $content .= '<tr>
             $query = DB::table('replacement_class')
             ->join('user_subjek', 'replacement_class.user_subjek_id', '=', 'user_subjek.id')
             ->join('subjek', 'user_subjek.course_id', '=', 'subjek.sub_id')
+            ->join('subjek_structure', 'subjek.sub_id', '=', 'subjek_structure.courseID')
             ->join('users', 'user_subjek.user_ic', '=', 'users.ic')
             ->join('sessions', 'user_subjek.session_id', '=', 'sessions.SessionID')
             ->leftJoin('tbllecture_room', 'replacement_class.lecture_room_id', '=', 'tbllecture_room.id')
