@@ -1607,11 +1607,13 @@ $content .= '<tr>
             ->leftJoin('tbllecture_room as revised_room', 'replacement_class.revised_room_id', '=', 'revised_room.id')
             ->leftJoin('users as kp_user', 'replacement_class.kp_ic', '=', 'kp_user.ic')
             ->where('users.usrtype', 'LCT')
-            ->where(function($q) use ($programs) {
-                foreach ($programs as $program) {
-                    $q->orWhereJsonContains('replacement_class.selected_programs', $program);
-                }
-            });
+            ->whereIn('subjek_structure.program_id', $programs);
+
+            // ->where(function($q) use ($programs) {
+            //     foreach ($programs as $program) {
+            //         $q->orWhereJsonContains('replacement_class.selected_programs', $program);
+            //     }
+            // });
             
         }elseif($user->usrtype == 'AO')
         {
