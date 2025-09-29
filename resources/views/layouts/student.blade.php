@@ -396,11 +396,11 @@
                   <i data-feather="credit-card"></i><span>Payment</span>
                 </a>
               </li>
-              {{-- <li>
-                <a href="{{ asset('storage/finals_schedule/Jadual Pengawasan Peperiksaan Akhir UNITI Semester II Sesi 20242025 (Kemasukan Mac).pdf') }}" target="_blank">
+              <li>
+                <a href="{{ asset('storage/finals_schedule/Jadual Peperiksaan Akhir UNITI Semester I Sesi 20252026 (Kemasukan Jun).pdf') }}" target="_blank">
                   <i data-feather="file-text"></i><span>Finals Timetable</span>
                 </a>
-              </li> --}}
+              </li>
               
               <!-- Mini Games -->
               <li class="treeview">
