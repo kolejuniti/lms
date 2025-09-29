@@ -1600,14 +1600,17 @@ $content .= '<tr>
             $query = DB::table('replacement_class')
             ->join('user_subjek', 'replacement_class.user_subjek_id', '=', 'user_subjek.id')
             ->join('subjek', 'user_subjek.course_id', '=', 'subjek.sub_id')
-            ->join('subjek_structure', 'subjek.sub_id', '=', 'subjek_structure.courseID')
             ->join('users', 'user_subjek.user_ic', '=', 'users.ic')
             ->join('sessions', 'user_subjek.session_id', '=', 'sessions.SessionID')
             ->leftJoin('tbllecture_room', 'replacement_class.lecture_room_id', '=', 'tbllecture_room.id')
             ->leftJoin('tbllecture_room as revised_room', 'replacement_class.revised_room_id', '=', 'revised_room.id')
             ->leftJoin('users as kp_user', 'replacement_class.kp_ic', '=', 'kp_user.ic')
             ->where('users.usrtype', 'LCT')
-            ->whereIn('subjek_structure.program_id', $programs);
+            ->where(function($q) use ($programs) {
+                foreach ($programs as $program) {
+                    $q->orWhereJsonContains('replacement_class.selected_programs', $program);
+                }
+            });
             
         }elseif($user->usrtype == 'AO')
         {
