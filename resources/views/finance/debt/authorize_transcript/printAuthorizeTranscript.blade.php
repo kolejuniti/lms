@@ -33,7 +33,7 @@ use Carbon\Carbon;
     <style>
         @page {
             size: A5;
-            margin: 1cm;
+            margin: 0.5cm;
         }
         * {
             margin: 0;
