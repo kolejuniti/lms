@@ -32,8 +32,8 @@ use Carbon\Carbon;
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
     <style>
         @page {
-            size: A4;
-            margin: 1.5cm;
+            size: A5;
+            margin: 1cm;
         }
         * {
             margin: 0;
@@ -43,7 +43,7 @@ use Carbon\Carbon;
             font-size: 100%;
             vertical-align: baseline;
             background: transparent;
-            font-size: 12px;
+            font-size: 9px;
         }
         html, body {
             height: 100%;
@@ -70,7 +70,7 @@ use Carbon\Carbon;
             font-size: 100%;
             vertical-align: baseline;
             background: transparent;
-            font-size: 12px;
+            font-size: 9px;
         }
         .form-group {
             page-break-inside: avoid;
@@ -93,7 +93,7 @@ use Carbon\Carbon;
         .border-line {
             width: 100%;
             border-top: 1px solid black; /* Border as the line */
-            margin: 15px 0; /* Space around the line */
+            margin: 8px 0; /* Space around the line */
         }
     </style>
     <body>
@@ -108,8 +108,8 @@ use Carbon\Carbon;
         @endphp --}}
         <div class="row">
             <div class="col-12 d-flex">
-                <img src="{{ asset('assets/images/logo/Kolej-UNITI.png')}}" alt="" height="50">
-                <address>
+                <img src="{{ asset('assets/images/logo/Kolej-UNITI.png')}}" alt="" height="35">
+                <address style="font-size: 8px; line-height: 1.2;">
                     <strong>KOLEJ UNITI</strong><br>
                     PERSIARAN UNITI VILLAGE, TANJUNG AGAS<br>
                     71250, PORT DICKSON, NEGERI SEMBILAN.<br>
@@ -125,32 +125,32 @@ use Carbon\Carbon;
         
         <!-- Balance Summary Table -->
         <div class="col-12 mb-2 mt-2" style="display: flex; justify-content: center;">
-            <table style="border-collapse: collapse; border: 2px solid #000; width: 80%;">
+            <table style="border-collapse: collapse; border: 2px solid #000; width: 95%; font-size: 8px;">
                 <thead>
                     <tr style="background-color: #87CEEB;">
-                        <th style="border: 1px solid #000; padding: 8px; text-align: center; font-weight: bold;">Yuran Semasa</th>
-                        <th style="border: 1px solid #000; padding: 8px; text-align: center; font-weight: bold;">Pembiayaan Khas</th>
-                        <th style="border: 1px solid #000; padding: 8px; text-align: center; font-weight: bold;">Denda / Saman</th>
+                        <th style="border: 1px solid #000; padding: 4px; text-align: center; font-weight: bold;">Yuran Semasa</th>
+                        <th style="border: 1px solid #000; padding: 4px; text-align: center; font-weight: bold;">Pembiayaan Khas</th>
+                        <th style="border: 1px solid #000; padding: 4px; text-align: center; font-weight: bold;">Denda / Saman</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr style="background-color: #87CEEB;">
-                        <td style="border: 1px solid #000; padding: 8px; text-align: center; font-weight: bold;">RM</td>
-                        <td style="border: 1px solid #000; padding: 8px; text-align: center; font-weight: bold;">RM</td>
-                        <td style="border: 1px solid #000; padding: 8px; text-align: center; font-weight: bold;">RM</td>
+                        <td style="border: 1px solid #000; padding: 4px; text-align: center; font-weight: bold;">RM</td>
+                        <td style="border: 1px solid #000; padding: 4px; text-align: center; font-weight: bold;">RM</td>
+                        <td style="border: 1px solid #000; padding: 4px; text-align: center; font-weight: bold;">RM</td>
                     </tr>
                     <tr>
-                        <td style="border: 1px solid #000; padding: 8px; text-align: center;">{{ number_format($data['current_balance'], 2) }}</td>
-                        <td style="border: 1px solid #000; padding: 8px; text-align: center;">{{ number_format($data['pk_balance'], 2) }}</td>
-                        <td style="border: 1px solid #000; padding: 8px; text-align: center;">{{ number_format($data['fine'], 2) }}</td>
+                        <td style="border: 1px solid #000; padding: 4px; text-align: center;">{{ number_format($data['current_balance'], 2) }}</td>
+                        <td style="border: 1px solid #000; padding: 4px; text-align: center;">{{ number_format($data['pk_balance'], 2) }}</td>
+                        <td style="border: 1px solid #000; padding: 4px; text-align: center;">{{ number_format($data['fine'], 2) }}</td>
                     </tr>
                 </tbody>
             </table>
         </div>
 
         <div class="col-12 mb-1 mt-1">  
-            <div style="border: 1px solid white; padding: 10px;">
-                <table>
+            <div style="border: 1px solid white; padding: 6px;">
+                <table style="font-size: 8px; line-height: 1.3;">
                     <tr>
                         <td>Nama</td>
                         <td>&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp;&nbsp;&nbsp;<b>{{ $data['student']->name }}</b></td>
