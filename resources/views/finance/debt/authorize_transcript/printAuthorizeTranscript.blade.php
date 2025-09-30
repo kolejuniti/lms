@@ -43,7 +43,7 @@ use Carbon\Carbon;
             font-size: 100%;
             vertical-align: baseline;
             background: transparent;
-            font-size: 9px;
+            font-size: 12px;
         }
         html, body {
             height: 100%;
@@ -70,7 +70,7 @@ use Carbon\Carbon;
             font-size: 100%;
             vertical-align: baseline;
             background: transparent;
-            font-size: 9px;
+            font-size: 12px;
         }
         .form-group {
             page-break-inside: avoid;
