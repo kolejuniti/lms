@@ -48,6 +48,8 @@ class KP_Controller extends Controller
 
         // Total active subjects/groups
         $dashboardData['total_groups'] = subject::join('users', 'user_subjek.user_ic', '=', 'users.ic')
+            ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
+            ->where('sessions.Status', 'ACTIVE')
             ->where('users.faculty', $kp->faculty)
             ->count();
 
@@ -72,6 +74,7 @@ class KP_Controller extends Controller
         $dashboardData['recent_assignments'] = subject::join('users', 'user_subjek.user_ic', '=', 'users.ic')
             ->join('subjek', 'user_subjek.course_id','=', 'subjek.sub_id')
             ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
+            ->where('sessions.Status', 'ACTIVE')
             ->where('users.faculty', $kp->faculty)
             ->select('users.name','user_subjek.*','subjek.course_name','subjek.course_code','sessions.SessionName', 'user_subjek.created_at')
             ->orderBy('user_subjek.created_at', 'desc')
