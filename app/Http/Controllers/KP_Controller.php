@@ -33,6 +33,7 @@ class KP_Controller extends Controller
                         ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
                         ->select('users.name','user_subjek.*','subjek.course_name','subjek.course_code','sessions.SessionName')
                         ->where('users.faculty', $kp->faculty)
+                        ->where('sessions.Status', 'ACTIVE')
                         //->orderBy('sessions.SessionID')
                         ->get();
 
