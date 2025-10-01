@@ -394,7 +394,7 @@
 					</ul>
 				</li>
 				<li>
-					<a href="{{ asset('storage/finals_schedule/Jadual Pengawasan Peperiksaan Akhir UNITI Kemasukan Julai 20242025-I.pdf') }}" target="_blank"><i data-feather="layout"></i><span>Finals Timetable</span></a>
+					<a href="{{ asset('storage/finals_schedule/Jadual Peperiksaan Akhir UNITI Semester I Sesi 20252026 (Kemasukan Jun).pdf') }}" target="_blank"><i data-feather="layout"></i><span>Finals Timetable</span></a>
 				</li> 
 			  </ul>
 			  <div class="sidebar-widgets">
