@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class KP_Controller extends Controller
 {
@@ -21,6 +22,12 @@ class KP_Controller extends Controller
 
         $kp = Auth::user();
 
+        // Get programs handled by this KP
+        $programs = DB::table('user_program')
+            ->where('user_ic', $kp->ic)
+            ->pluck('program_id');
+
+        // Original data for the table
         $data = subject::join('users', 'user_subjek.user_ic', '=', 'users.ic')
                         ->join('subjek', 'user_subjek.course_id','=', 'subjek.sub_id')
                         ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
@@ -29,7 +36,87 @@ class KP_Controller extends Controller
                         //->orderBy('sessions.SessionID')
                         ->get();
 
-        return view('ketua_program', compact('data'));
+        // Dashboard statistics
+        $dashboardData = [];
+
+        // Total lecturers in faculty
+        $dashboardData['total_lecturers'] = User::where('faculty', $kp->faculty)
+            ->whereIn('usrtype', ['LCT'])
+            ->where('status', 'ACTIVE')
+            ->count();
+
+        // Total active subjects/groups
+        $dashboardData['total_groups'] = subject::join('users', 'user_subjek.user_ic', '=', 'users.ic')
+            ->where('users.faculty', $kp->faculty)
+            ->count();
+
+        // Total students under KP programs
+        if (!$programs->isEmpty()) {
+            $dashboardData['total_students'] = DB::table('students')
+                ->whereIn('program', $programs)
+                ->whereNotIn('status', [3,4,5,6,7,8,14,15,16])
+                ->count();
+        } else {
+            $dashboardData['total_students'] = 0;
+        }
+
+        // Total programs handled by KP
+        $dashboardData['total_programs'] = $programs->count();
+
+        // Pending replacement classes
+        $pendingResponse = $this->countPendingReplacementClasses();
+        $dashboardData['pending_replacement_classes'] = $pendingResponse->getData(true)['count'] ?? 0;
+
+        // Recent lecturer assignments (last 10)
+        $dashboardData['recent_assignments'] = subject::join('users', 'user_subjek.user_ic', '=', 'users.ic')
+            ->join('subjek', 'user_subjek.course_id','=', 'subjek.sub_id')
+            ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
+            ->where('users.faculty', $kp->faculty)
+            ->select('users.name','user_subjek.*','subjek.course_name','subjek.course_code','sessions.SessionName', 'user_subjek.created_at')
+            ->orderBy('user_subjek.created_at', 'desc')
+            ->limit(10)
+            ->get();
+
+        // Active sessions
+        $dashboardData['active_sessions'] = DB::table('sessions')
+            ->where('Status', 'ACTIVE')
+            ->count();
+
+        // Today's assessments count
+        $dashboardData['todays_assessments'] = 0;
+        $today = now()->format('Y-m-d');
+        
+        $assessmentTables = ['tblclassquiz', 'tblclasstest', 'tblclasstest2', 'tblclassassign', 'tblclassmidterm', 'tblclassfinal'];
+        foreach ($assessmentTables as $table) {
+            $count = DB::table($table)
+                ->join('users', $table . '.addby', 'users.ic')
+                ->where('users.faculty', $kp->faculty)
+                ->whereDate($table . '.created_at', $today)
+                ->count();
+            $dashboardData['todays_assessments'] += $count;
+        }
+
+        // Program statistics
+        $dashboardData['program_stats'] = [];
+        if (!$programs->isEmpty()) {
+            foreach ($programs as $programId) {
+                $program = DB::table('tblprogramme')->where('id', $programId)->first();
+                if ($program) {
+                    $studentCount = DB::table('students')
+                        ->where('program', $programId)
+                        ->whereNotIn('status', [3,4,5,6,7,8,14,15,16])
+                        ->count();
+                    
+                    $dashboardData['program_stats'][] = [
+                        'name' => $program->progname,
+                        'code' => $program->progcode,
+                        'student_count' => $studentCount
+                    ];
+                }
+            }
+        }
+
+        return view('ketua_program', compact('data', 'dashboardData'));
     }
 
     public function create()
@@ -1762,8 +1849,8 @@ $content .= '<tr>
                 'message' => 'Application status updated successfully.'
             ]);
         } catch (\Exception $e) {
-            \Log::error('Error updating replacement class status: ' . $e->getMessage());
-            \Log::error('Request data: ' . json_encode($request->all()));
+            Log::error('Error updating replacement class status: ' . $e->getMessage());
+            Log::error('Request data: ' . json_encode($request->all()));
             
             return response()->json([
                 'error' => 'An error occurred while updating the application status: ' . $e->getMessage()
