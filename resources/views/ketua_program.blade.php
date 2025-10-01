@@ -209,7 +209,7 @@
 
                 <!-- Finals Timetable -->
                 <div class="col-lg-3 col-md-6 col-sm-6 col-12 mb-20">
-                  <a href="{{ asset('storage/finals_schedule/Jadual Pengawasan Peperiksaan Akhir UNITI Kemasukan Julai 20242025-I.pdf') }}" target="_blank" class="d-block text-center p-20 bg-light rounded hover-shadow timetable-action">
+                  <a href="{{ asset('storage/finals_schedule/Jadual Peperiksaan Akhir UNITI Semester I Sesi 20252026 (Kemasukan Jun).pdf') }}" target="_blank" class="d-block text-center p-20 bg-light rounded hover-shadow timetable-action">
                     <div class="timetable-icon-wrapper mb-15">
                       <i data-feather="file-text" class="text-danger" style="width: 35px; height: 35px;"></i>
                     </div>
