@@ -5428,7 +5428,8 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
     {
 
         $data = [
-            'session' => DB::table('sessions')->orderBy('SessionID', 'DESC')->get()
+            'session' => DB::table('sessions')->orderBy('SessionID', 'DESC')->get(),
+            'status' => DB::table('tblstudent_status')->get()
         ];
 
         return view('pendaftar_akademik.student.result_report.resultReport', compact('data'));
@@ -5465,6 +5466,9 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
                 })
                 ->when($datas->type == 'cgpa', function ($query) use ($datas) {
                     return $query->whereBetween('student_transcript.cgpa', [$datas->start, $datas->end]);
+                })
+                ->when($datas->status != 'all', function ($query) use ($datas) {
+                    return $query->where('students.status', $datas->status);
                 })
                 ->orderBy('students.name')
                 ->get();

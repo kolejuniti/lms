@@ -93,6 +93,19 @@
             </div>
             </div>
           </div>
+          <div class="row">
+            <div class="col-md-4">
+              <div class="form-group">
+                <label class="form-label" for="status">Status</label>
+                <select class="form-select" id="status" name="status">
+                  <option value="all" selected>All Status</option>
+                  @foreach ($data['status'] as $status)
+                  <option value="{{ $status->id }}">{{ $status->name }}</option>
+                  @endforeach
+                </select>
+              </div>
+            </div>
+          </div>
           <button type="submit" class="btn btn-primary pull-right mb-3" onclick="submit()">Find</button>
           <div id="form-student">
             
@@ -186,7 +199,8 @@
       session : $('#session').val(),
       type : $('#type').val(),
       start : $('#start').val(),
-      end : $('#end').val()
+      end : $('#end').val(),
+      status : $('#status').val()
     };
 
     formData.append('submitData', JSON.stringify(getInput))
