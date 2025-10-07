@@ -20,6 +20,21 @@
         </div>
       </div>
     </div>
+
+    <!-- Success/Error Messages -->
+    @if(session('success'))
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      <strong>Success!</strong> {{ session('success') }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    @endif
+
+    @if(session('error'))
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      <strong>Error!</strong> {{ session('error') }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    @endif
     
     <!-- Main content -->
     <section class="content">
@@ -227,48 +242,70 @@
               </div>
             </div>
             <div class="box-body">
-              <div class="table-responsive">
-                <table class="table table-striped">
-                  <thead>
-                    <tr>
-                      <th>Receipt No</th>
-                      <th>Student</th>
-                      <th>Ic</th>
-                      <th>Amount</th>
-                      <th>Date</th>
-                      <th>Status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    @php
-                      $recentPayments = DB::table('tblpayment')
-                        ->join('tblpaymentmethod', 'tblpayment.id', '=', 'tblpaymentmethod.payment_id')
-                        ->join('students', 'tblpayment.student_ic', '=', 'students.ic')
-                        ->where([
-                            ['tblpaymentmethod.claim_method_id', 17], 
-                            ['tblpayment.process_status_id', 1]])
-                        ->select('tblpayment.*', 'students.name', 'students.no_matric', 'students.ic')
-                        ->orderBy('tblpayment.date', 'desc')
-                        ->limit(10)
-                        ->get();
-                    @endphp
-                    @forelse($recentPayments as $payment)
+              <form action="{{ route('finance.fpx.bulk.cancel') }}" method="POST" id="fpxCancelForm">
+                @csrf
+                <div class="table-responsive">
+                  <table class="table table-striped">
+                    <thead>
                       <tr>
-                        <td>{{ $payment->ref_no ?? 'N/A' }}</td>
-                        <td>{{ $payment->name }} ({{ $payment->no_matric }})</td>
-                        <td>{{ $payment->ic }}</td>
-                        <td>RM {{ number_format($payment->amount, 2) }}</td>
-                        <td>{{ date('d/m/Y', strtotime($payment->date)) }}</td>
-                        <td><span class="badge badge-warning">Pending</span></td>
+                        <th>Receipt No</th>
+                        <th>Student</th>
+                        <th>Ic</th>
+                        <th>Amount</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th class="text-center">
+                          <div class="d-flex align-items-center justify-content-center">
+                            <input type="checkbox" id="checkAllFpx" class="filled-in" onclick="CheckAllFpx(this)">
+                            <label for="checkAllFpx" class="mb-0 ms-2">All</label>
+                          </div>
+                        </th>
                       </tr>
-                    @empty
-                      <tr>
-                        <td colspan="5" class="text-center">No recent payments found</td>
-                      </tr>
-                    @endforelse
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+                    <tbody>
+                      @php
+                        $recentPayments = DB::table('tblpayment')
+                          ->join('tblpaymentmethod', 'tblpayment.id', '=', 'tblpaymentmethod.payment_id')
+                          ->join('students', 'tblpayment.student_ic', '=', 'students.ic')
+                          ->where([
+                              ['tblpaymentmethod.claim_method_id', 17], 
+                              ['tblpayment.process_status_id', 1]])
+                          ->select('tblpayment.*', 'students.name', 'students.no_matric', 'students.ic')
+                          ->orderBy('tblpayment.date', 'desc')
+                          ->limit(10)
+                          ->get();
+                      @endphp
+                      @forelse($recentPayments as $payment)
+                        <tr>
+                          <td>{{ $payment->ref_no ?? 'N/A' }}</td>
+                          <td>{{ $payment->name }} ({{ $payment->no_matric }})</td>
+                          <td>{{ $payment->ic }}</td>
+                          <td>RM {{ number_format($payment->amount, 2) }}</td>
+                          <td>{{ date('d/m/Y', strtotime($payment->date)) }}</td>
+                          <td><span class="badge badge-warning">Pending</span></td>
+                          <td class="text-center">
+                            <div class="d-flex align-items-center justify-content-center">
+                              <input type="checkbox" id="fpx_payment_{{ $payment->id }}" name="payment_ids[]" value="{{ $payment->id }}" class="filled-in fpx-payment-checkbox">
+                              <label for="fpx_payment_{{ $payment->id }}"></label>
+                            </div>
+                          </td>
+                        </tr>
+                      @empty
+                        <tr>
+                          <td colspan="7" class="text-center">No recent payments found</td>
+                        </tr>
+                      @endforelse
+                    </tbody>
+                  </table>
+                </div>
+                @if($recentPayments->count() > 0)
+                <div class="text-end mt-3">
+                  <button type="button" class="btn btn-danger" onclick="confirmFpxCancellation()">
+                    <i class="ti-close"></i> Mark Selected as Failed
+                  </button>
+                </div>
+                @endif
+              </form>
             </div>
           </div>
         </div>
@@ -856,6 +893,40 @@
     // Also fetch unread students when page loads using the same method as index.blade.php
     fetchUnreadStudents();
   });
+
+  // FPX Bulk Cancellation Functions
+  function CheckAllFpx(elem) {
+    $('.fpx-payment-checkbox').prop("checked", $(elem).prop('checked'));
+  }
+
+  function confirmFpxCancellation() {
+    const checkedBoxes = $('.fpx-payment-checkbox:checked').length;
+    
+    if (checkedBoxes === 0) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'No Selection',
+        text: 'Please select at least one payment to mark as failed.',
+        confirmButtonText: 'OK'
+      });
+      return;
+    }
+
+    Swal.fire({
+      title: 'Confirm Cancellation',
+      html: `You are about to mark <strong>${checkedBoxes}</strong> FPX payment(s) as failed.<br><br>Reason: <strong>FPX Tidak Berjaya</strong>`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, Mark as Failed',
+      cancelButtonText: 'Cancel'
+    }).then(function(result) {
+      if (result.isConfirmed) {
+        $('#fpxCancelForm').submit();
+      }
+    });
+  }
 </script>
 
 <!-- Vue.js App Script -->

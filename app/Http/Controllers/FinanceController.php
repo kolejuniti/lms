@@ -8417,6 +8417,37 @@ class FinanceController extends Controller
 
     }
 
+    public function bulkCancelFpxPayments(Request $request)
+    {
+        $request->validate([
+            'payment_ids' => 'required|array',
+            'payment_ids.*' => 'integer'
+        ]);
+
+        $paymentIds = $request->payment_ids;
+        $terminationReason = 'FPX Tidak Berjaya';
+        $staffIC = Auth::user()->ic;
+        $terminationDate = date('Y-m-d');
+
+        try {
+            // Update all selected payments in bulk
+            DB::table('tblpayment')
+                ->whereIn('id', $paymentIds)
+                ->where('process_status_id', 1) // Only update pending payments
+                ->update([
+                    'process_status_id' => 3,
+                    'termination_date' => $terminationDate,
+                    'termination_reason' => $terminationReason,
+                    'termination_staffID' => $staffIC
+                ]);
+
+            return back()->with('success', count($paymentIds) . ' FPX payment(s) have been marked as failed.');
+
+        } catch (\Exception $e) {
+            return back()->with('error', 'Failed to update payments: ' . $e->getMessage());
+        }
+    }
+
     public function studentVoucher()
     {
 
