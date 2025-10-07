@@ -13330,6 +13330,7 @@ class FinanceController extends Controller
                     $val = 0;
                     $data['sum1_2'] = 0;
                     $data['sum2_2'] = 0;
+                    $data['total2'] = [];
 
                     foreach($data['record2'] as $key => $req)
                     {
@@ -13357,7 +13358,7 @@ class FinanceController extends Controller
 
                     }
 
-                    $data['sum3_2'] = end($data['total2']);
+                    $data['sum3_2'] = !empty($data['total2']) ? end($data['total2']) : 0;
 
                     $data['sum3'] = end($data['total']) + $data['sum3_2'];
 
