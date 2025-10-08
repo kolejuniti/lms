@@ -6943,7 +6943,8 @@ class FinanceController extends Controller
                             'students.status', 
                             'tblprogramme.progname', 
                             'tblstudentclaim.groupid',
-                            'tblstudentclaim.name AS type')
+                            'tblstudentclaim.name AS type',
+                            'tblstudentclaim.id AS claim_id')
                   ->orderBy('tblclaim.ref_no', 'desc')
                   ->get();
 
@@ -7014,7 +7015,7 @@ class FinanceController extends Controller
 
                 }
 
-            }elseif($crg->process_type_id == 4 && $crg->process_status_id == 2 && $crg->groupid == 1)
+            }elseif($crg->process_type_id == 4 && $crg->process_status_id == 2 && $crg->groupid == 1 && $crg->claim_id != 39)
             {
 
                 $data['debit'][] = $crg;
