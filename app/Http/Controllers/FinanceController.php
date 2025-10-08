@@ -9101,6 +9101,7 @@ class FinanceController extends Controller
                                             ['tblclaim.process_type_id', 4],
                                         ])
                                         ->whereIn('tblstudentclaim.groupid', [1,4,5])
+                                        ->where('tblstudentclaim.id', '!=', 39)
                                         ->sum('tblclaimdtl.amount');
 
                     $data['debtNK'][$key] = ($baseQuery)()->where([
@@ -11659,6 +11660,7 @@ class FinanceController extends Controller
                                 ['tblclaim.student_ic', '=', $std->ic]
                             ])
                             ->whereBetween('tblclaim.add_date', [$filter->from, $endYear2])
+                            ->where('tblstudentclaim.id', '!=', 39)
                             ->select(DB::raw("IFNULL(SUM(tblclaimdtl.amount), 0) AS claim"), DB::raw('0 as payment'));
 
                             // Define the second part of the union
@@ -11981,6 +11983,7 @@ class FinanceController extends Controller
                         AND tblstudentclaim.groupid = 1
                         AND tblclaim.program_id = ?
                         AND tblclaim.add_date BETWEEN ? AND ?
+                        AND tblstudentclaim.id != 39
                         GROUP BY YEAR(tblclaim.add_date)
                         
                         UNION ALL
@@ -12221,6 +12224,7 @@ class FinanceController extends Controller
                             ])
                             ->where('students.status', $sts)
                             ->whereBetween('tblclaim.add_date', [$filter->from, $endYear2])
+                            ->where('tblstudentclaim.id', '!=', 39)
                             ->select(DB::raw("IFNULL(SUM(tblclaimdtl.amount), 0) AS claim"), DB::raw('0 as payment'));
 
                             // Define the second part of the union
@@ -12987,6 +12991,7 @@ class FinanceController extends Controller
                     ->when($filter->from != '' && $filter->to != '', function ($query) use ($filter){
                         return $query->whereBetween('tblclaim.date', [$filter->from, $filter->to]);
                     })
+                    ->where('tblstudentclaim.id', '!=', 39)
                     ->select(DB::raw("IFNULL(SUM(tblclaimdtl.amount), 0) AS claim"), DB::raw('0 as payment'));
 
                     // Define the second part of the union
