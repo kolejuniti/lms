@@ -116,6 +116,9 @@
                         Address
                     </th>
                     <th>
+                        State
+                    </th>
+                    <th>
                         Dependant
                     </th>
                     <th>

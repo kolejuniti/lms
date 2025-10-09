@@ -6307,6 +6307,7 @@ class PendaftarController extends Controller
             'tblstudent_status.name AS status',
             'tblstudent_personal.no_tel',
             DB::raw('CONCAT_WS(", ", tblstudent_address.address1, tblstudent_address.address2, tblstudent_address.address3, tblstudent_address.city, tblstudent_address.postcode, tblstate.state_name) AS full_address'),
+            'tblstate.state_name',
             'waris_summary.total_dependent as dependent_no',
             'waris_summary.total_kasar as gajikasar'
         )

@@ -34,6 +34,9 @@
         {{ $student->full_address }}
     </td>
     <td>
+        {{ $student->state_name }}
+    </td>
+    <td>
         {{ $student->dependent_no }}
     </td>
     @php
