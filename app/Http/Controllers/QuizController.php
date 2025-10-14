@@ -269,7 +269,7 @@ class QuizController extends Controller
         $status = $request->status;
         $marks = $request->marks;
 
-        dd($sessionid);
+        dd($classid);
 
         $user = Auth::user();
             
