@@ -171,7 +171,7 @@ class QuizController extends Controller
 
         }
 
-        //dd($data);
+        dd($sessionid);
 
         return view('lecturer.courseassessment.quizcreate', compact(['group', 'folder', 'data']));
     }
@@ -268,8 +268,6 @@ class QuizController extends Controller
         $questionindex = $request->questionindex;
         $status = $request->status;
         $marks = $request->marks;
-
-        dd($classid);
 
         $user = Auth::user();
             
