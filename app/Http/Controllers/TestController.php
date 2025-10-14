@@ -258,8 +258,8 @@ class TestController extends Controller
 
     public function inserttest(Request $request){
         $data = $request->data;
-        $classid = Session::get('CourseIDS');
-        $sessionid = Session::get('SessionIDS');
+        $classid = Session::get('CourseID');
+        $sessionid = Session::get('SessionID');
         $duration = $request->duration;
         $title = $request->title;
         $from = $request->from;
@@ -1462,8 +1462,8 @@ class TestController extends Controller
 
     public function inserttest2(Request $request){
         //$data = $request->data;
-        $classid = Session::get('CourseIDS');
-        $sessionid = Session::get('SessionIDS');
+        $classid = Session::get('CourseID');
+        $sessionid = Session::get('SessionID');
         $title = $request->title;
         $group = $request->group;
         $chapter = $request->chapter;

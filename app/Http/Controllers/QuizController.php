@@ -259,8 +259,8 @@ class QuizController extends Controller
 
     public function insertquiz(Request $request){
         $data = $request->data;
-        $classid = Session::get('CourseIDS');
-        $sessionid = Session::get('SessionIDS');
+        $classid = Session::get('CourseID');
+        $sessionid = Session::get('SessionID');
         $duration = $request->duration;
         $title = $request->title;
         $from = $request->from;
@@ -1793,8 +1793,8 @@ class QuizController extends Controller
 
     public function insertquiz2(Request $request){
         //$data = $request->data;
-        $classid = Session::get('CourseIDS');
-        $sessionid = Session::get('SessionIDS');
+        $classid = Session::get('CourseID');
+        $sessionid = Session::get('SessionID');
         $title = $request->title;
         $group = $request->group;
         $chapter = $request->chapter;
