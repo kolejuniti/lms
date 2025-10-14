@@ -269,6 +269,8 @@ class QuizController extends Controller
         $status = $request->status;
         $marks = $request->marks;
 
+        dd($sessionid);
+
         $user = Auth::user();
             
         $quizid = empty($request->quiz) ? '' : $request->quiz;
