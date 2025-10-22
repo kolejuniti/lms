@@ -152,41 +152,127 @@ class StudentController extends Controller
 
     public function setting()
     {
-        $student = DB::table('students')->where('ic', Auth::guard('student')->user()->ic)->first();
+        $ic = Auth::guard('student')->user()->ic;
+        
+        $student = DB::table('students')
+                   ->leftjoin('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
+                   ->leftjoin('tblstudent_address', 'students.ic', 'tblstudent_address.student_ic')
+                   ->leftjoin('tblprogramme', 'students.program', 'tblprogramme.id')
+                   ->leftjoin('sessions', 'students.intake', 'sessions.SessionID')
+                   ->select('students.*', 'tblstudent_personal.*', 'tblstudent_address.*', 
+                            'tblprogramme.progname', 'tblprogramme.progcode', 
+                            'sessions.SessionName as intake_name')
+                   ->where('students.ic', $ic)
+                   ->first();
 
-        return view('settingStudent', compact('student'));
+        $data['waris'] = DB::table('tblstudent_waris')->where('student_ic', $ic)->get();
+        $data['state'] = DB::table('tblstate')->orderBy('state_name')->get();
+        $data['CL'] = DB::table('tblcitizenship_level')->get();
+        $data['relationship'] = DB::table('tblrelationship')->get();
+        $data['wstatus'] = DB::table('tblwaris_status')->get();
+
+        return view('settingStudent', compact('student', 'data'));
     }
 
     public function updateSetting(Request $request)
     {
-        $data = $request->validate([
-            'email' => ['email', 'required'],
-            'pass' => ['nullable','max:10','regex:/^\S*$/u'],
-            'conpass' => ['max:10','same:pass','regex:/^\S*$/u']
-        ],[
-            'conpass.same' => 'The Confirm Password and Password must match!',
-            'pass.regex' => 'The Password cannot have spaces!'
-        ]);
+        try {
+            $ic = Auth::guard('student')->user()->ic;
+            
+            $data = $request->validate([
+                'email' => ['nullable', 'email'],
+                'pass' => ['nullable','max:10','regex:/^\S*$/u'],
+                'conpass' => ['nullable','max:10','same:pass','regex:/^\S*$/u'],
+                'CL' => ['nullable'],
+                'np1' => ['nullable'],
+                'np2' => ['nullable'],
+                'np3' => ['nullable'],
+                'oku' => ['nullable'],
+                'address1' => ['nullable'],
+                'address2' => ['nullable'],
+                'address3' => ['nullable'],
+                'postcode' => ['nullable'],
+                'city' => ['nullable'],
+                'state' => ['nullable'],
+            ],[
+                'conpass.same' => 'The Confirm Password and Password must match!',
+                'pass.regex' => 'The Password cannot have spaces!'
+            ]);
 
-        //dd($data['pass']);
+        // Update students table (email, password, and tracking)
+        $studentUpdate = [
+            'email' => $data['email'] ?? null,
+            'updated_by' => $ic,
+            'updated_at' => now()
+        ];
 
-        if($data['pass'] != null)
-        {
-            DB::table('students')
-                ->where('ic', Auth::guard('student')->user()->ic)
-                ->update([
-                    'email' => $data['email'],
-                    'password' =>  Hash::make($data['pass'])
-                ]);
-        }else{
-            DB::table('students')
-                ->where('ic', Auth::guard('student')->user()->ic)
-                ->update([
-                    'email' => $data['email']
-                ]);
+        if(!empty($data['pass'])) {
+            $studentUpdate['password'] = Hash::make($data['pass']);
         }
 
-        return redirect()->back()->with('alert', 'You have successfully updated your setting!');
+        DB::table('students')
+            ->where('ic', $ic)
+            ->update($studentUpdate);
+
+        // Update tblstudent_personal table (phone numbers, OKU, citizenship level)
+        DB::table('tblstudent_personal')
+            ->updateOrInsert(
+                ['student_ic' => $ic],
+                [
+                    'no_tel' => $data['np1'] ?? null,
+                    'no_tel2' => $data['np2'] ?? null,
+                    'no_telhome' => $data['np3'] ?? null,
+                    'oku' => $request->has('oku') ? 1 : null,
+                    'statelevel_id' => $data['CL'] ?? null,
+                ]
+            );
+
+        // Update tblstudent_address table
+        DB::table('tblstudent_address')
+            ->updateOrInsert(
+                ['student_ic' => $ic],
+                [
+                    'address1' => $data['address1'] ?? null,
+                    'address2' => $data['address2'] ?? null,
+                    'address3' => $data['address3'] ?? null,
+                    'postcode' => $data['postcode'] ?? null,
+                    'city' => $data['city'] ?? null,
+                    'state_id' => $data['state'] ?? null,
+                ]
+            );
+
+        // Update waris information
+        if($request->has('w_name')) {
+            // Delete existing waris records
+            DB::table('tblstudent_waris')->where('student_ic', $ic)->delete();
+            
+            // Insert new waris records
+            foreach($request->w_name as $key => $name) {
+                if(!empty($name)) {
+                    DB::table('tblstudent_waris')->insert([
+                        'student_ic' => $ic,
+                        'name' => $name,
+                        'ic' => $request->w_ic[$key] ?? null,
+                        'email' => $request->w_email[$key] ?? null,
+                        'home_tel' => $request->w_notel_home[$key] ?? null,
+                        'phone_tel' => $request->w_notel[$key] ?? null,
+                        'occupation' => $request->occupation[$key] ?? null,
+                        'dependent_no' => $request->dependent[$key] ?? null,
+                        'relationship' => $request->relationship[$key] ?? null,
+                        'kasar' => $request->w_kasar[$key] ?? null,
+                        'bersih' => $request->w_bersih[$key] ?? null,
+                        'status' => $request->w_status[$key] ?? null,
+                        'address' => $request->w_address[$key] ?? null,
+                    ]);
+                }
+            }
+        }
+
+        return redirect()->back()->with('alert', 'You have successfully updated your details!');
+        
+        } catch (\Exception $e) {
+            return redirect()->back()->with('alert', 'Error updating details: ' . $e->getMessage())->withInput();
+        }
     }
 
     public function getCourseList(Request $request)
