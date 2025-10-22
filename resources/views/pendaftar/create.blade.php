@@ -165,6 +165,28 @@
                         </div>
                         <div class="col-md-6">
                           <div class="form-group">
+                            <label class="form-label" for="descendants">Descendants</label>
+                            <select class="form-select" id="descendants" name="descendants">
+                              <option value="-" selected disabled>-</option>
+                                @foreach ($data['descendants'] as $desc)
+                                <option value="{{ $desc->id }}">{{ $desc->descendants_name}}</option> 
+                                @endforeach
+                            </select>
+                          </div>
+                        </div>
+                        <div class="col-md-6">
+                          <div class="form-group">
+                            <label class="form-label" for="muet">MUET</label>
+                            <select class="form-select" id="muet" name="muet">
+                              <option value="-" selected disabled>-</option>
+                                @foreach ($data['muet'] as $muet)
+                                <option value="{{ $muet->id }}">{{ $muet->muet_name}}</option> 
+                                @endforeach
+                            </select>
+                          </div>
+                        </div>
+                        <div class="col-md-6">
+                          <div class="form-group">
                             <label class="form-label" for="mstatus">Status <p style="color:red; display:inline-block;">*</p></label>
                             <select class="form-select" id="mstatus" name="mstatus" required>
                               <option value="-" selected disabled>-</option>

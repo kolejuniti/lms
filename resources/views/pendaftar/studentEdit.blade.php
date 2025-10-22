@@ -35,24 +35,64 @@
           </div>
         </div>
         <div class="card-body">
-          <div class="row mt-3 ">
-            <div class="row col-md-12">
-              <div class="col-md-3">
-                <div class="form-group">
-                  <label class="form-label" for="name">Name / No. IC / No. Matric</label>
-                  <input type="text" class="form-control" id="search" placeholder="Search..." name="search">
-                </div>
+          <!-- Search by text input -->
+          <div class="row mt-3">
+            <div class="col-md-12">
+              <h5 class="mb-3">Search by Name / IC / Matric</h5>
+            </div>
+            <div class="col-md-3">
+              <div class="form-group">
+                <label class="form-label" for="name">Name / No. IC / No. Matric</label>
+                <input type="text" class="form-control" id="search" placeholder="Search..." name="search">
               </div>
             </div>
           </div>
-          <div class="row mt-3 " id="group-card" hidden>
-            <div class="col-md-6 ml-3">
+
+          <hr class="my-4">
+
+          <!-- Search by filters -->
+          <div class="row mt-3">
+            <div class="col-md-12">
+              <h5 class="mb-3">Search by Filters</h5>
+            </div>
+            <div class="col-md-4">
               <div class="form-group">
-                  <label class="form-label" for="group">Group</label>
-                  <select class="form-select" id="group" name="group">
-                  </select>
+                <label class="form-label" for="program">Program</label>
+                <select class="form-select" id="program" name="program">
+                  <option value="" selected>- All Programs -</option>
+                  @foreach ($program as $prg)
+                  <option value="{{ $prg->id }}">{{ $prg->progcode }} - {{ $prg->progname }}</option> 
+                  @endforeach
+                </select>
               </div>
-            </div>        
+            </div>
+            <div class="col-md-4">
+              <div class="form-group">
+                <label class="form-label" for="session">Session</label>
+                <select class="form-select" id="session" name="session">
+                  <option value="" selected>- All Sessions -</option>
+                  @foreach ($session as $ses)
+                  <option value="{{ $ses->SessionID }}">{{ $ses->SessionName }}</option> 
+                  @endforeach
+                </select>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-group">
+                <label class="form-label" for="semester">Semester</label>
+                <select class="form-select" id="semester" name="semester">
+                  <option value="" selected>- All Semesters -</option>
+                  @foreach ($semester as $sem)
+                  <option value="{{ $sem->id }}">{{ $sem->semester_name }}</option> 
+                  @endforeach
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="row mt-2">
+            <div class="col-md-12">
+              <button type="submit" class="btn btn-primary pull-right" onclick="searchByFilters()">Search by Filters</button>
+            </div>
           </div>
         </div>
         <div class="card-body p-0">
@@ -201,14 +241,16 @@
   $('#search').keyup(function(event){
     if (event.keyCode === 13) { // 13 is the code for the "Enter" key
         var searchTerm = $(this).val();
-        getStudent(searchTerm);
+        getStudent(searchTerm, null, null, null);
     }
   });
 
-  function getStudent(search)
+  function getStudent(search, program, session, semester)
   {
-
-    $('#complex_header').DataTable().destroy();
+    // Check if DataTable exists before destroying
+    if ($.fn.DataTable.isDataTable('#complex_header')) {
+        $('#complex_header').DataTable().destroy();
+    }
 
     var edit = true;
 
@@ -216,7 +258,12 @@
         headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
         url      : "{{ url('pendaftar/group/getStudentTableIndex2') }}",
         method   : 'POST',
-        data 	 : {search: search},
+        data 	 : {
+            search: search,
+            program: program,
+            session: session,
+            semester: semester
+        },
         beforeSend:function(xhr){
           $("#complex_header").LoadingOverlay("show", {
             image: `<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="24px" height="30px" viewBox="0 0 24 30" style="enable-background:new 0 0 50 50;" xml:space="preserve">
@@ -260,6 +307,15 @@
         }
     });
       
+  }
+
+  function searchByFilters()
+  {
+    var program = $('#program').val();
+    var session = $('#session').val();
+    var semester = $('#semester').val();
+
+    getStudent(null, program, session, semester);
   }
 
   function getProgram(ic)

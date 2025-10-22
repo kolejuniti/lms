@@ -356,44 +356,56 @@ class PendaftarController extends Controller
 
     public function getStudentTableIndex2(Request $request)
     {
-        $students = DB::table('students')
+        $student = DB::table('students')
             ->join('tblprogramme', 'students.program', 'tblprogramme.id')
             ->join('sessions AS a', 'students.intake', 'a.SessionID')
             ->join('sessions AS b', 'students.session', 'b.SessionID')
             ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
             ->select('students.*', 'tblprogramme.progname', 'a.SessionName AS intake', 
                      'b.SessionName AS session', 'tblstudent_status.name AS status',
-                     'students.updated_at', 'students.updated_by')
-            ->where('students.name', 'LIKE', "%".$request->search."%")
-            ->orwhere('students.ic', 'LIKE', "%".$request->search."%")
-            ->orwhere('students.no_matric', 'LIKE', "%".$request->search."%")->get();
+                     'students.updated_at', 'students.updated_by');
 
-        // if(!empty($request->program))
-        // {
-        //     $student->where('students.program', $request->program);
-        // }
+        // Search by text (Name/IC/Matric)
+        if(!empty($request->search))
+        {
+            $student->where(function($query) use ($request) {
+                $query->where('students.name', 'LIKE', "%".$request->search."%")
+                      ->orWhere('students.ic', 'LIKE', "%".$request->search."%")
+                      ->orWhere('students.no_matric', 'LIKE', "%".$request->search."%");
+            });
+        }
+
+        // Filter by program
+        if(!empty($request->program))
+        {
+            $student->where('students.program', $request->program);
+        }
         
-        // if(!empty($request->session))
-        // {
-        //     $student->where('students.session', $request->session);
-        // }
+        // Filter by session
+        if(!empty($request->session))
+        {
+            $student->where('students.session', $request->session);
+        }
         
+        // Filter by year (if needed in future)
         // if(!empty($request->year))
         // {
         //     $student->where('a.Year', $request->year);
         // }
         
-        // if(!empty($request->semester))
-        // {
-        //     $student->where('students.semester', $request->semester);
-        // }
+        // Filter by semester
+        if(!empty($request->semester))
+        {
+            $student->where('students.semester', $request->semester);
+        }
         
+        // Filter by status (if needed in future)
         // if(!empty($request->status))
         // {
         //     $student->where('students.status', $request->status);
         // }
 
-        // $students = $student->get();
+        $students = $student->get();
 
         foreach($students as $key => $std)
         {
@@ -628,6 +640,10 @@ class PendaftarController extends Controller
 
         $data['qualification'] = DB::table('tblqualification_std')->get();
 
+        $data['descendants'] = DB::table('descendants')->get();
+
+        $data['muet'] = DB::table('muet')->get();
+
         //dd($data['race']);
 
         return view('pendaftar.create', compact(['program','session','data']));
@@ -758,6 +774,8 @@ class PendaftarController extends Controller
                 'marriage_id' => $request->mstatus,
                 'statelevel_id' => $request->CL,
                 'citizenship_id' => $request->citizen,
+                'descendants_id' => $request->descendants,
+                'muet_id' => $request->muet,
                 'no_tel' => $request->np1,
                 'no_tel2' => $request->np2,
                 'no_telhome' => $request->np3,
@@ -928,6 +946,8 @@ class PendaftarController extends Controller
                    ->leftjoin('tblreligion', 'tblstudent_personal.religion_id', 'tblreligion.id')
                    ->leftjoin('tblcitizenship_level', 'tblstudent_personal.statelevel_id', 'tblcitizenship_level.id')
                    ->leftjoin('tblcitizenship', 'tblstudent_personal.citizenship_id', 'tblcitizenship.id')
+                   ->leftjoin('descendants', 'tblstudent_personal.descendants_id', 'descendants.id')
+                   ->leftjoin('muet', 'tblstudent_personal.muet_id', 'muet.id')
                    ->leftjoin('tblmarriage', 'tblstudent_personal.marriage_id', 'tblmarriage.id')
                    ->leftjoin('tbledu_advisor', 'tblstudent_personal.advisor_id', 'tbledu_advisor.id')
                    ->leftjoin('tbldun', 'tblstudent_personal.dun', 'tbldun.id')
@@ -943,6 +963,7 @@ class PendaftarController extends Controller
                                      'tblstudent_pass.*', 'student_form.*', 'a.state_name AS place_birth',
                                      'tblbatch.BatchName', 'tblsex.sex_name', 'tblnationality.nationality_name',
                                      'tblreligion.religion_name', 'tblcitizenship_level.citizenshiplevel_name', 'tblcitizenship.citizenship_name',
+                                     'descendants.descendants_name', 'muet.muet_name',
                                      'tblmarriage.marriage_name', 'tbledu_advisor.name AS advisor', 'tblpass_type.name AS pass_type',
                                      'tblcountry.name AS country', 'b.state_name AS state_name2', 'tbldun.name AS dun',
                                      'tblparlimen.name AS parlimen', 'tblqualification_std.name AS qualification',
@@ -1023,6 +1044,10 @@ class PendaftarController extends Controller
 
             $data['qualification'] = DB::table('tblqualification_std')->get();
 
+            $data['descendants'] = DB::table('descendants')->get();
+
+            $data['muet'] = DB::table('muet')->get();
+
             return view('pendaftar.update', compact(['student','program','session','data']));
 
         }
@@ -1101,6 +1126,8 @@ class PendaftarController extends Controller
             'marriage_id' => $request->mstatus,
             'statelevel_id' => $request->CL,
             'citizenship_id' => $request->citizen,
+            'descendants_id' => $request->descendants,
+            'muet_id' => $request->muet,
             'no_tel' => $request->np1,
             'no_tel2' => $request->np2,
             'no_telhome' => $request->np3,

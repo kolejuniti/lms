@@ -181,6 +181,16 @@
                     <td style="padding-left: 10px;">{{ $student->citizenship_name ?? '-' }}</td>
                 </tr>
                 <tr>
+                    <td style="padding-right: 10px;">Descendants</td>
+                    <td>:</td>
+                    <td style="padding-left: 10px;">{{ $student->descendants_name ?? '-' }}</td>
+                </tr>
+                <tr>
+                    <td style="padding-right: 10px;">MUET</td>
+                    <td>:</td>
+                    <td style="padding-left: 10px;">{{ $student->muet_name ?? '-' }}</td>
+                </tr>
+                <tr>
                   <td style="padding-right: 10px;">Status</td>
                   <td>:</td>
                   <td style="padding-left: 10px;">{{ $student->marriage_name ?? '-' }}</td>
