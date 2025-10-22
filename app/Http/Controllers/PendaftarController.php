@@ -872,6 +872,8 @@ class PendaftarController extends Controller
                    ->leftjoin('tblstudent_address', 'students.ic', 'tblstudent_address.student_ic')
                    ->leftjoin('tblstudent_pass', 'students.ic', 'tblstudent_pass.student_ic')
                    ->leftjoin('student_form', 'students.ic', 'student_form.student_ic')
+                   ->leftjoin('descendants', 'tblstudent_personal.descendants_id', 'descendants.id')
+                   ->leftjoin('muet', 'tblstudent_personal.muet_id', 'muet.id')
                    ->join('sessions', 'students.session', 'sessions.SessionID')
                    ->leftjoin('users', 'students.updated_by', 'users.ic')
                    ->leftjoin('students as updater_student', 'students.updated_by', 'updater_student.ic')
@@ -919,6 +921,10 @@ class PendaftarController extends Controller
         $data['parlimen'] = DB::table('tblparlimen')->orderBy('name')->get();
 
         $data['qualification'] = DB::table('tblqualification_std')->get();
+
+        $data['descendants'] = DB::table('descendants')->get();
+
+        $data['muet'] = DB::table('muet')->get();
 
         return view('pendaftar.view', compact(['student','program','session','data']));
 

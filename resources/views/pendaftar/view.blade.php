@@ -218,6 +218,28 @@
                         </div>
                         <div class="col-md-6">
                           <div class="form-group">
+                            <label class="form-label" for="descendants">Descendants</label>
+                            <select class="form-select" id="descendants" name="descendants" disabled>
+                              <option value="-" selected disabled>-</option>
+                                @foreach ($data['descendants'] as $desc)
+                                <option value="{{ $desc->id }}" {{ ($student->descendants_id == $desc->id) ? 'selected' : '' }}>{{ $desc->descendants_name}}</option> 
+                                @endforeach
+                            </select>
+                          </div>
+                        </div>
+                        <div class="col-md-6">
+                          <div class="form-group">
+                            <label class="form-label" for="muet">MUET</label>
+                            <select class="form-select" id="muet" name="muet" disabled>
+                              <option value="-" selected disabled>-</option>
+                                @foreach ($data['muet'] as $muet)
+                                <option value="{{ $muet->id }}" {{ ($student->muet_id == $muet->id) ? 'selected' : '' }}>{{ $muet->muet_name}}</option> 
+                                @endforeach
+                            </select>
+                          </div>
+                        </div>
+                        <div class="col-md-6">
+                          <div class="form-group">
                             <label class="form-label" for="mstatus">Status <p style="color:red; display:inline-block;">*</p></label>
                             <select class="form-select" id="mstatus" name="mstatus" disabled>
                               <option value="-" selected disabled>-</option>
