@@ -865,11 +865,11 @@ $(document).ready(function(){
       newForm.find('select[name="w_status[]"]').after('<input type="hidden" name="w_status[]" value="{{ $waris->status }}">');
     @endif
     
-    // Add a delete button to the card element
-    var deleteButton = $('<div class="delete-waris-btn"><button class="btn-modern btn-danger-modern delete-form" type="button"><i class="mdi mdi-delete"></i> Remove</button></div>');
-    newForm.find('.modern-card-body').prepend(deleteButton);
+    // Add "Existing Data" badge to existing waris cards
+    newForm.find('.modern-card-header .info-badge').remove(); // Remove any existing badge first
+    newForm.find('.modern-card-header').append('<span class="info-badge ms-auto">Existing Data</span>');
     
-    // Add the new card element to the forms container
+    // Add the new card element to the forms container (no delete button for existing data)
     $('#forms-container').append(newForm);
   @endforeach
 
