@@ -457,6 +457,7 @@
                     <th class="text-center">Salary (kasar)</th>
                     <th class="text-center">Salary (Bersih)</th>
                     <th class="text-center">Status</th>
+                    <th class="text-center">Address</th>
                 </tr>
             </thead>
             <tbody>
@@ -469,6 +470,7 @@
                     <td class="text-center">{{ $waris->kasar ?? '-' }}</td>
                     <td class="text-center">{{ $waris->bersih ?? '-' }}</td>
                     <td class="text-center">{{ $waris->status ?? '-' }}</td>
+                    <td class="text-center">{{ $waris->address ?? '-' }}</td>
                 </tr>
                 @endforeach
             </tbody>

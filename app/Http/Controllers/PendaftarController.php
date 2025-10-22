@@ -1119,7 +1119,8 @@ class PendaftarController extends Controller
                     'bersih' => $request->input('w_bersih')[$i],
                     'relationship' => $request->input('relationship')[$i],
                     //'race' => $request->input('w_race')[$i],
-                    'status' => $request->input('w_status')[$i]
+                    'status' => $request->input('w_status')[$i],
+                    'address' => $request->input('w_address')[$i] ?? null
                 ]);
             }
         }

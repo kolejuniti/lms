@@ -697,6 +697,12 @@
                               </select>
                             </div>
                           </div>
+                          <div class="col-md-12">
+                            <div class="form-group">
+                              <label class="form-label" for="w_address">Address</label>
+                              <textarea class="form-control" id="w_address" name="w_address[]" rows="3" placeholder="Enter Address"></textarea>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -762,6 +768,7 @@ $(document).ready(function() {
   $('#w_kasar').val(firstWaris.kasar);
   $('#w_bersih').val(firstWaris.bersih);
   $('#w_status').val(firstWaris.status);
+  $('#w_address').val(firstWaris.address);
 
   // Clone the card element with ID #card-1 for each remaining row of data
   @foreach ($data['waris'] as $waris)
@@ -781,6 +788,7 @@ $(document).ready(function() {
     newForm.find('select[name="relationship[]"]').val('{{ $waris->relationship }}');
     //newForm.find('select[name="w_race[]"]').val('{{ $waris->race }}');
     newForm.find('select[name="w_status[]"]').val('{{ $waris->status }}');
+    newForm.find('textarea[name="w_address[]"]').val('{{ $waris->address }}');
     
     // Add a delete button to the card element
     var deleteButton = $('<div class="form-group" style="margin-left: 10px"><button class="btn btn-danger delete-form" type="button">Delete Form</button></div>');
@@ -802,7 +810,7 @@ $(document).ready(function() {
       // Clone the card element with ID #card-1
       var newForm = $('#card-1').clone();
       // Clear the input values in the cloned form
-      newForm.find('input, select').val('');
+      newForm.find('input, select, textarea').val('');
       // Add a delete button to the new form
       newForm.append('<div class="form-group" style="margin-left: 10px"><button class="btn btn-danger delete-form" type="button">Delete Form</button></div>');
       // Append the new form to the forms container

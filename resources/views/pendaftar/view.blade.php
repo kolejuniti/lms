@@ -695,6 +695,12 @@
                               </select>
                             </div>
                           </div>
+                          <div class="col-md-12">
+                            <div class="form-group">
+                              <label class="form-label" for="w_address">Address</label>
+                              <textarea class="form-control" id="w_address" name="w_address[]" rows="3" placeholder="Enter Address" readonly></textarea>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -734,6 +740,7 @@ $(document).ready(function() {
   $('#w_kasar').val(firstWaris.kasar);
   $('#w_bersih').val(firstWaris.bersih);
   $('#w_status').val(firstWaris.status);
+  $('#w_address').val(firstWaris.address);
 
   // Clone the card element with ID #card-1 for each remaining row of data
   @foreach ($data['waris'] as $waris)
@@ -750,6 +757,7 @@ $(document).ready(function() {
     newForm.find('select[name="relationship[]"]').val('{{ $waris->relationship }}');
     //newForm.find('select[name="w_race[]"]').val('{{ $waris->race }}');
     newForm.find('select[name="w_status[]"]').val('{{ $waris->status }}');
+    newForm.find('textarea[name="w_address[]"]').val('{{ $waris->address }}');
     // Add the new card element to the forms container
     $('#forms-container').append(newForm);
   @endforeach
