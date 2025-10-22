@@ -62,8 +62,23 @@
           <div class="col-md-12">
             <!-- general form elements -->
             <div class="card card-primary">
-              <div class="card-header">
+              <div class="card-header d-flex justify-content-between align-items-center">
                 <h3 class="card-title">Student Edit</h3>
+                @if($student->student_updated_at || $student->student_updated_by)
+                <div class="text-end">
+                  @if($student->student_updated_at)
+                  <span class="badge" style="background-color: #28a745; color: white; font-size: 12px; padding: 6px 12px; margin-bottom: 5px; display: inline-block;">
+                    <i class="fa fa-clock-o"></i> Last Updated: {{ date('d-m-Y H:i:s', strtotime($student->student_updated_at)) }}
+                  </span>
+                  <br>
+                  @endif
+                  @if($student->updated_by_name)
+                  <span class="badge" style="background-color: #28a745; color: white; font-size: 12px; padding: 6px 12px; display: inline-block;">
+                    <i class="fa fa-user"></i> By: {{ $student->updated_by_name }} ({{ $student->student_updated_by }})
+                  </span>
+                  @endif
+                </div>
+                @endif
               </div>
               <!-- /.card-header -->
               <!-- Student Image Section -->
