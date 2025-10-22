@@ -441,12 +441,12 @@ class PendaftarController extends Controller
                 // First check in users table
                 $user = DB::table('users')->where('ic', $std->updated_by)->first();
                 if($user) {
-                    $updated_by_display[$key] = $user->usrtype;
+                    $updated_by_display[$key] = $user->name . ' (' . $user->usrtype . ')';
                 } else {
                     // Check in students table
                     $student_updater = DB::table('students')->where('ic', $std->updated_by)->first();
                     if($student_updater) {
-                        $updated_by_display[$key] = 'STUDENT';
+                        $updated_by_display[$key] = $student_updater->name . ' (STUDENT)';
                     }
                 }
             }
