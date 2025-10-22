@@ -410,6 +410,7 @@ function addCellStyle(cellXfs, fillId) {
         $('#complex_header').html(data);
         $('#complex_header').DataTable({
           dom: 'lBfrtip',
+            scrollX: true, // Enable horizontal scrolling
             // Example: Sort by "Name" column ascending on load
             // The marker is column 0, "No." is column 1, so "Name" is column 2
             order: [[1, 'asc']], 
