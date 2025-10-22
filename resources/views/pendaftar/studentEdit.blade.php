@@ -74,6 +74,12 @@
                     <th style="width: 10%">
                         Program
                     </th>
+                    <th style="width: 10%">
+                        Last Updated
+                    </th>
+                    <th style="width: 10%">
+                        Updated By
+                    </th>
                     <th style="width: 20%">
                     </th>
                 </tr>

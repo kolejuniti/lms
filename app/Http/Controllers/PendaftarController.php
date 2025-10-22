@@ -362,7 +362,8 @@ class PendaftarController extends Controller
             ->join('sessions AS b', 'students.session', 'b.SessionID')
             ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
             ->select('students.*', 'tblprogramme.progname', 'a.SessionName AS intake', 
-                     'b.SessionName AS session', 'tblstudent_status.name AS status')
+                     'b.SessionName AS session', 'tblstudent_status.name AS status',
+                     'students.updated_at', 'students.updated_by')
             ->where('students.name', 'LIKE', "%".$request->search."%")
             ->orwhere('students.ic', 'LIKE', "%".$request->search."%")
             ->orwhere('students.no_matric', 'LIKE', "%".$request->search."%")->get();
@@ -434,6 +435,22 @@ class PendaftarController extends Controller
 
             }
 
+            // Get updated by information
+            $updated_by_display[$key] = '-';
+            if(!empty($std->updated_by)) {
+                // First check in users table
+                $user = DB::table('users')->where('ic', $std->updated_by)->first();
+                if($user) {
+                    $updated_by_display[$key] = $user->usrtype;
+                } else {
+                    // Check in students table
+                    $student_updater = DB::table('students')->where('ic', $std->updated_by)->first();
+                    if($student_updater) {
+                        $updated_by_display[$key] = 'STUDENT';
+                    }
+                }
+            }
+
         }
 
         $content = "";
@@ -462,6 +479,12 @@ class PendaftarController extends Controller
                             </th>
                             <th>
                                 Semester
+                            </th>
+                            <th>
+                                Last Updated
+                            </th>
+                            <th>
+                                Updated By
                             </th>
                             <th>
                             </th>
@@ -496,6 +519,12 @@ class PendaftarController extends Controller
                 </td>
                 <td>
                 '. $student->semester .'
+                </td>
+                <td>
+                '. ($student->updated_at ? date('d/m/Y H:i', strtotime($student->updated_at)) : '-') .'
+                </td>
+                <td>
+                '. $updated_by_display[$key] .'
                 </td>';
                 
 
