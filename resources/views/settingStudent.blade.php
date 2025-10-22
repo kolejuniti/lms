@@ -781,37 +781,64 @@ $(document).ready(function(){
     
     // Use decoded values
     $('#w_name').val(decodeHTMLEntities(firstWaris.name || ''));
-    $('#w_ic').val(firstWaris.ic || '');
+    $('#w_ic').val(firstWaris.ic || '').addClass('readonly-field-modern').prop('readonly', true);
     $('#w_email').val(firstWaris.email || '');
     $('#w_notel_home').val(firstWaris.home_tel || '');
     $('#w_notel').val(firstWaris.phone_tel || '');
-    $('#occupation').val(firstWaris.occupation || '');
-    $('#dependent').val(firstWaris.dependent_no || '');
-    $('#relationship').val(firstWaris.relationship || '');
-    $('#w_kasar').val(firstWaris.kasar || '');
-    $('#w_bersih').val(firstWaris.bersih || '');
-    $('#w_status').val(firstWaris.status || '');
+    $('#occupation').val(firstWaris.occupation || '').addClass('readonly-field-modern').prop('disabled', true);
+    $('#dependent').val(firstWaris.dependent_no || '').addClass('readonly-field-modern').prop('readonly', true);
+    $('#relationship').val(firstWaris.relationship || '').addClass('readonly-field-modern').prop('disabled', true);
+    $('#w_kasar').val(firstWaris.kasar || '').addClass('readonly-field-modern').prop('readonly', true);
+    $('#w_bersih').val(firstWaris.bersih || '').addClass('readonly-field-modern').prop('readonly', true);
+    $('#w_status').val(firstWaris.status || '').addClass('readonly-field-modern').prop('disabled', true);
     $('#w_address').val(firstWaris.address || '');
+    
+    // Add hidden inputs for disabled selects to ensure values are submitted
+    if(firstWaris.occupation) {
+      $('#occupation').after('<input type="hidden" name="occupation[]" value="' + firstWaris.occupation + '">');
+    }
+    if(firstWaris.relationship) {
+      $('#relationship').after('<input type="hidden" name="relationship[]" value="' + firstWaris.relationship + '">');
+    }
+    if(firstWaris.status) {
+      $('#w_status').after('<input type="hidden" name="w_status[]" value="' + firstWaris.status + '">');
+    }
+    
+    // Mark the first card as existing data and add badge
+    $('#card-1').attr('data-existing', 'true');
+    $('#card-1').find('.modern-card-header').append('<span class="info-badge ms-auto">Existing Data</span>');
   @endif
 
   // Clone the card element with ID #card-1 for each remaining row of data
   @foreach ($data['waris'] as $waris)
     var newForm = $('#card-1').clone();
     newForm.attr('id', 'card-{{ $waris->id }}');
+    newForm.attr('data-existing', 'true');
     
     // Use escaping and decoding to handle special characters properly in Blade
     newForm.find('input[name="w_name[]"]').val('{!! addslashes(htmlspecialchars_decode($waris->name ?? '')) !!}');
-    newForm.find('input[name="w_ic[]"]').val('{{ $waris->ic ?? '' }}');
+    newForm.find('input[name="w_ic[]"]').val('{{ $waris->ic ?? '' }}').addClass('readonly-field-modern').prop('readonly', true);
     newForm.find('input[name="w_email[]"]').val('{{ $waris->email ?? '' }}');
     newForm.find('input[name="w_notel_home[]"]').val('{{ $waris->home_tel ?? '' }}');
     newForm.find('input[name="w_notel[]"]').val('{{ $waris->phone_tel ?? '' }}');
-    newForm.find('select[name="occupation[]"]').val('{{ $waris->occupation ?? '' }}');
-    newForm.find('input[name="dependent[]"]').val('{{ $waris->dependent_no ?? '' }}');
-    newForm.find('input[name="w_kasar[]"]').val('{{ $waris->kasar ?? '' }}');
-    newForm.find('input[name="w_bersih[]"]').val('{{ $waris->bersih ?? '' }}');
-    newForm.find('select[name="relationship[]"]').val('{{ $waris->relationship ?? '' }}');
-    newForm.find('select[name="w_status[]"]').val('{{ $waris->status ?? '' }}');
+    newForm.find('select[name="occupation[]"]').val('{{ $waris->occupation ?? '' }}').addClass('readonly-field-modern').prop('disabled', true);
+    newForm.find('input[name="dependent[]"]').val('{{ $waris->dependent_no ?? '' }}').addClass('readonly-field-modern').prop('readonly', true);
+    newForm.find('input[name="w_kasar[]"]').val('{{ $waris->kasar ?? '' }}').addClass('readonly-field-modern').prop('readonly', true);
+    newForm.find('input[name="w_bersih[]"]').val('{{ $waris->bersih ?? '' }}').addClass('readonly-field-modern').prop('readonly', true);
+    newForm.find('select[name="relationship[]"]').val('{{ $waris->relationship ?? '' }}').addClass('readonly-field-modern').prop('disabled', true);
+    newForm.find('select[name="w_status[]"]').val('{{ $waris->status ?? '' }}').addClass('readonly-field-modern').prop('disabled', true);
     newForm.find('textarea[name="w_address[]"]').val('{{ $waris->address ?? '' }}');
+    
+    // Add hidden inputs for disabled selects to ensure values are submitted
+    @if(!empty($waris->occupation))
+      newForm.find('select[name="occupation[]"]').after('<input type="hidden" name="occupation[]" value="{{ $waris->occupation }}">');
+    @endif
+    @if(!empty($waris->relationship))
+      newForm.find('select[name="relationship[]"]').after('<input type="hidden" name="relationship[]" value="{{ $waris->relationship }}">');
+    @endif
+    @if(!empty($waris->status))
+      newForm.find('select[name="w_status[]"]').after('<input type="hidden" name="w_status[]" value="{{ $waris->status }}">');
+    @endif
     
     // Add a delete button to the card element
     var deleteButton = $('<div class="delete-waris-btn"><button class="btn-modern btn-danger-modern delete-form" type="button"><i class="mdi mdi-delete"></i> Remove</button></div>');
@@ -827,8 +854,24 @@ $(document).ready(function(){
     var newForm = $('#card-1').clone();
     // Remove any existing delete button from clone
     newForm.find('.delete-waris-btn').remove();
+    // Remove hidden inputs that were added for disabled fields
+    newForm.find('input[type="hidden"]').remove();
+    // Remove "Existing Data" badge from new forms
+    newForm.find('.info-badge').remove();
+    // Remove data-existing attribute to mark as new form
+    newForm.removeAttr('data-existing');
     // Clear the input values in the cloned form
     newForm.find('input, select, textarea').val('');
+    
+    // Remove readonly and disabled attributes from new forms (make them editable)
+    newForm.find('input[name="w_ic[]"]').removeClass('readonly-field-modern').prop('readonly', false);
+    newForm.find('select[name="occupation[]"]').removeClass('readonly-field-modern').prop('disabled', false);
+    newForm.find('input[name="dependent[]"]').removeClass('readonly-field-modern').prop('readonly', false);
+    newForm.find('select[name="relationship[]"]').removeClass('readonly-field-modern').prop('disabled', false);
+    newForm.find('input[name="w_kasar[]"]').removeClass('readonly-field-modern').prop('readonly', false);
+    newForm.find('input[name="w_bersih[]"]').removeClass('readonly-field-modern').prop('readonly', false);
+    newForm.find('select[name="w_status[]"]').removeClass('readonly-field-modern').prop('disabled', false);
+    
     // Add a delete button to the new form
     newForm.find('.modern-card-body').prepend('<div class="delete-waris-btn"><button class="btn-modern btn-danger-modern delete-form" type="button"><i class="mdi mdi-delete"></i> Remove</button></div>');
     // Append the new form to the forms container with smooth animation
