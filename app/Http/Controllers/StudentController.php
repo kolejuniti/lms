@@ -170,6 +170,8 @@ class StudentController extends Controller
         $data['CL'] = DB::table('tblcitizenship_level')->get();
         $data['relationship'] = DB::table('tblrelationship')->get();
         $data['wstatus'] = DB::table('tblwaris_status')->get();
+        $data['descendants'] = DB::table('descendants')->get();
+        $data['muet'] = DB::table('muet')->get();
 
         return view('settingStudent', compact('student', 'data'));
     }
@@ -184,6 +186,8 @@ class StudentController extends Controller
                 'pass' => ['nullable','max:10','regex:/^\S*$/u'],
                 'conpass' => ['nullable','max:10','same:pass','regex:/^\S*$/u'],
                 'CL' => ['nullable'],
+                'descendants' => ['nullable'],
+                'muet' => ['nullable'],
                 'np1' => ['nullable'],
                 'np2' => ['nullable'],
                 'np3' => ['nullable'],
@@ -214,7 +218,7 @@ class StudentController extends Controller
             ->where('ic', $ic)
             ->update($studentUpdate);
 
-        // Update tblstudent_personal table (phone numbers, OKU, citizenship level)
+        // Update tblstudent_personal table (phone numbers, OKU, citizenship level, descendants, muet)
         DB::table('tblstudent_personal')
             ->updateOrInsert(
                 ['student_ic' => $ic],
@@ -224,6 +228,8 @@ class StudentController extends Controller
                     'no_telhome' => $data['np3'] ?? null,
                     'oku' => $request->has('oku') ? 1 : null,
                     'statelevel_id' => $data['CL'] ?? null,
+                    'descendants_id' => $data['descendants'] ?? null,
+                    'muet_id' => $data['muet'] ?? null,
                 ]
             );
 

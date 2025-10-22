@@ -524,6 +524,31 @@
                     </div>
                     <div class="col-lg-6 col-md-6">
                       <div class="form-group-modern">
+                        <label class="form-label-modern" for="descendants">Descendants</label>
+                        <select class="form-select-modern" id="descendants" name="descendants">
+                          <option value="">Select Descendants</option>
+                          @foreach ($data['descendants'] as $desc)
+                            <option value="{{ $desc->id }}" {{ ($student->descendants_id == $desc->id) ? 'selected' : '' }}>{{ $desc->descendants_name}}</option> 
+                          @endforeach
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="row g-3">
+                    <div class="col-lg-6 col-md-6">
+                      <div class="form-group-modern">
+                        <label class="form-label-modern" for="muet">MUET</label>
+                        <select class="form-select-modern" id="muet" name="muet">
+                          <option value="">Select MUET</option>
+                          @foreach ($data['muet'] as $muet)
+                            <option value="{{ $muet->id }}" {{ ($student->muet_id == $muet->id) ? 'selected' : '' }}>{{ $muet->muet_name}}</option> 
+                          @endforeach
+                        </select>
+                      </div>
+                    </div>
+                    <div class="col-lg-6 col-md-6">
+                      <div class="form-group-modern">
                         <label class="form-label-modern" style="display: block; margin-bottom: 0.75rem;">Special Status</label>
                         <div class="checkbox-modern">
                           <input type="checkbox" id="oku" name="oku" value="1" {{ ($student->oku != null) ? 'checked'  : '' }}>
