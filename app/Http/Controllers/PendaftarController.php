@@ -393,6 +393,17 @@ class PendaftarController extends Controller
                 ->leftJoin('tblstudent_address', 'students.ic', 'tblstudent_address.student_ic')
                 ->leftJoin('tblcountry', 'tblstudent_address.country_id', 'tblcountry.id')
                 ->leftJoin('tblstate AS state_address', 'tblstudent_address.state_id', 'state_address.id')
+                ->leftJoin('tblpackage_sponsorship', 'students.ic', 'tblpackage_sponsorship.student_ic')
+                ->leftJoin('tblpackage', 'tblpackage_sponsorship.package_id', 'tblpackage.id')
+                ->leftJoin('tblpayment_type', 'tblpackage_sponsorship.payment_type_id', 'tblpayment_type.id')
+                ->leftJoin('tblspm_dtl AS spm_bm', function($join) {
+                    $join->on('students.ic', '=', 'spm_bm.student_spm_ic')
+                         ->where('spm_bm.subject_spm_id', '=', 1);
+                })
+                ->leftJoin('tblspm_dtl AS spm_bi', function($join) {
+                    $join->on('students.ic', '=', 'spm_bi.student_spm_ic')
+                         ->where('spm_bi.subject_spm_id', '=', 2);
+                })
                 ->select(
                     'students.ic',
                     'students.no_matric',
@@ -420,7 +431,11 @@ class PendaftarController extends Controller
                     'tblstudent_address.postcode',
                     'tblstudent_address.city',
                     'state_address.state_name AS address_state',
-                    'tblcountry.name AS country_name'
+                    'tblcountry.name AS country_name',
+                    'tblpackage.name AS package',
+                    'tblpayment_type.name AS type',
+                    'spm_bm.grade_spm_id AS spm_bm',
+                    'spm_bi.grade_spm_id AS spm_bi'
                 );
 
             // Apply same filters
@@ -488,6 +503,10 @@ class PendaftarController extends Controller
                 'Session',
                 'Semester',
                 'Status',
+                'Package',
+                'Type',
+                'SPM BM',
+                'SPM BI'
             ];
 
             foreach($students as $key => $student)
@@ -547,6 +566,10 @@ class PendaftarController extends Controller
                     $student->session ?? '', // Session
                     $student->semester ?? '', // Semester
                     $student->status ?? '', // Status
+                    $student->package ?? '', // Package
+                    $student->type ?? '', // Type
+                    $student->spm_bm ?? '', // SPM BM
+                    $student->spm_bi ?? '', // SPM BI
                 ];
 
                 // Clear memory periodically for large datasets
