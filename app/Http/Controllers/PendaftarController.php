@@ -358,9 +358,14 @@ class PendaftarController extends Controller
     public function exportStudentEdit(Request $request)
     {
         try {
-            // Increase memory limit and execution time for large exports
-            ini_set('memory_limit', '512M');
-            set_time_limit(300); // 5 minutes
+            // Increase memory limit and execution time for large exports (if not disabled)
+            if (function_exists('ini_set')) {
+                @ini_set('memory_limit', '512M');
+            }
+            
+            if (function_exists('set_time_limit')) {
+                @set_time_limit(300); // 5 minutes
+            }
 
             Log::info('Student Export Started', [
                 'user' => Auth::user()->name ?? 'Unknown',
