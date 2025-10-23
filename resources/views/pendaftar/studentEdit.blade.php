@@ -92,6 +92,9 @@
           <div class="row mt-2">
             <div class="col-md-12">
               <button type="submit" class="btn btn-primary pull-right" onclick="searchByFilters()">Search by Filters</button>
+              <button type="button" class="btn btn-success pull-right mr-2" onclick="exportToExcel()">
+                <i class="fa fa-file-excel-o"></i> Export to Excel
+              </button>
             </div>
           </div>
         </div>
@@ -335,6 +338,31 @@
             }
         });
 
+  }
+
+  function exportToExcel()
+  {
+    // Get current filter values
+    var search = $('#search').val();
+    var program = $('#program').val();
+    var session = $('#session').val();
+    var semester = $('#semester').val();
+
+    // Build URL with parameters
+    var url = "{{ url('pendaftar/student/export') }}";
+    var params = [];
+    
+    if(search) params.push('search=' + encodeURIComponent(search));
+    if(program) params.push('program=' + encodeURIComponent(program));
+    if(session) params.push('session=' + encodeURIComponent(session));
+    if(semester) params.push('semester=' + encodeURIComponent(semester));
+    
+    if(params.length > 0) {
+        url += '?' + params.join('&');
+    }
+
+    // Open in new window to trigger download
+    window.location.href = url;
   }
   </script>
 @endsection

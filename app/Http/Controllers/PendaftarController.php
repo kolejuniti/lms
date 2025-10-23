@@ -19,6 +19,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use GuzzleHttp\Client;
+use Maatwebsite\Excel\Facades\Excel;
 
 class PendaftarController extends Controller
 {
@@ -352,6 +353,171 @@ class PendaftarController extends Controller
         return $content;
 
 
+    }
+
+    public function exportStudentEdit(Request $request)
+    {
+        // Build the same query as getStudentTableIndex2
+        $studentQuery = DB::table('students')
+            ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+            ->join('sessions AS a', 'students.intake', 'a.SessionID')
+            ->join('sessions AS b', 'students.session', 'b.SessionID')
+            ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
+            ->leftJoin('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
+            ->leftJoin('tblsex', 'tblstudent_personal.sex_id', 'tblsex.id')
+            ->leftJoin('tblnationality', 'tblstudent_personal.nationality_id', 'tblnationality.id')
+            ->leftJoin('tblstate AS state_birth', 'tblstudent_personal.state_id', 'state_birth.id')
+            ->leftJoin('tblreligion', 'tblstudent_personal.religion_id', 'tblreligion.id')
+            ->leftJoin('tblstudent_address', 'students.ic', 'tblstudent_address.student_ic')
+            ->leftJoin('tblcountry', 'tblstudent_address.country_id', 'tblcountry.id')
+            ->leftJoin('tblstate AS state_address', 'tblstudent_address.state_id', 'state_address.id')
+            ->select(
+                'students.*', 
+                'tblprogramme.progname', 
+                'tblprogramme.progcode',
+                'tblprogramme.mqa_code',
+                'tblprogramme.ifms_code',
+                'a.SessionName AS intake', 
+                'b.SessionName AS session', 
+                'tblstudent_status.name AS status',
+                'tblstudent_personal.date_birth',
+                'tblstudent_personal.state_id AS place_birth',
+                'tblstudent_personal.no_tel AS phone_no',
+                'students.email',
+                'tblsex.sex_name',
+                'tblnationality.nationality_name',
+                'state_birth.state_name AS birth_state',
+                'tblreligion.religion_name',
+                'tblstudent_address.address1',
+                'tblstudent_address.address2',
+                'tblstudent_address.address3',
+                'tblstudent_address.postcode',
+                'tblstudent_address.city',
+                'state_address.state_name AS address_state',
+                'tblcountry.name AS country_name'
+            );
+
+        // Apply same filters
+        if(!empty($request->search))
+        {
+            $studentQuery->where(function($query) use ($request) {
+                $query->where('students.name', 'LIKE', "%".$request->search."%")
+                      ->orWhere('students.ic', 'LIKE', "%".$request->search."%")
+                      ->orWhere('students.no_matric', 'LIKE', "%".$request->search."%");
+            });
+        }
+
+        if(!empty($request->program))
+        {
+            $studentQuery->where('students.program', $request->program);
+        }
+        
+        if(!empty($request->session))
+        {
+            $studentQuery->where('students.session', $request->session);
+        }
+        
+        if(!empty($request->semester))
+        {
+            $studentQuery->where('students.semester', $request->semester);
+        }
+
+        $students = $studentQuery->get();
+
+        // Prepare export data
+        $exportData = [];
+        $exportData[] = [
+            'No.',
+            'No Rujukan MQA',
+            'Kod Kursus',
+            'Ijazah yang Dianugerahkan',
+            'No. IC/Passport',
+            'No. Matrik',
+            'Nama Penuh',
+            'Jantina',
+            'Hari Lahir',
+            'Bulan Lahir',
+            'Tahun Lahir',
+            'Tempat Lahir',
+            'Warganegara',
+            'Agama',
+            'No. Telefon Bimbit',
+            'Emel',
+            'Alamat Tetap',
+            'Bandar',
+            'Poskod',
+            'Negeri',
+            'Negara',
+            'Intake',
+            'Session',
+            'Semester',
+            'Status'
+        ];
+
+        foreach($students as $key => $student)
+        {
+            // Parse date_birth into day, month, year
+            $day = '';
+            $month = '';
+            $year = '';
+            if(!empty($student->date_birth))
+            {
+                $birthDate = \Carbon\Carbon::parse($student->date_birth);
+                $day = $birthDate->format('d');
+                $month = $birthDate->format('m');
+                $year = $birthDate->format('Y');
+            }
+
+            // Build full address
+            $fullAddress = trim(implode(', ', array_filter([
+                $student->address1,
+                $student->address2,
+                $student->address3
+            ])));
+
+            $exportData[] = [
+                $key + 1, // No.
+                $student->mqa_code ?? '', // No Rujukan MQA
+                $student->ifms_code ?? '', // Kod Kursus
+                $student->progname ?? '', // Ijazah yang Dianugerahkan
+                $student->ic ?? '', // No. IC/Passport
+                $student->no_matric ?? '', // No. Matrik
+                $student->name ?? '', // Nama Penuh
+                $student->sex_name ?? '', // Jantina
+                $day, // Hari Lahir
+                $month, // Bulan Lahir
+                $year, // Tahun Lahir
+                $student->birth_state ?? '', // Tempat Lahir
+                $student->nationality_name ?? '', // Warganegara
+                $student->religion_name ?? '', // Agama
+                $student->phone_no ?? '', // No. Telefon Bimbit
+                $student->email ?? '', // Emel
+                $fullAddress, // Alamat Tetap
+                $student->city ?? '', // Bandar
+                $student->postcode ?? '', // Poskod
+                $student->address_state ?? '', // Negeri
+                $student->country_name ?? '', // Negara
+                $student->intake ?? '', // Intake
+                $student->session ?? '', // Session
+                $student->semester ?? '', // Semester
+                $student->status ?? '' // Status
+            ];
+        }
+
+        // Create Excel export
+        return Excel::download(new class($exportData) implements \Maatwebsite\Excel\Concerns\FromArray {
+            protected $data;
+
+            public function __construct($data)
+            {
+                $this->data = $data;
+            }
+
+            public function array(): array
+            {
+                return $this->data;
+            }
+        }, 'student_export_' . date('YmdHis') . '.xlsx');
     }
 
     public function getStudentTableIndex2(Request $request)
