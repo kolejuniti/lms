@@ -576,29 +576,24 @@ class PendaftarController extends Controller
 
                 Log::info('Export file created successfully', ['file' => $filePath]);
 
-                // Return file as download using basic file output (avoids disabled functions)
+                // Return file as download using the most basic method (avoids all disabled functions)
                 $fullPath = storage_path('app/public/' . $filePath);
                 
                 if (file_exists($fullPath)) {
-                    // Use a simple response that doesn't trigger ignore_user_abort()
-                    return response()->stream(
-                        function () use ($fullPath) {
-                            $stream = fopen($fullPath, 'r');
-                            fpassthru($stream);
-                            fclose($stream);
-                            // Delete file after sending
-                            @unlink($fullPath);
-                        },
-                        200,
-                        [
-                            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-                            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
-                            'Content-Length' => filesize($fullPath),
-                            'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
-                            'Pragma' => 'public',
-                            'Expires' => '0'
-                        ]
-                    );
+                    // Read file contents - most basic approach that works even on locked-down servers
+                    $fileContents = file_get_contents($fullPath);
+                    
+                    // Delete the temporary file
+                    @unlink($fullPath);
+                    
+                    // Return response with file contents
+                    return response($fileContents, 200)
+                        ->header('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+                        ->header('Content-Disposition', 'attachment; filename="' . $filename . '"')
+                        ->header('Content-Length', strlen($fileContents))
+                        ->header('Cache-Control', 'must-revalidate, post-check=0, pre-check=0')
+                        ->header('Pragma', 'public')
+                        ->header('Expires', '0');
                 } else {
                     Log::error('Export file not found after creation', ['path' => $fullPath]);
                     return back()->with('error', 'Failed to create export file.');
