@@ -384,6 +384,8 @@ class PendaftarController extends Controller
                 ->join('sessions AS b', 'students.session', 'b.SessionID')
                 ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
                 ->leftJoin('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
+                ->leftJoin('descendants', 'tblstudent_personal.descendants_id', 'descendants.id')
+                ->leftJoin('muet', 'tblstudent_personal.muet_id', 'muet.id')
                 ->leftJoin('tblsex', 'tblstudent_personal.sex_id', 'tblsex.id')
                 ->leftJoin('tblnationality', 'tblstudent_personal.nationality_id', 'tblnationality.id')
                 ->leftJoin('tblstate AS state_birth', 'tblstudent_personal.state_id', 'state_birth.id')
@@ -406,6 +408,8 @@ class PendaftarController extends Controller
                     'tblstudent_status.name AS status',
                     'tblstudent_personal.date_birth',
                     'tblstudent_personal.no_tel AS phone_no',
+                    'descendants.descendants_name',
+                    'muet.muet_name',
                     'tblsex.sex_name',
                     'tblnationality.nationality_name',
                     'state_birth.state_name AS birth_state',
@@ -473,6 +477,8 @@ class PendaftarController extends Controller
                 'Agama',
                 'No. Telefon Bimbit',
                 'Emel',
+                'Keturunan',
+                'Muet',
                 'Alamat Tetap',
                 'Bandar',
                 'Poskod',
@@ -481,7 +487,7 @@ class PendaftarController extends Controller
                 'Intake',
                 'Session',
                 'Semester',
-                'Status'
+                'Status',
             ];
 
             foreach($students as $key => $student)
@@ -530,6 +536,8 @@ class PendaftarController extends Controller
                     $student->religion_name ?? '', // Agama
                     $student->phone_no ?? '', // No. Telefon Bimbit
                     $student->email ?? '', // Emel
+                    $student->descendants_name ?? '', // Keturunan
+                    $student->muet_name ?? '', // Muet
                     $fullAddress, // Alamat Tetap
                     $student->city ?? '', // Bandar
                     $student->postcode ?? '', // Poskod
@@ -538,7 +546,7 @@ class PendaftarController extends Controller
                     $student->intake ?? '', // Intake
                     $student->session ?? '', // Session
                     $student->semester ?? '', // Semester
-                    $student->status ?? '' // Status
+                    $student->status ?? '', // Status
                 ];
 
                 // Clear memory periodically for large datasets
