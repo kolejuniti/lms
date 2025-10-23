@@ -506,7 +506,11 @@ class PendaftarController extends Controller
                 $fullAddress = trim(implode(', ', array_filter([
                     $student->address1 ?? '',
                     $student->address2 ?? '',
-                    $student->address3 ?? ''
+                    $student->address3 ?? '',
+                    $student->city ?? '',
+                    $student->postcode ?? '',
+                    $student->address_state ?? '',
+                    $student->country_name ?? ''
                 ])));
 
                 $exportData[] = [
