@@ -547,7 +547,20 @@ class PendaftarController extends Controller
 
             // Create Excel export with error handling
             try {
-                return Excel::download(new class($exportData) implements \Maatwebsite\Excel\Concerns\FromArray {
+                $filename = 'student_export_' . date('YmdHis') . '.xlsx';
+                $filePath = 'exports/' . $filename;
+
+                // Ensure exports directory exists
+                $exportDir = storage_path('app/public/exports');
+                if (!file_exists($exportDir)) {
+                    mkdir($exportDir, 0755, true);
+                }
+
+                // Clean up old export files (older than 1 hour)
+                $this->cleanupOldExports($exportDir);
+
+                // Store the file temporarily
+                Excel::store(new class($exportData) implements \Maatwebsite\Excel\Concerns\FromArray {
                     protected $data;
 
                     public function __construct($data)
@@ -559,7 +572,37 @@ class PendaftarController extends Controller
                     {
                         return $this->data;
                     }
-                }, 'student_export_' . date('YmdHis') . '.xlsx');
+                }, $filePath, 'public');
+
+                Log::info('Export file created successfully', ['file' => $filePath]);
+
+                // Return file as download using basic file output (avoids disabled functions)
+                $fullPath = storage_path('app/public/' . $filePath);
+                
+                if (file_exists($fullPath)) {
+                    // Use a simple response that doesn't trigger ignore_user_abort()
+                    return response()->stream(
+                        function () use ($fullPath) {
+                            $stream = fopen($fullPath, 'r');
+                            fpassthru($stream);
+                            fclose($stream);
+                            // Delete file after sending
+                            @unlink($fullPath);
+                        },
+                        200,
+                        [
+                            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+                            'Content-Length' => filesize($fullPath),
+                            'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
+                            'Pragma' => 'public',
+                            'Expires' => '0'
+                        ]
+                    );
+                } else {
+                    Log::error('Export file not found after creation', ['path' => $fullPath]);
+                    return back()->with('error', 'Failed to create export file.');
+                }
 
             } catch (\Exception $e) {
                 Log::error('Excel generation failed', [
@@ -578,6 +621,32 @@ class PendaftarController extends Controller
             ]);
             
             return back()->with('error', 'Export failed. Please try again or contact administrator. Error: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Clean up old export files to prevent storage buildup
+     */
+    private function cleanupOldExports($directory, $maxAge = 3600)
+    {
+        try {
+            if (!is_dir($directory)) {
+                return;
+            }
+
+            $files = glob($directory . '/*.xlsx');
+            $now = time();
+
+            foreach ($files as $file) {
+                if (is_file($file)) {
+                    $fileAge = $now - filemtime($file);
+                    if ($fileAge > $maxAge) {
+                        @unlink($file);
+                    }
+                }
+            }
+        } catch (\Exception $e) {
+            Log::warning('Failed to cleanup old exports', ['error' => $e->getMessage()]);
         }
     }
 
