@@ -24,6 +24,22 @@
 
     <!-- Main content -->
     <section class="content">
+      @if(session('error'))
+      <div class="alert alert-danger alert-dismissible">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+        <h5><i class="icon fa fa-ban"></i> Error!</h5>
+        {{ session('error') }}
+      </div>
+      @endif
+
+      @if(session('success'))
+      <div class="alert alert-success alert-dismissible">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+        <h5><i class="icon fa fa-check"></i> Success!</h5>
+        {{ session('success') }}
+      </div>
+      @endif
+
       <!-- Default box -->
       <div class="card">
         <div class="card-header">
@@ -342,6 +358,18 @@
 
   function exportToExcel()
   {
+    // Show loading alert
+    Swal.fire({
+      title: 'Exporting...',
+      text: 'Please wait while we prepare your Excel file. This may take a few moments.',
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      showConfirmButton: false,
+      willOpen: () => {
+        Swal.showLoading();
+      }
+    });
+
     // Get current filter values
     var search = $('#search').val();
     var program = $('#program').val();
@@ -361,8 +389,102 @@
         url += '?' + params.join('&');
     }
 
-    // Open in new window to trigger download
-    window.location.href = url;
+    // Use AJAX to check for errors, then download
+    $.ajax({
+      url: url,
+      type: 'GET',
+      xhrFields: {
+        responseType: 'blob'
+      },
+      success: function(data, status, xhr) {
+        // Close loading alert
+        Swal.close();
+
+        // Check if response is actually an error (will be JSON)
+        var contentType = xhr.getResponseHeader('content-type');
+        if (contentType && contentType.indexOf('application/json') !== -1) {
+          // It's an error response
+          var reader = new FileReader();
+          reader.onload = function() {
+            try {
+              var response = JSON.parse(reader.result);
+              Swal.fire({
+                icon: 'error',
+                title: 'Export Failed',
+                text: response.message || 'An error occurred during export',
+                confirmButtonText: 'OK'
+              });
+            } catch(e) {
+              Swal.fire({
+                icon: 'error',
+                title: 'Export Failed',
+                text: 'An unexpected error occurred',
+                confirmButtonText: 'OK'
+              });
+            }
+          };
+          reader.readAsText(data);
+        } else {
+          // Success - trigger download
+          var blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+          var link = document.createElement('a');
+          link.href = window.URL.createObjectURL(blob);
+          
+          // Get filename from Content-Disposition header or use default
+          var filename = 'student_export_' + new Date().getTime() + '.xlsx';
+          var disposition = xhr.getResponseHeader('Content-Disposition');
+          if (disposition && disposition.indexOf('filename=') !== -1) {
+            var filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+            var matches = filenameRegex.exec(disposition);
+            if (matches != null && matches[1]) {
+              filename = matches[1].replace(/['"]/g, '');
+            }
+          }
+          
+          link.download = filename;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+
+          Swal.fire({
+            icon: 'success',
+            title: 'Export Complete',
+            text: 'Your file has been downloaded successfully!',
+            timer: 2000,
+            showConfirmButton: false
+          });
+        }
+      },
+      error: function(xhr, status, error) {
+        Swal.close();
+        
+        var errorMessage = 'An error occurred during export. ';
+        
+        if (xhr.status === 500) {
+          errorMessage += 'Server error - the data set might be too large or there may be a configuration issue on the server.';
+        } else if (xhr.status === 404) {
+          errorMessage += 'Export endpoint not found.';
+        } else if (xhr.status === 0) {
+          errorMessage += 'Network error - please check your connection.';
+        } else {
+          errorMessage += 'Error code: ' + xhr.status;
+        }
+
+        Swal.fire({
+          icon: 'error',
+          title: 'Export Failed',
+          html: errorMessage + '<br><br>Please contact your administrator if the problem persists.',
+          confirmButtonText: 'OK'
+        });
+
+        console.error('Export error:', {
+          status: xhr.status,
+          statusText: xhr.statusText,
+          error: error,
+          response: xhr.responseText
+        });
+      }
+    });
   }
   </script>
 @endsection
