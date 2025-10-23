@@ -400,10 +400,12 @@ class PendaftarController extends Controller
                     $join->on('students.ic', '=', 'spm_bm.student_spm_ic')
                          ->where('spm_bm.subject_spm_id', '=', 1);
                 })
+                ->leftJoin('tblgrade_spm AS grade_bm', 'spm_bm.grade_spm_id', '=', 'grade_bm.id')
                 ->leftJoin('tblspm_dtl AS spm_bi', function($join) {
                     $join->on('students.ic', '=', 'spm_bi.student_spm_ic')
                          ->where('spm_bi.subject_spm_id', '=', 2);
                 })
+                ->leftJoin('tblgrade_spm AS grade_bi', 'spm_bi.grade_spm_id', '=', 'grade_bi.id')
                 ->select(
                     'students.ic',
                     'students.no_matric',
@@ -434,8 +436,8 @@ class PendaftarController extends Controller
                     'tblcountry.name AS country_name',
                     'tblpackage.name AS package',
                     'tblpayment_type.name AS type',
-                    'spm_bm.grade_spm_id AS spm_bm',
-                    'spm_bi.grade_spm_id AS spm_bi'
+                    'grade_bm.name AS spm_bm',
+                    'grade_bi.name AS spm_bi'
                 );
 
             // Apply same filters
