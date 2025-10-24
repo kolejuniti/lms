@@ -3519,9 +3519,6 @@ class FinanceController extends Controller
                             <th style="width: 10%">
                                 Amount
                             </th>
-                            <th style="width: 20%">
-                                Remark
-                            </th>
                         </tr>
                     </thead>
                     <tbody id="table">';
@@ -3602,9 +3599,6 @@ class FinanceController extends Controller
                             </th>
                             <th style="width: 10%">
                                 Amount
-                            </th>
-                            <th style="width: 20%">
-                                Remark
                             </th>
                         </tr>
                     </thead>

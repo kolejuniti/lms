@@ -46,12 +46,6 @@
                         <input type="number" class="form-control" id="total" name="total" step="0.01">
                       </div>
                     </div>
-                    <div class="col-md-6">
-                      <div class="form-group">
-                        <label class="form-label" for="remark">Remark (Optional)</label>
-                        <input type="text" class="form-control" id="remark" name="remark">
-                      </div>
-                    </div>
                   </div>
                   <div class="row">
                     <div class="col-md-12 mt-3">
@@ -93,8 +87,7 @@ function add()
   var formData = new FormData();
 
   forminput = {
-    total: $('#total').val(),
-    remark: $('#remark').val()
+    total: $('#total').val()
   };
 
   formData.append('paymentData', JSON.stringify(forminput));

@@ -69,9 +69,6 @@
                                 <th style="width: 10%">
                                     Amount
                                 </th>
-                                <th style="width: 20%">
-                                    Remark
-                                </th>
                             </tr>
                         </thead>
                         <tbody id="table">
