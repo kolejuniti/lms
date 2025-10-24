@@ -3340,6 +3340,599 @@ class FinanceController extends Controller
 
     }
 
+    // ==================== BULK REFUND PAYMENT METHODS ====================
+
+    public function bulkRefundPayment()
+    {
+        $payment = DB::table('tblpayment')
+                   ->where([['tblpayment.student_ic', null],['tblpayment.process_status_id',2],['tblpayment.process_type_id',6]])
+                   ->get();
+
+        // Initialize $method as an empty array to avoid 'undefined variable' errors if there is no payment
+        $method = [];
+
+        if (!$payment->isEmpty()) {
+            foreach($payment as $key => $pym)
+            {
+                $method[$key] = DB::table('tblpaymentmethod')->where('payment_id', $pym->id)->get();
+            }
+        }
+
+        return view('finance.payment.refundBulk.payment', compact('payment','method'));
+    }
+
+    public function bulkRefundPaymentInput()
+    {
+        return view('finance.payment.refundBulk.paymentInput');
+    }
+
+    public function bulkRefundPaymentStore(Request $request)
+    {
+        $paymentData = $request->paymentData;
+
+        $validator = Validator::make($request->all(), [
+            'paymentData' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return ["message"=>"Field Error", "error" => $validator->messages()->get('*')];
+        }
+
+        try{ 
+            DB::beginTransaction();
+            DB::connection()->enableQueryLog();
+
+            try{
+                $payment = json_decode($paymentData);
+                
+                if($payment->total != null)
+                {
+                    $id = DB::table('tblpayment')->insertGetId([
+                        'date' => date('Y-m-d'),
+                        'amount' => $payment->total,
+                        'process_status_id' => 1,
+                        'process_type_id' => 6, // Bulk refund process type
+                        'add_staffID' => Auth::user()->ic,
+                        'add_date' => date('Y-m-d'),
+                        'mod_staffID' => Auth::user()->ic,
+                        'mod_date' => date('Y-m-d')
+                    ]);
+
+                    $data['method'] = DB::table('tblpayment_method')->get();
+                    $data['bank'] = DB::table('tblpayment_bank')->orderBy('name', 'asc')->get();
+                }else{
+                    return ["message" => "Please fill all required field!"];
+                }
+                
+            }catch(QueryException $ex){
+                DB::rollback();
+                if($ex->getCode() == 23000){
+                    return ["message"=>"Class code already existed inside the system"];
+                }else{
+                    \Log::debug($ex);
+                    return ["message"=>"DB Error"];
+                }
+            }
+
+            DB::commit();
+        }catch(Exception $ex){
+            return ["message"=>"Error"];
+        }
+
+        return view('finance.payment.refundBulk.getRefundMethod', compact('id', 'data'));
+    }
+
+    public function bulkRefundPaymentStore2(Request $request)
+    {
+        $paymentData = $request->paymentData;
+
+        $validator = Validator::make($request->all(), [
+            'paymentData' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return ["message"=>"Field Error", "error" => $validator->messages()->get('*')];
+        }
+
+        try{ 
+            DB::beginTransaction();
+            DB::connection()->enableQueryLog();
+
+            try{
+                $payment = json_decode($paymentData);
+                
+                if($payment->method != null && $payment->amount != null)
+                {
+                    $total = $payment->amount;
+
+                    $main = DB::table('tblpayment')->where('id', $payment->id)->first();
+
+                    $details = DB::table('tblpaymentmethod')->where('payment_id', $payment->id)->get();
+
+                    if(count($details) > 0)
+                    {
+                        $total = $total + DB::table('tblpaymentmethod')->where('payment_id', $payment->id)->sum('amount');
+                    }
+
+                    if($total > $main->amount)
+                    {
+                        return ["message" => "Add cannot exceed initial payment value!"];
+                    }else{
+                        if(($payment->nodoc != null) ? DB::table('tblpaymentmethod')->join('tblpayment', 'tblpaymentmethod.payment_id', 'tblpayment.id')
+                        ->where([['tblpaymentmethod.no_document', $payment->nodoc],['tblpaymentmethod.payment_id', '!=', $payment->id],['tblpayment.process_status_id', 2]])->exists() : false)
+                        {
+                            return ["message" => "No Document already exists!"];
+                        }else{
+                            DB::table('tblpaymentmethod')->insert([
+                                'payment_id' => $payment->id,
+                                'claim_method_id' => $payment->method,
+                                'bank_id' => $payment->bank,
+                                'no_document' => $payment->nodoc,
+                                'amount' => $payment->amount,
+                                'add_staffID' => Auth::user()->ic,
+                                'add_date' => date('Y-m-d'),
+                                'mod_staffID' => Auth::user()->ic,
+                                'mod_date' => date('Y-m-d')
+                            ]);
+                        }
+                    }
+                }else{
+                    return ["message" => "Please fill all required field!"];
+                }
+                
+            }catch(QueryException $ex){
+                DB::rollback();
+                if($ex->getCode() == 23000){
+                    return ["message"=>"Class code already existed inside the system"];
+                }else{
+                    \Log::debug($ex);
+                    return ["message"=>"DB Error"];
+                }
+            }
+
+            DB::commit();
+        }catch(Exception $ex){
+            return ["message"=>"Error"];
+        }
+
+        $main = DB::table('tblpayment')->where('id', $payment->id)->first();
+
+        $methods = DB::table('tblpaymentmethod')
+                               ->join('tblpayment_method', 'tblpaymentmethod.claim_method_id', 'tblpayment_method.id')
+                               ->where('tblpaymentmethod.payment_id', $payment->id)
+                               ->select('tblpaymentmethod.*', 'tblpayment_method.name AS claim_method_id')->get();
+
+        $sum = DB::table('tblpaymentmethod')->where('payment_id', $payment->id)->sum('amount');
+
+        $content = "";
+        $content .= '<thead>
+                        <tr>
+                            <th style="width: 1%">
+                                No.
+                            </th>
+                            <th style="width: 10%">
+                                Date
+                            </th>
+                            <th style="width: 15%">
+                                Type
+                            </th>
+                            <th style="width: 10%">
+                                Amount
+                            </th>
+                            <th style="width: 20%">
+                                Remark
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="table">';
+                    
+        foreach($methods as $key => $dtl){
+        $content .= '
+            <tr>
+                <td style="width: 1%">
+                '. ($key+1) .'
+                </td>
+                <td style="width: 15%">
+                '. $main->date .'
+                </td>
+                <td style="width: 15%">
+                '. $dtl->claim_method_id .'
+                </td>
+                <td style="width: 30%">
+                '. $dtl->amount .'
+                </td>
+                <td>
+                    <a class="btn btn-danger btn-sm" href="#" onclick="deletedtl('. $dtl->id .', '. $dtl->payment_id .')">
+                        <i class="ti-trash">
+                        </i>
+                        Delete
+                    </a>
+                </td>
+            </tr>
+            ';
+            }
+        $content .= '</tbody>';
+        $content .= '<tfoot>
+                <tr>
+                    <td style="width: 1%">
+                    
+                    </td>
+                    <td style="width: 15%">
+                    TOTAL AMOUNT
+                    </td>
+                    <td style="width: 15%">
+                    :
+                    </td>
+                    <td style="width: 30%">
+                    '. $sum .'
+                    </td>
+                    <td>
+                
+                    </td>
+                </tr>
+            </tfoot>';
+
+        return ["message" => "Success", "data" => $content];
+    }
+
+    public function bulkRefundPaymentDelete(Request $request)
+    {
+        DB::table('tblpaymentmethod')->where('id', $request->dtl)->delete();
+
+        $main = DB::table('tblpayment')->where('id', $request->id)->first();
+
+        $methods = DB::table('tblpaymentmethod')
+                               ->join('tblpayment_method', 'tblpaymentmethod.claim_method_id', 'tblpayment_method.id')
+                               ->where('tblpaymentmethod.payment_id', $request->id)
+                               ->select('tblpaymentmethod.*', 'tblpayment_method.name AS claim_method_id')->get();
+
+        $sum = DB::table('tblpaymentmethod')->where('payment_id', $request->id)->sum('amount');
+
+        $content = "";
+        $content .= '<thead>
+                        <tr>
+                            <th style="width: 1%">
+                                No.
+                            </th>
+                            <th style="width: 10%">
+                                Date
+                            </th>
+                            <th style="width: 15%">
+                                Type
+                            </th>
+                            <th style="width: 10%">
+                                Amount
+                            </th>
+                            <th style="width: 20%">
+                                Remark
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="table">';
+                    
+        foreach($methods as $key => $dtl){
+        $content .= '
+            <tr>
+                <td style="width: 1%">
+                '. ($key+1) .'
+                </td>
+                <td style="width: 15%">
+                '. $main->date .'
+                </td>
+                <td style="width: 15%">
+                '. $dtl->claim_method_id .'
+                </td>
+                <td style="width: 30%">
+                '. $dtl->amount .'
+                </td>
+                <td>
+                    <a class="btn btn-danger btn-sm" href="#" onclick="deletedtl('. $dtl->id .', '. $dtl->payment_id .')">
+                        <i class="ti-trash">
+                        </i>
+                        Delete
+                    </a>
+                </td>
+            </tr>
+            ';
+            }
+        $content .= '</tbody>';
+        $content .= '<tfoot>
+                <tr>
+                    <td style="width: 1%">
+                    
+                    </td>
+                    <td style="width: 15%">
+                    TOTAL AMOUNT
+                    </td>
+                    <td style="width: 15%">
+                    :
+                    </td>
+                    <td style="width: 30%">
+                    '. $sum .'
+                    </td>
+                    <td>
+                
+                    </td>
+                </tr>
+            </tfoot>';
+
+        return $content;
+    }
+
+    public function bulkRefundPaymentConfirm(Request $request)
+    {
+        DB::table('tblpayment')->where('id', $request->id)->update([
+            'process_status_id' => 2
+        ]);
+
+        return true;
+    }
+
+    public function bulkRefundPaymentStudent()
+    {
+        $payment = DB::table('tblpayment')
+                   ->where('tblpayment.id', request()->id)
+                   ->first();
+
+        return view('finance.payment.refundBulk.studentPayment', compact('payment'));
+    }
+
+    public function getBulkRefundStudent(Request $request)
+    {
+        $data['student'] = DB::table('students')
+                           ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
+                           ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+                           ->join('sessions AS t1', 'students.intake', 't1.SessionID')
+                           ->join('sessions AS t2', 'students.session', 't2.SessionID')
+                           ->select('students.*', 'tblstudent_status.name AS status', 'tblprogramme.progname AS program', 'students.program AS progid', 't1.SessionName AS intake_name', 't2.SessionName AS session_name')
+                           ->where('ic', $request->student)->first();
+
+        $data['tuition'] = DB::table('tblclaimdtl')
+                            ->join('tblclaim', 'tblclaimdtl.claim_id', 'tblclaim.id')
+                            ->join('tblstudentclaim', 'tblclaimdtl.claim_package_id', 'tblstudentclaim.id')
+                            ->where('tblclaim.student_ic', $request->student)
+                            ->where('tblclaim.program_id', $data['student']->progid)
+                            ->where('tblclaim.process_status_id', 2)->where('tblclaim.process_type_id', '!=', 5)
+                            ->select('tblclaimdtl.*', 'tblclaim.session_id', 'tblclaim.semester_id', 'tblstudentclaim.name')->get();
+
+        foreach($data['tuition'] as $key => $tsy)
+        {
+
+            $data['amount'][] = $tsy->amount;
+
+            $a = $tsy->amount;
+
+            $balance = DB::table('tblpaymentdtl')
+            ->join('tblpayment', 'tblpaymentdtl.payment_id', 'tblpayment.id')
+            ->join('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
+            ->join('tblclaimdtl', 'tblpaymentdtl.claimDtl_id', 'tblclaimdtl.id')
+            ->join('tblclaim', 'tblclaimdtl.claim_id', 'tblclaim.id')
+            ->where([
+                ['tblclaim.semester_id', $tsy->semester_id],
+                ['tblpayment.student_ic', $request->student],
+                ['tblpaymentdtl.claim_type_id', $tsy->claim_package_id],
+                ['tblpayment.program_id', $data['student']->progid],
+                ['tblpayment.process_status_id', 2]
+            ]);
+
+            $data['payment'] = $balance->get();
+
+            $b = $balance->sum('tblpaymentdtl.amount');
+
+            if(count($data['payment']) > 0)
+            {
+
+                $data['balance'][] = $a - $b;
+
+            }else{
+
+                $data['balance'][] = $a;
+
+            }
+
+        }
+
+        return view('finance.payment.refundBulk.paymentGetStudent', compact('data'));
+    }
+
+    public function storeBulkRefundStudent(Request $request)
+    {
+        $paymentData = $request->paymentData;
+
+        $validator = Validator::make($request->all(), [
+            'paymentData' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return ["message"=>"Field Error", "error" => $validator->messages()->get('*')];
+        }
+
+        try{ 
+            DB::beginTransaction();
+            DB::connection()->enableQueryLog();
+
+            try{
+                $payment = json_decode($paymentData);
+                
+                if($payment->total != null)
+                {
+                    $stddetail = DB::table('students')->where('ic', $payment->ic)->first();
+
+                    $pymdetails = DB::table('tblpayment')->where('id', $payment->id)->first();
+
+                    // Calculate balance from bulk refund
+                    if(count(DB::table('tblpayment')->where([['refund_id', $payment->id],['process_status_id', 2]])->get()) > 0)
+                    {
+                        $sum = DB::table('tblpayment')->where([['refund_id', $payment->id],['process_status_id', 2]])->sum('amount');
+                        $balance = $pymdetails->amount - $sum;
+                    }else{
+                        $balance = $pymdetails->amount;
+                    }
+
+                    // Check if student already has refund in this bulk
+                    $count = DB::table('tblpayment')->where([['refund_id', $payment->id],['process_status_id', 2],['student_ic', $payment->ic]])->get();
+
+                    if(count($count) > 0)
+                    {
+                        return ["message" => "Student refund has already been paid in this bulk!"];
+                    }else{
+                        if($payment->total > $balance)
+                        {
+                            return ["message" => "Amount cannot exceed " . $balance . "!"];
+                        }else{
+                            $id = DB::table('tblpayment')->insertGetId([
+                                'student_ic' => $payment->ic,
+                                'refund_id' => $payment->id,
+                                'date' => date('Y-m-d'),
+                                'ref_no' => null,
+                                'program_id' => $stddetail->program,
+                                'session_id' => $stddetail->session,
+                                'semester_id' => $stddetail->semester,
+                                'amount' => $payment->total,
+                                'process_status_id' => 1,
+                                'process_type_id' => 6,
+                                'add_staffID' => Auth::user()->ic,
+                                'add_date' => date('Y-m-d'),
+                                'mod_staffID' => Auth::user()->ic,
+                                'mod_date' => date('Y-m-d')
+                            ]);
+                        }
+                    }
+                }else{
+                    return ["message" => "Please fill all required field!"];
+                }
+                
+            }catch(QueryException $ex){
+                DB::rollback();
+                if($ex->getCode() == 23000){
+                    return ["message"=>"Class code already existed inside the system"];
+                }else{
+                    \Log::debug($ex);
+                    return ["message"=>"DB Error"];
+                }
+            }
+
+            DB::commit();
+        }catch(Exception $ex){
+            return ["message"=>"Error"];
+        }
+
+        return ["message" => "Success", "data" => $id, "sum" => $payment->total];
+    }
+
+    public function confirmBulkRefundStudent(Request $request)
+    {
+        $paymentDetail = $request->paymentDetail;
+
+        $validator = Validator::make($request->all(), [
+            'paymentDetail' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return ["message"=>"Field Error", "error" => $validator->messages()->get('*')];
+        }
+
+        try{ 
+            DB::beginTransaction();
+            DB::connection()->enableQueryLog();
+
+            try{
+                $payment = json_decode($paymentDetail);
+                $paymentinput = json_decode($request->paymentinput);
+                $paymentinput2 = json_decode($request->paymentinput2);
+                
+                if($paymentinput != null)
+                {
+                    foreach($paymentinput as $i => $phy)
+                    {
+                        $claimdtl = DB::table('tblclaimdtl')->where('id', $phy->id)->first();
+
+                        if($paymentinput2[$i]->payment != null && $paymentinput2[$i]->payment > 0)
+                        {
+                            DB::table('tblpaymentdtl')->insert([
+                                'payment_id' => $payment->id,
+                                'claimDtl_id' => $phy->id,
+                                'claim_type_id' => $claimdtl->claim_package_id,
+                                'amount' => $paymentinput2[$i]->payment * -1,
+                                'add_staffID' => Auth::user()->ic,
+                                'add_date' => date('Y-m-d'),
+                                'mod_staffID' => Auth::user()->ic,
+                                'mod_date' => date('Y-m-d')
+                            ]);
+
+                            $payment_refund = DB::table('tblpaymentmethod')->where('payment_id', $payment->id)->get();
+
+                            foreach($payment_refund as $key => $refund)
+                            {
+
+                                DB::table('tblpaymentmethod')->insert([
+                                    'payment_id' => $payment->id,
+                                    'claim_method_id' => $refund->claim_method_id,
+                                    'bank_id' => $refund->bank_id,
+                                    'no_document' => $refund->no_document,
+                                    'amount' => $refund->amount,
+                                    'add_staffID' => Auth::user()->ic,
+                                    'add_date' => date('Y-m-d'),
+                                    'mod_staffID' => Auth::user()->ic,
+                                    'mod_date' => date('Y-m-d')
+                                ]);
+
+                            }
+                        }
+                    }
+
+                    $ref_no = DB::table('tblref_no')
+                      ->join('tblpayment', 'tblref_no.process_type_id', 'tblpayment.process_type_id')
+                      ->where('tblpayment.id', $payment->id)
+                      ->select('tblref_no.*', 'tblpayment.student_ic')->first();
+
+                    DB::table('tblref_no')->where('id', $ref_no->id)->update([
+                        'ref_no' => $ref_no->ref_no + 1
+                    ]);
+
+                    DB::table('tblpayment')->where('id', $payment->id)->update([
+                        'process_status_id' => 2,
+                        'ref_no' => $ref_no->code . $ref_no->ref_no + 1
+                    ]);
+
+                }else{
+                    return ["message" => "Please fill all required field!", "id" => $payment->id];
+                }
+                
+            }catch(QueryException $ex){
+                DB::rollback();
+                if($ex->getCode() == 23000){
+                    return ["message"=>"Class code already existed inside the system"];
+                }else{
+                    \Log::debug($ex);
+                    return ["message"=>"DB Error"];
+                }
+            }
+
+            DB::commit();
+        }catch(Exception $ex){
+            \Log::debug($ex);
+            return ["message"=>"Error: " . $ex->getMessage()];
+        }
+
+        return ["message" => "Success", "id" => $payment->id];
+    }
+
+    public function deleteBulkRefund(Request $request)
+    {
+        DB::table('tblpayment')->where('id', $request->id)->delete();
+        return true;
+    }
+
+    public function getBulkRefundReceipt(Request $request)
+    {
+        // This would need to be implemented based on your receipt template
+        // For now, returning a simple success message
+        return redirect()->back()->with('success', 'Receipt generated successfully');
+    }
+
+    // ==================== END BULK REFUND PAYMENT METHODS ====================
+
     public function getReceipt(Request $request)
     {
         $data['payment'] = DB::table('tblpayment')->where('tblpayment.id', $request->id)

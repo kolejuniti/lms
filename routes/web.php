@@ -810,6 +810,21 @@ Route::post('/finance/payment/refund/storeRefund', [App\Http\Controllers\Finance
 Route::post('/finance/payment/refund/storeRefundDtl', [App\Http\Controllers\FinanceController::class, 'storeRefundDtl']);
 Route::post('/finance/payment/refund/confirmRefund', [App\Http\Controllers\FinanceController::class, 'confirmRefund']);
 Route::post('/finance/payment/refund/deleteRefund', [App\Http\Controllers\FinanceController::class, 'deleteRefund']);
+
+// Bulk Refund Payment Routes
+Route::get('/finance/payment/refund/bulk', [App\Http\Controllers\FinanceController::class, 'bulkRefundPayment'])->name('finance.payment.refund.bulk');
+Route::get('/finance/payment/refund/bulk/input', [App\Http\Controllers\FinanceController::class, 'bulkRefundPaymentInput'])->name('finance.payment.refund.bulk.input');
+Route::post('/finance/payment/refund/bulk/input/store', [App\Http\Controllers\FinanceController::class, 'bulkRefundPaymentStore']);
+Route::post('/finance/payment/refund/bulk/input/store2', [App\Http\Controllers\FinanceController::class, 'bulkRefundPaymentStore2']);
+Route::post('/finance/payment/refund/bulk/input/delete', [App\Http\Controllers\FinanceController::class, 'bulkRefundPaymentDelete']);
+Route::post('/finance/payment/refund/bulk/input/confirm', [App\Http\Controllers\FinanceController::class, 'bulkRefundPaymentConfirm']);
+Route::get('/finance/payment/refund/bulk/student', [App\Http\Controllers\FinanceController::class, 'bulkRefundPaymentStudent'])->name('finance.payment.refund.bulk.student');
+Route::post('/finance/payment/refund/bulk/student/getStudent', [App\Http\Controllers\FinanceController::class, 'getBulkRefundStudent']);
+Route::post('/finance/payment/refund/bulk/student/storeStudent', [App\Http\Controllers\FinanceController::class, 'storeBulkRefundStudent']);
+Route::post('/finance/payment/refund/bulk/student/confirmStudent', [App\Http\Controllers\FinanceController::class, 'confirmBulkRefundStudent']);
+Route::post('/finance/payment/refund/bulk/delete', [App\Http\Controllers\FinanceController::class, 'deleteBulkRefund']);
+Route::get('/finance/payment/refund/bulk/getReceipt', [App\Http\Controllers\FinanceController::class, 'getBulkRefundReceipt'])->name('finance.payment.refund.bulk.receipt');
+
 Route::get('/finance/payment/KWSPrefund', [App\Http\Controllers\FinanceController::class, 'studentKWSPRefund'])->name('finance.payment.KWSPrefund');
 Route::post('/finance/payment/KWSPrefund/getStudent', [App\Http\Controllers\FinanceController::class, 'getStudentKWSPrefund']);
 Route::post('/finance/payment/KWSPrefund/storeKWSPrefund', [App\Http\Controllers\FinanceController::class, 'storeKWSPrefund']);
