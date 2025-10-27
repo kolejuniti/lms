@@ -336,7 +336,7 @@
                         <table>
                             <tr>
                                 <td style="width: 10%; padding-left: 10px; padding-right: 10px;"><b>PNGS</b></td>
-                                <td style="padding-left: 10px;"><b>{{ $data['detail'][$key]->gpa }}</b></td>
+                                <td style="padding-left: 10px;"><b>{{ $data['detail'][$key]->gpa ?? 'no gpa' }}</b></td>
                             </tr>
                             <tr>
                                 <td style="width: 10%; padding-left: 10px; padding-right: 10px;"><b>KREDIT</b></td>
@@ -348,7 +348,7 @@
                         <table>
                             <tr>
                                 <td style="width: 10%; padding-left: 10px; padding-right: 10px;"><b>PNGK</b></td>
-                                <td style="padding-left: 10px;"><b>{{ $data['detail'][$key]->cgpa }}</b></td>
+                                <td style="padding-left: 10px;"><b>{{ $data['detail'][$key]->cgpa ?? 'no cgpa' }}</b></td>
                             </tr>
                         </table>
                     </div>
