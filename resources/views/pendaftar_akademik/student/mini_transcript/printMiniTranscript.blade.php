@@ -219,7 +219,7 @@
                     <tr>
                         <td style="padding-right: 10px;">SESI AKHIR</td>
                         <td>:</td>
-                        <td style="padding-left: 10px;">{{ $data['student']->session }}</td>
+                        <td style="padding-left: 10px;">{{ $data['student']->session ?? 'no session 2' }}</td>
                     </tr>
                     <tr>
                         <td style="padding-right: 10px;">KEPUTUSAN</td>
@@ -302,7 +302,7 @@
             $total_credit_c = 0;
             @endphp
             <div class="col-md-6 mt-3">
-                <div class="mb-1"><b>SESI {{ $data['detail'][$key]->session }} SEMESTER {{ $sm }}</b></div>
+                <div class="mb-1"><b>SESI {{ $data['detail'][$key]->session ?? 'no session 1' }} SEMESTER {{ $sm }}</b></div>
                 <table class="custom-table">
                     <tbody>
                         @foreach($data['course'][$key] as $key2 => $crs)
