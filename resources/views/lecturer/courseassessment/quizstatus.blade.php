@@ -183,7 +183,7 @@
                                   @endforeach
                                 @else
                                   <td style="width: 20%">
-                                    -sssssssssss
+                                    -
                                   </td>
                                   <td>
                                     -
@@ -191,8 +191,8 @@
                                   <td>
                                   -
                                   </td> 
-                                  <td class="project-actions text-center">
-                                    @if(date('Y-m-d H:i:s') > $qz->date_to)
+                                  <td >
+                                    
                                     @php
                                       // Get active assessment period for current user and session
                                       $currentDate = now()->format('Y-m-d');
@@ -232,7 +232,7 @@
                                         </i>
                                         Manual Mark
                                     </a>
-                                    @endif
+                                    
                                   </td>
                                 @endif
                               </tr> 
