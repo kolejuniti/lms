@@ -3565,6 +3565,13 @@ function getExamPaperStyles() {
             background: #f8f9fa;
             border: 1px solid #ccc;
         }
+        h3 {
+            font-size: 16px;
+            font-weight: bold;
+            margin: 25px 0 15px 0;
+            padding: 10px 0;
+            border-bottom: 1px solid #333;
+        }
         .question-section {
             margin-bottom: 25px;
             page-break-inside: avoid;
