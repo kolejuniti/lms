@@ -154,7 +154,7 @@
                                           } else {
                                               $course = DB::table('subjek')->where('id', Session::get('CourseIDS'))->first();
 
-                      $courseName = $course->course_name ?? '';
+                                              $courseName = $course->course_name ?? '';
                                               $showButtons = in_array($courseName, ['LATIHAN INDUSTRI', 'LATIHAN PRAKTIKAL', 'LATIHAN PRAKTIKUM', 'LATIHAN AMALI (PRAKTIKAL)', 'INDUSTRIAL TRAINING', 'PRACTICAL TRAINING', 'PRAKTIKUM']);
                                           }
                                       }
@@ -172,13 +172,13 @@
                                           Delete
                                       </a>
                                       @endif
-                                      @if(date('Y-m-d H:i:s') > $qz->date_to && (empty($sts->final_mark) || $sts->final_mark == '' || $sts->final_mark == '0' || $sts->final_mark == 0 || $sts->final_mark == '-'))
+                                      {{-- @if(date('Y-m-d H:i:s') > $qz->date_to && (empty($sts->final_mark) || $sts->final_mark == '' || $sts->final_mark == '0' || $sts->final_mark == 0 || $sts->final_mark == '-'))
                                       <a class="btn btn-warning btn-sm mr-2" onclick="openManualMarkModal('{{ $sts->userid }}', '{{ $qz->name }}', '{{ $qz->total_mark }}', '{{ request()->quiz }}')" {{ $showButtons ? '' : 'hidden' }}>
                                           <i class="ti-marker-alt">
                                           </i>
                                           Manual Mark
                                       </a>
-                                      @endif
+                                      @endif --}}
                                     </td>
                                   @endforeach
                                 @else
@@ -227,7 +227,7 @@
                                           }
                                       }
                                     @endphp
-                                    <a class="btn btn-warning btn-sm mr-2" onclick="openManualMarkModal('{{ $qz->student_ic }}', '{{ $qz->name }}', '{{ $qz->total_mark }}', '{{ request()->quiz }}')" >
+                                    <a class="btn btn-warning btn-sm mr-2" onclick="openManualMarkModal('{{ $qz->student_ic }}', '{{ $qz->name }}', '{{ $qz->total_mark }}', '{{ request()->quiz }}')" {{ $showButtons ? '' : 'hidden' }}>
                                         <i class="ti-marker-alt">
                                         </i>
                                         Manual Mark
