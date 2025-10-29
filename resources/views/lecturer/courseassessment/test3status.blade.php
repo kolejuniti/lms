@@ -172,6 +172,13 @@
                                           Delete
                                       </a>
                                     @endif
+                                    {{-- @if(date('Y-m-d H:i:s') > $qz->date_to && (empty($sts->final_mark) || $sts->final_mark == '' || $sts->final_mark == '0' || $sts->final_mark == 0))
+                                      <a class="btn btn-warning btn-sm mr-2" onclick="openManualMarkModal('{{ $sts->userid }}', '{{ $qz->name }}', '{{ $qz->total_mark }}', '{{ request()->test }}')" {{ $showButtons ? '' : 'hidden' }}>
+                                          <i class="ti-marker-alt">
+                                          </i>
+                                          Manual Mark
+                                      </a>
+                                    @endif --}}
                                   </td>                                               
                                   @endforeach
                                 @else
@@ -184,8 +191,48 @@
                                   <td>
                                   -
                                   </td> 
-                                  <td>
-
+                                  <td class="project-actions text-center">
+                                    @if(date('Y-m-d H:i:s') > $qz->date_to)
+                                    @php
+                                      // Get active assessment period for current user and session
+                                      $currentDate = now()->format('Y-m-d');
+                                      $currentUserIc = auth()->user()->ic;
+                                      $currentSessionId = Session::get('SessionID');
+                                      
+                                      $period = null;
+                                      if ($currentSessionId) {
+                                          $period = DB::table('tblassessment_period')
+                                              ->where('Start', '<=', $currentDate)
+                                              ->where('End', '>=', $currentDate)
+                                              ->get()
+                                              ->filter(function ($p) use ($currentUserIc, $currentSessionId) {
+                                                  $userIcs = json_decode($p->user_ic, true) ?: [];
+                                                  $sessions = json_decode($p->session, true) ?: [];
+                                                  
+                                                  return in_array($currentUserIc, $userIcs) && 
+                                                         in_array($currentSessionId, $sessions);
+                                              })
+                                              ->first();
+                                      }
+                                      
+                                      // Determine if buttons should be visible
+                                      $showButtons = false;
+                                      if (!empty($period)) {
+                                          if ($period->subject == 'ALL') {
+                                              $showButtons = true;
+                                          } else {
+                                              $course = DB::table('subjek')->where('id', Session::get('CourseIDS'))->first();
+                                              $courseName = $course->course_name ?? '';
+                                              $showButtons = in_array($courseName, ['LATIHAN INDUSTRI', 'LATIHAN PRAKTIKAL', 'LATIHAN PRAKTIKUM', 'LATIHAN AMALI (PRAKTIKAL)', 'INDUSTRIAL TRAINING', 'PRACTICAL TRAINING', 'PRAKTIKUM']);
+                                          }
+                                      }
+                                    @endphp
+                                    <a class="btn btn-warning btn-sm mr-2" onclick="openManualMarkModal('{{ $qz->student_ic }}', '{{ $qz->name }}', '{{ $qz->total_mark }}', '{{ request()->test }}')" {{ $showButtons ? '' : 'hidden' }}>
+                                        <i class="ti-marker-alt">
+                                        </i>
+                                        Manual Mark
+                                    </a>
+                                    @endif
                                   </td>
                                 @endif
                               
@@ -210,6 +257,46 @@
     </div>
 </div>
 <!-- /.content-wrapper -->
+
+<!-- Manual Mark Modal -->
+<div id="manualMarkModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <!-- modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Manual Mark Entry</h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="manualMarkForm">
+          <input type="hidden" id="manual_userid" name="userid">
+          <input type="hidden" id="manual_testid" name="testid">
+          
+          <div class="form-group mb-3">
+            <label for="student_name">Student Name</label>
+            <input type="text" class="form-control" id="student_name" readonly>
+          </div>
+          
+          <div class="form-group mb-3">
+            <label for="manual_mark">Final Mark <span class="text-danger">*</span></label>
+            <input type="number" class="form-control" id="manual_mark" name="mark" min="0" step="0.01" required>
+            <small class="form-text text-muted">Total Mark: <span id="total_mark_display"></span></small>
+          </div>
+          
+          <div class="form-group mb-3">
+            <label for="manual_comments">Comments</label>
+            <textarea class="form-control" id="manual_comments" name="comments" rows="3" placeholder="Enter comments (optional)"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" onclick="submitManualMark()">Save Mark</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script src="{{ asset('assets/src/js/pages/data-table.js') }}"></script>
 
 <script type="text/javascript">
@@ -281,6 +368,119 @@
                     success  : function(data){
                         window.location.reload();
                         alert("success");
+                    }
+                });
+            }
+        });
+    }
+
+    function openManualMarkModal(userid, studentName, totalMark, testid) {
+        // Set modal values
+        $('#manual_userid').val(userid);
+        $('#manual_testid').val(testid);
+        $('#student_name').val(studentName);
+        $('#total_mark_display').text(totalMark);
+        $('#manual_mark').attr('max', totalMark);
+        $('#manual_mark').val('');
+        $('#manual_comments').val('');
+        
+        // Show modal
+        $('#manualMarkModal').modal('show');
+    }
+
+    function submitManualMark() {
+        var userid = $('#manual_userid').val();
+        var testid = $('#manual_testid').val();
+        var mark = $('#manual_mark').val();
+        var comments = $('#manual_comments').val();
+        var totalMark = $('#total_mark_display').text();
+
+        // Validate mark
+        if (!mark || mark === '') {
+            Swal.fire({
+                title: "Error!",
+                text: "Please enter a mark",
+                icon: "error"
+            });
+            return;
+        }
+
+        if (parseFloat(mark) > parseFloat(totalMark)) {
+            Swal.fire({
+                title: "Error!",
+                text: "Mark cannot exceed total mark (" + totalMark + ")",
+                icon: "error"
+            });
+            return;
+        }
+
+        if (parseFloat(mark) < 0) {
+            Swal.fire({
+                title: "Error!",
+                text: "Mark cannot be negative",
+                icon: "error"
+            });
+            return;
+        }
+
+        // Confirm submission
+        Swal.fire({
+            title: "Confirm Manual Mark Entry?",
+            text: "This will create a manual submission entry for the student with mark: " + mark + " / " + totalMark,
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonText: "Yes, save it!"
+        }).then(function(result) {
+            if (result.isConfirmed) {
+                // Show loading
+                Swal.fire({
+                    title: 'Saving...',
+                    text: 'Please wait',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading()
+                    }
+                });
+
+                $.ajax({
+                    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                    url: "{{ url('lecturer/test3/manual-mark') }}",
+                    method: 'POST',
+                    data: {
+                        userid: userid,
+                        testid: testid,
+                        mark: mark,
+                        comments: comments || 'Manual entry by lecturer'
+                    },
+                    error: function(err) {
+                        console.log(err);
+                        let errorMessage = "An error occurred while saving the mark.";
+                        if (err.responseJSON && err.responseJSON.message) {
+                            errorMessage = err.responseJSON.message;
+                        }
+                        Swal.fire({
+                            title: "Error!",
+                            text: errorMessage,
+                            icon: "error"
+                        });
+                    },
+                    success: function(data) {
+                        if (data.success) {
+                            Swal.fire({
+                                title: "Success!",
+                                text: data.message,
+                                icon: "success"
+                            }).then(() => {
+                                $('#manualMarkModal').modal('hide');
+                                window.location.reload();
+                            });
+                        } else {
+                            Swal.fire({
+                                title: "Error!",
+                                text: data.message,
+                                icon: "error"
+                            });
+                        }
                     }
                 });
             }

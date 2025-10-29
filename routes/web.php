@@ -466,6 +466,7 @@ Route::get('/lecturer/test/{id}/create', [App\Http\Controllers\TestController::c
 Route::post('/lecturer/test/insert', [App\Http\Controllers\TestController::class, 'inserttest']);
 Route::post('/lecturer/test/getStatus', [App\Http\Controllers\TestController::class, 'getStatus']);
 Route::post('/lecturer/test/updatetestresult', [App\Http\Controllers\TestController::class, 'updatetestresult']);
+Route::post('/lecturer/test/manual-mark', [App\Http\Controllers\TestController::class, 'manualMarkTest']);
 Route::get('/lecturer/test/{id}/{test}', [App\Http\Controllers\TestController::class, 'lecturerteststatus'])->name('lecturer.test.status');
 Route::post('/lecturer/test/{id}/{test}/getGroup', [App\Http\Controllers\TestController::class, 'testGetGroup']);
 Route::delete('/lecturer/test/status/delete', [App\Http\Controllers\TestController::class, 'deleteteststatus']);
@@ -491,6 +492,7 @@ Route::get('/lecturer/test3/{id}/create', [App\Http\Controllers\Test2Controller:
 Route::post('/lecturer/test3/insert', [App\Http\Controllers\Test2Controller::class, 'inserttest']);
 Route::post('/lecturer/test3/getStatus', [App\Http\Controllers\Test2Controller::class, 'getStatus']);
 Route::post('/lecturer/test3/updatetestresult', [App\Http\Controllers\Test2Controller::class, 'updatetestresult']);
+Route::post('/lecturer/test3/manual-mark', [App\Http\Controllers\Test2Controller::class, 'manualMarkTest']);
 Route::get('/lecturer/test3/{id}/{test}', [App\Http\Controllers\Test2Controller::class, 'lecturerteststatus'])->name('lecturer.test3.status');
 Route::post('/lecturer/test3/{id}/{test}/getGroup', [App\Http\Controllers\Test2Controller::class, 'testGetGroup']);
 Route::delete('/lecturer/test3/status/delete', [App\Http\Controllers\Test2Controller::class, 'deleteteststatus']);

@@ -846,6 +846,102 @@ class TestController extends Controller
         return view('lecturer.courseassessment.testresult', compact('data'));
     }
 
+    public function manualMarkTest(Request $request){
+        try {
+            $userid = $request->userid;
+            $testid = $request->testid;
+            $mark = $request->mark;
+            $comments = $request->comments ?? 'Manual entry by lecturer';
+
+            // Validate inputs
+            if (empty($userid) || empty($testid) || !is_numeric($mark)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid input data'
+                ], 400);
+            }
+
+            // Get test details to validate mark
+            $test = DB::table('tblclasstest')->where('id', $testid)->first();
+            if (!$test) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Test not found'
+                ], 404);
+            }
+
+            // Validate mark doesn't exceed total
+            if ($mark > $test->total_mark) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Mark cannot exceed total mark (' . $test->total_mark . ')'
+                ], 400);
+            }
+
+            // Check if entry already exists
+            $existingEntry = DB::table('tblclassstudenttest')
+                ->where('userid', $userid)
+                ->where('testid', $testid)
+                ->first();
+
+            // Create empty test content (since student didn't submit)
+            $emptyContent = json_encode([
+                'formData' => []
+            ]);
+
+            if ($existingEntry) {
+                // Update existing entry
+                DB::table('tblclassstudenttest')
+                    ->where('userid', $userid)
+                    ->where('testid', $testid)
+                    ->update([
+                        'final_mark' => $mark,
+                        'comments' => $comments,
+                        'status' => 3, // Marked status
+                        'submittime' => now()
+                    ]);
+            } else {
+                // Create new entry for manual mark
+                DB::table('tblclassstudenttest')->insert([
+                    'userid' => $userid,
+                    'testid' => $testid,
+                    'submittime' => now(),
+                    'content' => $emptyContent,
+                    'final_mark' => $mark,
+                    'comments' => $comments,
+                    'status' => 3, // Marked status
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ]);
+            }
+
+            // Send notification to student
+            $message = "Lecturer has manually entered marks for your test: " . $test->title;
+            $url = url('/student/test/' . Session::get('CourseIDS') . '/' . $testid);
+            $icon = "fa-check fa-lg";
+            $iconColor = "#2b74f3";
+
+            $student = UserStudent::where('ic', $userid)->first();
+            if ($student && $student->user_id) {
+                Notification::send(
+                    User::find($student->user_id),
+                    new MyCustomNotification($message, $url, $icon, $iconColor)
+                );
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Manual mark saved successfully'
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error saving manual mark: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
     public function updatetestresult(Request $request){
         $test = $request->test;
         $participant = $request->participant;
