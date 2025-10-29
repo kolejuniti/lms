@@ -172,7 +172,7 @@
                                           Delete
                                       </a>
                                       @endif
-                                      @if(date('Y-m-d H:i:s') > $qz->date_to && (empty($sts->final_mark) || $sts->final_mark == '' || $sts->final_mark == '0' || $sts->final_mark == 0))
+                                      @if(date('Y-m-d H:i:s') > $qz->date_to && (empty($sts->final_mark) || $sts->final_mark == '' || $sts->final_mark == '0' || $sts->final_mark == 0 || $sts->final_mark == '-'))
                                       <a class="btn btn-warning btn-sm mr-2" onclick="openManualMarkModal('{{ $sts->userid }}', '{{ $qz->name }}', '{{ $qz->total_mark }}', '{{ request()->quiz }}')" {{ $showButtons ? '' : 'hidden' }}>
                                           <i class="ti-marker-alt">
                                           </i>
