@@ -227,7 +227,7 @@
                                           }
                                       }
                                     @endphp
-                                    <a class="btn btn-warning btn-sm mr-2" onclick="openManualMarkModal('{{ $qz->ic }}', '{{ $qz->name }}', '{{ $qz->total_mark }}', '{{ request()->quiz }}')" {{ $showButtons ? '' : 'hidden' }}>
+                                    <a class="btn btn-warning btn-sm mr-2" onclick="openManualMarkModal('{{ $qz->student_ic }}', '{{ $qz->name }}', '{{ $qz->total_mark }}', '{{ request()->quiz }}')" {{ $showButtons ? '' : 'hidden' }}>
                                         <i class="ti-marker-alt">
                                         </i>
                                         Manual Mark
