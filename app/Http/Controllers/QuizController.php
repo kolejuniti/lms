@@ -626,18 +626,58 @@ class QuizController extends Controller
             
             if (count($status[$key]) > 0) {
                 foreach ($status[$key] as $keys => $sts) {
+                    // Get active assessment period
+                    $currentDate = now()->format('Y-m-d');
+                    $currentUserIc = $user->ic;
+                    $currentSessionId = Session::get('SessionID');
+                    
+                    $showButtons = false;
+                    if ($currentSessionId) {
+                        $period = DB::table('tblassessment_period')
+                            ->where('Start', '<=', $currentDate)
+                            ->where('End', '>=', $currentDate)
+                            ->get()
+                            ->filter(function ($p) use ($currentUserIc, $currentSessionId) {
+                                $userIcs = json_decode($p->user_ic, true) ?: [];
+                                $sessions = json_decode($p->session, true) ?: [];
+                                
+                                return in_array($currentUserIc, $userIcs) && 
+                                       in_array($currentSessionId, $sessions);
+                            })
+                            ->first();
+                        
+                        if (!empty($period)) {
+                            if ($period->subject == 'ALL') {
+                                $showButtons = true;
+                            } else {
+                                $course = DB::table('subjek')->where('id', Session::get('CourseIDS'))->first();
+                                $courseName = $course->course_name ?? '';
+                                $showButtons = in_array($courseName, ['LATIHAN INDUSTRI', 'LATIHAN PRAKTIKAL', 'LATIHAN PRAKTIKUM', 'LATIHAN AMALI (PRAKTIKAL)', 'INDUSTRIAL TRAINING', 'PRACTICAL TRAINING', 'PRAKTIKUM']);
+                            }
+                        }
+                    }
+                    
+                    $hiddenAttr = $showButtons ? '' : 'hidden';
+                    
                     $content .= '
                         <td style="width: 20%">' . (empty($sts) ? '-' : $sts->submittime) . '</td>
                         <td>' . (empty($sts) ? '-' : $sts->status) . '</td>
                         <td>' . (empty($sts) ? '-' : $sts->final_mark) . ' / ' . $qz->total_mark . '</td>
                         <td class="project-actions text-center">
-                            <a class="btn btn-success btn-sm mr-2" href="/lecturer/quiz/' . request()->quiz . '/' . $sts->userid . '/result">
+                            <a class="btn btn-success btn-sm mr-2" href="/lecturer/quiz/' . request()->quiz . '/' . $sts->userid . '/result" ' . $hiddenAttr . '>
                                 <i class="ti-pencil-alt"></i> Answer
                             </a>';
                     if (date('Y-m-d H:i:s') >= $qz->date_from && date('Y-m-d H:i:s') <= $qz->date_to) {
                         $content .= '
-                            <a class="btn btn-danger btn-sm mr-2" onclick="deleteStdQuiz(\'' . $sts->id . '\')">
+                            <a class="btn btn-danger btn-sm mr-2" onclick="deleteStdQuiz(\'' . $sts->id . '\')" ' . $hiddenAttr . '>
                                 <i class="ti-trash"></i> Delete
+                            </a>';
+                    }
+                    // Add manual mark button if quiz deadline has passed and no mark yet
+                    if (date('Y-m-d H:i:s') > $qz->date_to && (empty($sts->final_mark) || $sts->final_mark == '' || $sts->final_mark == '0' || $sts->final_mark == 0)) {
+                        $content .= '
+                            <a class="btn btn-warning btn-sm mr-2" onclick="openManualMarkModal(\'' . $sts->userid . '\', \'' . addslashes($qz->name) . '\', \'' . $qz->total_mark . '\', \'' . request()->quiz . '\')" ' . $hiddenAttr . '>
+                                <i class="ti-marker-alt"></i> Manual Mark
                             </a>';
                     }
                     $content .= '
@@ -648,7 +688,50 @@ class QuizController extends Controller
                     <td style="width: 20%">-</td>
                     <td>-</td>
                     <td>-</td>
-                    <td></td>';
+                    <td class="project-actions text-center">';
+                
+                // Add manual mark button for students who haven't submitted if deadline passed
+                if (date('Y-m-d H:i:s') > $qz->date_to) {
+                    // Get active assessment period
+                    $currentDate = now()->format('Y-m-d');
+                    $currentUserIc = $user->ic;
+                    $currentSessionId = Session::get('SessionID');
+                    
+                    $showButtons = false;
+                    if ($currentSessionId) {
+                        $period = DB::table('tblassessment_period')
+                            ->where('Start', '<=', $currentDate)
+                            ->where('End', '>=', $currentDate)
+                            ->get()
+                            ->filter(function ($p) use ($currentUserIc, $currentSessionId) {
+                                $userIcs = json_decode($p->user_ic, true) ?: [];
+                                $sessions = json_decode($p->session, true) ?: [];
+                                
+                                return in_array($currentUserIc, $userIcs) && 
+                                       in_array($currentSessionId, $sessions);
+                            })
+                            ->first();
+                        
+                        if (!empty($period)) {
+                            if ($period->subject == 'ALL') {
+                                $showButtons = true;
+                            } else {
+                                $course = DB::table('subjek')->where('id', Session::get('CourseIDS'))->first();
+                                $courseName = $course->course_name ?? '';
+                                $showButtons = in_array($courseName, ['LATIHAN INDUSTRI', 'LATIHAN PRAKTIKAL', 'LATIHAN PRAKTIKUM', 'LATIHAN AMALI (PRAKTIKAL)', 'INDUSTRIAL TRAINING', 'PRACTICAL TRAINING', 'PRAKTIKUM']);
+                            }
+                        }
+                    }
+                    
+                    $hiddenAttr = $showButtons ? '' : 'hidden';
+                    
+                    $content .= '
+                        <a class="btn btn-warning btn-sm mr-2" onclick="openManualMarkModal(\'' . $qz->student_ic . '\', \'' . addslashes($qz->name) . '\', \'' . $qz->total_mark . '\', \'' . request()->quiz . '\')" ' . $hiddenAttr . '>
+                            <i class="ti-marker-alt"></i> Manual Mark
+                        </a>';
+                }
+                
+                $content .= '</td>';
             }
 
             $content .= '
@@ -859,6 +942,102 @@ class QuizController extends Controller
         $data['studentquizstatus'] = $quiz->studentquizstatus;
     
         return view('lecturer.courseassessment.quizresult', compact('data'));
+    }
+
+    public function manualMarkQuiz(Request $request){
+        try {
+            $userid = $request->userid;
+            $quizid = $request->quizid;
+            $mark = $request->mark;
+            $comments = $request->comments ?? 'Manual entry by lecturer';
+
+            // Validate inputs
+            if (empty($userid) || empty($quizid) || !is_numeric($mark)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid input data'
+                ], 400);
+            }
+
+            // Get quiz details to validate mark
+            $quiz = DB::table('tblclassquiz')->where('id', $quizid)->first();
+            if (!$quiz) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Quiz not found'
+                ], 404);
+            }
+
+            // Validate mark doesn't exceed total
+            if ($mark > $quiz->total_mark) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Mark cannot exceed total mark (' . $quiz->total_mark . ')'
+                ], 400);
+            }
+
+            // Check if entry already exists
+            $existingEntry = DB::table('tblclassstudentquiz')
+                ->where('userid', $userid)
+                ->where('quizid', $quizid)
+                ->first();
+
+            // Create empty quiz content (since student didn't submit)
+            $emptyContent = json_encode([
+                'formData' => []
+            ]);
+
+            if ($existingEntry) {
+                // Update existing entry
+                DB::table('tblclassstudentquiz')
+                    ->where('userid', $userid)
+                    ->where('quizid', $quizid)
+                    ->update([
+                        'final_mark' => $mark,
+                        'comments' => $comments,
+                        'status' => 3, // Marked status
+                        'submittime' => now()
+                    ]);
+            } else {
+                // Create new entry for manual mark
+                DB::table('tblclassstudentquiz')->insert([
+                    'userid' => $userid,
+                    'quizid' => $quizid,
+                    'submittime' => now(),
+                    'content' => $emptyContent,
+                    'final_mark' => $mark,
+                    'comments' => $comments,
+                    'status' => 3, // Marked status
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ]);
+            }
+
+            // Send notification to student
+            $message = "Lecturer has manually entered marks for your quiz: " . $quiz->title;
+            $url = url('/student/quiz/' . Session::get('CourseIDS') . '/' . $quizid);
+            $icon = "fa-check fa-lg";
+            $iconColor = "#2b74f3";
+
+            $student = UserStudent::where('ic', $userid)->first();
+            if ($student && $student->user_id) {
+                Notification::send(
+                    User::find($student->user_id),
+                    new MyCustomNotification($message, $url, $icon, $iconColor)
+                );
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Manual mark saved successfully'
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error saving manual mark: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     public function updatequizresult(Request $request){
