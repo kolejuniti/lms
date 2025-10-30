@@ -6892,7 +6892,7 @@ class FinanceController extends Controller
                     }
                 }
 
-            }elseif($status->id == 4 && $pym->sponsor_id == null && $pym->claim_type_id != 38)
+            }elseif($status->id == 4 && $pym->sponsor_id == null && $pym->groupid == 1)
             {
 
                 //withdraw
