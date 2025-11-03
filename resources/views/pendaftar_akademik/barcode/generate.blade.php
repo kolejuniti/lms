@@ -70,7 +70,8 @@
             }
 
             .barcode-item {
-                border: 1px solid #ccc !important;
+                border: 2.5px solid #000 !important; /* Thicker outer border */
+                box-shadow: inset 0 0 0 2mm white, inset 0 0 0 calc(2mm + 1px) #000 !important; /* Gap + thinner inner border */
                 page-break-inside: avoid;
                 break-inside: avoid;
                 padding: 1.5mm !important;
@@ -114,7 +115,8 @@
             justify-content: center;
             text-align: center;
             padding: 2mm;
-            border: 1px solid #ddd;
+            border: 2.5px solid #000; /* Thicker outer border */
+            box-shadow: inset 0 0 0 2mm white, inset 0 0 0 calc(2mm + 1px) #000; /* Gap + thinner inner border */
             background: white;
             break-inside: avoid;
             page-break-inside: avoid;
