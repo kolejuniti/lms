@@ -8,21 +8,77 @@
     <style>
         @media print {
             @page {
-                size: A4;
-                margin: 10mm;
+                size: A4 portrait;
+                margin: 0; /* Remove all default browser margins */
+            }
+
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            html {
+                width: 210mm;
+                height: 297mm;
             }
 
             body {
-                margin: 0;
-                padding: 0;
+                width: 210mm;
+                height: 297mm;
+                margin: 0 !important;
+                padding: 0 !important;
+                background: white !important;
             }
 
             .no-print {
-                display: none;
+                display: none !important;
             }
 
             .page-break {
                 page-break-after: always;
+                break-after: page;
+                height: 0;
+                margin: 0;
+                padding: 0;
+            }
+
+            .print-container {
+                width: 210mm !important;
+                height: 297mm !important;
+                max-width: 210mm !important;
+                max-height: 297mm !important;
+                margin: 0 !important;
+                padding: 8mm 10mm !important; /* Internal padding instead of @page margin */
+                box-shadow: none !important;
+                background: white !important;
+                page-break-inside: avoid;
+                break-inside: avoid;
+                box-sizing: border-box;
+            }
+
+            .barcode-grid {
+                display: grid !important;
+                grid-template-columns: repeat(5, 1fr) !important;
+                grid-template-rows: repeat(10, 1fr) !important;
+                gap: 3mm !important;
+                width: 100%;
+                height: 100%;
+                grid-auto-flow: row;
+            }
+
+            .barcode-item {
+                border: 1px solid #ccc !important;
+                page-break-inside: avoid;
+                break-inside: avoid;
+                padding: 1.5mm !important;
+            }
+
+            .barcode-number {
+                font-size: 8pt !important;
+                margin-top: 1mm !important;
             }
         }
 
@@ -45,8 +101,10 @@
         .barcode-grid {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
+            grid-template-rows: repeat(10, 1fr);
             gap: 5mm;
             width: 100%;
+            min-height: 270mm;
         }
 
         .barcode-item {
@@ -59,6 +117,7 @@
             border: 1px solid #ddd;
             background: white;
             break-inside: avoid;
+            page-break-inside: avoid;
         }
 
         .barcode-item svg {
@@ -67,7 +126,7 @@
         }
 
         .barcode-number {
-            font-size: 10pt;
+            font-size: 9pt;
             font-weight: bold;
             margin-top: 2mm;
             font-family: monospace;
@@ -118,7 +177,7 @@
 <body>
     <div class="controls no-print">
         <h2>Barcode Generator</h2>
-        <p class="info">Total barcodes: <strong>{{ count($numbers) }}</strong> | Pages: <strong>{{ ceil(count($numbers) / 55) }}</strong></p>
+        <p class="info">Total barcodes: <strong>{{ count($numbers) }}</strong> | Pages: <strong>{{ ceil(count($numbers) / 50) }}</strong></p>
         <button onclick="window.print()">
             <i class="fa fa-print"></i> Print Barcodes
         </button>
@@ -128,7 +187,7 @@
     </div>
 
     @php
-        $chunks = array_chunk($numbers, 55); // 5 columns x 11 rows = 55 items per page
+        $chunks = array_chunk($numbers, 50); // 5 columns x 10 rows = 50 items per page
     @endphp
 
     @foreach($chunks as $pageIndex => $pageNumbers)

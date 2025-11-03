@@ -67,8 +67,8 @@
                 <div class="alert alert-info">
                   <strong>Note:</strong>
                   <ul class="mb-0">
-                    <li>The barcodes will be generated in a 5 column x 11 row layout suitable for A4 paper</li>
-                    <li>Each page will contain 55 barcodes (5 x 11)</li>
+                    <li>The barcodes will be generated in a 5 column x 10 row layout suitable for A4 paper</li>
+                    <li>Each page will contain 50 barcodes (5 x 10)</li>
                     <li>Leading zeros will be preserved (e.g., 0001 to 0030)</li>
                     <li>The result will open in a new window ready for printing</li>
                   </ul>
