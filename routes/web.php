@@ -295,6 +295,8 @@ Route::post('/AR/student/assessmentFilter/submit', [App\Http\Controllers\AR_Cont
 Route::get('/AR/student/assessmentFilter/get/{id}', [App\Http\Controllers\AR_Controller::class, 'assessmentFilterGet']);
 Route::post('/AR/student/assessmentFilter/edit/{id}', [App\Http\Controllers\AR_Controller::class, 'assessmentFilterEdit']);
 Route::delete('/AR/student/assessmentFilter/delete/{id}', [App\Http\Controllers\AR_Controller::class, 'assessmentFilterDelete']);
+Route::get('/AR/student/barcodeGenerate', [App\Http\Controllers\AR_Controller::class, 'barcodeGenerate'])->name('pendaftar_akademik.barcodeGenerate');
+Route::post('/AR/student/barcodeGenerate/generate', [App\Http\Controllers\AR_Controller::class, 'barcodeGenerateSubmit'])->name('pendaftar_akademik.barcodeGenerate.submit');
 Route::get('/AR/student/certificate', [App\Http\Controllers\AR_Controller::class, 'studentCertificate'])->name('pendaftar_akademik.student.certificate');
 Route::post('/AR/student/certificate/search', [App\Http\Controllers\AR_Controller::class, 'searchStudentForCertificate']);
 Route::post('/AR/student/certificate/generate', [App\Http\Controllers\AR_Controller::class, 'generateCertificateNumber']);

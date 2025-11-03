@@ -7372,4 +7372,39 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
         }
     }
 
+    public function barcodeGenerate()
+    {
+        return view('pendaftar_akademik.barcode.index');
+    }
+
+    public function barcodeGenerateSubmit(Request $request)
+    {
+        $request->validate([
+            'from' => 'required',
+            'to' => 'required'
+        ]);
+
+        $from = $request->from;
+        $to = $request->to;
+
+        // Generate array of numbers from 'from' to 'to'
+        $numbers = [];
+        $current = intval($from);
+        $end = intval($to);
+
+        if ($current > $end) {
+            return back()->with('error', 'Start number must be less than or equal to end number');
+        }
+
+        // Get the number of digits from the 'from' input to maintain leading zeros
+        $digits = strlen($from);
+
+        while ($current <= $end) {
+            $numbers[] = str_pad($current, $digits, '0', STR_PAD_LEFT);
+            $current++;
+        }
+
+        return view('pendaftar_akademik.barcode.generate', compact('numbers'));
+    }
+
 }
