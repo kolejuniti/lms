@@ -78,7 +78,7 @@
             }
 
             .barcode-number {
-                font-size: 8pt !important;
+                font-size: 12pt !important;
                 margin-top: 1mm !important;
             }
         }
@@ -128,7 +128,7 @@
         }
 
         .barcode-number {
-            font-size: 9pt;
+            font-size: 10pt;
             font-weight: bold;
             margin-top: 2mm;
             font-family: monospace;
@@ -216,10 +216,10 @@
                 try {
                     JsBarcode(barcode, number, {
                         format: 'CODE128',
-                        width: 2,
-                        height: 50,
+                        width: 1.5,
+                        height: 35,
                         displayValue: false,
-                        margin: 5,
+                        margin: 2,
                         fontSize: 12
                     });
                 } catch(e) {
