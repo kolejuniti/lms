@@ -796,7 +796,7 @@
                     No. Program
                 </th>
                 <th style="width: 5%" style="font-size: 7px;">
-                    PROGRAM
+                    PRG
                 </th>
                 <th style="width: 4%" style="font-size: 7px;">
                     QUOTE
