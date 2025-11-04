@@ -806,7 +806,7 @@
         <tbody id="table">
         @foreach ($data['program'] as $key => $prg)
         <tr>
-          <td>
+          <td style="width: 2%">
             {{ $prg->program_ID }}
           </td>
           <td>
