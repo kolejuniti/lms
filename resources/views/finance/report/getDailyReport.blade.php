@@ -798,7 +798,7 @@
                 <th style="width: 5%">
                     PROGRAM
                 </th>
-                <th style="width: 5%">
+                <th style="width: 4%">
                     QUOTE
                 </th>
             </tr>
@@ -806,7 +806,7 @@
         <tbody id="table">
         @foreach ($data['program'] as $key => $prg)
         <tr>
-          <td style="width: 2%">
+          <td>
             {{ $prg->program_ID }}
           </td>
           <td>
