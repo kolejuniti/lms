@@ -792,13 +792,13 @@
       <table id="myTable" class="table table-striped projects display dataTable">
         <thead>
             <tr>
-                <th style="width: 2%" style="font-size: 7px;">
+                <th style="width: 2%">
                     No. Program
                 </th>
-                <th style="width: 5%" style="font-size: 7px;">
+                <th style="width: 5%">
                     PRG
                 </th>
-                <th style="width: 4%" style="font-size: 7px;">
+                <th style="width: 4%">
                     QUOTE
                 </th>
             </tr>
@@ -843,12 +843,12 @@
         <thead>
             <tr>
                 <th style="width: 2%">
-                    No.
+                    No. Program
                 </th>
                 <th style="width: 5%">
-                    PROGRAM
+                    PRG
                 </th>
-                <th style="width: 5%">
+                <th style="width: 4%">
                     QUOTE
                 </th>
             </tr>
@@ -893,12 +893,12 @@
         <thead>
             <tr>
                 <th style="width: 2%">
-                    No.
+                    No. Program
                 </th>
                 <th style="width: 5%">
-                    PROGRAM
+                    PRG
                 </th>
-                <th style="width: 5%">
+                <th style="width: 4%">
                     QUOTE
                 </th>
             </tr>
@@ -943,12 +943,12 @@
         <thead>
             <tr>
                 <th style="width: 2%">
-                    No.
+                    No. Program
                 </th>
                 <th style="width: 5%">
-                    PROGRAM
+                    PRG
                 </th>
-                <th style="width: 5%">
+                <th style="width: 4%">
                     QUOTE
                 </th>
             </tr>
@@ -993,12 +993,12 @@
         <thead>
             <tr>
                 <th style="width: 2%">
-                    No.
+                    No. Program
                 </th>
                 <th style="width: 5%">
-                    PROGRAM
+                    PRG
                 </th>
-                <th style="width: 5%">
+                <th style="width: 4%">
                     QUOTE
                 </th>
             </tr>
@@ -1043,12 +1043,12 @@
         <thead>
             <tr>
                 <th style="width: 2%">
-                    No.
+                    No. Program
                 </th>
                 <th style="width: 5%">
-                    PROGRAM
+                    PRG
                 </th>
-                <th style="width: 5%">
+                <th style="width: 4%">
                     QUOTE
                 </th>
             </tr>
@@ -1093,12 +1093,12 @@
         <thead>
             <tr>
                 <th style="width: 2%">
-                    No.
+                    No. Program
                 </th>
                 <th style="width: 5%">
-                    PROGRAM
+                    PRG
                 </th>
-                <th style="width: 5%">
+                <th style="width: 4%">
                     QUOTE
                 </th>
             </tr>
@@ -1973,12 +1973,12 @@
         <thead>
             <tr>
                 <th style="width: 2%">
-                    No.
+                    No. Program
                 </th>
                 <th style="width: 5%">
-                    PROGRAM
+                    PRG
                 </th>
-                <th style="width: 5%">
+                <th style="width: 4%">
                     QUOTE
                 </th>
             </tr>
@@ -2023,12 +2023,12 @@
         <thead>
             <tr>
                 <th style="width: 2%">
-                    No.
+                    No. Program
                 </th>
                 <th style="width: 5%">
-                    PROGRAM
+                    PRG
                 </th>
-                <th style="width: 5%">
+                <th style="width: 4%">
                     QUOTE
                 </th>
             </tr>
@@ -2195,12 +2195,12 @@
         <thead>
             <tr>
                 <th style="width: 2%">
-                    No.
+                    No. Program
                 </th>
                 <th style="width: 5%">
-                    PROGRAM
+                    PRG
                 </th>
-                <th style="width: 5%">
+                <th style="width: 4%">
                     QUOTE
                 </th>
             </tr>
@@ -2245,12 +2245,12 @@
         <thead>
             <tr>
                 <th style="width: 2%">
-                    No.
+                    No. Program
                 </th>
                 <th style="width: 5%">
-                    PROGRAM
+                    PRG
                 </th>
-                <th style="width: 5%">
+                <th style="width: 4%">
                     QUOTE
                 </th>
             </tr>
@@ -2417,12 +2417,12 @@
         <thead>
             <tr>
                 <th style="width: 2%">
-                    No.
+                    No. Program
                 </th>
                 <th style="width: 5%">
-                    PROGRAM
+                    PRG
                 </th>
-                <th style="width: 5%">
+                <th style="width: 4%">
                     QUOTE
                 </th>
             </tr>
@@ -2467,12 +2467,12 @@
         <thead>
             <tr>
                 <th style="width: 2%">
-                    No.
+                    No. Program
                 </th>
                 <th style="width: 5%">
-                    PROGRAM
+                    PRG
                 </th>
-                <th style="width: 5%">
+                <th style="width: 4%">
                     QUOTE
                 </th>
             </tr>
@@ -2639,12 +2639,12 @@
         <thead>
             <tr>
                 <th style="width: 2%">
-                    No.
+                    No. Program
                 </th>
                 <th style="width: 5%">
-                    PROGRAM
+                    PRG
                 </th>
-                <th style="width: 5%">
+                <th style="width: 4%">
                     QUOTE
                 </th>
             </tr>
@@ -2689,12 +2689,12 @@
         <thead>
             <tr>
                 <th style="width: 2%">
-                    No.
+                    No. Program
                 </th>
                 <th style="width: 5%">
-                    PROGRAM
+                    PRG
                 </th>
-                <th style="width: 5%">
+                <th style="width: 4%">
                     QUOTE
                 </th>
             </tr>
@@ -2861,12 +2861,12 @@
         <thead>
             <tr>
                 <th style="width: 2%">
-                    No.
+                    No. Program
                 </th>
                 <th style="width: 5%">
-                    PROGRAM
+                    PRG
                 </th>
-                <th style="width: 5%">
+                <th style="width: 4%">
                     QUOTE
                 </th>
             </tr>
@@ -2911,12 +2911,12 @@
         <thead>
             <tr>
                 <th style="width: 2%">
-                    No.
+                    No. Program
                 </th>
                 <th style="width: 5%">
-                    PROGRAM
+                    PRG
                 </th>
-                <th style="width: 5%">
+                <th style="width: 4%">
                     QUOTE
                 </th>
             </tr>
@@ -3083,12 +3083,12 @@
         <thead>
             <tr>
                 <th style="width: 2%">
-                    No.
+                    No. Program
                 </th>
                 <th style="width: 5%">
-                    PROGRAM
+                    PRG
                 </th>
-                <th style="width: 5%">
+                <th style="width: 4%">
                     QUOTE
                 </th>
             </tr>
@@ -3133,12 +3133,12 @@
         <thead>
             <tr>
                 <th style="width: 2%">
-                    No.
+                    No. Program
                 </th>
                 <th style="width: 5%">
-                    PROGRAM
+                    PRG
                 </th>
-                <th style="width: 5%">
+                <th style="width: 4%">
                     QUOTE
                 </th>
             </tr>
@@ -3285,12 +3285,12 @@
         <thead>
             <tr>
                 <th style="width: 2%">
-                    No.
+                    No. Program
                 </th>
                 <th style="width: 5%">
-                    PROGRAM
+                    PRG
                 </th>
-                <th style="width: 5%">
+                <th style="width: 4%">
                     QUOTE
                 </th>
             </tr>
@@ -3335,12 +3335,12 @@
         <thead>
             <tr>
                 <th style="width: 2%">
-                    No.
+                    No. Program
                 </th>
                 <th style="width: 5%">
-                    PROGRAM
+                    PRG
                 </th>
-                <th style="width: 5%">
+                <th style="width: 4%">
                     QUOTE
                 </th>
             </tr>
