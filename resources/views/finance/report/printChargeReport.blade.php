@@ -284,13 +284,13 @@ tr:hover {
                                                     </th>
                                                 </tr>
                                                 <tr>
-                                                    <th style="width: 1%">
-                                                        No.
+                                                    <th style="width: 2%">
+                                                        No. Program
                                                     </th>
                                                     <th style="width: 5%">
-                                                        PROGRAM
+                                                        PRG
                                                     </th>
-                                                    <th style="width: 5%">
+                                                    <th style="width: 4%">
                                                         QUOTE
                                                     </th>
                                                 </tr>
@@ -331,13 +331,13 @@ tr:hover {
                                                     </th>
                                                 </tr>
                                                 <tr>
-                                                    <th style="width: 1%">
-                                                        No.
-                                                    </th>
                                                     <th style="width: 2%">
-                                                        PROGRAM
+                                                        No. Program
                                                     </th>
-                                                    <th style="width: 2%">
+                                                    <th style="width: 5%">
+                                                        PRG
+                                                    </th>
+                                                    <th style="width: 4%">
                                                         QUOTE
                                                     </th>
                                                 </tr>
@@ -493,13 +493,13 @@ tr:hover {
                                                     </th>
                                                 </tr>
                                                 <tr>
-                                                    <th style="width: 1%">
-                                                        No.
-                                                    </th>
                                                     <th style="width: 2%">
-                                                        PROGRAM
+                                                        No. Program
                                                     </th>
-                                                    <th style="width: 2%">
+                                                    <th style="width: 5%">
+                                                        PRG
+                                                    </th>
+                                                    <th style="width: 4%">
                                                         QUOTE
                                                     </th>
                                                 </tr>
@@ -909,13 +909,13 @@ tr:hover {
                                                     </th>
                                                 </tr>
                                                 <tr>
-                                                    <th style="width: 1%">
-                                                        No.
-                                                    </th>
                                                     <th style="width: 2%">
-                                                        PROGRAM
+                                                        No. Program
                                                     </th>
-                                                    <th style="width: 2%">
+                                                    <th style="width: 5%">
+                                                        PRG
+                                                    </th>
+                                                    <th style="width: 4%">
                                                         QUOTE
                                                     </th>
                                                 </tr>
@@ -1071,13 +1071,13 @@ tr:hover {
                                                     </th>
                                                 </tr>
                                                 <tr>
-                                                    <th style="width: 1%">
-                                                        No.
-                                                    </th>
                                                     <th style="width: 2%">
-                                                        PROGRAM
+                                                        No. Program
                                                     </th>
-                                                    <th style="width: 2%">
+                                                    <th style="width: 5%">
+                                                        PRG
+                                                    </th>
+                                                    <th style="width: 4%">
                                                         QUOTE
                                                     </th>
                                                 </tr>
@@ -1233,13 +1233,13 @@ tr:hover {
                                                     </th>
                                                 </tr>
                                                 <tr>
-                                                    <th style="width: 1%">
-                                                        No.
-                                                    </th>
                                                     <th style="width: 2%">
-                                                        PROGRAM
+                                                        No. Program
                                                     </th>
-                                                    <th style="width: 2%">
+                                                    <th style="width: 5%">
+                                                        PRG
+                                                    </th>
+                                                    <th style="width: 4%">
                                                         QUOTE
                                                     </th>
                                                 </tr>
@@ -1395,13 +1395,13 @@ tr:hover {
                                                     </th>
                                                 </tr>
                                                 <tr>
-                                                    <th style="width: 1%">
-                                                        No.
-                                                    </th>
                                                     <th style="width: 2%">
-                                                        PROGRAM
+                                                        No. Program
                                                     </th>
-                                                    <th style="width: 2%">
+                                                    <th style="width: 5%">
+                                                        PRG
+                                                    </th>
+                                                    <th style="width: 4%">
                                                         QUOTE
                                                     </th>
                                                 </tr>
@@ -1557,13 +1557,13 @@ tr:hover {
                                                     </th>
                                                 </tr>
                                                 <tr>
-                                                    <th style="width: 1%">
-                                                        No.
-                                                    </th>
                                                     <th style="width: 2%">
-                                                        PROGRAM
+                                                        No. Program
                                                     </th>
-                                                    <th style="width: 2%">
+                                                    <th style="width: 5%">
+                                                        PRG
+                                                    </th>
+                                                    <th style="width: 4%">
                                                         QUOTE
                                                     </th>
                                                 </tr>

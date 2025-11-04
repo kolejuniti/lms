@@ -180,13 +180,13 @@
       <table id="myTable" class="table table-striped projects display dataTable">
         <thead>
             <tr>
-                <th style="width: 1%">
-                    No.
+                <th style="width: 2%">
+                    No. Program
                 </th>
-                <th>
-                    PROGRAM
+                <th style="width: 5%">
+                    PRG
                 </th>
-                <th>
+                <th style="width: 4%">
                     QUOTE
                 </th>
             </tr>
@@ -229,13 +229,13 @@
       <table id="myTable" class="table table-striped projects display dataTable">
         <thead>
             <tr>
-                <th style="width: 1%">
-                    No.
+                <th style="width: 2%">
+                    No. Program
                 </th>
-                <th>
-                    PROGRAM
+                <th style="width: 5%">
+                    PRG
                 </th>
-                <th>
+                <th style="width: 4%">
                     QUOTE
                 </th>
             </tr>
@@ -379,13 +379,13 @@
       <table id="myTable" class="table table-striped projects display dataTable">
         <thead>
             <tr>
-                <th style="width: 1%">
-                    No.
+                <th style="width: 2%">
+                    No. Program
                 </th>
-                <th>
-                    PROGRAM
+                <th style="width: 5%">
+                    PRG
                 </th>
-                <th>
+                <th style="width: 4%">
                     QUOTE
                 </th>
             </tr>
@@ -771,13 +771,13 @@
       <table id="myTable" class="table table-striped projects display dataTable">
         <thead>
             <tr>
-                <th style="width: 1%">
-                    No.
+                <th style="width: 2%">
+                    No. Program
                 </th>
-                <th>
-                    PROGRAM
+                <th style="width: 5%">
+                    PRG
                 </th>
-                <th>
+                <th style="width: 4%">
                     QUOTE
                 </th>
             </tr>
@@ -921,13 +921,13 @@
       <table id="myTable" class="table table-striped projects display dataTable">
         <thead>
             <tr>
-                <th style="width: 1%">
-                    No.
+                <th style="width: 2%">
+                    No. Program
                 </th>
-                <th>
-                    PROGRAM
+                <th style="width: 5%">
+                    PRG
                 </th>
-                <th>
+                <th style="width: 4%">
                     QUOTE
                 </th>
             </tr>
@@ -1071,13 +1071,13 @@
       <table id="myTable" class="table table-striped projects display dataTable">
         <thead>
             <tr>
-                <th style="width: 1%">
-                    No.
+                <th style="width: 2%">
+                    No. Program
                 </th>
-                <th>
-                    PROGRAM
+                <th style="width: 5%">
+                    PRG
                 </th>
-                <th>
+                <th style="width: 4%">
                     QUOTE
                 </th>
             </tr>
@@ -1221,13 +1221,13 @@
       <table id="myTable" class="table table-striped projects display dataTable">
         <thead>
             <tr>
-                <th style="width: 1%">
-                    No.
+                <th style="width: 2%">
+                    No. Program
                 </th>
-                <th>
-                    PROGRAM
+                <th style="width: 5%">
+                    PRG
                 </th>
-                <th>
+                <th style="width: 4%">
                     QUOTE
                 </th>
             </tr>
@@ -1371,13 +1371,13 @@
       <table id="myTable" class="table table-striped projects display dataTable">
         <thead>
             <tr>
-                <th style="width: 1%">
-                    No.
+                <th style="width: 2%">
+                    No. Program
                 </th>
-                <th>
-                    PROGRAM
+                <th style="width: 5%">
+                    PRG
                 </th>
-                <th>
+                <th style="width: 4%">
                     QUOTE
                 </th>
             </tr>
