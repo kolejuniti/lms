@@ -792,7 +792,7 @@
       <table id="myTable" class="table table-striped projects display dataTable">
         <thead>
             <tr>
-                <th style="width: 1%">
+                <th style="width: 2%">
                     No.
                 </th>
                 <th style="width: 5%">
@@ -842,7 +842,7 @@
       <table id="myTable" class="table table-striped projects display dataTable">
         <thead>
             <tr>
-                <th style="width: 1%">
+                <th style="width: 2%">
                     No.
                 </th>
                 <th style="width: 5%">
@@ -892,7 +892,7 @@
       <table id="myTable" class="table table-striped projects display dataTable">
         <thead>
             <tr>
-                <th style="width: 1%">
+                <th style="width: 2%">
                     No.
                 </th>
                 <th style="width: 5%">
@@ -942,7 +942,7 @@
       <table id="myTable" class="table table-striped projects display dataTable">
         <thead>
             <tr>
-                <th style="width: 1%">
+                <th style="width: 2%">
                     No.
                 </th>
                 <th style="width: 5%">
@@ -992,7 +992,7 @@
       <table id="myTable" class="table table-striped projects display dataTable">
         <thead>
             <tr>
-                <th style="width: 1%">
+                <th style="width: 2%">
                     No.
                 </th>
                 <th style="width: 5%">
@@ -1042,7 +1042,7 @@
       <table id="myTable" class="table table-striped projects display dataTable">
         <thead>
             <tr>
-                <th style="width: 1%">
+                <th style="width: 2%">
                     No.
                 </th>
                 <th style="width: 5%">
@@ -1092,7 +1092,7 @@
       <table id="myTable" class="table table-striped projects display dataTable">
         <thead>
             <tr>
-                <th style="width: 1%">
+                <th style="width: 2%">
                     No.
                 </th>
                 <th style="width: 5%">
@@ -1972,7 +1972,7 @@
       <table id="myTable" class="table table-striped projects display dataTable">
         <thead>
             <tr>
-                <th style="width: 1%">
+                <th style="width: 2%">
                     No.
                 </th>
                 <th style="width: 5%">
@@ -2022,7 +2022,7 @@
       <table id="myTable" class="table table-striped projects display dataTable">
         <thead>
             <tr>
-                <th style="width: 1%">
+                <th style="width: 2%">
                     No.
                 </th>
                 <th style="width: 5%">
@@ -2073,7 +2073,7 @@
     <table id="myTable" class="table table-striped projects display dataTable">
       <thead>
           <tr>
-              <th style="width: 1%">
+              <th style="width: 2%">
                   No.
               </th>
               <th style="width: 15%">
@@ -2194,7 +2194,7 @@
       <table id="myTable" class="table table-striped projects display dataTable">
         <thead>
             <tr>
-                <th style="width: 1%">
+                <th style="width: 2%">
                     No.
                 </th>
                 <th style="width: 5%">
@@ -2244,7 +2244,7 @@
       <table id="myTable" class="table table-striped projects display dataTable">
         <thead>
             <tr>
-                <th style="width: 1%">
+                <th style="width: 2%">
                     No.
                 </th>
                 <th style="width: 5%">
@@ -2416,7 +2416,7 @@
       <table id="myTable" class="table table-striped projects display dataTable">
         <thead>
             <tr>
-                <th style="width: 1%">
+                <th style="width: 2%">
                     No.
                 </th>
                 <th style="width: 5%">
@@ -2466,7 +2466,7 @@
       <table id="myTable" class="table table-striped projects display dataTable">
         <thead>
             <tr>
-                <th style="width: 1%">
+                <th style="width: 2%">
                     No.
                 </th>
                 <th style="width: 5%">
@@ -2638,7 +2638,7 @@
       <table id="myTable" class="table table-striped projects display dataTable">
         <thead>
             <tr>
-                <th style="width: 1%">
+                <th style="width: 2%">
                     No.
                 </th>
                 <th style="width: 5%">
@@ -2688,7 +2688,7 @@
       <table id="myTable" class="table table-striped projects display dataTable">
         <thead>
             <tr>
-                <th style="width: 1%">
+                <th style="width: 2%">
                     No.
                 </th>
                 <th style="width: 5%">
@@ -2860,7 +2860,7 @@
       <table id="myTable" class="table table-striped projects display dataTable">
         <thead>
             <tr>
-                <th style="width: 1%">
+                <th style="width: 2%">
                     No.
                 </th>
                 <th style="width: 5%">
@@ -2910,7 +2910,7 @@
       <table id="myTable" class="table table-striped projects display dataTable">
         <thead>
             <tr>
-                <th style="width: 1%">
+                <th style="width: 2%">
                     No.
                 </th>
                 <th style="width: 5%">
@@ -3082,7 +3082,7 @@
       <table id="myTable" class="table table-striped projects display dataTable">
         <thead>
             <tr>
-                <th style="width: 1%">
+                <th style="width: 2%">
                     No.
                 </th>
                 <th style="width: 5%">
@@ -3132,7 +3132,7 @@
       <table id="myTable" class="table table-striped projects display dataTable">
         <thead>
             <tr>
-                <th style="width: 1%">
+                <th style="width: 2%">
                     No.
                 </th>
                 <th style="width: 5%">
@@ -3284,7 +3284,7 @@
       <table id="myTable" class="table table-striped projects display dataTable">
         <thead>
             <tr>
-                <th style="width: 1%">
+                <th style="width: 2%">
                     No.
                 </th>
                 <th style="width: 5%">
@@ -3334,7 +3334,7 @@
       <table id="myTable" class="table table-striped projects display dataTable">
         <thead>
             <tr>
-                <th style="width: 1%">
+                <th style="width: 2%">
                     No.
                 </th>
                 <th style="width: 5%">
