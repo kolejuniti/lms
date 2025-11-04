@@ -793,13 +793,13 @@
         <thead>
             <tr>
                 <th style="width: 2%">
-                    No. ID
+                    No. Program
                 </th>
                 <th style="width: 5%">
                     PROGRAM
                 </th>
                 <th style="width: 4%">
-                    QUOTE
+                    TOTAL
                 </th>
             </tr>
         </thead>
