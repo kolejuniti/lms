@@ -3199,8 +3199,15 @@ function generateExamPaperHTML(formData) {
     console.log('Starting to parse form data, total elements:', formData.length);
     
     while (i < formData.length) {
-        // Look for question header
-        if (formData[i].type === 'header' && formData[i].label && formData[i].label.includes('Question')) {
+        // Look for question header - support multiple formats (Question, SOALAN, etc.)
+        const isQuestionHeader = formData[i].type === 'header' && 
+                                 formData[i].label && 
+                                 (formData[i].label.includes('Question') || 
+                                  formData[i].label.includes('SOALAN') ||
+                                  /question\s+\d+/i.test(formData[i].label) ||
+                                  /soalan\s+\d+/i.test(formData[i].label));
+        
+        if (isQuestionHeader) {
             console.log('Found question header at index', i, ':', formData[i].label);
             const questionData = parseQuestionSequence(formData, i);
             console.log('Parsed question data:', questionData);
