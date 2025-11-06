@@ -3199,8 +3199,15 @@ function generateExamPaperHTML(formData) {
     console.log('Starting to parse form data, total elements:', formData.length);
     
     while (i < formData.length) {
-        // Look for question header
-        if (formData[i].type === 'header' && formData[i].label && formData[i].label.includes('Question')) {
+        // Look for question header - support multiple formats (Question, SOALAN, etc.)
+        const isQuestionHeader = formData[i].type === 'header' && 
+                                 formData[i].label && 
+                                 (formData[i].label.includes('Question') || 
+                                  formData[i].label.includes('SOALAN') ||
+                                  /question\s+\d+/i.test(formData[i].label) ||
+                                  /soalan\s+\d+/i.test(formData[i].label));
+        
+        if (isQuestionHeader) {
             console.log('Found question header at index', i, ':', formData[i].label);
             const questionData = parseQuestionSequence(formData, i);
             console.log('Parsed question data:', questionData);
@@ -3280,10 +3287,11 @@ function parseQuestionSequence(formData, startIndex) {
     
     let currentIndex = startIndex;
     
-    // Step 1: Extract question number from header
+    // Step 1: Extract question number from header (support both "Question" and "SOALAN")
     if (formData[currentIndex].type === 'header') {
         const headerLabel = formData[currentIndex].label;
-        const questionMatch = headerLabel.match(/Question\s+(\d+)/i);
+        // Try to match both English (Question) and Malay (SOALAN) formats
+        const questionMatch = headerLabel.match(/(?:Question|SOALAN)\s+(\d+)/i);
         questionData.questionNumber = questionMatch ? parseInt(questionMatch[1]) : null;
         currentIndex++;
     }
@@ -3333,8 +3341,18 @@ function parseQuestionSequence(formData, startIndex) {
     }
     
     // Skip other fields (inputmark, feedback-text, etc.) until next question or end
-    while (currentIndex < formData.length && 
-           !(formData[currentIndex].type === 'header' && formData[currentIndex].label && formData[currentIndex].label.includes('Question'))) {
+    while (currentIndex < formData.length) {
+        // Check if this is a question header (support both Question and SOALAN)
+        const isNextQuestion = formData[currentIndex].type === 'header' && 
+                               formData[currentIndex].label && 
+                               (formData[currentIndex].label.includes('Question') || 
+                                formData[currentIndex].label.includes('SOALAN') ||
+                                /question\s+\d+/i.test(formData[currentIndex].label) ||
+                                /soalan\s+\d+/i.test(formData[currentIndex].label));
+        
+        if (isNextQuestion) {
+            break; // Stop when we find the next question
+        }
         currentIndex++;
     }
     
@@ -3351,10 +3369,11 @@ function parseQuestionSequence(formData, startIndex) {
 }
 
 function generateMultipleChoiceHTML(questionData) {
+    const questionNum = questionData.questionNumber || '?';
     let html = `
         <div class="question-section">
             <div class="question-text">
-                <span class="question-number">${questionData.questionNumber}.</span>
+                <span class="question-number">${questionNum}.</span>
                 ${questionData.questionText}
             </div>
     `;
@@ -3387,10 +3406,11 @@ function generateMultipleChoiceHTML(questionData) {
 }
 
 function generateSubjectiveHTML(questionData) {
+    const questionNum = questionData.questionNumber || '?';
     let html = `
         <div class="question-section">
             <div class="question-text">
-                <span class="question-number">${questionData.questionNumber}.</span>
+                <span class="question-number">${questionNum}.</span>
                 ${questionData.questionText}
             </div>
     `;
@@ -3516,11 +3536,13 @@ function generateAnswerKey(answerKey) {
     `;
     
     answerKey.forEach(answer => {
+        const questionNum = answer.number || 'N/A';
+        const answerText = answer.answers && answer.answers.length > 0 ? answer.answers.join(', ') : 'N/A';
         html += `
             <div style="margin: 10px 0; border-bottom: 1px solid #ddd; padding-bottom: 8px;">
-                <strong>Question ${answer.number} (${answer.type}):</strong>
+                <strong>Question ${questionNum} (${answer.type}):</strong>
                 <br>
-                <span style="margin-left: 20px;">Answer: ${answer.answers.join(', ')}</span>
+                <span style="margin-left: 20px;">Answer: ${answerText}</span>
                 ${answer.marks ? `<br><span style="margin-left: 20px;">Marks: ${answer.marks}</span>` : ''}
             </div>
         `;
