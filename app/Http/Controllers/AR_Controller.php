@@ -1676,7 +1676,7 @@ class AR_Controller extends Controller
             $data = [
                 'room' => DB::table('tbllecture_room')->get(),
                 'session' => DB::table('sessions')->where('Status', 'ACTIVE')->get(),
-                'lecturer' => DB::table('users')->whereIn('usrtype', ['LCT', 'PL', 'AO'])->get()
+                'lecturer' => DB::table('users')->whereIn('usrtype', ['LCT', 'PL', 'AO', 'DN'])->get()
             ];
 
         }elseif(request()->type == 'std')
@@ -4272,7 +4272,7 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
         $data['lecturer'] = DB::table('users')
                             ->join('user_subjek', 'users.ic', 'user_subjek.user_ic')
                             ->where([['users.status', 'ACTIVE']])
-                            ->whereIn('users.usrtype', ['LCT', 'PL', 'AO'])
+                            ->whereIn('users.usrtype', ['LCT', 'PL', 'AO', 'DN'])
                             ->whereIn('user_subjek.session_id', $session)
                             ->groupBy('users.ic')
                             ->orderBy('users.name', 'asc')
@@ -5489,7 +5489,7 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
 
         $data = [
             'lecturer' => DB::table('users')
-                          ->whereIn('usrtype', ['LCT', 'PL', 'AO'])
+                          ->whereIn('usrtype', ['LCT', 'PL', 'AO', 'DN'])
                           ->get(),
             'intake' => DB::table('sessions')->orderBy('SessionID', 'DESC')->get()
         ];
@@ -6728,7 +6728,7 @@ private function applyTimeOverlapConditions($query, $startTimeOnly, $endTimeOnly
     {
         $data = [
             'session' => DB::table('sessions')->get(),
-            'lecturer' => DB::table('users')->whereIn('usrtype', ['LCT', 'AO', 'PL'])->get(),
+            'lecturer' => DB::table('users')->whereIn('usrtype', ['LCT', 'AO', 'PL', 'DN'])->get(),
             'periods' => DB::table('tblassessment_period')
                         ->orderBy('created_at', 'desc')
                         ->get()
