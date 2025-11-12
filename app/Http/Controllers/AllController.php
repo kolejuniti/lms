@@ -806,17 +806,25 @@ class AllController extends Controller
 
     public function sendMassage(Request $request)
     {
-        // Handle image upload if present
-        $imageUrl = null;
-        if ($request->hasFile('image')) {
-            $imageUrl = $this->uploadMessageImage($request->file('image'), $request->ic, $request->type);
+        // Handle file upload if present (image or document)
+        $fileUrl = null;
+        $fileName = null;
+        $fileType = null;
+        $fileSize = null;
+
+        if ($request->hasFile('file')) {
+            $uploadResult = $this->uploadMessageFile($request->file('file'), $request->ic, $request->type);
+            $fileUrl = $uploadResult['url'];
+            $fileName = $uploadResult['name'];
+            $fileType = $request->file_type ?? 'document';
+            $fileSize = $uploadResult['size'];
         }
 
         if($request->type != 'STUDENT')
         {
 
             if(!DB::table('tblmessage')->where([
-                ['user_type', Auth::user()->usrtype], 
+                ['user_type', Auth::user()->usrtype],
                 ['recipient', $request->ic]
             ])->exists())
             {
@@ -830,7 +838,7 @@ class AllController extends Controller
             }else{
 
                 $id = DB::table('tblmessage')->where([
-                    ['user_type', Auth::user()->usrtype], 
+                    ['user_type', Auth::user()->usrtype],
                     ['recipient', $request->ic]
                 ])->value('id');
 
@@ -841,7 +849,11 @@ class AllController extends Controller
                 'sender' => Auth::user()->ic,
                 'user_type' => $request->type,
                 'message' => $request->message ?? '',
-                'image_url' => $imageUrl,
+                'image_url' => $fileUrl,
+                'file_url' => $fileUrl,
+                'file_name' => $fileName,
+                'file_type' => $fileType,
+                'file_size' => $fileSize,
                 'status' => 'NEW'
             ]);
 
@@ -849,24 +861,24 @@ class AllController extends Controller
 
 
             if(!DB::table('tblmessage')->where([
-                ['user_type', $request->ic], 
+                ['user_type', $request->ic],
                 ['recipient', Auth::guard('student')->user()->ic]
             ])->exists())
             {
-    
+
                 $id = DB::table('tblmessage')->insertGetId([
                         'sender' => null,
                         'user_type' => $request->ic,
                         'recipient' => Auth::guard('student')->user()->ic
                     ]);
-    
+
             }else{
-    
+
                 $id = DB::table('tblmessage')->where([
-                    ['user_type', $request->ic], 
+                    ['user_type', $request->ic],
                     ['recipient', Auth::guard('student')->user()->ic]
                 ])->value('id');
-    
+
             }
 
             DB::table('tblmessage_dtl')->insert([
@@ -874,7 +886,11 @@ class AllController extends Controller
                 'sender' => Auth::guard('student')->user()->ic,
                 'user_type' => $request->type,
                 'message' => $request->message ?? '',
-                'image_url' => $imageUrl,
+                'image_url' => $fileUrl,
+                'file_url' => $fileUrl,
+                'file_name' => $fileName,
+                'file_type' => $fileType,
+                'file_size' => $fileSize,
                 'status' => 'NEW'
             ]);
 
@@ -882,48 +898,79 @@ class AllController extends Controller
 
         return response()->json([
             'message' => $request->message ?? '',
-            'image_url' => $imageUrl
+            'image_url' => $fileUrl,
+            'file_url' => $fileUrl,
+            'file_name' => $fileName,
+            'file_type' => $fileType,
+            'file_size' => $fileSize
         ]);
     }
 
-    private function uploadMessageImage($image, $ic, $type)
+    private function uploadMessageFile($file, $ic, $type)
     {
         try {
-            // Validate image
-            $allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'image/webp'];
-            if (!in_array($image->getMimeType(), $allowedTypes)) {
-                throw new \Exception('Invalid image type. Only JPEG, PNG, JPG, GIF, and WebP are allowed.');
+            // Validate file type
+            $allowedTypes = [
+                // Images
+                'image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'image/webp',
+                // Documents
+                'application/pdf',
+                'application/msword', // .doc
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // .docx
+                'application/vnd.ms-excel', // .xls
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // .xlsx
+                'application/vnd.ms-powerpoint', // .ppt
+                'application/vnd.openxmlformats-officedocument.presentationml.presentation', // .pptx
+                'text/plain',
+                'text/csv'
+            ];
+
+            if (!in_array($file->getMimeType(), $allowedTypes)) {
+                throw new \Exception('Invalid file type. Only images, PDF, Word, Excel, PowerPoint, Text, and CSV files are allowed.');
             }
 
-            // Check file size (max 5MB)
-            if ($image->getSize() > 5 * 1024 * 1024) {
-                throw new \Exception('Image size must be less than 5MB.');
+            // Check file size (20MB max for documents, 5MB for images)
+            $maxSize = str_starts_with($file->getMimeType(), 'image/') ? 5 * 1024 * 1024 : 20 * 1024 * 1024;
+            if ($file->getSize() > $maxSize) {
+                $maxSizeMB = $maxSize / (1024 * 1024);
+                throw new \Exception("File size must be less than {$maxSizeMB}MB.");
             }
 
             // Generate unique filename
-            $extension = $image->getClientOriginalExtension();
+            $extension = $file->getClientOriginalExtension();
+            $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
             $filename = 'msg_' . $ic . '_' . $type . '_' . time() . '_' . uniqid() . '.' . $extension;
-            
+
             // Create directory path
             $directory = 'messages/' . date('Y') . '/' . date('m');
-            
+
             // Check if directory exists, if not create it
             if (!Storage::disk('linode')->exists($directory)) {
                 Storage::disk('linode')->makeDirectory($directory, 'public');
             }
-            
-            // Upload to Linode storage using the same pattern as existing code
-            $path = $image->storeAs($directory, $filename, [
+
+            // Upload to Linode storage
+            $path = $file->storeAs($directory, $filename, [
                 'disk' => 'linode',
                 'visibility' => 'public'
             ]);
 
-            // Return the full URL using environment variables like other controllers
-            return env('LINODE_ENDPOINT') . '/' . env('LINODE_BUCKET') . '/' . $path;
+            // Return the full URL and file info
+            return [
+                'url' => env('LINODE_ENDPOINT') . '/' . env('LINODE_BUCKET') . '/' . $path,
+                'name' => $file->getClientOriginalName(),
+                'size' => $file->getSize(),
+                'path' => $path
+            ];
 
         } catch (\Exception $e) {
-            Log::error('Image upload failed: ' . $e->getMessage());
-            return null;
+            Log::error('File upload failed: ' . $e->getMessage());
+            return [
+                'url' => null,
+                'name' => null,
+                'size' => null,
+                'path' => null
+            ];
         }
     }
 
@@ -1385,18 +1432,26 @@ class AllController extends Controller
 
     public function sendStudentMessage(Request $request)
     {
-        // Handle image upload if present
-        $imageUrl = null;
-        if ($request->hasFile('image')) {
-            $imageUrl = $this->uploadMessageImage($request->file('image'), $request->recipient_ic, 'STUDENT_TO_STUDENT');
+        // Handle file upload if present (image or document)
+        $fileUrl = null;
+        $fileName = null;
+        $fileType = null;
+        $fileSize = null;
+
+        if ($request->hasFile('file')) {
+            $uploadResult = $this->uploadMessageFile($request->file('file'), $request->recipient_ic, 'STUDENT_TO_STUDENT');
+            $fileUrl = $uploadResult['url'];
+            $fileName = $uploadResult['name'];
+            $fileType = $request->file_type ?? 'document';
+            $fileSize = $uploadResult['size'];
         }
 
         $currentStudentIc = Auth::guard('student')->user()->ic;
         $recipientIc = $request->recipient_ic;
 
         // Create a unique conversation ID by sorting the ICs
-        $conversationId = ($currentStudentIc < $recipientIc) 
-            ? $currentStudentIc . '_' . $recipientIc 
+        $conversationId = ($currentStudentIc < $recipientIc)
+            ? $currentStudentIc . '_' . $recipientIc
             : $recipientIc . '_' . $currentStudentIc;
 
         // Check if conversation exists
@@ -1421,13 +1476,21 @@ class AllController extends Controller
             'sender' => $currentStudentIc,
             'user_type' => 'STUDENT_TO_STUDENT',
             'message' => $request->message ?? '',
-            'image_url' => $imageUrl,
+            'image_url' => $fileUrl,
+            'file_url' => $fileUrl,
+            'file_name' => $fileName,
+            'file_type' => $fileType,
+            'file_size' => $fileSize,
             'status' => 'NEW'
         ]);
 
         return response()->json([
             'message' => $request->message ?? '',
-            'image_url' => $imageUrl,
+            'image_url' => $fileUrl,
+            'file_url' => $fileUrl,
+            'file_name' => $fileName,
+            'file_type' => $fileType,
+            'file_size' => $fileSize,
             'conversation_id' => $conversationId
         ]);
     }

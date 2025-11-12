@@ -41,10 +41,10 @@
         <!-- Regular message content (only show if not deleted) -->
         <template v-else>
           <!-- Image display -->
-          <div v-if="data.image_url" class="message-image-container">
-            <img 
-              :src="getImageUrl(data.image_url)" 
-              :alt="data.message || 'Image'" 
+          <div v-if="data.image_url && isImageFile(data.image_url, data.file_type)" class="message-image-container">
+            <img
+              :src="getImageUrl(data.image_url)"
+              :alt="data.message || 'Image'"
               class="message-image"
               @click="openImageModal"
               @error="handleImageError"
@@ -53,7 +53,64 @@
               <div class="uploading-spinner"></div>
             </div>
           </div>
-          
+
+          <!-- Document/File display -->
+          <div v-else-if="data.file_url || (data.image_url && !isImageFile(data.image_url, data.file_type))" class="message-file-container">
+            <div class="file-info">
+              <div class="file-icon-wrapper" :class="getFileIconClass(data.file_name || data.image_url)">
+                <!-- PDF Icon -->
+                <svg v-if="getFileExtension(data.file_name || data.image_url) === 'pdf'" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                  <line x1="16" y1="13" x2="8" y2="13"></line>
+                  <line x1="16" y1="17" x2="8" y2="17"></line>
+                </svg>
+                <!-- Word Icon -->
+                <svg v-else-if="['doc', 'docx'].includes(getFileExtension(data.file_name || data.image_url))" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                  <line x1="16" y1="13" x2="8" y2="13"></line>
+                  <line x1="16" y1="17" x2="8" y2="17"></line>
+                </svg>
+                <!-- Excel Icon -->
+                <svg v-else-if="['xls', 'xlsx'].includes(getFileExtension(data.file_name || data.image_url))" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                  <rect x="8" y="12" width="8" height="6"></rect>
+                  <line x1="12" y1="12" x2="12" y2="18"></line>
+                </svg>
+                <!-- Generic File Icon -->
+                <svg v-else xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
+                  <polyline points="13 2 13 9 20 9"></polyline>
+                </svg>
+              </div>
+              <div class="file-details">
+                <div class="file-name">{{ getFileName(data.file_name || data.image_url) }}</div>
+                <div class="file-size" v-if="data.file_size">{{ formatFileSize(data.file_size) }}</div>
+              </div>
+              <a
+                :href="getFileUrl(data.file_url || data.image_url)"
+                :download="shouldDownload(data.file_name || data.image_url) ? getFileName(data.file_name || data.image_url) : null"
+                :target="shouldOpenInNewTab(data.file_name || data.image_url) ? '_blank' : null"
+                :rel="shouldOpenInNewTab(data.file_name || data.image_url) ? 'noopener noreferrer' : null"
+                class="file-download-btn"
+                :title="shouldOpenInNewTab(data.file_name || data.image_url) ? 'Open file' : 'Download file'"
+                @click.stop
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7 10 12 15 17 10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+              </a>
+            </div>
+            <div v-if="data.isTemporary" class="file-uploading-overlay">
+              <div class="uploading-spinner"></div>
+              <span class="uploading-text">Uploading...</span>
+            </div>
+          </div>
+
           <!-- Text message (only show if there's text content) -->
           <p v-if="data.message && data.message.trim()" class="message-text">{{ data.message }}</p>
         </template>
@@ -229,6 +286,81 @@ export default {
       if (imageUrl) {
         window.open(imageUrl, '_blank');
       }
+    },
+    isImageFile(url, fileType) {
+      // Check file_type first if available
+      if (fileType && fileType === 'image') {
+        return true;
+      }
+
+      if (!url) return false;
+
+      // Check if URL is actually an image by extension
+      const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg'];
+      const extension = this.getFileExtension(url);
+      return imageExtensions.includes(extension);
+    },
+    getFileExtension(filename) {
+      if (!filename) return '';
+      const parts = filename.split('.');
+      return parts.length > 1 ? parts[parts.length - 1].toLowerCase() : '';
+    },
+    getFileName(filename) {
+      if (!filename) return 'Unknown file';
+      // Extract filename from path if it's a full path
+      const parts = filename.split('/');
+      return parts[parts.length - 1];
+    },
+    formatFileSize(bytes) {
+      if (!bytes || bytes === 0) return '0 Bytes';
+      const k = 1024;
+      const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+    },
+    getFileIconClass(filename) {
+      const extension = this.getFileExtension(filename);
+      const iconMap = {
+        'pdf': 'icon-pdf',
+        'doc': 'icon-word',
+        'docx': 'icon-word',
+        'xls': 'icon-excel',
+        'xlsx': 'icon-excel',
+        'ppt': 'icon-powerpoint',
+        'pptx': 'icon-powerpoint',
+        'txt': 'icon-text',
+        'csv': 'icon-csv'
+      };
+      return iconMap[extension] || 'icon-file';
+    },
+    getFileUrl(url) {
+      if (!url) return '';
+
+      // If it's already a full URL (starts with http), return as is
+      if (url.startsWith('http')) {
+        return url;
+      }
+
+      // If it's a relative path, construct the full URL using Linode configuration
+      const linodeEndpoint = window.Laravel?.linodeEndpoint || process.env.LINODE_ENDPOINT;
+      const linodeBucket = window.Laravel?.linodeBucket || process.env.LINODE_BUCKET;
+
+      if (linodeEndpoint && linodeBucket) {
+        return `${linodeEndpoint}/${linodeBucket}/${url}`;
+      }
+
+      // Fallback: return the URL as-is
+      return url;
+    },
+    shouldOpenInNewTab(filename) {
+      // PDFs should open in new tab for viewing
+      const extension = this.getFileExtension(filename);
+      return extension === 'pdf';
+    },
+    shouldDownload(filename) {
+      // All files except PDFs should download
+      const extension = this.getFileExtension(filename);
+      return extension !== 'pdf';
     }
   }
 }
@@ -394,6 +526,179 @@ export default {
   to { transform: rotate(360deg); }
 }
 
+/* File message styles */
+.message-file-container {
+  position: relative;
+  margin-bottom: 0.5rem;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  max-width: 300px;
+  width: 100%;
+}
+
+.file-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 0.75rem;
+  transition: background-color 0.2s;
+}
+
+.message-bubble.mine .file-info {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.message-bubble.others .file-info {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.file-info:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.message-bubble.others .file-info:hover {
+  background-color: rgba(0, 0, 0, 0.08);
+}
+
+.file-icon-wrapper {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.message-bubble.others .file-icon-wrapper {
+  background-color: rgba(0, 0, 0, 0.08);
+}
+
+.file-icon-wrapper.icon-pdf {
+  background-color: #fee2e2;
+  color: #dc2626;
+}
+
+.file-icon-wrapper.icon-word {
+  background-color: #dbeafe;
+  color: #2563eb;
+}
+
+.file-icon-wrapper.icon-excel {
+  background-color: #d1fae5;
+  color: #059669;
+}
+
+.file-icon-wrapper.icon-powerpoint {
+  background-color: #fed7aa;
+  color: #ea580c;
+}
+
+.file-icon-wrapper.icon-text,
+.file-icon-wrapper.icon-csv {
+  background-color: #e0e7ff;
+  color: #4f46e5;
+}
+
+.file-icon-wrapper.icon-file {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+.message-bubble.others .file-icon-wrapper.icon-file {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.file-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.file-name {
+  font-size: 0.875rem;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-bottom: 0.25rem;
+}
+
+.message-bubble.mine .file-name {
+  color: white;
+}
+
+.message-bubble.others .file-name {
+  color: #1f2937;
+}
+
+.file-size {
+  font-size: 0.75rem;
+  opacity: 0.8;
+}
+
+.message-bubble.mine .file-size {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.message-bubble.others .file-size {
+  color: #6b7280;
+}
+
+.file-download-btn {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.2);
+  color: inherit;
+  transition: all 0.2s;
+  text-decoration: none;
+}
+
+.message-bubble.mine .file-download-btn {
+  color: white;
+}
+
+.message-bubble.others .file-download-btn {
+  background-color: rgba(0, 0, 0, 0.08);
+  color: #1f2937;
+}
+
+.file-download-btn:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+  transform: scale(1.1);
+}
+
+.message-bubble.others .file-download-btn:hover {
+  background-color: rgba(0, 0, 0, 0.12);
+}
+
+.file-uploading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.75rem;
+  gap: 0.5rem;
+}
+
+.uploading-text {
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
 /* Adjust message bubble styling for images */
 .message-bubble:has(.message-image-container) {
   padding: 0.25rem;
@@ -409,6 +714,19 @@ export default {
 
 .message-bubble:has(.message-image-container) .message-metadata {
   padding: 0 0.5rem 0.25rem 0.5rem;
+}
+
+/* Adjust message bubble styling for files */
+.message-bubble:has(.message-file-container) .message-content {
+  padding: 0.5rem;
+}
+
+.message-bubble:has(.message-file-container) .message-text {
+  padding: 0.5rem 0 0 0;
+}
+
+.message-bubble:has(.message-file-container) .message-metadata {
+  padding: 0.25rem 0 0 0;
 }
 
 .message-metadata {

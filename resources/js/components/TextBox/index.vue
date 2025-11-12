@@ -70,11 +70,53 @@
             </div>
           </div>
   
-          <!-- Image Preview (above the input area) -->
-          <div v-if="selectedImage" class="image-preview-container">
-            <div class="image-preview">
-              <img :src="selectedImage.preview" alt="Image preview" class="preview-image">
-              <button @click="removeSelectedImage" class="remove-image-btn">
+          <!-- File Preview (above the input area) -->
+          <div v-if="selectedFile" class="file-preview-container">
+            <!-- Image Preview -->
+            <div v-if="selectedFile.type === 'image'" class="file-preview image-preview">
+              <img :src="selectedFile.preview" alt="Image preview" class="preview-image">
+              <button @click="removeSelectedFile" class="remove-file-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
+            </div>
+
+            <!-- Document Preview -->
+            <div v-else class="file-preview document-preview">
+              <div class="document-info">
+                <div class="file-icon" :class="getFileIconClass(selectedFile.extension)">
+                  <svg v-if="selectedFile.extension === 'pdf'" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                    <polyline points="10 9 9 9 8 9"></polyline>
+                  </svg>
+                  <svg v-else-if="['doc', 'docx'].includes(selectedFile.extension)" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                  </svg>
+                  <svg v-else-if="['xls', 'xlsx'].includes(selectedFile.extension)" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <rect x="8" y="12" width="8" height="6"></rect>
+                    <line x1="12" y1="12" x2="12" y2="18"></line>
+                  </svg>
+                  <svg v-else xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
+                    <polyline points="13 2 13 9 20 9"></polyline>
+                  </svg>
+                </div>
+                <div class="file-details">
+                  <div class="file-name">{{ selectedFile.name }}</div>
+                  <div class="file-size">{{ formatFileSize(selectedFile.size) }}</div>
+                </div>
+              </div>
+              <button @click="removeSelectedFile" class="remove-file-btn">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <line x1="18" y1="6" x2="6" y2="18"></line>
                   <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -96,21 +138,19 @@
                 ref="messageInput"
               >
               <div class="input-actions">
-                <!-- Image Upload Button -->
-                <button class="image-button" @click="triggerImageUpload" ref="imageButton">
+                <!-- File Upload Button -->
+                <button class="file-button" @click="triggerFileUpload" ref="fileButton" title="Attach file">
                   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                    <circle cx="9" cy="9" r="2"></circle>
-                    <path d="M21 15l-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path>
+                    <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
                   </svg>
                 </button>
-                
+
                 <!-- Hidden File Input -->
-                <input 
-                  type="file" 
-                  ref="imageInput" 
-                  @change="handleImageSelect" 
-                  accept="image/*" 
+                <input
+                  type="file"
+                  ref="fileInput"
+                  @change="handleFileSelect"
+                  accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv"
                   style="display: none"
                 >
                 
@@ -154,10 +194,10 @@
               </div>
             </div>
             
-            <button 
-              @click="submitMessage" 
-              class="send-button" 
-              :class="{ 'active': message.trim().length > 0 || selectedImage }"
+            <button
+              @click="submitMessage"
+              class="send-button"
+              :class="{ 'active': message.trim().length > 0 || selectedFile }"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="22" y1="2" x2="11" y2="13"></line>
@@ -260,11 +300,11 @@
       const selectedCategory = ref(0);
       const isTyping = ref(false);
       const typingTimeout = ref(null);
-      
-      // Image upload refs
-      const imageInput = ref(null);
-      const imageButton = ref(null);
-      const selectedImage = ref(null);
+
+      // File upload refs
+      const fileInput = ref(null);
+      const fileButton = ref(null);
+      const selectedFile = ref(null);
       
       // Reassignment refs
       const showReassignDropdown = ref(false);
@@ -395,46 +435,117 @@
         messageInput.value.focus();
       };
 
-      // Image handling methods
-      const triggerImageUpload = () => {
-        imageInput.value.click();
+      // File handling methods
+      const triggerFileUpload = () => {
+        fileInput.value.click();
       };
 
-      const handleImageSelect = (event) => {
+      const getFileType = (mimeType) => {
+        if (mimeType.startsWith('image/')) return 'image';
+        if (mimeType === 'application/pdf') return 'pdf';
+        if (mimeType === 'application/msword' || mimeType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') return 'word';
+        if (mimeType === 'application/vnd.ms-excel' || mimeType === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') return 'excel';
+        if (mimeType === 'application/vnd.ms-powerpoint' || mimeType === 'application/vnd.openxmlformats-officedocument.presentationml.presentation') return 'powerpoint';
+        if (mimeType === 'text/plain' || mimeType === 'text/csv') return 'text';
+        return 'document';
+      };
+
+      const getFileExtension = (filename) => {
+        const parts = filename.split('.');
+        return parts.length > 1 ? parts[parts.length - 1].toLowerCase() : '';
+      };
+
+      const formatFileSize = (bytes) => {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+      };
+
+      const getFileIconClass = (extension) => {
+        const iconMap = {
+          'pdf': 'icon-pdf',
+          'doc': 'icon-word',
+          'docx': 'icon-word',
+          'xls': 'icon-excel',
+          'xlsx': 'icon-excel',
+          'ppt': 'icon-powerpoint',
+          'pptx': 'icon-powerpoint',
+          'txt': 'icon-text',
+          'csv': 'icon-csv'
+        };
+        return iconMap[extension] || 'icon-file';
+      };
+
+      const handleFileSelect = (event) => {
         const file = event.target.files[0];
         if (file) {
           // Validate file type
-          const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'image/webp'];
+          const allowedTypes = [
+            'image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'image/webp',
+            'application/pdf',
+            'application/msword',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'application/vnd.ms-excel',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'application/vnd.ms-powerpoint',
+            'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+            'text/plain',
+            'text/csv'
+          ];
+
           if (!allowedTypes.includes(file.type)) {
-            alert('Please select a valid image file (JPEG, PNG, JPG, GIF, or WebP)');
+            alert('Please select a valid file type (Images, PDF, Word, Excel, PowerPoint, Text, CSV)');
             return;
           }
 
-          // Validate file size (5MB max)
-          if (file.size > 5 * 1024 * 1024) {
-            alert('Image size must be less than 5MB');
+          // Validate file size (20MB max for documents, 5MB for images)
+          const maxSize = file.type.startsWith('image/') ? 5 * 1024 * 1024 : 20 * 1024 * 1024;
+          if (file.size > maxSize) {
+            const maxSizeMB = maxSize / (1024 * 1024);
+            alert(`File size must be less than ${maxSizeMB}MB`);
             return;
           }
 
-          // Create preview
-          const reader = new FileReader();
-          reader.onload = (e) => {
-            selectedImage.value = {
-              file: file,
-              preview: e.target.result,
-              name: file.name,
-              size: file.size
+          const fileType = getFileType(file.type);
+          const extension = getFileExtension(file.name);
+
+          // For images, create preview
+          if (fileType === 'image') {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+              selectedFile.value = {
+                file: file,
+                type: fileType,
+                preview: e.target.result,
+                name: file.name,
+                size: file.size,
+                extension: extension,
+                mimeType: file.type
+              };
             };
-          };
-          reader.readAsDataURL(file);
+            reader.readAsDataURL(file);
+          } else {
+            // For documents, just store file info
+            selectedFile.value = {
+              file: file,
+              type: fileType,
+              preview: null,
+              name: file.name,
+              size: file.size,
+              extension: extension,
+              mimeType: file.type
+            };
+          }
         }
-        
+
         // Reset the input value so the same file can be selected again
         event.target.value = '';
       };
 
-      const removeSelectedImage = () => {
-        selectedImage.value = null;
+      const removeSelectedFile = () => {
+        selectedFile.value = null;
       };
 
       // Reassignment helper methods
@@ -845,16 +956,16 @@
 
       // Define your methods here
       const submitMessage = () => {
-        if (message.value.trim() === '' && !selectedImage.value) {
-          return; // Don't send empty messages without image
+        if (message.value.trim() === '' && !selectedFile.value) {
+          return; // Don't send empty messages without file
         }
-        
+
         // Close emoji picker when sending a message
         showEmojiPicker.value = false;
-        
+
         const messageToSend = message.value.trim();
-        const imageToSend = selectedImage.value;
-        
+        const fileToSend = selectedFile.value;
+
         // Create a temporary message to show immediately
         const tempId = `temp-${state.ic}-${Date.now()}`;
         const tempMessage = {
@@ -864,41 +975,47 @@
           sender: state.messageType === 'STUDENT_TO_STUDENT' ? window.Laravel?.currentStudentIc : state.sessionUserId,
           created_at: new Date().toISOString(),
           isTemporary: true,
-          image_url: imageToSend ? imageToSend.preview : null // Show preview temporarily
+          image_url: fileToSend ? fileToSend.preview : null, // Show preview temporarily for images
+          file_url: fileToSend && fileToSend.type !== 'image' ? fileToSend.name : null, // Store file name for documents
+          file_name: fileToSend ? fileToSend.name : null,
+          file_type: fileToSend ? fileToSend.type : null,
+          file_size: fileToSend ? fileToSend.size : null
         };
-        
+
         // Add temp message to UI immediately (safer approach)
         const currentMessages = [...state.messages];
         currentMessages.push(tempMessage);
         state.messages = currentMessages;
-        
-        // Clear input and image
+
+        // Clear input and file
         message.value = '';
-        selectedImage.value = null;
-        
+        selectedFile.value = null;
+
         // Scroll to bottom
         nextTick(() => {
           scrollToBottom();
         });
-        
+
         console.log('Sending message:', messageToSend);
-        
+
         // Prepare data for submission
         let requestData;
         let config = {};
         let endpoint;
-        
+
         if (state.messageType === 'STUDENT_TO_STUDENT') {
           // Student-to-student messaging
           endpoint = '/all/student/sendMessage';
-          
-          if (imageToSend) {
-            // Use FormData for image upload
+
+          if (fileToSend) {
+            // Use FormData for file upload
             requestData = new FormData();
             requestData.append('message', messageToSend);
             requestData.append('recipient_ic', state.ic);
-            requestData.append('image', imageToSend.file);
-            
+            requestData.append('file', fileToSend.file);
+            requestData.append('file_type', fileToSend.type);
+            requestData.append('file_name', fileToSend.name);
+
             config = {
               headers: {
                 'Content-Type': 'multipart/form-data'
@@ -914,15 +1031,17 @@
         } else {
           // Department messaging
           endpoint = '/all/massage/user/sendMassage';
-          
-          if (imageToSend) {
-            // Use FormData for image upload
+
+          if (fileToSend) {
+            // Use FormData for file upload
             requestData = new FormData();
             requestData.append('message', messageToSend);
             requestData.append('ic', state.ic);
             requestData.append('type', state.sessionUserId);
-            requestData.append('image', imageToSend.file);
-            
+            requestData.append('file', fileToSend.file);
+            requestData.append('file_type', fileToSend.type);
+            requestData.append('file_name', fileToSend.name);
+
             config = {
               headers: {
                 'Content-Type': 'multipart/form-data'
@@ -960,16 +1079,16 @@
         })
         .catch(error => {
           console.error("Error sending message:", error);
-          
+
           // Remove temp message if sending failed
           state.messages = state.messages.filter(msg => msg.id !== tempMessage.id);
-          
+
           // Restore the message to input if sending failed
           message.value = messageToSend;
-          if (imageToSend) {
-            selectedImage.value = imageToSend;
+          if (fileToSend) {
+            selectedFile.value = fileToSend;
           }
-          
+
           // Show error message to user
           alert('Failed to send message. Please try again.');
         });
@@ -1003,9 +1122,9 @@
       });
   
       // Return everything that needs to be accessible in the template
-      return { 
-        state, 
-        message, 
+      return {
+        state,
+        message,
         chatMessages,
         messageInput,
         emojiButton,
@@ -1016,8 +1135,8 @@
         currentCategoryEmojis,
         isStudent,
         getChatTitle,
-        toggleChatBox, 
-        isMessageMine, 
+        toggleChatBox,
+        isMessageMine,
         submitMessage,
         scrollToBottom,
         toggleEmojiPicker,
@@ -1028,13 +1147,15 @@
         handleBlur,
         handleDeleteMessage,
         openStudentChat,
-        // Image upload related
-        imageInput,
-        imageButton,
-        selectedImage,
-        triggerImageUpload,
-        handleImageSelect,
-        removeSelectedImage,
+        // File upload related
+        fileInput,
+        fileButton,
+        selectedFile,
+        triggerFileUpload,
+        handleFileSelect,
+        removeSelectedFile,
+        formatFileSize,
+        getFileIconClass,
         // Reassignment related
         showReassignDropdown,
         reassignDropdown,
@@ -1269,7 +1390,7 @@
     position: relative;
   }
   
-  .image-button {
+  .file-button {
     background: transparent;
     border: none;
     color: var(--light-text);
@@ -1282,8 +1403,8 @@
     transition: color 0.2s;
     margin-right: 0.25rem;
   }
-  
-  .image-button:hover {
+
+  .file-button:hover {
     color: var(--primary-color);
   }
   
@@ -1304,14 +1425,14 @@
     color: var(--primary-color);
   }
 
-  /* Image Preview Styles */
-  .image-preview-container {
+  /* File Preview Styles */
+  .file-preview-container {
     padding: 0.75rem 1rem;
     border-bottom: 1px solid var(--border-color);
     background-color: #f9fafb;
   }
 
-  .image-preview {
+  .file-preview {
     position: relative;
     display: inline-block;
     border-radius: 0.75rem;
@@ -1319,6 +1440,11 @@
     border: 2px solid var(--border-color);
     background-color: white;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Image Preview */
+  .file-preview.image-preview {
+    max-width: 200px;
   }
 
   .preview-image {
@@ -1330,7 +1456,82 @@
     border-radius: 0.5rem;
   }
 
-  .remove-image-btn {
+  /* Document Preview */
+  .file-preview.document-preview {
+    padding: 0.75rem;
+    min-width: 250px;
+    max-width: 300px;
+  }
+
+  .document-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .file-icon {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.5rem;
+    background-color: #f3f4f6;
+  }
+
+  .file-icon.icon-pdf {
+    background-color: #fee2e2;
+    color: #dc2626;
+  }
+
+  .file-icon.icon-word {
+    background-color: #dbeafe;
+    color: #2563eb;
+  }
+
+  .file-icon.icon-excel {
+    background-color: #d1fae5;
+    color: #059669;
+  }
+
+  .file-icon.icon-powerpoint {
+    background-color: #fed7aa;
+    color: #ea580c;
+  }
+
+  .file-icon.icon-text,
+  .file-icon.icon-csv {
+    background-color: #e0e7ff;
+    color: #4f46e5;
+  }
+
+  .file-icon.icon-file {
+    background-color: #f3f4f6;
+    color: #6b7280;
+  }
+
+  .file-details {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .file-name {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-color);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin-bottom: 0.25rem;
+  }
+
+  .file-size {
+    font-size: 0.75rem;
+    color: var(--light-text);
+  }
+
+  .remove-file-btn {
     position: absolute;
     top: 0.25rem;
     right: 0.25rem;
@@ -1345,9 +1546,10 @@
     align-items: center;
     justify-content: center;
     transition: background-color 0.2s;
+    z-index: 10;
   }
 
-  .remove-image-btn:hover {
+  .remove-file-btn:hover {
     background-color: var(--error-color);
   }
   
