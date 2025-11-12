@@ -71,57 +71,64 @@
           </div>
   
           <!-- File Preview (above the input area) -->
-          <div v-if="selectedFile" class="file-preview-container">
-            <!-- Image Preview -->
-            <div v-if="selectedFile.type === 'image'" class="file-preview image-preview">
-              <img :src="selectedFile.preview" alt="Image preview" class="preview-image">
-              <button @click="removeSelectedFile" class="remove-file-btn">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <line x1="18" y1="6" x2="6" y2="18"></line>
-                  <line x1="6" y1="6" x2="18" y2="18"></line>
-                </svg>
-              </button>
-            </div>
-
-            <!-- Document Preview -->
-            <div v-else class="file-preview document-preview">
-              <div class="document-info">
-                <div class="file-icon" :class="getFileIconClass(selectedFile.extension)">
-                  <svg v-if="selectedFile.extension === 'pdf'" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                    <polyline points="14 2 14 8 20 8"></polyline>
-                    <line x1="16" y1="13" x2="8" y2="13"></line>
-                    <line x1="16" y1="17" x2="8" y2="17"></line>
-                    <polyline points="10 9 9 9 8 9"></polyline>
-                  </svg>
-                  <svg v-else-if="['doc', 'docx'].includes(selectedFile.extension)" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                    <polyline points="14 2 14 8 20 8"></polyline>
-                    <line x1="16" y1="13" x2="8" y2="13"></line>
-                    <line x1="16" y1="17" x2="8" y2="17"></line>
-                  </svg>
-                  <svg v-else-if="['xls', 'xlsx'].includes(selectedFile.extension)" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                    <polyline points="14 2 14 8 20 8"></polyline>
-                    <rect x="8" y="12" width="8" height="6"></rect>
-                    <line x1="12" y1="12" x2="12" y2="18"></line>
-                  </svg>
-                  <svg v-else xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
-                    <polyline points="13 2 13 9 20 9"></polyline>
-                  </svg>
+          <div v-if="selectedFiles.length > 0" class="file-preview-container">
+            <div class="files-preview-grid">
+              <div
+                v-for="(file, index) in selectedFiles"
+                :key="index"
+                class="file-preview-item"
+              >
+                <!-- Image Preview -->
+                <div v-if="file.type === 'image'" class="file-preview image-preview">
+                  <img :src="file.preview" alt="Image preview" class="preview-image">
+                  <button @click="removeSelectedFile(index)" class="remove-file-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <line x1="18" y1="6" x2="6" y2="18"></line>
+                      <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                  </button>
                 </div>
-                <div class="file-details">
-                  <div class="file-name">{{ selectedFile.name }}</div>
-                  <div class="file-size">{{ formatFileSize(selectedFile.size) }}</div>
+
+                <!-- Document Preview -->
+                <div v-else class="file-preview document-preview">
+                  <div class="document-info">
+                    <div class="file-icon" :class="getFileIconClass(file.extension)">
+                      <svg v-if="file.extension === 'pdf'" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                      </svg>
+                      <svg v-else-if="['doc', 'docx'].includes(file.extension)" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                      </svg>
+                      <svg v-else-if="['xls', 'xlsx'].includes(file.extension)" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <rect x="8" y="12" width="8" height="6"></rect>
+                        <line x1="12" y1="12" x2="12" y2="18"></line>
+                      </svg>
+                      <svg v-else xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
+                        <polyline points="13 2 13 9 20 9"></polyline>
+                      </svg>
+                    </div>
+                    <div class="file-details">
+                      <div class="file-name">{{ file.name }}</div>
+                      <div class="file-size">{{ formatFileSize(file.size) }}</div>
+                    </div>
+                  </div>
+                  <button @click="removeSelectedFile(index)" class="remove-file-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <line x1="18" y1="6" x2="6" y2="18"></line>
+                      <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                  </button>
                 </div>
               </div>
-              <button @click="removeSelectedFile" class="remove-file-btn">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <line x1="18" y1="6" x2="6" y2="18"></line>
-                  <line x1="6" y1="6" x2="18" y2="18"></line>
-                </svg>
-              </button>
             </div>
           </div>
 
@@ -151,6 +158,7 @@
                   ref="fileInput"
                   @change="handleFileSelect"
                   accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv"
+                  multiple
                   style="display: none"
                 >
                 
@@ -197,7 +205,7 @@
             <button
               @click="submitMessage"
               class="send-button"
-              :class="{ 'active': message.trim().length > 0 || selectedFile }"
+              :class="{ 'active': message.trim().length > 0 || selectedFiles.length > 0 }"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="22" y1="2" x2="11" y2="13"></line>
@@ -304,7 +312,7 @@
       // File upload refs
       const fileInput = ref(null);
       const fileButton = ref(null);
-      const selectedFile = ref(null);
+      const selectedFiles = ref([]);
       
       // Reassignment refs
       const showReassignDropdown = ref(false);
@@ -479,73 +487,86 @@
       };
 
       const handleFileSelect = (event) => {
-        const file = event.target.files[0];
-        if (file) {
-          // Validate file type
-          const allowedTypes = [
-            'image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'image/webp',
-            'application/pdf',
-            'application/msword',
-            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-            'application/vnd.ms-excel',
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            'application/vnd.ms-powerpoint',
-            'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-            'text/plain',
-            'text/csv'
-          ];
+        const files = Array.from(event.target.files);
 
+        if (files.length === 0) return;
+
+        // Validate file type and size for all files
+        const allowedTypes = [
+          'image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'image/webp',
+          'application/pdf',
+          'application/msword',
+          'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+          'application/vnd.ms-excel',
+          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+          'application/vnd.ms-powerpoint',
+          'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+          'text/plain',
+          'text/csv'
+        ];
+
+        const validFiles = [];
+        const errors = [];
+
+        for (const file of files) {
+          // Validate file type
           if (!allowedTypes.includes(file.type)) {
-            alert('Please select a valid file type (Images, PDF, Word, Excel, PowerPoint, Text, CSV)');
-            return;
+            errors.push(`${file.name}: Invalid file type`);
+            continue;
           }
 
           // Validate file size (20MB max for documents, 5MB for images)
           const maxSize = file.type.startsWith('image/') ? 5 * 1024 * 1024 : 20 * 1024 * 1024;
           if (file.size > maxSize) {
             const maxSizeMB = maxSize / (1024 * 1024);
-            alert(`File size must be less than ${maxSizeMB}MB`);
-            return;
+            errors.push(`${file.name}: File size exceeds ${maxSizeMB}MB`);
+            continue;
           }
 
           const fileType = getFileType(file.type);
           const extension = getFileExtension(file.name);
 
-          // For images, create preview
-          if (fileType === 'image') {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-              selectedFile.value = {
-                file: file,
-                type: fileType,
-                preview: e.target.result,
-                name: file.name,
-                size: file.size,
-                extension: extension,
-                mimeType: file.type
-              };
-            };
-            reader.readAsDataURL(file);
-          } else {
-            // For documents, just store file info
-            selectedFile.value = {
-              file: file,
-              type: fileType,
-              preview: null,
-              name: file.name,
-              size: file.size,
-              extension: extension,
-              mimeType: file.type
-            };
-          }
+          validFiles.push({
+            file: file,
+            type: fileType,
+            name: file.name,
+            size: file.size,
+            extension: extension,
+            mimeType: file.type,
+            preview: null
+          });
         }
 
-        // Reset the input value so the same file can be selected again
+        // Show errors if any
+        if (errors.length > 0) {
+          alert('Some files could not be added:\n' + errors.join('\n'));
+        }
+
+        // Process valid files
+        if (validFiles.length > 0) {
+          // For images, create previews
+          validFiles.forEach((fileInfo, index) => {
+            if (fileInfo.type === 'image') {
+              const reader = new FileReader();
+              reader.onload = (e) => {
+                fileInfo.preview = e.target.result;
+                // Update the reactive array
+                selectedFiles.value = [...selectedFiles.value];
+              };
+              reader.readAsDataURL(fileInfo.file);
+            }
+          });
+
+          // Add valid files to the selected files array
+          selectedFiles.value = [...selectedFiles.value, ...validFiles];
+        }
+
+        // Reset the input value so the same files can be selected again
         event.target.value = '';
       };
 
-      const removeSelectedFile = () => {
-        selectedFile.value = null;
+      const removeSelectedFile = (index) => {
+        selectedFiles.value = selectedFiles.value.filter((_, i) => i !== index);
       };
 
       // Reassignment helper methods
@@ -956,121 +977,148 @@
 
       // Define your methods here
       const submitMessage = () => {
-        if (message.value.trim() === '' && !selectedFile.value) {
-          return; // Don't send empty messages without file
+        if (message.value.trim() === '' && selectedFiles.value.length === 0) {
+          return; // Don't send empty messages without files
         }
 
         // Close emoji picker when sending a message
         showEmojiPicker.value = false;
 
         const messageToSend = message.value.trim();
-        const fileToSend = selectedFile.value;
+        const filesToSend = [...selectedFiles.value];
 
-        // Create a temporary message to show immediately
-        const tempId = `temp-${state.ic}-${Date.now()}`;
-        const tempMessage = {
-          id: tempId,
-          message: messageToSend,
-          user_type: state.messageType === 'STUDENT_TO_STUDENT' ? 'STUDENT_TO_STUDENT' : state.sessionUserId,
-          sender: state.messageType === 'STUDENT_TO_STUDENT' ? window.Laravel?.currentStudentIc : state.sessionUserId,
-          created_at: new Date().toISOString(),
-          isTemporary: true,
-          image_url: fileToSend ? fileToSend.preview : null, // Show preview temporarily for images
-          file_url: fileToSend && fileToSend.type !== 'image' ? fileToSend.name : null, // Store file name for documents
-          file_name: fileToSend ? fileToSend.name : null,
-          file_type: fileToSend ? fileToSend.type : null,
-          file_size: fileToSend ? fileToSend.size : null
-        };
+        // For multiple files, we'll send them individually to create separate messages
+        // This provides better UX than one message with multiple files
+        const tempMessages = [];
 
-        // Add temp message to UI immediately (safer approach)
-        const currentMessages = [...state.messages];
-        currentMessages.push(tempMessage);
+        if (filesToSend.length > 0) {
+          // Create temp messages for each file
+          filesToSend.forEach((fileInfo, index) => {
+            const tempId = `temp-${state.ic}-${Date.now()}-${index}`;
+            const tempMessage = {
+              id: tempId,
+              message: index === 0 ? messageToSend : '', // Only first file gets the text message
+              user_type: state.messageType === 'STUDENT_TO_STUDENT' ? 'STUDENT_TO_STUDENT' : state.sessionUserId,
+              sender: state.messageType === 'STUDENT_TO_STUDENT' ? window.Laravel?.currentStudentIc : state.sessionUserId,
+              created_at: new Date().toISOString(),
+              isTemporary: true,
+              image_url: fileInfo.type === 'image' ? fileInfo.preview : null,
+              file_url: fileInfo.type !== 'image' ? fileInfo.name : null,
+              file_name: fileInfo.name,
+              file_type: fileInfo.type,
+              file_size: fileInfo.size
+            };
+            tempMessages.push(tempMessage);
+          });
+        } else if (messageToSend) {
+          // Text-only message
+          const tempId = `temp-${state.ic}-${Date.now()}`;
+          const tempMessage = {
+            id: tempId,
+            message: messageToSend,
+            user_type: state.messageType === 'STUDENT_TO_STUDENT' ? 'STUDENT_TO_STUDENT' : state.sessionUserId,
+            sender: state.messageType === 'STUDENT_TO_STUDENT' ? window.Laravel?.currentStudentIc : state.sessionUserId,
+            created_at: new Date().toISOString(),
+            isTemporary: true
+          };
+          tempMessages.push(tempMessage);
+        }
+
+        // Add temp messages to UI immediately
+        const currentMessages = [...state.messages, ...tempMessages];
         state.messages = currentMessages;
 
-        // Clear input and file
+        // Clear input and files
         message.value = '';
-        selectedFile.value = null;
+        selectedFiles.value = [];
 
         // Scroll to bottom
         nextTick(() => {
           scrollToBottom();
         });
 
-        console.log('Sending message:', messageToSend);
+        console.log('Sending message with files:', filesToSend.length);
 
-        // Prepare data for submission
-        let requestData;
-        let config = {};
-        let endpoint;
+        // Send messages (one request per file for better handling)
+        const sendPromises = [];
 
-        if (state.messageType === 'STUDENT_TO_STUDENT') {
-          // Student-to-student messaging
-          endpoint = '/all/student/sendMessage';
+        if (filesToSend.length > 0) {
+          filesToSend.forEach((fileInfo, index) => {
+            // Prepare data for submission
+            let requestData;
+            let config = {};
+            let endpoint;
 
-          if (fileToSend) {
-            // Use FormData for file upload
-            requestData = new FormData();
-            requestData.append('message', messageToSend);
-            requestData.append('recipient_ic', state.ic);
-            requestData.append('file', fileToSend.file);
-            requestData.append('file_type', fileToSend.type);
-            requestData.append('file_name', fileToSend.name);
+            if (state.messageType === 'STUDENT_TO_STUDENT') {
+              endpoint = '/all/student/sendMessage';
+              requestData = new FormData();
+              requestData.append('message', index === 0 ? messageToSend : ''); // Only first file gets the text
+              requestData.append('recipient_ic', state.ic);
+              requestData.append('file', fileInfo.file);
+              requestData.append('file_type', fileInfo.type);
+              requestData.append('file_name', fileInfo.name);
 
-            config = {
-              headers: {
-                'Content-Type': 'multipart/form-data'
-              }
-            };
-          } else {
-            // Use regular JSON for text-only message
+              config = {
+                headers: {
+                  'Content-Type': 'multipart/form-data'
+                }
+              };
+            } else {
+              endpoint = '/all/massage/user/sendMassage';
+              requestData = new FormData();
+              requestData.append('message', index === 0 ? messageToSend : ''); // Only first file gets the text
+              requestData.append('ic', state.ic);
+              requestData.append('type', state.sessionUserId);
+              requestData.append('file', fileInfo.file);
+              requestData.append('file_type', fileInfo.type);
+              requestData.append('file_name', fileInfo.name);
+
+              config = {
+                headers: {
+                  'Content-Type': 'multipart/form-data'
+                }
+              };
+            }
+
+            sendPromises.push(axios.post(endpoint, requestData, config));
+          });
+        } else {
+          // Text-only message
+          let requestData;
+          let endpoint;
+
+          if (state.messageType === 'STUDENT_TO_STUDENT') {
+            endpoint = '/all/student/sendMessage';
             requestData = {
               message: messageToSend,
               recipient_ic: state.ic
             };
-          }
-        } else {
-          // Department messaging
-          endpoint = '/all/massage/user/sendMassage';
-
-          if (fileToSend) {
-            // Use FormData for file upload
-            requestData = new FormData();
-            requestData.append('message', messageToSend);
-            requestData.append('ic', state.ic);
-            requestData.append('type', state.sessionUserId);
-            requestData.append('file', fileToSend.file);
-            requestData.append('file_type', fileToSend.type);
-            requestData.append('file_name', fileToSend.name);
-
-            config = {
-              headers: {
-                'Content-Type': 'multipart/form-data'
-              }
-            };
           } else {
-            // Use regular JSON for text-only message
+            endpoint = '/all/massage/user/sendMassage';
             requestData = {
               message: messageToSend,
               ic: state.ic,
               type: state.sessionUserId
             };
           }
+
+          sendPromises.push(axios.post(endpoint, requestData));
         }
-        
-        // Send to server
-        axios.post(endpoint, requestData, config)
-        .then(response => {
-          console.log('Message sent successfully:', response.data);
-          
-          // Force immediate update to replace temp message
+
+        // Send all requests
+        Promise.all(sendPromises)
+        .then(responses => {
+          console.log('Messages sent successfully:', responses.length);
+
+          // Force immediate update to replace temp messages
           setTimeout(() => {
             fetchMessages(true);
-            
-            // Set up brief aggressive polling to ensure recipient sees the message quickly
+
+            // Set up brief aggressive polling to ensure recipient sees the messages quickly
             const sendPolling = setInterval(() => {
               fetchMessages(true);
             }, 1000);
-            
+
             // Stop after 5 seconds
             setTimeout(() => {
               clearInterval(sendPolling);
@@ -1078,16 +1126,14 @@
           }, 500);
         })
         .catch(error => {
-          console.error("Error sending message:", error);
+          console.error("Error sending messages:", error);
 
-          // Remove temp message if sending failed
-          state.messages = state.messages.filter(msg => msg.id !== tempMessage.id);
+          // Remove temp messages if sending failed
+          state.messages = state.messages.filter(msg => !tempMessages.find(temp => temp.id === msg.id));
 
-          // Restore the message to input if sending failed
+          // Restore the message and files to input if sending failed
           message.value = messageToSend;
-          if (fileToSend) {
-            selectedFile.value = fileToSend;
-          }
+          selectedFiles.value = filesToSend;
 
           // Show error message to user
           alert('Failed to send message. Please try again.');
@@ -1150,7 +1196,7 @@
         // File upload related
         fileInput,
         fileButton,
-        selectedFile,
+        selectedFiles,
         triggerFileUpload,
         handleFileSelect,
         removeSelectedFile,
@@ -1430,27 +1476,39 @@
     padding: 0.75rem 1rem;
     border-bottom: 1px solid var(--border-color);
     background-color: #f9fafb;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+
+  .files-preview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 0.75rem;
+  }
+
+  .file-preview-item {
+    width: 100%;
   }
 
   .file-preview {
     position: relative;
-    display: inline-block;
+    display: block;
     border-radius: 0.75rem;
     overflow: hidden;
     border: 2px solid var(--border-color);
     background-color: white;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 100%;
   }
 
   /* Image Preview */
   .file-preview.image-preview {
-    max-width: 200px;
+    width: 100%;
   }
 
   .preview-image {
-    width: auto;
-    height: 120px;
-    max-width: 200px;
+    width: 100%;
+    height: 100px;
     object-fit: cover;
     display: block;
     border-radius: 0.5rem;
@@ -1458,25 +1516,24 @@
 
   /* Document Preview */
   .file-preview.document-preview {
-    padding: 0.75rem;
-    min-width: 250px;
-    max-width: 300px;
+    padding: 0.5rem;
+    width: 100%;
   }
 
   .document-info {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: 0.5rem;
   }
 
   .file-icon {
     flex-shrink: 0;
-    width: 48px;
-    height: 48px;
+    width: 32px;
+    height: 32px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 0.5rem;
+    border-radius: 0.375rem;
     background-color: #f3f4f6;
   }
 
