@@ -191,8 +191,8 @@
         </div>
         <div class="header-center">
             <h3>KOLEJ UNITI, PORT DICKSON</h3>
-            <p><strong>FAKULTI:</strong> {{ $courseInfo->faculty_name ?? 'N/A' }}</p>
-            <p><strong>PROGRAM:</strong> {{ $courseInfo->progname ?? 'N/A' }}</p>
+            <p><strong>FAKULTI:</strong> {{ $courseInfo->facultyname ?? 'N/A' }}</p>
+            <p><strong>PROGRAM:</strong> {{ $courseInfo->course_name ?? 'N/A' }}</p>
             <p><strong>PEPERIKSAAN:</strong> {{ $courseInfo->session ?? 'N/A' }}</p>
             <p><strong>KOD MATA PELAJARAN:</strong> {{ $courseInfo->course_code ?? 'N/A' }}</p>
             <p><strong>KUMPULAN:</strong> {{ $groupName }}</p>

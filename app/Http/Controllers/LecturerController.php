@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
 use League\Flysystem\AwsS3V3\PortableVisibilityConverter;
 use Mail;
-use Barryvdh\DomPDF\Facade\Pdf;
+use PDF;
 use Twilio\Rest\Client;
 use Illuminate\Validation\ValidationException;
 use Intervention\Image\Facades\Image;
@@ -4257,7 +4257,7 @@ $content .= '</tr>
         $gradingScale = DB::table('tblsubject_grade')->orderBy('mark_start', 'desc')->get();
 
         // Generate PDF
-        $pdf = Pdf::loadView('lecturer.courseassessment.rowscore_pdf', compact(
+        $pdf = PDF::loadView('lecturer.courseassessment.rowscore_pdf', compact(
             'courseInfo', 'groupName', 'students', 
             'quiz', 'quizanswer', 'overallquiz', 'percentquiz', 'totalquiz',
             'test', 'testanswer', 'overalltest', 'percenttest', 'totaltest',
