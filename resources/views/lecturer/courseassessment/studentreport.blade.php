@@ -80,7 +80,14 @@
               @foreach ($groups as $ky => $grp)
               <div class="box">
                 <div class="card-header mb-4">
-                  <h3 class="card-title">Student List : Group {{ $grp->group_name }}</h3>
+                  <div class="d-flex justify-content-between align-items-center">
+                    <h3 class="card-title">Student List : Group {{ $grp->group_name }}</h3>
+                    <a href="{{ url('lecturer/report/' . $id . '/printRowscore/' . $grp->group_name) }}" 
+                       target="_blank" 
+                       class="btn btn-primary btn-sm">
+                      <i class="fa fa-print"></i> Print Rowscore
+                    </a>
+                  </div>
                 </div>
                 <div class="box-body">
                   <div class="table-responsive">

@@ -396,6 +396,7 @@ Route::patch('/lecturer/class/announcement/list/update/{id}', [App\Http\Controll
 
 Route::get('/lecturer/report/{id}', [App\Http\Controllers\LecturerController::class, 'assessmentreport'])->name('lecturer.report');
 Route::get('/lecturer/report/{id}/{student}', [App\Http\Controllers\LecturerController::class, 'studentreport'])->name('lecturer.report.student');
+Route::get('/lecturer/report/{id}/printRowscore/{groupName}', [App\Http\Controllers\LecturerController::class, 'printRowscore'])->name('lecturer.report.printRowscore');
 
 // Lecturer Materials Routes
 Route::get('/lecturer/materials/get', [App\Http\Controllers\LecturerController::class, 'getLecturerMaterials'])->name('lecturer.materials.get');
