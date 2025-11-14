@@ -4257,7 +4257,7 @@ $content .= '</tr>
         $gradingScale = DB::table('tblsubject_grade')->orderBy('mark_start', 'desc')->get();
 
         // Generate PDF
-        $pdf = \PDF::loadView('lecturer.courseassessment.rowscore_pdf', compact(
+        $pdf = Pdf::loadView('lecturer.courseassessment.rowscore_pdf', compact(
             'courseInfo', 'groupName', 'students', 
             'quiz', 'quizanswer', 'overallquiz', 'percentquiz', 'totalquiz',
             'test', 'testanswer', 'overalltest', 'percenttest', 'totaltest',
