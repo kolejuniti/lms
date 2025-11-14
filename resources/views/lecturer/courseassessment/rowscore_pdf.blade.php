@@ -75,14 +75,18 @@
         
         .right-section {
             width: 100%;
-            page-break-before: always;
-            display: flex;
-            justify-content: space-around;
-            align-items: flex-start;
+            margin-top: 20px;
         }
         
-        .right-section > div {
-            width: 45%;
+        .grading-container {
+            float: left;
+            width: 48%;
+            margin-right: 2%;
+        }
+        
+        .chart-wrapper {
+            float: left;
+            width: 48%;
         }
         
         table {
@@ -133,9 +137,9 @@
         }
         
         .chart-container {
-            margin-top: 15px;
             padding: 10px;
             border: 1px solid #000;
+            height: auto;
         }
         
         .chart-title {
@@ -495,8 +499,8 @@
         </div>
         
         <!-- Right Section: Grading Scale and Chart -->
-        <div class="right-section">
-            <div>
+        <div class="right-section clearfix">
+            <div class="grading-container">
                 <!-- Grading Scale Table -->
                 <table class="grading-table">
                 <thead>
@@ -523,7 +527,7 @@
             </table>
             </div>
             
-            <div>
+            <div class="chart-wrapper">
                 <!-- Performance Chart -->
                 <div class="chart-container">
                 <div class="chart-title">PRESTASI CALON</div>
@@ -547,7 +551,7 @@
     </div>
     
     <!-- Signature Section -->
-    <div class="signature-section clearfix" style="margin-top: 30px;">
+    <div class="signature-section clearfix" style="margin-top: 30px; clear: both;">
         <div class="signature-left">
             <p><strong>TANDATANGAN PENSYARAH:</strong> ______________________</p>
             <p style="margin-top: 30px;"><strong>Tarikh :</strong> ______________________</p>
