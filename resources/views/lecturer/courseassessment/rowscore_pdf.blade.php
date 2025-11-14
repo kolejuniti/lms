@@ -69,14 +69,20 @@
         }
         
         .left-section {
-            float: left;
-            width: 75%;
+            width: 100%;
+            page-break-after: always;
         }
         
         .right-section {
-            float: right;
-            width: 23%;
-            margin-left: 2%;
+            width: 100%;
+            page-break-before: always;
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-start;
+        }
+        
+        .right-section > div {
+            width: 45%;
         }
         
         table {
@@ -490,8 +496,9 @@
         
         <!-- Right Section: Grading Scale and Chart -->
         <div class="right-section">
-            <!-- Grading Scale Table -->
-            <table class="grading-table">
+            <div>
+                <!-- Grading Scale Table -->
+                <table class="grading-table">
                 <thead>
                     <tr>
                         <th colspan="4" style="background-color: #d0d0d0;">GRADING SCALE</th>
@@ -509,14 +516,16 @@
                         <td>{{ $grade->mark_start }}-{{ $grade->mark_end }}</td>
                         <td>{{ $grade->code }}</td>
                         <td>{{ number_format($grade->grade_value, 2) }}</td>
-                        {{-- <td>{{ $grade->status }}</td> --}}
+                        <td></td>
                     </tr>
                     @endforeach
                 </tbody>
             </table>
+            </div>
             
-            <!-- Performance Chart -->
-            <div class="chart-container">
+            <div>
+                <!-- Performance Chart -->
+                <div class="chart-container">
                 <div class="chart-title">PRESTASI CALON</div>
                 <div class="chart-bars">
                     @foreach($gradingScale as $grade)
@@ -532,6 +541,7 @@
                         </div>
                     @endforeach
                 </div>
+            </div>
             </div>
         </div>
     </div>
