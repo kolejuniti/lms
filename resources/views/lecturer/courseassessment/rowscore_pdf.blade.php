@@ -257,14 +257,16 @@
                         
                         <!-- MARKAH KESELURUHAN Header -->
                         <th rowspan="2" colspan="2">MARKAH KESELURUHAN</th>
-                        
-                        <th rowspan="2" colspan="2">CATATAN</th>
                     </tr>
                     <tr>
                         <!-- Individual Assessment Columns with titles and marks -->
                         @foreach($quiz as $key => $qz)
                         <th class="col-assessment">Quiz {{ $key + 1 }}<br>({{ $qz->total_mark }})</th>
                         @endforeach
+                        
+                        @if(count($quiz) > 0)
+                        <th class="col-assessment">Overall Quiz</th>
+                        @endif
                         
                         @foreach($test as $key => $ts)
                         <th class="col-assessment">TEST {{ $key + 1 }}<br>({{ $ts->total_mark }})</th>
@@ -312,10 +314,6 @@
                         
                         @if(count($midterm) > 0)
                         <th class="col-assessment">Overall MIDTERM</th>
-                        @endif
-                        
-                        @if(count($quiz) > 0)
-                        <th class="col-assessment">Overall Quiz</th>
                         @endif
                         
                         <th class="col-assessment">Attend</th>
@@ -377,6 +375,11 @@
                         <th>{{ $qz->total_mark }}</th>
                         @endforeach
                         
+                        <!-- Overall Quiz percentage -->
+                        @if(count($quiz) > 0)
+                        <th>{{ $percentquiz ? $percentquiz->mark_percentage . '%' : '10%' }}</th>
+                        @endif
+                        
                         <!-- Individual Test columns - show total marks, not percentages -->
                         @foreach($test as $ts)
                         <th>{{ $ts->total_mark }}</th>
@@ -437,11 +440,6 @@
                         <th>{{ $percentmidterm ? $percentmidterm->mark_percentage . '%' : '10%' }}</th>
                         @endif
                         
-                        <!-- Overall Quiz percentage -->
-                        @if(count($quiz) > 0)
-                        <th>{{ $percentquiz ? $percentquiz->mark_percentage . '%' : '10%' }}</th>
-                        @endif
-                        
                         <!-- Attend percentage -->
                         <th>5%</th>
                         
@@ -469,6 +467,11 @@
                         @foreach($quiz as $qkey => $qz)
                         <td>{{ isset($quizanswer[$key][$qkey]) && $quizanswer[$key][$qkey] ? $quizanswer[$key][$qkey]->final_mark : '0' }}</td>
                         @endforeach
+                        
+                        <!-- Overall Quiz -->
+                        @if(count($quiz) > 0)
+                        <td style="background-color: #677ee2">{{ $overallquiz[$key] ?? '0' }}</td>
+                        @endif
                         
                         <!-- Test marks -->
                         @foreach($test as $tkey => $ts)
@@ -530,11 +533,6 @@
                         <td style="background-color: #677ee2">{{ $overallmidterm[$key] ?? '0' }}</td>
                         @endif
                         
-                        <!-- Overall Quiz -->
-                        @if(count($quiz) > 0)
-                        <td style="background-color: #677ee2">{{ $overallquiz[$key] ?? '0' }}</td>
-                        @endif
-                        
                         <!-- Attend -->
                         <td>0</td>
                         
@@ -548,10 +546,6 @@
                         
                         <!-- Nilai Gred -->
                         <td>{{ $valGrade[$key] ?? '-' }}</td>
-                        
-                        <!-- Catatan columns -->
-                        <td></td>
-                        <td></td>
                     </tr>
                     @endforeach
                     
@@ -746,6 +740,9 @@
                         @foreach($quizAvgs as $avg)
                         <td>{{ $avg }}</td>
                         @endforeach
+                        @if(count($quiz) > 0)
+                        <td style="background-color: #677ee2">{{ $avgOverallQuiz }}</td>
+                        @endif
                         @foreach($testAvgs as $avg)
                         <td>{{ $avg }}</td>
                         @endforeach
@@ -782,9 +779,6 @@
                         @if(count($midterm) > 0)
                         <td style="background-color: #677ee2">{{ $avgOverallMidterm }}</td>
                         @endif
-                        @if(count($quiz) > 0)
-                        <td style="background-color: #677ee2">{{ $avgOverallQuiz }}</td>
-                        @endif
                         <td>0</td>
                         @if(count($final) > 0)
                         @foreach($finalAvgs as $avg)
@@ -792,8 +786,6 @@
                         @endforeach
                         @endif
                         <td>{{ $avgoverall }}%</td>
-                        <td></td>
-                        <td></td>
                         <td></td>
                     </tr>
                     
@@ -972,6 +964,9 @@
                         @foreach($quizMaxs as $max)
                         <td>{{ $max }}</td>
                         @endforeach
+                        @if(count($quiz) > 0)
+                        <td style="background-color: #677ee2">{{ $maxOverallQuiz }}</td>
+                        @endif
                         @foreach($testMaxs as $max)
                         <td>{{ $max }}</td>
                         @endforeach
@@ -1008,9 +1003,6 @@
                         @if(count($midterm) > 0)
                         <td style="background-color: #677ee2">{{ $maxOverallMidterm }}</td>
                         @endif
-                        @if(count($quiz) > 0)
-                        <td style="background-color: #677ee2">{{ $maxOverallQuiz }}</td>
-                        @endif
                         <td>0</td>
                         @if(count($final) > 0)
                         @foreach($finalMaxs as $max)
@@ -1018,8 +1010,6 @@
                         @endforeach
                         @endif
                         <td>{{ $maxoverall }}%</td>
-                        <td></td>
-                        <td></td>
                         <td></td>
                     </tr>
                     
@@ -1228,6 +1218,9 @@
                         @foreach($quizMins as $min)
                         <td>{{ $min }}</td>
                         @endforeach
+                        @if(count($quiz) > 0)
+                        <td style="background-color: #677ee2">{{ $minOverallQuiz }}</td>
+                        @endif
                         @foreach($testMins as $min)
                         <td>{{ $min }}</td>
                         @endforeach
@@ -1264,9 +1257,6 @@
                         @if(count($midterm) > 0)
                         <td style="background-color: #677ee2">{{ $minOverallMidterm }}</td>
                         @endif
-                        @if(count($quiz) > 0)
-                        <td style="background-color: #677ee2">{{ $minOverallQuiz }}</td>
-                        @endif
                         <td>0</td>
                         @if(count($final) > 0)
                         @foreach($finalMins as $min)
@@ -1274,8 +1264,6 @@
                         @endforeach
                         @endif
                         <td>{{ $minoverall }}%</td>
-                        <td></td>
-                        <td></td>
                         <td></td>
                     </tr>
                 </tbody>
