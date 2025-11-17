@@ -208,7 +208,7 @@
             <p><strong>KUMPULAN:</strong> {{ $groupName }}</p>
         </div>
         <div class="header-right">
-            BPJOLI-PMI (D1.05/01)
+            BPKDU.PM.(O).05/01
         </div>
     </div>
     
@@ -462,8 +462,8 @@
                         @endif
                         
                         <!-- Overall percentages -->
-                        <th> </th>
-                        <th> </th>
+                        <th>100%</th>
+                        <th>Gred</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -1340,12 +1340,14 @@
                 </thead>
                 <tbody>
                     @foreach($gradingScale as $grade)
+                    @if($grade->code != 'GL')
                     <tr>
                         <td>{{ $grade->mark_start }}-{{ $grade->mark_end }}</td>
                         <td>{{ $grade->code }}</td>
                         <td>{{ number_format($grade->grade_value, 2) }}</td>
                         <td></td>
                     </tr>
+                    @endif
                     @endforeach
                 </tbody>
             </table>
@@ -1357,6 +1359,7 @@
                 <div class="chart-title">PRESTASI CALON</div>
                 <div class="chart-bars">
                     @foreach($gradingScale as $grade)
+                    @if($grade->code != 'GL')
                         @php
                             $count = $gradeDistribution[$grade->code] ?? 0;
                             $barHeight = $count > 0 ? ($count * 20) : 0;
@@ -1367,6 +1370,7 @@
                             <div class="bar" style="width: {{ $barHeight }}px; height: 15px; line-height: 15px;">{{ $count }}</div>
                             @endif
                         </div>
+                    @endif
                     @endforeach
                 </div>
             </div>
@@ -1377,7 +1381,7 @@
     <!-- Signature Section -->
     <div class="signature-section clearfix" style="margin-top: 30px; clear: both;">
         <div class="signature-left">
-            <p><strong>TANDATANGAN PENSYARAH:</strong> ______________________</p>
+            <p><strong>Tandatangan Pensyarah:</strong> ______________________</p>
             <p style="margin-top: 30px;"><strong>Tarikh :</strong> ______________________</p>
         </div>
         <div class="signature-right">
