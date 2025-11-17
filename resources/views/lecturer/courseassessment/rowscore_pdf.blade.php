@@ -1001,7 +1001,7 @@
                         @if(count($midterm) > 0)
                         <td style="background-color: #677ee2">{{ $maxOverallMidterm }}</td>
                         @endif
-                        <td>0</td>
+                        <td> </td>
                         @if(count($final) > 0)
                         @foreach($finalMaxs as $max)
                         <td>{{ $max }}</td>
