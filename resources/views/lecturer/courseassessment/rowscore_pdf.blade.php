@@ -246,7 +246,7 @@
                             $totalCourseWorkCols += count($other) > 0 ? 1 : 0; // Overall OTHER
                             $totalCourseWorkCols += count($midterm) > 0 ? 1 : 0; // Overall MIDTERM
                             $totalCourseWorkCols += count($quiz) > 0 ? 1 : 0; // Overall Quiz
-                            $totalCourseWorkCols += 1; // Attend column
+                            // $totalCourseWorkCols += 1; // Attend column
                         @endphp
                         @if($assessmentColCount > 0 || count($quiz) > 0)
                         <th colspan="{{ $totalCourseWorkCols }}">KERJA KURSUS/MARKAH BULANAN (%)</th>
@@ -317,7 +317,7 @@
                         <th class="col-assessment">Keseluruhan Pertengahan</th>
                         @endif
                         
-                        <th class="col-assessment">Attend</th>
+                        {{-- <th class="col-assessment">Attend</th> --}}
                         
                         @if(count($final) > 0)
                         @foreach($final as $key => $fn)
@@ -449,8 +449,8 @@
                         <th>{{ $percentmidterm ? $percentmidterm->mark_percentage . '%' : '10%' }}</th>
                         @endif
                         
-                        <!-- Attend percentage -->
-                        <th> </th>
+                        {{-- <!-- Attend percentage -->
+                        <th> </th> --}}
                         
                         <!-- Individual Final columns - show total marks -->
                         @if(count($final) > 0)
@@ -545,8 +545,8 @@
                         <td style="background-color: #677ee2">{{ $overallmidterm[$key] ?? '0' }}</td>
                         @endif
                         
-                        <!-- Attend -->
-                        <td> </td>
+                        {{-- <!-- Attend -->
+                        <td> </td> --}}
                         
                         <!-- Individual Final marks -->
                         @if(count($final) > 0)
@@ -807,7 +807,7 @@
                         @if(count($midterm) > 0)
                         <td style="background-color: #677ee2">{{ $avgOverallMidterm }}</td>
                         @endif
-                        <td> </td>
+                        {{-- <td> </td> --}}
                         @if(count($final) > 0)
                         @foreach($finalAvgs as $avg)
                         <td>{{ $avg }}</td>
@@ -1042,7 +1042,7 @@
                         @if(count($midterm) > 0)
                         <td style="background-color: #677ee2">{{ $maxOverallMidterm }}</td>
                         @endif
-                        <td> </td>
+                        {{-- <td> </td> --}}
                         @if(count($final) > 0)
                         @foreach($finalMaxs as $max)
                         <td>{{ $max }}</td>
@@ -1309,7 +1309,7 @@
                         @if(count($midterm) > 0)
                         <td style="background-color: #677ee2">{{ $minOverallMidterm }}</td>
                         @endif
-                        <td> </td>
+                        {{-- <td> </td> --}}
                         @if(count($final) > 0)
                         @foreach($finalMins as $min)
                         <td>{{ $min }}</td>
