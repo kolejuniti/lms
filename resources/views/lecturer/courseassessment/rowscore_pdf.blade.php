@@ -262,69 +262,69 @@
                     <tr>
                         <!-- Individual Assessment Columns with titles and marks -->
                         @foreach($quiz as $key => $qz)
-                        <th class="col-assessment">Quiz {{ $key + 1 }}<br>({{ $qz->total_mark }})</th>
+                        <th class="col-assessment">Kuiz {{ $key + 1 }}<br>({{ $qz->total_mark }})</th>
                         @endforeach
                         
                         @if(count($quiz) > 0)
-                        <th class="col-assessment">Overall Quiz</th>
+                        <th class="col-assessment">Keseluruhan Kuiz</th>
                         @endif
                         
                         @foreach($test as $key => $ts)
-                        <th class="col-assessment">TEST {{ $key + 1 }}<br>({{ $ts->total_mark }})</th>
+                        <th class="col-assessment">Ujian {{ $key + 1 }}<br>({{ $ts->total_mark }})</th>
                         @endforeach
                         
                         @foreach($test2 as $key => $ts2)
-                        <th class="col-assessment">TEST {{ count($test) + $key + 1 }}<br>({{ $ts2->total_mark }})</th>
+                        <th class="col-assessment">Ujian {{ count($test) + $key + 1 }}<br>({{ $ts2->total_mark }})</th>
                         @endforeach
                         
                         @if(count($test) > 0)
-                        <th class="col-assessment">Overall TEST</th>
+                        <th class="col-assessment">Keseluruhan Ujian</th>
                         @endif
                         
                         @if(count($test2) > 0)
-                        <th class="col-assessment">Overall TEST 2</th>
+                        <th class="col-assessment">Keseluruhan Ujian 2</th>
                         @endif
                         
                         @foreach($assign as $key => $ag)
-                        <th class="col-assessment">Asgn {{ $key + 1 }}<br>({{ $ag->total_mark }})</th>
+                        <th class="col-assessment">Tugasan {{ $key + 1 }}<br>({{ $ag->total_mark }})</th>
                         @endforeach
                         
                         @if(count($assign) > 0)
-                        <th class="col-assessment">Overall ASSIGNMENT</th>
+                        <th class="col-assessment">Keseluruhan Tugasan</th>
                         @endif
                         
                         @foreach($extra as $key => $ex)
-                        <th class="col-assessment">Extra {{ $key + 1 }}<br>({{ $ex->total_mark }})</th>
+                        <th class="col-assessment">Tambahan {{ $key + 1 }}<br>({{ $ex->total_mark }})</th>
                         @endforeach
                         
                         @if(count($extra) > 0)
-                        <th class="col-assessment">Overall EXTRA</th>
+                        <th class="col-assessment">Keseluruhan Tambahan</th>
                         @endif
                         
                         @foreach($other as $key => $ot)
-                        <th class="col-assessment">Other {{ $key + 1 }}<br>({{ $ot->total_mark }})</th>
+                        <th class="col-assessment">Lain-lain {{ $key + 1 }}<br>({{ $ot->total_mark }})</th>
                         @endforeach
                         
                         @if(count($other) > 0)
-                        <th class="col-assessment">Overall OTHER</th>
+                        <th class="col-assessment">Keseluruhan Lain-lain</th>
                         @endif
                         
                         @foreach($midterm as $key => $mt)
-                        <th class="col-assessment">Mid-term<br>({{ $mt->total_mark }})</th>
+                        <th class="col-assessment">Pertengahan<br>({{ $mt->total_mark }})</th>
                         @endforeach
                         
                         @if(count($midterm) > 0)
-                        <th class="col-assessment">Overall MIDTERM</th>
+                        <th class="col-assessment">Keseluruhan Pertengahan</th>
                         @endif
                         
                         <th class="col-assessment">Attend</th>
                         
                         @if(count($final) > 0)
                         @foreach($final as $key => $fn)
-                        <th class="col-assessment">Final {{ $key + 1 }}<br>({{ $fn->total_mark }})</th>
+                        <th class="col-assessment">Akhir Tahun {{ $key + 1 }}<br>({{ $fn->total_mark }})</th>
                         @endforeach
                         
-                        <th class="col-assessment">Overall FINAL</th>
+                        <th class="col-assessment">Keseluruhan Akhir Tahun</th>
                         @endif
                     </tr>
                     
