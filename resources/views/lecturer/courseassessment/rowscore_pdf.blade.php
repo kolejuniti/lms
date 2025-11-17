@@ -262,7 +262,7 @@
                     <tr>
                         <!-- Individual Assessment Columns with titles and marks -->
                         @foreach($quiz as $key => $qz)
-                        <th class="col-assessment">Kuiz {{ $key + 1 }}<br>({{ $qz->total_mark }})</th>
+                        <th class="col-assessment">Kuiz {{ $key + 1 }}<br></th>
                         @endforeach
                         
                         @if(count($quiz) > 0)
@@ -270,23 +270,23 @@
                         @endif
                         
                         @foreach($test as $key => $ts)
-                        <th class="col-assessment">Ujian {{ $key + 1 }}<br>({{ $ts->total_mark }})</th>
+                        <th class="col-assessment">Ujian 1 ({{ $key + 1 }})<br></th>
                         @endforeach
-                        
-                        @foreach($test2 as $key => $ts2)
-                        <th class="col-assessment">Ujian {{ count($test) + $key + 1 }}<br>({{ $ts2->total_mark }})</th>
-                        @endforeach
-                        
+
                         @if(count($test) > 0)
                         <th class="col-assessment">Keseluruhan Ujian</th>
                         @endif
+                        
+                        @foreach($test2 as $key => $ts2)
+                        <th class="col-assessment">Ujian 2 ({{ $key + 1 }})<br></th>
+                        @endforeach
                         
                         @if(count($test2) > 0)
                         <th class="col-assessment">Keseluruhan Ujian 2</th>
                         @endif
                         
                         @foreach($assign as $key => $ag)
-                        <th class="col-assessment">Tugasan {{ $key + 1 }}<br>({{ $ag->total_mark }})</th>
+                        <th class="col-assessment">Tugasan {{ $key + 1 }}<br></th>
                         @endforeach
                         
                         @if(count($assign) > 0)
@@ -294,7 +294,7 @@
                         @endif
                         
                         @foreach($extra as $key => $ex)
-                        <th class="col-assessment">Tambahan {{ $key + 1 }}<br>({{ $ex->total_mark }})</th>
+                        <th class="col-assessment">Tambahan {{ $key + 1 }}<br></th>
                         @endforeach
                         
                         @if(count($extra) > 0)
@@ -302,7 +302,7 @@
                         @endif
                         
                         @foreach($other as $key => $ot)
-                        <th class="col-assessment">Lain-lain {{ $key + 1 }}<br>({{ $ot->total_mark }})</th>
+                        <th class="col-assessment">Lain-lain {{ $key + 1 }}<br></th>
                         @endforeach
                         
                         @if(count($other) > 0)
@@ -310,7 +310,7 @@
                         @endif
                         
                         @foreach($midterm as $key => $mt)
-                        <th class="col-assessment">Pertengahan<br>({{ $mt->total_mark }})</th>
+                        <th class="col-assessment">Pertengahan<br></th>
                         @endforeach
                         
                         @if(count($midterm) > 0)
@@ -321,7 +321,7 @@
                         
                         @if(count($final) > 0)
                         @foreach($final as $key => $fn)
-                        <th class="col-assessment">Akhir Tahun {{ $key + 1 }}<br>({{ $fn->total_mark }})</th>
+                        <th class="col-assessment">Akhir Tahun {{ $key + 1 }}<br></th>
                         @endforeach
                         
                         <th class="col-assessment">Keseluruhan Akhir Tahun</th>
@@ -394,15 +394,15 @@
                         <th>{{ $ts->total_mark }}</th>
                         @endforeach
                         
-                        <!-- Individual Test2 columns - show total marks, not percentages -->
-                        @foreach($test2 as $ts2)
-                        <th>{{ $ts2->total_mark }}</th>
-                        @endforeach
-                        
                         <!-- Overall Test percentage -->
                         @if(count($test) > 0)
                         <th>{{ $percenttest ? $percenttest->mark_percentage . '%' : '10%' }}</th>
                         @endif
+                        
+                        <!-- Individual Test2 columns - show total marks, not percentages -->
+                        @foreach($test2 as $ts2)
+                        <th>{{ $ts2->total_mark }}</th>
+                        @endforeach
                         
                         <!-- Overall Test2 percentage -->
                         @if(count($test2) > 0)
@@ -490,15 +490,15 @@
                         <td>{{ isset($testanswer[$key][$tkey]) && $testanswer[$key][$tkey] ? $testanswer[$key][$tkey]->final_mark : '0' }}</td>
                         @endforeach
                         
-                        <!-- Test2 marks -->
-                        @foreach($test2 as $t2key => $ts2)
-                        <td>{{ isset($test2answer[$key][$t2key]) && $test2answer[$key][$t2key] ? $test2answer[$key][$t2key]->final_mark : '0' }}</td>
-                        @endforeach
-                        
                         <!-- Overall Test -->
                         @if(count($test) > 0)
                         <td style="background-color: #677ee2">{{ $overalltest[$key] ?? '0' }}</td>
                         @endif
+                        
+                        <!-- Test2 marks -->
+                        @foreach($test2 as $t2key => $ts2)
+                        <td>{{ isset($test2answer[$key][$t2key]) && $test2answer[$key][$t2key] ? $test2answer[$key][$t2key]->final_mark : '0' }}</td>
+                        @endforeach
                         
                         <!-- Overall Test2 -->
                         @if(count($test2) > 0)
@@ -774,12 +774,12 @@
                         @foreach($testAvgs as $avg)
                         <td>{{ $avg }}</td>
                         @endforeach
-                        @foreach($test2Avgs as $avg)
-                        <td>{{ $avg }}</td>
-                        @endforeach
                         @if(count($test) > 0)
                         <td style="background-color: #677ee2">{{ $avgOverallTest }}</td>
                         @endif
+                        @foreach($test2Avgs as $avg)
+                        <td>{{ $avg }}</td>
+                        @endforeach
                         @if(count($test2) > 0)
                         <td style="background-color: #677ee2">{{ $avgOverallTest2 }}</td>
                         @endif
@@ -1008,13 +1008,13 @@
                         @endif
                         @foreach($testMaxs as $max)
                         <td>{{ $max }}</td>
+                        @if(count($test) > 0)
+                        <td style="background-color: #677ee2">{{ $maxOverallTest }}</td>
+                        @endif
                         @endforeach
                         @foreach($test2Maxs as $max)
                         <td>{{ $max }}</td>
                         @endforeach
-                        @if(count($test) > 0)
-                        <td style="background-color: #677ee2">{{ $maxOverallTest }}</td>
-                        @endif
                         @if(count($test2) > 0)
                         <td style="background-color: #677ee2">{{ $maxOverallTest2 }}</td>
                         @endif
@@ -1276,12 +1276,12 @@
                         @foreach($testMins as $min)
                         <td>{{ $min }}</td>
                         @endforeach
-                        @foreach($test2Mins as $min)
-                        <td>{{ $min }}</td>
-                        @endforeach
                         @if(count($test) > 0)
                         <td style="background-color: #677ee2">{{ $minOverallTest }}</td>
                         @endif
+                        @foreach($test2Mins as $min)
+                        <td>{{ $min }}</td>
+                        @endforeach
                         @if(count($test2) > 0)
                         <td style="background-color: #677ee2">{{ $minOverallTest2 }}</td>
                         @endif
@@ -1330,7 +1330,7 @@
                 <table class="grading-table">
                 <thead>
                     <tr>
-                        <th colspan="3" style="background-color: #d0d0d0;">GRADING SCALE</th>
+                        <th colspan="3" style="background-color: #d0d0d0;">SKALA PENGGREDAN</th>
                     </tr>
                     <tr>
                         <th>MARKAH</th>
