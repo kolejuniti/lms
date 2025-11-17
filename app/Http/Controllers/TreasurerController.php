@@ -197,12 +197,12 @@ class TreasurerController extends Controller
                                     <div class="col-md-12" id="payment-card">
                                         <div class="form-group">
                                             <input type="text" class="form-control" name="phyid[]" id="phyid[]" value="'. $clm->id .'" hidden>';
-                                            if($data['balance'][$key] <= 0)
-                                            {
-                                            $content .= '<input readonly type="number" class="form-control" name="payment[]" id="payment[]" step="0.01" max="'. $data['balance'][$key] .'">';
-                                            }else{
+                                            // if($data['balance'][$key] <= 0)
+                                            // {
+                                            // $content .= '<input readonly type="number" class="form-control" name="payment[]" id="payment[]" step="0.01" max="'. $data['balance'][$key] .'">';
+                                            // }else{
                                             $content .= '<input type="number" class="form-control" name="payment[]" id="payment[]" step="0.01" max="'. $data['balance'][$key] .'">';
-                                            }
+                                            // }
                             $content .='</div>
                                     </div> 
                                 </td>

@@ -201,14 +201,15 @@
         </div>
         <div class="header-center">
             <h3>KOLEJ UNITI, PORT DICKSON</h3>
+            <p><strong>PENSYARAH:</strong> {{ $courseInfo->lecturer_name ?? 'N/A' }}</p>
             <p><strong>FAKULTI:</strong> {{ $courseInfo->facultyname ?? 'N/A' }}</p>
-            <p><strong>PROGRAM:</strong> {{ $courseInfo->course_name ?? 'N/A' }}</p>
-            <p><strong>PEPERIKSAAN:</strong> {{ $courseInfo->session ?? 'N/A' }}</p>
+            <p><strong>NAMA MATA PELAJARAN:</strong> {{ $courseInfo->course_name ?? 'N/A' }}</p>
+            <p><strong>SESI:</strong> {{ $courseInfo->session ?? 'N/A' }}</p>
             <p><strong>KOD MATA PELAJARAN:</strong> {{ $courseInfo->course_code ?? 'N/A' }}</p>
             <p><strong>KUMPULAN:</strong> {{ $groupName }}</p>
         </div>
         <div class="header-right">
-            BPKDU.PM.(O).05/01
+            BPKDU.PM.(O).05/02
         </div>
     </div>
     
@@ -218,9 +219,9 @@
             <table class="assessment-table">
                 <thead>
                     <tr>
-                        <th rowspan="2" class="col-bil">BIL</th>
-                        <th rowspan="2" class="col-matric">NO KAD MATRIK</th>
-                        <th rowspan="2" class="col-nama">NAMA</th>
+                        <th rowspan="3" class="col-bil">BIL</th>
+                        <th rowspan="3" class="col-matric">NO KAD MATRIK</th>
+                        <th rowspan="3" class="col-nama">NAMA</th>
                         
                         <!-- KERJA KURSUS/MARKAH BULANAN (%) Header -->
                         @php
@@ -329,9 +330,9 @@
                     
                     <!-- Percentage Weight Row -->
                     <tr class="percent-row">
+                        {{-- <th> </th>
                         <th> </th>
-                        <th> </th>
-                        <th> </th>
+                        <th> </th> --}}
                         
                         @php
                             $sub_id = DB::table('subjek')->where('id', $courseInfo->id ?? 0)->value('sub_id');

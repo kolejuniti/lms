@@ -3942,7 +3942,7 @@ $content .= '</tr>
                             ['user_subjek.session_id', Session::get('SessionID')],
                             ['subjek.id', $id]
                          ])
-                        ->select('subjek.*', 'sessions.SessionName AS session', 'tblfaculty.facultyname')
+                        ->select('subjek.*', 'sessions.SessionName AS session', 'tblfaculty.facultyname', 'users.name AS lecturer_name')
                         ->first();
 
         $sub_id = DB::table('subjek')->where('id', $id)->value('sub_id');
