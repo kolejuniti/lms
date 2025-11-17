@@ -532,7 +532,7 @@
                         @endif
                         
                         <!-- Attend -->
-                        <td>0</td>
+                        <td> </td>
                         
                         <!-- Final marks -->
                         @if(count($final) > 0)
@@ -777,7 +777,7 @@
                         @if(count($midterm) > 0)
                         <td style="background-color: #677ee2">{{ $avgOverallMidterm }}</td>
                         @endif
-                        <td>0</td>
+                        <td> </td>
                         @if(count($final) > 0)
                         @foreach($finalAvgs as $avg)
                         <td>{{ $avg }}</td>
@@ -1255,7 +1255,7 @@
                         @if(count($midterm) > 0)
                         <td style="background-color: #677ee2">{{ $minOverallMidterm }}</td>
                         @endif
-                        <td>0</td>
+                        <td> </td>
                         @if(count($final) > 0)
                         @foreach($finalMins as $min)
                         <td>{{ $min }}</td>
