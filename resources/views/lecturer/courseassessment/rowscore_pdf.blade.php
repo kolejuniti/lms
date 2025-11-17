@@ -1330,12 +1330,13 @@
                 <table class="grading-table">
                 <thead>
                     <tr>
-                        <th colspan="3" style="background-color: #d0d0d0;">SKALA PENGGREDAN</th>
+                        <th colspan="4" style="background-color: #d0d0d0;">SKALA PENGGREDAN</th>
                     </tr>
                     <tr>
                         <th>MARKAH</th>
                         <th>GRED</th>
                         <th>NILAI MATA</th>
+                        <th>CATATAN</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -1345,6 +1346,7 @@
                         <td>{{ $grade->mark_start }}-{{ $grade->mark_end }}</td>
                         <td>{{ $grade->code }}</td>
                         <td>{{ number_format($grade->grade_value, 2) }}</td>
+                        <td>{{ $grade->content }}</td>
                     </tr>
                     @endif
                     @endforeach
