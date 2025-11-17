@@ -234,8 +234,21 @@
                             $assessmentColCount += count($other);
                         @endphp
                         
-                        @if($assessmentColCount > 0)
-                        <th colspan="{{ $assessmentColCount + 2 }}">KERJA KURSUS/MARKAH BULANAN (%)</th>
+                        @php
+                            // Calculate total coursework columns including overall columns
+                            $totalCourseWorkCols = $assessmentColCount;
+                            // Add overall columns for each assessment type that exists
+                            $totalCourseWorkCols += count($test) > 0 ? 1 : 0; // Overall TEST
+                            $totalCourseWorkCols += count($test2) > 0 ? 1 : 0; // Overall TEST2
+                            $totalCourseWorkCols += count($assign) > 0 ? 1 : 0; // Overall ASSIGNMENT
+                            $totalCourseWorkCols += count($extra) > 0 ? 1 : 0; // Overall EXTRA
+                            $totalCourseWorkCols += count($other) > 0 ? 1 : 0; // Overall OTHER
+                            $totalCourseWorkCols += count($midterm) > 0 ? 1 : 0; // Overall MIDTERM
+                            $totalCourseWorkCols += count($quiz) > 0 ? 1 : 0; // Overall Quiz
+                            $totalCourseWorkCols += 1; // Attend column
+                        @endphp
+                        @if($assessmentColCount > 0 || count($quiz) > 0)
+                        <th colspan="{{ $totalCourseWorkCols }}">KERJA KURSUS/MARKAH BULANAN (%)</th>
                         @endif
                         
                         @if(count($final) > 0)
@@ -301,7 +314,10 @@
                         <th class="col-assessment">Overall MIDTERM</th>
                         @endif
                         
+                        @if(count($quiz) > 0)
                         <th class="col-assessment">Overall Quiz</th>
+                        @endif
+                        
                         <th class="col-assessment">Attend</th>
                     </tr>
                     
@@ -422,7 +438,9 @@
                         @endif
                         
                         <!-- Overall Quiz percentage -->
+                        @if(count($quiz) > 0)
                         <th>{{ $percentquiz ? $percentquiz->mark_percentage . '%' : '10%' }}</th>
+                        @endif
                         
                         <!-- Attend percentage -->
                         <th>5%</th>
@@ -513,7 +531,9 @@
                         @endif
                         
                         <!-- Overall Quiz -->
+                        @if(count($quiz) > 0)
                         <td style="background-color: #677ee2">{{ $overallquiz[$key] ?? '0' }}</td>
+                        @endif
                         
                         <!-- Attend -->
                         <td>0</td>
@@ -762,7 +782,9 @@
                         @if(count($midterm) > 0)
                         <td style="background-color: #677ee2">{{ $avgOverallMidterm }}</td>
                         @endif
+                        @if(count($quiz) > 0)
                         <td style="background-color: #677ee2">{{ $avgOverallQuiz }}</td>
+                        @endif
                         <td>0</td>
                         @if(count($final) > 0)
                         @foreach($finalAvgs as $avg)
@@ -986,7 +1008,9 @@
                         @if(count($midterm) > 0)
                         <td style="background-color: #677ee2">{{ $maxOverallMidterm }}</td>
                         @endif
+                        @if(count($quiz) > 0)
                         <td style="background-color: #677ee2">{{ $maxOverallQuiz }}</td>
+                        @endif
                         <td>0</td>
                         @if(count($final) > 0)
                         @foreach($finalMaxs as $max)
@@ -1240,7 +1264,9 @@
                         @if(count($midterm) > 0)
                         <td style="background-color: #677ee2">{{ $minOverallMidterm }}</td>
                         @endif
+                        @if(count($quiz) > 0)
                         <td style="background-color: #677ee2">{{ $minOverallQuiz }}</td>
+                        @endif
                         <td>0</td>
                         @if(count($final) > 0)
                         @foreach($finalMins as $min)
