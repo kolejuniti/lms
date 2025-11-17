@@ -261,23 +261,47 @@
                         <th class="col-assessment">TEST {{ count($test) + $key + 1 }}<br>({{ $ts2->total_mark }})</th>
                         @endforeach
                         
+                        @if(count($test) > 0)
+                        <th class="col-assessment">Overall TEST</th>
+                        @endif
+                        
+                        @if(count($test2) > 0)
+                        <th class="col-assessment">Overall TEST 2</th>
+                        @endif
+                        
                         @foreach($assign as $key => $ag)
                         <th class="col-assessment">Asgn {{ $key + 1 }}<br>({{ $ag->total_mark }})</th>
                         @endforeach
+                        
+                        @if(count($assign) > 0)
+                        <th class="col-assessment">Overall ASSIGNMENT</th>
+                        @endif
                         
                         @foreach($extra as $key => $ex)
                         <th class="col-assessment">Extra {{ $key + 1 }}<br>({{ $ex->total_mark }})</th>
                         @endforeach
                         
+                        @if(count($extra) > 0)
+                        <th class="col-assessment">Overall EXTRA</th>
+                        @endif
+                        
                         @foreach($other as $key => $ot)
                         <th class="col-assessment">Other {{ $key + 1 }}<br>({{ $ot->total_mark }})</th>
                         @endforeach
+                        
+                        @if(count($other) > 0)
+                        <th class="col-assessment">Overall OTHER</th>
+                        @endif
                         
                         @foreach($midterm as $key => $mt)
                         <th class="col-assessment">Mid-term<br>({{ $mt->total_mark }})</th>
                         @endforeach
                         
-                        <th class="col-assessment">Quiz</th>
+                        @if(count($midterm) > 0)
+                        <th class="col-assessment">Overall MIDTERM</th>
+                        @endif
+                        
+                        <th class="col-assessment">Overall Quiz</th>
                         <th class="col-assessment">Attend</th>
                     </tr>
                     
@@ -305,6 +329,31 @@
                                 ['course_id', $sub_id],
                                 ['assessment', 'test2']
                             ])->orderBy('tblclassmarks.id', 'desc')->first();
+                            
+                            $percentassign = DB::table('tblclassmarks')->where([
+                                ['course_id', $sub_id],
+                                ['assessment', 'assignment']
+                            ])->orderBy('tblclassmarks.id', 'desc')->first();
+                            
+                            $percentextra = DB::table('tblclassmarks')->where([
+                                ['course_id', $sub_id],
+                                ['assessment', 'extra']
+                            ])->orderBy('tblclassmarks.id', 'desc')->first();
+                            
+                            $percentother = DB::table('tblclassmarks')->where([
+                                ['course_id', $sub_id],
+                                ['assessment', 'lain-lain']
+                            ])->orderBy('tblclassmarks.id', 'desc')->first();
+                            
+                            $percentmidterm = DB::table('tblclassmarks')->where([
+                                ['course_id', $sub_id],
+                                ['assessment', 'midterm']
+                            ])->orderBy('tblclassmarks.id', 'desc')->first();
+                            
+                            $percentfinal = DB::table('tblclassmarks')->where([
+                                ['course_id', $sub_id],
+                                ['assessment', 'final']
+                            ])->orderBy('tblclassmarks.id', 'desc')->first();
                         @endphp
                         
                         <!-- Individual Quiz columns - show total marks, not percentages -->
@@ -322,25 +371,55 @@
                         <th>{{ $ts2->total_mark }}</th>
                         @endforeach
                         
+                        <!-- Overall Test percentage -->
+                        @if(count($test) > 0)
+                        <th>{{ $percenttest ? $percenttest->mark_percentage . '%' : '10%' }}</th>
+                        @endif
+                        
+                        <!-- Overall Test2 percentage -->
+                        @if(count($test2) > 0)
+                        <th>{{ $percenttest2 ? $percenttest2->mark_percentage . '%' : '10%' }}</th>
+                        @endif
+                        
                         <!-- Individual Assignment columns - show total marks -->
                         @foreach($assign as $ag)
                         <th>{{ $ag->total_mark }}</th>
                         @endforeach
+                        
+                        <!-- Overall Assignment percentage -->
+                        @if(count($assign) > 0)
+                        <th>{{ $percentassign ? $percentassign->mark_percentage . '%' : '10%' }}</th>
+                        @endif
                         
                         <!-- Individual Extra columns - show total marks -->
                         @foreach($extra as $ex)
                         <th>{{ $ex->total_mark }}</th>
                         @endforeach
                         
+                        <!-- Overall Extra percentage -->
+                        @if(count($extra) > 0)
+                        <th>{{ $percentextra ? $percentextra->mark_percentage . '%' : '10%' }}</th>
+                        @endif
+                        
                         <!-- Individual Other columns - show total marks -->
                         @foreach($other as $ot)
                         <th>{{ $ot->total_mark }}</th>
                         @endforeach
                         
+                        <!-- Overall Other percentage -->
+                        @if(count($other) > 0)
+                        <th>{{ $percentother ? $percentother->mark_percentage . '%' : '10%' }}</th>
+                        @endif
+                        
                         <!-- Individual Midterm columns - show total marks -->
                         @foreach($midterm as $mt)
                         <th>{{ $mt->total_mark }}</th>
                         @endforeach
+                        
+                        <!-- Overall Midterm percentage -->
+                        @if(count($midterm) > 0)
+                        <th>{{ $percentmidterm ? $percentmidterm->mark_percentage . '%' : '10%' }}</th>
+                        @endif
                         
                         <!-- Overall Quiz percentage -->
                         <th>{{ $percentquiz ? $percentquiz->mark_percentage . '%' : '10%' }}</th>
@@ -383,28 +462,58 @@
                         <td>{{ isset($test2answer[$key][$t2key]) && $test2answer[$key][$t2key] ? $test2answer[$key][$t2key]->final_mark : '0' }}</td>
                         @endforeach
                         
+                        <!-- Overall Test -->
+                        @if(count($test) > 0)
+                        <td style="background-color: #677ee2">{{ $overalltest[$key] ?? '0' }}</td>
+                        @endif
+                        
+                        <!-- Overall Test2 -->
+                        @if(count($test2) > 0)
+                        <td style="background-color: #677ee2">{{ $overalltest2[$key] ?? '0' }}</td>
+                        @endif
+                        
                         <!-- Assignment marks -->
                         @foreach($assign as $akey => $ag)
                         <td>{{ isset($assignanswer[$key][$akey]) && $assignanswer[$key][$akey] ? $assignanswer[$key][$akey]->final_mark : '0' }}</td>
                         @endforeach
+                        
+                        <!-- Overall Assignment -->
+                        @if(count($assign) > 0)
+                        <td style="background-color: #677ee2">{{ $overallassign[$key] ?? '0' }}</td>
+                        @endif
                         
                         <!-- Extra marks -->
                         @foreach($extra as $ekey => $ex)
                         <td>{{ isset($extraanswer[$key][$ekey]) && $extraanswer[$key][$ekey] ? $extraanswer[$key][$ekey]->total_mark : '0' }}</td>
                         @endforeach
                         
+                        <!-- Overall Extra -->
+                        @if(count($extra) > 0)
+                        <td style="background-color: #677ee2">{{ $overallextra[$key] ?? '0' }}</td>
+                        @endif
+                        
                         <!-- Other marks -->
                         @foreach($other as $okey => $ot)
                         <td>{{ isset($otheranswer[$key][$okey]) && $otheranswer[$key][$okey] ? $otheranswer[$key][$okey]->total_mark : '0' }}</td>
                         @endforeach
+                        
+                        <!-- Overall Other -->
+                        @if(count($other) > 0)
+                        <td style="background-color: #677ee2">{{ $overallother[$key] ?? '0' }}</td>
+                        @endif
                         
                         <!-- Midterm marks -->
                         @foreach($midterm as $mkey => $mt)
                         <td>{{ isset($midtermanswer[$key][$mkey]) && $midtermanswer[$key][$mkey] ? $midtermanswer[$key][$mkey]->final_mark : '0' }}</td>
                         @endforeach
                         
+                        <!-- Overall Midterm -->
+                        @if(count($midterm) > 0)
+                        <td style="background-color: #677ee2">{{ $overallmidterm[$key] ?? '0' }}</td>
+                        @endif
+                        
                         <!-- Overall Quiz -->
-                        <td>{{ $overallquiz[$key] ?? '0' }}</td>
+                        <td style="background-color: #677ee2">{{ $overallquiz[$key] ?? '0' }}</td>
                         
                         <!-- Attend -->
                         <td>0</td>
@@ -522,6 +631,72 @@
                                 $midtermAvgs[] = $count > 0 ? number_format($sum / $count, 2) : '0.0';
                             }
                             
+                            // Calculate average overall test
+                            $overallTestSum = 0;
+                            $overallTestCount = 0;
+                            foreach($students as $skey => $student) {
+                                if(isset($overalltest[$skey])) {
+                                    $overallTestSum += floatval($overalltest[$skey]);
+                                    $overallTestCount++;
+                                }
+                            }
+                            $avgOverallTest = $overallTestCount > 0 ? number_format($overallTestSum / $overallTestCount, 2) : '0.0';
+                            
+                            // Calculate average overall test2
+                            $overallTest2Sum = 0;
+                            $overallTest2Count = 0;
+                            foreach($students as $skey => $student) {
+                                if(isset($overalltest2[$skey])) {
+                                    $overallTest2Sum += floatval($overalltest2[$skey]);
+                                    $overallTest2Count++;
+                                }
+                            }
+                            $avgOverallTest2 = $overallTest2Count > 0 ? number_format($overallTest2Sum / $overallTest2Count, 2) : '0.0';
+                            
+                            // Calculate average overall assign
+                            $overallAssignSum = 0;
+                            $overallAssignCount = 0;
+                            foreach($students as $skey => $student) {
+                                if(isset($overallassign[$skey])) {
+                                    $overallAssignSum += floatval($overallassign[$skey]);
+                                    $overallAssignCount++;
+                                }
+                            }
+                            $avgOverallAssign = $overallAssignCount > 0 ? number_format($overallAssignSum / $overallAssignCount, 2) : '0.0';
+                            
+                            // Calculate average overall extra
+                            $overallExtraSum = 0;
+                            $overallExtraCount = 0;
+                            foreach($students as $skey => $student) {
+                                if(isset($overallextra[$skey])) {
+                                    $overallExtraSum += floatval($overallextra[$skey]);
+                                    $overallExtraCount++;
+                                }
+                            }
+                            $avgOverallExtra = $overallExtraCount > 0 ? number_format($overallExtraSum / $overallExtraCount, 2) : '0.0';
+                            
+                            // Calculate average overall other
+                            $overallOtherSum = 0;
+                            $overallOtherCount = 0;
+                            foreach($students as $skey => $student) {
+                                if(isset($overallother[$skey])) {
+                                    $overallOtherSum += floatval($overallother[$skey]);
+                                    $overallOtherCount++;
+                                }
+                            }
+                            $avgOverallOther = $overallOtherCount > 0 ? number_format($overallOtherSum / $overallOtherCount, 2) : '0.0';
+                            
+                            // Calculate average overall midterm
+                            $overallMidtermSum = 0;
+                            $overallMidtermCount = 0;
+                            foreach($students as $skey => $student) {
+                                if(isset($overallmidterm[$skey])) {
+                                    $overallMidtermSum += floatval($overallmidterm[$skey]);
+                                    $overallMidtermCount++;
+                                }
+                            }
+                            $avgOverallMidterm = $overallMidtermCount > 0 ? number_format($overallMidtermSum / $overallMidtermCount, 2) : '0.0';
+                            
                             // Calculate average overall quiz
                             $overallQuizSum = 0;
                             $overallQuizCount = 0;
@@ -557,19 +732,37 @@
                         @foreach($test2Avgs as $avg)
                         <td>{{ $avg }}</td>
                         @endforeach
+                        @if(count($test) > 0)
+                        <td style="background-color: #677ee2">{{ $avgOverallTest }}</td>
+                        @endif
+                        @if(count($test2) > 0)
+                        <td style="background-color: #677ee2">{{ $avgOverallTest2 }}</td>
+                        @endif
                         @foreach($assignAvgs as $avg)
                         <td>{{ $avg }}</td>
                         @endforeach
+                        @if(count($assign) > 0)
+                        <td style="background-color: #677ee2">{{ $avgOverallAssign }}</td>
+                        @endif
                         @foreach($extraAvgs as $avg)
                         <td>{{ $avg }}</td>
                         @endforeach
+                        @if(count($extra) > 0)
+                        <td style="background-color: #677ee2">{{ $avgOverallExtra }}</td>
+                        @endif
                         @foreach($otherAvgs as $avg)
                         <td>{{ $avg }}</td>
                         @endforeach
+                        @if(count($other) > 0)
+                        <td style="background-color: #677ee2">{{ $avgOverallOther }}</td>
+                        @endif
                         @foreach($midtermAvgs as $avg)
                         <td>{{ $avg }}</td>
                         @endforeach
-                        <td>{{ $avgOverallQuiz }}</td>
+                        @if(count($midterm) > 0)
+                        <td style="background-color: #677ee2">{{ $avgOverallMidterm }}</td>
+                        @endif
+                        <td style="background-color: #677ee2">{{ $avgOverallQuiz }}</td>
                         <td>0</td>
                         @if(count($final) > 0)
                         @foreach($finalAvgs as $avg)
@@ -670,6 +863,66 @@
                                 $midtermMaxs[] = number_format($max, 2);
                             }
                             
+                            // Calculate max overall test
+                            $maxOverallTest = 0;
+                            foreach($students as $skey => $student) {
+                                if(isset($overalltest[$skey])) {
+                                    $mark = floatval($overalltest[$skey]);
+                                    if($mark > $maxOverallTest) $maxOverallTest = $mark;
+                                }
+                            }
+                            $maxOverallTest = number_format($maxOverallTest, 2);
+                            
+                            // Calculate max overall test2
+                            $maxOverallTest2 = 0;
+                            foreach($students as $skey => $student) {
+                                if(isset($overalltest2[$skey])) {
+                                    $mark = floatval($overalltest2[$skey]);
+                                    if($mark > $maxOverallTest2) $maxOverallTest2 = $mark;
+                                }
+                            }
+                            $maxOverallTest2 = number_format($maxOverallTest2, 2);
+                            
+                            // Calculate max overall assign
+                            $maxOverallAssign = 0;
+                            foreach($students as $skey => $student) {
+                                if(isset($overallassign[$skey])) {
+                                    $mark = floatval($overallassign[$skey]);
+                                    if($mark > $maxOverallAssign) $maxOverallAssign = $mark;
+                                }
+                            }
+                            $maxOverallAssign = number_format($maxOverallAssign, 2);
+                            
+                            // Calculate max overall extra
+                            $maxOverallExtra = 0;
+                            foreach($students as $skey => $student) {
+                                if(isset($overallextra[$skey])) {
+                                    $mark = floatval($overallextra[$skey]);
+                                    if($mark > $maxOverallExtra) $maxOverallExtra = $mark;
+                                }
+                            }
+                            $maxOverallExtra = number_format($maxOverallExtra, 2);
+                            
+                            // Calculate max overall other
+                            $maxOverallOther = 0;
+                            foreach($students as $skey => $student) {
+                                if(isset($overallother[$skey])) {
+                                    $mark = floatval($overallother[$skey]);
+                                    if($mark > $maxOverallOther) $maxOverallOther = $mark;
+                                }
+                            }
+                            $maxOverallOther = number_format($maxOverallOther, 2);
+                            
+                            // Calculate max overall midterm
+                            $maxOverallMidterm = 0;
+                            foreach($students as $skey => $student) {
+                                if(isset($overallmidterm[$skey])) {
+                                    $mark = floatval($overallmidterm[$skey]);
+                                    if($mark > $maxOverallMidterm) $maxOverallMidterm = $mark;
+                                }
+                            }
+                            $maxOverallMidterm = number_format($maxOverallMidterm, 2);
+                            
                             // Calculate max overall quiz
                             $maxOverallQuiz = 0;
                             foreach($students as $skey => $student) {
@@ -703,19 +956,37 @@
                         @foreach($test2Maxs as $max)
                         <td>{{ $max }}</td>
                         @endforeach
+                        @if(count($test) > 0)
+                        <td style="background-color: #677ee2">{{ $maxOverallTest }}</td>
+                        @endif
+                        @if(count($test2) > 0)
+                        <td style="background-color: #677ee2">{{ $maxOverallTest2 }}</td>
+                        @endif
                         @foreach($assignMaxs as $max)
                         <td>{{ $max }}</td>
                         @endforeach
+                        @if(count($assign) > 0)
+                        <td style="background-color: #677ee2">{{ $maxOverallAssign }}</td>
+                        @endif
                         @foreach($extraMaxs as $max)
                         <td>{{ $max }}</td>
                         @endforeach
+                        @if(count($extra) > 0)
+                        <td style="background-color: #677ee2">{{ $maxOverallExtra }}</td>
+                        @endif
                         @foreach($otherMaxs as $max)
                         <td>{{ $max }}</td>
                         @endforeach
+                        @if(count($other) > 0)
+                        <td style="background-color: #677ee2">{{ $maxOverallOther }}</td>
+                        @endif
                         @foreach($midtermMaxs as $max)
                         <td>{{ $max }}</td>
                         @endforeach
-                        <td>{{ $maxOverallQuiz }}</td>
+                        @if(count($midterm) > 0)
+                        <td style="background-color: #677ee2">{{ $maxOverallMidterm }}</td>
+                        @endif
+                        <td style="background-color: #677ee2">{{ $maxOverallQuiz }}</td>
                         <td>0</td>
                         @if(count($final) > 0)
                         @foreach($finalMaxs as $max)
@@ -830,6 +1101,78 @@
                                 $midtermMins[] = $hasValue ? number_format($min, 2) : '0.0';
                             }
                             
+                            // Calculate min overall test
+                            $minOverallTest = PHP_INT_MAX;
+                            $hasOverallTestValue = false;
+                            foreach($students as $skey => $student) {
+                                if(isset($overalltest[$skey])) {
+                                    $mark = floatval($overalltest[$skey]);
+                                    if($mark < $minOverallTest) $minOverallTest = $mark;
+                                    $hasOverallTestValue = true;
+                                }
+                            }
+                            $minOverallTest = $hasOverallTestValue ? number_format($minOverallTest, 2) : '0.0';
+                            
+                            // Calculate min overall test2
+                            $minOverallTest2 = PHP_INT_MAX;
+                            $hasOverallTest2Value = false;
+                            foreach($students as $skey => $student) {
+                                if(isset($overalltest2[$skey])) {
+                                    $mark = floatval($overalltest2[$skey]);
+                                    if($mark < $minOverallTest2) $minOverallTest2 = $mark;
+                                    $hasOverallTest2Value = true;
+                                }
+                            }
+                            $minOverallTest2 = $hasOverallTest2Value ? number_format($minOverallTest2, 2) : '0.0';
+                            
+                            // Calculate min overall assign
+                            $minOverallAssign = PHP_INT_MAX;
+                            $hasOverallAssignValue = false;
+                            foreach($students as $skey => $student) {
+                                if(isset($overallassign[$skey])) {
+                                    $mark = floatval($overallassign[$skey]);
+                                    if($mark < $minOverallAssign) $minOverallAssign = $mark;
+                                    $hasOverallAssignValue = true;
+                                }
+                            }
+                            $minOverallAssign = $hasOverallAssignValue ? number_format($minOverallAssign, 2) : '0.0';
+                            
+                            // Calculate min overall extra
+                            $minOverallExtra = PHP_INT_MAX;
+                            $hasOverallExtraValue = false;
+                            foreach($students as $skey => $student) {
+                                if(isset($overallextra[$skey])) {
+                                    $mark = floatval($overallextra[$skey]);
+                                    if($mark < $minOverallExtra) $minOverallExtra = $mark;
+                                    $hasOverallExtraValue = true;
+                                }
+                            }
+                            $minOverallExtra = $hasOverallExtraValue ? number_format($minOverallExtra, 2) : '0.0';
+                            
+                            // Calculate min overall other
+                            $minOverallOther = PHP_INT_MAX;
+                            $hasOverallOtherValue = false;
+                            foreach($students as $skey => $student) {
+                                if(isset($overallother[$skey])) {
+                                    $mark = floatval($overallother[$skey]);
+                                    if($mark < $minOverallOther) $minOverallOther = $mark;
+                                    $hasOverallOtherValue = true;
+                                }
+                            }
+                            $minOverallOther = $hasOverallOtherValue ? number_format($minOverallOther, 2) : '0.0';
+                            
+                            // Calculate min overall midterm
+                            $minOverallMidterm = PHP_INT_MAX;
+                            $hasOverallMidtermValue = false;
+                            foreach($students as $skey => $student) {
+                                if(isset($overallmidterm[$skey])) {
+                                    $mark = floatval($overallmidterm[$skey]);
+                                    if($mark < $minOverallMidterm) $minOverallMidterm = $mark;
+                                    $hasOverallMidtermValue = true;
+                                }
+                            }
+                            $minOverallMidterm = $hasOverallMidtermValue ? number_format($minOverallMidterm, 2) : '0.0';
+                            
                             // Calculate min overall quiz
                             $minOverallQuiz = PHP_INT_MAX;
                             $hasOverallQuizValue = false;
@@ -867,19 +1210,37 @@
                         @foreach($test2Mins as $min)
                         <td>{{ $min }}</td>
                         @endforeach
+                        @if(count($test) > 0)
+                        <td style="background-color: #677ee2">{{ $minOverallTest }}</td>
+                        @endif
+                        @if(count($test2) > 0)
+                        <td style="background-color: #677ee2">{{ $minOverallTest2 }}</td>
+                        @endif
                         @foreach($assignMins as $min)
                         <td>{{ $min }}</td>
                         @endforeach
+                        @if(count($assign) > 0)
+                        <td style="background-color: #677ee2">{{ $minOverallAssign }}</td>
+                        @endif
                         @foreach($extraMins as $min)
                         <td>{{ $min }}</td>
                         @endforeach
+                        @if(count($extra) > 0)
+                        <td style="background-color: #677ee2">{{ $minOverallExtra }}</td>
+                        @endif
                         @foreach($otherMins as $min)
                         <td>{{ $min }}</td>
                         @endforeach
+                        @if(count($other) > 0)
+                        <td style="background-color: #677ee2">{{ $minOverallOther }}</td>
+                        @endif
                         @foreach($midtermMins as $min)
                         <td>{{ $min }}</td>
                         @endforeach
-                        <td>{{ $minOverallQuiz }}</td>
+                        @if(count($midterm) > 0)
+                        <td style="background-color: #677ee2">{{ $minOverallMidterm }}</td>
+                        @endif
+                        <td style="background-color: #677ee2">{{ $minOverallQuiz }}</td>
                         <td>0</td>
                         @if(count($final) > 0)
                         @foreach($finalMins as $min)
