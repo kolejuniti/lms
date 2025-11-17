@@ -321,9 +321,9 @@
                     
                     <!-- Percentage Weight Row -->
                     <tr class="percent-row">
-                        <th>100%</th>
-                        <th>20%</th>
-                        <th>100%</th>
+                        <th> </th>
+                        <th> </th>
+                        <th> </th>
                         
                         @php
                             $sub_id = DB::table('subjek')->where('id', $courseInfo->id ?? 0)->value('sub_id');
@@ -441,7 +441,7 @@
                         @endif
                         
                         <!-- Attend percentage -->
-                        <th>5%</th>
+                        <th> </th>
                         
                         <!-- Final percentage -->
                         @if(count($final) > 0)
@@ -449,10 +449,8 @@
                         @endif
                         
                         <!-- Overall percentages -->
-                        <th>60%</th>
-                        <th>40%</th>
-                        <th>0</th>
-                        <th>0</th>
+                        <th> </th>
+                        <th> </th>
                     </tr>
                 </thead>
                 <tbody>
