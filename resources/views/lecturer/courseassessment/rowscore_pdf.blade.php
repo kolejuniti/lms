@@ -252,7 +252,7 @@
                         @endif
                         
                         @if(count($final) > 0)
-                        <th rowspan="2" class="col-assessment">PEP. AKHIR</th>
+                        <th colspan="{{ count($final) + 1 }}" class="col-assessment">PEP. AKHIR</th>
                         @endif
                         
                         <!-- MARKAH KESELURUHAN Header -->
@@ -317,6 +317,14 @@
                         @endif
                         
                         <th class="col-assessment">Attend</th>
+                        
+                        @if(count($final) > 0)
+                        @foreach($final as $key => $fn)
+                        <th class="col-assessment">Final {{ $key + 1 }}<br>({{ $fn->total_mark }})</th>
+                        @endforeach
+                        
+                        <th class="col-assessment">Overall FINAL</th>
+                        @endif
                     </tr>
                     
                     <!-- Percentage Weight Row -->
@@ -443,8 +451,13 @@
                         <!-- Attend percentage -->
                         <th> </th>
                         
-                        <!-- Final percentage -->
+                        <!-- Individual Final columns - show total marks -->
                         @if(count($final) > 0)
+                        @foreach($final as $fn)
+                        <th>{{ $fn->total_mark }}</th>
+                        @endforeach
+                        
+                        <!-- Overall Final percentage -->
                         <th>{{ $percentfinal ? $percentfinal->mark_percentage . '%' : '40%' }}</th>
                         @endif
                         
@@ -534,9 +547,14 @@
                         <!-- Attend -->
                         <td> </td>
                         
-                        <!-- Final marks -->
+                        <!-- Individual Final marks -->
                         @if(count($final) > 0)
-                        <td>{{ isset($finalanswer[$key][0]) && $finalanswer[$key][0] ? $finalanswer[$key][0]->final_mark : '0' }}</td>
+                        @foreach($final as $fkey => $fn)
+                        <td>{{ isset($finalanswer[$key][$fkey]) && $finalanswer[$key][$fkey] ? $finalanswer[$key][$fkey]->final_mark : '0' }}</td>
+                        @endforeach
+                        
+                        <!-- Overall Final -->
+                        <td style="background-color: #677ee2">{{ $overallfinal[$key] ?? '0' }}</td>
                         @endif
                         
                         <!-- Selang Markah -->
@@ -720,19 +738,30 @@
                             }
                             $avgOverallQuiz = $overallQuizCount > 0 ? number_format($overallQuizSum / $overallQuizCount, 2) : '0.0';
                             
-                            // Calculate average final
+                            // Calculate average final for each final exam
                             $finalAvgs = [];
-                            if(count($final) > 0) {
+                            foreach($final as $fkey => $fn) {
                                 $sum = 0;
                                 $count = 0;
                                 foreach($students as $skey => $student) {
-                                    if(isset($finalanswer[$skey][0]) && $finalanswer[$skey][0]) {
-                                        $sum += floatval($finalanswer[$skey][0]->final_mark);
+                                    if(isset($finalanswer[$skey][$fkey]) && $finalanswer[$skey][$fkey]) {
+                                        $sum += floatval($finalanswer[$skey][$fkey]->final_mark);
                                         $count++;
                                     }
                                 }
                                 $finalAvgs[] = $count > 0 ? number_format($sum / $count, 2) : '0.0';
                             }
+                            
+                            // Calculate average overall final
+                            $overallFinalSum = 0;
+                            $overallFinalCount = 0;
+                            foreach($students as $skey => $student) {
+                                if(isset($overallfinal[$skey])) {
+                                    $overallFinalSum += floatval($overallfinal[$skey]);
+                                    $overallFinalCount++;
+                                }
+                            }
+                            $avgOverallFinal = $overallFinalCount > 0 ? number_format($overallFinalSum / $overallFinalCount, 2) : '0.0';
                         @endphp
                         
                         @foreach($quizAvgs as $avg)
@@ -782,6 +811,7 @@
                         @foreach($finalAvgs as $avg)
                         <td>{{ $avg }}</td>
                         @endforeach
+                        <td style="background-color: #677ee2">{{ $avgOverallFinal }}</td>
                         @endif
                         <td>{{ $avgoverall }}%</td>
                         <td></td>
@@ -945,18 +975,28 @@
                             }
                             $maxOverallQuiz = number_format($maxOverallQuiz, 2);
                             
-                            // Calculate max final
+                            // Calculate max final for each final exam
                             $finalMaxs = [];
-                            if(count($final) > 0) {
+                            foreach($final as $fkey => $fn) {
                                 $max = 0;
                                 foreach($students as $skey => $student) {
-                                    if(isset($finalanswer[$skey][0]) && $finalanswer[$skey][0]) {
-                                        $mark = floatval($finalanswer[$skey][0]->final_mark);
+                                    if(isset($finalanswer[$skey][$fkey]) && $finalanswer[$skey][$fkey]) {
+                                        $mark = floatval($finalanswer[$skey][$fkey]->final_mark);
                                         if($mark > $max) $max = $mark;
                                     }
                                 }
                                 $finalMaxs[] = number_format($max, 2);
                             }
+                            
+                            // Calculate max overall final
+                            $maxOverallFinal = 0;
+                            foreach($students as $skey => $student) {
+                                if(isset($overallfinal[$skey])) {
+                                    $mark = floatval($overallfinal[$skey]);
+                                    if($mark > $maxOverallFinal) $maxOverallFinal = $mark;
+                                }
+                            }
+                            $maxOverallFinal = number_format($maxOverallFinal, 2);
                         @endphp
                         
                         @foreach($quizMaxs as $max)
@@ -1006,6 +1046,7 @@
                         @foreach($finalMaxs as $max)
                         <td>{{ $max }}</td>
                         @endforeach
+                        <td style="background-color: #677ee2">{{ $maxOverallFinal }}</td>
                         @endif
                         <td>{{ $maxoverall }}%</td>
                         <td></td>
@@ -1197,20 +1238,32 @@
                             }
                             $minOverallQuiz = $hasOverallQuizValue ? number_format($minOverallQuiz, 2) : '0.0';
                             
-                            // Calculate min final
+                            // Calculate min final for each final exam
                             $finalMins = [];
-                            if(count($final) > 0) {
+                            foreach($final as $fkey => $fn) {
                                 $min = PHP_INT_MAX;
                                 $hasValue = false;
                                 foreach($students as $skey => $student) {
-                                    if(isset($finalanswer[$skey][0]) && $finalanswer[$skey][0]) {
-                                        $mark = floatval($finalanswer[$skey][0]->final_mark);
+                                    if(isset($finalanswer[$skey][$fkey]) && $finalanswer[$skey][$fkey]) {
+                                        $mark = floatval($finalanswer[$skey][$fkey]->final_mark);
                                         if($mark < $min) $min = $mark;
                                         $hasValue = true;
                                     }
                                 }
                                 $finalMins[] = $hasValue ? number_format($min, 2) : '0.0';
                             }
+                            
+                            // Calculate min overall final
+                            $minOverallFinal = PHP_INT_MAX;
+                            $hasOverallFinalValue = false;
+                            foreach($students as $skey => $student) {
+                                if(isset($overallfinal[$skey])) {
+                                    $mark = floatval($overallfinal[$skey]);
+                                    if($mark < $minOverallFinal) $minOverallFinal = $mark;
+                                    $hasOverallFinalValue = true;
+                                }
+                            }
+                            $minOverallFinal = $hasOverallFinalValue ? number_format($minOverallFinal, 2) : '0.0';
                         @endphp
                         
                         @foreach($quizMins as $min)
@@ -1260,6 +1313,7 @@
                         @foreach($finalMins as $min)
                         <td>{{ $min }}</td>
                         @endforeach
+                        <td style="background-color: #677ee2">{{ $minOverallFinal }}</td>
                         @endif
                         <td>{{ $minoverall }}%</td>
                         <td></td>
