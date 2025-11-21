@@ -5324,7 +5324,10 @@ class FinanceController extends Controller
                            ->join('tblprogramme', 'students.program', 'tblprogramme.id')
                            ->join('sessions AS t1', 'students.intake', 't1.SessionID')
                            ->join('sessions AS t2', 'students.session', 't2.SessionID')
-                           ->select('students.*','tblstudent_address.*' ,'tblcountry.name AS country','tblstate.state_name AS state', 'tblstudent_status.name AS status', 'tblprogramme.progname AS program', 'students.program AS progid', 't1.SessionName AS intake_name', 't2.SessionName AS session_name', )
+                           ->leftjoin('student_tin_no', 'students.ic', 'student_tin_no.student_ic')
+                           ->select('students.*','tblstudent_address.*' ,'tblcountry.name AS country','tblstate.state_name AS state', 
+                                             'tblstudent_status.name AS status', 'tblprogramme.progname AS program', 'students.program AS progid', 
+                                             't1.SessionName AS intake_name', 't2.SessionName AS session_name', 'student_tin_no.tin_number')
                            ->where('ic', $request->student)->first();
 
         $record = DB::table('tblpaymentdtl')
