@@ -743,8 +743,13 @@ class PendaftarController extends Controller
 
         $students = $student->get();
 
+        $student_tin = [];
+
         foreach($students as $key => $std)
         {
+            $student_tin[$key] = DB::table('student_tin_no')
+                                 ->where('student_ic', $std->ic)
+                                 ->value('tin_number');
 
             $sponsor_id[$key] = DB::table('tblpayment')
                                 ->where([
@@ -811,6 +816,9 @@ class PendaftarController extends Controller
                                 Name
                             </th>
                             <th>
+                                No. TIN
+                            </th>
+                            <th>
                                 No. IC
                             </th>
                             <th>
@@ -849,6 +857,9 @@ class PendaftarController extends Controller
                 </td>
                 <td>
                 '. $student->name .'
+                </td>
+                <td>
+                '. $student_tin[$key] ?? '-' .'
                 </td>
                 <td>
                 '. $student->ic .'
