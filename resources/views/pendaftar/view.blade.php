@@ -121,6 +121,12 @@
                         </div>
                         <div class="col-md-6">
                           <div class="form-group">
+                            <label class="form-label" for="tin">No. TIN <p style="color:red; display:inline-block;">*</p></label>
+                            <input type="text" class="form-control" id="tin" name="tin" placeholder="Enter tin" value="{{ $student->tin_number }}" readonly>
+                          </div>
+                        </div>
+                        <div class="col-md-6">
+                          <div class="form-group">
                             <label class="form-label" for="ic">IC <p style="color:red; display:inline-block;">*</p></label>
                             <input type="text" class="form-control" id="ic" name="ic" placeholder="Enter ic" value="{{ (strlen($student->ic) == 12) ? $student->ic : '' }}" readonly>
                           </div>
