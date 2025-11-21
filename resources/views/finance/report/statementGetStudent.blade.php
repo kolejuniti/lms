@@ -35,7 +35,7 @@
                 </div>
                 <div class="col-md-6">
                     <div class="form-group">
-                        <p>No. TIN &nbsp; &nbsp;: &nbsp;&nbsp; {{ $data['student']->tin_number }}</p>
+                        <p>No. TIN &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp; {{ $data['student']->tin_number }}</p>
                     </div>
                     <div class="form-group">
                         <p>No. IC / No. Passport &nbsp; &nbsp;: &nbsp;&nbsp; {{ $data['student']->ic }}</p>
