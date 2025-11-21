@@ -217,6 +217,8 @@ class PendaftarController extends Controller
 
         $students = $student->get();
 
+        $student_tin = [];
+
         foreach($students as $key => $std)
         {
 
@@ -257,6 +259,10 @@ class PendaftarController extends Controller
 
             }
 
+            $student_tin[$key] = DB::table('student_tin_no')
+                                 ->where('student_ic', $std->ic)
+                                 ->value('tin_number');
+
         }
 
         $content = "";
@@ -267,6 +273,7 @@ class PendaftarController extends Controller
                             <th style="width: 1%">No.</th>
                             <th>Name</th>
                             <th>Gender</th>
+                            <th>No. TIN</th>
                             <th>No. IC</th>
                             <th>No. Matric</th>
                             <th>Program</th>
@@ -301,6 +308,7 @@ class PendaftarController extends Controller
             // Other columns
             $content .= '<td>' . $student->name . '</td>';
             $content .= '<td>' . $student->gender . '</td>';
+            $content .= '<td>' . $student_tin[$key] ?? '-' . '</td>';
             $content .= '<td>' . $student->ic . '</td>';
             $content .= '<td>' . $student->no_matric . '</td>';
             $content .= '<td>' . $student->progcode . '</td>';
