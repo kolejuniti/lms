@@ -131,6 +131,11 @@
                     <td style="padding-left: 10px;">{{ $student->name ?? '-' }}</td>
                 </tr>
                 <tr>
+                    <td style="padding-right: 10px;">No. TIN</td>
+                    <td>:</td>
+                    <td style="padding-left: 10px;">{{ $student->tin_number ?? '-' }}</td>
+                </tr>
+                <tr></tr>
                     <td style="padding-right: 10px;">IC</td>
                     <td>:</td>
                     <td style="padding-left: 10px;">{{ $student->ic ?? '-' }}</td>

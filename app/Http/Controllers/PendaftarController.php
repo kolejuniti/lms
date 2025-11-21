@@ -1225,9 +1225,11 @@ class PendaftarController extends Controller
                    ->join('sessions', 'students.session', 'sessions.SessionID')
                    ->leftjoin('users', 'students.updated_by', 'users.ic')
                    ->leftjoin('students as updater_student', 'students.updated_by', 'updater_student.ic')
+                   ->leftjoin('student_tin_no', 'students.ic', 'student_tin_no.student_ic')
                    ->select('students.*', 'tblstudent_personal.*', 'tblstudent_address.*', 'tblstudent_pass.*', 'student_form.*', 'tblstudent_personal.state_id AS place_birth', 'sessions.SessionName AS session',
                             'students.updated_at as student_updated_at', 'students.updated_by as student_updated_by',
-                            DB::raw('COALESCE(users.name, updater_student.name) as updated_by_name'))
+                            DB::raw('COALESCE(users.name, updater_student.name) as updated_by_name'),
+                            'student_tin_no.tin_number')
                    ->where('students.ic',request()->ic)->first();
 
         $data['waris'] = DB::table('tblstudent_waris')->where('student_ic', $student->ic)->get();
@@ -1288,6 +1290,7 @@ class PendaftarController extends Controller
         {
 
             $student = DB::table('students')
+                   ->leftjoin('student_tin_no', 'students.ic', 'student_tin_no.student_ic')
                    ->leftjoin('tblprogramme', 'students.program', 'tblprogramme.id')
                    ->leftjoin('sessions AS c', 'students.intake', 'c.SessionID')
                    ->leftjoin('sessions AS d', 'students.session', 'd.SessionID')
@@ -1321,7 +1324,8 @@ class PendaftarController extends Controller
                                      'tblmarriage.marriage_name', 'tbledu_advisor.name AS advisor', 'tblpass_type.name AS pass_type',
                                      'tblcountry.name AS country', 'b.state_name AS state_name2', 'tbldun.name AS dun',
                                      'tblparlimen.name AS parlimen', 'tblqualification_std.name AS qualification',
-                                     'tblprogramme.progname', 'c.SessionName', 'd.SessionName AS session', 'tblstudent_status.name AS status')
+                                     'tblprogramme.progname', 'c.SessionName', 'd.SessionName AS session', 'tblstudent_status.name AS status',
+                                     'student_tin_no.tin_number')
                    ->where('students.ic',request()->ic)->first();
 
             $data['waris'] = DB::table('tblstudent_waris')
@@ -1352,10 +1356,12 @@ class PendaftarController extends Controller
                    ->leftjoin('student_form', 'students.ic', 'student_form.student_ic')
                    ->leftjoin('users', 'students.updated_by', 'users.ic')
                    ->leftjoin('students as updater_student', 'students.updated_by', 'updater_student.ic')
+                   ->leftjoin('student_tin_no', 'students.ic', 'student_tin_no.student_ic')
                    ->select('students.*', 'tblstudent_personal.*', 'tblstudent_address.*', 
                                      'tblstudent_pass.*', 'student_form.*', 'tblstudent_personal.state_id AS place_birth',
                                      'students.updated_at as student_updated_at', 'students.updated_by as student_updated_by',
-                                     DB::raw('COALESCE(users.name, updater_student.name) as updated_by_name'))
+                                     DB::raw('COALESCE(users.name, updater_student.name) as updated_by_name'),
+                                     'student_tin_no.tin_number')
                    ->where('students.ic',request()->ic)->first();
 
             $data['waris'] = DB::table('tblstudent_waris')->where('student_ic', $student->ic)->get();
