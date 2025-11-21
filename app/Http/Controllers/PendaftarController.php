@@ -414,8 +414,10 @@ class PendaftarController extends Controller
                          ->where('spm_bi.subject_spm_id', '=', 2);
                 })
                 ->leftJoin('tblgrade_spm AS grade_bi', 'spm_bi.grade_spm_id', '=', 'grade_bi.id')
+                ->leftJoin('student_tin_no', 'students.ic', 'student_tin_no.student_ic')
                 ->select(
                     'students.ic',
+                    'student_tin_no.tin_number',
                     'students.no_matric',
                     'students.name',
                     'students.email',
@@ -490,6 +492,7 @@ class PendaftarController extends Controller
                 'No Rujukan MQA',
                 'Kod Kursus',
                 'Ijazah yang Dianugerahkan',
+                'No. TIN',
                 'No. IC/Passport',
                 'No. Matrik',
                 'Nama Penuh',
@@ -553,6 +556,7 @@ class PendaftarController extends Controller
                     $student->mqa_code ?? '', // No Rujukan MQA
                     $student->ifms_code ?? '', // Kod Kursus
                     $student->progname ?? '', // Ijazah yang Dianugerahkan
+                    $student->tin_number ?? '', // No. TIN
                     $student->ic ?? '', // No. IC/Passport
                     $student->no_matric ?? '', // No. Matrik
                     $student->name ?? '', // Nama Penuh
