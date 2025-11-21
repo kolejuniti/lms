@@ -860,7 +860,7 @@ class PendaftarController extends Controller
                 '. $student->name .'
                 </td>
                 <td>
-                '. $student_tin[$key] ?? '-' .'
+                '. $student_tin[$key] .'
                 </td>
                 <td>
                 '. $student->ic .'
