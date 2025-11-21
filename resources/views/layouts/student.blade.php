@@ -262,11 +262,10 @@
                       foreach ($activePeriods as $period) {
                           $programs = json_decode($period->program, true) ?: [];
                           $sessions = json_decode($period->session, true) ?: [];
-                          $semesters = json_decode($period->semester, true) ?: [];
+                          // $semesters = json_decode($period->semester, true) ?: [];
                           
                           if (in_array($student->program, $programs) && 
-                              in_array($student->session, $sessions) && 
-                              in_array($student->semester, $semesters)) {
+                              in_array($student->session, $sessions)) {
                               $hasActiveResultPeriod = true;
                               break;
                           }

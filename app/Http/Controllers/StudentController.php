@@ -1665,6 +1665,16 @@ class StudentController extends Controller
 
         $semesterArray = [$firstSem, $secondSem];
 
+        $resultSemester = DB::table('tblresult_period')
+                          ->where('Start', '<=', now())
+                          ->where('End', '>=', now())
+                          ->whereJsonContains('program', (string)$student->program)
+                          ->whereJsonContains('session', (string)$student->session)
+                          ->first();
+
+        // Decode the semester array from the result period
+        $semesterArray = $resultSemester ? json_decode($resultSemester->semester, true) : [];
+
         $data['student'] = DB::table('students')
                            ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
                            ->join('tblprogramme', 'students.program', 'tblprogramme.id')
@@ -1680,7 +1690,7 @@ class StudentController extends Controller
                 ->where([
                     ['student_transcript.student_ic',  $student->ic],
                 ])
-                // ->whereIn('student_transcript.semester', $semesterArray)
+                ->whereIn('student_transcript.semester', $semesterArray)
                 ->select('student_transcript.*', 'students.name', 'students.no_matric', 'sessions.SessionName','transcript_status.status_name AS transcript_status_id')
                 ->orderBy('student_transcript.semester', 'desc')
                 ->limit(1)
