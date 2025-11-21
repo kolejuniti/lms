@@ -817,6 +817,9 @@ class PendaftarController extends Controller
                                 Name
                             </th>
                             <th>
+                                No. TIN
+                            </th>
+                            <th>
                                 No. IC
                             </th>
                             <th>
@@ -852,6 +855,9 @@ class PendaftarController extends Controller
             <tr>
                 <td style="width: 1%">
                 '. $key+1 .'
+                </td>
+                <td>
+                '. $student->name .'
                 </td>
                 <td>
                 '. $student->name .'
