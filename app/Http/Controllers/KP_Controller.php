@@ -210,7 +210,7 @@ class KP_Controller extends Controller
         "midterm" => "midterm",
         "final" => "final",
         // "paperwork" => "paperwork",
-        // "practical" => "practical",
+        "practical" => "practical",
         "lain-lain" => "lain-lain",
         "extra" => "extra"
        );
