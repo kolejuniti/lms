@@ -238,6 +238,32 @@
                                   @endif
 
                                   <!--<th>
+                                    PRACTICAL
+                                  </th>-->
+                                  @foreach ($practical[$ky] as $key=>$ex)
+                                  <th>
+                                    Practical {{ $key+1 }} : {{ $ex->title }} ({{ $ex->total_mark }})
+                                  </th>
+                                  @endforeach
+                                  @if (count($practical[$ky]) > 0)
+                                  <th >
+                                    @php
+                                    $markpercen = DB::table('tblclassmarks')->where([
+                                    ['course_id', $sub_id],
+                                    ['assessment', 'practical']
+                                    ])
+                                    ->orderBy('tblclassmarks.id', 'desc')
+                                    ->first();
+                                    @endphp
+                                    @if ($markpercen != null)
+                                    Overall PRACTICAL ({{ $markpercen->mark_percentage }}%)
+                                    @else
+                                    Overall PRACTICAL (%)
+                                    @endif
+                                  </th>
+                                  @endif
+
+                                  <!--<th>
                                     OTHER
                                   </th>-->
                                   @foreach ($other[$ky] as $key=>$ex)
@@ -600,6 +626,59 @@
                                     @endif
                                   @endif
 
+                                  <!-- PRACTICAL -->
+
+                                  @if (isset($practicalanswer[$ky][$key]))
+                                    @foreach ($practicalanswer[$ky][$key] as $keys => $tsanswer)
+                                      @if ($tsanswer != null)
+                                      <td>
+                                        <span >{{ $tsanswer->total_mark }}</span>
+                                      </td>
+                                      @elseif($tsanswer == null)
+                                      <td>
+                                        <span >-</span>
+                                      </td>
+                                      @endif
+                                    @endforeach
+                                  @else
+                                    @foreach ($practical[$ky] as $ts)
+                                    <td>
+                                      <span >-</span>
+                                    </td>
+                                    @endforeach
+                                  @endif
+
+                                  @if (count($practical[$ky]) > 0)
+                                    @if ($groupcheck = DB::table('tblclasspractical')->join('tblclasspractical_group', 'tblclasspractical.id', 'tblclasspractical_group.practicalid')
+                                    ->where([
+                                      ['tblclasspractical.classid', $id],
+                                      ['tblclasspractical.sessionid', Session::get('SessionID')],
+                                      ['tblclasspractical_group.groupname', $grp->group_name],
+                                      ['tblclasspractical.status', '!=', 3]
+                                    ])->exists())
+                                      @if(DB::table('tblclassmarks')->where([
+                                      ['course_id', $sub_id],
+                                      ['assessment', 'practical']
+                                      ])
+                                      ->orderBy('tblclassmarks.id', 'desc')
+                                      ->first() != null)
+                                        @foreach ((array) $overallpractical[$ky][$key] as $ag)
+                                        <td style="background-color: #677ee2">
+                                          <span >{{ $ag }}</span>
+                                        </td>
+                                        @endforeach
+                                      @else
+                                      <td style="background-color: #677ee2">
+                                        <span >0</span>
+                                      </td>
+                                      @endif
+                                    @else
+                                    <td style="background-color: #677ee2">
+                                      <span >0</span>
+                                    </td>
+                                    @endif
+                                  @endif
+
                                   <!-- OTHER -->
 
                                   @if (isset($otheranswer[$ky][$key]))
@@ -608,7 +687,7 @@
                                       <td>
                                         <span >{{ $tsanswer->total_mark }}</span>
                                       </td>
-                                      @elseif($tsanswer == null) 
+                                      @elseif($tsanswer == null)
                                       <td>
                                         <span >-</span>
                                       </td>
@@ -618,10 +697,10 @@
                                     @foreach ($other[$ky] as $ts)
                                     <td>
                                       <span >-</span>
-                                    </td> 
+                                    </td>
                                     @endforeach
                                   @endif
-                                  
+
                                   @if (count($other[$ky]) > 0)
                                     @if ($groupcheck = DB::table('tblclassother')->join('tblclassother_group', 'tblclassother.id', 'tblclassother_group.otherid')
                                     ->where([
@@ -639,17 +718,17 @@
                                         @foreach ((array) $overallother[$ky][$key] as $ag)
                                         <td style="background-color: #677ee2">
                                           <span >{{ $ag }}</span>
-                                        </td> 
+                                        </td>
                                         @endforeach
                                       @else
                                       <td style="background-color: #677ee2">
                                         <span >0</span>
-                                      </td> 
+                                      </td>
                                       @endif
                                     @else
                                     <td style="background-color: #677ee2">
                                       <span >0</span>
-                                    </td> 
+                                    </td>
                                     @endif
                                   @endif
 
@@ -944,6 +1023,39 @@
                                     @endif
                                   @endif
 
+                                  @foreach ($practical[$ky] as $keyss => $qz)
+                                  <td>
+                                    {{ $practicalavg[$ky][$keyss] }}
+                                  </td>
+                                  @endforeach
+
+                                  @if (count($practical[$ky]) > 0)
+                                    @if ($groupcheck = DB::table('tblclasspractical')->join('tblclasspractical_group', 'tblclasspractical.id', 'tblclasspractical_group.practicalid')
+                                    ->where([
+                                      ['tblclasspractical.classid', $id],
+                                      ['tblclasspractical.sessionid', Session::get('SessionID')],
+                                      ['tblclasspractical_group.groupname', $grp->group_name],
+                                      ['tblclasspractical.status', '!=', 3]
+                                    ])->exists())
+                                      @if(DB::table('tblclassmarks')->where([
+                                      ['course_id', $sub_id],
+                                      ['assessment', 'practical']
+                                      ])
+                                      ->orderBy('tblclassmarks.id', 'desc')
+                                      ->first() != null)
+                                        <td style="background-color: #677ee2">{{ $practicalavgoverall }}</td>
+                                      @else
+                                      <td style="background-color: #677ee2">
+                                        <span >0</span>
+                                      </td>
+                                      @endif
+                                    @else
+                                    <td style="background-color: #677ee2">
+                                      <span >0</span>
+                                    </td>
+                                    @endif
+                                  @endif
+
                                   @foreach ($other[$ky] as $keyss => $qz)
                                   <td>
                                     {{ $otheravg[$ky][$keyss] }}
@@ -968,12 +1080,12 @@
                                       @else
                                       <td style="background-color: #677ee2">
                                         <span >0</span>
-                                      </td> 
+                                      </td>
                                       @endif
                                     @else
                                     <td style="background-color: #677ee2">
                                       <span >0</span>
-                                    </td> 
+                                    </td>
                                     @endif
                                   @endif
 
@@ -1225,6 +1337,39 @@
                                     @endif
                                   @endif
 
+                                  @foreach ($practical[$ky] as $keyss => $qz)
+                                  <td>
+                                    {{ $practicalmax[$ky][$keyss] }}
+                                  </td>
+                                  @endforeach
+
+                                  @if (count($practical[$ky]) > 0)
+                                    @if ($groupcheck = DB::table('tblclasspractical')->join('tblclasspractical_group', 'tblclasspractical.id', 'tblclasspractical_group.practicalid')
+                                    ->where([
+                                      ['tblclasspractical.classid', $id],
+                                      ['tblclasspractical.sessionid', Session::get('SessionID')],
+                                      ['tblclasspractical_group.groupname', $grp->group_name],
+                                      ['tblclasspractical.status', '!=', 3]
+                                    ])->exists())
+                                      @if(DB::table('tblclassmarks')->where([
+                                      ['course_id', $sub_id],
+                                      ['assessment', 'practical']
+                                      ])
+                                      ->orderBy('tblclassmarks.id', 'desc')
+                                      ->first() != null)
+                                        <td style="background-color: #677ee2">{{ $practicalcollection->max() }}</td>
+                                      @else
+                                      <td style="background-color: #677ee2">
+                                        <span >0</span>
+                                      </td>
+                                      @endif
+                                    @else
+                                    <td style="background-color: #677ee2">
+                                      <span >0</span>
+                                    </td>
+                                    @endif
+                                  @endif
+
                                   @foreach ($other[$ky] as $keyss => $qz)
                                   <td>
                                     {{ $othermax[$ky][$keyss] }}
@@ -1249,12 +1394,12 @@
                                       @else
                                       <td style="background-color: #677ee2">
                                         <span >0</span>
-                                      </td> 
+                                      </td>
                                       @endif
                                     @else
                                     <td style="background-color: #677ee2">
                                       <span >0</span>
-                                    </td> 
+                                    </td>
                                     @endif
                                   @endif
 
@@ -1506,6 +1651,39 @@
                                     @endif
                                   @endif
 
+                                  @foreach ($practical[$ky] as $keyss => $qz)
+                                  <td>
+                                    {{ $practicalmin[$ky][$keyss] }}
+                                  </td>
+                                  @endforeach
+
+                                  @if (count($practical[$ky]) > 0)
+                                    @if ($groupcheck = DB::table('tblclasspractical')->join('tblclasspractical_group', 'tblclasspractical.id', 'tblclasspractical_group.practicalid')
+                                    ->where([
+                                      ['tblclasspractical.classid', $id],
+                                      ['tblclasspractical.sessionid', Session::get('SessionID')],
+                                      ['tblclasspractical_group.groupname', $grp->group_name],
+                                      ['tblclasspractical.status', '!=', 3]
+                                    ])->exists())
+                                      @if(DB::table('tblclassmarks')->where([
+                                      ['course_id', $sub_id],
+                                      ['assessment', 'practical']
+                                      ])
+                                      ->orderBy('tblclassmarks.id', 'desc')
+                                      ->first() != null)
+                                        <td style="background-color: #677ee2">{{ $practicalcollection->min() }}</td>
+                                      @else
+                                      <td style="background-color: #677ee2">
+                                        <span >0</span>
+                                      </td>
+                                      @endif
+                                    @else
+                                    <td style="background-color: #677ee2">
+                                      <span >0</span>
+                                    </td>
+                                    @endif
+                                  @endif
+
                                   @foreach ($other[$ky] as $keyss => $qz)
                                   <td>
                                     {{ $othermin[$ky][$keyss] }}
@@ -1530,12 +1708,12 @@
                                       @else
                                       <td style="background-color: #677ee2">
                                         <span >0</span>
-                                      </td> 
+                                      </td>
                                       @endif
                                     @else
                                     <td style="background-color: #677ee2">
                                       <span >0</span>
-                                    </td> 
+                                    </td>
                                     @endif
                                   @endif
 

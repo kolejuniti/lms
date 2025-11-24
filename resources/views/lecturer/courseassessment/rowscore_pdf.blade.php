@@ -232,6 +232,7 @@
                             $assessmentColCount += count($test2);
                             $assessmentColCount += count($assign);
                             $assessmentColCount += count($extra);
+                            $assessmentColCount += count($practical);
                             $assessmentColCount += count($other);
                         @endphp
                         
@@ -243,6 +244,7 @@
                             $totalCourseWorkCols += count($test2) > 0 ? 1 : 0; // Overall TEST2
                             $totalCourseWorkCols += count($assign) > 0 ? 1 : 0; // Overall ASSIGNMENT
                             $totalCourseWorkCols += count($extra) > 0 ? 1 : 0; // Overall EXTRA
+                            $totalCourseWorkCols += count($practical) > 0 ? 1 : 0; // Overall PRACTICAL
                             $totalCourseWorkCols += count($other) > 0 ? 1 : 0; // Overall OTHER
                             $totalCourseWorkCols += count($midterm) > 0 ? 1 : 0; // Overall MIDTERM
                             $totalCourseWorkCols += count($quiz) > 0 ? 1 : 0; // Overall Quiz
@@ -296,11 +298,19 @@
                         @foreach($extra as $key => $ex)
                         <th class="col-assessment">Tambahan {{ $key + 1 }}<br></th>
                         @endforeach
-                        
+
                         @if(count($extra) > 0)
                         <th class="col-assessment">Keseluruhan Tambahan</th>
                         @endif
-                        
+
+                        @foreach($practical as $key => $pr)
+                        <th class="col-assessment">Praktikal {{ $key + 1 }}<br></th>
+                        @endforeach
+
+                        @if(count($practical) > 0)
+                        <th class="col-assessment">Keseluruhan Praktikal</th>
+                        @endif
+
                         @foreach($other as $key => $ot)
                         <th class="col-assessment">Lain-lain {{ $key + 1 }}<br></th>
                         @endforeach
@@ -362,7 +372,12 @@
                                 ['course_id', $sub_id],
                                 ['assessment', 'extra']
                             ])->orderBy('tblclassmarks.id', 'desc')->first();
-                            
+
+                            $percentpractical = DB::table('tblclassmarks')->where([
+                                ['course_id', $sub_id],
+                                ['assessment', 'practical']
+                            ])->orderBy('tblclassmarks.id', 'desc')->first();
+
                             $percentother = DB::table('tblclassmarks')->where([
                                 ['course_id', $sub_id],
                                 ['assessment', 'lain-lain']
@@ -423,12 +438,22 @@
                         @foreach($extra as $ex)
                         <th>{{ $ex->total_mark }}</th>
                         @endforeach
-                        
+
                         <!-- Overall Extra percentage -->
                         @if(count($extra) > 0)
                         <th>{{ $percentextra ? $percentextra->mark_percentage . '%' : '10%' }}</th>
                         @endif
-                        
+
+                        <!-- Individual Practical columns - show total marks -->
+                        @foreach($practical as $pr)
+                        <th>{{ $pr->total_mark }}</th>
+                        @endforeach
+
+                        <!-- Overall Practical percentage -->
+                        @if(count($practical) > 0)
+                        <th>{{ $percentpractical ? $percentpractical->mark_percentage . '%' : '10%' }}</th>
+                        @endif
+
                         <!-- Individual Other columns - show total marks -->
                         @foreach($other as $ot)
                         <th>{{ $ot->total_mark }}</th>
@@ -519,12 +544,22 @@
                         @foreach($extra as $ekey => $ex)
                         <td>{{ isset($extraanswer[$key][$ekey]) && $extraanswer[$key][$ekey] ? $extraanswer[$key][$ekey]->total_mark : '0' }}</td>
                         @endforeach
-                        
+
                         <!-- Overall Extra -->
                         @if(count($extra) > 0)
                         <td style="background-color: #677ee2">{{ $overallextra[$key] ?? '0' }}</td>
                         @endif
-                        
+
+                        <!-- Practical marks -->
+                        @foreach($practical as $pkey => $pr)
+                        <td>{{ isset($practicalanswer[$key][$pkey]) && $practicalanswer[$key][$pkey] ? $practicalanswer[$key][$pkey]->total_mark : '0' }}</td>
+                        @endforeach
+
+                        <!-- Overall Practical -->
+                        @if(count($practical) > 0)
+                        <td style="background-color: #677ee2">{{ $overallpractical[$key] ?? '0' }}</td>
+                        @endif
+
                         <!-- Other marks -->
                         @foreach($other as $okey => $ot)
                         <td>{{ isset($otheranswer[$key][$okey]) && $otheranswer[$key][$okey] ? $otheranswer[$key][$okey]->total_mark : '0' }}</td>
@@ -635,7 +670,20 @@
                                 }
                                 $extraAvgs[] = $count > 0 ? number_format($sum / $count, 2) : '0.0';
                             }
-                            
+
+                            $practicalAvgs = [];
+                            foreach($practical as $pkey => $pr) {
+                                $sum = 0;
+                                $count = 0;
+                                foreach($students as $skey => $student) {
+                                    if(isset($practicalanswer[$skey][$pkey]) && $practicalanswer[$skey][$pkey]) {
+                                        $sum += floatval($practicalanswer[$skey][$pkey]->total_mark);
+                                        $count++;
+                                    }
+                                }
+                                $practicalAvgs[] = $count > 0 ? number_format($sum / $count, 2) : '0.0';
+                            }
+
                             $otherAvgs = [];
                             foreach($other as $okey => $ot) {
                                 $sum = 0;
@@ -705,7 +753,18 @@
                                 }
                             }
                             $avgOverallExtra = $overallExtraCount > 0 ? number_format($overallExtraSum / $overallExtraCount, 2) : '0.0';
-                            
+
+                            // Calculate average overall practical
+                            $overallPracticalSum = 0;
+                            $overallPracticalCount = 0;
+                            foreach($students as $skey => $student) {
+                                if(isset($overallpractical[$skey])) {
+                                    $overallPracticalSum += floatval($overallpractical[$skey]);
+                                    $overallPracticalCount++;
+                                }
+                            }
+                            $avgOverallPractical = $overallPracticalCount > 0 ? number_format($overallPracticalSum / $overallPracticalCount, 2) : '0.0';
+
                             // Calculate average overall other
                             $overallOtherSum = 0;
                             $overallOtherCount = 0;
@@ -795,6 +854,12 @@
                         @if(count($extra) > 0)
                         <td style="background-color: #677ee2">{{ $avgOverallExtra }}</td>
                         @endif
+                        @foreach($practicalAvgs as $avg)
+                        <td>{{ $avg }}</td>
+                        @endforeach
+                        @if(count($practical) > 0)
+                        <td style="background-color: #677ee2">{{ $avgOverallPractical }}</td>
+                        @endif
                         @foreach($otherAvgs as $avg)
                         <td>{{ $avg }}</td>
                         @endforeach
@@ -881,7 +946,19 @@
                                 }
                                 $extraMaxs[] = number_format($max, 2);
                             }
-                            
+
+                            $practicalMaxs = [];
+                            foreach($practical as $pkey => $pr) {
+                                $max = 0;
+                                foreach($students as $skey => $student) {
+                                    if(isset($practicalanswer[$skey][$pkey]) && $practicalanswer[$skey][$pkey]) {
+                                        $mark = floatval($practicalanswer[$skey][$pkey]->total_mark);
+                                        if($mark > $max) $max = $mark;
+                                    }
+                                }
+                                $practicalMaxs[] = number_format($max, 2);
+                            }
+
                             $otherMaxs = [];
                             foreach($other as $okey => $ot) {
                                 $max = 0;
@@ -945,7 +1022,17 @@
                                 }
                             }
                             $maxOverallExtra = number_format($maxOverallExtra, 2);
-                            
+
+                            // Calculate max overall practical
+                            $maxOverallPractical = 0;
+                            foreach($students as $skey => $student) {
+                                if(isset($overallpractical[$skey])) {
+                                    $mark = floatval($overallpractical[$skey]);
+                                    if($mark > $maxOverallPractical) $maxOverallPractical = $mark;
+                                }
+                            }
+                            $maxOverallPractical = number_format($maxOverallPractical, 2);
+
                             // Calculate max overall other
                             $maxOverallOther = 0;
                             foreach($students as $skey => $student) {
@@ -1029,6 +1116,12 @@
                         @endforeach
                         @if(count($extra) > 0)
                         <td style="background-color: #677ee2">{{ $maxOverallExtra }}</td>
+                        @endif
+                        @foreach($practicalMaxs as $max)
+                        <td>{{ $max }}</td>
+                        @endforeach
+                        @if(count($practical) > 0)
+                        <td style="background-color: #677ee2">{{ $maxOverallPractical }}</td>
                         @endif
                         @foreach($otherMaxs as $max)
                         <td>{{ $max }}</td>
@@ -1126,7 +1219,21 @@
                                 }
                                 $extraMins[] = $hasValue ? number_format($min, 2) : '0.0';
                             }
-                            
+
+                            $practicalMins = [];
+                            foreach($practical as $pkey => $pr) {
+                                $min = PHP_INT_MAX;
+                                $hasValue = false;
+                                foreach($students as $skey => $student) {
+                                    if(isset($practicalanswer[$skey][$pkey]) && $practicalanswer[$skey][$pkey]) {
+                                        $mark = floatval($practicalanswer[$skey][$pkey]->total_mark);
+                                        if($mark < $min) $min = $mark;
+                                        $hasValue = true;
+                                    }
+                                }
+                                $practicalMins[] = $hasValue ? number_format($min, 2) : '0.0';
+                            }
+
                             $otherMins = [];
                             foreach($other as $okey => $ot) {
                                 $min = PHP_INT_MAX;
@@ -1202,7 +1309,19 @@
                                 }
                             }
                             $minOverallExtra = $hasOverallExtraValue ? number_format($minOverallExtra, 2) : '0.0';
-                            
+
+                            // Calculate min overall practical
+                            $minOverallPractical = PHP_INT_MAX;
+                            $hasOverallPracticalValue = false;
+                            foreach($students as $skey => $student) {
+                                if(isset($overallpractical[$skey])) {
+                                    $mark = floatval($overallpractical[$skey]);
+                                    if($mark < $minOverallPractical) $minOverallPractical = $mark;
+                                    $hasOverallPracticalValue = true;
+                                }
+                            }
+                            $minOverallPractical = $hasOverallPracticalValue ? number_format($minOverallPractical, 2) : '0.0';
+
                             // Calculate min overall other
                             $minOverallOther = PHP_INT_MAX;
                             $hasOverallOtherValue = false;
@@ -1296,6 +1415,12 @@
                         @endforeach
                         @if(count($extra) > 0)
                         <td style="background-color: #677ee2">{{ $minOverallExtra }}</td>
+                        @endif
+                        @foreach($practicalMins as $min)
+                        <td>{{ $min }}</td>
+                        @endforeach
+                        @if(count($practical) > 0)
+                        <td style="background-color: #677ee2">{{ $minOverallPractical }}</td>
                         @endif
                         @foreach($otherMins as $min)
                         <td>{{ $min }}</td>

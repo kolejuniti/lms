@@ -3263,6 +3263,40 @@ $content .= '</tr>
 
                 }
 
+                //PRACTICAL
+
+                $practicals = DB::table('tblclasspractical')
+                        ->join('tblclasspractical_group', 'tblclasspractical.id', 'tblclasspractical_group.practicalid')
+                        ->where([
+                            ['tblclasspractical.classid', request()->id],
+                            ['tblclasspractical.sessionid', Session::get('SessionID')],
+                            ['tblclasspractical_group.groupname', $grp->group_name],
+                            ['tblclasspractical.status', '!=', 3],
+                            ['tblclasspractical.addby', $user->ic]
+                        ]);
+
+                $practical[] = $practicals->get();
+
+                $practicalid = $practicals->pluck('tblclasspractical.id');
+
+                $totalpractical = $practicals->sum('tblclasspractical.total_mark');
+
+                foreach($practical[$ky] as $key => $qz)
+                {
+
+                    $practicalarray = DB::table('tblclassstudentpractical')
+                                            ->join('tblclasspractical', 'tblclassstudentpractical.practicalid', 'tblclasspractical.id')
+                                            ->where('practicalid', $qz->practicalid)
+                                            ->whereIn('userid', $collection->pluck('ic'));
+
+                    $practicalavg[$ky][$key] = number_format((float)$practicalarray->sum('tblclassstudentpractical.total_mark') / count($collection->pluck('ic')), 2, '.', '');
+
+                    $practicalmax[$ky][$key] = $practicalarray->max('tblclassstudentpractical.total_mark');
+
+                    $practicalmin[$ky][$key] = $practicalarray->min('tblclassstudentpractical.total_mark');
+
+                }
+
                 //OTHER
 
                 $others = DB::table('tblclassother')
@@ -3673,11 +3707,70 @@ $content .= '</tr>
                         $extracollection = collect($overallextra[$ky]);
                     }
 
+                    // PRACTICAL
+
+                    foreach($practical[$ky] as $key =>$qz)
+                    {
+
+                    $practicalanswer[$ky][$keys][$key] = DB::table('tblclassstudentpractical')->where('userid', $std->ic)->where('practicalid', $qz->practicalid)->first();
+
+                    }
+
+                    $sumpractical[$ky][$keys] = DB::table('tblclassstudentpractical')->where('userid', $std->ic)->whereIn('practicalid', $practicalid)->sum('total_mark');
+
+                    $percentpractical = DB::table('tblclassmarks')
+                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
+                                ['subjek.id', request()->id],
+                                ['assessment', 'practical']
+                                ])
+                                ->orderBy('tblclassmarks.id', 'desc')
+                                ->first();
+
+                    if($practicals = DB::table('tblclasspractical')
+                    ->join('tblclasspractical_group', 'tblclasspractical.id', 'tblclasspractical_group.practicalid')
+                    ->where([
+                        ['tblclasspractical.classid', request()->id],
+                        ['tblclasspractical.sessionid', Session::get('SessionID')],
+                        ['tblclasspractical_group.groupname', $grp->group_name],
+                        ['tblclasspractical.status', '!=', 3]
+                    ])->exists()){
+                        if($percentpractical != null)
+                        {
+                            if(DB::table('tblclasspractical')
+                            ->where([
+                                ['classid', request()->id],
+                                ['sessionid', Session::get('SessionID')]
+                            ])->exists()){
+                                //dd($totalpractical);
+                                if ($totalpractical > 0) {
+                                    $overallpractical[$ky][$keys] = round(number_format((float)$sumpractical[$ky][$keys] / $totalpractical * $percentpractical->mark_percentage, 2, '.', ''), 1);
+                                } else {
+                                    $overallpractical[$ky][$keys] = 0;
+                                }
+
+                                $practicalcollection = collect($overallpractical[$ky]);
+                            }else{
+                                $overallpractical[$ky][$keys] = 0;
+
+                                $practicalcollection = collect($overallpractical[$ky]);
+                            }
+
+                        }else{
+                            $overallpractical[$ky][$keys] = 0;
+
+                            $practicalcollection = collect($overallpractical[$ky]);
+                        }
+                    }else{
+                        $overallpractical[$ky][$keys] = 0;
+
+                        $practicalcollection = collect($overallpractical[$ky]);
+                    }
+
                     // OTHER
-                    
+
                     foreach($other[$ky] as $key =>$qz)
                     {
-                    
+
                     $otheranswer[$ky][$keys][$key] = DB::table('tblclassstudentother')->where('userid', $std->ic)->where('otherid', $qz->otherid)->first();
 
                     }
@@ -3846,7 +3939,7 @@ $content .= '</tr>
                         $finalcollection = collect($overallfinal[$ky]);
                     }
 
-                    $overallalls[$ky][$keys] = $overallquiz[$ky][$keys] + $overalltest[$ky][$keys] + $overalltest2[$ky][$keys] + $overallassign[$ky][$keys] + $overallextra[$ky][$keys] + $overallother[$ky][$keys] + $overallmidterm[$ky][$keys] + $overallfinal[$ky][$keys];
+                    $overallalls[$ky][$keys] = $overallquiz[$ky][$keys] + $overalltest[$ky][$keys] + $overalltest2[$ky][$keys] + $overallassign[$ky][$keys] + $overallextra[$ky][$keys] + $overallpractical[$ky][$keys] + $overallother[$ky][$keys] + $overallmidterm[$ky][$keys] + $overallfinal[$ky][$keys];
 
                     $overallall2[$ky][$keys] = round($overallalls[$ky][$keys], 1);
 
@@ -3898,6 +3991,8 @@ $content .= '</tr>
 
             $extraavgoverall = number_format((float)$extracollection->sum() / count($collection->pluck('ic')), 2, '.', '');
 
+            $practicalavgoverall = number_format((float)$practicalcollection->sum() / count($collection->pluck('ic')), 2, '.', '');
+
             $otheravgoverall = number_format((float)$othercollection->sum() / count($collection->pluck('ic')), 2, '.', '');
 
             $midtermavgoverall = number_format((float)$midtermcollection->sum() / count($collection->pluck('ic')), 2, '.', '');
@@ -3918,6 +4013,7 @@ $content .= '</tr>
                                                                        'test2', 'test2answer', 'overalltest2', 'test2avg', 'test2max', 'test2min', 'test2collection','test2avgoverall',
                                                                        'assign', 'assignanswer', 'overallassign', 'assignavg', 'assignmax', 'assignmin', 'assigncollection','assignavgoverall',
                                                                        'extra', 'extraanswer', 'overallextra', 'extraavg', 'extramax', 'extramin', 'extracollection','extraavgoverall',
+                                                                       'practical', 'practicalanswer', 'overallpractical', 'practicalavg', 'practicalmax', 'practicalmin', 'practicalcollection','practicalavgoverall',
                                                                        'other', 'otheranswer', 'overallother', 'otheravg', 'othermax', 'othermin', 'othercollection','otheravgoverall',
                                                                        'midterm', 'midtermanswer', 'overallmidterm', 'midtermavg', 'midtermmax', 'midtermmin', 'midtermcollection','midtermavgoverall',
                                                                        'final', 'finalanswer', 'overallfinal', 'finalavg', 'finalmax', 'finalmin', 'finalcollection','finalavgoverall',
@@ -3979,6 +4075,9 @@ $content .= '</tr>
         $extra = [];
         $extraanswer = [];
         $overallextra = [];
+        $practical = [];
+        $practicalanswer = [];
+        $overallpractical = [];
         $other = [];
         $otheranswer = [];
         $overallother = [];
@@ -4062,6 +4161,20 @@ $content .= '</tr>
         $extraid = $extras->pluck('tblclassextra.id');
         $totalextra = $extras->sum('tblclassextra.total_mark');
 
+        // Fetch PRACTICAL assessments
+        $practicals = DB::table('tblclasspractical')
+                ->join('tblclasspractical_group', 'tblclasspractical.id', 'tblclasspractical_group.practicalid')
+                ->where([
+                    ['tblclasspractical.classid', $id],
+                    ['tblclasspractical.sessionid', Session::get('SessionID')],
+                    ['tblclasspractical_group.groupname', $groupName],
+                    ['tblclasspractical.status', '!=', 3],
+                    ['tblclasspractical.addby', $user->ic]
+                ]);
+        $practical = $practicals->get();
+        $practicalid = $practicals->pluck('tblclasspractical.id');
+        $totalpractical = $practicals->sum('tblclasspractical.total_mark');
+
         // Fetch OTHER assessments
         $others = DB::table('tblclassother')
                 ->join('tblclassother_group', 'tblclassother.id', 'tblclassother_group.otherid')
@@ -4110,6 +4223,7 @@ $content .= '</tr>
         $percenttest2 = DB::table('tblclassmarks')->where([['course_id', $sub_id], ['assessment', 'test2']])->orderBy('id', 'desc')->first();
         $percentassign = DB::table('tblclassmarks')->where([['course_id', $sub_id], ['assessment', 'assignment']])->orderBy('id', 'desc')->first();
         $percentextra = DB::table('tblclassmarks')->where([['course_id', $sub_id], ['assessment', 'extra']])->orderBy('id', 'desc')->first();
+        $percentpractical = DB::table('tblclassmarks')->where([['course_id', $sub_id], ['assessment', 'practical']])->orderBy('id', 'desc')->first();
         $percentother = DB::table('tblclassmarks')->where([['course_id', $sub_id], ['assessment', 'lain-lain']])->orderBy('id', 'desc')->first();
         $percentmidterm = DB::table('tblclassmarks')->where([['course_id', $sub_id], ['assessment', 'midterm']])->orderBy('id', 'desc')->first();
         $percentfinal = DB::table('tblclassmarks')->where([['course_id', $sub_id], ['assessment', 'final']])->orderBy('id', 'desc')->first();
@@ -4175,11 +4289,24 @@ $content .= '</tr>
                 $extraanswer[$keys][$key] = DB::table('tblclassstudentextra')->where('userid', $std->ic)->where('extraid', $qz->extraid)->first();
             }
             $sumextra[$keys] = DB::table('tblclassstudentextra')->where('userid', $std->ic)->whereIn('extraid', $extraid)->sum('total_mark');
-            
+
             if(count($extra) > 0 && $percentextra != null && $totalextra > 0) {
                 $overallextra[$keys] = round(number_format((float)$sumextra[$keys] / $totalextra * $percentextra->mark_percentage, 2, '.', ''), 1);
             } else {
                 $overallextra[$keys] = 0;
+            }
+
+            // PRACTICAL
+            foreach($practical as $key => $qz)
+            {
+                $practicalanswer[$keys][$key] = DB::table('tblclassstudentpractical')->where('userid', $std->ic)->where('practicalid', $qz->practicalid)->first();
+            }
+            $sumpractical[$keys] = DB::table('tblclassstudentpractical')->where('userid', $std->ic)->whereIn('practicalid', $practicalid)->sum('total_mark');
+
+            if(count($practical) > 0 && $percentpractical != null && $totalpractical > 0) {
+                $overallpractical[$keys] = round(number_format((float)$sumpractical[$keys] / $totalpractical * $percentpractical->mark_percentage, 2, '.', ''), 1);
+            } else {
+                $overallpractical[$keys] = 0;
             }
 
             // OTHER
@@ -4222,7 +4349,7 @@ $content .= '</tr>
             }
 
             // Calculate overall
-            $overallalls[$keys] = $overallquiz[$keys] + $overalltest[$keys] + $overalltest2[$keys] + $overallassign[$keys] + $overallextra[$keys] + $overallother[$keys] + $overallmidterm[$keys] + $overallfinal[$keys];
+            $overallalls[$keys] = $overallquiz[$keys] + $overalltest[$keys] + $overalltest2[$keys] + $overallassign[$keys] + $overallextra[$keys] + $overallpractical[$keys] + $overallother[$keys] + $overallmidterm[$keys] + $overallfinal[$keys];
             $overallall2[$keys] = round($overallalls[$keys], 1);
             $overallall[$keys] = round($overallall2[$keys]);
 
@@ -4258,12 +4385,13 @@ $content .= '</tr>
 
         // Generate PDF
         $pdf = PDF::loadView('lecturer.courseassessment.rowscore_pdf', compact(
-            'courseInfo', 'groupName', 'students', 
+            'courseInfo', 'groupName', 'students',
             'quiz', 'quizanswer', 'overallquiz', 'percentquiz', 'totalquiz',
             'test', 'testanswer', 'overalltest', 'percenttest', 'totaltest',
             'test2', 'test2answer', 'overalltest2', 'percenttest2', 'totaltest2',
             'assign', 'assignanswer', 'overallassign', 'percentassign', 'totalassign',
             'extra', 'extraanswer', 'overallextra', 'percentextra', 'totalextra',
+            'practical', 'practicalanswer', 'overallpractical', 'percentpractical', 'totalpractical',
             'other', 'otheranswer', 'overallother', 'percentother', 'totalother',
             'midterm', 'midtermanswer', 'overallmidterm', 'percentmidterm', 'totalmidterm',
             'final', 'finalanswer', 'overallfinal', 'percentfinal', 'totalfinal',
