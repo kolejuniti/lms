@@ -156,6 +156,7 @@ var selected_quiz = {{ json_encode($data['quizid']) }};
 var selected_participant = {!! json_encode($data['quizuserid']) !!};
 var quiz_status = {{ json_encode($data['studentquizstatus']) }};
 var index = "{{ $data['questionindex'] }}";
+var total_all = 0;
 
 $(document).ready(function(){
 
@@ -279,7 +280,7 @@ function renderForm(formdata){
 }
 
 function renderMark(){
-    var total_mark = 0, total_correct_mark = 0, total_correct_input = 0, total_all = 0;
+    var total_mark = 0, total_correct_mark = 0, total_correct_input = 0;
 
     $('.collected-marks').each((i)=>{
         var checkbox = $($('.collected-marks')[i]);
