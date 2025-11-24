@@ -279,24 +279,25 @@ function renderForm(formdata){
 }
 
 function renderMark(){
-    var total_mark = 0, total_correct_mark = 0; total_correct_input = 0; total_all = 0;
-   
+    var total_mark = 0, total_correct_mark = 0, total_correct_input = 0, total_all = 0;
+
     $('.collected-marks').each((i)=>{
         var checkbox = $($('.collected-marks')[i]);
 
         var mark = checkbox.val();
-        mark = parseInt(mark);
+        mark = parseInt(mark) || 0;
 
         if(checkbox.is(':checked')){
             total_correct_mark = total_correct_mark + mark;
         }
-        
+
         total_mark = total_mark + mark;
     });
 
-   
+
     $('.inputmark').each(function() {
-        total_correct_input += parseInt($(this).val());
+        var value = parseInt($(this).val()) || 0;
+        total_correct_input += value;
     });
 
     //alert(total_correct_input);
