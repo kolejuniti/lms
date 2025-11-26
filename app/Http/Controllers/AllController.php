@@ -612,19 +612,39 @@ class AllController extends Controller
 
     public function getStudentNewMassage(Request $request)
     {
-
+        // Get students who have NEW (unread) messages from them
         $students = DB::table('students')
             ->join('tblprogramme', 'students.program', 'tblprogramme.id')
             ->join('sessions AS a', 'students.intake', 'a.SessionID')
             ->join('sessions AS b', 'students.session', 'b.SessionID')
-            ->join('tblmessage_dtl', 'students.ic', 'tblmessage_dtl.sender')
-            ->join('tblmessage', 'tblmessage_dtl.message_id', 'tblmessage.id')
+            ->join('tblmessage', 'students.ic', 'tblmessage.recipient')
             ->select('students.*', 'tblprogramme.progname', 'a.SessionName AS intake', 
-                     'b.SessionName AS session')
-            ->where('tblmessage_dtl.status', 'NEW')
+                     'b.SessionName AS session', 'tblmessage.id AS message_id')
             ->where('tblmessage.user_type', Auth::user()->usrtype)
-            ->distinct('students.ic')
+            ->whereExists(function ($query) {
+                // Check if there are NEW messages from the student
+                $query->select(DB::raw(1))
+                    ->from('tblmessage_dtl')
+                    ->whereColumn('tblmessage_dtl.message_id', 'tblmessage.id')
+                    ->where('tblmessage_dtl.status', 'NEW')
+                    ->where('tblmessage_dtl.user_type', 'STUDENT');
+            })
+            ->distinct()
             ->get();
+
+        // Get last message datetime for each student conversation
+        foreach ($students as $student) {
+            $lastMessage = DB::table('tblmessage_dtl')
+                ->where('message_id', $student->message_id)
+                ->whereIn('status', ['NEW', 'READ']) // Exclude DELETED
+                ->orderBy('datetime', 'desc')
+                ->first();
+            
+            $student->last_message_datetime = $lastMessage ? $lastMessage->datetime : null;
+        }
+
+        // Sort by last message datetime descending
+        $students = collect($students)->sortByDesc('last_message_datetime')->values();
 
         $content = "";
         $content .= '<thead>
@@ -654,17 +674,24 @@ class AllController extends Controller
                                 Semester
                             </th>
                             <th>
+                                Last Message
+                            </th>
+                            <th>
                             </th>
                         </tr>
                     </thead>
                     <tbody id="table">';
                     
         foreach($students as $key => $student){
-            //$registered = ($student->status == 'ACTIVE') ? 'checked' : '';
+            // Format the datetime
+            $lastMessageFormatted = $student->last_message_datetime 
+                ? Carbon::parse($student->last_message_datetime)->format('d/m/Y H:i') 
+                : '-';
+            
             $content .= '
             <tr>
                 <td style="width: 1%">
-                '. $key+1 .'
+                '. ($key+1) .'
                 </td>
                 <td>
                 '. $student->name .'
@@ -686,6 +713,9 @@ class AllController extends Controller
                 </td>
                 <td>
                 '. $student->semester .'
+                </td>
+                <td>
+                '. $lastMessageFormatted .'
                 </td>';
                 
 
@@ -709,19 +739,39 @@ class AllController extends Controller
 
     public function getStudentOldMassage(Request $request)
     {
-
+        // Get students who have conversation history (no NEW messages from them)
         $students = DB::table('students')
             ->join('tblprogramme', 'students.program', 'tblprogramme.id')
             ->join('sessions AS a', 'students.intake', 'a.SessionID')
             ->join('sessions AS b', 'students.session', 'b.SessionID')
-            ->join('tblmessage_dtl', 'students.ic', 'tblmessage_dtl.sender')
-            ->join('tblmessage', 'tblmessage_dtl.message_id', 'tblmessage.id')
+            ->join('tblmessage', 'students.ic', 'tblmessage.recipient')
             ->select('students.*', 'tblprogramme.progname', 'a.SessionName AS intake', 
-                     'b.SessionName AS session')
-            ->where('tblmessage_dtl.status', 'READ')
+                     'b.SessionName AS session', 'tblmessage.id AS message_id')
             ->where('tblmessage.user_type', Auth::user()->usrtype)
-            ->distinct('students.ic')
+            ->whereNotExists(function ($query) {
+                // Exclude students who have NEW messages from them (they appear in New Messages tab)
+                $query->select(DB::raw(1))
+                    ->from('tblmessage_dtl AS md2')
+                    ->whereColumn('md2.message_id', 'tblmessage.id')
+                    ->where('md2.status', 'NEW')
+                    ->where('md2.user_type', 'STUDENT');
+            })
+            ->distinct()
             ->get();
+
+        // Get last message datetime for each student conversation
+        foreach ($students as $student) {
+            $lastMessage = DB::table('tblmessage_dtl')
+                ->where('message_id', $student->message_id)
+                ->whereIn('status', ['NEW', 'READ']) // Exclude DELETED
+                ->orderBy('datetime', 'desc')
+                ->first();
+            
+            $student->last_message_datetime = $lastMessage ? $lastMessage->datetime : null;
+        }
+
+        // Sort by last message datetime descending
+        $students = collect($students)->sortByDesc('last_message_datetime')->values();
 
         $content = "";
         $content .= '<thead>
@@ -751,17 +801,24 @@ class AllController extends Controller
                                 Semester
                             </th>
                             <th>
+                                Last Message
+                            </th>
+                            <th>
                             </th>
                         </tr>
                     </thead>
                     <tbody id="table">';
                     
         foreach($students as $key => $student){
-            //$registered = ($student->status == 'ACTIVE') ? 'checked' : '';
+            // Format the datetime
+            $lastMessageFormatted = $student->last_message_datetime 
+                ? Carbon::parse($student->last_message_datetime)->format('d/m/Y H:i') 
+                : '-';
+            
             $content .= '
             <tr>
                 <td style="width: 1%">
-                '. $key+1 .'
+                '. ($key+1) .'
                 </td>
                 <td>
                 '. $student->name .'
@@ -783,6 +840,9 @@ class AllController extends Controller
                 </td>
                 <td>
                 '. $student->semester .'
+                </td>
+                <td>
+                '. $lastMessageFormatted .'
                 </td>';
                 
 
