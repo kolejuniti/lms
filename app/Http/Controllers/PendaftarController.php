@@ -200,7 +200,7 @@ class PendaftarController extends Controller
                     NULLIF(tblstudent_address.address3,''), 
                     NULLIF(tblstudent_address.city,''), 
                     NULLIF(tblstudent_address.postcode,''), 
-                    NULLIF(tblstate.name,''), 
+                    NULLIF(tblstate.state_name,''), 
                     NULLIF(tblcountry.name,'')
                 ) AS full_address")
             );
