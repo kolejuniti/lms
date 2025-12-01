@@ -177,13 +177,33 @@ class PendaftarController extends Controller
             ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
             ->join('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
             ->leftJoin('tblqualification_std', 'tblstudent_personal.qualification', 'tblqualification_std.id')
+            ->leftjoin('tblstudent_address', 'students.ic', 'tblstudent_address.student_ic')
+            ->leftjoin('tblstate', 'tblstudent_address.state_id', 'tblstate.id')
+            ->leftjoin('tblcountry', 'tblstudent_address.country_id', 'tblcountry.id')
             ->join('tblsex', 'tblstudent_personal.sex_id', 'tblsex.id')
             ->leftjoin('tblreligion', 'tblstudent_personal.religion_id', 'tblreligion.id')
             ->leftjoin('tblnationality', 'tblstudent_personal.nationality_id', 'tblnationality.id')
-            ->select('students.*', 'tblprogramme.progcode', 'a.SessionName AS intake', 
-                     'b.SessionName AS session', 'tblstudent_status.name AS status',
-                     'tblstudent_personal.no_tel', 'tblsex.code AS gender', 'tblqualification_std.name AS qualification',
-                     'tblreligion.religion_name AS religion', 'tblnationality.nationality_name AS race');
+            ->select(
+                'students.*', 
+                'tblprogramme.progcode', 
+                'a.SessionName AS intake', 
+                'b.SessionName AS session', 
+                'tblstudent_status.name AS status',
+                'tblstudent_personal.no_tel', 
+                'tblsex.code AS gender', 
+                'tblqualification_std.name AS qualification',
+                'tblreligion.religion_name AS religion', 
+                'tblnationality.nationality_name AS race',
+                DB::raw("CONCAT_WS(', ', 
+                    NULLIF(tblstudent_address.address1,''), 
+                    NULLIF(tblstudent_address.address2,''), 
+                    NULLIF(tblstudent_address.address3,''), 
+                    NULLIF(tblstudent_address.city,''), 
+                    NULLIF(tblstudent_address.postcode,''), 
+                    NULLIF(tblstate.name,''), 
+                    NULLIF(tblcountry.name,'')
+                ) AS full_address")
+            );
 
         if(!empty($request->program) && $request->program != '-')
         {
@@ -276,6 +296,8 @@ class PendaftarController extends Controller
                             <th>No. TIN</th>
                             <th>No. IC</th>
                             <th>No. Matric</th>
+                            <th>Address</th>
+                            <th>Email</th>
                             <th>Program</th>
                             <th>Intake</th>
                             <th>Current Session</th>
@@ -311,6 +333,8 @@ class PendaftarController extends Controller
             $content .= '<td>' . $student_tin[$key] ?? '-' . '</td>';
             $content .= '<td>' . $student->ic . '</td>';
             $content .= '<td>' . $student->no_matric . '</td>';
+            $content .= '<td>' . $student->full_address . '</td>';
+            $content .= '<td>' . $student->email . '</td>';
             $content .= '<td>' . $student->progcode . '</td>';
             $content .= '<td>' . $student->intake . '</td>';
             $content .= '<td>' . $student->session . '</td>';
