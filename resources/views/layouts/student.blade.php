@@ -48,11 +48,11 @@
         <!-- Logo -->
         <a href="{{ url('student') }}" class="logo">
           <!-- logo-->
-          <div class="logo-mini w-50">
+          <div class="logo-mini">
             <span class="light-logo"><img src="{{ asset('assets/images/logo/Kolej-UNITI.png')}}" alt="logo" class="unity"></span>
             <span class="dark-logo"><img src="{{ asset('assets/images/logo-letter-white.png') }}" alt="logo"></span>
           </div>
-          <div class="logo-lg d-flex align-items-center">
+          <div class="logo-lg">
             <span class="light-logo">
               <span class="ucms-text-black">U</span><span class="ucms-text-orange">CMS</span>
             </span>
