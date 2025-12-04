@@ -497,8 +497,8 @@
 					{{-- <li><a href="/student/final/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Final</a></li>
 					<li><a href="/student/paperwork/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Paperwork</a></li> --}}
 					<li><a href="/student/practical/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Practical</a></li>
-					{{-- <li><a href="/student/other/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Lain-Lain</a></li>
-					<li><a href="/student/report/{{ Session::get('CourseID') }}" class="">Report</a></li> --}}
+					{{-- <li><a href="/student/other/{{ Session::get('CourseID') }}?session={{ Session::get('SessionID') }}" class="">Lain-Lain</a></li> --}}
+					<li><a href="/student/report/{{ Session::get('CourseID') }}" class="">Report</a></li>
 				</ul>
           </li>
           <li class="treeview">
