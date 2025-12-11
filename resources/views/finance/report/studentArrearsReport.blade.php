@@ -70,6 +70,17 @@
                 </select>
               </div>
             </div>
+            <div class="col-md-6 mr-3" id="year-card"> 
+              <div class="form-group">
+                <label class="form-label" for="year">Year</label>
+                <select class="form-select" id="year" name="year">
+                  <option value="-" selected>-</option>
+                  @foreach ($data['year'] as $yr)
+                  <option value="{{ $yr->year }}">{{ $yr->year }}</option> 
+                  @endforeach
+                </select>
+              </div>
+            </div>
             {{-- <div class="col-md-6 mr-3" id="intake-card">
               <div class="form-group">
                 <label class="form-label" for="intake">Intake</label>
@@ -194,6 +205,7 @@
         program: $('#program').val(),
         session: $('#session').val(),
         status: $('#status').val(),
+        year: $('#year').val(),
         // intake: $('#intake').val(),
         from: $('#from').val(),
         to: $('#to').val(),
@@ -305,6 +317,7 @@
         program: $('#program').val(),
         session: $('#session').val(),
         status: $('#status').val(),
+        year: $('#year').val(),
       };
 
 

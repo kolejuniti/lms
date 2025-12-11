@@ -13487,6 +13487,8 @@ class FinanceController extends Controller
 
         $data['status'] = DB::table('tblstudent_status')->get();
 
+        $data['year'] = DB::table('tblyear')->get();
+
         return view('finance.report.studentArrearsReport', compact('data'));
 
     }
@@ -13537,6 +13539,9 @@ class FinanceController extends Controller
                                 //     })
                                     ->when(is_array($filter->session) && !empty($filter->session), function ($query) use ($filter){
                                         return $query->whereIn('students.session', $filter->session);
+                                    })
+                                    ->when($filter->year != '-', function ($query) use ($filter){
+                                        return $query->where('A.Year', $filter->year);
                                     })
                                    ->select('students.name','students.ic', 'students.no_matric', 'tblprogramme.progcode', 
                                             'A.SessionName AS session', 'B.SessionName AS intake', 'students.semester', 'tblstudent_status.name AS status')
@@ -13831,6 +13836,9 @@ class FinanceController extends Controller
                                    })
                                    ->when($filter->session != 'all', function ($query) use ($filter){
                                         return $query->where('students.session', $filter->session);
+                                    })
+                                    ->when($filter->year != '-', function ($query) use ($filter){
+                                        return $query->where('sessions.Year', $filter->year);
                                     })
                                    ->select('students.*')
                                    ->get();
