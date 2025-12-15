@@ -9046,7 +9046,9 @@ class FinanceController extends Controller
     {
         $request->validate([
             'payment_ids' => 'required|array',
-            'payment_ids.*' => 'integer'
+            'payment_ids.*' => 'integer',
+            'date_option' => 'nullable|in:maintain,custom',
+            'custom_date' => 'nullable|date'
         ]);
 
         $paymentIds = $request->payment_ids;
@@ -9055,8 +9057,17 @@ class FinanceController extends Controller
         $successCount = 0;
         $errors = [];
 
+        // Determine date option
+        $dateOption = $request->date_option ?? 'maintain';
+        $customDate = $request->custom_date;
+
         // Generate no_document in format: FPX + DDMMYY (e.g., FPX151225)
-        $noDocument = 'FPX' . date('dmy');
+        // Use custom date if provided, otherwise use today's date
+        if ($dateOption === 'custom' && $customDate) {
+            $noDocument = 'FPX' . date('dmy', strtotime($customDate));
+        } else {
+            $noDocument = 'FPX' . date('dmy');
+        }
 
         try {
             DB::beginTransaction();
@@ -9094,13 +9105,21 @@ class FinanceController extends Controller
                     'ref_no' => $newRefNo
                 ]);
 
-                // Update payment status and ref_no
-                DB::table('tblpayment')->where('id', $paymentId)->update([
+                // Build payment update data
+                $paymentUpdateData = [
                     'process_status_id' => 2,
                     'ref_no' => $ref_no->code . $newRefNo,
                     'mod_staffID' => $staffIC,
                     'mod_date' => $currentDate
-                ]);
+                ];
+
+                // Update payment date if custom date option selected
+                if ($dateOption === 'custom' && $customDate) {
+                    $paymentUpdateData['date'] = $customDate;
+                }
+
+                // Update payment status, ref_no, and optionally the date
+                DB::table('tblpayment')->where('id', $paymentId)->update($paymentUpdateData);
 
                 // Update tblpaymentmethod no_document for FPX method (claim_method_id = 17)
                 DB::table('tblpaymentmethod')

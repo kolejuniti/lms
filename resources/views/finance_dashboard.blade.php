@@ -949,22 +949,69 @@
       return;
     }
 
-    // Get today's date in DDMMYY format for display
+    // Get today's date in YYYY-MM-DD format for the date input
     const today = new Date();
-    const dd = String(today.getDate()).padStart(2, '0');
+    const yyyy = today.getFullYear();
     const mm = String(today.getMonth() + 1).padStart(2, '0');
-    const yy = String(today.getFullYear()).slice(-2);
-    const noDocument = 'FPX' + dd + mm + yy;
+    const dd = String(today.getDate()).padStart(2, '0');
+    const todayFormatted = yyyy + '-' + mm + '-' + dd;
 
     Swal.fire({
       title: 'Confirm Payment Success',
-      html: `You are about to mark <strong>${checkedCount}</strong> FPX payment(s) as successful.<br><br>Document No: <strong>${noDocument}</strong>`,
+      html: `
+        <p>You are about to mark <strong>${checkedCount}</strong> FPX payment(s) as successful.</p>
+        <hr>
+        <div class="text-start">
+          <label class="d-block mb-2">
+            <strong>Payment Date Option:</strong>
+          </label>
+          <div class="form-check mb-2">
+            <input class="form-check-input" type="radio" name="dateOption" id="maintainDate" value="maintain" checked>
+            <label class="form-check-label" for="maintainDate">
+              Maintain original date
+            </label>
+          </div>
+          <div class="form-check mb-2">
+            <input class="form-check-input" type="radio" name="dateOption" id="customDate" value="custom">
+            <label class="form-check-label" for="customDate">
+              Set custom date for all
+            </label>
+          </div>
+          <div id="customDateContainer" style="display: none; margin-top: 10px;">
+            <input type="date" id="fpxCustomDate" class="form-control" value="${todayFormatted}">
+          </div>
+        </div>
+      `,
       icon: 'question',
       showCancelButton: true,
       confirmButtonColor: '#28a745',
       cancelButtonColor: '#6c757d',
       confirmButtonText: 'Yes, Mark as Successful',
-      cancelButtonText: 'Cancel'
+      cancelButtonText: 'Cancel',
+      didOpen: () => {
+        // Toggle custom date input visibility
+        $('input[name="dateOption"]').on('change', function() {
+          if ($(this).val() === 'custom') {
+            $('#customDateContainer').show();
+          } else {
+            $('#customDateContainer').hide();
+          }
+        });
+      },
+      preConfirm: () => {
+        const dateOption = $('input[name="dateOption"]:checked').val();
+        const customDate = $('#fpxCustomDate').val();
+        
+        if (dateOption === 'custom' && !customDate) {
+          Swal.showValidationMessage('Please select a date');
+          return false;
+        }
+        
+        return {
+          dateOption: dateOption,
+          customDate: customDate
+        };
+      }
     }).then(function(result) {
       if (result.isConfirmed) {
         // Copy selected payment IDs to the confirm form
@@ -974,6 +1021,17 @@
             '<input type="hidden" name="payment_ids[]" value="' + $(this).val() + '">'
           );
         });
+        
+        // Add date option and custom date to form
+        $('#fpxConfirmPaymentIds').append(
+          '<input type="hidden" name="date_option" value="' + result.value.dateOption + '">'
+        );
+        if (result.value.dateOption === 'custom') {
+          $('#fpxConfirmPaymentIds').append(
+            '<input type="hidden" name="custom_date" value="' + result.value.customDate + '">'
+          );
+        }
+        
         $('#fpxConfirmForm').submit();
       }
     });
