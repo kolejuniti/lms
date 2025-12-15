@@ -9061,14 +9061,6 @@ class FinanceController extends Controller
         $dateOption = $request->date_option ?? 'maintain';
         $customDate = $request->custom_date;
 
-        // Generate no_document in format: FPX + DDMMYY (e.g., FPX151225)
-        // Use custom date if provided, otherwise use today's date
-        if ($dateOption === 'custom' && $customDate) {
-            $noDocument = 'FPX' . date('dmy', strtotime($customDate));
-        } else {
-            $noDocument = 'FPX' . date('dmy');
-        }
-
         try {
             DB::beginTransaction();
 
@@ -9113,13 +9105,21 @@ class FinanceController extends Controller
                     'mod_date' => $currentDate
                 ];
 
-                // Update payment date if custom date option selected
+                // Update payment date and add_date based on selected option
                 if ($dateOption === 'custom' && $customDate) {
+                    // Use custom date for both date and add_date
                     $paymentUpdateData['date'] = $customDate;
+                    $paymentUpdateData['add_date'] = $customDate;
+                } else {
+                    // Use current date for add_date when maintaining original date
+                    $paymentUpdateData['add_date'] = $currentDate;
                 }
 
                 // Update payment status, ref_no, and optionally the date
                 DB::table('tblpayment')->where('id', $paymentId)->update($paymentUpdateData);
+
+                //maintain the original date for document number generation
+                $noDocument = 'FPX' . date('dmy', strtotime($payment->date));
 
                 // Update tblpaymentmethod no_document for FPX method (claim_method_id = 17)
                 DB::table('tblpaymentmethod')
