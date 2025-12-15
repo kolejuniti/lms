@@ -9042,6 +9042,135 @@ class FinanceController extends Controller
         }
     }
 
+    public function bulkConfirmFpxPayments(Request $request)
+    {
+        $request->validate([
+            'payment_ids' => 'required|array',
+            'payment_ids.*' => 'integer'
+        ]);
+
+        $paymentIds = $request->payment_ids;
+        $staffIC = Auth::user()->ic;
+        $currentDate = date('Y-m-d');
+        $successCount = 0;
+        $errors = [];
+
+        // Generate no_document in format: FPX + DDMMYY (e.g., FPX151225)
+        $noDocument = 'FPX' . date('dmy');
+
+        try {
+            DB::beginTransaction();
+
+            foreach ($paymentIds as $paymentId) {
+                $payment = DB::table('tblpayment')
+                    ->where('id', $paymentId)
+                    ->where('process_status_id', 1) // Only pending payments
+                    ->first();
+
+                if (!$payment) {
+                    continue;
+                }
+
+                // Check if payment has details
+                if (DB::table('tblpaymentdtl')->where('payment_id', $paymentId)->count() == 0) {
+                    $errors[] = "Payment ID {$paymentId}: No payment details found.";
+                    continue;
+                }
+
+                // Get ref_no from tblref_no based on process_type_id
+                $ref_no = DB::table('tblref_no')
+                    ->where('process_type_id', $payment->process_type_id)
+                    ->first();
+
+                if (!$ref_no) {
+                    $errors[] = "Payment ID {$paymentId}: No ref_no configuration found.";
+                    continue;
+                }
+
+                // Increment ref_no
+                $newRefNo = $ref_no->ref_no + 1;
+
+                DB::table('tblref_no')->where('id', $ref_no->id)->update([
+                    'ref_no' => $newRefNo
+                ]);
+
+                // Update payment status and ref_no
+                DB::table('tblpayment')->where('id', $paymentId)->update([
+                    'process_status_id' => 2,
+                    'ref_no' => $ref_no->code . $newRefNo,
+                    'mod_staffID' => $staffIC,
+                    'mod_date' => $currentDate
+                ]);
+
+                // Update tblpaymentmethod no_document for FPX method (claim_method_id = 17)
+                DB::table('tblpaymentmethod')
+                    ->where('payment_id', $paymentId)
+                    ->where('claim_method_id', 17)
+                    ->update([
+                        'no_document' => $noDocument,
+                        'mod_staffID' => $staffIC,
+                        'mod_date' => $currentDate
+                    ]);
+
+                // Check if new student needs matric number (same logic as confirmPayment)
+                $student = DB::table('students')->where('ic', $payment->student_ic)->first();
+
+                if ($student && $student->no_matric == null) {
+                    $totalPaid = DB::table('tblpayment')
+                        ->where('student_ic', $student->ic)
+                        ->whereNotIn('process_status_id', [1, 3])
+                        ->sum('amount');
+
+                    if ($totalPaid >= 250) {
+                        $intake = DB::table('sessions')->where('SessionID', $student->intake)->first();
+                        
+                        if ($intake) {
+                            $year = substr($intake->SessionName, 6, 2) . substr($intake->SessionName, 11, 2);
+
+                            if (DB::table('tblmatric_no')->where('session', $year)->exists()) {
+                                $lastno = DB::table('tblmatric_no')->where('session', $year)->first();
+                                $newno = sprintf("%04s", $lastno->final_no + 1);
+                            } else {
+                                DB::table('tblmatric_no')->insert([
+                                    'session' => $year,
+                                    'final_no' => 1
+                                ]);
+                                $lastno = DB::table('tblmatric_no')->where('session', $year)->first();
+                                $newno = sprintf("%04s", $lastno->final_no);
+                            }
+
+                            $newno = sprintf("%04s", $lastno->final_no + 1);
+                            $no_matric = $year . $newno;
+
+                            DB::table('students')->where('ic', $student->ic)->update([
+                                'no_matric' => $no_matric
+                            ]);
+
+                            DB::table('tblmatric_no')->where('session', $year)->update([
+                                'final_no' => $newno
+                            ]);
+                        }
+                    }
+                }
+
+                $successCount++;
+            }
+
+            DB::commit();
+
+            $message = $successCount . ' FPX payment(s) have been confirmed as successful.';
+            if (!empty($errors)) {
+                $message .= ' Errors: ' . implode(' ', $errors);
+            }
+
+            return back()->with('success', $message);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Failed to confirm payments: ' . $e->getMessage());
+        }
+    }
+
     public function studentVoucher()
     {
 

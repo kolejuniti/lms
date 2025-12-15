@@ -902,6 +902,7 @@ Route::post('/finance/payment/other/confirmPayment', [App\Http\Controllers\Finan
 Route::get('/finance/payment/cancel', [App\Http\Controllers\FinanceController::class, 'cancelTransaction'])->name('finance.payment.cancel');
 Route::post('/finance/payment/cancel/confirm', [App\Http\Controllers\FinanceController::class, 'cancelTransactionConfirm']);
 Route::post('/finance/fpx/bulk-cancel', [App\Http\Controllers\FinanceController::class, 'bulkCancelFpxPayments'])->name('finance.fpx.bulk.cancel');
+Route::post('/finance/fpx/bulk-confirm', [App\Http\Controllers\FinanceController::class, 'bulkConfirmFpxPayments'])->name('finance.fpx.bulk.confirm');
 Route::get('/finance/package/incentive', [App\Http\Controllers\FinanceController::class, 'incentive'])->name('finance.package.incentive');
 Route::get('/finance/package/incentive/getIncentive', [App\Http\Controllers\FinanceController::class, 'getIncentive']);
 Route::post('/finance/package/incentive/storeIncentive', [App\Http\Controllers\FinanceController::class, 'storeIncentive']);

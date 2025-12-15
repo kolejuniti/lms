@@ -300,11 +300,18 @@
                 </div>
                 @if($recentPayments->count() > 0)
                 <div class="text-end mt-3">
+                  <button type="button" class="btn btn-success me-2" onclick="confirmFpxSuccess()">
+                    <i class="ti-check"></i> Mark Selected as Successful
+                  </button>
                   <button type="button" class="btn btn-danger" onclick="confirmFpxCancellation()">
                     <i class="ti-close"></i> Mark Selected as Failed
                   </button>
                 </div>
                 @endif
+              </form>
+              <form action="{{ route('finance.fpx.bulk.confirm') }}" method="POST" id="fpxConfirmForm" style="display:none;">
+                @csrf
+                <div id="fpxConfirmPaymentIds"></div>
               </form>
             </div>
           </div>
@@ -924,6 +931,50 @@
     }).then(function(result) {
       if (result.isConfirmed) {
         $('#fpxCancelForm').submit();
+      }
+    });
+  }
+
+  function confirmFpxSuccess() {
+    const checkedBoxes = $('.fpx-payment-checkbox:checked');
+    const checkedCount = checkedBoxes.length;
+    
+    if (checkedCount === 0) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'No Selection',
+        text: 'Please select at least one payment to mark as successful.',
+        confirmButtonText: 'OK'
+      });
+      return;
+    }
+
+    // Get today's date in DDMMYY format for display
+    const today = new Date();
+    const dd = String(today.getDate()).padStart(2, '0');
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const yy = String(today.getFullYear()).slice(-2);
+    const noDocument = 'FPX' + dd + mm + yy;
+
+    Swal.fire({
+      title: 'Confirm Payment Success',
+      html: `You are about to mark <strong>${checkedCount}</strong> FPX payment(s) as successful.<br><br>Document No: <strong>${noDocument}</strong>`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#28a745',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Yes, Mark as Successful',
+      cancelButtonText: 'Cancel'
+    }).then(function(result) {
+      if (result.isConfirmed) {
+        // Copy selected payment IDs to the confirm form
+        $('#fpxConfirmPaymentIds').empty();
+        checkedBoxes.each(function() {
+          $('#fpxConfirmPaymentIds').append(
+            '<input type="hidden" name="payment_ids[]" value="' + $(this).val() + '">'
+          );
+        });
+        $('#fpxConfirmForm').submit();
       }
     });
   }
