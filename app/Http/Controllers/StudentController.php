@@ -846,6 +846,9 @@ class StudentController extends Controller
         $testlist = [];
         $percentagetest = "";
 
+        $test2list = [];
+        $percentagetest2 = "";
+
         $midtermlist = [];
         $percentagemidterm = "";
 
@@ -970,6 +973,55 @@ class StudentController extends Controller
             $total_alltest = round(( (int)$marktest / (int)$totaltest ) * (int)$percentagetest);
         }else{
             $total_alltest = 0;
+        }
+
+        //TEST2
+
+        $percenttest2 = DB::table('tblclassmarks')
+                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
+                                ['subjek.id', Session::get('CourseID')],
+                                ['assessment', 'test2']
+                                ])->first();
+
+        if($percenttest2 != null)
+        {
+            $percentagetest2 = $percenttest2->mark_percentage;
+        }
+
+        $totaltest2 = 0;
+        $marktest2 = 0;
+
+        $test2 = DB::table('tblclasstest2')
+                    ->join('tblclasstest2_group', 'tblclasstest2.id', 'tblclasstest2_group.testid')
+                    ->where([
+                        ['tblclasstest2.classid', request()->id],
+                        ['tblclasstest2.sessionid', Session::get('SessionID')],
+                        ['tblclasstest2_group.groupid', $student->group_id],
+                        ['tblclasstest2_group.groupname', $student->group_name],
+                        ['status', 2]
+                    ])->select('tblclasstest2.*')->get();
+        
+        foreach($test2 as $key => $qz)
+        {
+            $test2list[$key] = DB::table('tblclassstudenttest')->where([
+                                                                ['userid', $student->ic],
+                                                                ['testid', $qz->id],
+                                                                ])->first();
+        
+            // Add the current total_mark to the $totaltest2 variable
+            $totaltest2 += $qz->total_mark;
+        
+            // If a test2list record exists, add the current final_mark to the $marktest2 variable
+            if ($test2list[$key]) {
+                $marktest2 += $test2list[$key]->final_mark;
+            }
+        }
+
+        if($totaltest2 != 0 && $marktest2 != 0)
+        {
+            $total_alltest2 = round(( (int)$marktest2 / (int)$totaltest2 ) * (int)$percentagetest2);
+        }else{
+            $total_alltest2 = 0;
         }
 
         //ASSIGNMENT
@@ -1220,6 +1272,7 @@ class StudentController extends Controller
 
         return view('student.courseassessment.reportdetails', compact('student', 'quiz', 'quizlist', 'totalquiz', 'markquiz', 'percentagequiz', 'total_allquiz',
                                                                                   'test', 'testlist', 'totaltest', 'marktest', 'percentagetest', 'total_alltest',
+                                                                                  'test2', 'test2list', 'totaltest2', 'marktest2', 'percentagetest2', 'total_alltest2',
                                                                                   'assign', 'assignlist', 'totalassign', 'markassign', 'percentageassign', 'total_allassign',
                                                                                   'midterm', 'midtermlist', 'totalmidterm', 'markmidterm', 'percentagemidterm', 'total_allmidterm',
                                                                                   'final', 'finallist', 'totalfinal', 'markfinal', 'percentagefinal', 'total_allfinal',

@@ -236,6 +236,103 @@
 					</div>-->
 					@endif
 
+					<!-- TEST2 -->
+					@if ($percentagetest2 != "")
+					<div class="col-12">
+						<div class="box">
+							<div class="card-header">
+							<h3 class="card-title d-flex">Test 2 ({{ $percentagetest2 }}%)</h3>
+							</div>
+							<div class="box-body">
+								<div class="table-responsive">
+									<div id="complex_header_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap4 no-footer">
+									<div class="row">
+										<div class="col-sm-12">
+										<table id="table_projectprogress_test" class="table table-striped projects display dataTable no-footer " style="width: 100%;">
+											<thead class="thead-themed">
+											<tr>
+												<th style="width: 1%">
+												No.
+												</th>
+												<th style="width: 20%">
+												Title
+												</th>
+												<th style="width: 20%">
+												Duration
+												</th>
+												<th style="width: 20%">
+												Total Mark
+												</th>
+												<td style="width: 20%">
+												Final Mark
+												</td>
+											</tr>
+											</thead>
+											<tbody>
+											@foreach ($test as $keys=>$ts)
+											<tr>
+												<td>
+												{{ $keys+1 }}
+												</td>
+												<td >
+												{{ $ts->title }}
+												</td>
+												<td>
+												{{ $ts->duration }}
+												</td>
+												<td>
+												{{ $ts->total_mark }}
+												</td>
+												<td>
+												{{ $testlist[$keys]->final_mark ?? '-' }}
+												</td>
+											</tr>
+											@endforeach
+												<tr>
+													<td style="width: 1%">
+														
+													</td>
+													<td >
+														
+													</td>
+													<td>
+														Total Marks by Percentage
+													</td>
+													<td>
+														$${ Overall Mark : {{ $marktest }} \over Total Mark :{{ $totaltest }} \\ \times Percentage : {{ $percentagetest }} }$$
+													</td>
+													<td>
+														<strong>Overall Percentage : {{ $total_alltest }}%</strong>
+													</td>
+												</tr>
+											</tbody>
+											<tfoot class="tfoot-themed">
+												<tr>
+													
+												</tr>
+											</tfoot>
+										</table>
+										</div>
+									</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					@else
+					<!--<div class="box bg-danger">
+						<div class="box-body d-flex p-0">
+							<div class="flex-grow-1 p-30 flex-grow-1 bg-img bg-none-md" style="background-position: right bottom; background-size: auto 100%; background-image: url(images/svg-icon/color-svg/custom-30.svg)">
+								<div class="row">
+									<div class="col-12 col-xl-12">
+										<h1 class="mb-0 fw-600">Test percentage is not set, please consult the person in charge.</h1>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>-->
+					@endif
+
 					<!-- ASSIGNMENT -->
 
 					@if ($percentageassign != "")
