@@ -11755,6 +11755,9 @@ class FinanceController extends Controller
 
             //B
 
+            // Initialize type with default value to prevent undefined array key errors
+            $data['type'][$key] = ' ';
+
             $data['sponsor'][$key] = DB::table('tblpackage_sponsorship')
                                ->leftjoin('tblpackage', 'tblpackage_sponsorship.package_id', 'tblpackage.id')
                                ->leftjoin('tblpayment_type', 'tblpackage_sponsorship.payment_type_id', 'tblpayment_type.id')
@@ -11762,7 +11765,7 @@ class FinanceController extends Controller
                                ->select('tblpackage.id AS package_id','tblpackage.name AS package_name', 'tblpayment_type.name AS payment_type_name', 'tblpackage_sponsorship.amount')
                                ->first();
 
-            if($data['sponsor'][$key])
+            if($data['sponsor'][$key] && isset($data['sponsor'][$key]->package_id) && $data['sponsor'][$key]->package_id !== null)
             {
 
                 if(in_array($data['sponsor'][$key]->package_id, [1,4,6,7,8]))
@@ -11781,11 +11784,6 @@ class FinanceController extends Controller
                     $data['type'][$key] = 'T20';
 
                 }
-
-            }else{
-
-
-                $data['type'][$key] = ' ';
 
             }
 
