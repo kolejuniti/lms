@@ -4053,7 +4053,8 @@ $content .= '</tr>
                     ['user_subjek.user_ic', $user->ic],
                     ['user_subjek.session_id', Session::get('SessionID')],
                     ['subjek.id', $id],
-                    ['student_subjek.group_name', $groupName]
+                    ['student_subjek.group_name', $groupName],
+                    ['students.status', '!=', 6],
                 ])
                 ->orderBy('students.name')->get();
 
