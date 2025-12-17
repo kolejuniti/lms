@@ -269,22 +269,22 @@
 											</tr>
 											</thead>
 											<tbody>
-											@foreach ($test as $keys=>$ts)
+											@foreach ($test2 as $keys=>$ts2)
 											<tr>
 												<td>
 												{{ $keys+1 }}
 												</td>
 												<td >
-												{{ $ts->title }}
+												{{ $ts2->title }}
 												</td>
 												<td>
-												{{ $ts->duration }}
+												{{ $ts2->duration }}
 												</td>
 												<td>
-												{{ $ts->total_mark }}
+												{{ $ts2->total_mark }}
 												</td>
 												<td>
-												{{ $testlist[$keys]->final_mark ?? '-' }}
+												{{ $test2list[$keys]->final_mark ?? '-' }}
 												</td>
 											</tr>
 											@endforeach
@@ -299,10 +299,10 @@
 														Total Marks by Percentage
 													</td>
 													<td>
-														$${ Overall Mark : {{ $marktest }} \over Total Mark :{{ $totaltest }} \\ \times Percentage : {{ $percentagetest }} }$$
+														$${ Overall Mark : {{ $marktest2 }} \over Total Mark :{{ $totaltest2 }} \\ \times Percentage : {{ $percentagetest2 }} }$$
 													</td>
 													<td>
-														<strong>Overall Percentage : {{ $total_alltest }}%</strong>
+														<strong>Overall Percentage : {{ $total_alltest2	 }}%</strong>
 													</td>
 												</tr>
 											</tbody>
