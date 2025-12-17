@@ -11385,8 +11385,9 @@ class FinanceController extends Controller
 
     public function collectionReport()
     {
+        $data['status'] = DB::table('tblstudent_status')->whereIn('id', [3, 4, 7, 8])->get();
                            
-        return view('finance.debt.collection_report.collectionReport');
+        return view('finance.debt.collection_report.collectionReport', compact('data'));
 
     }
 
@@ -11395,9 +11396,16 @@ class FinanceController extends Controller
 
         //A
 
+        // Determine status filter
+        $statusFilter = [3, 4, 7, 8]; // Default to all allowed statuses
+        if($request->status && $request->status != '-') {
+            $statusFilter = [$request->status];
+        }
+
         $data['student'] = DB::table('student_payment_log')
                            ->join('students', 'student_payment_log.student_ic', 'students.ic')
                            ->whereBetween('student_payment_log.date_of_payment', [$request->from, $request->to])
+                           ->whereIn('students.status', $statusFilter)
                            ->select('students.name', 'students.ic', 'students.no_matric')
                            ->groupBy('students.ic')
                            ->get();

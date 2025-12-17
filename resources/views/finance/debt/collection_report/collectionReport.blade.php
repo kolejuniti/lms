@@ -63,17 +63,28 @@
                 </div>
                 <div class="card-body">
                   <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                       <div class="form-group">
                       <label class="form-label" for="from">FROM</label>
                       <input type="date" class="form-control" id="from" name="from">
                       </div>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <div class="form-group">
                         <label class="form-label" for="name">TO</label>
                         <input type="date" class="form-control" id="to" name="to">
                         </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="form-group">
+                        <label class="form-label" for="status">Status</label>
+                        <select class="form-select" id="status" name="status">
+                          <option value="-" selected>-</option>
+                          @foreach ($data['status'] as $sts)
+                            <option value="{{ $sts->id }}">{{ $sts->name }}</option> 
+                          @endforeach
+                        </select>
+                      </div>
                     </div>
                   </div>
                   <button type="submit" class="btn btn-primary pull-right mb-3" onclick="submit()">Find</button>
@@ -105,6 +116,7 @@ function submit()
 
   var from = $('#from').val();
   var to = $('#to').val();
+  var status = $('#status').val();
 
   // Show the spinner
   $('#loading-spinner').css('display', 'block');
@@ -113,7 +125,7 @@ function submit()
             headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
             url      : "{{ url('finance/debt/collectionReport/getCollectionReport') }}",
             method   : 'POST',
-            data 	 : {from: from, to: to},
+            data 	 : {from: from, to: to, status: status},
             error:function(err){
                 alert("Error");
                 console.log(err);
