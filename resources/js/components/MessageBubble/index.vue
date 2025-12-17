@@ -6,7 +6,7 @@
     </div>
   </div>
 
-  <div class="message-container" :class="{ 'mine': isMine, 'others': !isMine }">
+  <div class="message-container" :class="{ 'mine': isMine, 'others': !isMine }" :data-message-id="data.id">
     <div class="avatar" v-if="!isMine">
       <div class="avatar-circle">
         {{ getInitial() }}
@@ -15,20 +15,38 @@
     
     <div class="message-bubble" 
          :class="{ 'mine': isMine, 'others': !isMine, 'temporary': data.isTemporary, 'deleted': isDeleted }"
-         @mouseenter="showDeleteOption = true"
-         @mouseleave="showDeleteOption = false">
+         @mouseenter="showActionButtons = true"
+         @mouseleave="showActionButtons = false">
       
-      <!-- Delete button (only for own messages and not temporary or already deleted) -->
-      <div v-if="isMine && !data.isTemporary && !isDeleted && showDeleteOption" class="delete-button" @click="deleteMessage">
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="3,6 5,6 21,6"></polyline>
-          <path d="m19,6v14a2,2 0 0,1 -2,2H7a2,2 0 0,1 -2,-2V6m3,0V4a2,2 0 0,1 2,-2h4a2,2 0 0,1 2,2v2"></path>
-          <line x1="10" y1="11" x2="10" y2="17"></line>
-          <line x1="14" y1="11" x2="14" y2="17"></line>
-        </svg>
+      <!-- Action buttons container (Reply + Delete) -->
+      <div v-if="!data.isTemporary && !isDeleted && showActionButtons" class="message-actions">
+        <!-- Reply button -->
+        <div class="action-button reply-button" @click="replyToMessage" title="Reply">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 17 4 12 9 7"></polyline>
+            <path d="M20 18v-2a4 4 0 0 0-4-4H4"></path>
+          </svg>
+        </div>
+        <!-- Delete button (only for own messages) -->
+        <div v-if="isMine" class="action-button delete-button" @click="deleteMessage" title="Delete">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="3,6 5,6 21,6"></polyline>
+            <path d="m19,6v14a2,2 0 0,1 -2,2H7a2,2 0 0,1 -2,-2V6m3,0V4a2,2 0 0,1 2,-2h4a2,2 0 0,1 2,2v2"></path>
+            <line x1="10" y1="11" x2="10" y2="17"></line>
+            <line x1="14" y1="11" x2="14" y2="17"></line>
+          </svg>
+        </div>
       </div>
 
       <div class="message-content">
+        <!-- Quoted Reply Block (WhatsApp-style) -->
+        <div v-if="replyTarget || data.reply_to_message_id" class="quoted-reply" @click="handleJumpToMessage">
+          <div class="quoted-reply-indicator"></div>
+          <div class="quoted-reply-content">
+            <div class="quoted-reply-sender">{{ getQuotedSenderName() }}</div>
+            <div class="quoted-reply-text">{{ getQuotedText() }}</div>
+          </div>
+        </div>
         <!-- Deleted message indicator -->
         <div v-if="isDeleted" class="deleted-message">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="deleted-icon">
@@ -161,11 +179,16 @@ export default {
     showDateHeader: {
       type: Boolean,
       default: false
+    },
+    replyTarget: {
+      type: Object,
+      default: null
     }
   },
   data() {
     return {
-      showDeleteOption: false
+      showDeleteOption: false,
+      showActionButtons: false
     }
   },
   computed: {
@@ -177,6 +200,66 @@ export default {
     deleteMessage() {
       // Emit an event to the parent component to handle the deletion
       this.$emit('delete-message', this.data);
+    },
+    replyToMessage() {
+      // Emit an event to the parent component to set up reply
+      this.$emit('reply-message', this.data);
+    },
+    handleJumpToMessage() {
+      // Jump to the original message that was replied to
+      const messageId = this.data.reply_to_message_id;
+      if (messageId) {
+        this.$emit('jump-to-message', messageId);
+      }
+    },
+    getQuotedSenderName() {
+      if (!this.replyTarget && !this.data.reply_to_message_id) return '';
+      
+      // If reply target is deleted
+      if (this.replyTarget && (this.replyTarget.status === 'DELETED' || this.replyTarget.is_deleted)) {
+        return '';
+      }
+      
+      if (this.replyTarget) {
+        // Check if it's from the current user
+        if (this.replyTarget.user_type === this.data.user_type) {
+          return 'You';
+        }
+        return this.replyTarget.sender_name || 'Them';
+      }
+      
+      return 'Message';
+    },
+    getQuotedText() {
+      if (!this.replyTarget && !this.data.reply_to_message_id) return '';
+      
+      // If we don't have the reply target data
+      if (!this.replyTarget) {
+        return 'Loading...';
+      }
+      
+      // If reply target is deleted
+      if (this.replyTarget.status === 'DELETED' || this.replyTarget.is_deleted) {
+        return 'This message was deleted';
+      }
+      
+      // If there's text, show a preview
+      if (this.replyTarget.message && this.replyTarget.message.trim()) {
+        const text = this.replyTarget.message.trim();
+        return text.length > 60 ? text.substring(0, 60) + '...' : text;
+      }
+      
+      // If it's an image
+      if (this.replyTarget.image_url) {
+        return '📷 Photo';
+      }
+      
+      // If it's a file
+      if (this.replyTarget.file_name) {
+        return '📎 ' + this.replyTarget.file_name;
+      }
+      
+      return 'Message';
     },
     getDeletedText() {
       if (this.isMine) {
@@ -816,12 +899,24 @@ export default {
   }
 }
 
-/* Delete button styles */
-.delete-button {
+/* Message action buttons (Reply + Delete) */
+.message-actions {
   position: absolute;
   top: -8px;
   right: -8px;
-  background-color: #ef4444;
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  z-index: 10;
+}
+
+.message-bubble:hover .message-actions {
+  opacity: 1;
+}
+
+.action-button {
+  background-color: #6b7280;
   color: white;
   border-radius: 50%;
   width: 24px;
@@ -831,23 +926,109 @@ export default {
   justify-content: center;
   cursor: pointer;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  opacity: 0;
-  transition: opacity 0.2s ease, transform 0.2s ease;
-  z-index: 10;
+  transition: all 0.2s ease;
 }
 
-.message-bubble:hover .delete-button {
-  opacity: 1;
+.action-button:hover {
   transform: scale(1.1);
+}
+
+.action-button:active {
+  transform: scale(0.95);
+}
+
+.reply-button {
+  background-color: #4f46e5;
+}
+
+.reply-button:hover {
+  background-color: #3730a3;
+}
+
+.delete-button {
+  background-color: #ef4444;
 }
 
 .delete-button:hover {
   background-color: #dc2626;
-  transform: scale(1.2) !important;
 }
 
-.delete-button:active {
-  transform: scale(0.95) !important;
+/* Quoted Reply Block (WhatsApp-style) */
+.quoted-reply {
+  display: flex;
+  align-items: stretch;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.message-bubble.mine .quoted-reply {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.message-bubble.mine .quoted-reply:hover {
+  background-color: rgba(255, 255, 255, 0.25);
+}
+
+.message-bubble.others .quoted-reply {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.message-bubble.others .quoted-reply:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.quoted-reply-indicator {
+  width: 3px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.message-bubble.mine .quoted-reply-indicator {
+  background-color: rgba(255, 255, 255, 0.6);
+}
+
+.message-bubble.others .quoted-reply-indicator {
+  background-color: #4f46e5;
+}
+
+.quoted-reply-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.quoted-reply-sender {
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.message-bubble.mine .quoted-reply-sender {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.message-bubble.others .quoted-reply-sender {
+  color: #4f46e5;
+}
+
+.quoted-reply-text {
+  font-size: 0.75rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.message-bubble.mine .quoted-reply-text {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.message-bubble.others .quoted-reply-text {
+  color: #6b7280;
 }
 
 /* Deleted message styles */
@@ -886,8 +1067,8 @@ export default {
     max-width: 80%;
   }
   
-  .delete-button {
-    opacity: 1; /* Always show delete button on mobile */
+  .message-actions {
+    opacity: 1; /* Always show action buttons on mobile */
   }
 }
 </style>

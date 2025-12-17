@@ -880,6 +880,9 @@ class AllController extends Controller
             $fileSize = $uploadResult['size'];
         }
 
+        // Handle reply_to_message_id for WhatsApp-style replies
+        $replyToMessageId = $request->reply_to_message_id ? (int) $request->reply_to_message_id : null;
+
         if($request->type != 'STUDENT')
         {
 
@@ -904,6 +907,17 @@ class AllController extends Controller
 
             }
 
+            // Validate reply_to_message_id belongs to this conversation (prevent cross-chat replies)
+            if ($replyToMessageId) {
+                $validReply = DB::table('tblmessage_dtl')
+                    ->where('id', $replyToMessageId)
+                    ->where('message_id', $id)
+                    ->exists();
+                if (!$validReply) {
+                    $replyToMessageId = null; // Ignore invalid reply reference
+                }
+            }
+
             DB::table('tblmessage_dtl')->insert([
                 'message_id' => $id,
                 'sender' => Auth::user()->ic,
@@ -914,7 +928,8 @@ class AllController extends Controller
                 'file_name' => $fileName,
                 'file_type' => $fileType,
                 'file_size' => $fileSize,
-                'status' => 'NEW'
+                'status' => 'NEW',
+                'reply_to_message_id' => $replyToMessageId
             ]);
 
         }else{
@@ -941,6 +956,17 @@ class AllController extends Controller
 
             }
 
+            // Validate reply_to_message_id belongs to this conversation (prevent cross-chat replies)
+            if ($replyToMessageId) {
+                $validReply = DB::table('tblmessage_dtl')
+                    ->where('id', $replyToMessageId)
+                    ->where('message_id', $id)
+                    ->exists();
+                if (!$validReply) {
+                    $replyToMessageId = null; // Ignore invalid reply reference
+                }
+            }
+
             DB::table('tblmessage_dtl')->insert([
                 'message_id' => $id,
                 'sender' => Auth::guard('student')->user()->ic,
@@ -951,7 +977,8 @@ class AllController extends Controller
                 'file_name' => $fileName,
                 'file_type' => $fileType,
                 'file_size' => $fileSize,
-                'status' => 'NEW'
+                'status' => 'NEW',
+                'reply_to_message_id' => $replyToMessageId
             ]);
 
         }
@@ -962,7 +989,8 @@ class AllController extends Controller
             'file_url' => $fileUrl,
             'file_name' => $fileName,
             'file_type' => $fileType,
-            'file_size' => $fileSize
+            'file_size' => $fileSize,
+            'reply_to_message_id' => $replyToMessageId
         ]);
     }
 
@@ -1506,6 +1534,9 @@ class AllController extends Controller
             $fileSize = $uploadResult['size'];
         }
 
+        // Handle reply_to_message_id for WhatsApp-style replies
+        $replyToMessageId = $request->reply_to_message_id ? (int) $request->reply_to_message_id : null;
+
         $currentStudentIc = Auth::guard('student')->user()->ic;
         $recipientIc = $request->recipient_ic;
 
@@ -1531,6 +1562,17 @@ class AllController extends Controller
             ])->value('id');
         }
 
+        // Validate reply_to_message_id belongs to this conversation (prevent cross-chat replies)
+        if ($replyToMessageId) {
+            $validReply = DB::table('tblmessage_dtl')
+                ->where('id', $replyToMessageId)
+                ->where('message_id', $id)
+                ->exists();
+            if (!$validReply) {
+                $replyToMessageId = null; // Ignore invalid reply reference
+            }
+        }
+
         DB::table('tblmessage_dtl')->insert([
             'message_id' => $id,
             'sender' => $currentStudentIc,
@@ -1541,7 +1583,8 @@ class AllController extends Controller
             'file_name' => $fileName,
             'file_type' => $fileType,
             'file_size' => $fileSize,
-            'status' => 'NEW'
+            'status' => 'NEW',
+            'reply_to_message_id' => $replyToMessageId
         ]);
 
         return response()->json([
@@ -1551,7 +1594,8 @@ class AllController extends Controller
             'file_name' => $fileName,
             'file_type' => $fileType,
             'file_size' => $fileSize,
-            'conversation_id' => $conversationId
+            'conversation_id' => $conversationId,
+            'reply_to_message_id' => $replyToMessageId
         ]);
     }
 

@@ -61,15 +61,40 @@
                 <message-bubble
                   v-for="(message, index) in state.messages" 
                   :key="`${state.ic}-${message.id || index}`"
+                  :ref="el => setMessageRef(message.id, el)"
                   :data="message"
                   :isMine="isMessageMine(message)"
                   :showDateHeader="shouldShowDateHeader(message, index)"
+                  :replyTarget="getReplyTarget(message.reply_to_message_id)"
                   @delete-message="handleDeleteMessage"
+                  @reply-message="handleReplyMessage"
+                  @jump-to-message="jumpToMessage"
                 />
               </div>
             </div>
           </div>
   
+          <!-- Reply Preview Bar (WhatsApp-style) -->
+          <div v-if="replyingTo" class="reply-preview-bar">
+            <div class="reply-preview-content">
+              <div class="reply-preview-indicator"></div>
+              <div class="reply-preview-info">
+                <div class="reply-preview-sender">
+                  Replying to {{ getReplyPreviewSender() }}
+                </div>
+                <div class="reply-preview-text">
+                  {{ getReplyPreviewText() }}
+                </div>
+              </div>
+            </div>
+            <button class="cancel-reply-btn" @click="cancelReply" title="Cancel reply">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+
           <!-- File Preview (above the input area) -->
           <div v-if="selectedFiles.length > 0" class="file-preview-container">
             <div class="files-preview-grid">
@@ -321,6 +346,10 @@
       const reassignReason = ref('');
       const transferOption = ref('none');
       const isReassigning = ref(false);
+
+      // Reply feature refs (WhatsApp-style message replies)
+      const replyingTo = ref(null); // { id, message, sender, user_type, image_url, file_name, ... }
+      const messageRefs = {}; // Store refs to message elements for jump-to functionality
   
       // Emoji categories and their emojis
       const emojiCategories = [
@@ -350,6 +379,19 @@
       // Check if current user is a student
       const isStudent = computed(() => {
         return state.sessionUserId === 'STUDENT';
+      });
+
+      // Build a lookup map for messages by ID (for reply feature)
+      const messagesById = computed(() => {
+        const map = {};
+        if (state.messages && state.messages.length > 0) {
+          state.messages.forEach(msg => {
+            if (msg.id) {
+              map[msg.id] = msg;
+            }
+          });
+        }
+        return map;
       });
 
       // Get chat title based on message type
@@ -394,6 +436,7 @@
           state.studentName = studentName;
           state.matricNumber = matricNumber;
           state.messages = [];
+          replyingTo.value = null; // Clear reply state when switching conversations
           
           // Use nextTick to ensure state is updated before fetching
           nextTick(() => {
@@ -420,6 +463,7 @@
         state.studentName = studentName;
         state.messages = [];
         state.isChatBoxOpen = true;
+        replyingTo.value = null; // Clear reply state when switching conversations
         
         // Fetch messages for this student
         nextTick(() => {
@@ -975,6 +1019,110 @@
         });
       };
 
+      // Reply feature methods (WhatsApp-style message replies)
+      const setMessageRef = (messageId, el) => {
+        if (messageId && el) {
+          messageRefs[messageId] = el;
+        }
+      };
+
+      const getReplyTarget = (replyToMessageId) => {
+        if (!replyToMessageId) return null;
+        return messagesById.value[replyToMessageId] || null;
+      };
+
+      const handleReplyMessage = (messageData) => {
+        replyingTo.value = {
+          id: messageData.id,
+          message: messageData.message,
+          sender: messageData.sender,
+          user_type: messageData.user_type,
+          image_url: messageData.image_url,
+          file_name: messageData.file_name,
+          file_type: messageData.file_type,
+          sender_name: messageData.sender_name,
+          status: messageData.status
+        };
+        // Focus the input field
+        nextTick(() => {
+          if (messageInput.value) {
+            messageInput.value.focus();
+          }
+        });
+      };
+
+      const jumpToMessage = (messageId) => {
+        const messageEl = messageRefs[messageId];
+        if (messageEl && messageEl.$el) {
+          const element = messageEl.$el;
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          // Add highlight effect
+          element.classList.add('message-highlight');
+          setTimeout(() => {
+            element.classList.remove('message-highlight');
+          }, 2000);
+        } else if (chatMessages.value) {
+          // Fallback: try to find by data attribute
+          const msgElement = chatMessages.value.querySelector(`[data-message-id="${messageId}"]`);
+          if (msgElement) {
+            msgElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            msgElement.classList.add('message-highlight');
+            setTimeout(() => {
+              msgElement.classList.remove('message-highlight');
+            }, 2000);
+          }
+        }
+      };
+
+      const cancelReply = () => {
+        replyingTo.value = null;
+      };
+
+      const getReplyPreviewSender = () => {
+        if (!replyingTo.value) return '';
+        
+        // Check if it's your own message
+        if (state.messageType === 'STUDENT_TO_STUDENT') {
+          const currentStudentIc = window.Laravel?.currentStudentIc;
+          if (replyingTo.value.sender === currentStudentIc) {
+            return 'yourself';
+          }
+          return replyingTo.value.sender_name || state.studentName || 'them';
+        } else {
+          if (replyingTo.value.user_type === state.sessionUserId) {
+            return 'yourself';
+          }
+          return state.studentName || 'them';
+        }
+      };
+
+      const getReplyPreviewText = () => {
+        if (!replyingTo.value) return '';
+        
+        // Check if message was deleted
+        if (replyingTo.value.status === 'DELETED') {
+          return 'This message was deleted';
+        }
+        
+        // If there's text, show a preview
+        if (replyingTo.value.message && replyingTo.value.message.trim()) {
+          const text = replyingTo.value.message.trim();
+          return text.length > 50 ? text.substring(0, 50) + '...' : text;
+        }
+        
+        // If it's an image
+        if (replyingTo.value.image_url) {
+          return '📷 Photo';
+        }
+        
+        // If it's a file
+        if (replyingTo.value.file_name) {
+          return '📎 ' + replyingTo.value.file_name;
+        }
+        
+        return 'Message';
+      };
+
       // Define your methods here
       const submitMessage = () => {
         if (message.value.trim() === '' && selectedFiles.value.length === 0) {
@@ -986,6 +1134,10 @@
 
         const messageToSend = message.value.trim();
         const filesToSend = [...selectedFiles.value];
+        
+        // Capture reply info before clearing (for WhatsApp-style replies)
+        const replyToMessageId = replyingTo.value ? replyingTo.value.id : null;
+        const savedReplyingTo = replyingTo.value ? { ...replyingTo.value } : null;
 
         // For multiple files, we'll send them individually to create separate messages
         // This provides better UX than one message with multiple files
@@ -1006,7 +1158,8 @@
               file_url: fileInfo.type !== 'image' ? fileInfo.name : null,
               file_name: fileInfo.name,
               file_type: fileInfo.type,
-              file_size: fileInfo.size
+              file_size: fileInfo.size,
+              reply_to_message_id: replyToMessageId // Include reply reference
             };
             tempMessages.push(tempMessage);
           });
@@ -1019,7 +1172,8 @@
             user_type: state.messageType === 'STUDENT_TO_STUDENT' ? 'STUDENT_TO_STUDENT' : state.sessionUserId,
             sender: state.messageType === 'STUDENT_TO_STUDENT' ? window.Laravel?.currentStudentIc : state.sessionUserId,
             created_at: new Date().toISOString(),
-            isTemporary: true
+            isTemporary: true,
+            reply_to_message_id: replyToMessageId // Include reply reference
           };
           tempMessages.push(tempMessage);
         }
@@ -1028,9 +1182,10 @@
         const currentMessages = [...state.messages, ...tempMessages];
         state.messages = currentMessages;
 
-        // Clear input and files
+        // Clear input, files, and reply state
         message.value = '';
         selectedFiles.value = [];
+        replyingTo.value = null;
 
         // Scroll to bottom
         nextTick(() => {
@@ -1057,6 +1212,9 @@
               requestData.append('file', fileInfo.file);
               requestData.append('file_type', fileInfo.type);
               requestData.append('file_name', fileInfo.name);
+              if (replyToMessageId) {
+                requestData.append('reply_to_message_id', replyToMessageId);
+              }
 
               config = {
                 headers: {
@@ -1072,6 +1230,9 @@
               requestData.append('file', fileInfo.file);
               requestData.append('file_type', fileInfo.type);
               requestData.append('file_name', fileInfo.name);
+              if (replyToMessageId) {
+                requestData.append('reply_to_message_id', replyToMessageId);
+              }
 
               config = {
                 headers: {
@@ -1091,14 +1252,16 @@
             endpoint = '/all/student/sendMessage';
             requestData = {
               message: messageToSend,
-              recipient_ic: state.ic
+              recipient_ic: state.ic,
+              reply_to_message_id: replyToMessageId
             };
           } else {
             endpoint = '/all/massage/user/sendMassage';
             requestData = {
               message: messageToSend,
               ic: state.ic,
-              type: state.sessionUserId
+              type: state.sessionUserId,
+              reply_to_message_id: replyToMessageId
             };
           }
 
@@ -1131,9 +1294,10 @@
           // Remove temp messages if sending failed
           state.messages = state.messages.filter(msg => !tempMessages.find(temp => temp.id === msg.id));
 
-          // Restore the message and files to input if sending failed
+          // Restore the message, files, and reply state if sending failed
           message.value = messageToSend;
           selectedFiles.value = filesToSend;
+          replyingTo.value = savedReplyingTo;
 
           // Show error message to user
           alert('Failed to send message. Please try again.');
@@ -1213,7 +1377,17 @@
         getDepartmentName,
         getAvailableDepartments,
         toggleReassignDropdown,
-        handleReassign
+        handleReassign,
+        // Reply feature related (WhatsApp-style)
+        replyingTo,
+        messagesById,
+        setMessageRef,
+        getReplyTarget,
+        handleReplyMessage,
+        jumpToMessage,
+        cancelReply,
+        getReplyPreviewSender,
+        getReplyPreviewText
       };
     }
   }
@@ -2008,6 +2182,99 @@
     background-color: #f9fafb;
     border-color: var(--text-color);
     color: var(--text-color);
+  }
+
+  /* Reply Preview Bar Styles (WhatsApp-style) */
+  .reply-preview-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    background-color: #f0f4f8;
+    border-bottom: 1px solid var(--border-color);
+    animation: slideDown 0.2s ease;
+  }
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .reply-preview-content {
+    display: flex;
+    align-items: stretch;
+    flex: 1;
+    min-width: 0;
+    gap: 0.5rem;
+  }
+
+  .reply-preview-indicator {
+    width: 4px;
+    background-color: var(--primary-color);
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  .reply-preview-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.125rem;
+  }
+
+  .reply-preview-sender {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--primary-color);
+  }
+
+  .reply-preview-text {
+    font-size: 0.8rem;
+    color: var(--light-text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .cancel-reply-btn {
+    background: transparent;
+    border: none;
+    color: var(--light-text);
+    cursor: pointer;
+    padding: 0.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+
+  .cancel-reply-btn:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+    color: var(--error-color);
+  }
+
+  /* Message highlight animation (for jump-to-message) */
+  .messages-container :deep(.message-highlight) {
+    animation: highlightPulse 2s ease;
+  }
+
+  @keyframes highlightPulse {
+    0%, 100% {
+      background-color: transparent;
+    }
+    25%, 75% {
+      background-color: rgba(79, 70, 229, 0.15);
+    }
   }
 
   /* Responsive adjustments */
