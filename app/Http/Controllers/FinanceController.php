@@ -11637,6 +11637,7 @@ class FinanceController extends Controller
     {
 
         $data['program'] = DB::table('tblprogramme')->orderBy('program_ID')->get();
+        $data['status'] = DB::table('tblstudent_status')->whereIn('id', [3, 4, 7, 8])->get();
 
         return view('finance.debt.monthly_payment_report.monthlyReport', compact('data'));
 
@@ -11682,6 +11683,12 @@ class FinanceController extends Controller
 
         //A
 
+        // Determine status filter
+        $statusFilter = [3, 4, 7, 8]; // Default to all allowed statuses
+        if($request->status && $request->status != '-') {
+            $statusFilter = [$request->status];
+        }
+
         if($request->program != 'all')
         {
 
@@ -11689,7 +11696,7 @@ class FinanceController extends Controller
             ->join('sessions', 'students.session', 'sessions.SessionID')
             ->join('tblprogramme', 'students.program', 'tblprogramme.id')
             ->where('students.program', $request->program)
-            ->whereIn('students.status', [8])
+            ->whereIn('students.status', $statusFilter)
             ->whereBetween('sessions.Year', [$request->from, $request->to])
             ->when($request->input('remark'), function($query) use ($filterStd) {
                 return $query->whereNotIn('students.ic', $filterStd);
@@ -11705,7 +11712,7 @@ class FinanceController extends Controller
             ->join('sessions', 'students.session', 'sessions.SessionID')
             ->join('tblprogramme', 'students.program', 'tblprogramme.id')
             ->where('students.program', '!=', 30)
-            ->whereIn('students.status', [8])
+            ->whereIn('students.status', $statusFilter)
             ->whereBetween('sessions.Year', [$request->from, $request->to])
             ->when($request->input('remark'), function($query) use ($filterStd) {
                 return $query->whereNotIn('students.ic', $filterStd);
@@ -13104,6 +13111,7 @@ class FinanceController extends Controller
     {
 
         $data['program'] = DB::table('tblprogramme')->orderBy('program_ID')->get();
+        $data['status'] = DB::table('tblstudent_status')->whereIn('id', [3, 4, 7, 8])->get();
 
         return view('finance.debt.ctos_report.ctosReport', compact('data'));
 
@@ -13126,6 +13134,12 @@ class FinanceController extends Controller
             $data['program'] = DB::table('tblprogramme')
             ->where('id', $request->program)->pluck('id');
             
+        }
+
+        // Determine status filter
+        $statusFilter = [3, 4, 7, 8]; // Default to all allowed statuses
+        if($request->status && $request->status != '-') {
+            $statusFilter = [$request->status];
         }
 
         $data['student'] = DB::table('students')
@@ -13165,7 +13179,7 @@ class FinanceController extends Controller
         )
         ->whereBetween('sessions.Year', [$request->from, $request->to])
         ->whereIn('students.program', $data['program'])
-        ->whereIn('students.status', [8])
+        ->whereIn('students.status', $statusFilter)
         ->get();
 
                            
@@ -16168,6 +16182,7 @@ class FinanceController extends Controller
     public function discountReport()
     {
         $data['program'] = DB::table('tblprogramme')->get();
+        $data['status'] = DB::table('tblstudent_status')->whereIn('id', [3, 4, 7, 8])->get();
 
         return view('finance.debt.discount_report.discountReport', compact('data'));
 
@@ -16184,11 +16199,17 @@ class FinanceController extends Controller
         $to = $request->to;
         $program = $request->program;
 
+        // Determine status filter
+        $statusFilter = [3, 4, 7, 8]; // Default to all allowed statuses
+        if($request->status && $request->status != '-') {
+            $statusFilter = [$request->status];
+        }
+
         $query = DB::table('tblclaim')
                    ->join('tblclaimdtl', 'tblclaim.id', 'tblclaimdtl.claim_id')
                    ->join('students', 'tblclaim.student_ic', 'students.ic')
                    ->where('tblclaim.remark', 'LIKE', "%"."BAYARAN PENUH"."%")
-                   ->where('students.status', 8)
+                   ->whereIn('students.status', $statusFilter)
                    ->whereBetween('tblclaim.date', [$from, $to]);
 
         // Add program filter if not 'all'
@@ -16325,6 +16346,7 @@ class FinanceController extends Controller
     {
         $year = $request->year;
         $month = $request->month;
+        $status = $request->status;
 
         $query = DB::table('student_discount')
                    ->leftJoin('students', 'student_discount.student_ic', '=', 'students.ic')
@@ -16353,6 +16375,14 @@ class FinanceController extends Controller
                            ->whereMonth('student_discount.created_at', $month);
                   });
             });
+        }
+
+        // Apply status filter
+        if ($status && $status !== '-') {
+            $query->where('students.status', $status);
+        } else {
+            // Default to allowed statuses if no status filter is selected
+            $query->whereIn('students.status', [3, 4, 7, 8]);
         }
 
         $data['records'] = $query->orderBy('student_discount.id')->get();

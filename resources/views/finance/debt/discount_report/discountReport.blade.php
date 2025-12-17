@@ -138,7 +138,7 @@
                 </div>
                 <div class="card-body">
                   <div class="row mb-3">
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                       <div class="form-group">
                         <label class="form-label" for="filter_year">Filter by Year</label>
                         <select class="form-select" id="filter_year" name="filter_year">
@@ -149,7 +149,7 @@
                         </select>
                       </div>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                       <div class="form-group">
                         <label class="form-label" for="filter_month">Filter by Month</label>
                         <select class="form-select" id="filter_month" name="filter_month">
@@ -157,6 +157,17 @@
                           @for($month = 1; $month <= 12; $month++)
                             <option value="{{ $month }}">{{ date('F', mktime(0, 0, 0, $month, 1)) }}</option>
                           @endfor
+                        </select>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="form-group">
+                        <label class="form-label" for="filter_status">Status</label>
+                        <select class="form-select" id="filter_status" name="filter_status">
+                          <option value="-" selected>-</option>
+                          @foreach ($data['status'] as $sts)
+                            <option value="{{ $sts->id }}">{{ $sts->name }}</option> 
+                          @endforeach
                         </select>
                       </div>
                     </div>
@@ -282,6 +293,7 @@ function loadDiscountRecords()
 {
     var year = $('#filter_year').val();
     var month = $('#filter_month').val();
+    var status = $('#filter_status').val();
 
     return $.ajax({
             headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
@@ -289,7 +301,8 @@ function loadDiscountRecords()
             method   : 'POST',
             data 	 : {
                 year: year,
-                month: month
+                month: month,
+                status: status
             },
             error:function(err){
                 alert("Error loading records");

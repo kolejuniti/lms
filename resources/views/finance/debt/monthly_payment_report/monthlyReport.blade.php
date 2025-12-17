@@ -64,7 +64,7 @@
                 </div>
                 <div class="card-body">
                   <div class="row">
-                    <div class="col-md-12 ml-3">
+                    <div class="col-md-6 ml-3">
                       <div class="form-group">
                           <label class="form-label" for="program">Program</label>
                           <select class="form-select" id="program" name="program">
@@ -73,6 +73,17 @@
                             <option value="{{ $prg->id }}">{{ $prg->progcode }} - {{ $prg->progname }}</option> 
                             @endforeach
                           </select>
+                      </div>
+                    </div>
+                    <div class="col-md-6 mr-3">
+                      <div class="form-group">
+                        <label class="form-label" for="status">Status</label>
+                        <select class="form-select" id="status" name="status">
+                          <option value="-" selected>-</option>
+                          @foreach ($data['status'] as $sts)
+                            <option value="{{ $sts->id }}">{{ $sts->name }}</option> 
+                          @endforeach
+                        </select>
                       </div>
                     </div>
                   </div>
@@ -138,6 +149,7 @@ function submit() {
   var program = $('#program').val();
   var from = $('#from').val();
   var to = $('#to').val();
+  var status = $('#status').val();
   var remark = $('#filterRemarkStudent').is(':checked');
   var includeFineOther = $('#includeFineOther').is(':checked');
 
@@ -148,7 +160,7 @@ function submit() {
     headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
     url: "{{ url('finance/debt/monthlyPayment/getMonthlyPayment') }}",
     method: 'POST',
-    data: {program: program, from: from, to: to, remark: remark, includeFineOther: includeFineOther},
+    data: {program: program, from: from, to: to, status: status, remark: remark, includeFineOther: includeFineOther},
     error: function(err){
       alert("Error");
       console.log(err);
