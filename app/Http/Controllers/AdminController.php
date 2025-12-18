@@ -823,6 +823,15 @@ class AdminController extends Controller
         $testmin = [];
         $testavgoverall = [];
 
+        $test2 = [];
+        $test2collection = [];
+        $overalltest2 = [];
+        $testanswer = [];
+        $test2avg = [];
+        $test2max = [];
+        $test2min = [];
+        $test2avgoverall = [];
+
         $assign = [];
         $assigncollection = [];
         $overallassign = [];
@@ -996,6 +1005,39 @@ class AdminController extends Controller
                     $testmax[$ky][$key] = $testarray->max('final_mark');
                     
                     $testmin[$ky][$key] = $testarray->min('final_mark');
+
+                }
+
+                //TEST2
+
+                $tests2 = DB::table('tblclasstest2')
+                        ->join('tblclasstest2_group', 'tblclasstest2.id', 'tblclasstest2_group.testid')
+                        ->where([
+                            ['tblclasstest2.classid',$id],
+                            ['tblclasstest2.sessionid', Session::get('SessionID')],
+                            ['tblclasstest2_group.groupname', $grp->group_name],
+                            ['tblclasstest2.status', '!=', 3]
+                        ]);
+
+                $test2[] = $tests2->get();
+
+                $test2id = $tests2->pluck('tblclasstest2.id');
+
+                $totaltest2 = $tests2->sum('tblclasstest2.total_mark');
+
+                foreach($test2[$ky] as $key => $qz)
+                {
+
+                    $test2array = DB::table('tblclassstudenttest')
+                                            ->join('tblclasstest2', 'tblclassstudenttest.testid', 'tblclasstest2.id')
+                                            ->where('testid', $qz->testid)
+                                            ->whereIn('userid', $collection->pluck('ic'));
+
+                    $test2avg[$ky][$key] = number_format((float)$test2array->sum('final_mark') / count($collection->pluck('ic')), 2, '.', '');
+
+                    $test2max[$ky][$key] = $test2array->max('final_mark');
+                    
+                    $test2min[$ky][$key] = $test2array->min('final_mark');
 
                 }
 
@@ -1274,6 +1316,59 @@ class AdminController extends Controller
                         $overalltest[$ky][$keys] = 0;
 
                         $testcollection = collect($overalltest[$ky]);
+                    }
+
+                    // TEST2
+                    
+                    foreach($test2[$ky] as $key =>$qz)
+                    {
+                    
+                    $test2answer[$ky][$keys][$key] = DB::table('tblclassstudenttest')->where('userid', $std->ic)->where('testid', $qz->testid)->first();
+
+                    }
+
+                    $sumtest2[$ky][$keys] = DB::table('tblclassstudenttest')->where('userid', $std->ic)->whereIn('testid', $test2id)->sum('final_mark');
+
+                    $percenttest2 = DB::table('tblclassmarks')
+                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
+                                ['subjek.id',$id],
+                                ['assessment', 'test2']
+                                ])->first();
+
+                    if($tests2 = DB::table('tblclasstest2')
+                    ->join('tblclasstest_group', 'tblclasstest.id', 'tblclasstest_group.testid')
+                    ->where([
+                        ['tblclasstest.classid',$id],
+                        ['tblclasstest2.sessionid', Session::get('SessionID')],
+                        ['tblclasstest2_group.groupname', $grp->group_name],
+                        ['tblclasstest2.status', '!=', 3]
+                    ])->exists()){
+                        if($percenttest2 != null)
+                        {
+                            if(DB::table('tblclasstest2')
+                            ->where([
+                                ['classid',$id],
+                                ['sessionid', Session::get('SessionID')]
+                            ])->exists()){
+                                //dd($totaltest2);
+                                $overalltest2[$ky][$keys] = number_format((float)$sumtest2[$ky][$keys] / $totaltest2 * $percenttest2->mark_percentage, 2, '.', '');
+
+                                $test2collection = collect($overalltest2[$ky]);
+                            }else{
+                                $overalltest2[$ky][$keys] = 0;
+
+                                $test2collection = collect($overalltest2[$ky]);
+                            }
+            
+                        }else{
+                            $overalltest2[$ky][$keys] = 0;
+
+                            $test2collection = collect($overalltest2[$ky]);
+                        }
+                    }else{
+                        $overalltest2[$ky][$keys] = 0;
+
+                        $test2collection = collect($overalltest2[$ky]);
                     }
 
 
@@ -1583,6 +1678,8 @@ class AdminController extends Controller
 
             $testavgoverall = number_format((float)$testcollection->sum() / count($collection->pluck('ic')), 2, '.', '');
 
+            $test2avgoverall = number_format((float)$test2collection->sum() / count($collection->pluck('ic')), 2, '.', '');
+
             $assignavgoverall = number_format((float)$assigncollection->sum() / count($collection->pluck('ic')), 2, '.', '');
 
             $extraavgoverall = number_format((float)$extracollection->sum() / count($collection->pluck('ic')), 2, '.', '');
@@ -1604,6 +1701,7 @@ class AdminController extends Controller
         return view('lecturer.courseassessment.studentreport', compact('groups', 'students', 'id',
                                                                        'quiz', 'quizanswer', 'overallquiz', 'quizavg', 'quizmax', 'quizmin', 'quizcollection', 'quizavgoverall',
                                                                        'test', 'testanswer', 'overalltest', 'testavg', 'testmax', 'testmin', 'testcollection','testavgoverall',
+                                                                       'test2', 'test2answer', 'overalltest2', 'test2avg', 'test2max', 'test2min', 'test2collection','test2avgoverall',
                                                                        'assign', 'assignanswer', 'overallassign', 'assignavg', 'assignmax', 'assignmin', 'assigncollection','assignavgoverall',
                                                                        'extra', 'extraanswer', 'overallextra', 'extraavg', 'extramax', 'extramin', 'extracollection','extraavgoverall',
                                                                        'other', 'otheranswer', 'overallother', 'otheravg', 'othermax', 'othermin', 'othercollection','otheravgoverall',
