@@ -1107,6 +1107,39 @@ class AdminController extends Controller
 
                 }
 
+                //PRACTICAL
+
+                $practicals = DB::table('tblclasspractical')
+                        ->join('tblclasspractical_group', 'tblclasspractical.id', 'tblclasspractical_group.practicalid')
+                        ->where([
+                            ['tblclasspractical.classid',$id],
+                            ['tblclasspractical.sessionid', Session::get('SessionID')],
+                            ['tblclasspractical_group.groupname', $grp->group_name],
+                            ['tblclasspractical.status', '!=', 3],
+                        ]);
+
+                $practical[] = $practicals->get();
+
+                $practicalid = $practicals->pluck('tblclasspractical.id');
+
+                $totalpractical = $practicals->sum('tblclasspractical.total_mark');
+
+                foreach($practical[$ky] as $key => $qz)
+                {
+
+                    $practicalarray = DB::table('tblclassstudentpractical')
+                                            ->join('tblclasspractical', 'tblclassstudentpractical.practicalid', 'tblclasspractical.id')
+                                            ->where('practicalid', $qz->practicalid)
+                                            ->whereIn('userid', $collection->pluck('ic'));
+
+                    $practicalavg[$ky][$key] = number_format((float)$practicalarray->sum('tblclassstudentpractical.total_mark') / count($collection->pluck('ic')), 2, '.', '');
+
+                    $practicalmax[$ky][$key] = $practicalarray->max('tblclassstudentpractical.total_mark');
+
+                    $practicalmin[$ky][$key] = $practicalarray->min('tblclassstudentpractical.total_mark');
+
+                }
+
                 //OTHER
 
                 $others = DB::table('tblclassother')
@@ -1323,11 +1356,11 @@ class AdminController extends Controller
                     foreach($test2[$ky] as $key =>$qz)
                     {
                     
-                    $test2answer[$ky][$keys][$key] = DB::table('tblclassstudenttest2')->where('userid', $std->ic)->where('testid', $qz->testid)->first();
+                    $test2answer[$ky][$keys][$key] = DB::table('tblclassstudenttest')->where('userid', $std->ic)->where('testid', $qz->testid)->first();
 
                     }
 
-                    $sumtest2[$ky][$keys] = DB::table('tblclassstudenttest2')->where('userid', $std->ic)->whereIn('testid', $test2id)->sum('final_mark');
+                    $sumtest2[$ky][$keys] = DB::table('tblclassstudenttest')->where('userid', $std->ic)->whereIn('testid', $test2id)->sum('final_mark');
 
                     $percenttest2 = DB::table('tblclassmarks')
                                 ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
@@ -1476,6 +1509,65 @@ class AdminController extends Controller
                         $overallextra[$ky][$keys] = 0;
 
                         $extracollection = collect($overallextra[$ky]);
+                    }
+
+                    // PRACTICAL
+
+                    foreach($practical[$ky] as $key =>$qz)
+                    {
+
+                    $practicalanswer[$ky][$keys][$key] = DB::table('tblclassstudentpractical')->where('userid', $std->ic)->where('practicalid', $qz->practicalid)->first();
+
+                    }
+
+                    $sumpractical[$ky][$keys] = DB::table('tblclassstudentpractical')->where('userid', $std->ic)->whereIn('practicalid', $practicalid)->sum('total_mark');
+
+                    $percentpractical = DB::table('tblclassmarks')
+                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
+                                ['subjek.id',$id],
+                                ['assessment', 'practical']
+                                ])
+                                ->orderBy('tblclassmarks.id', 'desc')
+                                ->first();
+
+                    if($practicals = DB::table('tblclasspractical')
+                    ->join('tblclasspractical_group', 'tblclasspractical.id', 'tblclasspractical_group.practicalid')
+                    ->where([
+                        ['tblclasspractical.classid',$id],
+                        ['tblclasspractical.sessionid', Session::get('SessionID')],
+                        ['tblclasspractical_group.groupname', $grp->group_name],
+                        ['tblclasspractical.status', '!=', 3]
+                    ])->exists()){
+                        if($percentpractical != null)
+                        {
+                            if(DB::table('tblclasspractical')
+                            ->where([
+                                ['classid',$id],
+                                ['sessionid', Session::get('SessionID')]
+                            ])->exists()){
+                                //dd($totalpractical);
+                                if ($totalpractical > 0) {
+                                    $overallpractical[$ky][$keys] = round(number_format((float)$sumpractical[$ky][$keys] / $totalpractical * $percentpractical->mark_percentage, 2, '.', ''), 1);
+                                } else {
+                                    $overallpractical[$ky][$keys] = 0;
+                                }
+
+                                $practicalcollection = collect($overallpractical[$ky]);
+                            }else{
+                                $overallpractical[$ky][$keys] = 0;
+
+                                $practicalcollection = collect($overallpractical[$ky]);
+                            }
+
+                        }else{
+                            $overallpractical[$ky][$keys] = 0;
+
+                            $practicalcollection = collect($overallpractical[$ky]);
+                        }
+                    }else{
+                        $overallpractical[$ky][$keys] = 0;
+
+                        $practicalcollection = collect($overallpractical[$ky]);
                     }
 
                     // OTHER
