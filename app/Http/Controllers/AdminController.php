@@ -1336,9 +1336,9 @@ class AdminController extends Controller
                                 ])->first();
 
                     if($tests2 = DB::table('tblclasstest2')
-                    ->join('tblclasstest_group', 'tblclasstest.id', 'tblclasstest_group.testid')
+                    ->join('tblclasstest2_group', 'tblclasstest2.id', 'tblclasstest2_group.testid')
                     ->where([
-                        ['tblclasstest.classid',$id],
+                        ['tblclasstest2.classid',$id],
                         ['tblclasstest2.sessionid', Session::get('SessionID')],
                         ['tblclasstest2_group.groupname', $grp->group_name],
                         ['tblclasstest2.status', '!=', 3]
