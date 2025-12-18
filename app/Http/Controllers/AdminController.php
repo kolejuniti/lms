@@ -1323,11 +1323,11 @@ class AdminController extends Controller
                     foreach($test2[$ky] as $key =>$qz)
                     {
                     
-                    $test2answer[$ky][$keys][$key] = DB::table('tblclassstudenttest')->where('userid', $std->ic)->where('testid', $qz->testid)->first();
+                    $test2answer[$ky][$keys][$key] = DB::table('tblclassstudenttest2')->where('userid', $std->ic)->where('testid', $qz->testid)->first();
 
                     }
 
-                    $sumtest2[$ky][$keys] = DB::table('tblclassstudenttest')->where('userid', $std->ic)->whereIn('testid', $test2id)->sum('final_mark');
+                    $sumtest2[$ky][$keys] = DB::table('tblclassstudenttest2')->where('userid', $std->ic)->whereIn('testid', $test2id)->sum('final_mark');
 
                     $percenttest2 = DB::table('tblclassmarks')
                                 ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
