@@ -1794,6 +1794,7 @@ class AdminController extends Controller
                                                                        'quiz', 'quizanswer', 'overallquiz', 'quizavg', 'quizmax', 'quizmin', 'quizcollection', 'quizavgoverall',
                                                                        'test', 'testanswer', 'overalltest', 'testavg', 'testmax', 'testmin', 'testcollection','testavgoverall',
                                                                        'test2', 'test2answer', 'overalltest2', 'test2avg', 'test2max', 'test2min', 'test2collection','test2avgoverall',
+                                                                       'practical', 'practicalanswer', 'overallpractical', 'practicalavg', 'practicalmax', 'practicalmin', 'practicalcollection','practicalavgoverall',
                                                                        'assign', 'assignanswer', 'overallassign', 'assignavg', 'assignmax', 'assignmin', 'assigncollection','assignavgoverall',
                                                                        'extra', 'extraanswer', 'overallextra', 'extraavg', 'extramax', 'extramin', 'extracollection','extraavgoverall',
                                                                        'other', 'otheranswer', 'overallother', 'otheravg', 'othermax', 'othermin', 'othercollection','otheravgoverall',
