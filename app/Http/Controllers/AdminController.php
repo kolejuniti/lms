@@ -826,7 +826,7 @@ class AdminController extends Controller
         $test2 = [];
         $test2collection = [];
         $overalltest2 = [];
-        $testanswer = [];
+        $test2answer = [];
         $test2avg = [];
         $test2max = [];
         $test2min = [];
