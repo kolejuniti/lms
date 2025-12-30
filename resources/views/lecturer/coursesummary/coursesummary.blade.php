@@ -4,7 +4,7 @@
 <!-- Content Header (Page header) -->
 <div class="content-wrapper" style="min-height: 695.8px;">
   <div class="container-full">
-    <!-- Content Header (Page header) -->	  
+    <!-- Content Header (Page header) -->
     <div class="content-header">
       <div class="d-flex align-items-center">
         <div class="me-auto">
@@ -52,23 +52,29 @@
             @foreach ($summary as $sum)
             <div id="{{ $sum->progcode }}" class="tab-pane">
               <!-- //asset('storage/coursesummary/'.$course->progcode.'/'.str_replace(" ","_", $course->course_code).'.pdf') -->
-              
-                @if (Storage::disk('linode')->exists('coursesummary/'.$sum->progcode.'/'.str_replace(" ","_", $sum->course_code).'.pdf'))
-                    <iframe src="{{ Storage::disk('linode')->temporaryUrl('coursesummary/'.$sum->progcode.'/'.str_replace(" ","_", $sum->course_code).'.pdf',now()->addMinutes(5)) }}" width="100%" height="1000" style="border:1px solid black;">
-                    </iframe>
-                @else
-                    <div class=" d-flex justify-content-center align-items-center box-header bg-secondary-light" style="height:20em">
-                        <h1 class="text-muted ">-- Course Summary not set --</h1>
-                    </div>
-                @endif
-               
+
+              @if ($sum->pdfUrl)
+              <iframe src="{{ $sum->pdfUrl }}" width="100%" height="1000" style="border:1px solid black;">
+              </iframe>
+              @elseif (isset($sum->storageError))
+              <div class=" d-flex justify-content-center align-items-center box-header bg-danger-light" style="height:20em; flex-direction: column;">
+                <h3 class="text-danger">Storage Error</h3>
+                <p class="text-muted">{{ $sum->storageError }}</p>
+              </div>
+              @else
+              <div class=" d-flex justify-content-center align-items-center box-header bg-secondary-light" style="height:20em">
+                <h1 class="text-muted ">-- Course Summary not set --</h1>
+              </div>
+              @endif
+
+
             </div>
             @endforeach
           </div>
         </div>
         <div class="card-body p-0">
-         
-          
+
+
         </div>
         <!-- /.card-body -->
       </div>
