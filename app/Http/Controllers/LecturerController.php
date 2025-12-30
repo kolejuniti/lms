@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\User;
@@ -26,27 +27,27 @@ class LecturerController extends Controller
     public function index(Request $request)
     {
         //forgot current session
-        Session::forget(['User','CourseID','SessionID','CourseIDS','SessionIDS']);
+        Session::forget(['User', 'CourseID', 'SessionID', 'CourseIDS', 'SessionIDS']);
 
         Session::put('User', Auth::user());
-        
+
         //this function will get authenticated user and use relational models to join table
         $data = auth()->user()->subjects()
-            ->join('subjek', 'user_subjek.course_id','=','subjek.sub_id')
+            ->join('subjek', 'user_subjek.course_id', '=', 'subjek.sub_id')
             ->join('subjek_structure', 'subjek.sub_id', 'subjek_structure.courseID')
             ->join('tblprogramme', 'subjek_structure.program_id', 'tblprogramme.id')
-            ->join('sessions', 'user_subjek.session_id','sessions.SessionID')
+            ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
             ->where('sessions.Status', 'ACTIVE')
             ->where('tblprogramme.progstatusid', 1)
             ->groupBy('subjek.sub_id', 'user_subjek.session_id')
-            ->select('subjek.*','user_subjek.course_id','sessions.SessionName','sessions.SessionID','tblprogramme.progname','tblprogramme.progcode')
+            ->select('subjek.*', 'user_subjek.course_id', 'sessions.SessionName', 'sessions.SessionID', 'tblprogramme.progname', 'tblprogramme.progcode')
             ->get();
 
-            //dd($data);
+        //dd($data);
 
         $sessions = DB::table('sessions')->where('Status', 'ACTIVE')->get();
 
-        return view('lecturer', compact(['data','sessions']));
+        return view('lecturer', compact(['data', 'sessions']));
     }
 
     public function setting()
@@ -54,13 +55,12 @@ class LecturerController extends Controller
         //dd(Auth::user());
 
         return view('settingLecturer');
-
     }
 
     public function updateSetting(Request $request)
     {
         $user = Auth::user();
-        
+
         // Check form type to determine what to update
         if ($request->form_type === 'profile') {
             // Validate profile data
@@ -74,7 +74,6 @@ class LecturerController extends Controller
             ]);
 
             return redirect()->back()->with('alert', 'Your profile has been updated successfully!');
-            
         } elseif ($request->form_type === 'profile_image') {
             // Validate image upload
             $request->validate([
@@ -82,7 +81,7 @@ class LecturerController extends Controller
             ]);
 
             $imageArray = [];
-            
+
             // Handle image upload
             if ($request->hasFile('image')) {
                 $imageName = $request->file('image')->getClientOriginalName();
@@ -113,13 +112,12 @@ class LecturerController extends Controller
             $user->update($imageArray);
 
             return redirect()->back()->with('alert', 'Your profile picture has been updated successfully!');
-            
         } elseif ($request->form_type === 'security') {
             // Validate security data
             $data = $request->validate([
-                'pass' => ['max:10','required'],
-                'conpass' => ['max:10','same:pass']
-            ],[
+                'pass' => ['max:10', 'required'],
+                'conpass' => ['max:10', 'same:pass']
+            ], [
                 'conpass.same' => 'The Confirm Password and Password must match!'
             ]);
 
@@ -129,13 +127,12 @@ class LecturerController extends Controller
             ]);
 
             return redirect()->back()->with('alert', 'Your password has been updated successfully!');
-            
         } else {
             // Legacy support - if no form_type is specified, assume it's password update
             $data = $request->validate([
-                'pass' => ['max:10','required'],
-                'conpass' => ['max:10','same:pass']
-            ],[
+                'pass' => ['max:10', 'required'],
+                'conpass' => ['max:10', 'same:pass']
+            ], [
                 'conpass.same' => 'The Confirm Password and Password must match!'
             ]);
 
@@ -151,101 +148,87 @@ class LecturerController extends Controller
     {
         $user = Auth::user();
 
-        if(DB::table('user_setting')->where('user_ic', $user->ic)->exists())
-        {
+        if (DB::table('user_setting')->where('user_ic', $user->ic)->exists()) {
 
             DB::table('user_setting')->where('user_ic', $user->ic)->update([
                 'theme' => $request->theme
             ]);
-
-        }else{
+        } else {
 
             DB::table('user_setting')->insert([
                 'user_ic' => $user->ic,
                 'theme' => $request->theme
             ]);
-
         }
-
-
     }
 
     public function getCourseList(Request $request)
     {
-        if(isset($request->search) && isset($request->session))
-        {
-        //forgot current session
-        Session::forget(['CourseID','SessionID','CourseIDS','SessionIDS']);
+        if (isset($request->search) && isset($request->session)) {
+            //forgot current session
+            Session::forget(['CourseID', 'SessionID', 'CourseIDS', 'SessionIDS']);
 
-        $data = auth()->user()->subjects()
-            ->join('subjek', 'user_subjek.course_id','=','subjek.sub_id')
-            ->join('subjek_structure', 'subjek.sub_id', 'subjek_structure.courseID')
-            ->join('tblprogramme', 'subjek_structure.program_id', 'tblprogramme.id')
-            ->join('sessions', 'user_subjek.session_id','sessions.SessionID')
-            ->where('sessions.Status', 'ACTIVE')
-            ->where('tblprogramme.progstatusid', 1)
-            ->groupBy('subjek.sub_id', 'user_subjek.session_id')
-            ->select('subjek.*','user_subjek.course_id','sessions.SessionName','sessions.SessionID','tblprogramme.progname','tblprogramme.progcode')
-            ->where('subjek.course_name','LIKE','%'.$request->search."%")
-            ->orwhere('subjek.course_code','LIKE','%'.$request->search."%")
-            ->where('user_subjek.session_id','LIKE','%'.$request->session.'%')
-            ->get();
+            $data = auth()->user()->subjects()
+                ->join('subjek', 'user_subjek.course_id', '=', 'subjek.sub_id')
+                ->join('subjek_structure', 'subjek.sub_id', 'subjek_structure.courseID')
+                ->join('tblprogramme', 'subjek_structure.program_id', 'tblprogramme.id')
+                ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
+                ->where('sessions.Status', 'ACTIVE')
+                ->where('tblprogramme.progstatusid', 1)
+                ->groupBy('subjek.sub_id', 'user_subjek.session_id')
+                ->select('subjek.*', 'user_subjek.course_id', 'sessions.SessionName', 'sessions.SessionID', 'tblprogramme.progname', 'tblprogramme.progcode')
+                ->where('subjek.course_name', 'LIKE', '%' . $request->search . "%")
+                ->orwhere('subjek.course_code', 'LIKE', '%' . $request->search . "%")
+                ->where('user_subjek.session_id', 'LIKE', '%' . $request->session . '%')
+                ->get();
+        } elseif (isset($request->search)) {
+            //forgot current session
+            Session::forget(['CourseID', 'SessionID', 'CourseIDS', 'SessionIDS']);
 
-        }elseif(isset($request->search))
-        {
-        //forgot current session
-        Session::forget(['CourseID','SessionID','CourseIDS','SessionIDS']);
+            $data = auth()->user()->subjects()
+                ->join('subjek', 'user_subjek.course_id', '=', 'subjek.sub_id')
+                ->join('subjek_structure', 'subjek.sub_id', 'subjek_structure.courseID')
+                ->join('tblprogramme', 'subjek_structure.program_id', 'tblprogramme.id')
+                ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
+                ->where('sessions.Status', 'ACTIVE')
+                ->where('tblprogramme.progstatusid', 1)
+                ->groupBy('subjek.sub_id', 'user_subjek.session_id')
+                ->select('subjek.*', 'user_subjek.course_id', 'sessions.SessionName', 'sessions.SessionID', 'tblprogramme.progname', 'tblprogramme.progcode')
+                ->where('subjek.course_name', 'LIKE', '%' . $request->search . "%")
+                ->orwhere('subjek.course_code', 'LIKE', '%' . $request->search . "%")
+                ->get();
+        } elseif (isset($request->session)) {
+            //forgot current session
+            Session::forget(['CourseID', 'SessionID', 'CourseIDS', 'SessionIDS']);
 
-        $data = auth()->user()->subjects()
-            ->join('subjek', 'user_subjek.course_id','=','subjek.sub_id')
-            ->join('subjek_structure', 'subjek.sub_id', 'subjek_structure.courseID')
-            ->join('tblprogramme', 'subjek_structure.program_id', 'tblprogramme.id')
-            ->join('sessions', 'user_subjek.session_id','sessions.SessionID')
-            ->where('sessions.Status', 'ACTIVE')
-            ->where('tblprogramme.progstatusid', 1)
-            ->groupBy('subjek.sub_id', 'user_subjek.session_id')
-            ->select('subjek.*','user_subjek.course_id','sessions.SessionName','sessions.SessionID','tblprogramme.progname','tblprogramme.progcode')
-            ->where('subjek.course_name','LIKE','%'.$request->search."%")
-            ->orwhere('subjek.course_code','LIKE','%'.$request->search."%")
-            ->get();
+            $data = auth()->user()->subjects()
+                ->join('subjek', 'user_subjek.course_id', '=', 'subjek.sub_id')
+                ->join('subjek_structure', 'subjek.sub_id', 'subjek_structure.courseID')
+                ->join('tblprogramme', 'subjek_structure.program_id', 'tblprogramme.id')
+                ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
+                ->where('sessions.Status', 'ACTIVE')
+                ->where('tblprogramme.progstatusid', 1)
+                ->groupBy('subjek.sub_id', 'user_subjek.session_id')
+                ->select('subjek.*', 'user_subjek.course_id', 'sessions.SessionName', 'sessions.SessionID', 'tblprogramme.progname', 'tblprogramme.progcode')
+                ->where('user_subjek.session_id', 'LIKE', '%' . $request->session . '%')
+                ->get();
+        } else {
+            //forgot current session
+            Session::forget(['CourseID', 'SessionID', 'CourseIDS', 'SessionIDS']);
 
-        }elseif(isset($request->session))
-        {
-        //forgot current session
-        Session::forget(['CourseID','SessionID','CourseIDS','SessionIDS']);
-
-        $data = auth()->user()->subjects()
-            ->join('subjek', 'user_subjek.course_id','=','subjek.sub_id')
-            ->join('subjek_structure', 'subjek.sub_id', 'subjek_structure.courseID')
-            ->join('tblprogramme', 'subjek_structure.program_id', 'tblprogramme.id')
-            ->join('sessions', 'user_subjek.session_id','sessions.SessionID')
-            ->where('sessions.Status', 'ACTIVE')
-            ->where('tblprogramme.progstatusid', 1)
-            ->groupBy('subjek.sub_id', 'user_subjek.session_id')
-            ->select('subjek.*','user_subjek.course_id','sessions.SessionName','sessions.SessionID','tblprogramme.progname','tblprogramme.progcode')
-            ->where('user_subjek.session_id','LIKE','%'.$request->session.'%')
-            ->get();
-
-        }else{
-        //forgot current session
-        Session::forget(['CourseID','SessionID','CourseIDS','SessionIDS']);
-
-        $data = auth()->user()->subjects()
-            ->join('subjek', 'user_subjek.course_id','=','subjek.sub_id')
-            ->join('subjek_structure', 'subjek.sub_id', 'subjek_structure.courseID')
-            ->join('tblprogramme', 'subjek_structure.program_id', 'tblprogramme.id')
-            ->join('sessions', 'user_subjek.session_id','sessions.SessionID')
-            ->where('sessions.Status', 'ACTIVE')
-            ->where('tblprogramme.progstatusid', 1)
-            ->groupBy('subjek.sub_id', 'user_subjek.session_id')
-            ->select('subjek.*','user_subjek.course_id','sessions.SessionName','sessions.SessionID','tblprogramme.progname','tblprogramme.progcode')
-            ->get();
-
+            $data = auth()->user()->subjects()
+                ->join('subjek', 'user_subjek.course_id', '=', 'subjek.sub_id')
+                ->join('subjek_structure', 'subjek.sub_id', 'subjek_structure.courseID')
+                ->join('tblprogramme', 'subjek_structure.program_id', 'tblprogramme.id')
+                ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
+                ->where('sessions.Status', 'ACTIVE')
+                ->where('tblprogramme.progstatusid', 1)
+                ->groupBy('subjek.sub_id', 'user_subjek.session_id')
+                ->select('subjek.*', 'user_subjek.course_id', 'sessions.SessionName', 'sessions.SessionID', 'tblprogramme.progname', 'tblprogramme.progcode')
+                ->get();
         }
 
         return view('lecturergetcourse', compact('data'));
-
-
     }
 
     /**
@@ -268,9 +251,9 @@ class LecturerController extends Controller
             ->filter(function ($period) use ($currentUserIc, $currentSessionId) {
                 $userIcs = json_decode($period->user_ic, true) ?: [];
                 $sessions = json_decode($period->session, true) ?: [];
-                
-                return in_array($currentUserIc, $userIcs) && 
-                       in_array($currentSessionId, $sessions);
+
+                return in_array($currentUserIc, $userIcs) &&
+                    in_array($currentSessionId, $sessions);
             })
             ->first();
 
@@ -286,40 +269,58 @@ class LecturerController extends Controller
         Session::put('CourseID', request()->id);
         //$test = session::get('courseID');
 
-        if(Session::get('SessionID') == null)
-        {
-        Session::put('SessionID', request()->session);
+        if (Session::get('SessionID') == null) {
+            Session::put('SessionID', request()->session);
         }
 
         $course = DB::table('subjek')
-                  ->join('subjek_structure', 'subjek.sub_id', 'subjek_structure.courseID')
-                  ->join('tblprogramme', 'subjek_structure.program_id', 'tblprogramme.id')
-                  ->where('subjek.id', request()->id)->first();
+            ->join('subjek_structure', 'subjek.sub_id', 'subjek_structure.courseID')
+            ->join('tblprogramme', 'subjek_structure.program_id', 'tblprogramme.id')
+            ->where('subjek.id', request()->id)->first();
+
+        if (!$course) {
+            return redirect()->back()->with('error', 'Course data not found for ID: ' . request()->id);
+        }
 
         $program = DB::table('tblprogramme')
-                   ->join('subjek_structure', 'tblprogramme.id', 'subjek_structure.program_id')
-                   ->join('subjek', 'subjek_structure.courseID', 'subjek.sub_id')
-                   ->where('subjek_structure.courseID', $course->sub_id)
-                   ->groupBy('tblprogramme.id')
-                   ->get();
+            ->join('subjek_structure', 'tblprogramme.id', 'subjek_structure.program_id')
+            ->join('subjek', 'subjek_structure.courseID', 'subjek.sub_id')
+            ->where('subjek_structure.courseID', $course->sub_id)
+            ->groupBy('tblprogramme.id')
+            ->get();
 
         $collection = collect($program);
 
         $summary = DB::table('subjek')
-                ->join('subjek_structure', 'subjek.sub_id', 'subjek_structure.courseID')
-                ->join('tblprogramme', 'subjek_structure.program_id', 'tblprogramme.id')
-                ->whereIn('subjek.sub_id', $collection->pluck('sub_id'))
-                ->whereIn('subjek_structure.program_id', $collection->pluck('program_id'))->groupBy('tblprogramme.id')->get();
+            ->join('subjek_structure', 'subjek.sub_id', 'subjek_structure.courseID')
+            ->join('tblprogramme', 'subjek_structure.program_id', 'tblprogramme.id')
+            ->whereIn('subjek.sub_id', $collection->pluck('sub_id'))
+            ->whereIn('subjek_structure.program_id', $collection->pluck('program_id'))->groupBy('tblprogramme.id')->get();
 
-        return view('lecturer.coursesummary.coursesummary', compact('course','program','summary'))->with('course_id', request()->id);
+        // Pre-check storage URLs to handle errors gracefully (e.g. localhost config issues)
+        foreach ($summary as $sum) {
+            $sum->pdfUrl = null;
+            $sum->storageError = null;
+            try {
+                $path = 'coursesummary/' . $sum->progcode . '/' . str_replace(" ", "_", $sum->course_code) . '.pdf';
+                if (Storage::disk('linode')->exists($path)) {
+                    $sum->pdfUrl = Storage::disk('linode')->temporaryUrl($path, now()->addMinutes(5));
+                }
+            } catch (\Exception $e) {
+                // Determine if it is a configuration/connection error
+                $sum->storageError = $e->getMessage();
+            }
+        }
+
+        return view('lecturer.coursesummary.coursesummary', compact('course', 'program', 'summary'))->with('course_id', request()->id);
     }
 
     public function deleteContent(Request $request)
     {
 
         $directory = DB::table('lecturer_dir')
-                ->select('lecturer_dir.DrName as A')
-                ->where('lecturer_dir.DrID', $request->dir)->first();
+            ->select('lecturer_dir.DrName as A')
+            ->where('lecturer_dir.DrID', $request->dir)->first();
 
         $dir = "classmaterial/" . Session::get('CourseID') . "/" . $directory->A;
 
@@ -328,41 +329,37 @@ class LecturerController extends Controller
         DB::table('lecturer_dir')->where('DrID', $request->dir)->delete();
 
         return true;
-
     }
 
     public function renameContent(Request $request)
     {
 
-        if($request->name != null)
-        {
-        $directory = DB::table('lecturer_dir')->where('lecturer_dir.DrID', $request->dir)->update([
-            'newDrName' => $request->name
-        ]);
+        if ($request->name != null) {
+            $directory = DB::table('lecturer_dir')->where('lecturer_dir.DrID', $request->dir)->update([
+                'newDrName' => $request->name
+            ]);
 
-        //THIS IS TO RENAME USING HELPER STORAGE
-        //$olddir = "classmaterial/" . Session::get('CourseID') . "/" . $directory->A;
-        //$newdir = "classmaterial/" . Session::get('CourseID') . "/" . $request->name;
-        //Storage::disk('linode')->move($olddir, $newdir);
-        //DB::table('lecturer_dir')->where('lecturer_dir.DrID', $request->dir)->update([
+            //THIS IS TO RENAME USING HELPER STORAGE
+            //$olddir = "classmaterial/" . Session::get('CourseID') . "/" . $directory->A;
+            //$newdir = "classmaterial/" . Session::get('CourseID') . "/" . $request->name;
+            //Storage::disk('linode')->move($olddir, $newdir);
+            //DB::table('lecturer_dir')->where('lecturer_dir.DrID', $request->dir)->update([
             //'DrName' => $request->name
-        //]);
+            //]);
 
-        return true;
-
-        }else{
+            return true;
+        } else {
             return false;
         }
-
     }
 
     public function deleteFolder(Request $request)
     {
 
         $directory = DB::table('lecturer_dir')
-                ->join('material_dir', 'lecturer_dir.DrID', 'material_dir.LecturerDirID')
-                ->select('lecturer_dir.DrName as A', 'material_dir.DrName as B')
-                ->where('material_dir.DrID', $request->dir)->first();
+            ->join('material_dir', 'lecturer_dir.DrID', 'material_dir.LecturerDirID')
+            ->select('lecturer_dir.DrName as A', 'material_dir.DrName as B')
+            ->where('material_dir.DrID', $request->dir)->first();
 
         $dir = "classmaterial/" . Session::get('CourseID') . "/" . $directory->A . "/" . $directory->B;
 
@@ -371,44 +368,40 @@ class LecturerController extends Controller
         DB::table('material_dir')->where('DrID', $request->dir)->delete();
 
         return true;
-
     }
 
     public function renameFolder(Request $request)
     {
 
-        if($request->name != null)
-        {
+        if ($request->name != null) {
             $directory = DB::table('lecturer_dir')
-            ->join('material_dir', 'lecturer_dir.DrID', 'material_dir.LecturerDirID')
-            ->select('lecturer_dir.DrName as A', 'material_dir.DrName as B')
-            ->where('material_dir.DrID', $request->dir)->update([
-                'material_dir.newDrName' => $request->name
-            ]);
+                ->join('material_dir', 'lecturer_dir.DrID', 'material_dir.LecturerDirID')
+                ->select('lecturer_dir.DrName as A', 'material_dir.DrName as B')
+                ->where('material_dir.DrID', $request->dir)->update([
+                    'material_dir.newDrName' => $request->name
+                ]);
 
-        //$olddir = "classmaterial/" . Session::get('CourseID') . "/" . $directory->A . "/" . $directory->B;
-        //$newdir = "classmaterial/" . Session::get('CourseID') . "/" . $directory->A . "/" . $request->name;
-        //Storage::disk('linode')->move($olddir, $newdir);
-        //DB::table('material_dir')->where('material_dir.DrID', $request->dir)->update([
-        //    'DrName' => $request->name
-        //]);
+            //$olddir = "classmaterial/" . Session::get('CourseID') . "/" . $directory->A . "/" . $directory->B;
+            //$newdir = "classmaterial/" . Session::get('CourseID') . "/" . $directory->A . "/" . $request->name;
+            //Storage::disk('linode')->move($olddir, $newdir);
+            //DB::table('material_dir')->where('material_dir.DrID', $request->dir)->update([
+            //    'DrName' => $request->name
+            //]);
 
-        return true;
-
-        }else{
+            return true;
+        } else {
             return false;
         }
-
     }
 
     public function deleteSubfolder(Request $request)
     {
 
         $directory = DB::table('lecturer_dir')
-                ->join('material_dir', 'lecturer_dir.DrID', 'material_dir.LecturerDirID')
-                ->join('materialsub_dir', 'material_dir.DrID', 'materialsub_dir.MaterialDirID')
-                ->select('lecturer_dir.DrName as A', 'material_dir.DrName as B', 'materialsub_dir.DrName as C', 'materialsub_dir.Password', 'materialsub_dir.MaterialDirID', 'materialsub_dir.DrID')
-                ->where('materialsub_dir.DrID', $request->dir)->first();
+            ->join('material_dir', 'lecturer_dir.DrID', 'material_dir.LecturerDirID')
+            ->join('materialsub_dir', 'material_dir.DrID', 'materialsub_dir.MaterialDirID')
+            ->select('lecturer_dir.DrName as A', 'material_dir.DrName as B', 'materialsub_dir.DrName as C', 'materialsub_dir.Password', 'materialsub_dir.MaterialDirID', 'materialsub_dir.DrID')
+            ->where('materialsub_dir.DrID', $request->dir)->first();
 
         $dir = "classmaterial/" . Session::get('CourseID') . "/" . $directory->A . "/" . $directory->B . "/" . $directory->C;
 
@@ -425,7 +418,6 @@ class LecturerController extends Controller
         Storage::disk('linode')->delete($request->mats);
 
         return true;
-
     }
 
     public function deleteMaterial(Request $request)
@@ -434,79 +426,68 @@ class LecturerController extends Controller
         Storage::disk('linode')->delete($request->mats);
 
         return true;
-
     }
-    
+
     public function deleteUrl(Request $request)
     {
 
         DB::table('materialsub_url')->where('DrID', $request->id)->delete();
 
         return true;
-
     }
 
     public function renameSubfolder(Request $request)
     {
 
-        if($request->name != null)
-        {
+        if ($request->name != null) {
             DB::table('materialsub_dir')->where('DrID', $request->dir)->update([
                 'newDrName' => $request->name
             ]);
 
-        return true;
-
-        }else{
+            return true;
+        } else {
             return false;
         }
-
     }
 
     public function renameFileSubfolder(Request $request)
     {
 
-        if($request->name != null)
-        {
-        $directory = DB::table('lecturer_dir')
-        ->join('material_dir', 'lecturer_dir.DrID', 'material_dir.LecturerDirID')
-        ->select('lecturer_dir.DrName as A', 'material_dir.DrName as B')
-        ->where('material_dir.DrID', $request->dir)->first();
+        if ($request->name != null) {
+            $directory = DB::table('lecturer_dir')
+                ->join('material_dir', 'lecturer_dir.DrID', 'material_dir.LecturerDirID')
+                ->select('lecturer_dir.DrName as A', 'material_dir.DrName as B')
+                ->where('material_dir.DrID', $request->dir)->first();
 
-        $olddir = "classmaterial/" . Session::get('CourseID') . "/" . $directory->A . "/" . $directory->B . "/" . $request->file;
-        $newdir = "classmaterial/" . Session::get('CourseID') . "/" . $directory->A . "/" . $directory->B . "/" . $request->name . "." . $request->ext;
-        Storage::disk('linode')->move($olddir, $newdir);
+            $olddir = "classmaterial/" . Session::get('CourseID') . "/" . $directory->A . "/" . $directory->B . "/" . $request->file;
+            $newdir = "classmaterial/" . Session::get('CourseID') . "/" . $directory->A . "/" . $directory->B . "/" . $request->name . "." . $request->ext;
+            Storage::disk('linode')->move($olddir, $newdir);
 
-        return true;
-
-        }else{
+            return true;
+        } else {
             return false;
         }
-
     }
 
     public function renameMaterial(Request $request)
     {
 
-        if($request->name != null)
-        {
+        if ($request->name != null) {
 
-        $directory = DB::table('lecturer_dir')
-        ->join('material_dir', 'lecturer_dir.DrID', 'material_dir.LecturerDirID')
-        ->join('materialsub_dir', 'material_dir.DrID', 'materialsub_dir.MaterialDirID')
-        ->select('lecturer_dir.DrName as A', 'material_dir.DrName as B', 'materialsub_dir.DrName as C')
-        ->where('materialsub_dir.DrID', $request->dir)->first();
+            $directory = DB::table('lecturer_dir')
+                ->join('material_dir', 'lecturer_dir.DrID', 'material_dir.LecturerDirID')
+                ->join('materialsub_dir', 'material_dir.DrID', 'materialsub_dir.MaterialDirID')
+                ->select('lecturer_dir.DrName as A', 'material_dir.DrName as B', 'materialsub_dir.DrName as C')
+                ->where('materialsub_dir.DrID', $request->dir)->first();
 
-        $olddir = "classmaterial/" . Session::get('CourseID') . "/" . $directory->A . "/" . $directory->B . "/" . $directory->C . "/" . $request->file;
-        $newdir = "classmaterial/" . Session::get('CourseID') . "/" . $directory->A . "/" . $directory->B . "/" . $directory->C . "/" . $request->name . "." . $request->ext;
-        Storage::disk('linode')->move($olddir, $newdir);
+            $olddir = "classmaterial/" . Session::get('CourseID') . "/" . $directory->A . "/" . $directory->B . "/" . $directory->C . "/" . $request->file;
+            $newdir = "classmaterial/" . Session::get('CourseID') . "/" . $directory->A . "/" . $directory->B . "/" . $directory->C . "/" . $request->name . "." . $request->ext;
+            Storage::disk('linode')->move($olddir, $newdir);
 
-        return true;
-
-        }else{
+            return true;
+        } else {
             return false;
         }
-
     }
 
     public function coursecontent()
@@ -516,14 +497,14 @@ class LecturerController extends Controller
         $subid = DB::table('subjek')->where('id', request()->id)->pluck('sub_id');
 
         $folder = DB::table('lecturer_dir')
-                  ->join('subjek', 'lecturer_dir.CourseID','subjek.id')->where('subjek.sub_id', $subid)->where('Addby', $user->ic)->get();
+            ->join('subjek', 'lecturer_dir.CourseID', 'subjek.id')->where('subjek.sub_id', $subid)->where('Addby', $user->ic)->get();
 
         $course = DB::table('subjek')->where('id', Session::get('CourseID'))->first();
 
         //$test = Session::get('SessionID');
 
         //dd($folder);
-        
+
         return view('lecturer.coursecontent.index', compact('folder', 'course'))->with('course_id', request()->id);
     }
 
@@ -536,18 +517,16 @@ class LecturerController extends Controller
     {
         $dir = "classmaterial/" . Session::get('CourseID') . "/" . $request->name;
 
-        if(DB::table('lecturer_dir')->where([['DrName', $request->name],['CourseID', Session::get('CourseID')]])->exists())
-        {
+        if (DB::table('lecturer_dir')->where([['DrName', $request->name], ['CourseID', Session::get('CourseID')]])->exists()) {
 
-            return redirect()->back() ->with('alert', 'Folder already exists! Please try again with a different name.');
-
-        }else{
+            return redirect()->back()->with('alert', 'Folder already exists! Please try again with a different name.');
+        } else {
 
             $data = $request->validate([
-                'name' => ['required','string'],
+                'name' => ['required', 'string'],
                 'pass' => ['max:10'],
-                'conpass' => ['max:10','same:pass']
-            ],[
+                'conpass' => ['max:10', 'same:pass']
+            ], [
                 'conpass.same' => 'The Confirm Password and Password must match!'
             ]);
 
@@ -574,20 +553,16 @@ class LecturerController extends Controller
             ]);
 
             return redirect(route('lecturer.content', ['id' => $request->id]));
-
         }
-        
     }
 
     public function courseDirectory(Request $request)
     {
         $directory = DB::table('lecturer_dir')->where('DrID', $request->dir)->first();
 
-        if(!empty($directory->Password))
-        {
+        if (!empty($directory->Password)) {
             return view('lecturer.coursecontent.passwordfolder')->with('dir', $request->dir)->with('course_id', $request->id);
-
-        }else{
+        } else {
 
             $mat_directory = DB::table('material_dir')->where('LecturerDirID', $directory->DrID)->get();
 
@@ -598,11 +573,10 @@ class LecturerController extends Controller
     }
 
     public function passwordDirectory(Request $request)
-    {                                           
+    {
         $password = DB::table('lecturer_dir')->where('DrID', request()->dir)->first();
 
-        if(Hash::check($request->pass, $password->Password))
-        {
+        if (Hash::check($request->pass, $password->Password)) {
             //$dir = 'classmaterial/'. $password->DrName;
 
             $mat_directory = DB::table('material_dir')->where('LecturerDirID', $password->DrID)->get();
@@ -612,11 +586,9 @@ class LecturerController extends Controller
             //$classmaterial  = Storage::disk('linode')->allFiles( $dir );
 
             return view('lecturer.coursecontent.materialdirectory', compact('mat_directory', 'course'))->with('dirid', $password->DrID);
+        } else {
 
-        }else{
-
-            return redirect()->back() ->with('alert', 'Wrong Password! Please try again.');
-
+            return redirect()->back()->with('alert', 'Wrong Password! Please try again.');
         }
     }
 
@@ -633,19 +605,17 @@ class LecturerController extends Controller
 
         //dd($dir);
 
-        if(DB::table('material_dir')->where('DrName', $request->name)->where('LecturerDirID', $lectdir->DrID)->exists())
-        {
+        if (DB::table('material_dir')->where('DrName', $request->name)->where('LecturerDirID', $lectdir->DrID)->exists()) {
 
-            return redirect()->back() ->with('alert', 'Folder already exists! Please try again with a different name.');
-
-        }else{
+            return redirect()->back()->with('alert', 'Folder already exists! Please try again with a different name.');
+        } else {
 
             $data = $request->validate([
                 'chapter' => ['required'],
-                'name' => ['required','string'],
+                'name' => ['required', 'string'],
                 'pass' => ['max:10'],
-                'conpass' => ['max:10','same:pass']
-            ],[
+                'conpass' => ['max:10', 'same:pass']
+            ], [
                 'conpass.same' => 'The Confirm Password and Password must match!'
             ]);
 
@@ -670,9 +640,7 @@ class LecturerController extends Controller
             ]);
 
             return redirect(route('lecturer.directory.prev', ['dir' => $request->dir]));
-
         }
-        
     }
 
     public function prevcourseDirectory(Request $request)
@@ -684,21 +652,18 @@ class LecturerController extends Controller
         $course = DB::table('subjek')->where('id', Session::get('CourseID'))->first();
 
         return view('lecturer.coursecontent.materialdirectory', compact('mat_directory', 'course'))->with('dirid', $directory->DrID);
-
     }
 
     public function courseSubDirectory(Request $request)
     {
         $directory = DB::table('lecturer_dir')
-                ->join('material_dir', 'lecturer_dir.DrID', 'material_dir.LecturerDirID')
-                ->select('lecturer_dir.DrName as A', 'material_dir.DrName as B', 'material_dir.*')
-                ->where('material_dir.DrID', $request->dir)->first();
+            ->join('material_dir', 'lecturer_dir.DrID', 'material_dir.LecturerDirID')
+            ->select('lecturer_dir.DrName as A', 'material_dir.DrName as B', 'material_dir.*')
+            ->where('material_dir.DrID', $request->dir)->first();
 
-        if(!empty($directory->Password))
-        {
+        if (!empty($directory->Password)) {
             return view('lecturer.coursecontent.passwordsubfolder')->with('dir', $request->dir);
-
-        }else{
+        } else {
 
             $mat_directory = DB::table('materialsub_dir')->where('MaterialDirID', $directory->DrID)->get();
 
@@ -720,34 +685,32 @@ class LecturerController extends Controller
         $chapter = DB::table('material_dir')->where('DrID', request()->dir)->first();
 
         //dd(request()->dir);
-        
+
         return view('lecturer.coursecontent.createfoldersubmaterial', compact('chapter'))->with('dirid', request()->dir);
     }
 
     public function storeSubDirectory(Request $request)
     {
         $lectdir = DB::table('lecturer_dir')
-                ->join('material_dir', 'lecturer_dir.DrID', 'material_dir.LecturerDirID')
-                ->select('lecturer_dir.DrName as A', 'material_dir.DrName as B', 'lecturer_dir.DrID', 'lecturer_dir.CourseID')
-                ->where('material_dir.DrID', $request->dir)->first();
+            ->join('material_dir', 'lecturer_dir.DrID', 'material_dir.LecturerDirID')
+            ->select('lecturer_dir.DrName as A', 'material_dir.DrName as B', 'lecturer_dir.DrID', 'lecturer_dir.CourseID')
+            ->where('material_dir.DrID', $request->dir)->first();
 
         $dir = "classmaterial/" . Session::get('CourseID') . "/" . $lectdir->A . "/" . $lectdir->B . "/" . $request->name;
 
         //dd($dir);
 
-        if(DB::table('materialsub_dir')->where('DrName', $request->name)->where('MaterialDirID', $lectdir->DrID)->exists())
-        {
+        if (DB::table('materialsub_dir')->where('DrName', $request->name)->where('MaterialDirID', $lectdir->DrID)->exists()) {
 
-            return redirect()->back() ->with('alert', 'Folder already exists! Please try again with a different name.');
-
-        }else{
+            return redirect()->back()->with('alert', 'Folder already exists! Please try again with a different name.');
+        } else {
 
             $data = $request->validate([
                 'chapter' => ['required'],
-                'name' => ['required','string'],
+                'name' => ['required', 'string'],
                 'pass' => ['max:10'],
-                'conpass' => ['max:10','same:pass']
-            ],[
+                'conpass' => ['max:10', 'same:pass']
+            ], [
                 'conpass.same' => 'The Confirm Password and Password must match!'
             ]);
 
@@ -757,8 +720,7 @@ class LecturerController extends Controller
 
             $check = $mat->get();
 
-            if(count($check) > 0)
-            {
+            if (count($check) > 0) {
                 $data['chapter'] = $max + 0.1;
             }
 
@@ -785,7 +747,6 @@ class LecturerController extends Controller
             ]);
 
             return redirect(route('lecturer.subdirectory.prev', ['dir' => $request->dir]));
-
         }
     }
 
@@ -795,9 +756,9 @@ class LecturerController extends Controller
         if (isset($request->fileUpload)) {
 
             $directory = DB::table('lecturer_dir')
-                    ->join('material_dir', 'lecturer_dir.DrID', 'material_dir.LecturerDirID')
-                    ->select('lecturer_dir.DrName as A', 'material_dir.DrName as B', 'material_dir.*', 'lecturer_dir.CourseID')
-                    ->where('material_dir.DrID', $request->dir)->first();
+                ->join('material_dir', 'lecturer_dir.DrID', 'material_dir.LecturerDirID')
+                ->select('lecturer_dir.DrName as A', 'material_dir.DrName as B', 'material_dir.*', 'lecturer_dir.CourseID')
+                ->where('material_dir.DrID', $request->dir)->first();
 
             //dd($dirName);
 
@@ -825,15 +786,15 @@ class LecturerController extends Controller
             $fileMimeType = $file->getMimeType();
 
             if (in_array($fileMimeType, $videoMIMETypes)) {
-                
+
                 return back()->with('alert', 'The uploaded file must not be a video');
-            }            
+            }
 
             //dd($file_name);
 
             $classmaterial = "classmaterial/" . Session::get('CourseID') . "/" . $directory->A . "/" . $directory->B;
 
-            $dirpath = "classmaterial/" . Session::get('CourseID') . "/" . $directory->A . "/" . $directory->B . "/" .$newname;
+            $dirpath = "classmaterial/" . Session::get('CourseID') . "/" . $directory->A . "/" . $directory->B . "/" . $newname;
 
             if (! file_exists($newname)) {
                 Storage::disk('linode')->putFileAs(
@@ -845,9 +806,7 @@ class LecturerController extends Controller
 
                 return redirect(route('lecturer.subdirectory.prev', ['dir' =>  $request->dir]));
             }
-
-        }elseif(isset($request->url))
-        {
+        } elseif (isset($request->url)) {
             $user = auth()->user()->ic;
 
             DB::table('materialsub_url')->insert([
@@ -858,18 +817,16 @@ class LecturerController extends Controller
             ]);
 
             return redirect(route('lecturer.subdirectory.prev', ['dir' =>  $request->dir]));
-
         }
-
     }
 
     public function prevcourseSubDirectory(Request $request)
     {
 
         $directory = DB::table('lecturer_dir')
-                ->join('material_dir', 'lecturer_dir.DrID', 'material_dir.LecturerDirID')
-                ->select('lecturer_dir.DrName as A', 'material_dir.DrName as B', 'material_dir.*')
-                ->where('material_dir.DrID', $request->dir)->first();
+            ->join('material_dir', 'lecturer_dir.DrID', 'material_dir.LecturerDirID')
+            ->select('lecturer_dir.DrName as A', 'material_dir.DrName as B', 'material_dir.*')
+            ->where('material_dir.DrID', $request->dir)->first();
 
         $mat_directory = DB::table('materialsub_dir')->where('MaterialDirID', $directory->DrID)->get();
 
@@ -883,19 +840,17 @@ class LecturerController extends Controller
         $classmaterial  = Storage::disk('linode')->files($dir);
 
         return view('lecturer.coursecontent.materialsubdirectory', compact('mat_directory', 'url', 'course', 'classmaterial'))->with('dirid', $directory->DrID)->with('prev', $directory->LecturerDirID);
-
     }
 
     public function passwordSubDirectory(Request $request)
     {
 
         $password = DB::table('lecturer_dir')
-                ->join('material_dir', 'lecturer_dir.DrID', 'material_dir.LecturerDirID')
-                ->select('lecturer_dir.DrName as A', 'material_dir.DrName as B', 'material_dir.*')
-                ->where('material_dir.DrID', $request->dir)->first();
+            ->join('material_dir', 'lecturer_dir.DrID', 'material_dir.LecturerDirID')
+            ->select('lecturer_dir.DrName as A', 'material_dir.DrName as B', 'material_dir.*')
+            ->where('material_dir.DrID', $request->dir)->first();
 
-        if(Hash::check($request->pass, $password->Password))
-        {
+        if (Hash::check($request->pass, $password->Password)) {
             //$dir = 'classmaterial/'. $password->DrName;
 
             $mat_directory = DB::table('materialsub_dir')->where('MaterialDirID', $password->DrID)->get();
@@ -910,31 +865,28 @@ class LecturerController extends Controller
             $classmaterial  = Storage::disk('linode')->files($dir);
 
             return view('lecturer.coursecontent.materialsubdirectory', compact('mat_directory', 'url', 'course', 'classmaterial'))->with('dirid', $password->DrID)->with('prev', $password->LecturerDirID);
-        }else{
+        } else {
 
-            return redirect()->back() ->with('alert', 'Wrong Password! Please try again.');
-
+            return redirect()->back()->with('alert', 'Wrong Password! Please try again.');
         }
     }
 
     public function DirectoryContent(Request $request)
     {
         $directory = DB::table('lecturer_dir')
-                ->join('material_dir', 'lecturer_dir.DrID', 'material_dir.LecturerDirID')
-                ->join('materialsub_dir', 'material_dir.DrID', 'materialsub_dir.MaterialDirID')
-                ->select('lecturer_dir.DrName as A', 'material_dir.DrName as B', 'materialsub_dir.DrName as C', 'materialsub_dir.Password', 'materialsub_dir.MaterialDirID', 'materialsub_dir.DrID')
-                ->where('materialsub_dir.DrID', $request->dir)->first();
+            ->join('material_dir', 'lecturer_dir.DrID', 'material_dir.LecturerDirID')
+            ->join('materialsub_dir', 'material_dir.DrID', 'materialsub_dir.MaterialDirID')
+            ->select('lecturer_dir.DrName as A', 'material_dir.DrName as B', 'materialsub_dir.DrName as C', 'materialsub_dir.Password', 'materialsub_dir.MaterialDirID', 'materialsub_dir.DrID')
+            ->where('materialsub_dir.DrID', $request->dir)->first();
 
         //dd($directory);
 
-        if(!empty($directory->Password))
-        {
+        if (!empty($directory->Password)) {
             return view('lecturer.coursecontent.passwordcontent')->with('dir', $request->dir);
-
-        }else{
+        } else {
 
             $course = DB::table('subjek')->where('id', Session::get('CourseID'))->first();
-            
+
             $dir = "classmaterial/" . Session::get('CourseID') . "/" . $directory->A . "/" . $directory->B . "/" . $directory->C;
 
             $classmaterial  = Storage::disk('linode')->allFiles($dir);
@@ -948,15 +900,14 @@ class LecturerController extends Controller
     public function uploadMaterial(Request $request)
     {
         $dirName = DB::table('lecturer_dir')
-                ->join('material_dir', 'lecturer_dir.DrID', 'material_dir.LecturerDirID')
-                ->join('materialsub_dir', 'material_dir.DrID', 'materialsub_dir.MaterialDirID')
-                ->select('lecturer_dir.DrName as A', 'material_dir.DrName as B', 'materialsub_dir.DrName as C', 'materialsub_dir.Password', 'materialsub_dir.MaterialDirID', 'lecturer_dir.CourseID')
-                ->where('materialsub_dir.DrID', $request->id)->first();
-        
+            ->join('material_dir', 'lecturer_dir.DrID', 'material_dir.LecturerDirID')
+            ->join('materialsub_dir', 'material_dir.DrID', 'materialsub_dir.MaterialDirID')
+            ->select('lecturer_dir.DrName as A', 'material_dir.DrName as B', 'materialsub_dir.DrName as C', 'materialsub_dir.Password', 'materialsub_dir.MaterialDirID', 'lecturer_dir.CourseID')
+            ->where('materialsub_dir.DrID', $request->id)->first();
+
         //dd($dirName);
 
-        if(isset($request->fileUpload))
-        {
+        if (isset($request->fileUpload)) {
 
             $file = $request->file('fileUpload');
 
@@ -982,19 +933,19 @@ class LecturerController extends Controller
             $fileMimeType = $file->getMimeType();
 
             if (in_array($fileMimeType, $videoMIMETypes)) {
-                
+
                 return back()->with('alert', 'The uploaded file must not be a video');
-            }   
+            }
 
             //dd($file_name);
 
             $classmaterial = "classmaterial/" . Session::get('CourseID') . "/" . $dirName->A . "/" . $dirName->B . "/" . $dirName->C;
 
-            $dirpath = "classmaterial/" . Session::get('CourseID') . "/" . $dirName->A . "/" . $dirName->B . "/" . $dirName->C . "/" .$newname;
+            $dirpath = "classmaterial/" . Session::get('CourseID') . "/" . $dirName->A . "/" . $dirName->B . "/" . $dirName->C . "/" . $newname;
 
-            
 
-            if(! file_exists($newname)){
+
+            if (! file_exists($newname)) {
                 Storage::disk('linode')->putFileAs(
                     $classmaterial,
                     $file,
@@ -1004,9 +955,7 @@ class LecturerController extends Controller
 
                 return redirect(route('lecturer.directory.content.prev', ['dir' =>  $request->id]));
             }
-
-        }elseif(isset($request->url))
-        {
+        } elseif (isset($request->url)) {
 
             $user = auth()->user()->ic;
 
@@ -1018,7 +967,6 @@ class LecturerController extends Controller
             ]);
 
             return redirect(route('lecturer.directory.content.prev', ['dir' =>  $request->id]));
-
         }
     }
 
@@ -1026,51 +974,47 @@ class LecturerController extends Controller
     {
 
         $directory = DB::table('lecturer_dir')
-        ->join('material_dir', 'lecturer_dir.DrID', 'material_dir.LecturerDirID')
-        ->join('materialsub_dir', 'material_dir.DrID', 'materialsub_dir.MaterialDirID')
-        ->select('lecturer_dir.DrName as A', 'material_dir.DrName as B', 'materialsub_dir.DrName as C', 'materialsub_dir.Password', 'materialsub_dir.MaterialDirID', 'materialsub_dir.DrID', 'lecturer_dir.CourseID')
-        ->where('materialsub_dir.DrID', $request->dir)->first();
+            ->join('material_dir', 'lecturer_dir.DrID', 'material_dir.LecturerDirID')
+            ->join('materialsub_dir', 'material_dir.DrID', 'materialsub_dir.MaterialDirID')
+            ->select('lecturer_dir.DrName as A', 'material_dir.DrName as B', 'materialsub_dir.DrName as C', 'materialsub_dir.Password', 'materialsub_dir.MaterialDirID', 'materialsub_dir.DrID', 'lecturer_dir.CourseID')
+            ->where('materialsub_dir.DrID', $request->dir)->first();
 
         $dir = "classmaterial/" . Session::get('CourseID') . "/" . $directory->A . "/" . $directory->B . "/" . $directory->C;
 
-        $classmaterial  = Storage::disk('linode')->allFiles( $dir );
+        $classmaterial  = Storage::disk('linode')->allFiles($dir);
 
         $course = DB::table('subjek')->where('id', Session::get('CourseID'))->first();
 
         $url = DB::table('materialsub_url')->where('MaterialSubDirID', $directory->DrID)->get();
 
         return view('lecturer.coursecontent.coursematerial', compact('classmaterial', 'course', 'url'))->with('dirid', $directory->DrID)->with('prev', $directory->MaterialDirID);
-
     }
 
     public function passwordContent(Request $request)
     {
-        
+
         $password = DB::table('lecturer_dir')
-        ->join('material_dir', 'lecturer_dir.DrID', 'material_dir.LecturerDirID')
-        ->join('materialsub_dir', 'material_dir.DrID', 'materialsub_dir.MaterialDirID')
-        ->select('lecturer_dir.DrName as A', 'material_dir.DrName as B', 'materialsub_dir.DrName as C', 'materialsub_dir.Password', 'materialsub_dir.MaterialDirID', 'materialsub_dir.DrID', 'lecturer_dir.CourseID')
-        ->where('materialsub_dir.DrID', $request->dir)->first();
+            ->join('material_dir', 'lecturer_dir.DrID', 'material_dir.LecturerDirID')
+            ->join('materialsub_dir', 'material_dir.DrID', 'materialsub_dir.MaterialDirID')
+            ->select('lecturer_dir.DrName as A', 'material_dir.DrName as B', 'materialsub_dir.DrName as C', 'materialsub_dir.Password', 'materialsub_dir.MaterialDirID', 'materialsub_dir.DrID', 'lecturer_dir.CourseID')
+            ->where('materialsub_dir.DrID', $request->dir)->first();
 
 
-        if(Hash::check($request->pass, $password->Password))
-        {
+        if (Hash::check($request->pass, $password->Password)) {
             //$dir = 'classmaterial/'. $password->DrName;
 
-            $dir = "classmaterial/" . Session::get('CourseID') . "/". $password->A . "/" . $password->B . "/" . $password->C;
+            $dir = "classmaterial/" . Session::get('CourseID') . "/" . $password->A . "/" . $password->B . "/" . $password->C;
 
-            $classmaterial  = Storage::disk('linode')->allFiles( $dir );
+            $classmaterial  = Storage::disk('linode')->allFiles($dir);
 
             $course = DB::table('subjek')->where('id', Session::get('CourseID'))->first();
 
             $url = DB::table('materialsub_url')->where('MaterialSubDirID', $password->DrID)->get();
 
             return view('lecturer.coursecontent.coursematerial', compact('classmaterial', 'course', 'url'))->with('dirid', $password->DrID)->with('prev', $password->MaterialDirID);
+        } else {
 
-        }else{
-
-            return redirect()->back() ->with('alert', 'Wrong Password! Please try again.');
-
+            return redirect()->back()->with('alert', 'Wrong Password! Please try again.');
         }
     }
 
@@ -1083,21 +1027,21 @@ class LecturerController extends Controller
 
         $courseid = Session::get('CourseID');
 
-       
+
         $group = subject::join('student_subjek', 'user_subjek.id', 'student_subjek.group_id')
-                ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
-                ->where([
-                    ['subjek.id', $courseid],
-                    ['user_subjek.user_ic', $lecturer2->ic]
-                ])->groupBy('student_subjek.group_name')
-                ->select('user_subjek.*','student_subjek.group_name')->get();
+            ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+            ->where([
+                ['subjek.id', $courseid],
+                ['user_subjek.user_ic', $lecturer2->ic]
+            ])->groupBy('student_subjek.group_name')
+            ->select('user_subjek.*', 'student_subjek.group_name')->get();
 
         //dd($group)
 
         $content = "";
 
         $content .= "<option value='0' disabled selected>-</option>";
-        foreach($group as $grp){
+        foreach ($group as $grp) {
 
             $lecturer = User::where('ic', $grp->user_ic)->first();
 
@@ -1110,16 +1054,15 @@ class LecturerController extends Controller
                         </div>
                 </div>
                 <div class="col-md-10 align-self-center lh-lg">
-                    <span><strong>'. $grp->group_name .'</strong></span><br>
-                    <span><strong>'. htmlentities($lecturer->name, ENT_QUOTES) .'</strong></span><br>
-                    <span>'. $lecturer->email .' | <strong class="text-fade"">'.$lecturer->faculty .'</strong></span><br>
+                    <span><strong>' . $grp->group_name . '</strong></span><br>
+                    <span><strong>' . htmlentities($lecturer->name, ENT_QUOTES) . '</strong></span><br>
+                    <span>' . $lecturer->email . ' | <strong class="text-fade"">' . $lecturer->faculty . '</strong></span><br>
                     <span class="text-fade"></span>
                 </div>
-            </div>\' value='. $grp->id . '|' . $grp->group_name .'></option>';
+            </div>\' value=' . $grp->id . '|' . $grp->group_name . '></option>';
         }
-        
-        return $content;
 
+        return $content;
     }
 
     public function getSchedule(Request $request)
@@ -1128,76 +1071,74 @@ class LecturerController extends Controller
 
         $schedule = DB::table('tblclassschedule')->where('groupid', $group[0])->where('groupname', $group[1])->orderBy('id')->get();
 
-        if(count($schedule) > 0)
-        {
+        if (count($schedule) > 0) {
             return view('lecturer.class.getshcedule', compact('schedule'));
-
-        }else{
+        } else {
 
             return view('lecturer.class.getshcedule');
         }
     }
 
-    public function scheduleInsertGroup(Request $request){
+    public function scheduleInsertGroup(Request $request)
+    {
 
         $groups = $request->groupselect;
         $group = explode('|', $groups);
         $groupschedules = $request->groupschedules;
         $classid = 0;
-        
-  
+
+
         $validator = Validator::make($request->all(), [
             'groupselect' => 'required',
             'groupschedules' => 'required',
         ]);
-  
+
         if ($validator->fails()) {
-            return ["message"=>"Field Error", "error" => $validator->messages()->get('*')];
+            return ["message" => "Field Error", "error" => $validator->messages()->get('*')];
         }
 
         //dd($group);
 
-        if($group != 0)
-        {
-  
-            try{ 
+        if ($group != 0) {
+
+            try {
                 DB::beginTransaction();
                 DB::connection()->enableQueryLog();
 
-                try{
+                try {
                     $groupschedules = json_decode($groupschedules);
                     $upsert = [];
-                    foreach($groupschedules as $schedule){
+                    foreach ($groupschedules as $schedule) {
                         array_push($upsert, [
-                        'groupid' => $group[0],
-                        'groupname' => $group[1],
-                        'classday' => $schedule->day,
-                        'classstarttime' => date('H:i:s', strtotime($schedule->starttime)), 
-                        'classendtime' =>  date('H:i:s', strtotime($schedule->endtime)),
-                        'classstatusid' => $schedule->status
+                            'groupid' => $group[0],
+                            'groupname' => $group[1],
+                            'classday' => $schedule->day,
+                            'classstarttime' => date('H:i:s', strtotime($schedule->starttime)),
+                            'classendtime' =>  date('H:i:s', strtotime($schedule->endtime)),
+                            'classstatusid' => $schedule->status
                         ]);
                     }
 
-                    DB::table('tblclassschedule')->upsert($upsert, ['groupid','groupname','classday']);
-                }catch(QueryException $ex){
+                    DB::table('tblclassschedule')->upsert($upsert, ['groupid', 'groupname', 'classday']);
+                } catch (QueryException $ex) {
                     DB::rollback();
-                    if($ex->getCode() == 23000){
-                        return ["message"=>"Class code already existed inside the system"];
-                    }else{
+                    if ($ex->getCode() == 23000) {
+                        return ["message" => "Class code already existed inside the system"];
+                    } else {
                         \Log::debug($ex);
-                        return ["message"=>"DB Error"];
+                        return ["message" => "DB Error"];
                     }
                 }
 
                 DB::commit();
-            }catch(Exception $ex){
-                return ["message"=>"Error"];
+            } catch (Exception $ex) {
+                return ["message" => "Error"];
             }
-        }else{
-            return ["message"=>"Please select group from group list first!"];
+        } else {
+            return ["message" => "Please select group from group list first!"];
         }
 
-        return ["message"=>"Success", "id" => $classid];
+        return ["message" => "Success", "id" => $classid];
     }
 
     public function classAttendance()
@@ -1212,18 +1153,18 @@ class LecturerController extends Controller
         $lecturer = Auth::user();
 
         $group = subject::join('student_subjek', 'user_subjek.id', 'student_subjek.group_id')
-        ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
-        ->where([
-            ['subjek.id', $courseid],
-            ['user_subjek.session_id', Session::get('SessionID')],
-            ['user_subjek.user_ic', $lecturer->ic]
-        ])->groupBy('student_subjek.group_name')
-        ->select('user_subjek.*','student_subjek.group_name')->get();
+            ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+            ->where([
+                ['subjek.id', $courseid],
+                ['user_subjek.session_id', Session::get('SessionID')],
+                ['user_subjek.user_ic', $lecturer->ic]
+            ])->groupBy('student_subjek.group_name')
+            ->select('user_subjek.*', 'student_subjek.group_name')->get();
 
         $content = "";
 
         $content .= "<option value='0' selected disabled>-</option>";
-        foreach($group as $grp){
+        foreach ($group as $grp) {
 
             $content .= '<option data-style="btn-inverse"
             data-content=\'<div class="row" >
@@ -1234,14 +1175,14 @@ class LecturerController extends Controller
                         </div>
                 </div>
                 <div class="col-md-10 align-self-center lh-lg">
-                    <span><strong>'. $grp->group_name .'</strong></span><br>
-                    <span><strong>'. htmlentities($lecturer->name, ENT_QUOTES) .'</strong></span><br>
-                    <span>'. $lecturer->email .' | <strong class="text-fade"">'.$lecturer->faculty .'</strong></span><br>
+                    <span><strong>' . $grp->group_name . '</strong></span><br>
+                    <span><strong>' . htmlentities($lecturer->name, ENT_QUOTES) . '</strong></span><br>
+                    <span>' . $lecturer->email . ' | <strong class="text-fade"">' . $lecturer->faculty . '</strong></span><br>
                     <span class="text-fade"></span>
                 </div>
-            </div>\' value='. $grp->id . '|' . $grp->group_name .' ></option>';
+            </div>\' value=' . $grp->id . '|' . $grp->group_name . ' ></option>';
         }
-        
+
         return $content;
     }
 
@@ -1251,49 +1192,45 @@ class LecturerController extends Controller
         $group = explode('|', $request->group);
 
         $program = student::join('students', 'student_subjek.student_ic', 'students.ic')
-                    ->join('tblprogramme', 'students.program', 'tblprogramme.id')
-                    ->where('student_subjek.group_id', $group[0])->where('student_subjek.group_name', $group[1])
-                    ->where('student_subjek.sessionid', Session::get('SessionID'))
-                    ->whereNotIn('students.status', [4,5,6,7,16])
-                    ->groupBy('tblprogramme.id')
-                    ->select('tblprogramme.*')
-                    ->get();
+            ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+            ->where('student_subjek.group_id', $group[0])->where('student_subjek.group_name', $group[1])
+            ->where('student_subjek.sessionid', Session::get('SessionID'))
+            ->whereNotIn('students.status', [4, 5, 6, 7, 16])
+            ->groupBy('tblprogramme.id')
+            ->select('tblprogramme.*')
+            ->get();
 
         $content = "";
 
         $content .= "<option value='0' selected disabled>-</option>";
-        foreach($program as $prg){
+        foreach ($program as $prg) {
 
-            $content .= '<option data-style="btn-inverse" value="'. $prg->id .'" >'. $prg->progname .' ('. $prg->progcode .')</option>';
+            $content .= '<option data-style="btn-inverse" value="' . $prg->id . '" >' . $prg->progname . ' (' . $prg->progcode . ')</option>';
         }
-        
-        return $content;
 
+        return $content;
     }
 
     public function getStudents(Request $request)
     {
         $group = explode('|', $request->group);
 
-            $student = student::join('students', 'student_subjek.student_ic', 'students.ic')
-                        ->join('tblprogramme', 'students.program', 'tblprogramme.id')
-                        ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
-                        ->where('group_id', $group[0])->where('group_name', $group[1])
-                        ->where('student_subjek.sessionid', Session::get('SessionID'))
-                        ->whereNotIn('students.status', [4,5,6,7,16]);
+        $student = student::join('students', 'student_subjek.student_ic', 'students.ic')
+            ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+            ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
+            ->where('group_id', $group[0])->where('group_name', $group[1])
+            ->where('student_subjek.sessionid', Session::get('SessionID'))
+            ->whereNotIn('students.status', [4, 5, 6, 7, 16]);
 
-                        if(isset($request->program) && count($request->program) > 1)
-                        {
+        if (isset($request->program) && count($request->program) > 1) {
 
-                            $student->orderBy('students.program');
+            $student->orderBy('students.program');
+        } else {
 
-                        }else{
+            $student->orderBy('students.name');
+        }
 
-                            $student->orderBy('students.name');
-
-                        }
-
-                        $students = $student->get();
+        $students = $student->get();
 
         $content = "";
         $content .= '
@@ -1347,132 +1284,125 @@ class LecturerController extends Controller
             </tr>
             ';
 
-        foreach($students as $student){
+        foreach ($students as $student) {
             //$registered = ($student->status == 'ACTIVE') ? 'checked' : '';
             $content .= '
             <tr>
                 <td >
-                    <label class="text-dark"><strong>'.$student->name.'</strong></label><br>
-                    <label>IC: '.$student->student_ic.'</label>
+                    <label class="text-dark"><strong>' . $student->name . '</strong></label><br>
+                    <label>IC: ' . $student->student_ic . '</label>
                 </td>
                 <td >
-                    <label>'.$student->no_matric.'</label>
+                    <label>' . $student->no_matric . '</label>
                 </td>
                 <td >
-                    <p class="text-bold text-fade">'.$student->SessionName.'</p>
+                    <p class="text-bold text-fade">' . $student->SessionName . '</p>
                 </td>
                 <td >
-                    <p class="text-bold text-fade">'.$student->progcode.'</p>
+                    <p class="text-bold text-fade">' . $student->progcode . '</p>
                 </td>
                 <td >
-                    <p class="text-bold text-fade">'.$student->status.'</p>
+                    <p class="text-bold text-fade">' . $student->status . '</p>
                 </td>';
-                if(isset($request->program))
-                {
+            if (isset($request->program)) {
 
-                    if(in_array($student->program, $request->program))
-                    {
+                if (in_array($student->program, $request->program)) {
 
 
-                        $content .= '<td>
+                    $content .= '<td>
                             <div class="pull-right" >
-                                <input type="checkbox" id="student_checkbox_'.$student->no_matric.'"
-                                    class="filled-in" name="student[]" value="'.$student->student_ic.'" 
+                                <input type="checkbox" id="student_checkbox_' . $student->no_matric . '"
+                                    class="filled-in" name="student[]" value="' . $student->student_ic . '" 
                                 >
-                                <label for="student_checkbox_'.$student->no_matric.'"></label>
+                                <label for="student_checkbox_' . $student->no_matric . '"></label>
                             </div>
                         </td>
                         <td>
                             <div>
-                                <input type="text" id="excuse_'.$student->no_matric.'"
-                                    class="form-control" name="excuse[]" onkeyup="getExcuse('.$student->no_matric.')">
-                                <input type="hidden" id="ic_'.$student->no_matric.'"
-                                class="form-control" name="ic[]" value="'.$student->student_ic.'" disabled>
+                                <input type="text" id="excuse_' . $student->no_matric . '"
+                                    class="form-control" name="excuse[]" onkeyup="getExcuse(' . $student->no_matric . ')">
+                                <input type="hidden" id="ic_' . $student->no_matric . '"
+                                class="form-control" name="ic[]" value="' . $student->student_ic . '" disabled>
                                 <label for="checkboxAll"> </label>
                             </div>
                         </td>
                         <td>
                             <div class="pull-right" >
-                                <input type="checkbox" id="mc_'.$student->no_matric.'"
-                                    class="filled-in" name="mc[]" value="'.$student->student_ic.'" onclick="getMC('.$student->no_matric.')"
+                                <input type="checkbox" id="mc_' . $student->no_matric . '"
+                                    class="filled-in" name="mc[]" value="' . $student->student_ic . '" onclick="getMC(' . $student->no_matric . ')"
                                 >
-                                <label for="mc_'.$student->no_matric.'"></label>
+                                <label for="mc_' . $student->no_matric . '"></label>
                             </div>
                         </td>';
+                } else {
 
-                    }else{
-
-                        $content .= '<td>
+                    $content .= '<td>
                             <div class="pull-right" >
-                                <input type="checkbox" id="student_checkbox_'.$student->no_matric.'"
-                                    class="filled-in" name="student[]" value="'.$student->student_ic.'" 
+                                <input type="checkbox" id="student_checkbox_' . $student->no_matric . '"
+                                    class="filled-in" name="student[]" value="' . $student->student_ic . '" 
                                 disabled>
-                                <label for="student_checkbox_'.$student->no_matric.'"></label>
+                                <label for="student_checkbox_' . $student->no_matric . '"></label>
                             </div>
                         </td>
                         <td>
                             <div>
-                                <input type="text" id="excuse_'.$student->no_matric.'"
-                                    class="form-control" name="excuse[]" onkeyup="getExcuse('.$student->no_matric.')" disabled>
-                                <input type="hidden" id="ic_'.$student->no_matric.'"
-                                class="form-control" name="ic[]" value="'.$student->student_ic.'" disabled>
+                                <input type="text" id="excuse_' . $student->no_matric . '"
+                                    class="form-control" name="excuse[]" onkeyup="getExcuse(' . $student->no_matric . ')" disabled>
+                                <input type="hidden" id="ic_' . $student->no_matric . '"
+                                class="form-control" name="ic[]" value="' . $student->student_ic . '" disabled>
                                 <label for="checkboxAll"> </label>
                             </div>
                         </td>
                         <td>
                             <div class="pull-right" >
-                                <input type="checkbox" id="mc_'.$student->no_matric.'"
-                                    class="filled-in" name="mc[]" value="'.$student->student_ic.'" onclick="getMC('.$student->no_matric.')"
+                                <input type="checkbox" id="mc_' . $student->no_matric . '"
+                                    class="filled-in" name="mc[]" value="' . $student->student_ic . '" onclick="getMC(' . $student->no_matric . ')"
                                 disabled>
-                                <label for="mc_'.$student->no_matric.'"></label>
+                                <label for="mc_' . $student->no_matric . '"></label>
                             </div>
                         </td>
                         <td>
                             <div class="pull-right" >
-                                <input type="checkbox" id="lc_'.$student->no_matric.'"
-                                    class="filled-in" name="lc[]" value="'.$student->student_ic.'"
+                                <input type="checkbox" id="lc_' . $student->no_matric . '"
+                                    class="filled-in" name="lc[]" value="' . $student->student_ic . '"
                                 checked onclick="event.preventDefault();">
-                                <label for="lc_'.$student->no_matric.'"></label>
+                                <label for="lc_' . $student->no_matric . '"></label>
                             </div>
                         </td>';
+                }
+            } else {
 
-
-                    }
-
-                }else{
-
-    $content .= '<td>
+                $content .= '<td>
                     <div class="pull-right" >
-                        <input type="checkbox" id="student_checkbox_'.$student->no_matric.'"
-                            class="filled-in" name="student[]" value="'.$student->student_ic.'" 
+                        <input type="checkbox" id="student_checkbox_' . $student->no_matric . '"
+                            class="filled-in" name="student[]" value="' . $student->student_ic . '" 
                         >
-                        <label for="student_checkbox_'.$student->no_matric.'"></label>
+                        <label for="student_checkbox_' . $student->no_matric . '"></label>
                     </div>
                 </td>
                 <td>
                     <div>
-                        <input type="text" id="excuse_'.$student->no_matric.'"
-                            class="form-control" name="excuse[]" onkeyup="getExcuse('.$student->no_matric.')">
-                        <input type="hidden" id="ic_'.$student->no_matric.'"
-                        class="form-control" name="ic[]" value="'.$student->student_ic.'" disabled>
+                        <input type="text" id="excuse_' . $student->no_matric . '"
+                            class="form-control" name="excuse[]" onkeyup="getExcuse(' . $student->no_matric . ')">
+                        <input type="hidden" id="ic_' . $student->no_matric . '"
+                        class="form-control" name="ic[]" value="' . $student->student_ic . '" disabled>
                         <label for="checkboxAll"> </label>
                     </div>
                 </td>
                 <td>
                     <div class="pull-right" >
-                        <input type="checkbox" id="mc_'.$student->no_matric.'"
-                            class="filled-in" name="mc[]" value="'.$student->student_ic.'" onclick="getMC('.$student->no_matric.')"
+                        <input type="checkbox" id="mc_' . $student->no_matric . '"
+                            class="filled-in" name="mc[]" value="' . $student->student_ic . '" onclick="getMC(' . $student->no_matric . ')"
                         >
-                        <label for="mc_'.$student->no_matric.'"></label>
+                        <label for="mc_' . $student->no_matric . '"></label>
                     </div>
                 </td>';
-
-                }
-$content .= '</tr>
-            ';
             }
+            $content .= '</tr>
+            ';
+        }
 
-            $content .= '
+        $content .= '
             <tr>
                 <td >
                     <label class="text-dark"><strong>ALL ABSENT</strong></label><br>
@@ -1500,10 +1430,10 @@ $content .= '</tr>
                 </td>
             </tr>
             ';
-            
-            $content .= '</tbody></table>';
 
-            return $content;
+        $content .= '</tbody></table>';
+
+        return $content;
     }
 
     public function printAttendance(Request $request)
@@ -1511,32 +1441,29 @@ $content .= '</tr>
 
         $group = explode('|', $request->group);
 
-        if(!empty($request->program))
-        {
+        if (!empty($request->program)) {
 
             $data['students'] = student::join('students', 'student_subjek.student_ic', 'students.ic')
-                        ->join('tblprogramme', 'students.program', 'tblprogramme.id')
-                        ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
-                        ->where('group_id', $group[0])->where('group_name', $group[1])
-                        ->where('student_subjek.sessionid', Session::get('SessionID'))
-                        ->whereIn('students.program', $request->program)
-                        ->whereNotIn('students.status', [4,5,6,7,16])
-                        ->orderBy('students.program')
-                        ->orderBy('students.name')
-                        ->get();
-
-        }else{
+                ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+                ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
+                ->where('group_id', $group[0])->where('group_name', $group[1])
+                ->where('student_subjek.sessionid', Session::get('SessionID'))
+                ->whereIn('students.program', $request->program)
+                ->whereNotIn('students.status', [4, 5, 6, 7, 16])
+                ->orderBy('students.program')
+                ->orderBy('students.name')
+                ->get();
+        } else {
 
             $data['students'] = student::join('students', 'student_subjek.student_ic', 'students.ic')
-                        ->join('tblprogramme', 'students.program', 'tblprogramme.id')
-                        ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
-                        ->where('group_id', $group[0])->where('group_name', $group[1])
-                        ->where('student_subjek.sessionid', Session::get('SessionID'))
-                        ->whereNotIn('students.status', [4,5,6,7,16])
-                        ->orderBy('students.program')
-                        ->orderBy('students.name')
-                        ->get();
-
+                ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+                ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
+                ->where('group_id', $group[0])->where('group_name', $group[1])
+                ->where('student_subjek.sessionid', Session::get('SessionID'))
+                ->whereNotIn('students.status', [4, 5, 6, 7, 16])
+                ->orderBy('students.program')
+                ->orderBy('students.name')
+                ->get();
         }
 
         $data['course'] = DB::table('subjek')->where('id', Session::get('CourseID'))->first();
@@ -1544,7 +1471,6 @@ $content .= '</tr>
         $data['session'] = DB::table('sessions')->where('SessionID', Session::get('SessionID'))->first();
 
         return view('lecturer.class.printAttendance', compact('data'));
-
     }
 
     public function printExamination(Request $request)
@@ -1553,38 +1479,38 @@ $content .= '</tr>
 
         // Get all programs for this group
         $programs = student::join('students', 'student_subjek.student_ic', 'students.ic')
-                    ->join('tblprogramme', 'students.program', 'tblprogramme.id')
-                    ->where('student_subjek.group_id', $group[0])
-                    ->where('student_subjek.group_name', $group[1])
-                    ->where('student_subjek.sessionid', Session::get('SessionID'))
-                    ->whereNotIn('students.status', [4,5,6,7,16])
-                    ->groupBy('tblprogramme.id')
-                    ->select('tblprogramme.*')
-                    ->orderBy('tblprogramme.progcode')
-                    ->get();
+            ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+            ->where('student_subjek.group_id', $group[0])
+            ->where('student_subjek.group_name', $group[1])
+            ->where('student_subjek.sessionid', Session::get('SessionID'))
+            ->whereNotIn('students.status', [4, 5, 6, 7, 16])
+            ->groupBy('tblprogramme.id')
+            ->select('tblprogramme.*')
+            ->orderBy('tblprogramme.progcode')
+            ->get();
 
         // Filter by selected programs if provided
-        if(!empty($request->program)) {
+        if (!empty($request->program)) {
             $programs = $programs->whereIn('id', $request->program);
         }
 
         $data = [];
-        
-        // Get students grouped by program
-        foreach($programs as $program) {
-            $students = student::join('students', 'student_subjek.student_ic', 'students.ic')
-                        ->join('tblprogramme', 'students.program', 'tblprogramme.id')
-                        ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
-                        ->where('student_subjek.group_id', $group[0])
-                        ->where('student_subjek.group_name', $group[1])
-                        ->where('student_subjek.sessionid', Session::get('SessionID'))
-                        ->where('students.program', $program->id)
-                        ->whereNotIn('students.status', [4,5,6,7,16])
-                        ->orderBy('students.name')
-                        ->select('students.*', 'tblprogramme.progcode', 'tblprogramme.progname', 'sessions.SessionName')
-                        ->get();
 
-            if($students->count() > 0) {
+        // Get students grouped by program
+        foreach ($programs as $program) {
+            $students = student::join('students', 'student_subjek.student_ic', 'students.ic')
+                ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+                ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
+                ->where('student_subjek.group_id', $group[0])
+                ->where('student_subjek.group_name', $group[1])
+                ->where('student_subjek.sessionid', Session::get('SessionID'))
+                ->where('students.program', $program->id)
+                ->whereNotIn('students.status', [4, 5, 6, 7, 16])
+                ->orderBy('students.name')
+                ->select('students.*', 'tblprogramme.progcode', 'tblprogramme.progname', 'sessions.SessionName')
+                ->get();
+
+            if ($students->count() > 0) {
                 $data[] = [
                     'program' => $program,
                     'students' => $students
@@ -1594,7 +1520,7 @@ $content .= '</tr>
 
         $course = DB::table('subjek')->where('id', Session::get('CourseID'))->first();
         $session = DB::table('sessions')->where('SessionID', Session::get('SessionID'))->first();
-        
+
         // Pass group data to view
         $groupData = [
             'id' => $group[0],
@@ -1610,15 +1536,13 @@ $content .= '</tr>
         $day = Carbon::parse($request->date)->format('l');
 
         $schedule = DB::table('tblclassschedule')
-        ->where('groupid', $request->group)->where('classday', $day)->first();
+            ->where('groupid', $request->group)->where('classday', $day)->first();
 
-        if($schedule->classstatusid == 1)
-        {
-            return ["message"=>"Success", 'dayid' => $schedule->id];
-        }else{
-            return ["message"=>"Fail", "day" => $day];
+        if ($schedule->classstatusid == 1) {
+            return ["message" => "Success", 'dayid' => $schedule->id];
+        } else {
+            return ["message" => "Fail", "day" => $day];
         }
-
     }
 
     public function storeAttendance(Request $request)
@@ -1639,7 +1563,6 @@ $content .= '</tr>
                 'mc' => [],
                 'lc' => [],
             ]);
-
         } catch (ValidationException $e) {
             return redirect()->back()->with('error', 'Failed! Please fill all the input form')->withInput();
         }
@@ -1654,11 +1577,9 @@ $content .= '</tr>
 
         //dd($totalHours);
 
-        if($totalHours < 1 || $totalHours > 4 || $totalMinutes != 0)
-        {
+        if ($totalHours < 1 || $totalHours > 4 || $totalMinutes != 0) {
 
             return back()->with('alert', 'Total hours cannot be below 1 or above 4, please check the time range');
-
         }
 
         //dd(Session::get('CourseID'));
@@ -1667,7 +1588,7 @@ $content .= '</tr>
 
         //$date = Carbon::createFromFormat('d/m/Y', $data['date'])->format('Y-m-d');
 
-        if(isset($data['absentall'])){
+        if (isset($data['absentall'])) {
 
             //dd($data['absentall']);
 
@@ -1679,18 +1600,13 @@ $content .= '</tr>
                 'classdate' => $data['date'],
                 'classend' => $data['date2']
             ]);
+        } else {
 
-        }else{
+            if (isset($data['student'])) {
 
-            if(isset($data['student']))
-            {
-
-                foreach($data['student'] as $std)
-                {
-                    if(DB::table('tblclassattendance')->where([['student_ic', $std],['groupid', $group[0]],['groupname', $group[1]],['classdate', $data['date']]])->exists())
-                    {
-                        
-                    }else{
+                foreach ($data['student'] as $std) {
+                    if (DB::table('tblclassattendance')->where([['student_ic', $std], ['groupid', $group[0]], ['groupname', $group[1]], ['classdate', $data['date']]])->exists()) {
+                    } else {
                         DB::table('tblclassattendance')->insert([
                             'student_ic' => $std,
                             'groupid' => $group[0],
@@ -1701,15 +1617,10 @@ $content .= '</tr>
                         ]);
                     }
                 }
-
-            }elseif(!empty(array_filter($data['excuse'], function($value) {
+            } elseif (!empty(array_filter($data['excuse'], function ($value) {
                 return $value !== null;
-            })) && isset($data['mc']) && isset($data['lc']))
-            {
-
-
-
-            }else{
+            })) && isset($data['mc']) && isset($data['lc'])) {
+            } else {
 
                 DB::table('tblclassattendance')->insert([
                     'groupid' => $group[0],
@@ -1718,10 +1629,9 @@ $content .= '</tr>
                     'classdate' => $data['date'],
                     'classend' => $data['date2']
                 ]);
-
             }
 
-            
+
             // Filter the 'excuse' array from $data to remove any NULL values.
             // array_filter() is used to filter the array based on a callback function.
             $filtered_excuse = array_filter($data['excuse'], function ($value) {
@@ -1733,19 +1643,19 @@ $content .= '</tr>
             $reindexed_excuse = array_values($filtered_excuse);
 
             // Loop through each excuse in the reindexed array.
-            foreach($reindexed_excuse as $key => $exs) {
-                
+            foreach ($reindexed_excuse as $key => $exs) {
+
                 // Check if a record with the given criteria already exists in the 'tblclassattendance' table.
                 // The criteria include the student's IC, group ID, group name, and class date.
-                if(DB::table('tblclassattendance')->where([
+                if (DB::table('tblclassattendance')->where([
                     ['student_ic', $data['ic'][$key]],
                     ['groupid', $group[0]],
                     ['groupname', $group[1]],
                     ['classdate', $data['date']]
                 ])->exists()) {
-                    
+
                     // If the record exists, do nothing (this section is empty).
-                    
+
                 } else {
                     // If the record doesn't exist, insert a new record into the 'tblclassattendance' table.
                     // The data for the new record is populated using values from the $data array, the current excuse from the loop ($exs),
@@ -1763,15 +1673,11 @@ $content .= '</tr>
             }
 
 
-            if(isset($data['mc']))
-            {
+            if (isset($data['mc'])) {
 
-                foreach($data['mc'] as $std)
-                {
-                    if(DB::table('tblclassattendance')->where([['student_ic', $std],['groupid', $group[0]],['groupname', $group[1]],['classdate', $data['date']]])->exists())
-                    {
-                        
-                    }else{
+                foreach ($data['mc'] as $std) {
+                    if (DB::table('tblclassattendance')->where([['student_ic', $std], ['groupid', $group[0]], ['groupname', $group[1]], ['classdate', $data['date']]])->exists()) {
+                    } else {
                         DB::table('tblclassattendance')->insert([
                             'student_ic' => $std,
                             'groupid' => $group[0],
@@ -1785,15 +1691,11 @@ $content .= '</tr>
                 }
             }
 
-            if(isset($data['lc']))
-            {
+            if (isset($data['lc'])) {
 
-                foreach($data['lc'] as $std)
-                {
-                    if(DB::table('tblclassattendance')->where([['student_ic', $std],['groupid', $group[0]],['groupname', $group[1]],['classdate', $data['date']]])->exists())
-                    {
-                        
-                    }else{
+                foreach ($data['lc'] as $std) {
+                    if (DB::table('tblclassattendance')->where([['student_ic', $std], ['groupid', $group[0]], ['groupname', $group[1]], ['classdate', $data['date']]])->exists()) {
+                    } else {
                         DB::table('tblclassattendance')->insert([
                             'student_ic' => $std,
                             'groupid' => $group[0],
@@ -1816,7 +1718,7 @@ $content .= '</tr>
 
         $LC = (isset($data['lc'])) ? $data['lc'] : [];
 
-        $exists = array_merge($IC,$MC,$LC);
+        $exists = array_merge($IC, $MC, $LC);
 
         $absent = DB::table('student_subjek')->where([
             ['group_id', $group[0]],
@@ -1824,47 +1726,45 @@ $content .= '</tr>
         ])->whereNotIn('student_ic', $exists)->pluck('student_ic');
 
         $totalclass = DB::table('tblclassattendance')
-                 ->where([
-                    ['tblclassattendance.groupid', $group[0]],
-                    ['tblclassattendance.groupname', $group[1]]
-                 ])->groupBy('tblclassattendance.classdate')->count();
+            ->where([
+                ['tblclassattendance.groupid', $group[0]],
+                ['tblclassattendance.groupname', $group[1]]
+            ])->groupBy('tblclassattendance.classdate')->count();
 
         $course_credit = DB::table('subjek')->where('id', Session::get('CourseID'))
-                  ->select('course_credit', DB::raw('(course_credit * 14) as total'))->first();
+            ->select('course_credit', DB::raw('(course_credit * 14) as total'))->first();
 
 
         //try to get the total credit -> total credit (47) (2 x 14) - amount of student absent time (4)
 
-        if($totalclass > 0){  
-            
-            if(count($absent) > 0)
-            {
+        if ($totalclass > 0) {
 
-                foreach($absent as $key => $abs)
-                {
+            if (count($absent) > 0) {
+
+                foreach ($absent as $key => $abs) {
 
                     $subQuery = DB::table('tblclassattendance')
-                                    ->select('tblclassattendance.classdate')
-                                    ->where([
-                                        ['tblclassattendance.groupid', $group[0]],
-                                        ['tblclassattendance.groupname', $group[1]],
-                                        ['tblclassattendance.student_ic', $abs]
-                                    ])
-                                    ->groupBy('tblclassattendance.classdate');
+                        ->select('tblclassattendance.classdate')
+                        ->where([
+                            ['tblclassattendance.groupid', $group[0]],
+                            ['tblclassattendance.groupname', $group[1]],
+                            ['tblclassattendance.student_ic', $abs]
+                        ])
+                        ->groupBy('tblclassattendance.classdate');
 
                     $total_absent = DB::table('tblclassattendance')
-                    ->select(
-                        'tblclassattendance.classdate',
-                        'tblclassattendance.classend',
-                        DB::raw('HOUR(TIMEDIFF(tblclassattendance.classend, tblclassattendance.classdate)) as raw_diff')
-                    )
-                    ->where([
-                        ['tblclassattendance.groupid', $group[0]],
-                        ['tblclassattendance.groupname', $group[1]]
-                    ])
-                    ->whereNotIn('tblclassattendance.classdate', $subQuery)
-                    ->groupBy('tblclassattendance.classdate', 'tblclassattendance.classdate', 'tblclassattendance.classend')
-                    ->get();
+                        ->select(
+                            'tblclassattendance.classdate',
+                            'tblclassattendance.classend',
+                            DB::raw('HOUR(TIMEDIFF(tblclassattendance.classend, tblclassattendance.classdate)) as raw_diff')
+                        )
+                        ->where([
+                            ['tblclassattendance.groupid', $group[0]],
+                            ['tblclassattendance.groupname', $group[1]]
+                        ])
+                        ->whereNotIn('tblclassattendance.classdate', $subQuery)
+                        ->groupBy('tblclassattendance.classdate', 'tblclassattendance.classdate', 'tblclassattendance.classend')
+                        ->get();
 
                     $totalhours = 0; // Initialize totalhours to 0 before the loop
 
@@ -1874,16 +1774,13 @@ $content .= '</tr>
 
                     $total_absent = $course_credit->total - $totalhours;
 
-                    if(DB::table('tblstudent_warning')->where([['student_ic', $abs],['groupid', $group[0]],['groupname', $group[1]]])->exists())
-                    {
+                    if (DB::table('tblstudent_warning')->where([['student_ic', $abs], ['groupid', $group[0]], ['groupname', $group[1]]])->exists()) {
 
-                        if(DB::table('tblstudent_warning')->where([['student_ic', $abs],['groupid', $group[0]],['groupname', $group[1]]])->count() == 1)
-                        {
+                        if (DB::table('tblstudent_warning')->where([['student_ic', $abs], ['groupid', $group[0]], ['groupname', $group[1]]])->count() == 1) {
 
                             $threshold = $course_credit->total - ($course_credit->course_credit * 2);
 
-                            if($total_absent <= $threshold)
-                            {
+                            if ($total_absent <= $threshold) {
 
                                 $percentage = ($total_absent / $course_credit->total) * 100;
 
@@ -1930,14 +1827,11 @@ $content .= '</tr>
                                 // unlink($pdfPath);
 
                             }
-
-                        }elseif(DB::table('tblstudent_warning')->where([['student_ic', $abs],['groupid', $group[0]],['groupname', $group[1]]])->count() == 2)
-                        {
+                        } elseif (DB::table('tblstudent_warning')->where([['student_ic', $abs], ['groupid', $group[0]], ['groupname', $group[1]]])->count() == 2) {
 
                             $threshold = $course_credit->total - ($course_credit->course_credit * 3);
 
-                            if($total_absent <= $threshold)
-                            {
+                            if ($total_absent <= $threshold) {
 
                                 $percentage = ($total_absent / $course_credit->total) * 100;
 
@@ -1984,16 +1878,12 @@ $content .= '</tr>
                                 // unlink($pdfPath);
 
                             }
-
                         }
-
-
-                    }else{
+                    } else {
 
                         $threshold = $course_credit->total - $course_credit->course_credit;
 
-                        if($total_absent <= $threshold)
-                        {
+                        if ($total_absent <= $threshold) {
 
                             $percentage = ($total_absent / $course_credit->total) * 100;
 
@@ -2040,13 +1930,9 @@ $content .= '</tr>
                             // unlink($pdfPath);
 
                         }
-
                     }
-
                 }
-
             }
-
         }
 
         // set_time_limit(300); // Set time limit to 300 seconds (5 minutes)
@@ -2090,72 +1976,67 @@ $content .= '</tr>
 
 
         return redirect()->back()->with('message', 'Student attendance has been submitted!');
-
     }
-    
+
     public function classAttendanceEdit(Request $request)
     {
-        
-        $data['student'] = student::join('students', 'student_subjek.student_ic', 'students.ic')
-                        ->join('tblprogramme', 'students.program', 'tblprogramme.id')
-                        ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
-                        ->where('group_id', $request->group)->where('group_name', $request->name)
-                        ->where('student_subjek.sessionid', Session::get('SessionID'))
-                        ->whereNotIn('students.status', [4,5,6,7,16])
-                        ->orderBy('students.name')
-                        ->get();
 
-        foreach($data['student'] as $std)
-        {
+        $data['student'] = student::join('students', 'student_subjek.student_ic', 'students.ic')
+            ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+            ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
+            ->where('group_id', $request->group)->where('group_name', $request->name)
+            ->where('student_subjek.sessionid', Session::get('SessionID'))
+            ->whereNotIn('students.status', [4, 5, 6, 7, 16])
+            ->orderBy('students.name')
+            ->get();
+
+        foreach ($data['student'] as $std) {
 
             $data['attendance'][] = DB::table('tblclassattendance')
-            ->where([
-             ['student_ic', $std->ic],
-             ['classdate', $request->from],
-             ['classend', $request->to],
-             ['groupid', $request->group],
-             ['groupname', $request->name]
-            ])->first();
-
+                ->where([
+                    ['student_ic', $std->ic],
+                    ['classdate', $request->from],
+                    ['classend', $request->to],
+                    ['groupid', $request->group],
+                    ['groupname', $request->name]
+                ])->first();
         }
 
         //dd($data['attendance']);
 
         $time = DB::table('tblclassattendance')
-                           ->where([
-                            ['classdate', $request->from],
-                            ['classend', $request->to],
-                            ['groupid', $request->group],
-                            ['groupname', $request->name]
-                           ])->first();
+            ->where([
+                ['classdate', $request->from],
+                ['classend', $request->to],
+                ['groupid', $request->group],
+                ['groupname', $request->name]
+            ])->first();
 
         $data['from'] = $time->classdate;
 
         $data['to'] = $time->classend;
 
         $data['type'] = $time->classtype;
-        
+
         $data['group'] = $request->group;
 
         $data['name'] = $request->name;
 
         $data['program'] = student::join('students', 'student_subjek.student_ic', 'students.ic')
-                    ->join('tblprogramme', 'students.program', 'tblprogramme.id')
-                    ->where('student_subjek.group_id', $request->group)->where('student_subjek.group_name', $request->name)
-                    ->where('student_subjek.sessionid', Session::get('SessionID'))
-                    ->whereNotIn('students.status', [4,5,6,7,16])
-                    ->groupBy('tblprogramme.id')
-                    ->select('tblprogramme.*')
-                    ->get();
-        
+            ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+            ->where('student_subjek.group_id', $request->group)->where('student_subjek.group_name', $request->name)
+            ->where('student_subjek.sessionid', Session::get('SessionID'))
+            ->whereNotIn('students.status', [4, 5, 6, 7, 16])
+            ->groupBy('tblprogramme.id')
+            ->select('tblprogramme.*')
+            ->get();
+
         return view('lecturer.class.attendance_edit', compact('data'));
-
-
     }
 
     public function updateAttendance(Request $request)
     {
-        
+
         $data = $request->validate([
             'group' => ['required'],
             'date' => ['required'],
@@ -2179,7 +2060,7 @@ $content .= '</tr>
             ['groupname', $group[1]]
         ])->delete();
 
-        if(isset($data['absentall'])){
+        if (isset($data['absentall'])) {
 
             //dd($data['absentall']);
 
@@ -2191,18 +2072,13 @@ $content .= '</tr>
                 'classdate' => $data['date'],
                 'classend' => $data['date2']
             ]);
+        } else {
 
-        }else{
+            if (isset($data['student'])) {
 
-            if(isset($data['student']))
-            {
-
-                foreach($data['student'] as $std)
-                {
-                    if(DB::table('tblclassattendance')->where([['student_ic', $std],['groupid', $group[0]],['groupname', $group[1]],['classdate', $data['date']]])->exists())
-                    {
-                        
-                    }else{
+                foreach ($data['student'] as $std) {
+                    if (DB::table('tblclassattendance')->where([['student_ic', $std], ['groupid', $group[0]], ['groupname', $group[1]], ['classdate', $data['date']]])->exists()) {
+                    } else {
                         DB::table('tblclassattendance')->insert([
                             'student_ic' => $std,
                             'groupid' => $group[0],
@@ -2214,12 +2090,10 @@ $content .= '</tr>
                         ]);
                     }
                 }
-
             }
 
-            if(isset($data['excuse']))
-            {
-            
+            if (isset($data['excuse'])) {
+
                 // Filter the 'excuse' array from $data to remove any NULL values.
                 // array_filter() is used to filter the array based on a callback function.
                 $filtered_excuse = array_filter($data['excuse'], function ($value) {
@@ -2231,19 +2105,19 @@ $content .= '</tr>
                 $reindexed_excuse = array_values($filtered_excuse);
 
                 // Loop through each excuse in the reindexed array.
-                foreach($reindexed_excuse as $key => $exs) {
-                    
+                foreach ($reindexed_excuse as $key => $exs) {
+
                     // Check if a record with the given criteria already exists in the 'tblclassattendance' table.
                     // The criteria include the student's IC, group ID, group name, and class date.
-                    if(DB::table('tblclassattendance')->where([
+                    if (DB::table('tblclassattendance')->where([
                         ['student_ic', $data['ic'][$key]],
                         ['groupid', $group[0]],
                         ['groupname', $group[1]],
                         ['classdate', $data['date']]
                     ])->exists()) {
-                        
+
                         // If the record exists, do nothing (this section is empty).
-                        
+
                     } else {
                         // If the record doesn't exist, insert a new record into the 'tblclassattendance' table.
                         // The data for the new record is populated using values from the $data array, the current excuse from the loop ($exs),
@@ -2259,19 +2133,14 @@ $content .= '</tr>
                         ]);
                     }
                 }
-
             }
 
 
-            if(isset($data['mc']))
-            {
+            if (isset($data['mc'])) {
 
-                foreach($data['mc'] as $std)
-                {
-                    if(DB::table('tblclassattendance')->where([['student_ic', $std],['groupid', $group[0]],['groupname', $group[1]],['classdate', $data['date']]])->exists())
-                    {
-                        
-                    }else{
+                foreach ($data['mc'] as $std) {
+                    if (DB::table('tblclassattendance')->where([['student_ic', $std], ['groupid', $group[0]], ['groupname', $group[1]], ['classdate', $data['date']]])->exists()) {
+                    } else {
                         DB::table('tblclassattendance')->insert([
                             'student_ic' => $std,
                             'groupid' => $group[0],
@@ -2285,15 +2154,11 @@ $content .= '</tr>
                 }
             }
 
-            if(isset($data['lc']))
-            {
+            if (isset($data['lc'])) {
 
-                foreach($data['lc'] as $std)
-                {
-                    if(DB::table('tblclassattendance')->where([['student_ic', $std],['groupid', $group[0]],['groupname', $group[1]],['classdate', $data['date']]])->exists())
-                    {
-                        
-                    }else{
+                foreach ($data['lc'] as $std) {
+                    if (DB::table('tblclassattendance')->where([['student_ic', $std], ['groupid', $group[0]], ['groupname', $group[1]], ['classdate', $data['date']]])->exists()) {
+                    } else {
                         DB::table('tblclassattendance')->insert([
                             'student_ic' => $std,
                             'groupid' => $group[0],
@@ -2309,21 +2174,21 @@ $content .= '</tr>
         }
 
         //Enhanced warning check system - handles both new warnings and adjustment of existing warnings
-        
+
         $IC = (isset($data['student'])) ? $data['student'] : [];
         $MC = (isset($data['mc'])) ? $data['mc'] : [];
         $LC = (isset($data['lc'])) ? $data['lc'] : [];
-        
+
         // Get excuse array and filter for non-null values
-        $excuses = (isset($data['excuse'])) ? array_filter($data['excuse'], function($value) { 
-            return !is_null($value) && $value !== ''; 
+        $excuses = (isset($data['excuse'])) ? array_filter($data['excuse'], function ($value) {
+            return !is_null($value) && $value !== '';
         }) : [];
-        
+
         // Get corresponding ICs for excuses
         $excuse_ics = [];
-        if(isset($data['ic']) && count($excuses) > 0) {
-            foreach($data['excuse'] as $key => $excuse) {
-                if(!is_null($excuse) && $excuse !== '' && isset($data['ic'][$key])) {
+        if (isset($data['ic']) && count($excuses) > 0) {
+            foreach ($data['excuse'] as $key => $excuse) {
+                if (!is_null($excuse) && $excuse !== '' && isset($data['ic'][$key])) {
                     $excuse_ics[] = $data['ic'][$key];
                 }
             }
@@ -2340,42 +2205,42 @@ $content .= '</tr>
         $absent = $all_students->diff($exists);
 
         $totalclass = DB::table('tblclassattendance')
-                 ->where([
-                    ['tblclassattendance.groupid', $group[0]],
-                    ['tblclassattendance.groupname', $group[1]]
-                 ])->groupBy('tblclassattendance.classdate')->count();
+            ->where([
+                ['tblclassattendance.groupid', $group[0]],
+                ['tblclassattendance.groupname', $group[1]]
+            ])->groupBy('tblclassattendance.classdate')->count();
 
         $course_credit = DB::table('subjek')->where('id', Session::get('CourseID'))
-                  ->select('course_credit', DB::raw('(course_credit * 14) as total'))->first();
+            ->select('course_credit', DB::raw('(course_credit * 14) as total'))->first();
 
-        if($totalclass > 0){  
-            
+        if ($totalclass > 0) {
+
             // STEP 1: Check and clean up warnings for students who are now present/MC/excuse
-            foreach($all_students as $student_ic) {
-                
+            foreach ($all_students as $student_ic) {
+
                 // Calculate current attendance for this student
                 $subQuery = DB::table('tblclassattendance')
-                                ->select('tblclassattendance.classdate')
-                                ->where([
-                                    ['tblclassattendance.groupid', $group[0]],
-                                    ['tblclassattendance.groupname', $group[1]],
-                                    ['tblclassattendance.student_ic', $student_ic]
-                                ])
-                                ->groupBy('tblclassattendance.classdate');
+                    ->select('tblclassattendance.classdate')
+                    ->where([
+                        ['tblclassattendance.groupid', $group[0]],
+                        ['tblclassattendance.groupname', $group[1]],
+                        ['tblclassattendance.student_ic', $student_ic]
+                    ])
+                    ->groupBy('tblclassattendance.classdate');
 
                 $total_absent_classes = DB::table('tblclassattendance')
-                ->select(
-                    'tblclassattendance.classdate',
-                    'tblclassattendance.classend',
-                    DB::raw('HOUR(TIMEDIFF(tblclassattendance.classend, tblclassattendance.classdate)) as raw_diff')
-                )
-                ->where([
-                    ['tblclassattendance.groupid', $group[0]],
-                    ['tblclassattendance.groupname', $group[1]]
-                ])
-                ->whereNotIn('tblclassattendance.classdate', $subQuery)
-                ->groupBy('tblclassattendance.classdate', 'tblclassattendance.classdate', 'tblclassattendance.classend')
-                ->get();
+                    ->select(
+                        'tblclassattendance.classdate',
+                        'tblclassattendance.classend',
+                        DB::raw('HOUR(TIMEDIFF(tblclassattendance.classend, tblclassattendance.classdate)) as raw_diff')
+                    )
+                    ->where([
+                        ['tblclassattendance.groupid', $group[0]],
+                        ['tblclassattendance.groupname', $group[1]]
+                    ])
+                    ->whereNotIn('tblclassattendance.classdate', $subQuery)
+                    ->groupBy('tblclassattendance.classdate', 'tblclassattendance.classdate', 'tblclassattendance.classend')
+                    ->get();
 
                 $totalhours = 0;
                 foreach ($total_absent_classes as $ttl) {
@@ -2383,7 +2248,7 @@ $content .= '</tr>
                 }
 
                 $student_attendance_balance = $course_credit->total - $totalhours;
-                
+
                 // Define thresholds
                 $threshold_1st = $course_credit->total - $course_credit->course_credit;      // 1st warning threshold
                 $threshold_2nd = $course_credit->total - ($course_credit->course_credit * 2); // 2nd warning threshold  
@@ -2404,18 +2269,18 @@ $content .= '</tr>
 
                 // Determine what warning level should be based on current attendance
                 $should_have_warning = 0;
-                if($student_attendance_balance <= $threshold_3rd) {
+                if ($student_attendance_balance <= $threshold_3rd) {
                     $should_have_warning = 3;
-                } elseif($student_attendance_balance <= $threshold_2nd) {
+                } elseif ($student_attendance_balance <= $threshold_2nd) {
                     $should_have_warning = 2;
-                } elseif($student_attendance_balance <= $threshold_1st) {
+                } elseif ($student_attendance_balance <= $threshold_1st) {
                     $should_have_warning = 1;
                 }
 
                 // CASE 1: Student improved attendance - remove excessive warnings
-                if($highest_warning > $should_have_warning) {
-                    
-                    if($should_have_warning == 0) {
+                if ($highest_warning > $should_have_warning) {
+
+                    if ($should_have_warning == 0) {
                         // Remove all warnings - student attendance is now good
                         DB::table('tblstudent_warning')
                             ->where([
@@ -2424,7 +2289,6 @@ $content .= '</tr>
                                 ['groupname', $group[1]]
                             ])
                             ->delete();
-                            
                     } else {
                         // Remove warnings higher than what student should have
                         DB::table('tblstudent_warning')
@@ -2437,14 +2301,14 @@ $content .= '</tr>
                             ->delete();
                     }
                 }
-                
+
                 // CASE 2: Student needs new warning (attendance got worse)
-                elseif($should_have_warning > $highest_warning) {
-                    
+                elseif ($should_have_warning > $highest_warning) {
+
                     // Only add the next warning level (progressive warnings)
                     $next_warning_level = $highest_warning + 1;
-                    
-                    if($next_warning_level <= $should_have_warning) {
+
+                    if ($next_warning_level <= $should_have_warning) {
                         $percentage = ($student_attendance_balance / $course_credit->total) * 100;
 
                         DB::table('tblstudent_warning')->insert([
@@ -2457,11 +2321,11 @@ $content .= '</tr>
                         ]);
                     }
                 }
-                
+
                 // CASE 3: Update existing warning data if attendance balance changed
-                elseif($should_have_warning == $highest_warning && $should_have_warning > 0) {
+                elseif ($should_have_warning == $highest_warning && $should_have_warning > 0) {
                     $percentage = ($student_attendance_balance / $course_credit->total) * 100;
-                    
+
                     DB::table('tblstudent_warning')
                         ->where([
                             ['student_ic', $student_ic],
@@ -2478,10 +2342,9 @@ $content .= '</tr>
         }
 
         return redirect()->back()->with('message', 'Student attendance has been updated!');
-
     }
 
-    public function onlineClass() 
+    public function onlineClass()
     {
 
         $user = Auth::user();
@@ -2497,12 +2360,11 @@ $content .= '</tr>
         //     ])->get();
 
         $folder = DB::table('lecturer_dir')
-        ->join('subjek', 'lecturer_dir.CourseID','subjek.id')
-        ->where('subjek.sub_id', $courseid)
-        ->where('Addby', $user->ic)->get();
+            ->join('subjek', 'lecturer_dir.CourseID', 'subjek.id')
+            ->where('subjek.sub_id', $courseid)
+            ->where('Addby', $user->ic)->get();
 
         return view('lecturer.class.onlineclass', compact('folder'));
-
     }
 
     public function getChapters(Request $request)
@@ -2512,15 +2374,14 @@ $content .= '</tr>
         $content = "";
 
         $content .= "<option value='0' disabled selected>-</option>";
-        foreach($chapter as $chp){
+        foreach ($chapter as $chp) {
 
             //$lecturer = User::where('ic', $grp->user_ic)->first();
 
-            $content .= '<option value='. $chp->DrID .'> Chapter '. $chp->ChapterNo .' : '. (($chp->newDrName != null) ? $chp->newDrName : $chp->DrName) .'</option>';
+            $content .= '<option value=' . $chp->DrID . '> Chapter ' . $chp->ChapterNo . ' : ' . (($chp->newDrName != null) ? $chp->newDrName : $chp->DrName) . '</option>';
         }
-        
-        return $content;
 
+        return $content;
     }
 
     public function getSubChapters(Request $request)
@@ -2539,31 +2400,30 @@ $content .= '</tr>
             </thead>
             <tbody>
         ';
-        foreach($subchapter as $sub){
+        foreach ($subchapter as $sub) {
             //$registered = ($student->status == 'ACTIVE') ? 'checked' : '';
             $content .= '
             <tr>
                 <td >
-                    <label>'.$sub->SubChapterNo.'</label>
+                    <label>' . $sub->SubChapterNo . '</label>
                 </td>
                 <td >
-                    <label>'.$sub->DrName.'</label>
+                    <label>' . $sub->DrName . '</label>
                 </td>
                 <td >
                     <div class="pull-right" >
-                        <input type="checkbox" id="chapter_checkbox_'.$sub->DrID.'"
-                            class="filled-in" name="chapter[]" value="'.$sub->DrID.'" 
+                        <input type="checkbox" id="chapter_checkbox_' . $sub->DrID . '"
+                            class="filled-in" name="chapter[]" value="' . $sub->DrID . '" 
                         >
-                        <label for="chapter_checkbox_'.$sub->DrID.'"> </label>
+                        <label for="chapter_checkbox_' . $sub->DrID . '"> </label>
                     </div>
                 </td>
             </tr>
             ';
-            }
-            $content .= '</tbody></table>';
+        }
+        $content .= '</tbody></table>';
 
-            return $content;
-
+        return $content;
     }
 
     public function storeOnlineClass(Request $request)
@@ -2595,11 +2455,9 @@ $content .= '</tr>
         ]);
         //dd($request->chapter);
 
-        if(is_array($request->chapter))
-        {
+        if (is_array($request->chapter)) {
 
-            foreach($request->chapter as $chp)
-            {
+            foreach ($request->chapter as $chp) {
                 DB::table('classchapter')->insert([
                     'chapterid' => $chp,
                     'classid' => $id
@@ -2607,11 +2465,9 @@ $content .= '</tr>
             }
         }
 
-        
+
 
         return redirect()->back()->with('message', 'Online Class has successfully submitted, please check online class table!');
-        
-
     }
 
     public function OnlineClassList()
@@ -2625,33 +2481,31 @@ $content .= '</tr>
         $course = Session::get('CourseID');
 
         $class = DB::table('onlineclass')
-                 ->join('user_subjek', 'onlineclass.groupid', 'user_subjek.id')
-                 ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
-                 ->select('onlineclass.*')
-                 ->where('user_subjek.user_ic', $user->ic)
-                 ->where('subjek.id', $course)
-                 ->orderBy('onlineclass.id', 'DESC')
-                 ->paginate(5);
+            ->join('user_subjek', 'onlineclass.groupid', 'user_subjek.id')
+            ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+            ->select('onlineclass.*')
+            ->where('user_subjek.user_ic', $user->ic)
+            ->where('subjek.id', $course)
+            ->orderBy('onlineclass.id', 'DESC')
+            ->paginate(5);
 
         //dd($class);
 
-        foreach ($class as $clss)
-        {
+        foreach ($class as $clss) {
             $totalstd[] = student::where('group_id', $clss->groupid)->count();
 
             $chapters[] = DB::table('classchapter')
-                        ->join('materialsub_dir', 'classchapter.chapterid', 'materialsub_dir.DrID')
-                        ->where('classid', $clss->id)->get();
+                ->join('materialsub_dir', 'classchapter.chapterid', 'materialsub_dir.DrID')
+                ->where('classid', $clss->id)->get();
         }
 
         //dd($totalstd);
-           
+
         return view('lecturer.class.listonlineclass', compact([
             'class',
             'totalstd',
             'chapters'
         ]));
-
     }
 
     public function OnlineClassListDelete(Request $request)
@@ -2662,7 +2516,6 @@ $content .= '</tr>
         DB::table('classchapter')->where('classid', $request->id)->delete();
 
         return true;
-
     }
 
     function OnlineClassListEdit()
@@ -2670,28 +2523,27 @@ $content .= '</tr>
 
         $user = Auth::user();
 
-            $courseid = Session::get('CourseID');
+        $courseid = Session::get('CourseID');
 
-            $folder = DB::table('lecturer_dir')
+        $folder = DB::table('lecturer_dir')
             ->where([
                 ['CourseID', $courseid],
                 ['Addby', $user->ic]
-                ])->get();
+            ])->get();
 
-            $class = DB::table('onlineclass')->where('id', request()->id)->first();
+        $class = DB::table('onlineclass')->where('id', request()->id)->first();
 
-            $date = Carbon::createFromFormat('Y-m-d', $class->classdate)->format('d/m/Y');
+        $date = Carbon::createFromFormat('Y-m-d', $class->classdate)->format('d/m/Y');
 
-            //dd($class);
+        //dd($class);
 
-            return view('lecturer.class.onlineclassedit', compact(['folder', 'class', 'date']));
-
+        return view('lecturer.class.onlineclassedit', compact(['folder', 'class', 'date']));
     }
 
     function OnlineClassListUpdate(Request $request)
     {
         //dd($request->id);
-        
+
         $data = $request->validate([
             'group' => ['required'],
             'date' => ['required'],
@@ -2714,12 +2566,10 @@ $content .= '</tr>
 
 
         //dd($upid->id);
-        if(count($request->chapter) > 0)
-        {
+        if (count($request->chapter) > 0) {
             DB::table('classchapter')->where('classid', $request->id)->delete();
 
-            foreach($request->chapter as $chp)
-            {
+            foreach ($request->chapter as $chp) {
                 DB::table('classchapter')->insert([
                     'chapterid' => $chp,
                     'classid' => $request->id
@@ -2728,10 +2578,9 @@ $content .= '</tr>
         }
 
         return redirect(route('lecturer.onlineclass.list'))->with('message', 'Online Class has successfully submitted, please check online class table!');
-
     }
 
-    public function announcement() 
+    public function announcement()
     {
         $user = Auth::user();
 
@@ -2746,12 +2595,11 @@ $content .= '</tr>
         //     ])->get();
 
         $folder = DB::table('lecturer_dir')
-        ->join('subjek', 'lecturer_dir.CourseID','subjek.id')
-        ->where('subjek.sub_id', $courseid)
-        ->where('Addby', $user->ic)->get();
+            ->join('subjek', 'lecturer_dir.CourseID', 'subjek.id')
+            ->where('subjek.sub_id', $courseid)
+            ->where('Addby', $user->ic)->get();
 
         return view('lecturer.class.announcement', compact('folder'));
-
     }
 
     public function announcementGetGroupList(Request $request)
@@ -2762,13 +2610,13 @@ $content .= '</tr>
         $lecturer = Auth::user();
 
         $group = subject::join('student_subjek', 'user_subjek.id', 'student_subjek.group_id')
-        ->join('users', 'user_subjek.user_ic','users.ic')
-        ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
-        ->where([
-            ['subjek.id', $courseid],
-            ['user_subjek.user_ic', $lecturer->ic]
-        ])->groupBy('student_subjek.group_name')
-        ->select('user_subjek.*','student_subjek.group_name', 'users.name')->get();
+            ->join('users', 'user_subjek.user_ic', 'users.ic')
+            ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+            ->where([
+                ['subjek.id', $courseid],
+                ['user_subjek.user_ic', $lecturer->ic]
+            ])->groupBy('student_subjek.group_name')
+            ->select('user_subjek.*', 'student_subjek.group_name', 'users.name')->get();
 
         $content = "";
         $content .= '
@@ -2781,31 +2629,30 @@ $content .= '</tr>
             </thead>
             <tbody>
         ';
-        foreach($group as $grp){
+        foreach ($group as $grp) {
             //$registered = ($student->status == 'ACTIVE') ? 'checked' : '';
             $content .= '
             <tr>
                 <td >
-                    <label>'.$grp->group_name.'</label>
+                    <label>' . $grp->group_name . '</label>
                 </td>
                 <td >
-                    <label>'.htmlentities($grp->name, ENT_QUOTES).'</label>
+                    <label>' . htmlentities($grp->name, ENT_QUOTES) . '</label>
                 </td>
                 <td >
                     <div class="pull-right" >
-                        <input type="checkbox" id="group_checkbox_'.$grp->id . '|' . $grp->group_name.'"
-                            class="filled-in" name="group[]" value="'.$grp->id . '|' . $grp->group_name.'" 
+                        <input type="checkbox" id="group_checkbox_' . $grp->id . '|' . $grp->group_name . '"
+                            class="filled-in" name="group[]" value="' . $grp->id . '|' . $grp->group_name . '" 
                         >
-                        <label for="group_checkbox_'.$grp->id . '|' . $grp->group_name.'"> </label>
+                        <label for="group_checkbox_' . $grp->id . '|' . $grp->group_name . '"> </label>
                     </div>
                 </td>
             </tr>
             ';
-            }
-            $content .= '</tbody></table>';
+        }
+        $content .= '</tbody></table>';
 
-            return $content;
-
+        return $content;
     }
 
     public function storeAnnouncement(Request $request)
@@ -2838,31 +2685,28 @@ $content .= '</tr>
             //'classendtime' => $data['time_to']
         ]);
 
-        foreach($request->group as $grp)
-        {
-            $group = explode('|', $grp); 
-            
+        foreach ($request->group as $grp) {
+            $group = explode('|', $grp);
+
             DB::table('announcement_groupname')->insert([
                 'groupname' => $group[1],
                 'announcementid' => $id
             ]);
 
             $students = DB::table('students')
-                          ->join('student_subjek', 'students.ic', 'student_subjek.student_ic')
-                          ->where([
-                            ['student_subjek.group_id', $group[0]],
-                            ['student_subjek.group_name', $group[1]]
-                          ])->pluck('email');               
+                ->join('student_subjek', 'students.ic', 'student_subjek.student_ic')
+                ->where([
+                    ['student_subjek.group_id', $group[0]],
+                    ['student_subjek.group_name', $group[1]]
+                ])->pluck('email');
         }
 
         $test = array($students);
 
         //dd($test);
 
-        if($request->chapter != null)
-        {
-            foreach($request->chapter as $chp)
-            {
+        if ($request->chapter != null) {
+            foreach ($request->chapter as $chp) {
                 DB::table('announcement_chapter')->insert([
                     'chapterid' => $chp,
                     'announcementid' => $id
@@ -2880,8 +2724,6 @@ $content .= '</tr>
         //dd($data);
 
         return redirect()->back()->with('message', 'Online Class has successfully submitted, please check online class table!');
-        
-
     }
 
     public function announcementList()
@@ -2897,45 +2739,43 @@ $content .= '</tr>
         $course = Session::get('CourseID');
 
         $class = DB::table('announcement')
-                 ->join('user_subjek', 'announcement.groupid', 'user_subjek.id')
-                 ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
-                 ->select('announcement.*')
-                 ->where('user_subjek.user_ic', $user->ic)
-                 ->where('subjek.id', $course)
-                 ->orderBy('announcement.id', 'DESC')
-                 ->paginate(5);
+            ->join('user_subjek', 'announcement.groupid', 'user_subjek.id')
+            ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+            ->select('announcement.*')
+            ->where('user_subjek.user_ic', $user->ic)
+            ->where('subjek.id', $course)
+            ->orderBy('announcement.id', 'DESC')
+            ->paginate(5);
 
         //dd($class);
 
-        foreach ($class as $clss)
-        {
+        foreach ($class as $clss) {
             //$totalstd[] = student::where('group_id', $clss->groupid)->count();
 
             $group = DB::table('announcement_groupname')
-                    ->join('student_subjek', function($join){
-                        $join->on('announcement_groupname.groupname', 'student_subjek.group_name');
-                    })
-                    ->where('announcement_groupname.announcementid', $clss->id)
-                    ->where('student_subjek.group_id', $clss->groupid);
+                ->join('student_subjek', function ($join) {
+                    $join->on('announcement_groupname.groupname', 'student_subjek.group_name');
+                })
+                ->where('announcement_groupname.announcementid', $clss->id)
+                ->where('student_subjek.group_id', $clss->groupid);
 
             $allgroup[] = $group->groupBy('student_subjek.group_name')->get();
-                    
+
             $totalstd[] = $group->count();
 
             $chapters[] = DB::table('announcement_chapter')
-                        ->join('materialsub_dir', 'announcement_chapter.chapterid', 'materialsub_dir.DrID')
-                        ->where('announcementid', $clss->id)->get();
+                ->join('materialsub_dir', 'announcement_chapter.chapterid', 'materialsub_dir.DrID')
+                ->where('announcementid', $clss->id)->get();
         }
 
         //dd($totalstd);
-           
+
         return view('lecturer.class.listannouncement', compact([
             'class',
             'allgroup',
             'totalstd',
             'chapters'
         ]));
-
     }
 
     public function announcementListDelete(Request $request)
@@ -2948,7 +2788,6 @@ $content .= '</tr>
         DB::table('announcement_groupname')->where('announcementid', $request->id)->delete();
 
         return true;
-
     }
 
     public function assessmentreport()
@@ -3054,932 +2893,888 @@ $content .= '</tr>
         $id = request()->id;
 
         $data['lectInfo'] = DB::table('user_subjek')
-                            ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
-                            ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
-                            ->where([
-                                ['user_subjek.user_ic', $user->ic],
-                                ['user_subjek.session_id', Session::get('SessionID')],
-                                ['subjek.id', request()->id]
-                             ])
-                            ->select('subjek.*', 'sessions.SessionName AS session')
-                            ->first();
-
-        $groups = DB::table('user_subjek')
-                  ->join('student_subjek', 'user_subjek.id', 'student_subjek.group_id')
-                  ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
-                  ->select('user_subjek.*','student_subjek.group_name','student_subjek.group_id')
-                  ->where([
-                     ['user_subjek.user_ic', $user->ic],
-                     ['user_subjek.session_id', Session::get('SessionID')],
-                     ['subjek.id', request()->id]
-                  ])->groupBy('student_subjek.group_name')->get();
-
-        foreach($groups as $ky => $grp)
-        {
-
-
-                $students[] = DB::table('user_subjek')
-                ->join('student_subjek', 'user_subjek.id', 'student_subjek.group_id')
-                ->join('students', 'student_subjek.student_ic', 'students.ic')
-                ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
-                ->select('user_subjek.*','student_subjek.group_name','student_subjek.group_id','students.*')
-                ->where([
+            ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+            ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
+            ->where([
                 ['user_subjek.user_ic', $user->ic],
                 ['user_subjek.session_id', Session::get('SessionID')],
                 ['subjek.id', request()->id]
+            ])
+            ->select('subjek.*', 'sessions.SessionName AS session')
+            ->first();
+
+        $groups = DB::table('user_subjek')
+            ->join('student_subjek', 'user_subjek.id', 'student_subjek.group_id')
+            ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+            ->select('user_subjek.*', 'student_subjek.group_name', 'student_subjek.group_id')
+            ->where([
+                ['user_subjek.user_ic', $user->ic],
+                ['user_subjek.session_id', Session::get('SessionID')],
+                ['subjek.id', request()->id]
+            ])->groupBy('student_subjek.group_name')->get();
+
+        foreach ($groups as $ky => $grp) {
+
+
+            $students[] = DB::table('user_subjek')
+                ->join('student_subjek', 'user_subjek.id', 'student_subjek.group_id')
+                ->join('students', 'student_subjek.student_ic', 'students.ic')
+                ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+                ->select('user_subjek.*', 'student_subjek.group_name', 'student_subjek.group_id', 'students.*')
+                ->where([
+                    ['user_subjek.user_ic', $user->ic],
+                    ['user_subjek.session_id', Session::get('SessionID')],
+                    ['subjek.id', request()->id]
                 ])->where('student_subjek.group_name', $grp->group_name)
                 ->orderBy('students.name')->get();
 
-                $collection = collect($students[$ky]);
+            $collection = collect($students[$ky]);
 
-                //QUIZ
+            //QUIZ
 
-                $quizs = DB::table('tblclassquiz')
-                        ->join('tblclassquiz_group', 'tblclassquiz.id', 'tblclassquiz_group.quizid')
-                        ->where([
-                            ['tblclassquiz.classid', request()->id],
-                            ['tblclassquiz.sessionid', Session::get('SessionID')],
-                            ['tblclassquiz_group.groupname', $grp->group_name],
-                            ['tblclassquiz.status', '!=', 3],
-                            ['tblclassquiz.addby', $user->ic]
-                        ]);
+            $quizs = DB::table('tblclassquiz')
+                ->join('tblclassquiz_group', 'tblclassquiz.id', 'tblclassquiz_group.quizid')
+                ->where([
+                    ['tblclassquiz.classid', request()->id],
+                    ['tblclassquiz.sessionid', Session::get('SessionID')],
+                    ['tblclassquiz_group.groupname', $grp->group_name],
+                    ['tblclassquiz.status', '!=', 3],
+                    ['tblclassquiz.addby', $user->ic]
+                ]);
 
-                $quiz[] = $quizs->get();
+            $quiz[] = $quizs->get();
 
-                $quizid = $quizs->pluck('tblclassquiz.id');
+            $quizid = $quizs->pluck('tblclassquiz.id');
 
-                $totalquiz = $quizs->sum('tblclassquiz.total_mark');
+            $totalquiz = $quizs->sum('tblclassquiz.total_mark');
 
-                foreach($quiz[$ky] as $key => $qz)
-                {
+            foreach ($quiz[$ky] as $key => $qz) {
 
-                    $quizarray = DB::table('tblclassstudentquiz')
-                                            ->join('tblclassquiz', 'tblclassstudentquiz.quizid', 'tblclassquiz.id')
-                                            ->where('quizid', $qz->quizid)
-                                            ->whereIn('userid', $collection->pluck('ic'));
+                $quizarray = DB::table('tblclassstudentquiz')
+                    ->join('tblclassquiz', 'tblclassstudentquiz.quizid', 'tblclassquiz.id')
+                    ->where('quizid', $qz->quizid)
+                    ->whereIn('userid', $collection->pluck('ic'));
 
-                    $quizavg[$ky][$key] = number_format((float)$quizarray->sum('final_mark') / count($collection->pluck('ic')), 2, '.', '');
+                $quizavg[$ky][$key] = number_format((float)$quizarray->sum('final_mark') / count($collection->pluck('ic')), 2, '.', '');
 
-                    $quizmax[$ky][$key] = $quizarray->max('final_mark');
-                    
-                    $quizmin[$ky][$key] = $quizarray->min('final_mark');
+                $quizmax[$ky][$key] = $quizarray->max('final_mark');
 
-                }
+                $quizmin[$ky][$key] = $quizarray->min('final_mark');
+            }
 
 
-                //TEST
+            //TEST
 
-                $tests = DB::table('tblclasstest')
-                        ->join('tblclasstest_group', 'tblclasstest.id', 'tblclasstest_group.testid')
-                        ->where([
-                            ['tblclasstest.classid', request()->id],
-                            ['tblclasstest.sessionid', Session::get('SessionID')],
-                            ['tblclasstest_group.groupname', $grp->group_name],
-                            ['tblclasstest.status', '!=', 3],
-                            ['tblclasstest.addby', $user->ic]
-                        ]);
+            $tests = DB::table('tblclasstest')
+                ->join('tblclasstest_group', 'tblclasstest.id', 'tblclasstest_group.testid')
+                ->where([
+                    ['tblclasstest.classid', request()->id],
+                    ['tblclasstest.sessionid', Session::get('SessionID')],
+                    ['tblclasstest_group.groupname', $grp->group_name],
+                    ['tblclasstest.status', '!=', 3],
+                    ['tblclasstest.addby', $user->ic]
+                ]);
 
-                $test[] = $tests->get();
+            $test[] = $tests->get();
 
-                $testid = $tests->pluck('tblclasstest.id');
+            $testid = $tests->pluck('tblclasstest.id');
 
-                $totaltest = $tests->sum('tblclasstest.total_mark');
+            $totaltest = $tests->sum('tblclasstest.total_mark');
 
-                foreach($test[$ky] as $key => $qz)
-                {
+            foreach ($test[$ky] as $key => $qz) {
 
-                    $testarray = DB::table('tblclassstudenttest')
-                                            ->join('tblclasstest', 'tblclassstudenttest.testid', 'tblclasstest.id')
-                                            ->where('testid', $qz->testid)
-                                            ->whereIn('userid', $collection->pluck('ic'));
+                $testarray = DB::table('tblclassstudenttest')
+                    ->join('tblclasstest', 'tblclassstudenttest.testid', 'tblclasstest.id')
+                    ->where('testid', $qz->testid)
+                    ->whereIn('userid', $collection->pluck('ic'));
 
-                    $testavg[$ky][$key] = number_format((float)$testarray->sum('final_mark') / count($collection->pluck('ic')), 2, '.', '');
+                $testavg[$ky][$key] = number_format((float)$testarray->sum('final_mark') / count($collection->pluck('ic')), 2, '.', '');
 
-                    $testmax[$ky][$key] = $testarray->max('final_mark');
-                    
-                    $testmin[$ky][$key] = $testarray->min('final_mark');
+                $testmax[$ky][$key] = $testarray->max('final_mark');
 
-                }
+                $testmin[$ky][$key] = $testarray->min('final_mark');
+            }
 
-                //TEST2
+            //TEST2
 
-                $tests2 = DB::table('tblclasstest2')
-                        ->join('tblclasstest2_group', 'tblclasstest2.id', 'tblclasstest2_group.testid')
-                        ->where([
-                            ['tblclasstest2.classid', request()->id],
-                            ['tblclasstest2.sessionid', Session::get('SessionID')],
-                            ['tblclasstest2_group.groupname', $grp->group_name],
-                            ['tblclasstest2.status', '!=', 3],
-                            ['tblclasstest2.addby', $user->ic]
-                        ]);
+            $tests2 = DB::table('tblclasstest2')
+                ->join('tblclasstest2_group', 'tblclasstest2.id', 'tblclasstest2_group.testid')
+                ->where([
+                    ['tblclasstest2.classid', request()->id],
+                    ['tblclasstest2.sessionid', Session::get('SessionID')],
+                    ['tblclasstest2_group.groupname', $grp->group_name],
+                    ['tblclasstest2.status', '!=', 3],
+                    ['tblclasstest2.addby', $user->ic]
+                ]);
 
-                $test2[] = $tests2->get();
+            $test2[] = $tests2->get();
 
-                $test2id = $tests2->pluck('tblclasstest2.id');
+            $test2id = $tests2->pluck('tblclasstest2.id');
 
-                $totaltest2 = $tests2->sum('tblclasstest2.total_mark');
+            $totaltest2 = $tests2->sum('tblclasstest2.total_mark');
 
-                foreach($test2[$ky] as $key => $qz)
-                {
+            foreach ($test2[$ky] as $key => $qz) {
 
-                    $test2array = DB::table('tblclassstudenttest')
-                                            ->join('tblclasstest2', 'tblclassstudenttest.testid', 'tblclasstest2.id')
-                                            ->where('testid', $qz->testid)
-                                            ->whereIn('userid', $collection->pluck('ic'));
+                $test2array = DB::table('tblclassstudenttest')
+                    ->join('tblclasstest2', 'tblclassstudenttest.testid', 'tblclasstest2.id')
+                    ->where('testid', $qz->testid)
+                    ->whereIn('userid', $collection->pluck('ic'));
 
-                    $test2avg[$ky][$key] = number_format((float)$test2array->sum('final_mark') / count($collection->pluck('ic')), 2, '.', '');
+                $test2avg[$ky][$key] = number_format((float)$test2array->sum('final_mark') / count($collection->pluck('ic')), 2, '.', '');
 
-                    $test2max[$ky][$key] = $test2array->max('final_mark');
-                    
-                    $test2min[$ky][$key] = $test2array->min('final_mark');
+                $test2max[$ky][$key] = $test2array->max('final_mark');
 
-                }
+                $test2min[$ky][$key] = $test2array->min('final_mark');
+            }
 
-                //ASSIGNMENT
+            //ASSIGNMENT
 
-                $assigns = DB::table('tblclassassign')
-                        ->join('tblclassassign_group', 'tblclassassign.id', 'tblclassassign_group.assignid')
-                        ->where([
-                            ['tblclassassign.classid', request()->id],
-                            ['tblclassassign.sessionid', Session::get('SessionID')],
-                            ['tblclassassign_group.groupname', $grp->group_name],
-                            ['tblclassassign.status', '!=', 3],
-                            ['tblclassassign.addby', $user->ic]
-                        ]);
+            $assigns = DB::table('tblclassassign')
+                ->join('tblclassassign_group', 'tblclassassign.id', 'tblclassassign_group.assignid')
+                ->where([
+                    ['tblclassassign.classid', request()->id],
+                    ['tblclassassign.sessionid', Session::get('SessionID')],
+                    ['tblclassassign_group.groupname', $grp->group_name],
+                    ['tblclassassign.status', '!=', 3],
+                    ['tblclassassign.addby', $user->ic]
+                ]);
 
-                $assign[] = $assigns->get();
+            $assign[] = $assigns->get();
 
-                $assignid = $assigns->pluck('tblclassassign.id');
+            $assignid = $assigns->pluck('tblclassassign.id');
 
-                $totalassign = $assigns->sum('tblclassassign.total_mark');
+            $totalassign = $assigns->sum('tblclassassign.total_mark');
 
-                foreach($assign[$ky] as $key => $qz)
-                {
+            foreach ($assign[$ky] as $key => $qz) {
 
-                    $assignarray = DB::table('tblclassstudentassign')
-                                            ->join('tblclassassign', 'tblclassstudentassign.assignid', 'tblclassassign.id')
-                                            ->where('assignid', $qz->assignid)
-                                            ->whereIn('userid', $collection->pluck('ic'));
+                $assignarray = DB::table('tblclassstudentassign')
+                    ->join('tblclassassign', 'tblclassstudentassign.assignid', 'tblclassassign.id')
+                    ->where('assignid', $qz->assignid)
+                    ->whereIn('userid', $collection->pluck('ic'));
 
-                    $assignavg[$ky][$key] = number_format((float)$assignarray->sum('final_mark') / count($collection->pluck('ic')), 2, '.', '');
+                $assignavg[$ky][$key] = number_format((float)$assignarray->sum('final_mark') / count($collection->pluck('ic')), 2, '.', '');
 
-                    $assignmax[$ky][$key] = $assignarray->max('final_mark');
-                    
-                    $assignmin[$ky][$key] = $assignarray->min('final_mark');
+                $assignmax[$ky][$key] = $assignarray->max('final_mark');
 
-                }
+                $assignmin[$ky][$key] = $assignarray->min('final_mark');
+            }
 
-                //EXTRA
+            //EXTRA
 
-                $extras = DB::table('tblclassextra')
-                        ->join('tblclassextra_group', 'tblclassextra.id', 'tblclassextra_group.extraid')
-                        ->where([
-                            ['tblclassextra.classid', request()->id],
-                            ['tblclassextra.sessionid', Session::get('SessionID')],
-                            ['tblclassextra_group.groupname', $grp->group_name],
-                            ['tblclassextra.status', '!=', 3],
-                            ['tblclassextra.addby', $user->ic]
-                        ]);
+            $extras = DB::table('tblclassextra')
+                ->join('tblclassextra_group', 'tblclassextra.id', 'tblclassextra_group.extraid')
+                ->where([
+                    ['tblclassextra.classid', request()->id],
+                    ['tblclassextra.sessionid', Session::get('SessionID')],
+                    ['tblclassextra_group.groupname', $grp->group_name],
+                    ['tblclassextra.status', '!=', 3],
+                    ['tblclassextra.addby', $user->ic]
+                ]);
 
-                $extra[] = $extras->get();
+            $extra[] = $extras->get();
 
-                $extraid = $extras->pluck('tblclassextra.id');
+            $extraid = $extras->pluck('tblclassextra.id');
 
-                $totalextra = $extras->sum('tblclassextra.total_mark');
+            $totalextra = $extras->sum('tblclassextra.total_mark');
 
-                foreach($extra[$ky] as $key => $qz)
-                {
+            foreach ($extra[$ky] as $key => $qz) {
 
-                    $extraarray = DB::table('tblclassstudentextra')
-                                            ->join('tblclassextra', 'tblclassstudentextra.extraid', 'tblclassextra.id')
-                                            ->where('extraid', $qz->extraid)
-                                            ->whereIn('userid', $collection->pluck('ic'));
+                $extraarray = DB::table('tblclassstudentextra')
+                    ->join('tblclassextra', 'tblclassstudentextra.extraid', 'tblclassextra.id')
+                    ->where('extraid', $qz->extraid)
+                    ->whereIn('userid', $collection->pluck('ic'));
 
-                    $extraavg[$ky][$key] = number_format((float)$extraarray->sum('tblclassstudentextra.total_mark') / count($collection->pluck('ic')), 2, '.', '');
+                $extraavg[$ky][$key] = number_format((float)$extraarray->sum('tblclassstudentextra.total_mark') / count($collection->pluck('ic')), 2, '.', '');
 
-                    $extramax[$ky][$key] = $extraarray->max('tblclassstudentextra.total_mark');
-                    
-                    $extramin[$ky][$key] = $extraarray->min('tblclassstudentextra.total_mark');
+                $extramax[$ky][$key] = $extraarray->max('tblclassstudentextra.total_mark');
 
-                }
+                $extramin[$ky][$key] = $extraarray->min('tblclassstudentextra.total_mark');
+            }
 
-                //PRACTICAL
+            //PRACTICAL
 
-                $practicals = DB::table('tblclasspractical')
-                        ->join('tblclasspractical_group', 'tblclasspractical.id', 'tblclasspractical_group.practicalid')
-                        ->where([
-                            ['tblclasspractical.classid', request()->id],
-                            ['tblclasspractical.sessionid', Session::get('SessionID')],
-                            ['tblclasspractical_group.groupname', $grp->group_name],
-                            ['tblclasspractical.status', '!=', 3],
-                            ['tblclasspractical.addby', $user->ic]
-                        ]);
+            $practicals = DB::table('tblclasspractical')
+                ->join('tblclasspractical_group', 'tblclasspractical.id', 'tblclasspractical_group.practicalid')
+                ->where([
+                    ['tblclasspractical.classid', request()->id],
+                    ['tblclasspractical.sessionid', Session::get('SessionID')],
+                    ['tblclasspractical_group.groupname', $grp->group_name],
+                    ['tblclasspractical.status', '!=', 3],
+                    ['tblclasspractical.addby', $user->ic]
+                ]);
 
-                $practical[] = $practicals->get();
+            $practical[] = $practicals->get();
 
-                $practicalid = $practicals->pluck('tblclasspractical.id');
+            $practicalid = $practicals->pluck('tblclasspractical.id');
 
-                $totalpractical = $practicals->sum('tblclasspractical.total_mark');
+            $totalpractical = $practicals->sum('tblclasspractical.total_mark');
 
-                foreach($practical[$ky] as $key => $qz)
-                {
+            foreach ($practical[$ky] as $key => $qz) {
 
-                    $practicalarray = DB::table('tblclassstudentpractical')
-                                            ->join('tblclasspractical', 'tblclassstudentpractical.practicalid', 'tblclasspractical.id')
-                                            ->where('practicalid', $qz->practicalid)
-                                            ->whereIn('userid', $collection->pluck('ic'));
+                $practicalarray = DB::table('tblclassstudentpractical')
+                    ->join('tblclasspractical', 'tblclassstudentpractical.practicalid', 'tblclasspractical.id')
+                    ->where('practicalid', $qz->practicalid)
+                    ->whereIn('userid', $collection->pluck('ic'));
 
-                    $practicalavg[$ky][$key] = number_format((float)$practicalarray->sum('tblclassstudentpractical.total_mark') / count($collection->pluck('ic')), 2, '.', '');
+                $practicalavg[$ky][$key] = number_format((float)$practicalarray->sum('tblclassstudentpractical.final_mark') / count($collection->pluck('ic')), 2, '.', '');
 
-                    $practicalmax[$ky][$key] = $practicalarray->max('tblclassstudentpractical.total_mark');
+                $practicalmax[$ky][$key] = $practicalarray->max('tblclassstudentpractical.final_mark');
 
-                    $practicalmin[$ky][$key] = $practicalarray->min('tblclassstudentpractical.total_mark');
+                $practicalmin[$ky][$key] = $practicalarray->min('tblclassstudentpractical.final_mark');
+            }
 
-                }
+            //OTHER
 
-                //OTHER
+            $others = DB::table('tblclassother')
+                ->join('tblclassother_group', 'tblclassother.id', 'tblclassother_group.otherid')
+                ->where([
+                    ['tblclassother.classid', request()->id],
+                    ['tblclassother.sessionid', Session::get('SessionID')],
+                    ['tblclassother_group.groupname', $grp->group_name],
+                    ['tblclassother.status', '!=', 3],
+                    ['tblclassother.addby', $user->ic]
+                ]);
 
-                $others = DB::table('tblclassother')
-                        ->join('tblclassother_group', 'tblclassother.id', 'tblclassother_group.otherid')
-                        ->where([
-                            ['tblclassother.classid', request()->id],
-                            ['tblclassother.sessionid', Session::get('SessionID')],
-                            ['tblclassother_group.groupname', $grp->group_name],
-                            ['tblclassother.status', '!=', 3],
-                            ['tblclassother.addby', $user->ic]
-                        ]);
+            $other[] = $others->get();
 
-                $other[] = $others->get();
+            $otherid = $others->pluck('tblclassother.id');
 
-                $otherid = $others->pluck('tblclassother.id');
+            $totalother = $others->sum('tblclassother.total_mark');
 
-                $totalother = $others->sum('tblclassother.total_mark');
+            foreach ($other[$ky] as $key => $qz) {
 
-                foreach($other[$ky] as $key => $qz)
-                {
+                $otherarray = DB::table('tblclassstudentother')
+                    ->join('tblclassother', 'tblclassstudentother.otherid', 'tblclassother.id')
+                    ->where('otherid', $qz->otherid)
+                    ->whereIn('userid', $collection->pluck('ic'));
 
-                    $otherarray = DB::table('tblclassstudentother')
-                                            ->join('tblclassother', 'tblclassstudentother.otherid', 'tblclassother.id')
-                                            ->where('otherid', $qz->otherid)
-                                            ->whereIn('userid', $collection->pluck('ic'));
+                $otheravg[$ky][$key] = number_format((float)$otherarray->sum('tblclassstudentother.total_mark') / count($collection->pluck('ic')), 2, '.', '');
 
-                    $otheravg[$ky][$key] = number_format((float)$otherarray->sum('tblclassstudentother.total_mark') / count($collection->pluck('ic')), 2, '.', '');
+                $othermax[$ky][$key] = $otherarray->max('tblclassstudentother.total_mark');
 
-                    $othermax[$ky][$key] = $otherarray->max('tblclassstudentother.total_mark');
-                    
-                    $othermin[$ky][$key] = $otherarray->min('tblclassstudentother.total_mark');
+                $othermin[$ky][$key] = $otherarray->min('tblclassstudentother.total_mark');
+            }
 
-                }
+            //MIDTERM
 
-                //MIDTERM
+            $midterms = DB::table('tblclassmidterm')
+                ->join('tblclassmidterm_group', 'tblclassmidterm.id', 'tblclassmidterm_group.midtermid')
+                ->where([
+                    ['tblclassmidterm.classid', request()->id],
+                    ['tblclassmidterm.sessionid', Session::get('SessionID')],
+                    ['tblclassmidterm_group.groupname', $grp->group_name],
+                    ['tblclassmidterm.status', '!=', 3],
+                    ['tblclassmidterm.addby', $user->ic]
+                ]);
 
-                $midterms = DB::table('tblclassmidterm')
-                        ->join('tblclassmidterm_group', 'tblclassmidterm.id', 'tblclassmidterm_group.midtermid')
-                        ->where([
-                            ['tblclassmidterm.classid', request()->id],
-                            ['tblclassmidterm.sessionid', Session::get('SessionID')],
-                            ['tblclassmidterm_group.groupname', $grp->group_name],
-                            ['tblclassmidterm.status', '!=', 3],
-                            ['tblclassmidterm.addby', $user->ic]
-                        ]);
+            $midterm[] = $midterms->get();
 
-                $midterm[] = $midterms->get();
+            $midtermid = $midterms->pluck('tblclassmidterm.id');
 
-                $midtermid = $midterms->pluck('tblclassmidterm.id');
+            $totalmidterm = $midterms->sum('tblclassmidterm.total_mark');
 
-                $totalmidterm = $midterms->sum('tblclassmidterm.total_mark');
+            foreach ($midterm[$ky] as $key => $qz) {
 
-                foreach($midterm[$ky] as $key => $qz)
-                {
+                $midtermarray = DB::table('tblclassstudentmidterm')
+                    ->join('tblclassmidterm', 'tblclassstudentmidterm.midtermid', 'tblclassmidterm.id')
+                    ->where('midtermid', $qz->midtermid)
+                    ->whereIn('userid', $collection->pluck('ic'));
 
-                    $midtermarray = DB::table('tblclassstudentmidterm')
-                                            ->join('tblclassmidterm', 'tblclassstudentmidterm.midtermid', 'tblclassmidterm.id')
-                                            ->where('midtermid', $qz->midtermid)
-                                            ->whereIn('userid', $collection->pluck('ic'));
+                $midtermavg[$ky][$key] = number_format((float)$midtermarray->sum('final_mark') / count($collection->pluck('ic')), 2, '.', '');
 
-                    $midtermavg[$ky][$key] = number_format((float)$midtermarray->sum('final_mark') / count($collection->pluck('ic')), 2, '.', '');
+                $midtermmax[$ky][$key] = $midtermarray->max('final_mark');
 
-                    $midtermmax[$ky][$key] = $midtermarray->max('final_mark');
-                    
-                    $midtermmin[$ky][$key] = $midtermarray->min('final_mark');
+                $midtermmin[$ky][$key] = $midtermarray->min('final_mark');
+            }
 
-                }
+            //FINAL
 
-                //FINAL
+            $finals = DB::table('tblclassfinal')
+                ->join('tblclassfinal_group', 'tblclassfinal.id', 'tblclassfinal_group.finalid')
+                ->where([
+                    ['tblclassfinal.classid', request()->id],
+                    ['tblclassfinal.sessionid', Session::get('SessionID')],
+                    ['tblclassfinal_group.groupname', $grp->group_name],
+                    ['tblclassfinal.status', '!=', 3],
+                    ['tblclassfinal.addby', $user->ic]
+                ]);
 
-                $finals = DB::table('tblclassfinal')
-                        ->join('tblclassfinal_group', 'tblclassfinal.id', 'tblclassfinal_group.finalid')
-                        ->where([
-                            ['tblclassfinal.classid', request()->id],
-                            ['tblclassfinal.sessionid', Session::get('SessionID')],
-                            ['tblclassfinal_group.groupname', $grp->group_name],
-                            ['tblclassfinal.status', '!=', 3],
-                            ['tblclassfinal.addby', $user->ic]
-                        ]);
+            $final[] = $finals->get();
 
-                $final[] = $finals->get();
+            $finalid = $finals->pluck('tblclassfinal.id');
 
-                $finalid = $finals->pluck('tblclassfinal.id');
+            $totalfinal = $finals->sum('tblclassfinal.total_mark');
 
-                $totalfinal = $finals->sum('tblclassfinal.total_mark');
+            foreach ($final[$ky] as $key => $qz) {
 
-                foreach($final[$ky] as $key => $qz)
-                {
+                $finalarray = DB::table('tblclassstudentfinal')
+                    ->join('tblclassfinal', 'tblclassstudentfinal.finalid', 'tblclassfinal.id')
+                    ->where('finalid', $qz->finalid)
+                    ->whereIn('userid', $collection->pluck('ic'));
 
-                    $finalarray = DB::table('tblclassstudentfinal')
-                                            ->join('tblclassfinal', 'tblclassstudentfinal.finalid', 'tblclassfinal.id')
-                                            ->where('finalid', $qz->finalid)
-                                            ->whereIn('userid', $collection->pluck('ic'));
+                $finalavg[$ky][$key] = number_format((float)$finalarray->sum('final_mark') / count($collection->pluck('ic')), 2, '.', '');
 
-                    $finalavg[$ky][$key] = number_format((float)$finalarray->sum('final_mark') / count($collection->pluck('ic')), 2, '.', '');
+                $finalmax[$ky][$key] = $finalarray->max('final_mark');
 
-                    $finalmax[$ky][$key] = $finalarray->max('final_mark');
-                    
-                    $finalmin[$ky][$key] = $finalarray->min('final_mark');
+                $finalmin[$ky][$key] = $finalarray->min('final_mark');
+            }
 
-                }
+            //////////////////////////////////////////////////////////////////////////////////////////
 
-                //////////////////////////////////////////////////////////////////////////////////////////
-            
-                foreach($students[$ky] as $keys => $std)
-                {
-    
-                    // QUIZ
+            foreach ($students[$ky] as $keys => $std) {
 
-                    foreach($quiz[$ky] as $key =>$qz)
-                    {
-                    
+                // QUIZ
+
+                foreach ($quiz[$ky] as $key => $qz) {
+
                     $quizanswer[$ky][$keys][$key] = DB::table('tblclassstudentquiz')->where('userid', $std->ic)->where('quizid', $qz->quizid)->first();
+                }
 
-                    }
+                $sumquiz[$ky][$keys] = DB::table('tblclassstudentquiz')->where('userid', $std->ic)->whereIn('quizid', $quizid)->sum('final_mark');
 
-                    $sumquiz[$ky][$keys] = DB::table('tblclassstudentquiz')->where('userid', $std->ic)->whereIn('quizid', $quizid)->sum('final_mark');
+                $percentquiz = DB::table('tblclassmarks')
+                    ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
+                        ['subjek.id', request()->id],
+                        ['assessment', 'quiz']
+                    ])
+                    ->orderBy('tblclassmarks.id', 'desc')
+                    ->first();
 
-                    $percentquiz = DB::table('tblclassmarks')
-                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
-                                ['subjek.id', request()->id],
-                                ['assessment', 'quiz']
-                                ])
-                                ->orderBy('tblclassmarks.id', 'desc')
-                                ->first();
+                //dd($percentquiz);
 
-                    //dd($percentquiz);
-
-                    if($quizs = DB::table('tblclassquiz')
+                if ($quizs = DB::table('tblclassquiz')
                     ->join('tblclassquiz_group', 'tblclassquiz.id', 'tblclassquiz_group.quizid')
                     ->where([
                         ['tblclassquiz.classid', request()->id],
                         ['tblclassquiz.sessionid', Session::get('SessionID')],
                         ['tblclassquiz_group.groupname', $grp->group_name],
                         ['tblclassquiz.status', '!=', 3]
-                    ])->exists()){
-                        if($percentquiz != null)
-                        {
-                            if(DB::table('tblclassquiz')
+                    ])->exists()
+                ) {
+                    if ($percentquiz != null) {
+                        if (DB::table('tblclassquiz')
                             ->where([
                                 ['classid', request()->id],
                                 ['sessionid', Session::get('SessionID')]
-                            ])->exists()){
-                                //dd($totalquiz);
-                                if ($totalquiz > 0) {
-                                    $overallquiz[$ky][$keys] = round(number_format((float)$sumquiz[$ky][$keys] / $totalquiz * $percentquiz->mark_percentage, 2, '.', ''), 1);
-                                } else {
-                                    $overallquiz[$ky][$keys] = 0;
-                                }
-
-                                $quizcollection = collect($overallquiz[$ky]);
-                            }else{
+                            ])->exists()
+                        ) {
+                            //dd($totalquiz);
+                            if ($totalquiz > 0) {
+                                $overallquiz[$ky][$keys] = round(number_format((float)$sumquiz[$ky][$keys] / $totalquiz * $percentquiz->mark_percentage, 2, '.', ''), 1);
+                            } else {
                                 $overallquiz[$ky][$keys] = 0;
-
-                                $quizcollection = collect($overallquiz[$ky]);
                             }
-            
-                        }else{
+
+                            $quizcollection = collect($overallquiz[$ky]);
+                        } else {
                             $overallquiz[$ky][$keys] = 0;
 
                             $quizcollection = collect($overallquiz[$ky]);
                         }
-                    }else{
+                    } else {
                         $overallquiz[$ky][$keys] = 0;
 
                         $quizcollection = collect($overallquiz[$ky]);
                     }
+                } else {
+                    $overallquiz[$ky][$keys] = 0;
+
+                    $quizcollection = collect($overallquiz[$ky]);
+                }
 
 
-                    // TEST
-                    
-                    foreach($test[$ky] as $key =>$qz)
-                    {
-                    
+                // TEST
+
+                foreach ($test[$ky] as $key => $qz) {
+
                     $testanswer[$ky][$keys][$key] = DB::table('tblclassstudenttest')->where('userid', $std->ic)->where('testid', $qz->testid)->first();
+                }
 
-                    }
+                $sumtest[$ky][$keys] = DB::table('tblclassstudenttest')->where('userid', $std->ic)->whereIn('testid', $testid)->sum('final_mark');
 
-                    $sumtest[$ky][$keys] = DB::table('tblclassstudenttest')->where('userid', $std->ic)->whereIn('testid', $testid)->sum('final_mark');
+                $percenttest = DB::table('tblclassmarks')
+                    ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
+                        ['subjek.id', request()->id],
+                        ['assessment', 'test']
+                    ])
+                    ->orderBy('tblclassmarks.id', 'desc')
+                    ->first();
 
-                    $percenttest = DB::table('tblclassmarks')
-                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
-                                ['subjek.id', request()->id],
-                                ['assessment', 'test']
-                                ])
-                                ->orderBy('tblclassmarks.id', 'desc')
-                                ->first();
-
-                    if($tests = DB::table('tblclasstest')
+                if ($tests = DB::table('tblclasstest')
                     ->join('tblclasstest_group', 'tblclasstest.id', 'tblclasstest_group.testid')
                     ->where([
                         ['tblclasstest.classid', request()->id],
                         ['tblclasstest.sessionid', Session::get('SessionID')],
                         ['tblclasstest_group.groupname', $grp->group_name],
                         ['tblclasstest.status', '!=', 3]
-                    ])->exists()){
-                        if($percenttest != null)
-                        {
-                            if(DB::table('tblclasstest')
+                    ])->exists()
+                ) {
+                    if ($percenttest != null) {
+                        if (DB::table('tblclasstest')
                             ->where([
                                 ['classid', request()->id],
                                 ['sessionid', Session::get('SessionID')]
-                            ])->exists()){
-                                //dd($totaltest);
-                                if ($totaltest > 0) {
-                                    $overalltest[$ky][$keys] = round(number_format((float)$sumtest[$ky][$keys] / $totaltest * $percenttest->mark_percentage, 2, '.', ''), 1);
-                                } else {
-                                    $overalltest[$ky][$keys] = 0;
-                                }
-
-                                $testcollection = collect($overalltest[$ky]);
-                            }else{
+                            ])->exists()
+                        ) {
+                            //dd($totaltest);
+                            if ($totaltest > 0) {
+                                $overalltest[$ky][$keys] = round(number_format((float)$sumtest[$ky][$keys] / $totaltest * $percenttest->mark_percentage, 2, '.', ''), 1);
+                            } else {
                                 $overalltest[$ky][$keys] = 0;
-
-                                $testcollection = collect($overalltest[$ky]);
                             }
-            
-                        }else{
+
+                            $testcollection = collect($overalltest[$ky]);
+                        } else {
                             $overalltest[$ky][$keys] = 0;
 
                             $testcollection = collect($overalltest[$ky]);
                         }
-                    }else{
+                    } else {
                         $overalltest[$ky][$keys] = 0;
 
                         $testcollection = collect($overalltest[$ky]);
                     }
+                } else {
+                    $overalltest[$ky][$keys] = 0;
 
-                    // TEST2
-                    
-                    foreach($test2[$ky] as $key =>$qz)
-                    {
-                    
+                    $testcollection = collect($overalltest[$ky]);
+                }
+
+                // TEST2
+
+                foreach ($test2[$ky] as $key => $qz) {
+
                     $test2answer[$ky][$keys][$key] = DB::table('tblclassstudenttest')->where('userid', $std->ic)->where('testid', $qz->testid)->first();
+                }
 
-                    }
+                $sumtest2[$ky][$keys] = DB::table('tblclassstudenttest')->where('userid', $std->ic)->whereIn('testid', $test2id)->sum('final_mark');
 
-                    $sumtest2[$ky][$keys] = DB::table('tblclassstudenttest')->where('userid', $std->ic)->whereIn('testid', $test2id)->sum('final_mark');
+                $percenttest2 = DB::table('tblclassmarks')
+                    ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
+                        ['subjek.id', request()->id],
+                        ['assessment', 'test2']
+                    ])
+                    ->orderBy('tblclassmarks.id', 'desc')
+                    ->first();
 
-                    $percenttest2 = DB::table('tblclassmarks')
-                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
-                                ['subjek.id', request()->id],
-                                ['assessment', 'test2']
-                                ])
-                                ->orderBy('tblclassmarks.id', 'desc')
-                                ->first();
-
-                    if($tests2 = DB::table('tblclasstest2')
+                if ($tests2 = DB::table('tblclasstest2')
                     ->join('tblclasstest2_group', 'tblclasstest2.id', 'tblclasstest2_group.testid')
                     ->where([
                         ['tblclasstest2.classid', request()->id],
                         ['tblclasstest2.sessionid', Session::get('SessionID')],
                         ['tblclasstest2_group.groupname', $grp->group_name],
                         ['tblclasstest2.status', '!=', 3]
-                    ])->exists()){
-                        if($percenttest2 != null)
-                        {
-                            if(DB::table('tblclasstest2')
+                    ])->exists()
+                ) {
+                    if ($percenttest2 != null) {
+                        if (DB::table('tblclasstest2')
                             ->where([
                                 ['classid', request()->id],
                                 ['sessionid', Session::get('SessionID')]
-                            ])->exists()){
-                                //dd($totaltest);
-                                if ($totaltest2 > 0) {
-                                    $overalltest2[$ky][$keys] = round(number_format((float)$sumtest2[$ky][$keys] / $totaltest2 * $percenttest2->mark_percentage, 2, '.', ''), 1);
-                                } else {
-                                    $overalltest2[$ky][$keys] = 0;
-                                }
-
-                                $test2collection = collect($overalltest2[$ky]);
-                            }else{
+                            ])->exists()
+                        ) {
+                            //dd($totaltest);
+                            if ($totaltest2 > 0) {
+                                $overalltest2[$ky][$keys] = round(number_format((float)$sumtest2[$ky][$keys] / $totaltest2 * $percenttest2->mark_percentage, 2, '.', ''), 1);
+                            } else {
                                 $overalltest2[$ky][$keys] = 0;
-
-                                $test2collection = collect($overalltest2[$ky]);
                             }
-            
-                        }else{
+
+                            $test2collection = collect($overalltest2[$ky]);
+                        } else {
                             $overalltest2[$ky][$keys] = 0;
 
                             $test2collection = collect($overalltest2[$ky]);
                         }
-                    }else{
+                    } else {
                         $overalltest2[$ky][$keys] = 0;
 
                         $test2collection = collect($overalltest2[$ky]);
                     }
+                } else {
+                    $overalltest2[$ky][$keys] = 0;
+
+                    $test2collection = collect($overalltest2[$ky]);
+                }
 
 
-                    // ASSIGNMENT
-                    
-                    foreach($assign[$ky] as $key =>$qz)
-                    {
-                    
+                // ASSIGNMENT
+
+                foreach ($assign[$ky] as $key => $qz) {
+
                     $assignanswer[$ky][$keys][$key] = DB::table('tblclassstudentassign')->where('userid', $std->ic)->where('assignid', $qz->assignid)->first();
+                }
 
-                    }
+                $sumassign[$ky][$keys] = DB::table('tblclassstudentassign')->where('userid', $std->ic)->whereIn('assignid', $assignid)->sum('final_mark');
 
-                    $sumassign[$ky][$keys] = DB::table('tblclassstudentassign')->where('userid', $std->ic)->whereIn('assignid', $assignid)->sum('final_mark');
+                $percentassign = DB::table('tblclassmarks')
+                    ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
+                        ['subjek.id', request()->id],
+                        ['assessment', 'assignment']
+                    ])
+                    ->orderBy('tblclassmarks.id', 'desc')
+                    ->first();
 
-                    $percentassign = DB::table('tblclassmarks')
-                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
-                                ['subjek.id', request()->id],
-                                ['assessment', 'assignment']
-                                ])
-                                ->orderBy('tblclassmarks.id', 'desc')
-                                ->first();
-
-                    if($assigns = DB::table('tblclassassign')
+                if ($assigns = DB::table('tblclassassign')
                     ->join('tblclassassign_group', 'tblclassassign.id', 'tblclassassign_group.assignid')
                     ->where([
                         ['tblclassassign.classid', request()->id],
                         ['tblclassassign.sessionid', Session::get('SessionID')],
                         ['tblclassassign_group.groupname', $grp->group_name],
                         ['tblclassassign.status', '!=', 3]
-                    ])->exists()){
-                        if($percentassign != null)
-                        {
-                            if(DB::table('tblclassassign')
+                    ])->exists()
+                ) {
+                    if ($percentassign != null) {
+                        if (DB::table('tblclassassign')
                             ->where([
                                 ['classid', request()->id],
                                 ['sessionid', Session::get('SessionID')]
-                            ])->exists()){
-                                //dd($totalassign);
-                                if($totalassign == 0)
-                                {
-                                    // dd('error detectedsssss');
+                            ])->exists()
+                        ) {
+                            //dd($totalassign);
+                            if ($totalassign == 0) {
+                                // dd('error detectedsssss');
 
-                                    $overallassign[$ky][$keys] = 0; // or any default value or handling logic
-                                }
-                                else{
-                                    $overallassign[$ky][$keys] = round(number_format((float)$sumassign[$ky][$keys] / $totalassign * $percentassign->mark_percentage, 2, '.', ''), 1);
-                                }
-
-                                $assigncollection = collect($overallassign[$ky]);
-                            }else{
-                               $overallassign[$ky][$keys] = 0;
-
-                               $assigncollection = collect($overallassign[$ky]);
+                                $overallassign[$ky][$keys] = 0; // or any default value or handling logic
+                            } else {
+                                $overallassign[$ky][$keys] = round(number_format((float)$sumassign[$ky][$keys] / $totalassign * $percentassign->mark_percentage, 2, '.', ''), 1);
                             }
-            
-                        }else{
+
+                            $assigncollection = collect($overallassign[$ky]);
+                        } else {
                             $overallassign[$ky][$keys] = 0;
 
                             $assigncollection = collect($overallassign[$ky]);
                         }
-                    }else{
+                    } else {
                         $overallassign[$ky][$keys] = 0;
 
                         $assigncollection = collect($overallassign[$ky]);
                     }
+                } else {
+                    $overallassign[$ky][$keys] = 0;
 
-                    // EXTRA
-                    
-                    foreach($extra[$ky] as $key =>$qz)
-                    {
-                    
+                    $assigncollection = collect($overallassign[$ky]);
+                }
+
+                // EXTRA
+
+                foreach ($extra[$ky] as $key => $qz) {
+
                     $extraanswer[$ky][$keys][$key] = DB::table('tblclassstudentextra')->where('userid', $std->ic)->where('extraid', $qz->extraid)->first();
+                }
 
-                    }
+                $sumextra[$ky][$keys] = DB::table('tblclassstudentextra')->where('userid', $std->ic)->whereIn('extraid', $extraid)->sum('total_mark');
 
-                    $sumextra[$ky][$keys] = DB::table('tblclassstudentextra')->where('userid', $std->ic)->whereIn('extraid', $extraid)->sum('total_mark');
+                $percentextra = DB::table('tblclassmarks')
+                    ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
+                        ['subjek.id', request()->id],
+                        ['assessment', 'extra']
+                    ])
+                    ->orderBy('tblclassmarks.id', 'desc')
+                    ->first();
 
-                    $percentextra = DB::table('tblclassmarks')
-                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
-                                ['subjek.id', request()->id],
-                                ['assessment', 'extra']
-                                ])
-                                ->orderBy('tblclassmarks.id', 'desc')
-                                ->first();
-
-                    if($extras = DB::table('tblclassextra')
+                if ($extras = DB::table('tblclassextra')
                     ->join('tblclassextra_group', 'tblclassextra.id', 'tblclassextra_group.extraid')
                     ->where([
                         ['tblclassextra.classid', request()->id],
                         ['tblclassextra.sessionid', Session::get('SessionID')],
                         ['tblclassextra_group.groupname', $grp->group_name],
                         ['tblclassextra.status', '!=', 3]
-                    ])->exists()){
-                        if($percentextra != null)
-                        {
-                            if(DB::table('tblclassextra')
+                    ])->exists()
+                ) {
+                    if ($percentextra != null) {
+                        if (DB::table('tblclassextra')
                             ->where([
                                 ['classid', request()->id],
                                 ['sessionid', Session::get('SessionID')]
-                            ])->exists()){
-                                //dd($totalextra);
-                                if ($totalextra > 0) {
-                                    $overallextra[$ky][$keys] = round(number_format((float)$sumextra[$ky][$keys] / $totalextra * $percentextra->mark_percentage, 2, '.', ''), 1);
-                                } else {
-                                    $overallextra[$ky][$keys] = 0;
-                                }
-
-                                $extracollection = collect($overallextra[$ky]);
-                            }else{
+                            ])->exists()
+                        ) {
+                            //dd($totalextra);
+                            if ($totalextra > 0) {
+                                $overallextra[$ky][$keys] = round(number_format((float)$sumextra[$ky][$keys] / $totalextra * $percentextra->mark_percentage, 2, '.', ''), 1);
+                            } else {
                                 $overallextra[$ky][$keys] = 0;
-
-                                $extracollection = collect($overallextra[$ky]);
                             }
-            
-                        }else{
+
+                            $extracollection = collect($overallextra[$ky]);
+                        } else {
                             $overallextra[$ky][$keys] = 0;
 
                             $extracollection = collect($overallextra[$ky]);
                         }
-                    }else{
+                    } else {
                         $overallextra[$ky][$keys] = 0;
 
                         $extracollection = collect($overallextra[$ky]);
                     }
+                } else {
+                    $overallextra[$ky][$keys] = 0;
 
-                    // PRACTICAL
+                    $extracollection = collect($overallextra[$ky]);
+                }
 
-                    foreach($practical[$ky] as $key =>$qz)
-                    {
+                // PRACTICAL
+
+                foreach ($practical[$ky] as $key => $qz) {
 
                     $practicalanswer[$ky][$keys][$key] = DB::table('tblclassstudentpractical')->where('userid', $std->ic)->where('practicalid', $qz->practicalid)->first();
+                }
 
-                    }
+                $sumpractical[$ky][$keys] = DB::table('tblclassstudentpractical')->where('userid', $std->ic)->whereIn('practicalid', $practicalid)->sum('final_mark');
 
-                    $sumpractical[$ky][$keys] = DB::table('tblclassstudentpractical')->where('userid', $std->ic)->whereIn('practicalid', $practicalid)->sum('total_mark');
+                $percentpractical = DB::table('tblclassmarks')
+                    ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
+                        ['subjek.id', request()->id],
+                        ['assessment', 'practical']
+                    ])
+                    ->orderBy('tblclassmarks.id', 'desc')
+                    ->first();
 
-                    $percentpractical = DB::table('tblclassmarks')
-                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
-                                ['subjek.id', request()->id],
-                                ['assessment', 'practical']
-                                ])
-                                ->orderBy('tblclassmarks.id', 'desc')
-                                ->first();
-
-                    if($practicals = DB::table('tblclasspractical')
+                if ($practicals = DB::table('tblclasspractical')
                     ->join('tblclasspractical_group', 'tblclasspractical.id', 'tblclasspractical_group.practicalid')
                     ->where([
                         ['tblclasspractical.classid', request()->id],
                         ['tblclasspractical.sessionid', Session::get('SessionID')],
                         ['tblclasspractical_group.groupname', $grp->group_name],
                         ['tblclasspractical.status', '!=', 3]
-                    ])->exists()){
-                        if($percentpractical != null)
-                        {
-                            if(DB::table('tblclasspractical')
+                    ])->exists()
+                ) {
+                    if ($percentpractical != null) {
+                        if (DB::table('tblclasspractical')
                             ->where([
                                 ['classid', request()->id],
                                 ['sessionid', Session::get('SessionID')]
-                            ])->exists()){
-                                //dd($totalpractical);
-                                if ($totalpractical > 0) {
-                                    $overallpractical[$ky][$keys] = round(number_format((float)$sumpractical[$ky][$keys] / $totalpractical * $percentpractical->mark_percentage, 2, '.', ''), 1);
-                                } else {
-                                    $overallpractical[$ky][$keys] = 0;
-                                }
-
-                                $practicalcollection = collect($overallpractical[$ky]);
-                            }else{
+                            ])->exists()
+                        ) {
+                            //dd($totalpractical);
+                            if ($totalpractical > 0) {
+                                $overallpractical[$ky][$keys] = round(number_format((float)$sumpractical[$ky][$keys] / $totalpractical * $percentpractical->mark_percentage, 2, '.', ''), 1);
+                            } else {
                                 $overallpractical[$ky][$keys] = 0;
-
-                                $practicalcollection = collect($overallpractical[$ky]);
                             }
 
-                        }else{
+                            $practicalcollection = collect($overallpractical[$ky]);
+                        } else {
                             $overallpractical[$ky][$keys] = 0;
 
                             $practicalcollection = collect($overallpractical[$ky]);
                         }
-                    }else{
+                    } else {
                         $overallpractical[$ky][$keys] = 0;
 
                         $practicalcollection = collect($overallpractical[$ky]);
                     }
+                } else {
+                    $overallpractical[$ky][$keys] = 0;
 
-                    // OTHER
+                    $practicalcollection = collect($overallpractical[$ky]);
+                }
 
-                    foreach($other[$ky] as $key =>$qz)
-                    {
+                // OTHER
+
+                foreach ($other[$ky] as $key => $qz) {
 
                     $otheranswer[$ky][$keys][$key] = DB::table('tblclassstudentother')->where('userid', $std->ic)->where('otherid', $qz->otherid)->first();
+                }
 
-                    }
+                $sumother[$ky][$keys] = DB::table('tblclassstudentother')->where('userid', $std->ic)->whereIn('otherid', $otherid)->sum('total_mark');
 
-                    $sumother[$ky][$keys] = DB::table('tblclassstudentother')->where('userid', $std->ic)->whereIn('otherid', $otherid)->sum('total_mark');
+                $percentother = DB::table('tblclassmarks')
+                    ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
+                        ['subjek.id', request()->id],
+                        ['assessment', 'lain-lain']
+                    ])
+                    ->orderBy('tblclassmarks.id', 'desc')
+                    ->first();
 
-                    $percentother = DB::table('tblclassmarks')
-                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
-                                ['subjek.id', request()->id],
-                                ['assessment', 'lain-lain']
-                                ])
-                                ->orderBy('tblclassmarks.id', 'desc')
-                                ->first();
-
-                    if($others = DB::table('tblclassother')
+                if ($others = DB::table('tblclassother')
                     ->join('tblclassother_group', 'tblclassother.id', 'tblclassother_group.otherid')
                     ->where([
                         ['tblclassother.classid', request()->id],
                         ['tblclassother.sessionid', Session::get('SessionID')],
                         ['tblclassother_group.groupname', $grp->group_name],
                         ['tblclassother.status', '!=', 3]
-                    ])->exists()){
-                        if($percentother != null)
-                        {
-                            if(DB::table('tblclassother')
+                    ])->exists()
+                ) {
+                    if ($percentother != null) {
+                        if (DB::table('tblclassother')
                             ->where([
                                 ['classid', request()->id],
                                 ['sessionid', Session::get('SessionID')]
-                            ])->exists()){
-                                //dd($totalother);
-                                $overallother[$ky][$keys] = round(number_format((float)$sumother[$ky][$keys], 2, '.', ''), 1);
+                            ])->exists()
+                        ) {
+                            //dd($totalother);
+                            $overallother[$ky][$keys] = round(number_format((float)$sumother[$ky][$keys], 2, '.', ''), 1);
 
-                                $othercollection = collect($overallother[$ky]);
-                            }else{
-                                $overallother[$ky][$keys] = 0;
-
-                                $othercollection = collect($overallother[$ky]);
-                            }
-            
-                        }else{
+                            $othercollection = collect($overallother[$ky]);
+                        } else {
                             $overallother[$ky][$keys] = 0;
 
                             $othercollection = collect($overallother[$ky]);
                         }
-                    }else{
+                    } else {
                         $overallother[$ky][$keys] = 0;
 
                         $othercollection = collect($overallother[$ky]);
                     }
+                } else {
+                    $overallother[$ky][$keys] = 0;
 
-                    // MIDTERM
-                    
-                    foreach($midterm[$ky] as $key =>$qz)
-                    {
-                    
+                    $othercollection = collect($overallother[$ky]);
+                }
+
+                // MIDTERM
+
+                foreach ($midterm[$ky] as $key => $qz) {
+
                     $midtermanswer[$ky][$keys][$key] = DB::table('tblclassstudentmidterm')->where('userid', $std->ic)->where('midtermid', $qz->midtermid)->first();
+                }
 
-                    }
+                $summidterm[$ky][$keys] = DB::table('tblclassstudentmidterm')->where('userid', $std->ic)->whereIn('midtermid', $midtermid)->sum('final_mark');
 
-                    $summidterm[$ky][$keys] = DB::table('tblclassstudentmidterm')->where('userid', $std->ic)->whereIn('midtermid', $midtermid)->sum('final_mark');
+                $percentmidterm = DB::table('tblclassmarks')
+                    ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
+                        ['subjek.id', request()->id],
+                        ['assessment', 'midterm']
+                    ])
+                    ->orderBy('tblclassmarks.id', 'desc')
+                    ->first();
 
-                    $percentmidterm = DB::table('tblclassmarks')
-                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
-                                ['subjek.id', request()->id],
-                                ['assessment', 'midterm']
-                                ])
-                                ->orderBy('tblclassmarks.id', 'desc')
-                                ->first();
-
-                    if($midterms = DB::table('tblclassmidterm')
+                if ($midterms = DB::table('tblclassmidterm')
                     ->join('tblclassmidterm_group', 'tblclassmidterm.id', 'tblclassmidterm_group.midtermid')
                     ->where([
                         ['tblclassmidterm.classid', request()->id],
                         ['tblclassmidterm.sessionid', Session::get('SessionID')],
                         ['tblclassmidterm_group.groupname', $grp->group_name],
                         ['tblclassmidterm.status', '!=', 3]
-                    ])->exists()){
-                        if($percentmidterm != null)
-                        {
-                            if(DB::table('tblclassmidterm')
+                    ])->exists()
+                ) {
+                    if ($percentmidterm != null) {
+                        if (DB::table('tblclassmidterm')
                             ->where([
                                 ['classid', request()->id],
                                 ['sessionid', Session::get('SessionID')]
-                            ])->exists()){
-                                //dd($totalmidterm);
-                                if ($totalmidterm > 0) {
-                                    $overallmidterm[$ky][$keys] = round(number_format((float)$summidterm[$ky][$keys] / $totalmidterm * $percentmidterm->mark_percentage, 2, '.', ''), 1);
-                                } else {
-                                    $overallmidterm[$ky][$keys] = 0;
-                                }
-
-                                $midtermcollection = collect($overallmidterm[$ky]);
-                            }else{
+                            ])->exists()
+                        ) {
+                            //dd($totalmidterm);
+                            if ($totalmidterm > 0) {
+                                $overallmidterm[$ky][$keys] = round(number_format((float)$summidterm[$ky][$keys] / $totalmidterm * $percentmidterm->mark_percentage, 2, '.', ''), 1);
+                            } else {
                                 $overallmidterm[$ky][$keys] = 0;
-
-                                $midtermcollection = collect($overallmidterm[$ky]);
                             }
-            
-                        }else{
+
+                            $midtermcollection = collect($overallmidterm[$ky]);
+                        } else {
                             $overallmidterm[$ky][$keys] = 0;
 
                             $midtermcollection = collect($overallmidterm[$ky]);
                         }
-                    }else{
+                    } else {
                         $overallmidterm[$ky][$keys] = 0;
 
                         $midtermcollection = collect($overallmidterm[$ky]);
                     }
+                } else {
+                    $overallmidterm[$ky][$keys] = 0;
 
-                    // FINAL
-                    
-                    foreach($final[$ky] as $key =>$qz)
-                    {
-                    
+                    $midtermcollection = collect($overallmidterm[$ky]);
+                }
+
+                // FINAL
+
+                foreach ($final[$ky] as $key => $qz) {
+
                     $finalanswer[$ky][$keys][$key] = DB::table('tblclassstudentfinal')->where('userid', $std->ic)->where('finalid', $qz->finalid)->first();
+                }
 
-                    }
+                $sumfinal[$ky][$keys] = DB::table('tblclassstudentfinal')->where('userid', $std->ic)->whereIn('finalid', $finalid)->sum('final_mark');
 
-                    $sumfinal[$ky][$keys] = DB::table('tblclassstudentfinal')->where('userid', $std->ic)->whereIn('finalid', $finalid)->sum('final_mark');
+                $percentfinal = DB::table('tblclassmarks')
+                    ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
+                        ['subjek.id', request()->id],
+                        ['assessment', 'final']
+                    ])
+                    ->orderBy('tblclassmarks.id', 'desc')
+                    ->first();
 
-                    $percentfinal = DB::table('tblclassmarks')
-                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
-                                ['subjek.id', request()->id],
-                                ['assessment', 'final']
-                                ])
-                                ->orderBy('tblclassmarks.id', 'desc')
-                                ->first();
-
-                    if($finals = DB::table('tblclassfinal')
+                if ($finals = DB::table('tblclassfinal')
                     ->join('tblclassfinal_group', 'tblclassfinal.id', 'tblclassfinal_group.finalid')
                     ->where([
                         ['tblclassfinal.classid', request()->id],
                         ['tblclassfinal.sessionid', Session::get('SessionID')],
                         ['tblclassfinal_group.groupname', $grp->group_name],
                         ['tblclassfinal.status', '!=', 3]
-                    ])->exists()){
-                        if($percentfinal != null)
-                        {
-                            if(DB::table('tblclassfinal')
+                    ])->exists()
+                ) {
+                    if ($percentfinal != null) {
+                        if (DB::table('tblclassfinal')
                             ->where([
                                 ['classid', request()->id],
                                 ['sessionid', Session::get('SessionID')]
-                            ])->exists()){
-                                //dd($totalfinal);
-                                if ($totalfinal > 0) {
-                                    $overallfinal[$ky][$keys] = round(number_format((float)$sumfinal[$ky][$keys] / $totalfinal * $percentfinal->mark_percentage, 2, '.', ''), 1);
-                                } else {
-                                    $overallfinal[$ky][$keys] = 0;
-                                }
-
-                                $finalcollection = collect($overallfinal[$ky]);
-                            }else{
+                            ])->exists()
+                        ) {
+                            //dd($totalfinal);
+                            if ($totalfinal > 0) {
+                                $overallfinal[$ky][$keys] = round(number_format((float)$sumfinal[$ky][$keys] / $totalfinal * $percentfinal->mark_percentage, 2, '.', ''), 1);
+                            } else {
                                 $overallfinal[$ky][$keys] = 0;
+                            }
 
-                                $finalcollection = collect($overallfinal[$ky]);
-            }
-            
-                        }else{
+                            $finalcollection = collect($overallfinal[$ky]);
+                        } else {
                             $overallfinal[$ky][$keys] = 0;
 
                             $finalcollection = collect($overallfinal[$ky]);
                         }
-                    }else{
+                    } else {
                         $overallfinal[$ky][$keys] = 0;
 
                         $finalcollection = collect($overallfinal[$ky]);
                     }
+                } else {
+                    $overallfinal[$ky][$keys] = 0;
 
-                    $overallalls[$ky][$keys] = $overallquiz[$ky][$keys] + $overalltest[$ky][$keys] + $overalltest2[$ky][$keys] + $overallassign[$ky][$keys] + $overallextra[$ky][$keys] + $overallpractical[$ky][$keys] + $overallother[$ky][$keys] + $overallmidterm[$ky][$keys] + $overallfinal[$ky][$keys];
+                    $finalcollection = collect($overallfinal[$ky]);
+                }
 
-                    $overallall2[$ky][$keys] = round($overallalls[$ky][$keys], 1);
+                $overallalls[$ky][$keys] = $overallquiz[$ky][$keys] + $overalltest[$ky][$keys] + $overalltest2[$ky][$keys] + $overallassign[$ky][$keys] + $overallextra[$ky][$keys] + $overallpractical[$ky][$keys] + $overallother[$ky][$keys] + $overallmidterm[$ky][$keys] + $overallfinal[$ky][$keys];
 
-                    $overallall[$ky][$keys] = round($overallall2[$ky][$keys]);
+                $overallall2[$ky][$keys] = round($overallalls[$ky][$keys], 1);
 
-                    $collectionall = collect($overallall[$ky]);
+                $overallall[$ky][$keys] = round($overallall2[$ky][$keys]);
 
-                    //check grade
-                    $grade = DB::table('tblsubject_grade')->get();
+                $collectionall = collect($overallall[$ky]);
 
-                    foreach($grade as $grd)
-                    {
+                //check grade
+                $grade = DB::table('tblsubject_grade')->get();
 
-                        if($overallall[$ky][$keys] >= $grd->mark_start && $overallall[$ky][$keys] <= $grd->mark_end)
-                        {
-                            $valGrade[$ky][$keys] = $grd->code;
+                foreach ($grade as $grd) {
 
-                            $pointerGrade[$ky][$keys] = $grd->grade_value;
+                    if ($overallall[$ky][$keys] >= $grd->mark_start && $overallall[$ky][$keys] <= $grd->mark_end) {
+                        $valGrade[$ky][$keys] = $grd->code;
 
-                            break;
-                        }else{
+                        $pointerGrade[$ky][$keys] = $grd->grade_value;
 
-                            $valGrade[$ky][$keys] = null;
+                        break;
+                    } else {
 
-                            $pointerGrade[$ky][$keys] = 0;
-                        }
+                        $valGrade[$ky][$keys] = null;
 
+                        $pointerGrade[$ky][$keys] = 0;
                     }
+                }
 
-                    DB::table('student_subjek')
+                DB::table('student_subjek')
                     ->where([
                         ['student_ic', $std->ic],
                         ['sessionid', $std->session_id],
                         ['courseid', $std->course_id]
-                        ])->update([
-                            'grade' => $valGrade[$ky][$keys],
-                            'pointer' => $pointerGrade[$ky][$keys]
-                        ]);
-            
-                }
+                    ])->update([
+                        'grade' => $valGrade[$ky][$keys],
+                        'pointer' => $pointerGrade[$ky][$keys]
+                    ]);
+            }
 
             $quizavgoverall = number_format((float)$quizcollection->sum() / count($collection->pluck('ic')), 2, '.', '');
 
@@ -4002,61 +3797,130 @@ $content .= '</tr>
             $avgoverall = number_format((float)$collectionall->sum() / count($collection->pluck('ic')), 2, '.', '');
         }
 
-        
+
 
         //dd($valGrade);
 
 
-        return view('lecturer.courseassessment.studentreport', compact('groups', 'students', 'id',
-                                                                       'quiz', 'quizanswer', 'overallquiz', 'quizavg', 'quizmax', 'quizmin', 'quizcollection', 'quizavgoverall',
-                                                                       'test', 'testanswer', 'overalltest', 'testavg', 'testmax', 'testmin', 'testcollection','testavgoverall',
-                                                                       'test2', 'test2answer', 'overalltest2', 'test2avg', 'test2max', 'test2min', 'test2collection','test2avgoverall',
-                                                                       'assign', 'assignanswer', 'overallassign', 'assignavg', 'assignmax', 'assignmin', 'assigncollection','assignavgoverall',
-                                                                       'extra', 'extraanswer', 'overallextra', 'extraavg', 'extramax', 'extramin', 'extracollection','extraavgoverall',
-                                                                       'practical', 'practicalanswer', 'overallpractical', 'practicalavg', 'practicalmax', 'practicalmin', 'practicalcollection','practicalavgoverall',
-                                                                       'other', 'otheranswer', 'overallother', 'otheravg', 'othermax', 'othermin', 'othercollection','otheravgoverall',
-                                                                       'midterm', 'midtermanswer', 'overallmidterm', 'midtermavg', 'midtermmax', 'midtermmin', 'midtermcollection','midtermavgoverall',
-                                                                       'final', 'finalanswer', 'overallfinal', 'finalavg', 'finalmax', 'finalmin', 'finalcollection','finalavgoverall',
-                                                                       'overallall', 'overallall2', 'avgoverall', 'valGrade', 'data'
-                                                                    ));
-
+        return view('lecturer.courseassessment.studentreport', compact(
+            'groups',
+            'students',
+            'id',
+            'quiz',
+            'quizanswer',
+            'overallquiz',
+            'quizavg',
+            'quizmax',
+            'quizmin',
+            'quizcollection',
+            'quizavgoverall',
+            'test',
+            'testanswer',
+            'overalltest',
+            'testavg',
+            'testmax',
+            'testmin',
+            'testcollection',
+            'testavgoverall',
+            'test2',
+            'test2answer',
+            'overalltest2',
+            'test2avg',
+            'test2max',
+            'test2min',
+            'test2collection',
+            'test2avgoverall',
+            'assign',
+            'assignanswer',
+            'overallassign',
+            'assignavg',
+            'assignmax',
+            'assignmin',
+            'assigncollection',
+            'assignavgoverall',
+            'extra',
+            'extraanswer',
+            'overallextra',
+            'extraavg',
+            'extramax',
+            'extramin',
+            'extracollection',
+            'extraavgoverall',
+            'practical',
+            'practicalanswer',
+            'overallpractical',
+            'practicalavg',
+            'practicalmax',
+            'practicalmin',
+            'practicalcollection',
+            'practicalavgoverall',
+            'other',
+            'otheranswer',
+            'overallother',
+            'otheravg',
+            'othermax',
+            'othermin',
+            'othercollection',
+            'otheravgoverall',
+            'midterm',
+            'midtermanswer',
+            'overallmidterm',
+            'midtermavg',
+            'midtermmax',
+            'midtermmin',
+            'midtermcollection',
+            'midtermavgoverall',
+            'final',
+            'finalanswer',
+            'overallfinal',
+            'finalavg',
+            'finalmax',
+            'finalmin',
+            'finalcollection',
+            'finalavgoverall',
+            'overallall',
+            'overallall2',
+            'avgoverall',
+            'valGrade',
+            'data'
+        ));
     }
 
     public function printRowscore($id, $groupName)
     {
         $user = Auth::user();
-        
+
         // Fetch course/program details
         $courseInfo = DB::table('user_subjek')
-                        ->join('users', 'user_subjek.user_ic', 'users.ic')
-                        ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
-                        ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
-                        // ->join('tblprogramme', 'subjek.program', 'tblprogramme.id')
-                        ->leftJoin('tblfaculty', 'users.faculty', 'tblfaculty.id')
-                        ->where([
-                            ['user_subjek.user_ic', $user->ic],
-                            ['user_subjek.session_id', Session::get('SessionID')],
-                            ['subjek.id', $id]
-                         ])
-                        ->select('subjek.*', 'sessions.SessionName AS session', 'tblfaculty.facultyname', 'users.name AS lecturer_name')
-                        ->first();
+            ->join('users', 'user_subjek.user_ic', 'users.ic')
+            ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+            ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
+            // ->join('tblprogramme', 'subjek.program', 'tblprogramme.id')
+            ->leftJoin('tblfaculty', 'users.faculty', 'tblfaculty.id')
+            ->where([
+                ['user_subjek.user_ic', $user->ic],
+                ['user_subjek.session_id', Session::get('SessionID')],
+                ['subjek.id', $id]
+            ])
+            ->select('subjek.*', 'sessions.SessionName AS session', 'tblfaculty.facultyname', 'users.name AS lecturer_name')
+            ->first();
 
         $sub_id = DB::table('subjek')->where('id', $id)->value('sub_id');
 
         // Fetch students for the specific group
         $students = DB::table('user_subjek')
-                ->join('student_subjek', 'user_subjek.id', 'student_subjek.group_id')
-                ->join('students', 'student_subjek.student_ic', 'students.ic')
-                ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
-                ->select('user_subjek.*','student_subjek.group_name','student_subjek.group_id','students.*')
-                ->where([
-                    ['user_subjek.user_ic', $user->ic],
-                    ['user_subjek.session_id', Session::get('SessionID')],
-                    ['subjek.id', $id],
-                    ['student_subjek.group_name', $groupName],
-                    ['students.status', '!=', 6],
-                ])
-                ->orderBy('students.name')->get();
+            ->join('student_subjek', 'user_subjek.id', 'student_subjek.group_id')
+            ->join('students', 'student_subjek.student_ic', 'students.ic')
+            ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+            ->select('user_subjek.*', 'student_subjek.group_name', 'student_subjek.group_id', 'students.*')
+            ->where([
+                ['user_subjek.user_ic', $user->ic],
+                ['user_subjek.session_id', Session::get('SessionID')],
+                ['subjek.id', $id],
+                ['student_subjek.group_name', $groupName],
+                ['students.status', '!=', 6],
+            ])
+            ->orderBy('students.name')->get();
 
         $collection = collect($students);
 
@@ -4094,126 +3958,126 @@ $content .= '</tr>
 
         // Fetch QUIZ assessments
         $quizs = DB::table('tblclassquiz')
-                ->join('tblclassquiz_group', 'tblclassquiz.id', 'tblclassquiz_group.quizid')
-                ->where([
-                    ['tblclassquiz.classid', $id],
-                    ['tblclassquiz.sessionid', Session::get('SessionID')],
-                    ['tblclassquiz_group.groupname', $groupName],
-                    ['tblclassquiz.status', '!=', 3],
-                    ['tblclassquiz.addby', $user->ic]
-                ]);
+            ->join('tblclassquiz_group', 'tblclassquiz.id', 'tblclassquiz_group.quizid')
+            ->where([
+                ['tblclassquiz.classid', $id],
+                ['tblclassquiz.sessionid', Session::get('SessionID')],
+                ['tblclassquiz_group.groupname', $groupName],
+                ['tblclassquiz.status', '!=', 3],
+                ['tblclassquiz.addby', $user->ic]
+            ]);
         $quiz = $quizs->get();
         $quizid = $quizs->pluck('tblclassquiz.id');
         $totalquiz = $quizs->sum('tblclassquiz.total_mark');
 
         // Fetch TEST assessments
         $tests = DB::table('tblclasstest')
-                ->join('tblclasstest_group', 'tblclasstest.id', 'tblclasstest_group.testid')
-                ->where([
-                    ['tblclasstest.classid', $id],
-                    ['tblclasstest.sessionid', Session::get('SessionID')],
-                    ['tblclasstest_group.groupname', $groupName],
-                    ['tblclasstest.status', '!=', 3],
-                    ['tblclasstest.addby', $user->ic]
-                ]);
+            ->join('tblclasstest_group', 'tblclasstest.id', 'tblclasstest_group.testid')
+            ->where([
+                ['tblclasstest.classid', $id],
+                ['tblclasstest.sessionid', Session::get('SessionID')],
+                ['tblclasstest_group.groupname', $groupName],
+                ['tblclasstest.status', '!=', 3],
+                ['tblclasstest.addby', $user->ic]
+            ]);
         $test = $tests->get();
         $testid = $tests->pluck('tblclasstest.id');
         $totaltest = $tests->sum('tblclasstest.total_mark');
 
         // Fetch TEST2 assessments
         $tests2 = DB::table('tblclasstest2')
-                ->join('tblclasstest2_group', 'tblclasstest2.id', 'tblclasstest2_group.testid')
-                ->where([
-                    ['tblclasstest2.classid', $id],
-                    ['tblclasstest2.sessionid', Session::get('SessionID')],
-                    ['tblclasstest2_group.groupname', $groupName],
-                    ['tblclasstest2.status', '!=', 3],
-                    ['tblclasstest2.addby', $user->ic]
-                ]);
+            ->join('tblclasstest2_group', 'tblclasstest2.id', 'tblclasstest2_group.testid')
+            ->where([
+                ['tblclasstest2.classid', $id],
+                ['tblclasstest2.sessionid', Session::get('SessionID')],
+                ['tblclasstest2_group.groupname', $groupName],
+                ['tblclasstest2.status', '!=', 3],
+                ['tblclasstest2.addby', $user->ic]
+            ]);
         $test2 = $tests2->get();
         $test2id = $tests2->pluck('tblclasstest2.id');
         $totaltest2 = $tests2->sum('tblclasstest2.total_mark');
 
         // Fetch ASSIGNMENT assessments
         $assigns = DB::table('tblclassassign')
-                ->join('tblclassassign_group', 'tblclassassign.id', 'tblclassassign_group.assignid')
-                ->where([
-                    ['tblclassassign.classid', $id],
-                    ['tblclassassign.sessionid', Session::get('SessionID')],
-                    ['tblclassassign_group.groupname', $groupName],
-                    ['tblclassassign.status', '!=', 3],
-                    ['tblclassassign.addby', $user->ic]
-                ]);
+            ->join('tblclassassign_group', 'tblclassassign.id', 'tblclassassign_group.assignid')
+            ->where([
+                ['tblclassassign.classid', $id],
+                ['tblclassassign.sessionid', Session::get('SessionID')],
+                ['tblclassassign_group.groupname', $groupName],
+                ['tblclassassign.status', '!=', 3],
+                ['tblclassassign.addby', $user->ic]
+            ]);
         $assign = $assigns->get();
         $assignid = $assigns->pluck('tblclassassign.id');
         $totalassign = $assigns->sum('tblclassassign.total_mark');
 
         // Fetch EXTRA assessments
         $extras = DB::table('tblclassextra')
-                ->join('tblclassextra_group', 'tblclassextra.id', 'tblclassextra_group.extraid')
-                ->where([
-                    ['tblclassextra.classid', $id],
-                    ['tblclassextra.sessionid', Session::get('SessionID')],
-                    ['tblclassextra_group.groupname', $groupName],
-                    ['tblclassextra.status', '!=', 3],
-                    ['tblclassextra.addby', $user->ic]
-                ]);
+            ->join('tblclassextra_group', 'tblclassextra.id', 'tblclassextra_group.extraid')
+            ->where([
+                ['tblclassextra.classid', $id],
+                ['tblclassextra.sessionid', Session::get('SessionID')],
+                ['tblclassextra_group.groupname', $groupName],
+                ['tblclassextra.status', '!=', 3],
+                ['tblclassextra.addby', $user->ic]
+            ]);
         $extra = $extras->get();
         $extraid = $extras->pluck('tblclassextra.id');
         $totalextra = $extras->sum('tblclassextra.total_mark');
 
         // Fetch PRACTICAL assessments
         $practicals = DB::table('tblclasspractical')
-                ->join('tblclasspractical_group', 'tblclasspractical.id', 'tblclasspractical_group.practicalid')
-                ->where([
-                    ['tblclasspractical.classid', $id],
-                    ['tblclasspractical.sessionid', Session::get('SessionID')],
-                    ['tblclasspractical_group.groupname', $groupName],
-                    ['tblclasspractical.status', '!=', 3],
-                    ['tblclasspractical.addby', $user->ic]
-                ]);
+            ->join('tblclasspractical_group', 'tblclasspractical.id', 'tblclasspractical_group.practicalid')
+            ->where([
+                ['tblclasspractical.classid', $id],
+                ['tblclasspractical.sessionid', Session::get('SessionID')],
+                ['tblclasspractical_group.groupname', $groupName],
+                ['tblclasspractical.status', '!=', 3],
+                ['tblclasspractical.addby', $user->ic]
+            ]);
         $practical = $practicals->get();
         $practicalid = $practicals->pluck('tblclasspractical.id');
         $totalpractical = $practicals->sum('tblclasspractical.total_mark');
 
         // Fetch OTHER assessments
         $others = DB::table('tblclassother')
-                ->join('tblclassother_group', 'tblclassother.id', 'tblclassother_group.otherid')
-                ->where([
-                    ['tblclassother.classid', $id],
-                    ['tblclassother.sessionid', Session::get('SessionID')],
-                    ['tblclassother_group.groupname', $groupName],
-                    ['tblclassother.status', '!=', 3],
-                    ['tblclassother.addby', $user->ic]
-                ]);
+            ->join('tblclassother_group', 'tblclassother.id', 'tblclassother_group.otherid')
+            ->where([
+                ['tblclassother.classid', $id],
+                ['tblclassother.sessionid', Session::get('SessionID')],
+                ['tblclassother_group.groupname', $groupName],
+                ['tblclassother.status', '!=', 3],
+                ['tblclassother.addby', $user->ic]
+            ]);
         $other = $others->get();
         $otherid = $others->pluck('tblclassother.id');
         $totalother = $others->sum('tblclassother.total_mark');
 
         // Fetch MIDTERM assessments
         $midterms = DB::table('tblclassmidterm')
-                ->join('tblclassmidterm_group', 'tblclassmidterm.id', 'tblclassmidterm_group.midtermid')
-                ->where([
-                    ['tblclassmidterm.classid', $id],
-                    ['tblclassmidterm.sessionid', Session::get('SessionID')],
-                    ['tblclassmidterm_group.groupname', $groupName],
-                    ['tblclassmidterm.status', '!=', 3],
-                    ['tblclassmidterm.addby', $user->ic]
-                ]);
+            ->join('tblclassmidterm_group', 'tblclassmidterm.id', 'tblclassmidterm_group.midtermid')
+            ->where([
+                ['tblclassmidterm.classid', $id],
+                ['tblclassmidterm.sessionid', Session::get('SessionID')],
+                ['tblclassmidterm_group.groupname', $groupName],
+                ['tblclassmidterm.status', '!=', 3],
+                ['tblclassmidterm.addby', $user->ic]
+            ]);
         $midterm = $midterms->get();
         $midtermid = $midterms->pluck('tblclassmidterm.id');
         $totalmidterm = $midterms->sum('tblclassmidterm.total_mark');
 
         // Fetch FINAL assessments
         $finals = DB::table('tblclassfinal')
-                ->join('tblclassfinal_group', 'tblclassfinal.id', 'tblclassfinal_group.finalid')
-                ->where([
-                    ['tblclassfinal.classid', $id],
-                    ['tblclassfinal.sessionid', Session::get('SessionID')],
-                    ['tblclassfinal_group.groupname', $groupName],
-                    ['tblclassfinal.status', '!=', 3],
-                    ['tblclassfinal.addby', $user->ic]
-                ]);
+            ->join('tblclassfinal_group', 'tblclassfinal.id', 'tblclassfinal_group.finalid')
+            ->where([
+                ['tblclassfinal.classid', $id],
+                ['tblclassfinal.sessionid', Session::get('SessionID')],
+                ['tblclassfinal_group.groupname', $groupName],
+                ['tblclassfinal.status', '!=', 3],
+                ['tblclassfinal.addby', $user->ic]
+            ]);
         $final = $finals->get();
         $finalid = $finals->pluck('tblclassfinal.id');
         $totalfinal = $finals->sum('tblclassfinal.total_mark');
@@ -4230,120 +4094,110 @@ $content .= '</tr>
         $percentfinal = DB::table('tblclassmarks')->where([['course_id', $sub_id], ['assessment', 'final']])->orderBy('id', 'desc')->first();
 
         // Process student data
-        foreach($students as $keys => $std)
-        {
+        foreach ($students as $keys => $std) {
             // QUIZ
-            foreach($quiz as $key => $qz)
-            {
+            foreach ($quiz as $key => $qz) {
                 $quizanswer[$keys][$key] = DB::table('tblclassstudentquiz')->where('userid', $std->ic)->where('quizid', $qz->quizid)->first();
             }
             $sumquiz[$keys] = DB::table('tblclassstudentquiz')->where('userid', $std->ic)->whereIn('quizid', $quizid)->sum('final_mark');
-            
-            if(count($quiz) > 0 && $percentquiz != null && $totalquiz > 0) {
+
+            if (count($quiz) > 0 && $percentquiz != null && $totalquiz > 0) {
                 $overallquiz[$keys] = round(number_format((float)$sumquiz[$keys] / $totalquiz * $percentquiz->mark_percentage, 2, '.', ''), 1);
             } else {
                 $overallquiz[$keys] = 0;
             }
 
             // TEST
-            foreach($test as $key => $qz)
-            {
+            foreach ($test as $key => $qz) {
                 $testanswer[$keys][$key] = DB::table('tblclassstudenttest')->where('userid', $std->ic)->where('testid', $qz->testid)->first();
             }
             $sumtest[$keys] = DB::table('tblclassstudenttest')->where('userid', $std->ic)->whereIn('testid', $testid)->sum('final_mark');
-            
-            if(count($test) > 0 && $percenttest != null && $totaltest > 0) {
+
+            if (count($test) > 0 && $percenttest != null && $totaltest > 0) {
                 $overalltest[$keys] = round(number_format((float)$sumtest[$keys] / $totaltest * $percenttest->mark_percentage, 2, '.', ''), 1);
             } else {
                 $overalltest[$keys] = 0;
             }
 
             // TEST2
-            foreach($test2 as $key => $qz)
-            {
+            foreach ($test2 as $key => $qz) {
                 $test2answer[$keys][$key] = DB::table('tblclassstudenttest')->where('userid', $std->ic)->where('testid', $qz->testid)->first();
             }
             $sumtest2[$keys] = DB::table('tblclassstudenttest')->where('userid', $std->ic)->whereIn('testid', $test2id)->sum('final_mark');
-            
-            if(count($test2) > 0 && $percenttest2 != null && $totaltest2 > 0) {
+
+            if (count($test2) > 0 && $percenttest2 != null && $totaltest2 > 0) {
                 $overalltest2[$keys] = round(number_format((float)$sumtest2[$keys] / $totaltest2 * $percenttest2->mark_percentage, 2, '.', ''), 1);
             } else {
                 $overalltest2[$keys] = 0;
             }
 
             // ASSIGNMENT
-            foreach($assign as $key => $qz)
-            {
+            foreach ($assign as $key => $qz) {
                 $assignanswer[$keys][$key] = DB::table('tblclassstudentassign')->where('userid', $std->ic)->where('assignid', $qz->assignid)->first();
             }
             $sumassign[$keys] = DB::table('tblclassstudentassign')->where('userid', $std->ic)->whereIn('assignid', $assignid)->sum('final_mark');
-            
-            if(count($assign) > 0 && $percentassign != null && $totalassign > 0) {
+
+            if (count($assign) > 0 && $percentassign != null && $totalassign > 0) {
                 $overallassign[$keys] = round(number_format((float)$sumassign[$keys] / $totalassign * $percentassign->mark_percentage, 2, '.', ''), 1);
             } else {
                 $overallassign[$keys] = 0;
             }
 
             // EXTRA
-            foreach($extra as $key => $qz)
-            {
+            foreach ($extra as $key => $qz) {
                 $extraanswer[$keys][$key] = DB::table('tblclassstudentextra')->where('userid', $std->ic)->where('extraid', $qz->extraid)->first();
             }
             $sumextra[$keys] = DB::table('tblclassstudentextra')->where('userid', $std->ic)->whereIn('extraid', $extraid)->sum('total_mark');
 
-            if(count($extra) > 0 && $percentextra != null && $totalextra > 0) {
+            if (count($extra) > 0 && $percentextra != null && $totalextra > 0) {
                 $overallextra[$keys] = round(number_format((float)$sumextra[$keys] / $totalextra * $percentextra->mark_percentage, 2, '.', ''), 1);
             } else {
                 $overallextra[$keys] = 0;
             }
 
             // PRACTICAL
-            foreach($practical as $key => $qz)
-            {
+            foreach ($practical as $key => $qz) {
                 $practicalanswer[$keys][$key] = DB::table('tblclassstudentpractical')->where('userid', $std->ic)->where('practicalid', $qz->practicalid)->first();
             }
-            $sumpractical[$keys] = DB::table('tblclassstudentpractical')->where('userid', $std->ic)->whereIn('practicalid', $practicalid)->sum('total_mark');
+            $sumpractical[$keys] = DB::table('tblclassstudentpractical')->where('userid', $std->ic)->whereIn('practicalid', $practicalid)->sum('final_mark');
 
-            if(count($practical) > 0 && $percentpractical != null && $totalpractical > 0) {
+            if (count($practical) > 0 && $percentpractical != null && $totalpractical > 0) {
                 $overallpractical[$keys] = round(number_format((float)$sumpractical[$keys] / $totalpractical * $percentpractical->mark_percentage, 2, '.', ''), 1);
             } else {
                 $overallpractical[$keys] = 0;
             }
 
             // OTHER
-            foreach($other as $key => $qz)
-            {
+            foreach ($other as $key => $qz) {
                 $otheranswer[$keys][$key] = DB::table('tblclassstudentother')->where('userid', $std->ic)->where('otherid', $qz->otherid)->first();
             }
             $sumother[$keys] = DB::table('tblclassstudentother')->where('userid', $std->ic)->whereIn('otherid', $otherid)->sum('total_mark');
-            
-            if(count($other) > 0 && $percentother != null) {
+
+            if (count($other) > 0 && $percentother != null) {
                 $overallother[$keys] = round(number_format((float)$sumother[$keys], 2, '.', ''), 1);
             } else {
                 $overallother[$keys] = 0;
             }
 
             // MIDTERM
-            foreach($midterm as $key => $qz)
-            {
+            foreach ($midterm as $key => $qz) {
                 $midtermanswer[$keys][$key] = DB::table('tblclassstudentmidterm')->where('userid', $std->ic)->where('midtermid', $qz->midtermid)->first();
             }
             $summidterm[$keys] = DB::table('tblclassstudentmidterm')->where('userid', $std->ic)->whereIn('midtermid', $midtermid)->sum('final_mark');
-            
-            if(count($midterm) > 0 && $percentmidterm != null && $totalmidterm > 0) {
+
+            if (count($midterm) > 0 && $percentmidterm != null && $totalmidterm > 0) {
                 $overallmidterm[$keys] = round(number_format((float)$summidterm[$keys] / $totalmidterm * $percentmidterm->mark_percentage, 2, '.', ''), 1);
             } else {
                 $overallmidterm[$keys] = 0;
             }
 
             // FINAL
-            foreach($final as $key => $qz)
-            {
+            foreach ($final as $key => $qz) {
                 $finalanswer[$keys][$key] = DB::table('tblclassstudentfinal')->where('userid', $std->ic)->where('finalid', $qz->finalid)->first();
             }
             $sumfinal[$keys] = DB::table('tblclassstudentfinal')->where('userid', $std->ic)->whereIn('finalid', $finalid)->sum('final_mark');
-            
-            if(count($final) > 0 && $percentfinal != null && $totalfinal > 0) {
+
+            if (count($final) > 0 && $percentfinal != null && $totalfinal > 0) {
                 $overallfinal[$keys] = round(number_format((float)$sumfinal[$keys] / $totalfinal * $percentfinal->mark_percentage, 2, '.', ''), 1);
             } else {
                 $overallfinal[$keys] = 0;
@@ -4356,10 +4210,8 @@ $content .= '</tr>
 
             // Check grade
             $grade = DB::table('tblsubject_grade')->get();
-            foreach($grade as $grd)
-            {
-                if($overallall[$keys] >= $grd->mark_start && $overallall[$keys] <= $grd->mark_end)
-                {
+            foreach ($grade as $grd) {
+                if ($overallall[$keys] >= $grd->mark_start && $overallall[$keys] <= $grd->mark_end) {
                     $valGrade[$keys] = $grd->code;
                     break;
                 } else {
@@ -4386,23 +4238,66 @@ $content .= '</tr>
 
         // Generate PDF
         $pdf = PDF::loadView('lecturer.courseassessment.rowscore_pdf', compact(
-            'courseInfo', 'groupName', 'students',
-            'quiz', 'quizanswer', 'overallquiz', 'percentquiz', 'totalquiz',
-            'test', 'testanswer', 'overalltest', 'percenttest', 'totaltest',
-            'test2', 'test2answer', 'overalltest2', 'percenttest2', 'totaltest2',
-            'assign', 'assignanswer', 'overallassign', 'percentassign', 'totalassign',
-            'extra', 'extraanswer', 'overallextra', 'percentextra', 'totalextra',
-            'practical', 'practicalanswer', 'overallpractical', 'percentpractical', 'totalpractical',
-            'other', 'otheranswer', 'overallother', 'percentother', 'totalother',
-            'midterm', 'midtermanswer', 'overallmidterm', 'percentmidterm', 'totalmidterm',
-            'final', 'finalanswer', 'overallfinal', 'percentfinal', 'totalfinal',
-            'overallall', 'overallall2', 'valGrade',
-            'avgoverall', 'maxoverall', 'minoverall',
-            'gradeDistribution', 'gradingScale'
+            'courseInfo',
+            'groupName',
+            'students',
+            'quiz',
+            'quizanswer',
+            'overallquiz',
+            'percentquiz',
+            'totalquiz',
+            'test',
+            'testanswer',
+            'overalltest',
+            'percenttest',
+            'totaltest',
+            'test2',
+            'test2answer',
+            'overalltest2',
+            'percenttest2',
+            'totaltest2',
+            'assign',
+            'assignanswer',
+            'overallassign',
+            'percentassign',
+            'totalassign',
+            'extra',
+            'extraanswer',
+            'overallextra',
+            'percentextra',
+            'totalextra',
+            'practical',
+            'practicalanswer',
+            'overallpractical',
+            'percentpractical',
+            'totalpractical',
+            'other',
+            'otheranswer',
+            'overallother',
+            'percentother',
+            'totalother',
+            'midterm',
+            'midtermanswer',
+            'overallmidterm',
+            'percentmidterm',
+            'totalmidterm',
+            'final',
+            'finalanswer',
+            'overallfinal',
+            'percentfinal',
+            'totalfinal',
+            'overallall',
+            'overallall2',
+            'valGrade',
+            'avgoverall',
+            'maxoverall',
+            'minoverall',
+            'gradeDistribution',
+            'gradingScale'
         ));
-        
+
         $pdf->setPaper('A4', 'landscape');
-        
+
         return $pdf->stream("Rowscore_{$groupName}.pdf");
     }
 
@@ -4427,91 +4322,87 @@ $content .= '</tr>
         $percentageextra = "";
 
         $student = DB::table('students')
-                ->join('student_subjek', 'students.ic', 'student_subjek.student_ic')
-                ->join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
-                ->where('students.ic', request()->student)
-                ->where([
-                    ['subjek.id', Session::get('CourseID')],
-                    ['student_subjek.sessionid', Session::get('SessionID')]
-                ])->first();
-        
+            ->join('student_subjek', 'students.ic', 'student_subjek.student_ic')
+            ->join('subjek', 'student_subjek.courseid', 'subjek.sub_id')
+            ->where('students.ic', request()->student)
+            ->where([
+                ['subjek.id', Session::get('CourseID')],
+                ['student_subjek.sessionid', Session::get('SessionID')]
+            ])->first();
+
         //dd($student);
 
         //QUIZ
 
         $percentquiz = DB::table('tblclassmarks')
-                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
-                                ['subjek.id', Session::get('CourseID')],
-                                ['assessment', 'quiz']
-                                ])
-                                ->orderBy('tblclassmarks.id', 'desc')
-                                ->first();
+            ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
+                ['subjek.id', Session::get('CourseID')],
+                ['assessment', 'quiz']
+            ])
+            ->orderBy('tblclassmarks.id', 'desc')
+            ->first();
 
         //dd($percentquiz);
-  
+
         //get marked quiz
         $quiz = DB::table('tblclassstudentquiz')
-                ->join('tblclassquiz', 'tblclassstudentquiz.quizid', 'tblclassquiz.id')
-                ->where([
-                    ['tblclassstudentquiz.userid', request()->student],
-                    ['tblclassquiz.classid', request()->id],
-                    ['tblclassquiz.sessionid', Session::get('SessionID')],
-                    ['tblclassquiz.status', 2]
-                ]);
-        
+            ->join('tblclassquiz', 'tblclassstudentquiz.quizid', 'tblclassquiz.id')
+            ->where([
+                ['tblclassstudentquiz.userid', request()->student],
+                ['tblclassquiz.classid', request()->id],
+                ['tblclassquiz.sessionid', Session::get('SessionID')],
+                ['tblclassquiz.status', 2]
+            ]);
+
         $totalquiz = $quiz->sum('tblclassquiz.total_mark');
 
         $markquiz = $quiz->sum('tblclassstudentquiz.final_mark');
 
-        if($percentquiz != null)
-        {
+        if ($percentquiz != null) {
             $percentagequiz = $percentquiz->mark_percentage;
         }
 
         $quizlist = $quiz->get();
 
-        if($totalquiz != 0 && $markquiz != 0)
-        {
-            $total_allquiz = round(( (int)$markquiz / (int)$totalquiz ) * (int)$percentagequiz);
-        }else{
+        if ($totalquiz != 0 && $markquiz != 0) {
+            $total_allquiz = round(((int)$markquiz / (int)$totalquiz) * (int)$percentagequiz);
+        } else {
             $total_allquiz = 0;
         }
 
         //TEST
 
         $percenttest = DB::table('tblclassmarks')
-                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
-                                ['subjek.id', Session::get('CourseID')],
-                                ['assessment', 'test']
-                                ])
-                                ->orderBy('tblclassmarks.id', 'desc')
-                                ->first();
+            ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
+                ['subjek.id', Session::get('CourseID')],
+                ['assessment', 'test']
+            ])
+            ->orderBy('tblclassmarks.id', 'desc')
+            ->first();
 
         //get marked test
         $test = DB::table('tblclassstudenttest')
-                ->join('tblclasstest', 'tblclassstudenttest.testid', 'tblclasstest.id')
-                ->where([
-                    ['tblclassstudenttest.userid', request()->student],
-                    ['tblclasstest.classid', request()->id],
-                    ['tblclasstest.sessionid', Session::get('SessionID')],
-                    ['tblclasstest.status', 2]
-                ]);
-        
+            ->join('tblclasstest', 'tblclassstudenttest.testid', 'tblclasstest.id')
+            ->where([
+                ['tblclassstudenttest.userid', request()->student],
+                ['tblclasstest.classid', request()->id],
+                ['tblclasstest.sessionid', Session::get('SessionID')],
+                ['tblclasstest.status', 2]
+            ]);
+
         $totaltest = $test->sum('tblclasstest.total_mark');
 
         $marktest = $test->sum('tblclassstudenttest.final_mark');
 
-        if($percenttest != null)
-        {
+        if ($percenttest != null) {
             $percentagetest = $percenttest->mark_percentage;
         }
 
         $testlist = $test->get();
 
-        if($totaltest != 0 && $marktest != 0)
-        {
-            $total_alltest = round(( (int)$marktest / (int)$totaltest ) * (int)$percentagetest);
-        }else{
+        if ($totaltest != 0 && $marktest != 0) {
+            $total_alltest = round(((int)$marktest / (int)$totaltest) * (int)$percentagetest);
+        } else {
             $total_alltest = 0;
         }
 
@@ -4519,40 +4410,38 @@ $content .= '</tr>
         //ASSIGNMENT
 
         $percentassign = DB::table('tblclassmarks')
-                        ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
-                        ['subjek.id', Session::get('CourseID')],
-                        ['assessment', 'assignment']
-                        ])
-                        ->orderBy('tblclassmarks.id', 'desc')
-                        ->first();
+            ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
+                ['subjek.id', Session::get('CourseID')],
+                ['assessment', 'assignment']
+            ])
+            ->orderBy('tblclassmarks.id', 'desc')
+            ->first();
 
         //dd($percent);
-  
+
         //get marked assign
         $assign = DB::table('tblclassstudentassign')
-                ->join('tblclassassign', 'tblclassstudentassign.assignid', 'tblclassassign.id')
-                ->where([
-                    ['tblclassstudentassign.userid', request()->student],
-                    ['tblclassassign.classid', request()->id],
-                    ['tblclassassign.sessionid', Session::get('SessionID')],
-                    ['tblclassassign.status', 2]
-                ]);
-        
+            ->join('tblclassassign', 'tblclassstudentassign.assignid', 'tblclassassign.id')
+            ->where([
+                ['tblclassstudentassign.userid', request()->student],
+                ['tblclassassign.classid', request()->id],
+                ['tblclassassign.sessionid', Session::get('SessionID')],
+                ['tblclassassign.status', 2]
+            ]);
+
         $totalassign = $assign->sum('tblclassassign.total_mark');
 
         $markassign = $assign->sum('tblclassstudentassign.final_mark');
 
-        if($percentassign != null)
-        {
+        if ($percentassign != null) {
             $percentageassign = $percentassign->mark_percentage;
         }
 
         $assignlist = $assign->get();
 
-        if($totalassign != 0 && $markassign != 0)
-        {
-            $total_allassign = round(( (int)$markassign / (int)$totalassign ) * (int)$percentageassign);
-        }else{
+        if ($totalassign != 0 && $markassign != 0) {
+            $total_allassign = round(((int)$markassign / (int)$totalassign) * (int)$percentageassign);
+        } else {
             $total_allassign = 0;
         }
 
@@ -4560,119 +4449,113 @@ $content .= '</tr>
         // MIDTERM
 
         $percentmidterm = DB::table('tblclassmarks')
-                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
-                                ['subjek.id', Session::get('CourseID')],
-                                ['assessment', 'midterm']
-                                ])
-                                ->orderBy('tblclassmarks.id', 'desc')
-                                ->first();
+            ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
+                ['subjek.id', Session::get('CourseID')],
+                ['assessment', 'midterm']
+            ])
+            ->orderBy('tblclassmarks.id', 'desc')
+            ->first();
 
         //dd($percent);
-  
+
         $midterm = DB::table('tblclassstudentmidterm')
-                ->join('tblclassmidterm', 'tblclassstudentmidterm.midtermid', 'tblclassmidterm.id')
-                ->where([
-                    ['tblclassstudentmidterm.userid', request()->student],
-                    ['tblclassmidterm.classid', request()->id],
-                    ['tblclassmidterm.sessionid', Session::get('SessionID')],
-                    ['tblclassmidterm.status', 2]
-                ]);
-        
+            ->join('tblclassmidterm', 'tblclassstudentmidterm.midtermid', 'tblclassmidterm.id')
+            ->where([
+                ['tblclassstudentmidterm.userid', request()->student],
+                ['tblclassmidterm.classid', request()->id],
+                ['tblclassmidterm.sessionid', Session::get('SessionID')],
+                ['tblclassmidterm.status', 2]
+            ]);
+
         $totalmidterm = $midterm->sum('tblclassmidterm.total_mark');
-   
+
         $markmidterm = $midterm->sum('tblclassstudentmidterm.final_mark');
 
-        if($percentmidterm != null)
-        {
+        if ($percentmidterm != null) {
             $percentagemidterm = $percentmidterm->mark_percentage;
         }
 
         $midtermlist = $midterm->get();
 
-        if($totalmidterm != 0 && $markmidterm != 0)
-        {
-            $total_allmidterm = round(( (int)$markmidterm / (int)$totalmidterm ) * (int)$percentagemidterm);
-        }else{
+        if ($totalmidterm != 0 && $markmidterm != 0) {
+            $total_allmidterm = round(((int)$markmidterm / (int)$totalmidterm) * (int)$percentagemidterm);
+        } else {
             $total_allmidterm = 0;
         }
 
-        
+
         //FINAL
 
         $percentfinal = DB::table('tblclassmarks')
-                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
-                                ['subjek.id', Session::get('CourseID')],
-                                ['assessment', 'final']
-                                ])
-                                ->orderBy('tblclassmarks.id', 'desc')
-                                ->first();
+            ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
+                ['subjek.id', Session::get('CourseID')],
+                ['assessment', 'final']
+            ])
+            ->orderBy('tblclassmarks.id', 'desc')
+            ->first();
 
         //dd($percent);
-  
+
         $final = DB::table('tblclassstudentfinal')
-                ->join('tblclassfinal', 'tblclassstudentfinal.finalid', 'tblclassfinal.id')
-                ->where([
-                    ['tblclassstudentfinal.userid', request()->student],
-                    ['tblclassfinal.classid', request()->id],
-                    ['tblclassfinal.sessionid', Session::get('SessionID')],
-                    ['tblclassfinal.status', 2]
-                ]);
-        
+            ->join('tblclassfinal', 'tblclassstudentfinal.finalid', 'tblclassfinal.id')
+            ->where([
+                ['tblclassstudentfinal.userid', request()->student],
+                ['tblclassfinal.classid', request()->id],
+                ['tblclassfinal.sessionid', Session::get('SessionID')],
+                ['tblclassfinal.status', 2]
+            ]);
+
         $totalfinal = $final->sum('tblclassfinal.total_mark');
-   
+
         $markfinal = $final->sum('tblclassstudentfinal.final_mark');
 
-        if($percentfinal != null)
-        {
+        if ($percentfinal != null) {
             $percentagefinal = $percentfinal->mark_percentage;
         }
 
         $finallist = $final->get();
 
-        if($totalfinal != 0 && $markfinal != 0)
-        {
-            $total_allfinal = round(( (int)$markfinal / (int)$totalfinal ) * (int)$percentagefinal);
-        }else{
+        if ($totalfinal != 0 && $markfinal != 0) {
+            $total_allfinal = round(((int)$markfinal / (int)$totalfinal) * (int)$percentagefinal);
+        } else {
             $total_allfinal = 0;
         }
 
         //PAPERWORK
 
         $percentpaperwork = DB::table('tblclassmarks')
-                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
-                                ['subjek.id', Session::get('CourseID')],
-                                ['assessment', 'paperwork']
-                                ])
-                                ->orderBy('tblclassmarks.id', 'desc')
-                                ->first();
+            ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
+                ['subjek.id', Session::get('CourseID')],
+                ['assessment', 'paperwork']
+            ])
+            ->orderBy('tblclassmarks.id', 'desc')
+            ->first();
 
         //dd($percent);
-  
+
         //get marked paperwork
         $paperwork = DB::table('tblclassstudentpaperwork')
-                ->join('tblclasspaperwork', 'tblclassstudentpaperwork.paperworkid', 'tblclasspaperwork.id')
-                ->where([
-                    ['tblclassstudentpaperwork.userid', request()->student],
-                    ['tblclasspaperwork.classid', request()->id],
-                    ['tblclasspaperwork.sessionid', Session::get('SessionID')],
-                    ['tblclasspaperwork.status', 2]
-                ]);
-        
+            ->join('tblclasspaperwork', 'tblclassstudentpaperwork.paperworkid', 'tblclasspaperwork.id')
+            ->where([
+                ['tblclassstudentpaperwork.userid', request()->student],
+                ['tblclasspaperwork.classid', request()->id],
+                ['tblclasspaperwork.sessionid', Session::get('SessionID')],
+                ['tblclasspaperwork.status', 2]
+            ]);
+
         $totalpaperwork = $paperwork->sum('tblclasspaperwork.total_mark');
 
         $markpaperwork = $paperwork->sum('tblclassstudentpaperwork.final_mark');
 
-        if($percentpaperwork != null)
-        {
+        if ($percentpaperwork != null) {
             $percentagepaperwork = $percentpaperwork->mark_percentage;
         }
 
         $paperworklist = $paperwork->get();
 
-        if($totalpaperwork != 0 && $markpaperwork != 0)
-        {
-            $total_allpaperwork = round(( (int)$markpaperwork / (int)$totalpaperwork ) * (int)$percentagepaperwork);
-        }else{
+        if ($totalpaperwork != 0 && $markpaperwork != 0) {
+            $total_allpaperwork = round(((int)$markpaperwork / (int)$totalpaperwork) * (int)$percentagepaperwork);
+        } else {
             $total_allpaperwork = 0;
         }
 
@@ -4680,40 +4563,38 @@ $content .= '</tr>
         //PRACTICAL
 
         $percentpractical = DB::table('tblclassmarks')
-                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
-                                ['subjek.id', Session::get('CourseID')],
-                                ['assessment', 'practical']
-                                ])
-                                ->orderBy('tblclassmarks.id', 'desc')
-                                ->first();
+            ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
+                ['subjek.id', Session::get('CourseID')],
+                ['assessment', 'practical']
+            ])
+            ->orderBy('tblclassmarks.id', 'desc')
+            ->first();
 
         //dd($percent);
-  
+
         //get marked practical
         $practical = DB::table('tblclassstudentpractical')
-                ->join('tblclasspractical', 'tblclassstudentpractical.practicalid', 'tblclasspractical.id')
-                ->where([
-                    ['tblclassstudentpractical.userid', request()->student],
-                    ['tblclasspractical.classid', request()->id],
-                    ['tblclasspractical.sessionid', Session::get('SessionID')],
-                    ['tblclasspractical.status', 2]
-                ]);
-        
+            ->join('tblclasspractical', 'tblclassstudentpractical.practicalid', 'tblclasspractical.id')
+            ->where([
+                ['tblclassstudentpractical.userid', request()->student],
+                ['tblclasspractical.classid', request()->id],
+                ['tblclasspractical.sessionid', Session::get('SessionID')],
+                ['tblclasspractical.status', 2]
+            ]);
+
         $totalpractical = $practical->sum('tblclasspractical.total_mark');
 
         $markpractical = $practical->sum('tblclassstudentpractical.final_mark');
 
-        if($percentpractical != null)
-        {
+        if ($percentpractical != null) {
             $percentagepractical = $percentpractical->mark_percentage;
         }
 
         $practicallist = $practical->get();
 
-        if($totalpractical != 0 && $markpractical != 0)
-        {
-            $total_allpractical = round(( (int)$markpractical / (int)$totalpractical ) * (int)$percentagepractical);
-        }else{
+        if ($totalpractical != 0 && $markpractical != 0) {
+            $total_allpractical = round(((int)$markpractical / (int)$totalpractical) * (int)$percentagepractical);
+        } else {
             $total_allpractical = 0;
         }
 
@@ -4721,86 +4602,121 @@ $content .= '</tr>
         //OTHER
 
         $percentother = DB::table('tblclassmarks')
-                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
-                                ['subjek.id', Session::get('CourseID')],
-                                ['assessment', 'lain-lain']
-                                ])
-                                ->orderBy('tblclassmarks.id', 'desc')
-                                ->first();
+            ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
+                ['subjek.id', Session::get('CourseID')],
+                ['assessment', 'lain-lain']
+            ])
+            ->orderBy('tblclassmarks.id', 'desc')
+            ->first();
 
         $other = DB::table('tblclassstudentother')
-                ->join('tblclassother', 'tblclassstudentother.otherid', 'tblclassother.id')
-                ->where([
-                    ['tblclassstudentother.userid', request()->student],
-                    ['tblclassother.classid', request()->id],
-                    ['tblclassother.sessionid', Session::get('SessionID')],
-                    ['tblclassother.status', 2]
-                ]);
-        
+            ->join('tblclassother', 'tblclassstudentother.otherid', 'tblclassother.id')
+            ->where([
+                ['tblclassstudentother.userid', request()->student],
+                ['tblclassother.classid', request()->id],
+                ['tblclassother.sessionid', Session::get('SessionID')],
+                ['tblclassother.status', 2]
+            ]);
+
         $totalother = $other->sum('tblclassother.total_mark');
 
         $markother = $other->sum('tblclassstudentother.final_mark');
 
-        if($percentother != null)
-        {
+        if ($percentother != null) {
             $percentageother = $percentother->mark_percentage;
         }
 
         $otherlist = $other->get();
 
-        if($totalother != 0 && $markother != 0)
-        {
-            $total_allother = round(( (int)$markother / (int)$totalother ) * (int)$percentageother);
-        }else{
+        if ($totalother != 0 && $markother != 0) {
+            $total_allother = round(((int)$markother / (int)$totalother) * (int)$percentageother);
+        } else {
             $total_allother = 0;
         }
 
         //EXTRA
 
         $percentextra = DB::table('tblclassmarks')
-                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
-                                ['subjek.id', Session::get('CourseID')],
-                                ['assessment', 'extra']
-                                ])
-                                ->orderBy('tblclassmarks.id', 'desc')
-                                ->first();
+            ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
+                ['subjek.id', Session::get('CourseID')],
+                ['assessment', 'extra']
+            ])
+            ->orderBy('tblclassmarks.id', 'desc')
+            ->first();
 
         $extra = DB::table('tblclassstudentextra')
-                ->join('tblclassextra', 'tblclassstudentextra.extraid', 'tblclassextra.id')
-                ->where([
-                    ['tblclassstudentextra.userid', request()->student],
-                    ['tblclassextra.classid', request()->id],
-                    ['tblclassextra.sessionid', Session::get('SessionID')],
-                    ['tblclassextra.status', 2]
-                ]);
-        
+            ->join('tblclassextra', 'tblclassstudentextra.extraid', 'tblclassextra.id')
+            ->where([
+                ['tblclassstudentextra.userid', request()->student],
+                ['tblclassextra.classid', request()->id],
+                ['tblclassextra.sessionid', Session::get('SessionID')],
+                ['tblclassextra.status', 2]
+            ]);
+
         $totalextra = $extra->sum('tblclassextra.total_mark');
 
         $markextra = $extra->sum('tblclassstudentextra.final_mark');
 
-        if($percentextra != null)
-        {
+        if ($percentextra != null) {
             $percentageextra = $percentextra->mark_percentage;
         }
 
         $extralist = $extra->get();
 
-        if($totalextra != 0 && $markextra != 0)
-        {
+        if ($totalextra != 0 && $markextra != 0) {
             $total_allextra = round((int)$markextra);
-        }else{
+        } else {
             $total_allextra = 0;
         }
 
-        return view('lecturer.courseassessment.reportdetails', compact('student', 'quizlist', 'totalquiz', 'markquiz', 'percentagequiz', 'total_allquiz',
-                                                                                  'testlist', 'totaltest', 'marktest', 'percentagetest', 'total_alltest',
-                                                                                  'assignlist', 'totalassign', 'markassign', 'percentageassign', 'total_allassign',
-                                                                                  'midtermlist', 'totalmidterm', 'markmidterm', 'percentagemidterm', 'total_allmidterm',
-                                                                                  'finallist', 'totalfinal', 'markfinal', 'percentagefinal', 'total_allfinal',
-                                                                                  'paperworklist', 'totalpaperwork', 'markpaperwork', 'percentagepaperwork', 'total_allpaperwork',
-                                                                                  'practicallist', 'totalpractical', 'markpractical', 'percentagepractical', 'total_allpractical',
-                                                                                  'otherlist', 'totalother', 'markother', 'percentageother', 'total_allother',
-                                                                                  'extralist', 'totalextra', 'markextra', 'percentageextra', 'total_allextra'));
+        return view('lecturer.courseassessment.reportdetails', compact(
+            'student',
+            'quizlist',
+            'totalquiz',
+            'markquiz',
+            'percentagequiz',
+            'total_allquiz',
+            'testlist',
+            'totaltest',
+            'marktest',
+            'percentagetest',
+            'total_alltest',
+            'assignlist',
+            'totalassign',
+            'markassign',
+            'percentageassign',
+            'total_allassign',
+            'midtermlist',
+            'totalmidterm',
+            'markmidterm',
+            'percentagemidterm',
+            'total_allmidterm',
+            'finallist',
+            'totalfinal',
+            'markfinal',
+            'percentagefinal',
+            'total_allfinal',
+            'paperworklist',
+            'totalpaperwork',
+            'markpaperwork',
+            'percentagepaperwork',
+            'total_allpaperwork',
+            'practicallist',
+            'totalpractical',
+            'markpractical',
+            'percentagepractical',
+            'total_allpractical',
+            'otherlist',
+            'totalother',
+            'markother',
+            'percentageother',
+            'total_allother',
+            'extralist',
+            'totalextra',
+            'markextra',
+            'percentageextra',
+            'total_allextra'
+        ));
     }
 
     public function reportAttendance()
@@ -4818,37 +4734,36 @@ $content .= '</tr>
 
 
         $groups = DB::table('user_subjek')
-                  ->join('users', 'user_subjek.user_ic', 'users.ic')
-                  ->join('student_subjek', 'user_subjek.id', 'student_subjek.group_id')
-                  ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
-                  ->select('user_subjek.*','student_subjek.group_name','student_subjek.group_id', 'users.name', 'subjek.course_name', 'subjek.course_code')
-                  ->where([
-                     ['user_subjek.user_ic', $user->ic],
-                     ['user_subjek.session_id', Session::get('SessionID')],
-                     ['subjek.id', $courseid]
-                  ])->groupBy('student_subjek.group_name')->get();
+            ->join('users', 'user_subjek.user_ic', 'users.ic')
+            ->join('student_subjek', 'user_subjek.id', 'student_subjek.group_id')
+            ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+            ->select('user_subjek.*', 'student_subjek.group_name', 'student_subjek.group_id', 'users.name', 'subjek.course_name', 'subjek.course_code')
+            ->where([
+                ['user_subjek.user_ic', $user->ic],
+                ['user_subjek.session_id', Session::get('SessionID')],
+                ['subjek.id', $courseid]
+            ])->groupBy('student_subjek.group_name')->get();
 
-        foreach($groups as $ky => $grp)
-        {
+        foreach ($groups as $ky => $grp) {
 
 
-                $students[] = $data = DB::table('user_subjek')
+            $students[] = $data = DB::table('user_subjek')
                 ->join('student_subjek', 'user_subjek.id', 'student_subjek.group_id')
                 ->join('students', 'student_subjek.student_ic', 'students.ic')
                 ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
-                ->select('user_subjek.*','student_subjek.group_name','student_subjek.group_id','students.*')
+                ->select('user_subjek.*', 'student_subjek.group_name', 'student_subjek.group_id', 'students.*')
                 ->where([
-                ['user_subjek.user_ic', $user->ic],
-                ['user_subjek.session_id', $sessionid],
-                ['subjek.id', $courseid]
+                    ['user_subjek.user_ic', $user->ic],
+                    ['user_subjek.session_id', $sessionid],
+                    ['subjek.id', $courseid]
                 ])
-                ->whereNotIn('students.status', [4,5,6,7,16])
+                ->whereNotIn('students.status', [4, 5, 6, 7, 16])
                 ->where('student_subjek.group_name', $grp->group_name)
                 ->orderBy('students.name')->get();
 
-                $collection = collect($students[$ky]);
+            $collection = collect($students[$ky]);
 
-                $list[] = DB::table('tblclassattendance')
+            $list[] = DB::table('tblclassattendance')
                 ->join('user_subjek', 'tblclassattendance.groupid', 'user_subjek.id')
                 ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
                 ->where([
@@ -4860,64 +4775,47 @@ $content .= '</tr>
                 ->orderBy('tblclassattendance.classdate', 'ASC')
                 ->select('tblclassattendance.*')->get();
 
-                //dd($list);
+            //dd($list);
 
-                foreach($students[$ky] as $key => $std)
-                {
+            foreach ($students[$ky] as $key => $std) {
 
-                    foreach($list[$ky] as $keys => $ls)
-                    {
-                        $atten = DB::table('tblclassattendance')
+                foreach ($list[$ky] as $keys => $ls) {
+                    $atten = DB::table('tblclassattendance')
                         ->where([
                             ['tblclassattendance.groupid', $ls->groupid],
                             ['tblclassattendance.groupname', $grp->group_name],
                             ['tblclassattendance.student_ic', $std->ic],
                             ['tblclassattendance.classdate', $ls->classdate]
                         ])->select('tblclassattendance.*');
-                        
-                        $attendance = $atten->first();
 
-                        if($atten->exists())
-                        {
+                    $attendance = $atten->first();
 
-                            if($attendance->excuse == null && $attendance->mc == null && $attendance->lc == null)
-                            {
+                    if ($atten->exists()) {
 
-                                $status[$ky][$key][$keys] = 'Present';
+                        if ($attendance->excuse == null && $attendance->mc == null && $attendance->lc == null) {
 
-                            }elseif($attendance->excuse != null){
+                            $status[$ky][$key][$keys] = 'Present';
+                        } elseif ($attendance->excuse != null) {
 
-                                $status[$ky][$key][$keys] = 'THB';
+                            $status[$ky][$key][$keys] = 'THB';
+                        } elseif ($attendance->mc != null) {
 
-                            }elseif($attendance->mc != null){
+                            $status[$ky][$key][$keys] = 'MC';
+                        } elseif ($attendance->lc != null) {
 
-                                $status[$ky][$key][$keys] = 'MC';
-
-                            }elseif($attendance->lc != null){
-
-                                $status[$ky][$key][$keys] = 'NC/LC';
-
-                            }
-
-
-                        }else{
-
-                            $status[$ky][$key][$keys] = 'Absent';
-
+                            $status[$ky][$key][$keys] = 'NC/LC';
                         }
-                        
+                    } else {
 
+                        $status[$ky][$key][$keys] = 'Absent';
                     }
-
-
                 }
-
+            }
         }
 
         //dd($status[$ky][$key]);
 
         return view('lecturer.class.attendancereport', compact('groups', 'students', 'list', 'status'));
-
     }
 
 
@@ -4928,19 +4826,18 @@ $content .= '</tr>
         $sessionid = Session::get('SessionID');
 
         $list = DB::table('tblclassattendance')
-                ->join('user_subjek', 'tblclassattendance.groupid', 'user_subjek.id')
-                ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
-                ->where([
-                    ['subjek.id', $courseid],
-                    ['user_subjek.session_id', $sessionid],
-                    ['user_subjek.user_ic', Auth::user()->ic]
-                ])->groupBy('tblclassattendance.groupname')->groupBy('tblclassattendance.classdate')
-                ->orderBy('tblclassattendance.classdate', 'ASC')->get();
+            ->join('user_subjek', 'tblclassattendance.groupid', 'user_subjek.id')
+            ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+            ->where([
+                ['subjek.id', $courseid],
+                ['user_subjek.session_id', $sessionid],
+                ['user_subjek.user_ic', Auth::user()->ic]
+            ])->groupBy('tblclassattendance.groupname')->groupBy('tblclassattendance.classdate')
+            ->orderBy('tblclassattendance.classdate', 'ASC')->get();
 
         //dd($list);
 
         return view('lecturer.class.attendancelist', compact('list'));
-
     }
 
     public function reportAttendance2(Request $request)
@@ -4951,39 +4848,35 @@ $content .= '</tr>
         $sessionid = Session::get('SessionID');
 
         $student = DB::table('student_subjek')
-                    ->join('students', 'student_subjek.student_ic', 'students.ic')->where('student_subjek.group_id', $request->group)->where('student_subjek.group_name', $request->name);
-                    //->join('user_subjek', 'student_subjek.group_id', 'user_subjek.id')
-                    //->join('subjek', 'user_subjek.course_id', 'subjek.sub_id');
-        
+            ->join('students', 'student_subjek.student_ic', 'students.ic')->where('student_subjek.group_id', $request->group)->where('student_subjek.group_name', $request->name);
+        //->join('user_subjek', 'student_subjek.group_id', 'user_subjek.id')
+        //->join('subjek', 'user_subjek.course_id', 'subjek.sub_id');
+
         $students = $student->get();
 
         $group = $student->join('user_subjek', 'student_subjek.group_id', 'user_subjek.id')
-        ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
-        ->select('user_subjek.*', 'student_subjek.group_name', 'subjek.*')->first();
+            ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+            ->select('user_subjek.*', 'student_subjek.group_name', 'subjek.*')->first();
 
         $date = $request->date;
 
-        foreach($students as $std)
-        {
+        foreach ($students as $std) {
 
             $list = DB::table('tblclassattendance')
-            ->join('user_subjek', 'tblclassattendance.groupid', 'user_subjek.id')
-            ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
-            ->where([
-                ['subjek.id', $courseid],
-                ['user_subjek.session_id', $sessionid],
-                ['tblclassattendance.groupid', $request->group],
-                ['tblclassattendance.classdate', $request->date],
-                ['tblclassattendance.student_ic', $std->ic]
-            ])->groupBy('tblclassattendance.student_ic');
+                ->join('user_subjek', 'tblclassattendance.groupid', 'user_subjek.id')
+                ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+                ->where([
+                    ['subjek.id', $courseid],
+                    ['user_subjek.session_id', $sessionid],
+                    ['tblclassattendance.groupid', $request->group],
+                    ['tblclassattendance.classdate', $request->date],
+                    ['tblclassattendance.student_ic', $std->ic]
+                ])->groupBy('tblclassattendance.student_ic');
 
             $lists[] = $list->get();
-
-
         }
-            
-        return view('lecturer.class.attendancereport', compact('lists', 'students', 'group', 'date'));
 
+        return view('lecturer.class.attendancereport', compact('lists', 'students', 'group', 'date'));
     }
 
     public function deleteAttendance(Request $request)
@@ -4997,7 +4890,6 @@ $content .= '</tr>
         ])->delete();
 
         return response()->json(['message' => 'Attendance has been successfully deleted!']);
-
     }
 
 
@@ -5005,17 +4897,16 @@ $content .= '</tr>
     {
 
         $lecturer = DB::table('users')
-                    ->join('user_subjek', 'users.ic', 'user_subjek.user_ic')
-                    ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
-                    ->where([
-                        ['subjek.id', Session::get('CourseID')],
-                        ['user_subjek.session_id', Session::get('SessionID')]
-                    ])->get();
+            ->join('user_subjek', 'users.ic', 'user_subjek.user_ic')
+            ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+            ->where([
+                ['subjek.id', Session::get('CourseID')],
+                ['user_subjek.session_id', Session::get('SessionID')]
+            ])->get();
 
         //dd($lecturer);
 
         return view('lecturer.library.library', compact('lecturer'));
-
     }
 
     public function getContent(Request $request)
@@ -5025,12 +4916,11 @@ $content .= '</tr>
         $id = DB::table('subjek')->where('sub_id', $subid)->pluck('id');
 
         $folder = DB::table('lecturer_dir')
-                   ->where([
-                    ['Addby', $request->ic]
-                    ])->whereIn('CourseID', $id)->get();
+            ->where([
+                ['Addby', $request->ic]
+            ])->whereIn('CourseID', $id)->get();
 
         return view('lecturer.library.getSubfolder', compact('folder'));
-
     }
 
     public function getSubFolder(Request $request)
@@ -5040,17 +4930,16 @@ $content .= '</tr>
 
         $prev0 = $folder = DB::table('lecturer_dir')->where('DrID', $request->id)->first();
 
-        return view('lecturer.library.getSubfolder', compact('subfolder','prev0'));
-
+        return view('lecturer.library.getSubfolder', compact('subfolder', 'prev0'));
     }
 
     public function getSubFolder2(Request $request)
     {
 
         $directory = DB::table('lecturer_dir')
-        ->join('material_dir', 'lecturer_dir.DrID', 'material_dir.LecturerDirID')
-        ->select('lecturer_dir.DrName as A', 'material_dir.DrName as B', 'material_dir.*', 'lecturer_dir.CourseID')
-        ->where('material_dir.DrID', $request->id)->first();
+            ->join('material_dir', 'lecturer_dir.DrID', 'material_dir.LecturerDirID')
+            ->select('lecturer_dir.DrName as A', 'material_dir.DrName as B', 'material_dir.*', 'lecturer_dir.CourseID')
+            ->where('material_dir.DrID', $request->id)->first();
 
         $subfolder2 = DB::table('materialsub_dir')->where('MaterialDirID', $request->id)->get();
 
@@ -5061,18 +4950,17 @@ $content .= '</tr>
 
         $prev = $directory->LecturerDirID;
 
-        return view('lecturer.library.getSubfolder', compact('subfolder2', 'classmaterial','prev'));
-
+        return view('lecturer.library.getSubfolder', compact('subfolder2', 'classmaterial', 'prev'));
     }
 
     public function getMaterial(Request $request)
     {
 
         $directory = DB::table('lecturer_dir')
-        ->join('material_dir', 'lecturer_dir.DrID', 'material_dir.LecturerDirID')
-        ->join('materialsub_dir', 'material_dir.DrID', 'materialsub_dir.MaterialDirID')
-        ->select('lecturer_dir.DrName as A', 'material_dir.DrName as B', 'materialsub_dir.DrName as C', 'materialsub_dir.Password', 'materialsub_dir.MaterialDirID', 'materialsub_dir.DrID', 'lecturer_dir.CourseID')
-        ->where('materialsub_dir.DrID', $request->id)->first();
+            ->join('material_dir', 'lecturer_dir.DrID', 'material_dir.LecturerDirID')
+            ->join('materialsub_dir', 'material_dir.DrID', 'materialsub_dir.MaterialDirID')
+            ->select('lecturer_dir.DrName as A', 'material_dir.DrName as B', 'materialsub_dir.DrName as C', 'materialsub_dir.Password', 'materialsub_dir.MaterialDirID', 'materialsub_dir.DrID', 'lecturer_dir.CourseID')
+            ->where('materialsub_dir.DrID', $request->id)->first();
 
         $dir = "classmaterial/" . $directory->CourseID . "/" . $directory->A . "/" . $directory->B . "/" . $directory->C;
 
@@ -5080,89 +4968,84 @@ $content .= '</tr>
 
         $prev2 = $directory->MaterialDirID;
 
-        return view('lecturer.library.getSubfolder', compact('classmaterial','prev2'));
+        return view('lecturer.library.getSubfolder', compact('classmaterial', 'prev2'));
     }
 
     public function getQuiz(Request $request)
     {
 
         $quiz = DB::table('tblclassquiz')
-                ->join('tblclassquizstatus', 'tblclassquiz.status', 'tblclassquizstatus.id')
-                ->join('sessions', 'tblclassquiz.sessionid', 'sessions.SessionID')
-                ->where([
-                    ['tblclassquiz.addby', $request->ic],
-                    ['tblclassquiz.classid', Session::get('CourseID')]
-                ])
-                ->select('tblclassquiz.*', 'tblclassquizstatus.statusname', 'sessions.SessionName')->get();
+            ->join('tblclassquizstatus', 'tblclassquiz.status', 'tblclassquizstatus.id')
+            ->join('sessions', 'tblclassquiz.sessionid', 'sessions.SessionID')
+            ->where([
+                ['tblclassquiz.addby', $request->ic],
+                ['tblclassquiz.classid', Session::get('CourseID')]
+            ])
+            ->select('tblclassquiz.*', 'tblclassquizstatus.statusname', 'sessions.SessionName')->get();
 
 
         return view('lecturer.library.getQuiz', compact('quiz'));
-
     }
 
     public function getTest(Request $request)
     {
 
         $test = DB::table('tblclasstest')
-                ->join('tblclassteststatus', 'tblclasstest.status', 'tblclassteststatus.id')
-                ->join('sessions', 'tblclasstest.sessionid', 'sessions.SessionID')
-                ->where([
-                    ['tblclasstest.addby', $request->ic],
-                    ['tblclasstest.classid', Session::get('CourseID')]
-                ])
-                ->select('tblclasstest.*', 'tblclassteststatus.statusname', 'sessions.SessionName')->get();
+            ->join('tblclassteststatus', 'tblclasstest.status', 'tblclassteststatus.id')
+            ->join('sessions', 'tblclasstest.sessionid', 'sessions.SessionID')
+            ->where([
+                ['tblclasstest.addby', $request->ic],
+                ['tblclasstest.classid', Session::get('CourseID')]
+            ])
+            ->select('tblclasstest.*', 'tblclassteststatus.statusname', 'sessions.SessionName')->get();
 
 
         return view('lecturer.library.getTest', compact('test'));
-
     }
 
     public function getAssignment(Request $request)
     {
 
         $assign = DB::table('tblclassassign')
-                ->join('tblclassassignstatus', 'tblclassassign.status', 'tblclassassignstatus.id')
-                ->join('sessions', 'tblclassassign.sessionid', 'sessions.SessionID')
-                ->where([
-                    ['tblclassassign.addby', $request->ic],
-                    ['tblclassassign.classid', Session::get('CourseID')]
-                ])
-                ->select('tblclassassign.*', 'tblclassassignstatus.statusname', 'sessions.SessionName')->get();
+            ->join('tblclassassignstatus', 'tblclassassign.status', 'tblclassassignstatus.id')
+            ->join('sessions', 'tblclassassign.sessionid', 'sessions.SessionID')
+            ->where([
+                ['tblclassassign.addby', $request->ic],
+                ['tblclassassign.classid', Session::get('CourseID')]
+            ])
+            ->select('tblclassassign.*', 'tblclassassignstatus.statusname', 'sessions.SessionName')->get();
 
 
         return view('lecturer.library.getAssignment', compact('assign'));
-
     }
 
     public function getMidterm(Request $request)
     {
 
         $midterm = DB::table('tblclassmidterm')
-                ->join('tblclassmidtermstatus', 'tblclassmidterm.status', 'tblclassmidtermstatus.id')
-                ->join('sessions', 'tblclassmidterm.sessionid', 'sessions.SessionID')
-                ->where([
-                    ['tblclassmidterm.addby', $request->ic],
-                    ['tblclassmidterm.classid', Session::get('CourseID')]
-                ])
-                ->select('tblclassmidterm.*', 'tblclassmidtermstatus.statusname', 'sessions.SessionName')->get();
-
+            ->join('tblclassmidtermstatus', 'tblclassmidterm.status', 'tblclassmidtermstatus.id')
+            ->join('sessions', 'tblclassmidterm.sessionid', 'sessions.SessionID')
+            ->where([
+                ['tblclassmidterm.addby', $request->ic],
+                ['tblclassmidterm.classid', Session::get('CourseID')]
+            ])
+            ->select('tblclassmidterm.*', 'tblclassmidtermstatus.statusname', 'sessions.SessionName')->get();
     }
 
     public function getFinal(Request $request)
     {
 
         $final = DB::table('tblclassfinal')
-                ->join('tblclassfinalstatus', 'tblclassfinal.status', 'tblclassfinalstatus.id')
-                ->join('sessions', 'tblclassfinal.sessionid', 'sessions.SessionID')
-                ->where([
-                    ['tblclassfinal.addby', $request->ic],
-                    ['tblclassfinal.classid', Session::get('CourseID')]
-                ])
-                ->select('tblclassfinal.*', 'tblclassfinalstatus.statusname', 'sessions.SessionName')->get();
+            ->join('tblclassfinalstatus', 'tblclassfinal.status', 'tblclassfinalstatus.id')
+            ->join('sessions', 'tblclassfinal.sessionid', 'sessions.SessionID')
+            ->where([
+                ['tblclassfinal.addby', $request->ic],
+                ['tblclassfinal.classid', Session::get('CourseID')]
+            ])
+            ->select('tblclassfinal.*', 'tblclassfinalstatus.statusname', 'sessions.SessionName')->get();
 
 
         return view('lecturer.library.getFinal', compact('final'));
-
     }
 
     public function autoudateData()
@@ -5254,522 +5137,509 @@ $content .= '</tr>
         $avgoverall = [];
 
         $groups = DB::table('user_subjek')
-                  ->join('student_subjek', 'user_subjek.id', 'student_subjek.group_id')
-                  ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
-                  ->select('user_subjek.*','student_subjek.group_name','student_subjek.group_id', 'subjek.id as ID')
-                  ->groupBy('student_subjek.group_name')->get();
+            ->join('student_subjek', 'user_subjek.id', 'student_subjek.group_id')
+            ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+            ->select('user_subjek.*', 'student_subjek.group_name', 'student_subjek.group_id', 'subjek.id as ID')
+            ->groupBy('student_subjek.group_name')->get();
 
-        foreach($groups as $ky => $grp)
-        {
+        foreach ($groups as $ky => $grp) {
 
 
-                $students[] = $data = DB::table('user_subjek')
+            $students[] = $data = DB::table('user_subjek')
                 ->join('student_subjek', 'user_subjek.id', 'student_subjek.group_id')
                 ->join('students', 'student_subjek.student_ic', 'students.ic')
                 ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
-                ->select('user_subjek.*','student_subjek.group_name','student_subjek.group_id','students.*')
+                ->select('user_subjek.*', 'student_subjek.group_name', 'student_subjek.group_id', 'students.*')
                 ->where([
-                ['user_subjek.user_ic', $grp->user_ic],
-                ['user_subjek.session_id', $grp->session_id],
-                ['subjek.id', $grp->ID]
+                    ['user_subjek.user_ic', $grp->user_ic],
+                    ['user_subjek.session_id', $grp->session_id],
+                    ['subjek.id', $grp->ID]
                 ])->where('student_subjek.group_name', $grp->group_name)
                 ->orderBy('students.name')->get();
 
-                $collection = collect($students[$ky]);
+            $collection = collect($students[$ky]);
 
-                //QUIZ
+            //QUIZ
 
-                $quizs = DB::table('tblclassquiz')
-                        ->join('tblclassquiz_group', 'tblclassquiz.id', 'tblclassquiz_group.quizid')
-                        ->where([
-                            ['tblclassquiz.classid', $grp->ID],
-                            ['tblclassquiz.sessionid', $grp->session_id],
-                            ['tblclassquiz_group.groupname', $grp->group_name],
-                            ['tblclassquiz.status', '!=', 3]
-                        ]);
+            $quizs = DB::table('tblclassquiz')
+                ->join('tblclassquiz_group', 'tblclassquiz.id', 'tblclassquiz_group.quizid')
+                ->where([
+                    ['tblclassquiz.classid', $grp->ID],
+                    ['tblclassquiz.sessionid', $grp->session_id],
+                    ['tblclassquiz_group.groupname', $grp->group_name],
+                    ['tblclassquiz.status', '!=', 3]
+                ]);
 
-                $quiz[] = $quizs->get();
+            $quiz[] = $quizs->get();
 
-                $quizid = $quizs->pluck('tblclassquiz.id');
+            $quizid = $quizs->pluck('tblclassquiz.id');
 
-                $totalquiz = $quizs->sum('tblclassquiz.total_mark');
+            $totalquiz = $quizs->sum('tblclassquiz.total_mark');
 
 
-                //TEST
+            //TEST
 
-                $tests = DB::table('tblclasstest')
-                        ->join('tblclasstest_group', 'tblclasstest.id', 'tblclasstest_group.testid')
-                        ->where([
-                            ['tblclasstest.classid', $grp->ID],
-                            ['tblclasstest.sessionid', $grp->session_id],
-                            ['tblclasstest_group.groupname', $grp->group_name],
-                            ['tblclasstest.status', '!=', 3]
-                        ]);
+            $tests = DB::table('tblclasstest')
+                ->join('tblclasstest_group', 'tblclasstest.id', 'tblclasstest_group.testid')
+                ->where([
+                    ['tblclasstest.classid', $grp->ID],
+                    ['tblclasstest.sessionid', $grp->session_id],
+                    ['tblclasstest_group.groupname', $grp->group_name],
+                    ['tblclasstest.status', '!=', 3]
+                ]);
 
-                $test[] = $tests->get();
+            $test[] = $tests->get();
 
-                $testid = $tests->pluck('tblclasstest.id');
+            $testid = $tests->pluck('tblclasstest.id');
 
-                $totaltest = $tests->sum('tblclasstest.total_mark');
+            $totaltest = $tests->sum('tblclasstest.total_mark');
 
-                //ASSIGNMENT
+            //ASSIGNMENT
 
-                $assigns = DB::table('tblclassassign')
-                        ->join('tblclassassign_group', 'tblclassassign.id', 'tblclassassign_group.assignid')
-                        ->where([
-                            ['tblclassassign.classid', $grp->ID],
-                            ['tblclassassign.sessionid', $grp->session_id],
-                            ['tblclassassign_group.groupname', $grp->group_name],
-                            ['tblclassassign.status', '!=', 3]
-                        ]);
+            $assigns = DB::table('tblclassassign')
+                ->join('tblclassassign_group', 'tblclassassign.id', 'tblclassassign_group.assignid')
+                ->where([
+                    ['tblclassassign.classid', $grp->ID],
+                    ['tblclassassign.sessionid', $grp->session_id],
+                    ['tblclassassign_group.groupname', $grp->group_name],
+                    ['tblclassassign.status', '!=', 3]
+                ]);
 
-                $assign[] = $assigns->get();
+            $assign[] = $assigns->get();
 
-                $assignid = $assigns->pluck('tblclassassign.id');
+            $assignid = $assigns->pluck('tblclassassign.id');
 
-                $totalassign = $assigns->sum('tblclassassign.total_mark');
+            $totalassign = $assigns->sum('tblclassassign.total_mark');
 
-                //EXTRA
+            //EXTRA
 
-                $extras = DB::table('tblclassextra')
-                        ->join('tblclassextra_group', 'tblclassextra.id', 'tblclassextra_group.extraid')
-                        ->where([
-                            ['tblclassextra.classid', $grp->ID],
-                            ['tblclassextra.sessionid', $grp->session_id],
-                            ['tblclassextra_group.groupname', $grp->group_name],
-                            ['tblclassextra.status', '!=', 3]
-                        ]);
+            $extras = DB::table('tblclassextra')
+                ->join('tblclassextra_group', 'tblclassextra.id', 'tblclassextra_group.extraid')
+                ->where([
+                    ['tblclassextra.classid', $grp->ID],
+                    ['tblclassextra.sessionid', $grp->session_id],
+                    ['tblclassextra_group.groupname', $grp->group_name],
+                    ['tblclassextra.status', '!=', 3]
+                ]);
 
-                $extra[] = $extras->get();
+            $extra[] = $extras->get();
 
-                $extraid = $extras->pluck('tblclassextra.id');
+            $extraid = $extras->pluck('tblclassextra.id');
 
-                $totalextra = $extras->sum('tblclassextra.total_mark');
+            $totalextra = $extras->sum('tblclassextra.total_mark');
 
-                //OTHER
+            //OTHER
 
-                $others = DB::table('tblclassother')
-                        ->join('tblclassother_group', 'tblclassother.id', 'tblclassother_group.otherid')
-                        ->where([
-                            ['tblclassother.classid', $grp->ID],
-                            ['tblclassother.sessionid', $grp->session_id],
-                            ['tblclassother_group.groupname', $grp->group_name],
-                            ['tblclassother.status', '!=', 3]
-                        ]);
+            $others = DB::table('tblclassother')
+                ->join('tblclassother_group', 'tblclassother.id', 'tblclassother_group.otherid')
+                ->where([
+                    ['tblclassother.classid', $grp->ID],
+                    ['tblclassother.sessionid', $grp->session_id],
+                    ['tblclassother_group.groupname', $grp->group_name],
+                    ['tblclassother.status', '!=', 3]
+                ]);
 
-                $other[] = $others->get();
+            $other[] = $others->get();
 
-                $otherid = $others->pluck('tblclassother.id');
+            $otherid = $others->pluck('tblclassother.id');
 
-                $totalother = $others->sum('tblclassother.total_mark');
+            $totalother = $others->sum('tblclassother.total_mark');
 
-                //MIDTERM
+            //MIDTERM
 
-                $midterms = DB::table('tblclassmidterm')
-                        ->join('tblclassmidterm_group', 'tblclassmidterm.id', 'tblclassmidterm_group.midtermid')
-                        ->where([
-                            ['tblclassmidterm.classid', $grp->ID],
-                            ['tblclassmidterm.sessionid', $grp->session_id],
-                            ['tblclassmidterm_group.groupname', $grp->group_name],
-                            ['tblclassmidterm.status', '!=', 3]
-                        ]);
+            $midterms = DB::table('tblclassmidterm')
+                ->join('tblclassmidterm_group', 'tblclassmidterm.id', 'tblclassmidterm_group.midtermid')
+                ->where([
+                    ['tblclassmidterm.classid', $grp->ID],
+                    ['tblclassmidterm.sessionid', $grp->session_id],
+                    ['tblclassmidterm_group.groupname', $grp->group_name],
+                    ['tblclassmidterm.status', '!=', 3]
+                ]);
 
-                $midterm[] = $midterms->get();
+            $midterm[] = $midterms->get();
 
-                $midtermid = $midterms->pluck('tblclassmidterm.id');
+            $midtermid = $midterms->pluck('tblclassmidterm.id');
 
-                $totalmidterm = $midterms->sum('tblclassmidterm.total_mark');
+            $totalmidterm = $midterms->sum('tblclassmidterm.total_mark');
 
-                //FINAL
+            //FINAL
 
-                $finals = DB::table('tblclassfinal')
-                        ->join('tblclassfinal_group', 'tblclassfinal.id', 'tblclassfinal_group.finalid')
-                        ->where([
-                            ['tblclassfinal.classid', $grp->ID],
-                            ['tblclassfinal.sessionid', $grp->session_id],
-                            ['tblclassfinal_group.groupname', $grp->group_name],
-                            ['tblclassfinal.status', '!=', 3]
-                        ]);
+            $finals = DB::table('tblclassfinal')
+                ->join('tblclassfinal_group', 'tblclassfinal.id', 'tblclassfinal_group.finalid')
+                ->where([
+                    ['tblclassfinal.classid', $grp->ID],
+                    ['tblclassfinal.sessionid', $grp->session_id],
+                    ['tblclassfinal_group.groupname', $grp->group_name],
+                    ['tblclassfinal.status', '!=', 3]
+                ]);
 
-                $final[] = $finals->get();
+            $final[] = $finals->get();
 
-                $finalid = $finals->pluck('tblclassfinal.id');
+            $finalid = $finals->pluck('tblclassfinal.id');
 
-                $totalfinal = $finals->sum('tblclassfinal.total_mark');
+            $totalfinal = $finals->sum('tblclassfinal.total_mark');
 
-                //////////////////////////////////////////////////////////////////////////////////////////
-            
-                foreach($students[$ky] as $keys => $std)
-                {
-    
-                    // QUIZ
+            //////////////////////////////////////////////////////////////////////////////////////////
 
-                    foreach($quiz[$ky] as $key =>$qz)
-                    {
-                    
+            foreach ($students[$ky] as $keys => $std) {
+
+                // QUIZ
+
+                foreach ($quiz[$ky] as $key => $qz) {
+
                     $quizanswer[$ky][$keys][$key] = DB::table('tblclassstudentquiz')->where('userid', $std->ic)->where('quizid', $qz->quizid)->first();
+                }
 
-                    }
+                $sumquiz[$ky][$keys] = DB::table('tblclassstudentquiz')->where('userid', $std->ic)->whereIn('quizid', $quizid)->sum('final_mark');
 
-                    $sumquiz[$ky][$keys] = DB::table('tblclassstudentquiz')->where('userid', $std->ic)->whereIn('quizid', $quizid)->sum('final_mark');
+                $percentquiz = DB::table('tblclassmarks')
+                    ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
+                        ['subjek.id', $grp->ID],
+                        ['assessment', 'quiz']
+                    ])
+                    ->orderBy('tblclassmarks.id', 'desc')
+                    ->first();
 
-                    $percentquiz = DB::table('tblclassmarks')
-                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
-                                ['subjek.id', $grp->ID],
-                                ['assessment', 'quiz']
-                                ])
-                                ->orderBy('tblclassmarks.id', 'desc')
-                                ->first();
-
-                    if($quizs = DB::table('tblclassquiz')
+                if ($quizs = DB::table('tblclassquiz')
                     ->join('tblclassquiz_group', 'tblclassquiz.id', 'tblclassquiz_group.quizid')
                     ->where([
                         ['tblclassquiz.classid', $grp->ID],
                         ['tblclassquiz.sessionid', $grp->session_id],
                         ['tblclassquiz_group.groupname', $grp->group_name],
                         ['tblclassquiz.status', '!=', 3]
-                    ])->exists()){
-                        if($percentquiz != null)
-                        {
-                            if(DB::table('tblclassquiz')
+                    ])->exists()
+                ) {
+                    if ($percentquiz != null) {
+                        if (DB::table('tblclassquiz')
                             ->where([
                                 ['classid', $grp->ID],
                                 ['sessionid', $grp->session_id]
-                            ])->exists()){
-                                //dd($totalquiz);
-                                if ($totalquiz > 0) {
-                                    $overallquiz[$ky][$keys] = number_format((float)$sumquiz[$ky][$keys] / $totalquiz * $percentquiz->mark_percentage, 2, '.', '');
-                                } else {
-                                    $overallquiz[$ky][$keys] = 0;
-                                }
-                            }else{
+                            ])->exists()
+                        ) {
+                            //dd($totalquiz);
+                            if ($totalquiz > 0) {
+                                $overallquiz[$ky][$keys] = number_format((float)$sumquiz[$ky][$keys] / $totalquiz * $percentquiz->mark_percentage, 2, '.', '');
+                            } else {
                                 $overallquiz[$ky][$keys] = 0;
                             }
-                        }else{
+                        } else {
                             $overallquiz[$ky][$keys] = 0;
                         }
-                    }else{
+                    } else {
                         $overallquiz[$ky][$keys] = 0;
                     }
+                } else {
+                    $overallquiz[$ky][$keys] = 0;
+                }
 
 
-                    // TEST
-                    
-                    foreach($test[$ky] as $key =>$qz)
-                    {
-                    
+                // TEST
+
+                foreach ($test[$ky] as $key => $qz) {
+
                     $testanswer[$ky][$keys][$key] = DB::table('tblclassstudenttest')->where('userid', $std->ic)->where('testid', $qz->testid)->first();
+                }
 
-                    }
+                $sumtest[$ky][$keys] = DB::table('tblclassstudenttest')->where('userid', $std->ic)->whereIn('testid', $testid)->sum('final_mark');
 
-                    $sumtest[$ky][$keys] = DB::table('tblclassstudenttest')->where('userid', $std->ic)->whereIn('testid', $testid)->sum('final_mark');
+                $percenttest = DB::table('tblclassmarks')
+                    ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
+                        ['subjek.id', $grp->ID],
+                        ['assessment', 'test']
+                    ])
+                    ->orderBy('tblclassmarks.id', 'desc')
+                    ->first();
 
-                    $percenttest = DB::table('tblclassmarks')
-                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
-                                ['subjek.id', $grp->ID],
-                                ['assessment', 'test']
-                                ])
-                                ->orderBy('tblclassmarks.id', 'desc')
-                                ->first();
-
-                    if($tests = DB::table('tblclasstest')
+                if ($tests = DB::table('tblclasstest')
                     ->join('tblclasstest_group', 'tblclasstest.id', 'tblclasstest_group.testid')
                     ->where([
                         ['tblclasstest.classid', $grp->ID],
                         ['tblclasstest.sessionid', $grp->session_id],
                         ['tblclasstest_group.groupname', $grp->group_name],
                         ['tblclasstest.status', '!=', 3]
-                    ])->exists()){
-                        if($percenttest != null)
-                        {
-                            if(DB::table('tblclasstest')
+                    ])->exists()
+                ) {
+                    if ($percenttest != null) {
+                        if (DB::table('tblclasstest')
                             ->where([
                                 ['classid', $grp->ID],
                                 ['sessionid', $grp->session_id]
-                            ])->exists()){
-                                //dd($totaltest);
-                                if ($totaltest > 0) {
-                                    $overalltest[$ky][$keys] = number_format((float)$sumtest[$ky][$keys] / $totaltest * $percenttest->mark_percentage, 2, '.', '');
-                                } else {
-                                    $overalltest[$ky][$keys] = 0;
-                                }
-
-                                $testcollection = collect($overalltest[$ky]);
-                            }else{
+                            ])->exists()
+                        ) {
+                            //dd($totaltest);
+                            if ($totaltest > 0) {
+                                $overalltest[$ky][$keys] = number_format((float)$sumtest[$ky][$keys] / $totaltest * $percenttest->mark_percentage, 2, '.', '');
+                            } else {
                                 $overalltest[$ky][$keys] = 0;
-
-                                $testcollection = collect($overalltest[$ky]);
                             }
-            
-                        }else{
+
+                            $testcollection = collect($overalltest[$ky]);
+                        } else {
                             $overalltest[$ky][$keys] = 0;
 
                             $testcollection = collect($overalltest[$ky]);
                         }
-                    }else{
+                    } else {
                         $overalltest[$ky][$keys] = 0;
 
                         $testcollection = collect($overalltest[$ky]);
                     }
+                } else {
+                    $overalltest[$ky][$keys] = 0;
+
+                    $testcollection = collect($overalltest[$ky]);
+                }
 
 
-                    // ASSIGNMENT
-                    
-                    foreach($assign[$ky] as $key =>$qz)
-                    {
-                    
+                // ASSIGNMENT
+
+                foreach ($assign[$ky] as $key => $qz) {
+
                     $assignanswer[$ky][$keys][$key] = DB::table('tblclassstudentassign')->where('userid', $std->ic)->where('assignid', $qz->assignid)->first();
+                }
 
-                    }
+                $sumassign[$ky][$keys] = DB::table('tblclassstudentassign')->where('userid', $std->ic)->whereIn('assignid', $assignid)->sum('final_mark');
 
-                    $sumassign[$ky][$keys] = DB::table('tblclassstudentassign')->where('userid', $std->ic)->whereIn('assignid', $assignid)->sum('final_mark');
+                $percentassign = DB::table('tblclassmarks')
+                    ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
+                        ['subjek.id', $grp->ID],
+                        ['assessment', 'assignment']
+                    ])
+                    ->orderBy('tblclassmarks.id', 'desc')
+                    ->first();
 
-                    $percentassign = DB::table('tblclassmarks')
-                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
-                                ['subjek.id', $grp->ID],
-                                ['assessment', 'assignment']
-                                ])
-                                ->orderBy('tblclassmarks.id', 'desc')
-                                ->first();
-
-                    if($assigns = DB::table('tblclassassign')
+                if ($assigns = DB::table('tblclassassign')
                     ->join('tblclassassign_group', 'tblclassassign.id', 'tblclassassign_group.assignid')
                     ->where([
                         ['tblclassassign.classid', $grp->ID],
                         ['tblclassassign.sessionid', $grp->session_id],
                         ['tblclassassign_group.groupname', $grp->group_name],
                         ['tblclassassign.status', '!=', 3]
-                    ])->exists()){
-                        if($percentassign != null)
-                        {
-                            if(DB::table('tblclassassign')
+                    ])->exists()
+                ) {
+                    if ($percentassign != null) {
+                        if (DB::table('tblclassassign')
                             ->where([
                                 ['classid', $grp->ID],
                                 ['sessionid', $grp->session_id]
-                            ])->exists()){
-                                //dd($totalassign);
-                                if ($totalassign > 0) {
-                                    $overallassign[$ky][$keys] = number_format((float)$sumassign[$ky][$keys] / $totalassign * $percentassign->mark_percentage, 2, '.', '');
-                                } else {
-                                    $overallassign[$ky][$keys] = 0;
-                                }
-                            }else{
-                               $overallassign[$ky][$keys] = 0;
+                            ])->exists()
+                        ) {
+                            //dd($totalassign);
+                            if ($totalassign > 0) {
+                                $overallassign[$ky][$keys] = number_format((float)$sumassign[$ky][$keys] / $totalassign * $percentassign->mark_percentage, 2, '.', '');
+                            } else {
+                                $overallassign[$ky][$keys] = 0;
                             }
-            
-                        }else{
+                        } else {
                             $overallassign[$ky][$keys] = 0;
                         }
-                    }else{
+                    } else {
                         $overallassign[$ky][$keys] = 0;
                     }
+                } else {
+                    $overallassign[$ky][$keys] = 0;
+                }
 
-                    // EXTRA
-                    
-                    foreach($extra[$ky] as $key =>$qz)
-                    {
-                    
+                // EXTRA
+
+                foreach ($extra[$ky] as $key => $qz) {
+
                     $extraanswer[$ky][$keys][$key] = DB::table('tblclassstudentextra')->where('userid', $std->ic)->where('extraid', $qz->extraid)->first();
+                }
 
-                    }
+                $sumextra[$ky][$keys] = DB::table('tblclassstudentextra')->where('userid', $std->ic)->whereIn('extraid', $extraid)->sum('total_mark');
 
-                    $sumextra[$ky][$keys] = DB::table('tblclassstudentextra')->where('userid', $std->ic)->whereIn('extraid', $extraid)->sum('total_mark');
+                $percentextra = DB::table('tblclassmarks')
+                    ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
+                        ['subjek.id', $grp->ID],
+                        ['assessment', 'extra']
+                    ])
+                    ->orderBy('tblclassmarks.id', 'desc')
+                    ->first();
 
-                    $percentextra = DB::table('tblclassmarks')
-                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
-                                ['subjek.id', $grp->ID],
-                                ['assessment', 'extra']
-                                ])
-                                ->orderBy('tblclassmarks.id', 'desc')
-                                ->first();
-
-                    if($extras = DB::table('tblclassextra')
+                if ($extras = DB::table('tblclassextra')
                     ->join('tblclassextra_group', 'tblclassextra.id', 'tblclassextra_group.extraid')
                     ->where([
                         ['tblclassextra.classid', $grp->ID],
                         ['tblclassextra.sessionid', $grp->session_id],
                         ['tblclassextra_group.groupname', $grp->group_name],
                         ['tblclassextra.status', '!=', 3]
-                    ])->exists()){
-                        if($percentextra != null)
-                        {
-                            if(DB::table('tblclassextra')
+                    ])->exists()
+                ) {
+                    if ($percentextra != null) {
+                        if (DB::table('tblclassextra')
                             ->where([
                                 ['classid', $grp->ID],
                                 ['sessionid', $grp->session_id]
-                            ])->exists()){
-                                //dd($totalextra);
-                                if ($totalextra > 0) {
-                                    $overallextra[$ky][$keys] = number_format((float)$sumextra[$ky][$keys] / $totalextra * $percentextra->mark_percentage, 2, '.', '');
-                                } else {
-                                    $overallextra[$ky][$keys] = 0;
-                                }
-                            }else{
+                            ])->exists()
+                        ) {
+                            //dd($totalextra);
+                            if ($totalextra > 0) {
+                                $overallextra[$ky][$keys] = number_format((float)$sumextra[$ky][$keys] / $totalextra * $percentextra->mark_percentage, 2, '.', '');
+                            } else {
                                 $overallextra[$ky][$keys] = 0;
                             }
-                        }else{
+                        } else {
                             $overallextra[$ky][$keys] = 0;
                         }
-                    }else{
+                    } else {
                         $overallextra[$ky][$keys] = 0;
                     }
+                } else {
+                    $overallextra[$ky][$keys] = 0;
+                }
 
-                    // OTHER
-                    
-                    foreach($other[$ky] as $key =>$qz)
-                    {
-                    
+                // OTHER
+
+                foreach ($other[$ky] as $key => $qz) {
+
                     $otheranswer[$ky][$keys][$key] = DB::table('tblclassstudentother')->where('userid', $std->ic)->where('otherid', $qz->otherid)->first();
+                }
 
-                    }
+                $sumother[$ky][$keys] = DB::table('tblclassstudentother')->where('userid', $std->ic)->whereIn('otherid', $otherid)->sum('total_mark');
 
-                    $sumother[$ky][$keys] = DB::table('tblclassstudentother')->where('userid', $std->ic)->whereIn('otherid', $otherid)->sum('total_mark');
+                $percentother = DB::table('tblclassmarks')
+                    ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
+                        ['subjek.id', $grp->ID],
+                        ['assessment', 'lain-lain']
+                    ])
+                    ->orderBy('tblclassmarks.id', 'desc')
+                    ->first();
 
-                    $percentother = DB::table('tblclassmarks')
-                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
-                                ['subjek.id', $grp->ID],
-                                ['assessment', 'lain-lain']
-                                ])
-                                ->orderBy('tblclassmarks.id', 'desc')
-                                ->first();
-
-                    if($others = DB::table('tblclassother')
+                if ($others = DB::table('tblclassother')
                     ->join('tblclassother_group', 'tblclassother.id', 'tblclassother_group.otherid')
                     ->where([
                         ['tblclassother.classid', $grp->ID],
                         ['tblclassother.sessionid', $grp->session_id],
                         ['tblclassother_group.groupname', $grp->group_name],
                         ['tblclassother.status', '!=', 3]
-                    ])->exists()){
-                        if($percentother != null)
-                        {
-                            if(DB::table('tblclassother')
+                    ])->exists()
+                ) {
+                    if ($percentother != null) {
+                        if (DB::table('tblclassother')
                             ->where([
                                 ['classid', $grp->ID],
                                 ['sessionid', $grp->session_id]
-                            ])->exists()){
-                                //dd($totalother);
-                                if ($totalother > 0) {
-                                    $overallother[$ky][$keys] = number_format((float)$sumother[$ky][$keys] / $totalother * $percentother->mark_percentage, 2, '.', '');
-                                } else {
-                                    $overallother[$ky][$keys] = 0;
-                                }
-                            }else{
+                            ])->exists()
+                        ) {
+                            //dd($totalother);
+                            if ($totalother > 0) {
+                                $overallother[$ky][$keys] = number_format((float)$sumother[$ky][$keys] / $totalother * $percentother->mark_percentage, 2, '.', '');
+                            } else {
                                 $overallother[$ky][$keys] = 0;
                             }
-                        }else{
+                        } else {
                             $overallother[$ky][$keys] = 0;
                         }
-                    }else{
+                    } else {
                         $overallother[$ky][$keys] = 0;
                     }
+                } else {
+                    $overallother[$ky][$keys] = 0;
+                }
 
-                    // MIDTERM
-                    
-                    foreach($midterm[$ky] as $key =>$qz)
-                    {
-                    
+                // MIDTERM
+
+                foreach ($midterm[$ky] as $key => $qz) {
+
                     $midtermanswer[$ky][$keys][$key] = DB::table('tblclassstudentmidterm')->where('userid', $std->ic)->where('midtermid', $qz->midtermid)->first();
+                }
 
-                    }
+                $summidterm[$ky][$keys] = DB::table('tblclassstudentmidterm')->where('userid', $std->ic)->whereIn('midtermid', $midtermid)->sum('final_mark');
 
-                    $summidterm[$ky][$keys] = DB::table('tblclassstudentmidterm')->where('userid', $std->ic)->whereIn('midtermid', $midtermid)->sum('final_mark');
+                $percentmidterm = DB::table('tblclassmarks')
+                    ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
+                        ['subjek.id', $grp->ID],
+                        ['assessment', 'midterm']
+                    ])
+                    ->orderBy('tblclassmarks.id', 'desc')
+                    ->first();
 
-                    $percentmidterm = DB::table('tblclassmarks')
-                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
-                                ['subjek.id', $grp->ID],
-                                ['assessment', 'midterm']
-                                ])
-                                ->orderBy('tblclassmarks.id', 'desc')
-                                ->first();
-
-                    if($midterms = DB::table('tblclassmidterm')
+                if ($midterms = DB::table('tblclassmidterm')
                     ->join('tblclassmidterm_group', 'tblclassmidterm.id', 'tblclassmidterm_group.midtermid')
                     ->where([
                         ['tblclassmidterm.classid', $grp->ID],
                         ['tblclassmidterm.sessionid', $grp->session_id],
                         ['tblclassmidterm_group.groupname', $grp->group_name],
                         ['tblclassmidterm.status', '!=', 3]
-                    ])->exists()){
-                        if($percentmidterm != null)
-                        {
-                            if(DB::table('tblclassmidterm')
+                    ])->exists()
+                ) {
+                    if ($percentmidterm != null) {
+                        if (DB::table('tblclassmidterm')
                             ->where([
                                 ['classid', $grp->ID],
                                 ['sessionid', $grp->session_id]
-                            ])->exists()){
-                                //dd($totalmidterm);
-                                if ($totalmidterm > 0) {
-                                    $overallmidterm[$ky][$keys] = number_format((float)$summidterm[$ky][$keys] / $totalmidterm * $percentmidterm->mark_percentage, 2, '.', '');
-                                } else {
-                                    $overallmidterm[$ky][$keys] = 0;
-                                }
-                            }else{
+                            ])->exists()
+                        ) {
+                            //dd($totalmidterm);
+                            if ($totalmidterm > 0) {
+                                $overallmidterm[$ky][$keys] = number_format((float)$summidterm[$ky][$keys] / $totalmidterm * $percentmidterm->mark_percentage, 2, '.', '');
+                            } else {
                                 $overallmidterm[$ky][$keys] = 0;
                             }
-            
-                        }else{
+                        } else {
                             $overallmidterm[$ky][$keys] = 0;
                         }
-                    }else{
+                    } else {
                         $overallmidterm[$ky][$keys] = 0;
                     }
+                } else {
+                    $overallmidterm[$ky][$keys] = 0;
+                }
 
-                    // FINAL
-                    
-                    foreach($final[$ky] as $key =>$qz)
-                    {
-                    
+                // FINAL
+
+                foreach ($final[$ky] as $key => $qz) {
+
                     $finalanswer[$ky][$keys][$key] = DB::table('tblclassstudentfinal')->where('userid', $std->ic)->where('finalid', $qz->finalid)->first();
+                }
 
-                    }
+                $sumfinal[$ky][$keys] = DB::table('tblclassstudentfinal')->where('userid', $std->ic)->whereIn('finalid', $finalid)->sum('final_mark');
 
-                    $sumfinal[$ky][$keys] = DB::table('tblclassstudentfinal')->where('userid', $std->ic)->whereIn('finalid', $finalid)->sum('final_mark');
+                $percentfinal = DB::table('tblclassmarks')
+                    ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
+                        ['subjek.id', $grp->ID],
+                        ['assessment', 'final']
+                    ])
+                    ->orderBy('tblclassmarks.id', 'desc')
+                    ->first();
 
-                    $percentfinal = DB::table('tblclassmarks')
-                                ->join('subjek', 'tblclassmarks.course_id', 'subjek.sub_id')->where([
-                                ['subjek.id', $grp->ID],
-                                ['assessment', 'final']
-                                ])
-                                ->orderBy('tblclassmarks.id', 'desc')
-                                ->first();
-
-                    if($finals = DB::table('tblclassfinal')
+                if ($finals = DB::table('tblclassfinal')
                     ->join('tblclassfinal_group', 'tblclassfinal.id', 'tblclassfinal_group.finalid')
                     ->where([
                         ['tblclassfinal.classid', $grp->ID],
                         ['tblclassfinal.sessionid', $grp->session_id],
                         ['tblclassfinal_group.groupname', $grp->group_name],
                         ['tblclassfinal.status', '!=', 3]
-                    ])->exists()){
-                        if($percentfinal != null)
-                        {
-                            if(DB::table('tblclassfinal')
+                    ])->exists()
+                ) {
+                    if ($percentfinal != null) {
+                        if (DB::table('tblclassfinal')
                             ->where([
                                 ['classid', $grp->ID],
                                 ['sessionid', $grp->session_id]
-                            ])->exists()){
-                                //dd($totalfinal);
-                                if ($totalfinal > 0) {
-                                    $overallfinal[$ky][$keys] = number_format((float)$sumfinal[$ky][$keys] / $totalfinal * $percentfinal->mark_percentage, 2, '.', '');
-                                } else {
-                                    $overallfinal[$ky][$keys] = 0;
-                                }
-                            }else{
+                            ])->exists()
+                        ) {
+                            //dd($totalfinal);
+                            if ($totalfinal > 0) {
+                                $overallfinal[$ky][$keys] = number_format((float)$sumfinal[$ky][$keys] / $totalfinal * $percentfinal->mark_percentage, 2, '.', '');
+                            } else {
                                 $overallfinal[$ky][$keys] = 0;
                             }
-                        }else{
+                        } else {
                             $overallfinal[$ky][$keys] = 0;
                         }
-                    }else{
+                    } else {
                         $overallfinal[$ky][$keys] = 0;
                     }
-
-                    $overallall[$ky][$keys] = $overallquiz[$ky][$keys] + $overalltest[$ky][$keys] + $overallassign[$ky][$keys] + $overallextra[$ky][$keys] + $overallother[$ky][$keys] + $overallmidterm[$ky][$keys] + $overallfinal[$ky][$keys];
-
-                    $collectionall = collect($overallall[$ky]);
-            
+                } else {
+                    $overallfinal[$ky][$keys] = 0;
                 }
+
+                $overallall[$ky][$keys] = $overallquiz[$ky][$keys] + $overalltest[$ky][$keys] + $overallassign[$ky][$keys] + $overallextra[$ky][$keys] + $overallother[$ky][$keys] + $overallmidterm[$ky][$keys] + $overallfinal[$ky][$keys];
+
+                $collectionall = collect($overallall[$ky]);
+            }
         }
 
         // update the data
@@ -5780,14 +5650,12 @@ $content .= '</tr>
     {
 
         return view('lecturer.class.surat_amaran.surat_amaran');
-
     }
 
     public function classSchedule()
     {
 
         return view('lecturer.schedule.schedule');
-
     }
 
     public function fetchEvents()
@@ -5795,39 +5663,39 @@ $content .= '</tr>
         $user = Auth::user();
 
         $events = Tblevent2::join('user_subjek', 'tblevents_second.group_id', 'user_subjek.id')
-                  ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
-                  ->join('tbllecture_room', 'tblevents_second.lecture_id', 'tbllecture_room.id')
-                  ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
-                  ->where([
-                    ['tblevents_second.user_ic', $user->ic],
-                    ['sessions.Status', 'ACTIVE']
-                    ])
-                  ->groupBy('subjek.sub_id', 'tblevents_second.id')
-                  ->select('tblevents_second.*', 'subjek.course_code AS code' , 'subjek.course_name AS subject', 'tbllecture_room.name AS room', 'sessions.SessionName AS session')->get();
+            ->join('sessions', 'user_subjek.session_id', 'sessions.SessionID')
+            ->join('tbllecture_room', 'tblevents_second.lecture_id', 'tbllecture_room.id')
+            ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+            ->where([
+                ['tblevents_second.user_ic', $user->ic],
+                ['sessions.Status', 'ACTIVE']
+            ])
+            ->groupBy('subjek.sub_id', 'tblevents_second.id')
+            ->select('tblevents_second.*', 'subjek.course_code AS code', 'subjek.course_name AS subject', 'tbllecture_room.name AS room', 'sessions.SessionName AS session')->get();
 
         $formattedEvents = $events->map(function ($event) {
 
             $count = DB::table('student_subjek')
-                                ->where([
-                                ['group_id', $event->group_id],
-                                ['group_name', $event->group_name]
-                                ])
-                                ->select(DB::raw('COUNT(student_ic) AS total_student'))
-                                ->first();
+                ->where([
+                    ['group_id', $event->group_id],
+                    ['group_name', $event->group_name]
+                ])
+                ->select(DB::raw('COUNT(student_ic) AS total_student'))
+                ->first();
 
             $program = DB::table('student_subjek')
-                                ->join('students', 'student_subjek.student_ic', 'students.ic')
-                                ->join('tblprogramme', 'students.program', 'tblprogramme.id')
-                                ->where([
-                                ['student_subjek.group_id', $event->group_id],
-                                ['student_subjek.group_name', $event->group_name]
-                                ])
-                                ->groupBy('tblprogramme.id')
-                                ->select('tblprogramme.*')
-                                ->get();
+                ->join('students', 'student_subjek.student_ic', 'students.ic')
+                ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+                ->where([
+                    ['student_subjek.group_id', $event->group_id],
+                    ['student_subjek.group_name', $event->group_name]
+                ])
+                ->groupBy('tblprogramme.id')
+                ->select('tblprogramme.*')
+                ->get();
 
             // Convert program information into a string
-            $programInfo = $program->map(function($prog) {
+            $programInfo = $program->map(function ($prog) {
                 return $prog->progcode; // Assuming 'progname' is the relevant field you want to display
             })->implode(', ');
 
@@ -5866,12 +5734,12 @@ $content .= '</tr>
         // Load lecture rooms directly to avoid AJAX issues
         try {
             $lectureRooms = DB::table('tbllecture_room')
-                              ->orderBy('name')
-                              ->get();
+                ->orderBy('name')
+                ->get();
         } catch (\Exception $e) {
             $lectureRooms = collect(); // Empty collection if table doesn't exist
         }
-        
+
         return view('lecturer.class.replacement_class', compact('lectureRooms'));
     }
 
@@ -5881,22 +5749,22 @@ $content .= '</tr>
         $lecturer = Auth::user();
 
         $group = subject::join('student_subjek', 'user_subjek.id', 'student_subjek.group_id')
-        ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
-        ->where([
-            ['subjek.id', $courseid],
-            ['user_subjek.session_id', Session::get('SessionID')],
-            ['user_subjek.user_ic', $lecturer->ic]
-        ])->groupBy('student_subjek.group_name')
-        ->select('user_subjek.*','student_subjek.group_name')->get();
+            ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
+            ->where([
+                ['subjek.id', $courseid],
+                ['user_subjek.session_id', Session::get('SessionID')],
+                ['user_subjek.user_ic', $lecturer->ic]
+            ])->groupBy('student_subjek.group_name')
+            ->select('user_subjek.*', 'student_subjek.group_name')->get();
 
         $content = "";
         $content .= "<option value='0' selected disabled>-</option>";
-        foreach($group as $grp){
+        foreach ($group as $grp) {
             // Skip if group_name is empty or null
-            if(empty($grp->group_name)) {
+            if (empty($grp->group_name)) {
                 continue;
             }
-            
+
             $lecturer = User::where('ic', $grp->user_ic)->first();
             $content .= '<option data-style="btn-inverse"
             data-content=\'<div class="row" >
@@ -5907,77 +5775,77 @@ $content .= '</tr>
                         </div>
                 </div>
                 <div class="col-md-10 align-self-center lh-lg">
-                    <span><strong>'. htmlspecialchars($grp->group_name) .'</strong></span><br>
-                    <span><strong>'. htmlentities($lecturer->name, ENT_QUOTES) .'</strong></span><br>
-                    <span>'. $lecturer->email .' | <strong class="text-fade"">'.$lecturer->faculty .'</strong></span><br>
+                    <span><strong>' . htmlspecialchars($grp->group_name) . '</strong></span><br>
+                    <span><strong>' . htmlentities($lecturer->name, ENT_QUOTES) . '</strong></span><br>
+                    <span>' . $lecturer->email . ' | <strong class="text-fade"">' . $lecturer->faculty . '</strong></span><br>
                     <span class="text-fade"></span>
                 </div>
-            </div>\' value="'. $grp->id . '|' . htmlspecialchars($grp->group_name) .'" ></option>';
+            </div>\' value="' . $grp->id . '|' . htmlspecialchars($grp->group_name) . '" ></option>';
         }
-        
+
         return $content;
     }
 
     public function replacementClassGetStudentProgram(Request $request)
     {
         $group = explode('|', $request->group);
-        
+
         // Validate that we have both group_id and group_name
-        if(count($group) < 2) {
+        if (count($group) < 2) {
             return "<option value='0' selected disabled>Invalid group data</option>";
         }
 
         $program = student::join('students', 'student_subjek.student_ic', 'students.ic')
-                    ->join('tblprogramme', 'students.program', 'tblprogramme.id')
-                    ->where('student_subjek.group_id', $group[0])->where('student_subjek.group_name', $group[1])
-                    ->where('student_subjek.sessionid', Session::get('SessionID'))
-                    ->whereNotIn('students.status', [4,5,6,7,16])
-                    ->groupBy('tblprogramme.id')
-                    ->select('tblprogramme.*')
-                    ->get();
+            ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+            ->where('student_subjek.group_id', $group[0])->where('student_subjek.group_name', $group[1])
+            ->where('student_subjek.sessionid', Session::get('SessionID'))
+            ->whereNotIn('students.status', [4, 5, 6, 7, 16])
+            ->groupBy('tblprogramme.id')
+            ->select('tblprogramme.*')
+            ->get();
 
         $content = "";
         $content .= "<option value='0' selected disabled>-</option>";
-        foreach($program as $prg){
-            $content .= '<option data-style="btn-inverse" value="'. $prg->id .'" >'. $prg->progname .' ('. $prg->progcode .')</option>';
+        foreach ($program as $prg) {
+            $content .= '<option data-style="btn-inverse" value="' . $prg->id . '" >' . $prg->progname . ' (' . $prg->progcode . ')</option>';
         }
-        
+
         return $content;
     }
 
     public function replacementClassGetWakilPelajar(Request $request)
     {
         $group = explode('|', $request->group);
-        
+
         // Validate that we have both group_id and group_name
-        if(count($group) < 2) {
+        if (count($group) < 2) {
             return "<option value='0' selected disabled>Invalid group data</option>";
         }
 
         $students = student::join('students', 'student_subjek.student_ic', 'students.ic')
-                    ->join('tblprogramme', 'students.program', 'tblprogramme.id')
-                    ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
-                    ->leftJoin('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
-                    ->where('group_id', $group[0])->where('group_name', $group[1])
-                    ->where('student_subjek.sessionid', Session::get('SessionID'))
-                    ->whereNotIn('students.status', [4,5,6,7,16]);
+            ->join('tblprogramme', 'students.program', 'tblprogramme.id')
+            ->join('sessions', 'student_subjek.sessionid', 'sessions.SessionID')
+            ->leftJoin('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
+            ->where('group_id', $group[0])->where('group_name', $group[1])
+            ->where('student_subjek.sessionid', Session::get('SessionID'))
+            ->whereNotIn('students.status', [4, 5, 6, 7, 16]);
 
-        if(isset($request->program) && count($request->program) > 0) {
+        if (isset($request->program) && count($request->program) > 0) {
             $students->whereIn('students.program', $request->program);
         }
 
         $students = $students->select('students.ic', 'students.name', 'students.no_matric', 'tblstudent_personal.no_tel', 'tblstudent_personal.no_tel2')
-                    ->orderBy('students.name')->get();
+            ->orderBy('students.name')->get();
 
         $content = "";
         $content .= "<option value='0' selected disabled>-</option>";
-        foreach($students as $student){
+        foreach ($students as $student) {
             // Get phone number - prioritize no_tel, fallback to no_tel2
             $phoneNumber = $student->no_tel ?: $student->no_tel2;
-            
-            $content .= '<option value="'. $student->ic .'" data-name="'. htmlentities($student->name, ENT_QUOTES) .'" data-phone="'. ($phoneNumber ?: '') .'" >'. $student->name .' ('. $student->no_matric .')</option>';
+
+            $content .= '<option value="' . $student->ic . '" data-name="' . htmlentities($student->name, ENT_QUOTES) . '" data-phone="' . ($phoneNumber ?: '') . '" >' . $student->name . ' (' . $student->no_matric . ')</option>';
         }
-        
+
         return $content;
     }
 
@@ -5991,8 +5859,8 @@ $content .= '</tr>
             }
 
             $rooms = DB::table('tbllecture_room')
-                       ->orderBy('name')
-                       ->get();
+                ->orderBy('name')
+                ->get();
 
             if ($rooms->isEmpty()) {
                 return "<option value='' disabled selected>No lecture rooms available</option>";
@@ -6000,10 +5868,10 @@ $content .= '</tr>
 
             $content = "";
             $content .= "<option value='' disabled selected>Choose a room...</option>";
-            foreach($rooms as $room){
-                $content .= '<option value="'. $room->id .'" >'. htmlentities($room->name, ENT_QUOTES) .'</option>';
+            foreach ($rooms as $room) {
+                $content .= '<option value="' . $room->id . '" >' . htmlentities($room->name, ENT_QUOTES) . '</option>';
             }
-            
+
             return $content;
         } catch (\Exception $e) {
             \Log::error('Error fetching lecture rooms: ' . $e->getMessage());
@@ -6029,7 +5897,7 @@ $content .= '</tr>
 
         $group = explode('|', $data['group']);
         $user = Auth::user();
-        
+
         // Get the user_subjek record
         $userSubjek = DB::table('user_subjek')
             ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
@@ -6090,7 +5958,7 @@ $content .= '</tr>
             ->select(
                 'replacement_class.*',
                 'subjek.course_name',
-                'subjek.course_code', 
+                'subjek.course_code',
                 'sessions.SessionName',
                 'students.name as student_name',
                 'students.no_matric',
@@ -6103,7 +5971,7 @@ $content .= '</tr>
             ->paginate(10);
 
         // Get program details for each application
-        foreach($applications as $app) {
+        foreach ($applications as $app) {
             $programs = DB::table('tblprogramme')
                 ->whereIn('id', json_decode($app->selected_programs))
                 ->get();
@@ -6117,8 +5985,8 @@ $content .= '</tr>
     {
         $rooms = DB::table('tbllecture_room')->get();
         $html = '<option value="" disabled selected>Choose a room...</option>';
-        foreach($rooms as $room) {
-            $html .= '<option value="'.$room->id.'">'.$room->name.'</option>';
+        foreach ($rooms as $room) {
+            $html .= '<option value="' . $room->id . '">' . $room->name . '</option>';
         }
         return $html;
     }
@@ -6400,15 +6268,15 @@ $content .= '</tr>
             $originalName = $file->getClientOriginalName();
             $extension = $file->getClientOriginalExtension();
             $fileSize = $file->getSize();
-            
+
             // Generate unique filename
             $fileName = time() . '_' . uniqid() . '.' . $extension;
-            
+
             // Store file in materials/{user_subjek_id}
             // Try to use the same storage disk as other files in the application
             $storageDisk = config('app.env') === 'production' ? 'linode' : 'public';
             $actualDisk = $storageDisk;
-            
+
             try {
                 if ($storageDisk === 'linode') {
                     // For Linode, use putFileAs with public visibility
@@ -6521,7 +6389,7 @@ $content .= '</tr>
             // Try the preferred disk first
             if (Storage::disk($preferredDisk)->exists($material->file_path)) {
                 $disk = $preferredDisk;
-                
+
                 // For linode (S3-compatible), get URL instead of path
                 if ($preferredDisk === 'linode') {
                     $fileUrl = Storage::disk($preferredDisk)->url($material->file_path);
@@ -6532,11 +6400,11 @@ $content .= '</tr>
             } else {
                 // Fallback: Try multiple storage locations for compatibility
                 $storageDisks = ['linode', 'public', 'local'];
-                
+
                 foreach ($storageDisks as $diskName) {
                     if ($diskName !== $preferredDisk && Storage::disk($diskName)->exists($material->file_path)) {
                         $disk = $diskName;
-                        
+
                         // For linode (S3-compatible), get URL instead of path
                         if ($diskName === 'linode') {
                             $fileUrl = Storage::disk($diskName)->url($material->file_path);
@@ -6578,7 +6446,6 @@ $content .= '</tr>
             ];
 
             return response()->download($filePath, $material->file_name, $headers);
-
         } catch (\Exception $e) {
             \Log::error("Download error for material ID {$materialId}: " . $e->getMessage());
             abort(500, 'Error downloading file: ' . $e->getMessage());
@@ -6592,7 +6459,7 @@ $content .= '</tr>
     {
         if (config('app.env') !== 'production') {
             $material = DB::table('lecturer_materials')->where('id', $materialId)->first();
-            
+
             if (!$material) {
                 return response()->json(['error' => 'Material not found']);
             }
@@ -6624,7 +6491,7 @@ $content .= '</tr>
 
             return response()->json($debug);
         }
-        
+
         abort(404);
     }
 
@@ -6663,8 +6530,4 @@ $content .= '</tr>
             'errors' => $errors
         ]);
     }
-
-  
 }
-
-
