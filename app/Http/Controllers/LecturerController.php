@@ -2924,7 +2924,8 @@ class LecturerController extends Controller
                 ->where([
                     ['user_subjek.user_ic', $user->ic],
                     ['user_subjek.session_id', Session::get('SessionID')],
-                    ['subjek.id', request()->id]
+                    ['subjek.id', request()->id],
+                    ['students.status', '2']
                 ])->where('student_subjek.group_name', $grp->group_name)
                 ->orderBy('students.name')->get();
 
