@@ -2981,6 +2981,7 @@ class PendaftarController extends Controller
             ->join('transcript_status', 'student_transcript.transcript_status_id', 'transcript_status.id')
             ->where([
                 ['students.program', $request->program],
+                ['students.status', '!=', 4],
                 ['student_transcript.session_id', $request->session],
                 ['student_transcript.semester', $request->semester]
             ])->select('student_transcript.*', 'students.name', 'sessions.SessionName', 'transcript_status.status_name AS transcript_status_id')

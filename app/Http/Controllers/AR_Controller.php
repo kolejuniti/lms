@@ -5012,6 +5012,7 @@ class AR_Controller extends Controller
                     ->join('transcript_status', 'student_transcript.transcript_status_id', 'transcript_status.id')
                     ->where([
                         ['students.program', $datas->program],
+                        ['students.status', '!=', 4],
                         ['student_transcript.session_id', $datas->session],
                         ['student_transcript.semester', $datas->semester]
                     ])
