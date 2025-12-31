@@ -3789,8 +3789,7 @@ class FinanceController extends Controller
         $data['detail'] = DB::table('tblclaimdtl')
             ->join('tblstudentclaim', 'tblclaimdtl.claim_package_id', 'tblstudentclaim.id')
             ->where('tblclaimdtl.claim_id', $request->id)
-            ->select('tblclaimdtl.*', DB::raw('SUM(tblclaimdtl.amount) AS total_amount'), 'tblstudentclaim.name', 'tblstudentclaim.groupid')
-            ->groupBy('tblstudentclaim.name')->get();
+            ->select('tblclaimdtl.*', 'tblclaimdtl.amount AS total_amount', 'tblstudentclaim.name', 'tblstudentclaim.groupid')->get();
 
         $data['total'] = DB::table('tblclaimdtl')
             ->where('claim_id', $request->id)
@@ -5789,7 +5788,8 @@ class FinanceController extends Controller
 
                 //newstudent
 
-                if (DB::table('tblpaymentdtl')
+                if (
+                    DB::table('tblpaymentdtl')
                     ->join('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
                     ->where('tblpaymentdtl.payment_id', $pym->id)
                     ->whereIn('tblstudentclaim.groupid', [1])->exists() && $pym->process_type_id != 10
