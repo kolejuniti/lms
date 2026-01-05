@@ -529,7 +529,7 @@
 
                         <!-- Overall Quiz -->
                         @if(count($quiz) > 0)
-                        <td style="background-color: #677ee2">{{ $overallquiz[$key] ?? '0' }}</td>
+                        <td style="background-color: #fff9abff">{{ $overallquiz[$key] ?? '0' }}</td>
                         @endif
 
                         <!-- Test marks -->
@@ -539,7 +539,7 @@
 
                         <!-- Overall Test -->
                         @if(count($test) > 0)
-                        <td style="background-color: #677ee2">{{ $overalltest[$key] ?? '0' }}</td>
+                        <td style="background-color: #fff9abff">{{ $overalltest[$key] ?? '0' }}</td>
                         @endif
 
                         <!-- Test2 marks -->
@@ -549,7 +549,7 @@
 
                         <!-- Overall Test2 -->
                         @if(count($test2) > 0)
-                        <td style="background-color: #677ee2">{{ $overalltest2[$key] ?? '0' }}</td>
+                        <td style="background-color: #fff9abff">{{ $overalltest2[$key] ?? '0' }}</td>
                         @endif
 
                         <!-- Assignment marks -->
@@ -559,7 +559,7 @@
 
                         <!-- Overall Assignment -->
                         @if(count($assign) > 0)
-                        <td style="background-color: #677ee2">{{ $overallassign[$key] ?? '0' }}</td>
+                        <td style="background-color: #fff9abff">{{ $overallassign[$key] ?? '0' }}</td>
                         @endif
 
                         <!-- Extra marks -->
@@ -569,7 +569,7 @@
 
                         <!-- Overall Extra -->
                         @if(count($extra) > 0)
-                        <td style="background-color: #677ee2">{{ $overallextra[$key] ?? '0' }}</td>
+                        <td style="background-color: #fff9abff">{{ $overallextra[$key] ?? '0' }}</td>
                         @endif
 
                         <!-- Practical marks -->
@@ -579,7 +579,7 @@
 
                         <!-- Overall Practical -->
                         @if(count($practical) > 0)
-                        <td style="background-color: #677ee2">{{ $overallpractical[$key] ?? '0' }}</td>
+                        <td style="background-color: #fff9abff">{{ $overallpractical[$key] ?? '0' }}</td>
                         @endif
 
                         <!-- Other marks -->
@@ -589,7 +589,7 @@
 
                         <!-- Overall Other -->
                         @if(count($other) > 0)
-                        <td style="background-color: #677ee2">{{ $overallother[$key] ?? '0' }}</td>
+                        <td style="background-color: #fff9abff">{{ $overallother[$key] ?? '0' }}</td>
                         @endif
 
                         <!-- Midterm marks -->
@@ -599,7 +599,7 @@
 
                         <!-- Overall Midterm -->
                         @if(count($midterm) > 0)
-                        <td style="background-color: #677ee2">{{ $overallmidterm[$key] ?? '0' }}</td>
+                        <td style="background-color: #fff9abff">{{ $overallmidterm[$key] ?? '0' }}</td>
                         @endif
 
                         {{-- <!-- Attend -->
@@ -612,7 +612,7 @@
                         @endforeach
 
                         <!-- Overall Final -->
-                        <td style="background-color: #677ee2">{{ $overallfinal[$key] ?? '0' }}</td>
+                        <td style="background-color: #fff9abff">{{ $overallfinal[$key] ?? '0' }}</td>
                         @endif
 
                         <!-- Selang Markah -->
@@ -850,56 +850,56 @@
                         <td>{{ $avg }}</td>
                         @endforeach
                         @if(count($quiz) > 0)
-                        <td style="background-color: #677ee2">{{ $avgOverallQuiz }}</td>
+                        <td style="background-color: #fff9abff">{{ $avgOverallQuiz }}</td>
                         @endif
                         @foreach($testAvgs as $avg)
                         <td>{{ $avg }}</td>
                         @endforeach
                         @if(count($test) > 0)
-                        <td style="background-color: #677ee2">{{ $avgOverallTest }}</td>
+                        <td style="background-color: #fff9abff">{{ $avgOverallTest }}</td>
                         @endif
                         @foreach($test2Avgs as $avg)
                         <td>{{ $avg }}</td>
                         @endforeach
                         @if(count($test2) > 0)
-                        <td style="background-color: #677ee2">{{ $avgOverallTest2 }}</td>
+                        <td style="background-color: #fff9abff">{{ $avgOverallTest2 }}</td>
                         @endif
                         @foreach($assignAvgs as $avg)
                         <td>{{ $avg }}</td>
                         @endforeach
                         @if(count($assign) > 0)
-                        <td style="background-color: #677ee2">{{ $avgOverallAssign }}</td>
+                        <td style="background-color: #fff9abff">{{ $avgOverallAssign }}</td>
                         @endif
                         @foreach($extraAvgs as $avg)
                         <td>{{ $avg }}</td>
                         @endforeach
                         @if(count($extra) > 0)
-                        <td style="background-color: #677ee2">{{ $avgOverallExtra }}</td>
+                        <td style="background-color: #fff9abff">{{ $avgOverallExtra }}</td>
                         @endif
                         @foreach($practicalAvgs as $avg)
                         <td>{{ $avg }}</td>
                         @endforeach
                         @if(count($practical) > 0)
-                        <td style="background-color: #677ee2">{{ $avgOverallPractical }}</td>
+                        <td style="background-color: #fff9abff">{{ $avgOverallPractical }}</td>
                         @endif
                         @foreach($otherAvgs as $avg)
                         <td>{{ $avg }}</td>
                         @endforeach
                         @if(count($other) > 0)
-                        <td style="background-color: #677ee2">{{ $avgOverallOther }}</td>
+                        <td style="background-color: #fff9abff">{{ $avgOverallOther }}</td>
                         @endif
                         @foreach($midtermAvgs as $avg)
                         <td>{{ $avg }}</td>
                         @endforeach
                         @if(count($midterm) > 0)
-                        <td style="background-color: #677ee2">{{ $avgOverallMidterm }}</td>
+                        <td style="background-color: #fff9abff">{{ $avgOverallMidterm }}</td>
                         @endif
                         {{-- <td> </td> --}}
                         @if(count($final) > 0)
                         @foreach($finalAvgs as $avg)
                         <td>{{ $avg }}</td>
                         @endforeach
-                        <td style="background-color: #677ee2">{{ $avgOverallFinal }}</td>
+                        <td style="background-color: #fff9abff">{{ $avgOverallFinal }}</td>
                         @endif
                         <td>{{ $avgoverall }}%</td>
                         <td></td>
@@ -1113,56 +1113,56 @@
                         <td>{{ $max }}</td>
                         @endforeach
                         @if(count($quiz) > 0)
-                        <td style="background-color: #677ee2">{{ $maxOverallQuiz }}</td>
+                        <td style="background-color: #fff9abff">{{ $maxOverallQuiz }}</td>
                         @endif
                         @foreach($testMaxs as $max)
                         <td>{{ $max }}</td>
                         @endforeach
                         @if(count($test) > 0)
-                        <td style="background-color: #677ee2">{{ $maxOverallTest }}</td>
+                        <td style="background-color: #fff9abff">{{ $maxOverallTest }}</td>
                         @endif
                         @foreach($test2Maxs as $max)
                         <td>{{ $max }}</td>
                         @endforeach
                         @if(count($test2) > 0)
-                        <td style="background-color: #677ee2">{{ $maxOverallTest2 }}</td>
+                        <td style="background-color: #fff9abff">{{ $maxOverallTest2 }}</td>
                         @endif
                         @foreach($assignMaxs as $max)
                         <td>{{ $max }}</td>
                         @endforeach
                         @if(count($assign) > 0)
-                        <td style="background-color: #677ee2">{{ $maxOverallAssign }}</td>
+                        <td style="background-color: #fff9abff">{{ $maxOverallAssign }}</td>
                         @endif
                         @foreach($extraMaxs as $max)
                         <td>{{ $max }}</td>
                         @endforeach
                         @if(count($extra) > 0)
-                        <td style="background-color: #677ee2">{{ $maxOverallExtra }}</td>
+                        <td style="background-color: #fff9abff">{{ $maxOverallExtra }}</td>
                         @endif
                         @foreach($practicalMaxs as $max)
                         <td>{{ $max }}</td>
                         @endforeach
                         @if(count($practical) > 0)
-                        <td style="background-color: #677ee2">{{ $maxOverallPractical }}</td>
+                        <td style="background-color: #fff9abff">{{ $maxOverallPractical }}</td>
                         @endif
                         @foreach($otherMaxs as $max)
                         <td>{{ $max }}</td>
                         @endforeach
                         @if(count($other) > 0)
-                        <td style="background-color: #677ee2">{{ $maxOverallOther }}</td>
+                        <td style="background-color: #fff9abff">{{ $maxOverallOther }}</td>
                         @endif
                         @foreach($midtermMaxs as $max)
                         <td>{{ $max }}</td>
                         @endforeach
                         @if(count($midterm) > 0)
-                        <td style="background-color: #677ee2">{{ $maxOverallMidterm }}</td>
+                        <td style="background-color: #fff9abff">{{ $maxOverallMidterm }}</td>
                         @endif
                         {{-- <td> </td> --}}
                         @if(count($final) > 0)
                         @foreach($finalMaxs as $max)
                         <td>{{ $max }}</td>
                         @endforeach
-                        <td style="background-color: #677ee2">{{ $maxOverallFinal }}</td>
+                        <td style="background-color: #fff9abff">{{ $maxOverallFinal }}</td>
                         @endif
                         <td>{{ $maxoverall }}%</td>
                         <td></td>
@@ -1412,56 +1412,56 @@
                                                                                                 <td>{{ $min }}</td>
                                                                                                 @endforeach
                                                                                                 @if(count($quiz) > 0)
-                                                                                                <td style="background-color: #677ee2">{{ $minOverallQuiz }}</td>
+                                                                                                <td style="background-color: #fff9abff">{{ $minOverallQuiz }}</td>
                                                                                                 @endif
                                                                                                 @foreach($testMins as $min)
                                                                                                 <td>{{ $min }}</td>
                                                                                                 @endforeach
                                                                                                 @if(count($test) > 0)
-                                                                                                <td style="background-color: #677ee2">{{ $minOverallTest }}</td>
+                                                                                                <td style="background-color: #fff9abff">{{ $minOverallTest }}</td>
                                                                                                 @endif
                                                                                                 @foreach($test2Mins as $min)
                                                                                                 <td>{{ $min }}</td>
                                                                                                 @endforeach
                                                                                                 @if(count($test2) > 0)
-                                                                                                <td style="background-color: #677ee2">{{ $minOverallTest2 }}</td>
+                                                                                                <td style="background-color: #fff9abff">{{ $minOverallTest2 }}</td>
                                                                                                 @endif
                                                                                                 @foreach($assignMins as $min)
                                                                                                 <td>{{ $min }}</td>
                                                                                                 @endforeach
                                                                                                 @if(count($assign) > 0)
-                                                                                                <td style="background-color: #677ee2">{{ $minOverallAssign }}</td>
+                                                                                                <td style="background-color: #fff9abff">{{ $minOverallAssign }}</td>
                                                                                                 @endif
                                                                                                 @foreach($extraMins as $min)
                                                                                                 <td>{{ $min }}</td>
                                                                                                 @endforeach
                                                                                                 @if(count($extra) > 0)
-                                                                                                <td style="background-color: #677ee2">{{ $minOverallExtra }}</td>
+                                                                                                <td style="background-color: #fff9abff">{{ $minOverallExtra }}</td>
                                                                                                 @endif
                                                                                                 @foreach($practicalMins as $min)
                                                                                                 <td>{{ $min }}</td>
                                                                                                 @endforeach
                                                                                                 @if(count($practical) > 0)
-                                                                                                <td style="background-color: #677ee2">{{ $minOverallPractical }}</td>
+                                                                                                <td style="background-color: #fff9abff">{{ $minOverallPractical }}</td>
                                                                                                 @endif
                                                                                                 @foreach($otherMins as $min)
                                                                                                 <td>{{ $min }}</td>
                                                                                                 @endforeach
                                                                                                 @if(count($other) > 0)
-                                                                                                <td style="background-color: #677ee2">{{ $minOverallOther }}</td>
+                                                                                                <td style="background-color: #fff9abff">{{ $minOverallOther }}</td>
                                                                                                 @endif
                                                                                                 @foreach($midtermMins as $min)
                                                                                                 <td>{{ $min }}</td>
                                                                                                 @endforeach
                                                                                                 @if(count($midterm) > 0)
-                                                                                                <td style="background-color: #677ee2">{{ $minOverallMidterm }}</td>
+                                                                                                <td style="background-color: #fff9abff">{{ $minOverallMidterm }}</td>
                                                                                                 @endif
                                                                                                 {{-- <td> </td> --}}
                                                                                                 @if(count($final) > 0)
                                                                                                 @foreach($finalMins as $min)
                                                                                                 <td>{{ $min }}</td>
                                                                                                 @endforeach
-                                                                                                <td style="background-color: #677ee2">{{ $minOverallFinal }}</td>
+                                                                                                <td style="background-color: #fff9abff">{{ $minOverallFinal }}</td>
                                                                                                 @endif
                                                                                                 <td>{{ $minoverall }}%</td>
                                                                                                 <td></td>
