@@ -26,7 +26,8 @@
         background-color: #f5f7fa;
     }
 
-    .card, .box {
+    .card,
+    .box {
         border-radius: 12px;
         box-shadow: var(--card-shadow);
         border: none;
@@ -34,7 +35,8 @@
         overflow: hidden;
     }
 
-    .card:hover, .box:hover {
+    .card:hover,
+    .box:hover {
         transform: translateY(-5px);
         box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.2);
     }
@@ -61,7 +63,7 @@
         padding: 0;
     }
 
-    .breadcrumb-item + .breadcrumb-item::before {
+    .breadcrumb-item+.breadcrumb-item::before {
         content: ">";
     }
 
@@ -70,7 +72,8 @@
         height: 60px !important;
     }
 
-    .fc-theme-standard td, .fc-theme-standard th {
+    .fc-theme-standard td,
+    .fc-theme-standard th {
         border-color: #e0e0e0;
     }
 
@@ -111,7 +114,9 @@
         margin-bottom: 4px;
     }
 
-    .event-time, .event-program, .event-lecturer {
+    .event-time,
+    .event-program,
+    .event-lecturer {
         margin-top: 3px;
         font-size: 0.75rem;
     }
@@ -224,6 +229,7 @@
             transform: translateY(-20px);
             opacity: 0;
         }
+
         100% {
             transform: translateY(0);
             opacity: 1;
@@ -259,7 +265,7 @@
                         </nav>
                     </div>
                 </div>
-                
+
                 <!-- Add html2pdf library -->
                 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
             </div>
@@ -288,7 +294,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- Calendar Box -->
                     <div class="box mb-4">
                         <div class="box-body">
@@ -296,9 +302,9 @@
                                 <h4 class="box-title mb-0 fw-700">Lecturer Timetable</h4>
                             </div>
                             <hr>
-                            
+
                             <div id='calendar' style="width: 100%;"></div>
-                            
+
                             <div class="action-buttons">
                                 <button id="print-schedule-btn" class="btn btn-secondary">
                                     <i class="fas fa-print me-2"></i> Print Timetable
@@ -306,6 +312,32 @@
                                 <button id="download-pdf-btn" class="btn btn-primary ms-2">
                                     <i class="fas fa-file-pdf me-2"></i> Download PDF
                                 </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="box">
+                        <div class="box-body">
+                            <h4 class="box-title">
+                                <i class="fas fa-history me-2"></i> Timetable History
+                            </h4>
+                            <hr>
+                            <div class="card-body">
+                                <table id="complex_header" class="table table-striped projects">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Date</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="table">
+                                        <!-- Filled by getLoggedSchedule() -->
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
@@ -332,10 +364,13 @@
     document.addEventListener('DOMContentLoaded', function() {
         // Initialize tooltips for better user guidance
         initializeTooltips();
-        
+
         // Initialize the calendar
         setupCalendar();
-        
+
+        // Fetch logged schedules for lecturer
+        getLoggedSchedule();
+
         // Set up print button functionality
         // Set up print button with improved error handling
         const printBtn = document.getElementById('print-schedule-btn');
@@ -345,7 +380,7 @@
                 const originalText = this.innerHTML;
                 this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Preparing...';
                 this.disabled = true;
-                
+
                 // Slight delay to show the loading state
                 setTimeout(() => {
                     try {
@@ -361,87 +396,100 @@
                 }, 500);
             });
         }
-    
-    // Set up PDF download button
-    const pdfBtn = document.getElementById('download-pdf-btn');
-    if (pdfBtn) {
-        pdfBtn.addEventListener('click', function() {
-            // Show loading state in button
-            const originalText = this.innerHTML;
-            this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Generating PDF...';
-            this.disabled = true;
-            
-            // Use html2pdf library for PDF generation if available, or fallback
-            if (typeof html2pdf !== 'undefined') {
-                // Capture current calendar view
-                const calendarEl = document.getElementById('calendar');
-                
-                // Get current month and year for the filename
-                const date = new Date();
-                const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
-                                   'July', 'August', 'September', 'October', 'November', 'December'];
-                const month = monthNames[date.getMonth()];
-                const year = date.getFullYear();
-                
-                // Configure html2pdf options
-                const options = {
-                    margin: 0.5,
-                    filename: `Lecturer_Schedule_${month}_${year}.pdf`,
-                    image: { type: 'jpeg', quality: 0.98 },
-                    html2canvas: { scale: 2, useCORS: true },
-                    jsPDF: { unit: 'in', format: 'a4', orientation: 'landscape' }
-                };
-                
-                // Generate PDF using the calendar element
-                html2pdf().set(options).from(calendarEl).save().then(() => {
-                    showNotification('PDF downloaded successfully', 'success');
-                    // Restore button state
-                    this.innerHTML = originalText;
-                    this.disabled = false;
-                }).catch(error => {
-                    console.error('PDF generation error:', error);
-                    showNotification('Error generating PDF: ' + error.message, 'error');
-                    // Restore button state
-                    this.innerHTML = originalText;
-                    this.disabled = false;
-                });
-            } else {
-                // If html2pdf is not available, try alternative approach using the same HTML from printSchedule()
-                try {
-                    showNotification('Generating PDF using browser print function...', 'info');
-                    
-                    // Use the same HTML generation as in printSchedule()
-                    const scheduleHtml = generateScheduleHTML();
-                    
-                    // Create a blob and download link
-                    const blob = new Blob([scheduleHtml], { type: 'text/html' });
-                    const url = URL.createObjectURL(blob);
-                    
-                    // Create and trigger download
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = 'Lecturer_Schedule.html';
-                    document.body.appendChild(a);
-                    a.click();
-                    
-                    // Clean up
-                    setTimeout(() => {
-                        document.body.removeChild(a);
-                        URL.revokeObjectURL(url);
-                    }, 0);
-                    
-                    showNotification('HTML file downloaded. Please open it and use browser print function to create PDF', 'info', false);
-                } catch (error) {
-                    console.error('HTML download error:', error);
-                    showNotification('Error generating document: ' + error.message, 'error');
-                } finally {
-                    // Restore button state
-                    this.innerHTML = originalText;
-                    this.disabled = false;
+
+        // Set up PDF download button
+        const pdfBtn = document.getElementById('download-pdf-btn');
+        if (pdfBtn) {
+            pdfBtn.addEventListener('click', function() {
+                // Show loading state in button
+                const originalText = this.innerHTML;
+                this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Generating PDF...';
+                this.disabled = true;
+
+                // Use html2pdf library for PDF generation if available, or fallback
+                if (typeof html2pdf !== 'undefined') {
+                    // Capture current calendar view
+                    const calendarEl = document.getElementById('calendar');
+
+                    // Get current month and year for the filename
+                    const date = new Date();
+                    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                        'July', 'August', 'September', 'October', 'November', 'December'
+                    ];
+                    const month = monthNames[date.getMonth()];
+                    const year = date.getFullYear();
+
+                    // Configure html2pdf options
+                    const options = {
+                        margin: 0.5,
+                        filename: `Lecturer_Schedule_${month}_${year}.pdf`,
+                        image: {
+                            type: 'jpeg',
+                            quality: 0.98
+                        },
+                        html2canvas: {
+                            scale: 2,
+                            useCORS: true
+                        },
+                        jsPDF: {
+                            unit: 'in',
+                            format: 'a4',
+                            orientation: 'landscape'
+                        }
+                    };
+
+                    // Generate PDF using the calendar element
+                    html2pdf().set(options).from(calendarEl).save().then(() => {
+                        showNotification('PDF downloaded successfully', 'success');
+                        // Restore button state
+                        this.innerHTML = originalText;
+                        this.disabled = false;
+                    }).catch(error => {
+                        console.error('PDF generation error:', error);
+                        showNotification('Error generating PDF: ' + error.message, 'error');
+                        // Restore button state
+                        this.innerHTML = originalText;
+                        this.disabled = false;
+                    });
+                } else {
+                    // If html2pdf is not available, try alternative approach using the same HTML from printSchedule()
+                    try {
+                        showNotification('Generating PDF using browser print function...', 'info');
+
+                        // Use the same HTML generation as in printSchedule()
+                        const scheduleHtml = generateScheduleHTML();
+
+                        // Create a blob and download link
+                        const blob = new Blob([scheduleHtml], {
+                            type: 'text/html'
+                        });
+                        const url = URL.createObjectURL(blob);
+
+                        // Create and trigger download
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = 'Lecturer_Schedule.html';
+                        document.body.appendChild(a);
+                        a.click();
+
+                        // Clean up
+                        setTimeout(() => {
+                            document.body.removeChild(a);
+                            URL.revokeObjectURL(url);
+                        }, 0);
+
+                        showNotification('HTML file downloaded. Please open it and use browser print function to create PDF', 'info', false);
+                    } catch (error) {
+                        console.error('HTML download error:', error);
+                        showNotification('Error generating document: ' + error.message, 'error');
+                    } finally {
+                        // Restore button state
+                        this.innerHTML = originalText;
+                        this.disabled = false;
+                    }
                 }
-            }
-        });
-    }
+            });
+        }
     });
 
     /**
@@ -450,7 +498,7 @@
     function initializeTooltips() {
         const addTooltip = (element, message) => {
             if (!element) return;
-            
+
             element.addEventListener('mouseenter', (e) => {
                 const tooltip = document.createElement('div');
                 tooltip.className = 'custom-tooltip';
@@ -467,13 +515,13 @@
                 tooltip.style.left = `${e.pageX + 10}px`;
                 document.body.appendChild(tooltip);
             });
-            
+
             element.addEventListener('mouseleave', () => {
                 const tooltips = document.querySelectorAll('.custom-tooltip');
                 tooltips.forEach(tip => tip.remove());
             });
         };
-        
+
         // Add tooltips to buttons
         addTooltip(document.getElementById('print-schedule-btn'), 'Print current timetable');
     }
@@ -494,10 +542,10 @@
             toastContainer.style.zIndex = '9999';
             document.body.appendChild(toastContainer);
         }
-        
+
         // Generate a unique ID for this toast
         const toastId = 'toast-' + Date.now();
-        
+
         // Create the toast HTML structure
         const toastHTML = `
             <div id="${toastId}" class="toast-notification toast-${type}" style="
@@ -533,13 +581,13 @@
                 ">&times;</button>
             </div>
         `;
-        
+
         // Insert the toast into the container
         toastContainer.insertAdjacentHTML('beforeend', toastHTML);
-        
+
         // Get the newly created toast element
         const toast = document.getElementById(toastId);
-        
+
         // Auto hide after 4 seconds
         if (autoHide) {
             setTimeout(() => {
@@ -548,7 +596,7 @@
                 }
             }, 4000);
         }
-        
+
         return toast;
     }
 
@@ -566,7 +614,7 @@
             '#4895ef', // Sky blue
             '#560bad', // Dark purple
             '#b5179e', // Magenta
-            '#3f37c9'  // Indigo
+            '#3f37c9' // Indigo
         ];
         return colors[Math.floor(Math.random() * colors.length)];
     }
@@ -580,7 +628,7 @@
     function setupCalendar() {
         var calendarEl = document.getElementById('calendar');
         if (!calendarEl) return;
-        
+
         // Define hidden days - hide Saturday (6) and Sunday (0)
         var hiddenDays = [0, 6]; // Sunday = 0, Saturday = 6
 
@@ -612,29 +660,29 @@
             nowIndicator: true,
             navLinks: true,
             dayMaxEvents: true,
-            
+
             // Events fetching (REHAT + dynamic events)
             events: function(fetchInfo, successCallback, failureCallback) {
                 // Show loading indicator
                 $('#calendar').addClass('loading');
                 $('<div class="calendar-loading"><i class="fas fa-circle-notch fa-spin"></i> Loading...</div>').appendTo('#calendar');
-                
+
                 // Generate "REHAT" events
                 var rehatEvents = [];
                 var date = new Date(fetchInfo.start);
                 while (date < fetchInfo.end) {
-                    var dayOfWeek = date.getDay(); 
-                                    if (dayOfWeek >= 1 && dayOfWeek <= 4) {
-                    // Monday-Thursday => 13:15 to 14:15
-                    rehatEvents.push({
-                        title: 'REHAT',
-                        start: new Date(date.getFullYear(), date.getMonth(), date.getDate(), 13, 30, 0),
-                        end: new Date(date.getFullYear(), date.getMonth(), date.getDate(), 14, 0, 0),
-                        allDay: false,
-                        color: '#e63946',
-                        textColor: '#ffffff',
-                        borderColor: '#e63946'
-                    });
+                    var dayOfWeek = date.getDay();
+                    if (dayOfWeek >= 1 && dayOfWeek <= 4) {
+                        // Monday-Thursday => 13:15 to 14:15
+                        rehatEvents.push({
+                            title: 'REHAT',
+                            start: new Date(date.getFullYear(), date.getMonth(), date.getDate(), 13, 30, 0),
+                            end: new Date(date.getFullYear(), date.getMonth(), date.getDate(), 14, 0, 0),
+                            allDay: false,
+                            color: '#e63946',
+                            textColor: '#ffffff',
+                            borderColor: '#e63946'
+                        });
                     } else if (dayOfWeek === 5) {
                         // Friday => 12:30 to 14:30
                         rehatEvents.push({
@@ -661,23 +709,23 @@
                             textColor: '#ffffff',
                             borderColor: 'rgba(255,255,255,0.2)'
                         }));
-                        
+
                         // Remove loading overlay
                         $('#calendar').removeClass('loading');
                         $('.calendar-loading').remove();
-                        
+
                         successCallback(rehatEvents.concat(coloredEvents));
                     })
                     .catch(error => {
                         console.error('Error fetching events:', error);
-                        
+
                         // Remove loading overlay
                         $('#calendar').removeClass('loading');
                         $('.calendar-loading').remove();
-                        
+
                         // Show error notification
                         showNotification('Error loading calendar events: ' + error.message, 'error');
-                        
+
                         failureCallback(error);
                     });
             },
@@ -693,13 +741,13 @@
 
             editable: false, // Set to false as per original
             selectable: false, // Set to false as per original
-            
+
             titleFormat: {
                 year: 'numeric',
                 month: 'short',
                 day: 'numeric'
             },
-            
+
             dayHeaderFormat: {
                 weekday: 'long'
             },
@@ -712,7 +760,7 @@
                 container.style.display = 'flex';
                 container.style.flexDirection = 'column';
                 container.style.padding = '2px';
-                
+
                 // Time element at the top
                 var timeElement = document.createElement('div');
                 timeElement.classList.add('event-time');
@@ -720,7 +768,7 @@
                 timeElement.style.opacity = '0.9';
                 timeElement.style.fontWeight = 'bold';
                 timeElement.textContent = arg.timeText;
-                
+
                 // Title element below time
                 var titleElement = document.createElement('div');
                 titleElement.classList.add('event-title');
@@ -729,11 +777,11 @@
                 titleElement.style.padding = '2px 0';
                 titleElement.style.margin = '2px 0';
                 titleElement.textContent = arg.event.title;
-                
+
                 // Add elements to container
                 container.appendChild(timeElement);
                 container.appendChild(titleElement);
-                
+
                 // Description (if available)
                 if (arg.event.extendedProps.description) {
                     var descriptionElement = document.createElement('div');
@@ -764,12 +812,14 @@
                         container.appendChild(programDiv);
                     }
                 }
-                
-                return { domNodes: [container] };
+
+                return {
+                    domNodes: [container]
+                };
             },
 
             // Event click handling
-            eventClick: function (info) {
+            eventClick: function(info) {
                 const eventElement = info.el;
                 if (eventElement.getAttribute('data-clicked') === 'true') {
                     // Show event details in a modal or tooltip
@@ -789,7 +839,7 @@
     /**
      * Show event details in a modal or tooltip
      */
-     function showEventDetails(event) {
+    function showEventDetails(event) {
         // Create custom tooltip or use SweetAlert for a nice modal
         Swal.fire({
             title: event.title,
@@ -810,165 +860,165 @@
      * Generate HTML for schedule
      * Extracted as a separate function so it can be used by both print and PDF functions
      */
-     function generateScheduleHTML() {
-    // Build days array
-    const dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-    const hiddenDays = [5, 6]; // Hide Saturday (5) and Sunday (6) in this array indexing
+    function generateScheduleHTML() {
+        // Build days array
+        const dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+        const hiddenDays = [5, 6]; // Hide Saturday (5) and Sunday (6) in this array indexing
 
-    // Build time slots with proper 15-minute intervals during lunch period
-    let times = [];
-    let currentHour = 7; // From 7:00 as per calendar config
-    let currentMinute = 0;
-    let endHour = 20; // Until 20:00 as per calendar config
+        // Build time slots with proper 15-minute intervals during lunch period
+        let times = [];
+        let currentHour = 7; // From 7:00 as per calendar config
+        let currentMinute = 0;
+        let endHour = 20; // Until 20:00 as per calendar config
 
-    while (currentHour < endHour || (currentHour === endHour && currentMinute === 0)) {
-        let hh = String(currentHour).padStart(2, '0');
-        let mm = String(currentMinute).padStart(2, '0');
-        times.push(`${hh}:${mm}`);
-        
-        // Special handling for 13:00-15:00 period (15-minute intervals)
-        if (currentHour === 13 && currentMinute === 0) {
-            // Add all 15-minute intervals from 13:00 to 15:00
-            times.push('13:15');
-            times.push('13:30');
-            times.push('13:45');
-            times.push('14:00');
-            times.push('14:15');
-            times.push('14:30');
-            times.push('14:45');
-            // Jump to 15:00 for next iteration
-            currentHour = 15;
-            currentMinute = 0;
-        } else {
-            // Regular 30-minute increment
-            currentMinute += 30;
-            if (currentMinute === 60) {
+        while (currentHour < endHour || (currentHour === endHour && currentMinute === 0)) {
+            let hh = String(currentHour).padStart(2, '0');
+            let mm = String(currentMinute).padStart(2, '0');
+            times.push(`${hh}:${mm}`);
+
+            // Special handling for 13:00-15:00 period (15-minute intervals)
+            if (currentHour === 13 && currentMinute === 0) {
+                // Add all 15-minute intervals from 13:00 to 15:00
+                times.push('13:15');
+                times.push('13:30');
+                times.push('13:45');
+                times.push('14:00');
+                times.push('14:15');
+                times.push('14:30');
+                times.push('14:45');
+                // Jump to 15:00 for next iteration
+                currentHour = 15;
                 currentMinute = 0;
-                currentHour++;
+            } else {
+                // Regular 30-minute increment
+                currentMinute += 30;
+                if (currentMinute === 60) {
+                    currentMinute = 0;
+                    currentHour++;
+                }
             }
         }
-    }
 
-    // Get events from FullCalendar
-    const events = calendar.getEvents();
+        // Get events from FullCalendar
+        const events = calendar.getEvents();
 
-    // Build a 2D array scheduleData[dayIndex][timeIndex] = [events]
-    let scheduleData = [];
-    for (let d = 0; d < 7; d++) { // 7 days of the week
-        scheduleData[d] = [];
-        for (let t = 0; t < times.length; t++) {
-            scheduleData[d][t] = []; // Initialize with empty array
-        }
-    }
-
-    // Helper function to convert Date to "HH:MM" format
-    function toHHMM(dateObj) {
-        let hh = String(dateObj.getHours()).padStart(2, '0');
-        let mm = String(dateObj.getMinutes()).padStart(2, '0');
-        return hh + ':' + mm;
-    }
-
-    // Helper function to find the appropriate time slot index for any time
-    function findTimeSlotIndex(timeStr, times, isEndTime = false) {
-        // First try exact match
-        let exactIndex = times.indexOf(timeStr);
-        if (exactIndex !== -1) {
-            return exactIndex;
+        // Build a 2D array scheduleData[dayIndex][timeIndex] = [events]
+        let scheduleData = [];
+        for (let d = 0; d < 7; d++) { // 7 days of the week
+            scheduleData[d] = [];
+            for (let t = 0; t < times.length; t++) {
+                scheduleData[d][t] = []; // Initialize with empty array
+            }
         }
 
-        // Parse the time string
-        let [hours, minutes] = timeStr.split(':').map(Number);
-        let totalMinutes = hours * 60 + minutes;
+        // Helper function to convert Date to "HH:MM" format
+        function toHHMM(dateObj) {
+            let hh = String(dateObj.getHours()).padStart(2, '0');
+            let mm = String(dateObj.getMinutes()).padStart(2, '0');
+            return hh + ':' + mm;
+        }
 
-        // Find the closest appropriate slot
-        for (let i = 0; i < times.length; i++) {
-            let [slotHours, slotMinutes] = times[i].split(':').map(Number);
-            let slotTotalMinutes = slotHours * 60 + slotMinutes;
-            
-            if (isEndTime) {
-                // For end times, find the slot that contains or comes after this time
-                if (totalMinutes <= slotTotalMinutes) {
-                    return i;
-                }
-            } else {
-                // For start times, find the slot that contains this time or comes before
-                if (totalMinutes <= slotTotalMinutes) {
-                    return i;
-                }
-                
-                // Check if time falls between current and next slot
-                if (i < times.length - 1) {
-                    let [nextSlotHours, nextSlotMinutes] = times[i + 1].split(':').map(Number);
-                    let nextSlotTotalMinutes = nextSlotHours * 60 + nextSlotMinutes;
-                    
-                    if (totalMinutes > slotTotalMinutes && totalMinutes < nextSlotTotalMinutes) {
+        // Helper function to find the appropriate time slot index for any time
+        function findTimeSlotIndex(timeStr, times, isEndTime = false) {
+            // First try exact match
+            let exactIndex = times.indexOf(timeStr);
+            if (exactIndex !== -1) {
+                return exactIndex;
+            }
+
+            // Parse the time string
+            let [hours, minutes] = timeStr.split(':').map(Number);
+            let totalMinutes = hours * 60 + minutes;
+
+            // Find the closest appropriate slot
+            for (let i = 0; i < times.length; i++) {
+                let [slotHours, slotMinutes] = times[i].split(':').map(Number);
+                let slotTotalMinutes = slotHours * 60 + slotMinutes;
+
+                if (isEndTime) {
+                    // For end times, find the slot that contains or comes after this time
+                    if (totalMinutes <= slotTotalMinutes) {
                         return i;
+                    }
+                } else {
+                    // For start times, find the slot that contains this time or comes before
+                    if (totalMinutes <= slotTotalMinutes) {
+                        return i;
+                    }
+
+                    // Check if time falls between current and next slot
+                    if (i < times.length - 1) {
+                        let [nextSlotHours, nextSlotMinutes] = times[i + 1].split(':').map(Number);
+                        let nextSlotTotalMinutes = nextSlotHours * 60 + nextSlotMinutes;
+
+                        if (totalMinutes > slotTotalMinutes && totalMinutes < nextSlotTotalMinutes) {
+                            return i;
+                        }
                     }
                 }
             }
+
+            // Fallback: return appropriate boundary
+            return isEndTime ? times.length : times.length - 1;
         }
 
-        // Fallback: return appropriate boundary
-        return isEndTime ? times.length : times.length - 1;
-    }
+        // Fill the scheduleData with events
+        events.forEach(event => {
+            let start = event.start;
+            let end = event.end || new Date(start.getTime() + 60 * 60 * 1000);
 
-    // Fill the scheduleData with events
-    events.forEach(event => {
-        let start = event.start;
-        let end = event.end || new Date(start.getTime() + 60 * 60 * 1000);
+            // Day of week (0=Sunday, 1=Monday, etc.)
+            let dayIndex = start.getDay();
+            if (dayIndex === 0) dayIndex = 6; // Move Sunday to the end (index 6)
+            else dayIndex -= 1; // Adjust other days (Monday=0, Tuesday=1, etc.)
 
-        // Day of week (0=Sunday, 1=Monday, etc.)
-        let dayIndex = start.getDay();
-        if (dayIndex === 0) dayIndex = 6; // Move Sunday to the end (index 6)
-        else dayIndex -= 1; // Adjust other days (Monday=0, Tuesday=1, etc.)
+            let startTimeStr = toHHMM(start);
+            let endTimeStr = toHHMM(end);
 
-        let startTimeStr = toHHMM(start);
-        let endTimeStr = toHHMM(end);
+            // Find start and end indices - prioritize exact matches for REHAT events
+            let startIndex = times.indexOf(startTimeStr);
+            let endIndex = times.indexOf(endTimeStr);
 
-        // Find start and end indices - prioritize exact matches for REHAT events
-        let startIndex = times.indexOf(startTimeStr);
-        let endIndex = times.indexOf(endTimeStr);
-        
-        if (startIndex === -1) {
-            startIndex = findTimeSlotIndex(startTimeStr, times, false);
-        }
-        if (endIndex === -1) {
-            endIndex = findTimeSlotIndex(endTimeStr, times, true);
-        }
-
-        // For REHAT events, only place in the starting time slot to avoid duplication
-        if (event.title === 'REHAT') {
-            if (startIndex >= 0 && startIndex < times.length) {
-                scheduleData[dayIndex][startIndex].push(event);
+            if (startIndex === -1) {
+                startIndex = findTimeSlotIndex(startTimeStr, times, false);
             }
-        } else {
-            // Fill each time slot with regular events
-            for (let i = startIndex; i < endIndex && i < times.length; i++) {
-                if (i >= 0) {
-                    scheduleData[dayIndex][i].push(event);
+            if (endIndex === -1) {
+                endIndex = findTimeSlotIndex(endTimeStr, times, true);
+            }
+
+            // For REHAT events, only place in the starting time slot to avoid duplication
+            if (event.title === 'REHAT') {
+                if (startIndex >= 0 && startIndex < times.length) {
+                    scheduleData[dayIndex][startIndex].push(event);
+                }
+            } else {
+                // Fill each time slot with regular events
+                for (let i = startIndex; i < endIndex && i < times.length; i++) {
+                    if (i >= 0) {
+                        scheduleData[dayIndex][i].push(event);
+                    }
                 }
             }
+        });
+
+        // Create processed tracking arrays
+        let processedEvents = new Set();
+        let skip = [];
+        for (let d = 0; d < 7; d++) {
+            skip[d] = new Array(times.length).fill(false);
         }
-    });
 
-    // Create processed tracking arrays
-    let processedEvents = new Set();
-    let skip = [];
-    for (let d = 0; d < 7; d++) {
-        skip[d] = new Array(times.length).fill(false);
-    }
+        // Add current date for footer
+        const currentDate = new Date().toLocaleDateString('en-GB', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
 
-    // Add current date for footer
-    const currentDate = new Date().toLocaleDateString('en-GB', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-    });
-
-    // Build HTML with modern styling (DECLARED ONCE)
-    let html = `
+        // Build HTML with modern styling (DECLARED ONCE)
+        let html = `
         <html>
         <head>
             <title>Lecturer Timetable</title>
@@ -1222,13 +1272,13 @@
                         <tr>
                             <th class="time-column">Time</th>`;
 
-    // Column headers for days (only show days that aren't hidden)
-    const visibleDays = dayNames.filter((_, i) => !hiddenDays.includes(i));
-    visibleDays.forEach(day => {
-        html += `<th>${day}</th>`;
-    });
+        // Column headers for days (only show days that aren't hidden)
+        const visibleDays = dayNames.filter((_, i) => !hiddenDays.includes(i));
+        visibleDays.forEach(day => {
+            html += `<th>${day}</th>`;
+        });
 
-    html += `</tr></thead>
+        html += `</tr></thead>
 
                     <!-- Table Footer (repeats on each page) -->
                     <tfoot>
@@ -1241,81 +1291,146 @@
 
                     <tbody>`;
 
-    // For each timeslot row
-    for (let t = 0; t < times.length; t++) {
-        let currentTime = times[t];
-        
-        // Generate time label consistently
-        let timeLabel = '';
-        let isMinorSlot = false;
-        
-        // Check if this is a 15-minute interval during lunch period (13:00-15:00)
-        let [hour, minute] = currentTime.split(':').map(Number);
-        if (hour >= 13 && hour < 15) {
-            // All slots in lunch period are treated as 15-minute intervals
-            isMinorSlot = (minute === 15 || minute === 45);
-        }
-        
-        // Generate time range label
-        if (t + 1 < times.length) {
-            timeLabel = currentTime + ' - ' + times[t + 1];
-        } else {
-            timeLabel = currentTime + ' - 20:00';
-        }
+        // For each timeslot row
+        for (let t = 0; t < times.length; t++) {
+            let currentTime = times[t];
 
-        // Start a row
-        html += `<tr>`;
+            // Generate time label consistently
+            let timeLabel = '';
+            let isMinorSlot = false;
 
-        // Left column: time label with appropriate styling
-        let timeColumnClass = isMinorSlot ? "time-column minor-slot" : "time-column";
-        html += `<td class="${timeColumnClass}">${timeLabel}</td>`;
-
-        // For each day column
-        for (let d = 0; d < 7; d++) {
-            // Skip if this day is hidden
-            if (hiddenDays.includes(d)) continue;
-
-            // If this slot is marked skip => do nothing
-            if (skip[d][t]) {
-                continue;
+            // Check if this is a 15-minute interval during lunch period (13:00-15:00)
+            let [hour, minute] = currentTime.split(':').map(Number);
+            if (hour >= 13 && hour < 15) {
+                // All slots in lunch period are treated as 15-minute intervals
+                isMinorSlot = (minute === 15 || minute === 45);
             }
 
-            let eventList = scheduleData[d][t];
+            // Generate time range label
+            if (t + 1 < times.length) {
+                timeLabel = currentTime + ' - ' + times[t + 1];
+            } else {
+                timeLabel = currentTime + ' - 20:00';
+            }
 
-            if (eventList.length > 0) {
-                // Check if there's a REHAT event in this cell
-                let hasRehat = eventList.some(event => event.title === 'REHAT');
+            // Start a row
+            html += `<tr>`;
 
-                // If there's a REHAT event, give it priority
-                if (hasRehat) {
-                    let rehatEvent = eventList.find(event => event.title === 'REHAT');
+            // Left column: time label with appropriate styling
+            let timeColumnClass = isMinorSlot ? "time-column minor-slot" : "time-column";
+            html += `<td class="${timeColumnClass}">${timeLabel}</td>`;
 
-                    let start = rehatEvent.start;
-                    let end = rehatEvent.end || new Date(start.getTime() + 60 * 60 * 1000);
+            // For each day column
+            for (let d = 0; d < 7; d++) {
+                // Skip if this day is hidden
+                if (hiddenDays.includes(d)) continue;
 
-                    let startTimeStr = toHHMM(start);
-                    let endTimeStr = toHHMM(end);
+                // If this slot is marked skip => do nothing
+                if (skip[d][t]) {
+                    continue;
+                }
 
-                    // Find the exact time slots for start and end
-                    let startIndex = times.indexOf(startTimeStr);
-                    let endIndex = times.indexOf(endTimeStr);
-                    
-                    // If exact match not found, find closest slots
-                    if (startIndex === -1) {
-                        startIndex = findTimeSlotIndex(startTimeStr, times, false);
-                    }
-                    if (endIndex === -1) {
-                        endIndex = findTimeSlotIndex(endTimeStr, times, true);
-                    }
+                let eventList = scheduleData[d][t];
 
-                    // Only create REHAT cell if this is the actual starting time slot
-                    if (t === startIndex) {
-                        let rowSpan = endIndex - startIndex;
-                        
-                        // Ensure minimum rowspan of 1
-                        if (rowSpan < 1) {
-                            rowSpan = 1;
+                if (eventList.length > 0) {
+                    // Check if there's a REHAT event in this cell
+                    let hasRehat = eventList.some(event => event.title === 'REHAT');
+
+                    // If there's a REHAT event, give it priority
+                    if (hasRehat) {
+                        let rehatEvent = eventList.find(event => event.title === 'REHAT');
+
+                        let start = rehatEvent.start;
+                        let end = rehatEvent.end || new Date(start.getTime() + 60 * 60 * 1000);
+
+                        let startTimeStr = toHHMM(start);
+                        let endTimeStr = toHHMM(end);
+
+                        // Find the exact time slots for start and end
+                        let startIndex = times.indexOf(startTimeStr);
+                        let endIndex = times.indexOf(endTimeStr);
+
+                        // If exact match not found, find closest slots
+                        if (startIndex === -1) {
+                            startIndex = findTimeSlotIndex(startTimeStr, times, false);
                         }
+                        if (endIndex === -1) {
+                            endIndex = findTimeSlotIndex(endTimeStr, times, true);
+                        }
+
+                        // Only create REHAT cell if this is the actual starting time slot
+                        if (t === startIndex) {
+                            let rowSpan = endIndex - startIndex;
+
+                            // Ensure minimum rowspan of 1
+                            if (rowSpan < 1) {
+                                rowSpan = 1;
+                            }
+
+                            // Mark future slots to skip
+                            for (let k = 1; k < rowSpan; k++) {
+                                if (t + k < times.length) {
+                                    skip[d][t + k] = true;
+                                }
+                            }
+
+                            // Create cell with REHAT showing actual times
+                            let rehatTimeDisplay = `${startTimeStr} - ${endTimeStr}`;
+                            html += `<td rowspan="${rowSpan}" class="rehat-cell">
+                                    <div class="event-title">REHAT</div>
+                                    <div class="event-time-display">${rehatTimeDisplay}</div>
+                                </td>`;
+                        } else {
+                            // This time slot is part of a REHAT that started earlier, skip it
+                            continue;
+                        }
+
+                        // Skip processing other events in this cell
+                        continue;
+                    }
+
+                    // Group non-REHAT events by their full time span
+                    let eventGroups = {};
+
+                    eventList.forEach(event => {
+                        // Skip if we already processed this event
+                        if (processedEvents.has(event.id)) return;
+
+                        let start = event.start;
+                        let end = event.end || new Date(start.getTime() + 60 * 60 * 1000);
+
+                        let startTimeStr = toHHMM(start);
+                        let endTimeStr = toHHMM(end);
+
+                        let startIndex = findTimeSlotIndex(startTimeStr, times, false);
+                        let endIndex = findTimeSlotIndex(endTimeStr, times, true);
+
+                        // Create a unique key for this time span
+                        let timeSpanKey = `${startIndex}-${endIndex}`;
+
+                        // Initialize group if not exists
+                        if (!eventGroups[timeSpanKey]) {
+                            eventGroups[timeSpanKey] = {
+                                events: [],
+                                rowSpan: endIndex - startIndex
+                            };
+                        }
+
+                        // Add event to the group
+                        eventGroups[timeSpanKey].events.push(event);
+
+                        // Mark event as processed
+                        processedEvents.add(event.id);
+                    });
+
+                    // Get the keys sorted by start time
+                    let timeSpanKeys = Object.keys(eventGroups).sort();
+
+                    // Only process if we have groups and this is the starting row for a group
+                    if (timeSpanKeys.length > 0) {
+                        let firstGroup = eventGroups[timeSpanKeys[0]];
+                        let rowSpan = firstGroup.rowSpan;
+                        let events = firstGroup.events;
 
                         // Mark future slots to skip
                         for (let k = 1; k < rowSpan; k++) {
@@ -1324,126 +1439,61 @@
                             }
                         }
 
-                        // Create cell with REHAT showing actual times
-                        let rehatTimeDisplay = `${startTimeStr} - ${endTimeStr}`;
-                        html += `<td rowspan="${rowSpan}" class="rehat-cell">
-                                    <div class="event-title">REHAT</div>
-                                    <div class="event-time-display">${rehatTimeDisplay}</div>
-                                </td>`;
+                        // Create cell with rowspan
+                        html += `<td rowspan="${rowSpan}" class="event-cell">`;
+
+                        // Start multi-event container if we have multiple events
+                        if (events.length > 1) {
+                            html += `<div class="multi-event-container">`;
+                        }
+
+                        // Add each event
+                        events.forEach((event, index) => {
+                            if (index > 0) {
+                                html += `<div class="event-divider"></div>`;
+                            }
+
+                            // Title
+                            html += `<div class="event-title">${event.title || '(No Title)'}</div>`;
+
+                            // Add actual event times
+                            let eventStart = event.start;
+                            let eventEnd = event.end || new Date(eventStart.getTime() + 60 * 60 * 1000);
+                            let eventTimeDisplay = `${toHHMM(eventStart)} - ${toHHMM(eventEnd)}`;
+                            html += `<div class="event-time-display">${eventTimeDisplay}</div>`;
+
+                            // Add description if available
+                            if (event.extendedProps && event.extendedProps.description) {
+                                html += `<div class="event-description">${event.extendedProps.description}</div>`;
+                            }
+
+                            // Add program info if available (only once, with special class)
+                            if (event.extendedProps && event.extendedProps.programInfo) {
+                                html += `<div class="event-description program-info">Program: ${event.extendedProps.programInfo}</div>`;
+                            }
+                        });
+
+                        // Close multi-event container if needed
+                        if (events.length > 1) {
+                            html += `</div>`;
+                        }
+
+                        html += `</td>`;
                     } else {
-                        // This time slot is part of a REHAT that started earlier, skip it
-                        continue;
+                        // No unprocessed events => empty cell
+                        html += `<td></td>`;
                     }
-
-                    // Skip processing other events in this cell
-                    continue;
-                }
-
-                // Group non-REHAT events by their full time span
-                let eventGroups = {};
-
-                eventList.forEach(event => {
-                    // Skip if we already processed this event
-                    if (processedEvents.has(event.id)) return;
-
-                    let start = event.start;
-                    let end = event.end || new Date(start.getTime() + 60 * 60 * 1000);
-
-                    let startTimeStr = toHHMM(start);
-                    let endTimeStr = toHHMM(end);
-
-                    let startIndex = findTimeSlotIndex(startTimeStr, times, false);
-                    let endIndex = findTimeSlotIndex(endTimeStr, times, true);
-
-                    // Create a unique key for this time span
-                    let timeSpanKey = `${startIndex}-${endIndex}`;
-
-                    // Initialize group if not exists
-                    if (!eventGroups[timeSpanKey]) {
-                        eventGroups[timeSpanKey] = {
-                            events: [],
-                            rowSpan: endIndex - startIndex
-                        };
-                    }
-
-                    // Add event to the group
-                    eventGroups[timeSpanKey].events.push(event);
-
-                    // Mark event as processed
-                    processedEvents.add(event.id);
-                });
-
-                // Get the keys sorted by start time
-                let timeSpanKeys = Object.keys(eventGroups).sort();
-
-                // Only process if we have groups and this is the starting row for a group
-                if (timeSpanKeys.length > 0) {
-                    let firstGroup = eventGroups[timeSpanKeys[0]];
-                    let rowSpan = firstGroup.rowSpan;
-                    let events = firstGroup.events;
-
-                    // Mark future slots to skip
-                    for (let k = 1; k < rowSpan; k++) {
-                        if (t + k < times.length) {
-                            skip[d][t + k] = true;
-                        }
-                    }
-
-                    // Create cell with rowspan
-                    html += `<td rowspan="${rowSpan}" class="event-cell">`;
-
-                    // Start multi-event container if we have multiple events
-                    if (events.length > 1) {
-                        html += `<div class="multi-event-container">`;
-                    }
-
-                    // Add each event
-                    events.forEach((event, index) => {
-                        if (index > 0) {
-                            html += `<div class="event-divider"></div>`;
-                        }
-
-                        // Title
-                        html += `<div class="event-title">${event.title || '(No Title)'}</div>`;
-
-                        // Add actual event times
-                        let eventStart = event.start;
-                        let eventEnd = event.end || new Date(eventStart.getTime() + 60 * 60 * 1000);
-                        let eventTimeDisplay = `${toHHMM(eventStart)} - ${toHHMM(eventEnd)}`;
-                        html += `<div class="event-time-display">${eventTimeDisplay}</div>`;
-
-                        // Add description if available
-                        if (event.extendedProps && event.extendedProps.description) {
-                            html += `<div class="event-description">${event.extendedProps.description}</div>`;
-                        }
-
-                        // Add program info if available (only once, with special class)
-                        if (event.extendedProps && event.extendedProps.programInfo) {
-                            html += `<div class="event-description program-info">Program: ${event.extendedProps.programInfo}</div>`;
-                        }
-                    });
-
-                    // Close multi-event container if needed
-                    if (events.length > 1) {
-                        html += `</div>`;
-                    }
-
-                    html += `</td>`;
                 } else {
-                    // No unprocessed events => empty cell
+                    // No events => just a normal empty cell
                     html += `<td></td>`;
                 }
-            } else {
-                // No events => just a normal empty cell
-                html += `<td></td>`;
             }
+
+            // Close row
+            html += `</tr>`;
         }
 
-        // Close row
-        html += `</tr>`;
-    }
-
-    html += `
+        html += `
                     </tbody>
                 </table>
 
@@ -1454,47 +1504,47 @@
         </body>
         </html>`;
 
-    return html; // Return the generated HTML
-}
+        return html; // Return the generated HTML
+    }
     /**
     /**
      * Print the schedule
      */
-     function printSchedule() {
+    function printSchedule() {
         // Show loading notification
         showNotification('Preparing timetable for printing...', 'info');
-        
+
         // Generate HTML using the extracted function
         const html = generateScheduleHTML();
-        
+
         // Improved print function with better error handling
         try {
             // Create the print window
             let printWindow = window.open('', '_blank', 'width=1100,height=800');
-            
+
             if (!printWindow) {
                 // If window.open returns null, it was likely blocked by a popup blocker
                 showNotification('Print window was blocked. Please allow popups for this site.', 'error', false);
                 return;
             }
-            
+
             // Write content to the window
             printWindow.document.open();
             printWindow.document.write(html);
             printWindow.document.close();
-            
+
             // Add event listener to detect when the content is fully loaded
             printWindow.onload = function() {
                 try {
                     // Focus on the window to bring it to front
                     printWindow.focus();
-                    
+
                     // Trigger the print dialog
                     printWindow.print();
-                    
+
                     // Show success notification
                     showNotification('Timetable printed successfully', 'success');
-                    
+
                     // Close the print window after printing (optional)
                     // printWindow.close();
                 } catch (printError) {
@@ -1502,7 +1552,7 @@
                     showNotification('Error during printing: ' + printError.message, 'error', false);
                 }
             };
-            
+
             // Fallback in case onload doesn't trigger
             setTimeout(() => {
                 if (printWindow.document.readyState === 'complete') {
@@ -1514,7 +1564,7 @@
                     }
                 }
             }, 2000);
-            
+
         } catch (error) {
             console.error('Print setup error:', error);
             showNotification('Error setting up print: ' + error.message, 'error', false);
@@ -1524,7 +1574,7 @@
      * Helper to convert Date -> "HH:MM"
      */
     function convertToPhpMyAdminDatetime(dateString) {
-        if(!dateString) return ''; // handle empty
+        if (!dateString) return ''; // handle empty
         const dateObj = new Date(dateString);
         const year = dateObj.getFullYear();
         const month = String(dateObj.getMonth() + 1).padStart(2, '0');
@@ -1533,6 +1583,92 @@
         const minutes = String(dateObj.getMinutes()).padStart(2, '0');
         const seconds = String(dateObj.getSeconds()).padStart(2, '0');
         return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+    }
+
+    /**
+     * Fetch and display logged schedules for lecturer
+     */
+    function getLoggedSchedule() {
+        const tableBody = document.getElementById('table');
+
+        // Show loading state
+        tableBody.innerHTML = '<tr><td colspan="3" class="text-center py-4"><i class="fas fa-circle-notch fa-spin me-2"></i> Loading...</td></tr>';
+
+        fetch('/lecturer/class/schedule/getLoggedSchedule')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                tableBody.innerHTML = '';
+
+                if (data.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="3" class="text-center py-4"><i class="fas fa-info-circle me-2"></i>No logged schedules found</td></tr>';
+                    return;
+                }
+
+                let i = 1;
+                data.forEach(value => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${i}</td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-calendar-day me-2 text-primary"></i>
+                                ${value.date}
+                            </div>
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <a href="/AR/schedule/log/{{ Auth::user()->ic }}/view?idS=${value.date}" 
+                                   class="btn btn-primary btn-sm me-2" data-toggle="tooltip" title="View Timetable">
+                                   <i class="fas fa-eye me-1"></i> View
+                                </a>
+                            </div>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                    i++;
+                });
+
+                // Re-initialize tooltips after adding rows
+                const tooltips = document.querySelectorAll('[data-toggle="tooltip"]');
+                tooltips.forEach(tooltip => {
+                    // Simple tooltip implementation
+                    tooltip.addEventListener('mouseenter', function(e) {
+                        const title = this.getAttribute('title');
+                        if (title) {
+                            const tooltipEl = document.createElement('div');
+                            tooltipEl.className = 'custom-tooltip';
+                            tooltipEl.innerText = title;
+                            tooltipEl.style.position = 'absolute';
+                            tooltipEl.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+                            tooltipEl.style.color = 'white';
+                            tooltipEl.style.padding = '5px 10px';
+                            tooltipEl.style.borderRadius = '4px';
+                            tooltipEl.style.fontSize = '0.8rem';
+                            tooltipEl.style.zIndex = '1000';
+                            tooltipEl.style.pointerEvents = 'none';
+                            tooltipEl.style.top = `${e.pageY - 30}px`;
+                            tooltipEl.style.left = `${e.pageX + 10}px`;
+                            document.body.appendChild(tooltipEl);
+                        }
+                    });
+
+                    tooltip.addEventListener('mouseleave', function() {
+                        const tooltips = document.querySelectorAll('.custom-tooltip');
+                        tooltips.forEach(tip => tip.remove());
+                    });
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching schedule logs:', error);
+                tableBody.innerHTML = `<tr><td colspan="3" class="text-center py-4 text-danger">
+                    <i class="fas fa-exclamation-triangle me-2"></i> Error loading data: ${error.message}
+                </td></tr>`;
+            });
     }
 </script>
 

@@ -5729,6 +5729,20 @@ class LecturerController extends Controller
         return response()->json($formattedEvents);
     }
 
+    public function getLoggedSchedule()
+    {
+        $user = Auth::user();
+
+        $data = DB::table('tblevents_log')
+            ->where([
+                ['user_ic', $user->ic]
+            ])
+            ->groupBy('date')
+            ->get();
+
+        return response()->json($data);
+    }
+
     // Replacement Class Methods
     public function replacementClass()
     {

@@ -27,12 +27,12 @@ Route::get('/loginAdmin', function () {
 
 Auth::routes();
 
-Route::get('/home', function(){
+Route::get('/home', function () {
     return view('auth.login');
 });
 
 // Spotify Widget Routes
-Route::get('/spotify-debug', function() {
+Route::get('/spotify-debug', function () {
     return view('spotify-debug');
 })->middleware('auth');
 
@@ -182,10 +182,10 @@ Route::get('/pendaftar/student/reportRA', [App\Http\Controllers\PendaftarControl
 Route::get('/pendaftar/student/reportRA/getStudentReportRA', [App\Http\Controllers\PendaftarController::class, 'getStudentReportRA']);
 Route::post('/pendaftar/student/reportRA/analyseData', [App\Http\Controllers\PendaftarController::class, 'analyseData']);
 Route::post('/pendaftar/student/reportRA/getFilteredData', [App\Http\Controllers\PendaftarController::class, 'getFilteredData']);
-Route::get('/pendaftar/student/incomeReport', [App\Http\Controllers\PendaftarController::class,'incomeReport'])->name('pendaftar.student.incomeReport');
-Route::post('/pendaftar/student/incomeReport/getIncomeReport', [App\Http\Controllers\PendaftarController::class,'getIncomeReport']);
-Route::get('/pendaftar/student/internationalReport', [App\Http\Controllers\PendaftarController::class,'internationalReport'])->name('pendaftar.student.internationalReport');
-Route::get('/pendaftar/student/annualStudentReport', [App\Http\Controllers\PendaftarController::class,'annualStudentReport'])->name('pendaftar.student.annualStudentReport');
+Route::get('/pendaftar/student/incomeReport', [App\Http\Controllers\PendaftarController::class, 'incomeReport'])->name('pendaftar.student.incomeReport');
+Route::post('/pendaftar/student/incomeReport/getIncomeReport', [App\Http\Controllers\PendaftarController::class, 'getIncomeReport']);
+Route::get('/pendaftar/student/internationalReport', [App\Http\Controllers\PendaftarController::class, 'internationalReport'])->name('pendaftar.student.internationalReport');
+Route::get('/pendaftar/student/annualStudentReport', [App\Http\Controllers\PendaftarController::class, 'annualStudentReport'])->name('pendaftar.student.annualStudentReport');
 Route::post('/pendaftar/student/annualStudentReport/getAnnualStudentReport', [App\Http\Controllers\PendaftarController::class, 'getAnnualStudentReport']);
 
 
@@ -407,6 +407,7 @@ Route::get('/lecturer/materials/debug/{id}', [App\Http\Controllers\LecturerContr
 Route::get('/lecturer/materials/fix-private', [App\Http\Controllers\LecturerController::class, 'fixPrivateFiles'])->name('lecturer.materials.fix');
 Route::get('/lecturer/class/schedule', [App\Http\Controllers\LecturerController::class, 'classSchedule'])->name('lecturer.class.schedule');
 Route::get('/lecturer/class/schedule/fetch', [App\Http\Controllers\LecturerController::class, 'fetchEvents']);
+Route::get('/lecturer/class/schedule/getLoggedSchedule', [App\Http\Controllers\LecturerController::class, 'getLoggedSchedule']);
 
 // Replacement Class Routes
 Route::get('/lecturer/class/replacement_class', [App\Http\Controllers\LecturerController::class, 'replacementClass'])->name('lecturer.class.replacement_class');
@@ -770,7 +771,7 @@ Route::post('/student/games/decline', [App\Http\Controllers\StudentController::c
 Route::get('/student/games/{game_id}', [App\Http\Controllers\StudentController::class, 'getGame'])->name('student.games.get');
 Route::post('/student/games/move', [App\Http\Controllers\StudentController::class, 'makeMove'])->name('student.games.move');
 Route::post('/student/search', [App\Http\Controllers\StudentController::class, 'searchStudents'])->name('student.search');
-Route::get('/test-student-search', function() {
+Route::get('/test-student-search', function () {
     return response()->json(['test' => 'route works', 'students_count' => DB::table('students')->count()]);
 });
 
@@ -876,23 +877,23 @@ Route::get('/finance/report/dailyreport', [App\Http\Controllers\FinanceControlle
 Route::get('/finance/report/dailyreport/getDailyReport', [App\Http\Controllers\FinanceController::class, 'getDailyReport']);
 Route::get('/finance/report/chargeReport', [App\Http\Controllers\FinanceController::class, 'chargeReport'])->name('finance.chargeReport');
 Route::get('/finance/report/chargeReport/getChargeReport', [App\Http\Controllers\FinanceController::class, 'getChargeReport']);
-Route::get('finance/report/arrearsReport', [App\Http\Controllers\FinanceController::class,'arrearsReport'])->name('finance.arrearsReport');
-Route::post('finance/report/arrearsReport/getArrearsReport', [App\Http\Controllers\FinanceController::class,'getArrearsReport']);
-Route::get('finance/report/urReport', [App\Http\Controllers\FinanceController::class,'urReport'])->name('finance.urReport');
-Route::post('finance/report/urReport/getUrReport', [App\Http\Controllers\FinanceController::class,'getUrReport']);
-Route::get('finance/report/agingReport', [App\Http\Controllers\FinanceController::class,'agingReport'])->name('finance.agingReport');
-Route::post('finance/report/agingReport/getAgingReport', [App\Http\Controllers\FinanceController::class,'getAgingReport']);
-Route::get('finance/report/programAgingReport', [App\Http\Controllers\FinanceController::class,'programAgingReport'])->name('finance.programAgingReport');
-Route::post('finance/report/programAgingReport/getProgramAgingReport', [App\Http\Controllers\FinanceController::class,'getProgramAgingReport']);
-Route::get('finance/report/statusAgingReport', [App\Http\Controllers\FinanceController::class,'statusAgingReport'])->name('finance.statusAgingReport');
-Route::post('finance/report/statusAgingReport/getStatusAgingReport', [App\Http\Controllers\FinanceController::class,'getStatusAgingReport']);
-Route::get('finance/report/studentArrearsReport', [App\Http\Controllers\FinanceController::class,'studentArrearsReport'])->name('finance.studentArrearsReport');
-Route::post('finance/report/studentArrearsReport/getStudentArrearsReport', [App\Http\Controllers\FinanceController::class,'getStudentArrearsReport']);
-Route::post('finance/report/studentArrearsReport/blockStudentArrears', [App\Http\Controllers\FinanceController::class,'blockStudentArrears']);
-Route::get('finance/report/gradReport', [App\Http\Controllers\FinanceController::class,'gradReport'])->name('finance.gradReport');
-Route::post('finance/report/gradReport/getGradReport', [App\Http\Controllers\FinanceController::class,'getGradReport']);
-Route::get('finance/report/graduatereport', [App\Http\Controllers\FinanceController::class,'graduateReport'])->name('finance.graduateReport');
-Route::get('finance/report/graduatereport/getGraduateReport', [App\Http\Controllers\FinanceController::class,'getGraduateReport']);
+Route::get('finance/report/arrearsReport', [App\Http\Controllers\FinanceController::class, 'arrearsReport'])->name('finance.arrearsReport');
+Route::post('finance/report/arrearsReport/getArrearsReport', [App\Http\Controllers\FinanceController::class, 'getArrearsReport']);
+Route::get('finance/report/urReport', [App\Http\Controllers\FinanceController::class, 'urReport'])->name('finance.urReport');
+Route::post('finance/report/urReport/getUrReport', [App\Http\Controllers\FinanceController::class, 'getUrReport']);
+Route::get('finance/report/agingReport', [App\Http\Controllers\FinanceController::class, 'agingReport'])->name('finance.agingReport');
+Route::post('finance/report/agingReport/getAgingReport', [App\Http\Controllers\FinanceController::class, 'getAgingReport']);
+Route::get('finance/report/programAgingReport', [App\Http\Controllers\FinanceController::class, 'programAgingReport'])->name('finance.programAgingReport');
+Route::post('finance/report/programAgingReport/getProgramAgingReport', [App\Http\Controllers\FinanceController::class, 'getProgramAgingReport']);
+Route::get('finance/report/statusAgingReport', [App\Http\Controllers\FinanceController::class, 'statusAgingReport'])->name('finance.statusAgingReport');
+Route::post('finance/report/statusAgingReport/getStatusAgingReport', [App\Http\Controllers\FinanceController::class, 'getStatusAgingReport']);
+Route::get('finance/report/studentArrearsReport', [App\Http\Controllers\FinanceController::class, 'studentArrearsReport'])->name('finance.studentArrearsReport');
+Route::post('finance/report/studentArrearsReport/getStudentArrearsReport', [App\Http\Controllers\FinanceController::class, 'getStudentArrearsReport']);
+Route::post('finance/report/studentArrearsReport/blockStudentArrears', [App\Http\Controllers\FinanceController::class, 'blockStudentArrears']);
+Route::get('finance/report/gradReport', [App\Http\Controllers\FinanceController::class, 'gradReport'])->name('finance.gradReport');
+Route::post('finance/report/gradReport/getGradReport', [App\Http\Controllers\FinanceController::class, 'getGradReport']);
+Route::get('finance/report/graduatereport', [App\Http\Controllers\FinanceController::class, 'graduateReport'])->name('finance.graduateReport');
+Route::get('finance/report/graduatereport/getGraduateReport', [App\Http\Controllers\FinanceController::class, 'getGraduateReport']);
 Route::get('/finance/payment/other', [App\Http\Controllers\FinanceController::class, 'studentOtherPayment'])->name('finance.payment.other');
 Route::post('/finance/payment/other/getStudent', [App\Http\Controllers\FinanceController::class, 'getOtherStudentPayment']);
 Route::post('/finance/payment/other/storePayment', [App\Http\Controllers\FinanceController::class, 'storeOtherPayment']);
@@ -949,32 +950,32 @@ Route::post('/finance/voucher/student/storeVoucherDtl', [App\Http\Controllers\Fi
 Route::post('/finance/voucher/student/deleteVoucherDtl', [App\Http\Controllers\FinanceController::class, 'deleteVoucherDtl']);
 Route::post('/finance/voucher/student/claimVoucherDtl', [App\Http\Controllers\FinanceController::class, 'claimVoucherDtl']);
 Route::post('/finance/voucher/student/unclaimVoucherDtl', [App\Http\Controllers\FinanceController::class, 'unclaimVoucherDtl']);
-Route::get('/finance/debt/claimLog', [App\Http\Controllers\FinanceController::class,'claimLog'])->name('finance.claimLog');
-Route::get('/finance/debt/claimLog/{ic}', [App\Http\Controllers\FinanceController::class,'studentClaimLog'])->name('finance.studentClaimLog');
-Route::post('/finance/debt/claimLog/getClaimLog', [App\Http\Controllers\FinanceController::class,'getClaimLog']);
-Route::post('/finance/debt/claimLog/storeNote', [App\Http\Controllers\FinanceController::class,'storeNote']);
-Route::post('/finance/debt/claimLog/storeStudentLog/{ic}', [App\Http\Controllers\FinanceController::class,'storeStudentLog']);
-Route::post('/finance/debt/claimLog/deleteStudentLog', [App\Http\Controllers\FinanceController::class,'deleteStudentLog']);
-Route::get('/finance/debt/collectionReport', [App\Http\Controllers\FinanceController::class,'collectionReport'])->name('finance.collectionReport');
-Route::post('/finance/debt/collectionReport/getCollectionReport', [App\Http\Controllers\FinanceController::class,'getCollectionReport']);
-Route::get('/finance/debt/collectionExpectReport', [App\Http\Controllers\FinanceController::class,'collectionExpectReport'])->name('finance.collectionExpectReport');
-Route::post('/finance/debt/collectionExpectReport/getCollectionExpectReport', [App\Http\Controllers\FinanceController::class,'getCollectionExpectReport']);
-Route::get('/finance/debt/monthlyPayment', [App\Http\Controllers\FinanceController::class,'monthlyPayment'])->name('finance.monthlyPayment');
-Route::post('/finance/debt/monthlyPayment/getMonthlyPayment', [App\Http\Controllers\FinanceController::class,'getMonthlyPayment']);
-Route::get('/finance/debt/ctosReport', [App\Http\Controllers\FinanceController::class,'ctosReport'])->name('finance.ctosReport');
-Route::post('/finance/debt/ctosReport/getCtosReport', [App\Http\Controllers\FinanceController::class,'getCtosReport']);
-Route::get('/finance/debt/arrearNotice', function(){
+Route::get('/finance/debt/claimLog', [App\Http\Controllers\FinanceController::class, 'claimLog'])->name('finance.claimLog');
+Route::get('/finance/debt/claimLog/{ic}', [App\Http\Controllers\FinanceController::class, 'studentClaimLog'])->name('finance.studentClaimLog');
+Route::post('/finance/debt/claimLog/getClaimLog', [App\Http\Controllers\FinanceController::class, 'getClaimLog']);
+Route::post('/finance/debt/claimLog/storeNote', [App\Http\Controllers\FinanceController::class, 'storeNote']);
+Route::post('/finance/debt/claimLog/storeStudentLog/{ic}', [App\Http\Controllers\FinanceController::class, 'storeStudentLog']);
+Route::post('/finance/debt/claimLog/deleteStudentLog', [App\Http\Controllers\FinanceController::class, 'deleteStudentLog']);
+Route::get('/finance/debt/collectionReport', [App\Http\Controllers\FinanceController::class, 'collectionReport'])->name('finance.collectionReport');
+Route::post('/finance/debt/collectionReport/getCollectionReport', [App\Http\Controllers\FinanceController::class, 'getCollectionReport']);
+Route::get('/finance/debt/collectionExpectReport', [App\Http\Controllers\FinanceController::class, 'collectionExpectReport'])->name('finance.collectionExpectReport');
+Route::post('/finance/debt/collectionExpectReport/getCollectionExpectReport', [App\Http\Controllers\FinanceController::class, 'getCollectionExpectReport']);
+Route::get('/finance/debt/monthlyPayment', [App\Http\Controllers\FinanceController::class, 'monthlyPayment'])->name('finance.monthlyPayment');
+Route::post('/finance/debt/monthlyPayment/getMonthlyPayment', [App\Http\Controllers\FinanceController::class, 'getMonthlyPayment']);
+Route::get('/finance/debt/ctosReport', [App\Http\Controllers\FinanceController::class, 'ctosReport'])->name('finance.ctosReport');
+Route::post('/finance/debt/ctosReport/getCtosReport', [App\Http\Controllers\FinanceController::class, 'getCtosReport']);
+Route::get('/finance/debt/arrearNotice', function () {
     return view('finance.debt.arrear_notice.index');
 })->name('finance.arrearNotice');
-Route::post('/finance/debt/arrearNotice/printArrearNotice', [App\Http\Controllers\FinanceController::class,'printArrearNotice'])->name('finance.arrearNotice.store');
-Route::get('/finance/debt/authorizeTranscript', function(){
+Route::post('/finance/debt/arrearNotice/printArrearNotice', [App\Http\Controllers\FinanceController::class, 'printArrearNotice'])->name('finance.arrearNotice.store');
+Route::get('/finance/debt/authorizeTranscript', function () {
     return view('finance.debt.authorize_transcript.index');
 })->name('finance.authorizeTranscript');
-Route::post('/finance/debt/authorizeTranscript/printAuthorizeTranscript', [App\Http\Controllers\FinanceController::class,'printAuthorizeTranscript'])->name('finance.authorizeTranscript.store');
-Route::get('/finance/debt/studentCtos', [App\Http\Controllers\FinanceController::class,'studentCtos'])->name('finance.studentCtos');
-Route::post('/finance/debt/studentCtos/importCtos', [App\Http\Controllers\FinanceController::class,'importCtos'])->name('finance.studentCtos.importCtos');
-Route::post('/finance/debt/studentCtos/releaseCTOS', [App\Http\Controllers\FinanceController::class,'releaseCTOS'])->name('finance.studentCtos.releaseCTOS');
-Route::post('/finance/debt/studentCtos/deleteCTOS', [App\Http\Controllers\FinanceController::class,'deleteCTOS'])->name('finance.studentCtos.deleteCTOS');
+Route::post('/finance/debt/authorizeTranscript/printAuthorizeTranscript', [App\Http\Controllers\FinanceController::class, 'printAuthorizeTranscript'])->name('finance.authorizeTranscript.store');
+Route::get('/finance/debt/studentCtos', [App\Http\Controllers\FinanceController::class, 'studentCtos'])->name('finance.studentCtos');
+Route::post('/finance/debt/studentCtos/importCtos', [App\Http\Controllers\FinanceController::class, 'importCtos'])->name('finance.studentCtos.importCtos');
+Route::post('/finance/debt/studentCtos/releaseCTOS', [App\Http\Controllers\FinanceController::class, 'releaseCTOS'])->name('finance.studentCtos.releaseCTOS');
+Route::post('/finance/debt/studentCtos/deleteCTOS', [App\Http\Controllers\FinanceController::class, 'deleteCTOS'])->name('finance.studentCtos.deleteCTOS');
 Route::get('/finance/debt/studentRemarks', [App\Http\Controllers\FinanceController::class, 'studentRemarks'])->name('finance.studentRemarks');
 Route::post('/finance/debt/studentRemarks/getStudentRemarks', [App\Http\Controllers\FinanceController::class, 'getStudentRemarks']);
 Route::post('/finance/debt/studentRemarks/storeStudentRemarks', [App\Http\Controllers\FinanceController::class, 'storeStudentRemarks']);
@@ -987,24 +988,24 @@ Route::post('/finance/debt/discountReport/getDiscountRecords', [App\Http\Control
 Route::get('/finance/debt/discountReport/getDiscountRecord/{id}', [App\Http\Controllers\FinanceController::class, 'getDiscountRecord']);
 Route::post('/finance/debt/discountReport/updateDiscountRecord', [App\Http\Controllers\FinanceController::class, 'updateDiscountRecord']);
 Route::delete('/finance/debt/discountReport/deleteDiscountRecord/{id}', [App\Http\Controllers\FinanceController::class, 'deleteDiscountRecord']);
-Route::get('/finance/asset/vehicleRecord', [App\Http\Controllers\FinanceController::class,'vehicleRecord'])->name('finance.vehicleRecord');
-Route::post('/finance/asset/vehicleRecord/storeVehicle', [App\Http\Controllers\FinanceController::class,'storeVehicle']);
-Route::delete('/finance/asset/vehicleRecord/deleteVehicle', [App\Http\Controllers\FinanceController::class,'deleteVehicle']);
-Route::get('/finance/asset/vehicleRecord/updateVehicle', [App\Http\Controllers\FinanceController::class,'updateVehicle']);
-Route::get('/finance/asset/vehicleRecord/serviceRecord', [App\Http\Controllers\FinanceController::class,'serviceRecord']);
-Route::get('/finance/asset/vehicleRecord/getServiceList', [App\Http\Controllers\FinanceController::class,'getServiceList']);
-Route::post('/finance/asset/vehicleRecord/storeService', [App\Http\Controllers\FinanceController::class,'storeService']);
-Route::delete('/finance/asset/vehicleRecord/deleteRecord', [App\Http\Controllers\FinanceController::class,'deleteRecord']);
-Route::get('/finance/asset/vehicleRecord/odometerRecord', [App\Http\Controllers\FinanceController::class,'odometerRecord']);
-Route::get('/finance/asset/vehicleRecord/getOdometerRecord', [App\Http\Controllers\FinanceController::class,'getOdometerRecord']);
-Route::post('/finance/asset/vehicleRecord/storeOdometerRecord', [App\Http\Controllers\FinanceController::class,'storeOdometerRecord']);
-Route::delete('/finance/asset/vehicleRecord/deleteOdometerRecord', [App\Http\Controllers\FinanceController::class,'deleteOdometerRecord']);
-Route::get('/finance/asset/vehicleRecord/vehicleReport', [App\Http\Controllers\FinanceController::class,'vehicleReport'])->name('finance.asset.vehicleRecord.vehicleReport');
-Route::get('/finance/asset/vehicleRecord/getVehicleReport', [App\Http\Controllers\FinanceController::class,'getVehicleReport']);
-Route::get('/finance/student/blockList', [App\Http\Controllers\FinanceController::class,'blockList'])->name('finance.student.blockList');
+Route::get('/finance/asset/vehicleRecord', [App\Http\Controllers\FinanceController::class, 'vehicleRecord'])->name('finance.vehicleRecord');
+Route::post('/finance/asset/vehicleRecord/storeVehicle', [App\Http\Controllers\FinanceController::class, 'storeVehicle']);
+Route::delete('/finance/asset/vehicleRecord/deleteVehicle', [App\Http\Controllers\FinanceController::class, 'deleteVehicle']);
+Route::get('/finance/asset/vehicleRecord/updateVehicle', [App\Http\Controllers\FinanceController::class, 'updateVehicle']);
+Route::get('/finance/asset/vehicleRecord/serviceRecord', [App\Http\Controllers\FinanceController::class, 'serviceRecord']);
+Route::get('/finance/asset/vehicleRecord/getServiceList', [App\Http\Controllers\FinanceController::class, 'getServiceList']);
+Route::post('/finance/asset/vehicleRecord/storeService', [App\Http\Controllers\FinanceController::class, 'storeService']);
+Route::delete('/finance/asset/vehicleRecord/deleteRecord', [App\Http\Controllers\FinanceController::class, 'deleteRecord']);
+Route::get('/finance/asset/vehicleRecord/odometerRecord', [App\Http\Controllers\FinanceController::class, 'odometerRecord']);
+Route::get('/finance/asset/vehicleRecord/getOdometerRecord', [App\Http\Controllers\FinanceController::class, 'getOdometerRecord']);
+Route::post('/finance/asset/vehicleRecord/storeOdometerRecord', [App\Http\Controllers\FinanceController::class, 'storeOdometerRecord']);
+Route::delete('/finance/asset/vehicleRecord/deleteOdometerRecord', [App\Http\Controllers\FinanceController::class, 'deleteOdometerRecord']);
+Route::get('/finance/asset/vehicleRecord/vehicleReport', [App\Http\Controllers\FinanceController::class, 'vehicleReport'])->name('finance.asset.vehicleRecord.vehicleReport');
+Route::get('/finance/asset/vehicleRecord/getVehicleReport', [App\Http\Controllers\FinanceController::class, 'getVehicleReport']);
+Route::get('/finance/student/blockList', [App\Http\Controllers\FinanceController::class, 'blockList'])->name('finance.student.blockList');
 
 // Route::get('/finance/payment/fixIncentive', function(){
-    
+
 //     $students = DB::table('students')
 //     ->where(
 //         [
@@ -1020,7 +1021,7 @@ Route::get('/finance/student/blockList', [App\Http\Controllers\FinanceController
 //     ->get();
 
 //     foreach($students as $student){
-        
+
 //         $insentif = DB::table('tblinsentifkhas')
 //                                     ->join('tblprocess_type', 'tblinsentifkhas.process_type_id', 'tblprocess_type.id')
 //                                     ->where([
@@ -1203,6 +1204,6 @@ Route::middleware(['preventBackHistory'])->group(function () {
 
 Route::get('/send-announcement', [App\Http\Controllers\AnnouncementStudentController::class, 'sendAnnouncement']);
 
-Route::post("/logout/custom",[App\Http\Controllers\LogoutController::class,"store"])->name('custom_logout');
+Route::post("/logout/custom", [App\Http\Controllers\LogoutController::class, "store"])->name('custom_logout');
 
 Route::get('/weather/current', 'App\Http\Controllers\WeatherController@getCurrentWeather');
