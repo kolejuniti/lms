@@ -1622,7 +1622,7 @@
                         </td>
                         <td>
                             <div class="action-buttons">
-                                <a href="/AR/schedule/log/{{ Auth::user()->ic }}/view?idS=${value.date}" 
+                                <a href="{{ route('lecturer.schedule.log.view') }}?idS=${value.date}" 
                                    class="btn btn-primary btn-sm me-2" data-toggle="tooltip" title="View Timetable">
                                    <i class="fas fa-eye me-1"></i> View
                                 </a>
