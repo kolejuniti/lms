@@ -3919,7 +3919,8 @@ class LecturerController extends Controller
                 ['user_subjek.session_id', Session::get('SessionID')],
                 ['subjek.id', $id],
                 ['student_subjek.group_name', $groupName],
-                ['students.status', 'NOT IN', [4, 6]],
+                ['students.status', '!=', 4],
+                ['students.status', '!=', 6],
             ])
             ->orderBy('students.name')->get();
 
