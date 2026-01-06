@@ -1,42 +1,40 @@
-
 @extends('layouts.lecturer.lecturer')
 
 @section('main')
 
 
 <style>
+    #fb-rendered-form {
+        clear: both;
 
-
-#fb-rendered-form {
-    clear:both;
-    /* display:none; */
-    button{
-        float:right;
+        /* display:none; */
+        button {
+            float: right;
+        }
     }
-}
 
-.form-wrap.form-builder .frmb-control li{
-    font-family: Arial, Helvetica, sans-serif !important;
-    font-weight: Bold !important;
-}
+    .form-wrap.form-builder .frmb-control li {
+        font-family: Arial, Helvetica, sans-serif !important;
+        font-weight: Bold !important;
+    }
 
-div.form-actions.btn-group > button{
-    font-size:1.2em !important;
-    border-radius:0.5em !important;
-    padding:0.5em !important;
-    min-width:100px;
-    margin: 0.5em;
-}
+    div.form-actions.btn-group>button {
+        font-size: 1.2em !important;
+        border-radius: 0.5em !important;
+        padding: 0.5em !important;
+        min-width: 100px;
+        margin: 0.5em;
+    }
 
-input.collected-marks + label{
-    float:right;
-}
+    input.collected-marks+label {
+        float: right;
+    }
 </style>
 
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
     <div class="container-full">
-        <!-- Content Header (Page header) -->	  
+        <!-- Content Header (Page header) -->
         <div class="content-header">
             <div class="d-flex align-items-center">
                 <div class="me-auto">
@@ -51,7 +49,7 @@ input.collected-marks + label{
                         </nav>
                     </div>
                 </div>
-                
+
             </div>
         </div>
 
@@ -92,7 +90,7 @@ input.collected-marks + label{
                                     <div class="col-md-12">
                                         <h1 class="pull-left"> {{ $data['quiztitle'] }}</h1>
                                         <div class="pull-right  badge badge-xl badge-success" style="font-size:1.2em">
-                                                <label id="participant-mark"></label> <!--/ 
+                                            <label id="participant-mark"></label> <!--/ 
                                             <label id="total_mark" ></label>-->
                                         </div>
                                     </div>
@@ -105,21 +103,21 @@ input.collected-marks + label{
                                     <div class="form-group">
                                         <label class="form-label">Comments</label>
                                         <textarea id="commentss" name="commentss" class="form-control col-md-12 mt-3" rows="10" cols="80"></textarea>
-                                     
-                                    </div>   
+
+                                    </div>
                                 </div>
                                 @else
-        
+
                                 <div class="col-md-12 mt-3">
                                     <div class="form-group">
                                         <label class="form-label">Comments</label>
                                         <textarea id="commentss" class="form-control col-md-12 mt-3" rows="10" cols="80" readonly>{{ $data['comments'] }}</textarea>
-                                    </div>   
+                                    </div>
                                 </div>
-                                   
+
                                 @endif
-                                
-                                
+
+
                                 <div class="row mt-4">
                                     <div class="col-md-12">
                                         <button id="publish-result-btn" class="btn btn-danger pull-right">Publish Result</button>
@@ -130,12 +128,12 @@ input.collected-marks + label{
                         </div>
                     </div>
                 </div>
-                
-              
+
+
             </div>
-            
+
         </section>
-        
+
     </div>
 </div>
 
@@ -150,177 +148,191 @@ input.collected-marks + label{
 
 
 <script>
+    // var quiz = {!! json_encode($data['quiz']) !!};
+    // var selected_quiz = {{ json_encode($data['quizid']) }};
+    // var selected_participant = {!! json_encode($data['quizuserid']) !!};
+    // var quiz_status = {{ json_encode($data['studentquizstatus']) }};
+    var quiz = @json($data['quiz']);
+    var selected_quiz = @json($data['quizid']);
+    var selected_participant = @json($data['quizuserid']);
+    var quiz_status = @json($data['studentquizstatus']);
+    var index = "{{ $data['questionindex'] }}";
+    var total = "{{ $data['totalmark'] }}";
+    var total_all = 0;
 
-var quiz = {!! json_encode($data['quiz']) !!};
-var selected_quiz = {{ json_encode($data['quizid']) }};
-var selected_participant = {!! json_encode($data['quizuserid']) !!};
-var quiz_status = {{ json_encode($data['studentquizstatus']) }};
-var index = "{{ $data['questionindex'] }}";
-var total = "{{ $data['totalmark'] }}";
-var total_all = 0;
+    $(document).ready(function() {
 
-$(document).ready(function(){
-
-var selected_group = "";
-var input_date = "";
+        var selected_group = "";
+        var input_date = "";
 
 
-"use strict";
-    ClassicEditor
-    .create( document.querySelector( '#comments' ),{ height: '25em' } )
-    .then(newEditor =>{editor = newEditor;})
-    .catch( error => { console.log( error );});
-
-})
-
-jQuery(function($) {
-
- 
-    /* On Clicks */
-    document.getElementById('publish-result-btn').addEventListener('click', function() {
-    
-        if(total_all > total)
-        {
-
-            alert('Please make sure the total mark does not exceed ' + total)
-
-        }else{
-
-            $('[name="radio-question"]').removeAttr('disabled');
-            $('[name="checkbox-question[]"]').removeAttr('disabled');
-
-            const fbRender = document.getElementById("fb-render");
-
-            $.ajax({
-                headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
-                url: "{{ url('lecturer/quiz/updatequizresult') }}",
-                type: 'POST',
-                data:  {
-                    quiz: selected_quiz,
-                    participant: selected_participant,
-                    final_mark: $('#participant-mark').html(),
-                    comments: $('#commentss').val(),
-                    //total_mark: $('#total_mark').html(),
-                    data: window.JSON.stringify( {formData: $(fbRender).formRender("userData") })
-                },
-                error:function(err){
-                    console.log(err);
-                },
-                success:function(res){
-                    location.href = "/lecturer/quiz/"+ selected_quiz +"/"+selected_participant+"/result";
-                }
+        "use strict";
+        ClassicEditor
+            .create(document.querySelector('#comments'), {
+                height: '25em'
+            })
+            .then(newEditor => {
+                editor = newEditor;
+            })
+            .catch(error => {
+                console.log(error);
             });
 
-        }
-    }, false);
-    
-   
+    })
 
-   
-
-    renderForm(quiz);
-    
-    setTimeout(() => {
-        renderMark();
-        
-        $('[name="radio-question"]').attr("disabled","disabled");
-        $('[name="checkbox-question[]"]').attr("disabled","disabled");
-        $('[name="subjective-text"]').attr("disabled","disabled");
-
-        //remove editing features if published
-        if( quiz_status == 3 ){ 
-            $('.collected-marks').attr("disabled","disabled");
-            $('#publish-result-btn').hide();
-            $('#done-btn').removeAttr('hidden');
-        }
-    }, 500);
-
-    /* On Changes */
-    $(document).on('change', '.collected-marks', function(e){
-        renderMark();
-    });
-
-    $(document).on('keyup', '.inputmark', function(e){
-        renderMark();
-    });
+    jQuery(function($) {
 
 
+        /* On Clicks */
+        document.getElementById('publish-result-btn').addEventListener('click', function() {
 
-    
+            if (total_all > total) {
 
-    
-});
+                alert('Please make sure the total mark does not exceed ' + total)
 
+            } else {
 
-function renderForm(formdata){
-    return jQuery(function($) {
-        const fbRender = document.getElementById("fb-render");
-        const originalFormData = formdata;
+                $('[name="radio-question"]').removeAttr('disabled');
+                $('[name="checkbox-question[]"]').removeAttr('disabled');
 
-        var formRenderOptions = {
-            datatype: 'json',
-            formData: JSON.stringify(quiz),
-            onRender: function() {
-                const fileInputs = document.querySelectorAll('#fb-render input[type="file"]');
-                fileInputs.forEach(function(fileInput) {
-                    if (fileInput.name) {
-                        const img = document.createElement('img');
-                        img.src = fileInput.name;
-                        img.alt = 'uploaded_image';
-                        img.className = 'uploaded-image';
-                        fileInput.parentNode.insertBefore(img, fileInput.nextSibling);
-                        fileInput.style.display = 'none';
+                const fbRender = document.getElementById("fb-render");
+
+                $.ajax({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    url: "{{ url('lecturer/quiz/updatequizresult') }}",
+                    type: 'POST',
+                    data: {
+                        quiz: selected_quiz,
+                        participant: selected_participant,
+                        final_mark: $('#participant-mark').html(),
+                        comments: $('#commentss').val(),
+                        //total_mark: $('#total_mark').html(),
+                        data: window.JSON.stringify({
+                            formData: $(fbRender).formRender("userData")
+                        })
+                    },
+                    error: function(err) {
+                        console.log(err);
+                    },
+                    success: function(res) {
+                        location.href = "/lecturer/quiz/" + selected_quiz + "/" + selected_participant + "/result";
                     }
                 });
+
             }
-        };
-
-        $(fbRender).formRender(formRenderOptions );
-
-        //$('[name="checkbox-question3[]"]').attr("disabled","disabled");
-
-        for(let i=0; i < index; i++){
-
-        $(`[name="radio-question${i}"]:not(:checked)`).attr('disabled', true);
-        $(`[name="checkbox-question${i}[]"]`).click(false);
-        $(`[name="subjective-text${i}"]:not(:checked)`).attr('readonly', true);
-
-        //alert(`[name="checkbox-question${i}"]`)
-        }
-       
-        //alert(index);
-    });
-}
-
-function renderMark(){
-    var total_mark = 0, total_correct_mark = 0, total_correct_input = 0;
-
-    $('.collected-marks').each((i)=>{
-        var checkbox = $($('.collected-marks')[i]);
-
-        var mark = checkbox.val();
-        mark = parseFloat(mark) || 0;
-
-        if(checkbox.is(':checked')){
-            total_correct_mark = total_correct_mark + mark;
-        }
-
-        total_mark = total_mark + mark;
-    });
+        }, false);
 
 
-    $('.inputmark').each(function() {
-        var value = parseFloat($(this).val()) || 0;
-        total_correct_input += value;
+
+
+
+        renderForm(quiz);
+
+        setTimeout(() => {
+            renderMark();
+
+            $('[name="radio-question"]').attr("disabled", "disabled");
+            $('[name="checkbox-question[]"]').attr("disabled", "disabled");
+            $('[name="subjective-text"]').attr("disabled", "disabled");
+
+            //remove editing features if published
+            if (quiz_status == 3) {
+                // $('.collected-marks').attr("disabled", "disabled");
+                // $('#publish-result-btn').hide();
+                $('#done-btn').removeAttr('hidden');
+            }
+        }, 500);
+
+        /* On Changes */
+        $(document).on('change', '.collected-marks', function(e) {
+            renderMark();
+        });
+
+        $(document).on('keyup', '.inputmark', function(e) {
+            renderMark();
+        });
+
+
+
+
+
+
     });
 
-    //alert(total_correct_input);
 
-    total_all = total_correct_mark + total_correct_input;
+    function renderForm(formdata) {
+        return jQuery(function($) {
+            const fbRender = document.getElementById("fb-render");
+            const originalFormData = formdata;
 
-    $('#participant-mark').html(total_all + " Mark");
-    //$('#total_mark').html(total_mark + " Mark");
-}
+            var formRenderOptions = {
+                datatype: 'json',
+                formData: JSON.stringify(quiz),
+                onRender: function() {
+                    const fileInputs = document.querySelectorAll('#fb-render input[type="file"]');
+                    fileInputs.forEach(function(fileInput) {
+                        if (fileInput.name) {
+                            const img = document.createElement('img');
+                            img.src = fileInput.name;
+                            img.alt = 'uploaded_image';
+                            img.className = 'uploaded-image';
+                            fileInput.parentNode.insertBefore(img, fileInput.nextSibling);
+                            fileInput.style.display = 'none';
+                        }
+                    });
+                }
+            };
+
+            $(fbRender).formRender(formRenderOptions);
+
+            //$('[name="checkbox-question3[]"]').attr("disabled","disabled");
+
+            for (let i = 0; i < index; i++) {
+
+                $(`[name="radio-question${i}"]:not(:checked)`).attr('disabled', true);
+                $(`[name="checkbox-question${i}[]"]`).click(false);
+                $(`[name="subjective-text${i}"]:not(:checked)`).attr('readonly', true);
+
+                //alert(`[name="checkbox-question${i}"]`)
+            }
+
+            //alert(index);
+        });
+    }
+
+    function renderMark() {
+        var total_mark = 0,
+            total_correct_mark = 0,
+            total_correct_input = 0;
+
+        $('.collected-marks').each((i) => {
+            var checkbox = $($('.collected-marks')[i]);
+
+            var mark = checkbox.val();
+            mark = parseFloat(mark) || 0;
+
+            if (checkbox.is(':checked')) {
+                total_correct_mark = total_correct_mark + mark;
+            }
+
+            total_mark = total_mark + mark;
+        });
+
+
+        $('.inputmark').each(function() {
+            var value = parseFloat($(this).val()) || 0;
+            total_correct_input += value;
+        });
+
+        //alert(total_correct_input);
+
+        total_all = total_correct_mark + total_correct_input;
+
+        $('#participant-mark').html(total_all + " Mark");
+        //$('#total_mark').html(total_mark + " Mark");
+    }
 </script>
 
 @endsection
