@@ -5012,7 +5012,8 @@ class AR_Controller extends Controller
                     ->join('transcript_status', 'student_transcript.transcript_status_id', 'transcript_status.id')
                     ->where([
                         ['students.program', $datas->program],
-                        ['students.status', '!=', 4],
+                        ['students.status', '!=', '4'],
+                        ['students.status', '!=', '6'],
                         ['student_transcript.session_id', $datas->session],
                         ['student_transcript.semester', $datas->semester]
                     ])
@@ -5074,10 +5075,12 @@ class AR_Controller extends Controller
                     ->join('transcript_status', 'student_transcript.transcript_status_id', 'transcript_status.id')
                     ->where([
                         ['students.program', $datas->program],
+                        ['students.status', '!=', '4'],
+                        ['students.status', '!=', '6'],
                         ['student_transcript.session_id', $datas->session],
                         ['student_transcript.semester', $datas->semester]
                     ])
-                    ->select('student_transcript.*', 'students.name', 'transcript_status.status_name AS status')
+                    ->select('student_transcript.*', 'students.name', 'students.no_matric', 'transcript_status.status_name AS status')
                     ->orderBy('students.name')
                     ->get();
 
