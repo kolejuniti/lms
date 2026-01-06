@@ -8,7 +8,7 @@
 <!-- Content Header (Page header) -->
 <div class="content-wrapper" style="min-height: 695.8px;">
   <div class="container-full">
-    <!-- Content Header (Page header) -->	  
+    <!-- Content Header (Page header) -->
     <div class="content-header">
       <div class="d-flex align-items-center">
         <div class="me-auto">
@@ -25,11 +25,11 @@
         </div>
       </div>
       @if($errors->any())
-        <div class="form-group">
-            <div class="alert alert-success">
-              <span>{{$errors->first()}} </span>
-            </div>
+      <div class="form-group">
+        <div class="alert alert-success">
+          <span>{{$errors->first()}} </span>
         </div>
+      </div>
       @endif
     </div>
 
@@ -47,46 +47,46 @@
           <div class="row">
             <div class="col-md-4">
               <div class="form-group">
-                  <label class="form-label" for="program">Program</label>
-                  <select class="form-select" id="program" name="program">
+                <label class="form-label" for="program">Program</label>
+                <select class="form-select" id="program" name="program">
                   <option value="" selected disabled>-</option>
-                    @foreach ($data['program'] as $prg)
-                    <option value="{{ $prg->id }}">{{ $prg->progcode }} - {{ $prg->progname }}</option> 
-                    @endforeach
-                  </select>
+                  @foreach ($data['program'] as $prg)
+                  <option value="{{ $prg->id }}">{{ $prg->progcode }} - {{ $prg->progname }}</option>
+                  @endforeach
+                </select>
               </div>
             </div>
           </div>
           <div class="row">
             <div class="col-md-4">
               <div class="form-group">
-                  <label class="form-label" for="session">Session</label>
-                  <select class="form-select" id="session" name="session">
+                <label class="form-label" for="session">Session</label>
+                <select class="form-select" id="session" name="session">
                   <option value="" selected disabled>-</option>
-                    @foreach ($data['session'] as $ses)
-                    <option value="{{ $ses->SessionID }}">{{ $ses->SessionName }}</option> 
-                    @endforeach
-                  </select>
+                  @foreach ($data['session'] as $ses)
+                  <option value="{{ $ses->SessionID }}">{{ $ses->SessionName }}</option>
+                  @endforeach
+                </select>
               </div>
             </div>
           </div>
           <div class="row">
             <div class="col-md-4">
               <div class="form-group">
-                  <label class="form-label" for="semester">Semester</label>
-                  <select class="form-select" id="semester" name="semester">
+                <label class="form-label" for="semester">Semester</label>
+                <select class="form-select" id="semester" name="semester">
                   <option value="" selected disabled>-</option>
-                    @foreach ($data['semester'] as $sem)
-                    <option value="{{ $sem->id }}">{{ $sem->semester_name }}</option> 
-                    @endforeach
-                  </select>
+                  @foreach ($data['semester'] as $sem)
+                  <option value="{{ $sem->id }}">{{ $sem->semester_name }}</option>
+                  @endforeach
+                </select>
               </div>
             </div>
           </div>
           <button type="submit" class="btn btn-primary pull-right mb-3" onclick="submit()">Find</button>
           <div id="form-student">
-            
-  
+
+
           </div>
         </div>
       </div>
@@ -121,32 +121,32 @@
 <script src="{{ mix('js/app.js') }}"></script>
 
 <script>
-     $(document).ready( function () {
-        $('#myTable').DataTable({
-          dom: 'lBfrtip', // if you remove this line you will see the show entries dropdown
-          
-          buttons: [
-              'copy', 'csv', 'excel', 'pdf', 'print'
-          ],
-        });
-    } );
-  </script>
+  $(document).ready(function() {
+    $('#myTable').DataTable({
+      dom: 'lBfrtip', // if you remove this line you will see the show entries dropdown
 
-  <script type="text/javascript">
-    var from = '';
-    var to = '';
+      buttons: [
+        'copy', 'csv', 'excel', 'pdf', 'print'
+      ],
+    });
+  });
+</script>
 
-    // $(document).on('change', '#from', async function(e){
-    //     from = $(e.target).val();
+<script type="text/javascript">
+  var from = '';
+  var to = '';
 
-    //     await getStudent(from,to);
-    //   });
+  // $(document).on('change', '#from', async function(e){
+  //     from = $(e.target).val();
 
-    //   $(document).on('change', '#to', async function(e){
-    //     to = $(e.target).val();
+  //     await getStudent(from,to);
+  //   });
 
-    //     await getStudent(from,to);
-    //   });
+  //   $(document).on('change', '#to', async function(e){
+  //     to = $(e.target).val();
+
+  //     await getStudent(from,to);
+  //   });
 
 
   // function getStudent(from,to)
@@ -167,15 +167,14 @@
 
   // }
 
-  function submit()
-  {
+  function submit() {
 
     var formData = new FormData();
 
     getInput = {
-      program : $('#program').val(),
-      session : $('#session').val(),
-      semester : $('#semester').val()
+      program: $('#program').val(),
+      session: $('#session').val(),
+      semester: $('#semester').val()
     };
 
     formData.append('submitData', JSON.stringify(getInput))
@@ -184,41 +183,42 @@
     $('#loading-spinner').css('display', 'block');
 
     return $.ajax({
-              headers: {'X-CSRF-TOKEN':  $('meta[name="csrf-token"]').attr('content')},
-              url      : "{{ url('AR/student/senateReport/getSenateReport') }}",
-              method   : 'POST',
-              cache : false,
-              processData: false,
-              contentType: false,
-              data 	 : formData,
-              error:function(err){
-                  alert("Error");
+      headers: {
+        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+      },
+      url: "{{ url('AR/student/senateReport/getSenateReport') }}",
+      method: 'POST',
+      cache: false,
+      processData: false,
+      contentType: false,
+      data: formData,
+      error: function(err) {
+        alert("Error");
 
-                  // Hide the spinner on error
-                  $('#loading-spinner').css('display', 'none');
-              },
-              success  : function(data){
+        // Hide the spinner on error
+        $('#loading-spinner').css('display', 'none');
+      },
+      success: function(data) {
 
-                if(data.error)
-                {
-                  alert(data.error);
+        if (data.error) {
+          alert(data.error);
 
-                }
+        }
 
-                // Hide the spinner on success
-                $('#loading-spinner').css('display', 'none');
+        // Hide the spinner on success
+        $('#loading-spinner').css('display', 'none');
 
-                // Log the received data to the console
-                console.log(data.data);
-                console.log('renderSenateReport is defined:', typeof window.renderSenateReport);
-                renderSenateReport(data.data)
+        // Log the received data to the console
+        console.log(data.data);
+        console.log('renderSenateReport is defined:', typeof window.renderSenateReport);
+        renderSenateReport(data.data)
 
-                // $('#form-student').html(data);
-                        
-              }
-          });
+        // $('#form-student').html(data);
+
+      }
+    });
   }
-  
+
   $(document).ready(function() {
     $('#printButton').on('click', function(e) {
       e.preventDefault();
@@ -230,9 +230,9 @@
     var formData = new FormData();
 
     getInput = {
-      program : $('#program').val(),
-      session : $('#session').val(),
-      semester : $('#semester').val()
+      program: $('#program').val(),
+      session: $('#session').val(),
+      semester: $('#semester').val()
     };
 
     formData.append('submitData', JSON.stringify(getInput))
@@ -241,10 +241,12 @@
     $('#loading-spinner').css('display', 'block');
 
     return $.ajax({
-      headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+      headers: {
+        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+      },
       url: "{{ url('AR/student/senateReport/getSenateReport?print=true') }}",
       method: 'POST',
-      cache : false,
+      cache: false,
       processData: false,
       contentType: false,
       data: formData,
@@ -256,8 +258,7 @@
         $('#loading-spinner').css('display', 'none');
       },
       success: function(data) {
-        if(data.error)
-        {
+        if (data.error) {
           alert(data.error);
 
         }
@@ -271,5 +272,53 @@
       }
     });
   }
-  </script>
+
+  function renderSenateReport(data) {
+    var html = '';
+    if (data.length > 0) {
+      html += '<div class="table-responsive">';
+      html += '<table id="resultsTable" class="table table-bordered table-striped">';
+      html += '<thead>';
+      html += '<tr>';
+      html += '<th>No</th>';
+      html += '<th>Name</th>';
+      html += '<th>Matric No</th>';
+      html += '<th>GPA</th>';
+      html += '<th>CGPA</th>';
+      html += '<th>Status</th>';
+      html += '</tr>';
+      html += '</thead>';
+      html += '<tbody>';
+
+      $.each(data, function(index, value) {
+        html += '<tr>';
+        html += '<td>' + (index + 1) + '</td>';
+        html += '<td>' + value.name + '</td>';
+        html += '<td>' + (value.no_matric ? value.no_matric : '-') + '</td>';
+        html += '<td>' + (value.gpa ? value.gpa : '') + '</td>';
+        html += '<td>' + (value.cgpa ? value.cgpa : '') + '</td>';
+        html += '<td>' + (value.status ? value.status : '-') + '</td>';
+        html += '</tr>';
+      });
+
+      html += '</tbody>';
+      html += '</table>';
+      html += '</div>';
+    } else {
+      html += '<div class="alert alert-warning">No data found</div>';
+    }
+
+    $('#form-student').html(html);
+
+    // Initialize DataTable
+    if (data.length > 0) {
+      $('#resultsTable').DataTable({
+        dom: 'lBfrtip',
+        buttons: [
+          'copy', 'csv', 'excel', 'pdf', 'print'
+        ],
+      });
+    }
+  }
+</script>
 @endsection
