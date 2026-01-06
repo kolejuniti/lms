@@ -408,6 +408,8 @@ Route::get('/lecturer/materials/fix-private', [App\Http\Controllers\LecturerCont
 Route::get('/lecturer/class/schedule', [App\Http\Controllers\LecturerController::class, 'classSchedule'])->name('lecturer.class.schedule');
 Route::get('/lecturer/class/schedule/fetch', [App\Http\Controllers\LecturerController::class, 'fetchEvents']);
 Route::get('/lecturer/class/schedule/getLoggedSchedule', [App\Http\Controllers\LecturerController::class, 'getLoggedSchedule']);
+Route::get('/lecturer/class/schedule/log/view', [App\Http\Controllers\LecturerController::class, 'viewLogEvent'])->name('lecturer.schedule.log.view');
+Route::get('/lecturer/class/schedule/log/fetch', [App\Http\Controllers\LecturerController::class, 'fetchLogEvent'])->name('lecturer.schedule.log.fetch');
 
 // Replacement Class Routes
 Route::get('/lecturer/class/replacement_class', [App\Http\Controllers\LecturerController::class, 'replacementClass'])->name('lecturer.class.replacement_class');
