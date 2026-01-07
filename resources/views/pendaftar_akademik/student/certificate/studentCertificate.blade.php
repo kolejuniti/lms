@@ -919,9 +919,17 @@
           alert(data.message);
         }
       },
-      error: function(err) {
-        console.log(err);
-        alert("Error updating certificate");
+      error: function(xhr, status, error) {
+        console.log(xhr);
+        var errorMessage = "Error updating certificate";
+        if (xhr.status === 404) {
+          errorMessage = "Error 404: The update route was not found. Please ensure the server code is updated.";
+        } else if (xhr.responseJSON && xhr.responseJSON.message) {
+          errorMessage = "Error: " + xhr.responseJSON.message;
+        } else if (xhr.statusText) {
+          errorMessage = "Error " + xhr.status + ": " + xhr.statusText;
+        }
+        alert(errorMessage);
       }
     });
   }
