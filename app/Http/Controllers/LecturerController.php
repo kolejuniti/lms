@@ -3913,8 +3913,9 @@ class LecturerController extends Controller
         $students = DB::table('user_subjek')
             ->join('student_subjek', 'user_subjek.id', 'student_subjek.group_id')
             ->join('students', 'student_subjek.student_ic', 'students.ic')
+            ->join('tblprogramme', 'students.program', 'tblprogramme.id')
             ->join('subjek', 'user_subjek.course_id', 'subjek.sub_id')
-            ->select('user_subjek.*', 'student_subjek.group_name', 'student_subjek.group_id', 'students.*')
+            ->select('user_subjek.*', 'student_subjek.group_name', 'student_subjek.group_id', 'students.*', 'tblprogramme.progcode')
             ->where([
                 ['user_subjek.user_ic', $user->ic],
                 ['user_subjek.session_id', Session::get('SessionID')],
@@ -3924,6 +3925,11 @@ class LecturerController extends Controller
                 ['students.status', '!=', 6],
             ])
             ->orderBy('students.name')->get();
+
+        // Assign original index to preserve mapping with assessment arrays
+        foreach ($students as $index => $student) {
+            $student->original_index = $index;
+        }
 
         $collection = collect($students);
 
