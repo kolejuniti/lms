@@ -216,6 +216,10 @@
 </head>
 
 <body>
+    @foreach($students->groupBy('progcode') as $program => $programStudents)
+    @if(!$loop->first)
+    <div style="page-break-before: always;"></div>
+    @endif
     <!-- Header Section -->
     <div class="header clearfix">
         <div class="header-left">
@@ -228,7 +232,7 @@
             <p><strong>NAMA MATA PELAJARAN:</strong> {{ $courseInfo->course_name ?? 'N/A' }}</p>
             <p><strong>SESI:</strong> {{ $courseInfo->session ?? 'N/A' }}</p>
             <p><strong>KOD MATA PELAJARAN:</strong> {{ $courseInfo->course_code ?? 'N/A' }}</p>
-            <p><strong>KUMPULAN:</strong> {{ $groupName }}</p>
+            <p><strong>KUMPULAN:</strong> {{ $groupName }} - {{ $program }}</p>
         </div>
         <div class="header-right">
             BPKDU.PM.(O).05/02
@@ -516,9 +520,9 @@
                 </thead>
                 <tbody>
                     <!-- Student Rows -->
-                    @foreach($students as $key => $student)
+                    @foreach($programStudents as $student) @php $key = $student->original_index; @endphp
                     <tr>
-                        <td>{{ $key + 1 }}</td>
+                        <td>{{ $loop->iteration }}</td>
                         <td>{{ $student->no_matric }}</td>
                         <td class="student-name">{{ strtoupper($student->name) }}</td>
 
@@ -624,6 +628,31 @@
                     @endforeach
 
                     <!-- Statistics Rows -->
+                    @php
+                    // Recalculate Overall Stats & Grade Distribution for this program
+                    $progOverallArr = [];
+                    $currentGradeDistribution = [];
+                    // Initialize grade dist based on scale
+                    if(isset($gradingScale)) {
+                    foreach($gradingScale as $bg) $currentGradeDistribution[$bg->code] = 0;
+                    }
+
+                    foreach($programStudents as $std) { $key = $std->original_index;
+                    $val = $overallall2[$key] ?? 0;
+                    $progOverallArr[] = $val;
+
+                    // Grade Dist
+                    $g = $valGrade[$key] ?? null;
+                    if($g) $currentGradeDistribution[$g] = ($currentGradeDistribution[$g] ?? 0) + 1;
+                    }
+
+                    $avgoverall = count($progOverallArr) > 0 ? number_format(array_sum($progOverallArr) / count($progOverallArr), 2) : '0.00';
+                    $maxoverall = count($progOverallArr) > 0 ? max($progOverallArr) : 0;
+                    $minoverall = count($progOverallArr) > 0 ? min($progOverallArr) : 0;
+
+                    // Override global gradeDistribution with local one
+                    $gradeDistribution = $currentGradeDistribution;
+                    @endphp
                     <tr class="stats-row">
                         <td colspan="3" style="text-align: right; padding-right: 10px;">PURATA</td>
                         @php
@@ -632,7 +661,7 @@
                         foreach($quiz as $qkey => $qz) {
                         $sum = 0;
                         $count = 0;
-                        foreach($students as $skey => $student) {
+                        foreach($programStudents as $skey => $student) {
                         if(isset($quizanswer[$skey][$qkey]) && $quizanswer[$skey][$qkey]) {
                         $sum += floatval($quizanswer[$skey][$qkey]->final_mark);
                         $count++;
@@ -645,7 +674,7 @@
                         foreach($test as $tkey => $ts) {
                         $sum = 0;
                         $count = 0;
-                        foreach($students as $skey => $student) {
+                        foreach($programStudents as $skey => $student) {
                         if(isset($testanswer[$skey][$tkey]) && $testanswer[$skey][$tkey]) {
                         $sum += floatval($testanswer[$skey][$tkey]->final_mark);
                         $count++;
@@ -658,7 +687,7 @@
                         foreach($test2 as $t2key => $ts2) {
                         $sum = 0;
                         $count = 0;
-                        foreach($students as $skey => $student) {
+                        foreach($programStudents as $skey => $student) {
                         if(isset($test2answer[$skey][$t2key]) && $test2answer[$skey][$t2key]) {
                         $sum += floatval($test2answer[$skey][$t2key]->final_mark);
                         $count++;
@@ -671,7 +700,7 @@
                         foreach($assign as $akey => $ag) {
                         $sum = 0;
                         $count = 0;
-                        foreach($students as $skey => $student) {
+                        foreach($programStudents as $skey => $student) {
                         if(isset($assignanswer[$skey][$akey]) && $assignanswer[$skey][$akey]) {
                         $sum += floatval($assignanswer[$skey][$akey]->final_mark);
                         $count++;
@@ -684,7 +713,7 @@
                         foreach($extra as $ekey => $ex) {
                         $sum = 0;
                         $count = 0;
-                        foreach($students as $skey => $student) {
+                        foreach($programStudents as $skey => $student) {
                         if(isset($extraanswer[$skey][$ekey]) && $extraanswer[$skey][$ekey]) {
                         $sum += floatval($extraanswer[$skey][$ekey]->total_mark);
                         $count++;
@@ -697,7 +726,7 @@
                         foreach($practical as $pkey => $pr) {
                         $sum = 0;
                         $count = 0;
-                        foreach($students as $skey => $student) {
+                        foreach($programStudents as $skey => $student) {
                         if(isset($practicalanswer[$skey][$pkey]) && $practicalanswer[$skey][$pkey]) {
                         $sum += floatval($practicalanswer[$skey][$pkey]->total_mark);
                         $count++;
@@ -710,7 +739,7 @@
                         foreach($other as $okey => $ot) {
                         $sum = 0;
                         $count = 0;
-                        foreach($students as $skey => $student) {
+                        foreach($programStudents as $skey => $student) {
                         if(isset($otheranswer[$skey][$okey]) && $otheranswer[$skey][$okey]) {
                         $sum += floatval($otheranswer[$skey][$okey]->total_mark);
                         $count++;
@@ -723,7 +752,7 @@
                         foreach($midterm as $mkey => $mt) {
                         $sum = 0;
                         $count = 0;
-                        foreach($students as $skey => $student) {
+                        foreach($programStudents as $skey => $student) {
                         if(isset($midtermanswer[$skey][$mkey]) && $midtermanswer[$skey][$mkey]) {
                         $sum += floatval($midtermanswer[$skey][$mkey]->final_mark);
                         $count++;
@@ -735,7 +764,7 @@
                         // Calculate average overall test
                         $overallTestSum = 0;
                         $overallTestCount = 0;
-                        foreach($students as $skey => $student) {
+                        foreach($programStudents as $skey => $student) {
                         if(isset($overalltest[$skey])) {
                         $overallTestSum += floatval($overalltest[$skey]);
                         $overallTestCount++;
@@ -746,7 +775,7 @@
                         // Calculate average overall test2
                         $overallTest2Sum = 0;
                         $overallTest2Count = 0;
-                        foreach($students as $skey => $student) {
+                        foreach($programStudents as $skey => $student) {
                         if(isset($overalltest2[$skey])) {
                         $overallTest2Sum += floatval($overalltest2[$skey]);
                         $overallTest2Count++;
@@ -757,7 +786,7 @@
                         // Calculate average overall assign
                         $overallAssignSum = 0;
                         $overallAssignCount = 0;
-                        foreach($students as $skey => $student) {
+                        foreach($programStudents as $skey => $student) {
                         if(isset($overallassign[$skey])) {
                         $overallAssignSum += floatval($overallassign[$skey]);
                         $overallAssignCount++;
@@ -768,7 +797,7 @@
                         // Calculate average overall extra
                         $overallExtraSum = 0;
                         $overallExtraCount = 0;
-                        foreach($students as $skey => $student) {
+                        foreach($programStudents as $skey => $student) {
                         if(isset($overallextra[$skey])) {
                         $overallExtraSum += floatval($overallextra[$skey]);
                         $overallExtraCount++;
@@ -779,7 +808,7 @@
                         // Calculate average overall practical
                         $overallPracticalSum = 0;
                         $overallPracticalCount = 0;
-                        foreach($students as $skey => $student) {
+                        foreach($programStudents as $skey => $student) {
                         if(isset($overallpractical[$skey])) {
                         $overallPracticalSum += floatval($overallpractical[$skey]);
                         $overallPracticalCount++;
@@ -790,7 +819,7 @@
                         // Calculate average overall other
                         $overallOtherSum = 0;
                         $overallOtherCount = 0;
-                        foreach($students as $skey => $student) {
+                        foreach($programStudents as $skey => $student) {
                         if(isset($overallother[$skey])) {
                         $overallOtherSum += floatval($overallother[$skey]);
                         $overallOtherCount++;
@@ -801,7 +830,7 @@
                         // Calculate average overall midterm
                         $overallMidtermSum = 0;
                         $overallMidtermCount = 0;
-                        foreach($students as $skey => $student) {
+                        foreach($programStudents as $skey => $student) {
                         if(isset($overallmidterm[$skey])) {
                         $overallMidtermSum += floatval($overallmidterm[$skey]);
                         $overallMidtermCount++;
@@ -812,7 +841,7 @@
                         // Calculate average overall quiz
                         $overallQuizSum = 0;
                         $overallQuizCount = 0;
-                        foreach($students as $skey => $student) {
+                        foreach($programStudents as $skey => $student) {
                         if(isset($overallquiz[$skey])) {
                         $overallQuizSum += floatval($overallquiz[$skey]);
                         $overallQuizCount++;
@@ -825,7 +854,7 @@
                         foreach($final as $fkey => $fn) {
                         $sum = 0;
                         $count = 0;
-                        foreach($students as $skey => $student) {
+                        foreach($programStudents as $skey => $student) {
                         if(isset($finalanswer[$skey][$fkey]) && $finalanswer[$skey][$fkey]) {
                         $sum += floatval($finalanswer[$skey][$fkey]->final_mark);
                         $count++;
@@ -837,7 +866,7 @@
                         // Calculate average overall final
                         $overallFinalSum = 0;
                         $overallFinalCount = 0;
-                        foreach($students as $skey => $student) {
+                        foreach($programStudents as $skey => $student) {
                         if(isset($overallfinal[$skey])) {
                         $overallFinalSum += floatval($overallfinal[$skey]);
                         $overallFinalCount++;
@@ -912,7 +941,7 @@
                         $quizMaxs = [];
                         foreach($quiz as $qkey => $qz) {
                         $max = 0;
-                        foreach($students as $skey => $student) {
+                        foreach($programStudents as $skey => $student) {
                         if(isset($quizanswer[$skey][$qkey]) && $quizanswer[$skey][$qkey]) {
                         $mark = floatval($quizanswer[$skey][$qkey]->final_mark);
                         if($mark > $max) $max = $mark;
@@ -924,7 +953,7 @@
                         $testMaxs = [];
                         foreach($test as $tkey => $ts) {
                         $max = 0;
-                        foreach($students as $skey => $student) {
+                        foreach($programStudents as $skey => $student) {
                         if(isset($testanswer[$skey][$tkey]) && $testanswer[$skey][$tkey]) {
                         $mark = floatval($testanswer[$skey][$tkey]->final_mark);
                         if($mark > $max) $max = $mark;
@@ -936,7 +965,7 @@
                         $test2Maxs = [];
                         foreach($test2 as $t2key => $ts2) {
                         $max = 0;
-                        foreach($students as $skey => $student) {
+                        foreach($programStudents as $skey => $student) {
                         if(isset($test2answer[$skey][$t2key]) && $test2answer[$skey][$t2key]) {
                         $mark = floatval($test2answer[$skey][$t2key]->final_mark);
                         if($mark > $max) $max = $mark;
@@ -948,7 +977,7 @@
                         $assignMaxs = [];
                         foreach($assign as $akey => $ag) {
                         $max = 0;
-                        foreach($students as $skey => $student) {
+                        foreach($programStudents as $skey => $student) {
                         if(isset($assignanswer[$skey][$akey]) && $assignanswer[$skey][$akey]) {
                         $mark = floatval($assignanswer[$skey][$akey]->final_mark);
                         if($mark > $max) $max = $mark;
@@ -960,7 +989,7 @@
                         $extraMaxs = [];
                         foreach($extra as $ekey => $ex) {
                         $max = 0;
-                        foreach($students as $skey => $student) {
+                        foreach($programStudents as $skey => $student) {
                         if(isset($extraanswer[$skey][$ekey]) && $extraanswer[$skey][$ekey]) {
                         $mark = floatval($extraanswer[$skey][$ekey]->total_mark);
                         if($mark > $max) $max = $mark;
@@ -972,7 +1001,7 @@
                         $practicalMaxs = [];
                         foreach($practical as $pkey => $pr) {
                         $max = 0;
-                        foreach($students as $skey => $student) {
+                        foreach($programStudents as $skey => $student) {
                         if(isset($practicalanswer[$skey][$pkey]) && $practicalanswer[$skey][$pkey]) {
                         $mark = floatval($practicalanswer[$skey][$pkey]->total_mark);
                         if($mark > $max) $max = $mark;
@@ -984,7 +1013,7 @@
                         $otherMaxs = [];
                         foreach($other as $okey => $ot) {
                         $max = 0;
-                        foreach($students as $skey => $student) {
+                        foreach($programStudents as $skey => $student) {
                         if(isset($otheranswer[$skey][$okey]) && $otheranswer[$skey][$okey]) {
                         $mark = floatval($otheranswer[$skey][$okey]->total_mark);
                         if($mark > $max) $max = $mark;
@@ -996,7 +1025,7 @@
                         $midtermMaxs = [];
                         foreach($midterm as $mkey => $mt) {
                         $max = 0;
-                        foreach($students as $skey => $student) {
+                        foreach($programStudents as $skey => $student) {
                         if(isset($midtermanswer[$skey][$mkey]) && $midtermanswer[$skey][$mkey]) {
                         $mark = floatval($midtermanswer[$skey][$mkey]->final_mark);
                         if($mark > $max) $max = $mark;
@@ -1007,7 +1036,7 @@
 
                         // Calculate max overall test
                         $maxOverallTest = 0;
-                        foreach($students as $skey => $student) {
+                        foreach($programStudents as $skey => $student) {
                         if(isset($overalltest[$skey])) {
                         $mark = floatval($overalltest[$skey]);
                         if($mark > $maxOverallTest) $maxOverallTest = $mark;
@@ -1017,7 +1046,7 @@
 
                         // Calculate max overall test2
                         $maxOverallTest2 = 0;
-                        foreach($students as $skey => $student) {
+                        foreach($programStudents as $skey => $student) {
                         if(isset($overalltest2[$skey])) {
                         $mark = floatval($overalltest2[$skey]);
                         if($mark > $maxOverallTest2) $maxOverallTest2 = $mark;
@@ -1027,7 +1056,7 @@
 
                         // Calculate max overall assign
                         $maxOverallAssign = 0;
-                        foreach($students as $skey => $student) {
+                        foreach($programStudents as $skey => $student) {
                         if(isset($overallassign[$skey])) {
                         $mark = floatval($overallassign[$skey]);
                         if($mark > $maxOverallAssign) $maxOverallAssign = $mark;
@@ -1037,7 +1066,7 @@
 
                         // Calculate max overall extra
                         $maxOverallExtra = 0;
-                        foreach($students as $skey => $student) {
+                        foreach($programStudents as $skey => $student) {
                         if(isset($overallextra[$skey])) {
                         $mark = floatval($overallextra[$skey]);
                         if($mark > $maxOverallExtra) $maxOverallExtra = $mark;
@@ -1047,7 +1076,7 @@
 
                         // Calculate max overall practical
                         $maxOverallPractical = 0;
-                        foreach($students as $skey => $student) {
+                        foreach($programStudents as $skey => $student) {
                         if(isset($overallpractical[$skey])) {
                         $mark = floatval($overallpractical[$skey]);
                         if($mark > $maxOverallPractical) $maxOverallPractical = $mark;
@@ -1057,7 +1086,7 @@
 
                         // Calculate max overall other
                         $maxOverallOther = 0;
-                        foreach($students as $skey => $student) {
+                        foreach($programStudents as $skey => $student) {
                         if(isset($overallother[$skey])) {
                         $mark = floatval($overallother[$skey]);
                         if($mark > $maxOverallOther) $maxOverallOther = $mark;
@@ -1067,7 +1096,7 @@
 
                         // Calculate max overall midterm
                         $maxOverallMidterm = 0;
-                        foreach($students as $skey => $student) {
+                        foreach($programStudents as $skey => $student) {
                         if(isset($overallmidterm[$skey])) {
                         $mark = floatval($overallmidterm[$skey]);
                         if($mark > $maxOverallMidterm) $maxOverallMidterm = $mark;
@@ -1077,7 +1106,7 @@
 
                         // Calculate max overall quiz
                         $maxOverallQuiz = 0;
-                        foreach($students as $skey => $student) {
+                        foreach($programStudents as $skey => $student) {
                         if(isset($overallquiz[$skey])) {
                         $mark = floatval($overallquiz[$skey]);
                         if($mark > $maxOverallQuiz) $maxOverallQuiz = $mark;
@@ -1089,7 +1118,7 @@
                         $finalMaxs = [];
                         foreach($final as $fkey => $fn) {
                         $max = 0;
-                        foreach($students as $skey => $student) {
+                        foreach($programStudents as $skey => $student) {
                         if(isset($finalanswer[$skey][$fkey]) && $finalanswer[$skey][$fkey]) {
                         $mark = floatval($finalanswer[$skey][$fkey]->final_mark);
                         if($mark > $max) $max = $mark;
@@ -1100,7 +1129,7 @@
 
                         // Calculate max overall final
                         $maxOverallFinal = 0;
-                        foreach($students as $skey => $student) {
+                        foreach($programStudents as $skey => $student) {
                         if(isset($overallfinal[$skey])) {
                         $mark = floatval($overallfinal[$skey]);
                         if($mark > $maxOverallFinal) $maxOverallFinal = $mark;
@@ -1176,7 +1205,7 @@
                         foreach($quiz as $qkey => $qz) {
                         $min = PHP_INT_MAX;
                         $hasValue = false;
-                        foreach($students as $skey => $student) {
+                        foreach($programStudents as $skey => $student) {
                         if(isset($quizanswer[$skey][$qkey]) && $quizanswer[$skey][$qkey]) {
                         $mark = floatval($quizanswer[$skey][$qkey]->final_mark);
                         if($mark < $min) $min=$mark;
@@ -1190,7 +1219,7 @@
                             foreach($test as $tkey=> $ts) {
                             $min = PHP_INT_MAX;
                             $hasValue = false;
-                            foreach($students as $skey => $student) {
+                            foreach($programStudents as $skey => $student) {
                             if(isset($testanswer[$skey][$tkey]) && $testanswer[$skey][$tkey]) {
                             $mark = floatval($testanswer[$skey][$tkey]->final_mark);
                             if($mark < $min) $min=$mark;
@@ -1204,7 +1233,7 @@
                                 foreach($test2 as $t2key=> $ts2) {
                                 $min = PHP_INT_MAX;
                                 $hasValue = false;
-                                foreach($students as $skey => $student) {
+                                foreach($programStudents as $skey => $student) {
                                 if(isset($test2answer[$skey][$t2key]) && $test2answer[$skey][$t2key]) {
                                 $mark = floatval($test2answer[$skey][$t2key]->final_mark);
                                 if($mark < $min) $min=$mark;
@@ -1218,7 +1247,7 @@
                                     foreach($assign as $akey=> $ag) {
                                     $min = PHP_INT_MAX;
                                     $hasValue = false;
-                                    foreach($students as $skey => $student) {
+                                    foreach($programStudents as $skey => $student) {
                                     if(isset($assignanswer[$skey][$akey]) && $assignanswer[$skey][$akey]) {
                                     $mark = floatval($assignanswer[$skey][$akey]->final_mark);
                                     if($mark < $min) $min=$mark;
@@ -1232,7 +1261,7 @@
                                         foreach($extra as $ekey=> $ex) {
                                         $min = PHP_INT_MAX;
                                         $hasValue = false;
-                                        foreach($students as $skey => $student) {
+                                        foreach($programStudents as $skey => $student) {
                                         if(isset($extraanswer[$skey][$ekey]) && $extraanswer[$skey][$ekey]) {
                                         $mark = floatval($extraanswer[$skey][$ekey]->total_mark);
                                         if($mark < $min) $min=$mark;
@@ -1246,7 +1275,7 @@
                                             foreach($practical as $pkey=> $pr) {
                                             $min = PHP_INT_MAX;
                                             $hasValue = false;
-                                            foreach($students as $skey => $student) {
+                                            foreach($programStudents as $skey => $student) {
                                             if(isset($practicalanswer[$skey][$pkey]) && $practicalanswer[$skey][$pkey]) {
                                             $mark = floatval($practicalanswer[$skey][$pkey]->total_mark);
                                             if($mark < $min) $min=$mark;
@@ -1260,7 +1289,7 @@
                                                 foreach($other as $okey=> $ot) {
                                                 $min = PHP_INT_MAX;
                                                 $hasValue = false;
-                                                foreach($students as $skey => $student) {
+                                                foreach($programStudents as $skey => $student) {
                                                 if(isset($otheranswer[$skey][$okey]) && $otheranswer[$skey][$okey]) {
                                                 $mark = floatval($otheranswer[$skey][$okey]->total_mark);
                                                 if($mark < $min) $min=$mark;
@@ -1274,7 +1303,7 @@
                                                     foreach($midterm as $mkey=> $mt) {
                                                     $min = PHP_INT_MAX;
                                                     $hasValue = false;
-                                                    foreach($students as $skey => $student) {
+                                                    foreach($programStudents as $skey => $student) {
                                                     if(isset($midtermanswer[$skey][$mkey]) && $midtermanswer[$skey][$mkey]) {
                                                     $mark = floatval($midtermanswer[$skey][$mkey]->final_mark);
                                                     if($mark < $min) $min=$mark;
@@ -1287,7 +1316,7 @@
                                                         // Calculate min overall test
                                                         $minOverallTest=PHP_INT_MAX;
                                                         $hasOverallTestValue=false;
-                                                        foreach($students as $skey=> $student) {
+                                                        foreach($programStudents as $skey=> $student) {
                                                         if(isset($overalltest[$skey])) {
                                                         $mark = floatval($overalltest[$skey]);
                                                         if($mark < $minOverallTest) $minOverallTest=$mark;
@@ -1299,7 +1328,7 @@
                                                             // Calculate min overall test2
                                                             $minOverallTest2=PHP_INT_MAX;
                                                             $hasOverallTest2Value=false;
-                                                            foreach($students as $skey=> $student) {
+                                                            foreach($programStudents as $skey=> $student) {
                                                             if(isset($overalltest2[$skey])) {
                                                             $mark = floatval($overalltest2[$skey]);
                                                             if($mark < $minOverallTest2) $minOverallTest2=$mark;
@@ -1311,7 +1340,7 @@
                                                                 // Calculate min overall assign
                                                                 $minOverallAssign=PHP_INT_MAX;
                                                                 $hasOverallAssignValue=false;
-                                                                foreach($students as $skey=> $student) {
+                                                                foreach($programStudents as $skey=> $student) {
                                                                 if(isset($overallassign[$skey])) {
                                                                 $mark = floatval($overallassign[$skey]);
                                                                 if($mark < $minOverallAssign) $minOverallAssign=$mark;
@@ -1323,7 +1352,7 @@
                                                                     // Calculate min overall extra
                                                                     $minOverallExtra=PHP_INT_MAX;
                                                                     $hasOverallExtraValue=false;
-                                                                    foreach($students as $skey=> $student) {
+                                                                    foreach($programStudents as $skey=> $student) {
                                                                     if(isset($overallextra[$skey])) {
                                                                     $mark = floatval($overallextra[$skey]);
                                                                     if($mark < $minOverallExtra) $minOverallExtra=$mark;
@@ -1335,7 +1364,7 @@
                                                                         // Calculate min overall practical
                                                                         $minOverallPractical=PHP_INT_MAX;
                                                                         $hasOverallPracticalValue=false;
-                                                                        foreach($students as $skey=> $student) {
+                                                                        foreach($programStudents as $skey=> $student) {
                                                                         if(isset($overallpractical[$skey])) {
                                                                         $mark = floatval($overallpractical[$skey]);
                                                                         if($mark < $minOverallPractical) $minOverallPractical=$mark;
@@ -1347,7 +1376,7 @@
                                                                             // Calculate min overall other
                                                                             $minOverallOther=PHP_INT_MAX;
                                                                             $hasOverallOtherValue=false;
-                                                                            foreach($students as $skey=> $student) {
+                                                                            foreach($programStudents as $skey=> $student) {
                                                                             if(isset($overallother[$skey])) {
                                                                             $mark = floatval($overallother[$skey]);
                                                                             if($mark < $minOverallOther) $minOverallOther=$mark;
@@ -1359,7 +1388,7 @@
                                                                                 // Calculate min overall midterm
                                                                                 $minOverallMidterm=PHP_INT_MAX;
                                                                                 $hasOverallMidtermValue=false;
-                                                                                foreach($students as $skey=> $student) {
+                                                                                foreach($programStudents as $skey=> $student) {
                                                                                 if(isset($overallmidterm[$skey])) {
                                                                                 $mark = floatval($overallmidterm[$skey]);
                                                                                 if($mark < $minOverallMidterm) $minOverallMidterm=$mark;
@@ -1371,7 +1400,7 @@
                                                                                     // Calculate min overall quiz
                                                                                     $minOverallQuiz=PHP_INT_MAX;
                                                                                     $hasOverallQuizValue=false;
-                                                                                    foreach($students as $skey=> $student) {
+                                                                                    foreach($programStudents as $skey=> $student) {
                                                                                     if(isset($overallquiz[$skey])) {
                                                                                     $mark = floatval($overallquiz[$skey]);
                                                                                     if($mark < $minOverallQuiz) $minOverallQuiz=$mark;
@@ -1385,7 +1414,7 @@
                                                                                         foreach($final as $fkey=> $fn) {
                                                                                         $min = PHP_INT_MAX;
                                                                                         $hasValue = false;
-                                                                                        foreach($students as $skey => $student) {
+                                                                                        foreach($programStudents as $skey => $student) {
                                                                                         if(isset($finalanswer[$skey][$fkey]) && $finalanswer[$skey][$fkey]) {
                                                                                         $mark = floatval($finalanswer[$skey][$fkey]->final_mark);
                                                                                         if($mark < $min) $min=$mark;
@@ -1398,7 +1427,7 @@
                                                                                             // Calculate min overall final
                                                                                             $minOverallFinal=PHP_INT_MAX;
                                                                                             $hasOverallFinalValue=false;
-                                                                                            foreach($students as $skey=> $student) {
+                                                                                            foreach($programStudents as $skey=> $student) {
                                                                                             if(isset($overallfinal[$skey])) {
                                                                                             $mark = floatval($overallfinal[$skey]);
                                                                                             if($mark < $minOverallFinal) $minOverallFinal=$mark;
@@ -1537,6 +1566,7 @@
             <p style="margin-top: 30px;"><strong>Tarikh :</strong> ______________________</p>
         </div>
     </div>
+    @endforeach
 </body>
 
 </html>
