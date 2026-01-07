@@ -6595,6 +6595,62 @@ class AR_Controller extends Controller
         }
     }
 
+    public function updateCertificateDetails(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+
+            $certificateId = $request->certificate_id;
+            $serialNo = $request->serial_no;
+            $dateGenerated = $request->date_generated;
+            $dateClaimed = $request->date_claimed;
+
+            // Get current certificate
+            $certificate = DB::table('student_certificate')->where('id', $certificateId)->first();
+
+            if (!$certificate) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Certificate not found'
+                ]);
+            }
+
+            // Update certificate details
+            $updateData = [
+                'serial_no' => $serialNo,
+                'date' => $dateGenerated,
+                'date_claimed' => $dateClaimed,
+                'updated_at' => now()
+            ];
+
+            // If date_claimed is set, ensure status reflects it if it was NEW
+            if ($dateClaimed && $certificate->status === 'NEW') {
+                $updateData['status'] = 'CLAIMED';
+            } elseif (!$dateClaimed && $certificate->status === 'CLAIMED') {
+                // If date_claimed is removed, revert to NEW? Or keep as CLAIMED but no date?
+                // Typically removing claimed date means unclaiming.
+                $updateData['status'] = 'NEW';
+            }
+
+            DB::table('student_certificate')
+                ->where('id', $certificateId)
+                ->update($updateData);
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Certificate details updated successfully'
+            ]);
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'success' => false,
+                'message' => 'Error updating certificate details: ' . $e->getMessage()
+            ]);
+        }
+    }
+
     public function bulkGenerateCertificates(Request $request)
     {
         try {
