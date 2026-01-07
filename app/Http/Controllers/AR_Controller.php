@@ -6604,6 +6604,10 @@ class AR_Controller extends Controller
             $serialNo = $request->serial_no;
             $dateGenerated = $request->date_generated;
             $dateClaimed = $request->date_claimed;
+            // Convert empty string to null for date fields
+            if (empty($dateClaimed)) {
+                $dateClaimed = null;
+            }
 
             // Get current certificate
             $certificate = DB::table('student_certificate')->where('id', $certificateId)->first();
