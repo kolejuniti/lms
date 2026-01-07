@@ -194,11 +194,11 @@
         }
 
         .col-matric {
-            width: 8%;
+            width: 5%;
         }
 
         .col-nama {
-            width: 12%;
+            width: 15%;
         }
 
         .col-assessment {
@@ -510,8 +510,8 @@
                         @endif
 
                         <!-- Overall percentages -->
-                        <th>100%</th>
-                        <th>Gred</th>
+                        <th class="col-overall">100%</th>
+                        <th class="col-grade">Gred</th>
                     </tr>
                 </thead>
                 <tbody>
