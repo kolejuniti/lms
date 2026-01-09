@@ -297,16 +297,24 @@
                         <th class="col-assessment">Keseluruhan Kuiz</th>
                         @endif
 
+                        <!-- @foreach($test as $key => $ts)
+                        <th class="col-assessment">Ujian 1 {{ $key + 1 }}<br></th>
+                        @endforeach -->
+
                         @foreach($test as $key => $ts)
-                        <th class="col-assessment">Ujian {{ $key + 1 }}<br></th>
+                        <th class="col-assessment">Ujian 1<br></th>
                         @endforeach
 
                         @if(count($test) > 0)
                         <th class="col-assessment">Keseluruhan Ujian</th>
                         @endif
 
+                        <!-- @foreach($test2 as $key => $ts2)
+                        <th class="col-assessment">Ujian 2 {{ $key + 1 }}<br></th>
+                        @endforeach -->
+
                         @foreach($test2 as $key => $ts2)
-                        <th class="col-assessment">Ujian {{ $key + 1 }}<br></th>
+                        <th class="col-assessment">Ujian 2<br></th>
                         @endforeach
 
                         @if(count($test2) > 0)
