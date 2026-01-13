@@ -4305,7 +4305,7 @@ class LecturerController extends Controller
             'gradingScale'
         ));
 
-        $pdf->setPaper('A4', 'landscape');
+        $pdf->setPaper('a4', 'landscape');
 
         return $pdf->stream("Rowscore_{$groupName}.pdf");
     }
