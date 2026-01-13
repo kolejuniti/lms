@@ -7,19 +7,19 @@
     <style>
         @page {
             size: A4 landscape;
-            margin: 10mm;
+            margin: 5mm;
         }
 
         body {
             font-family: Arial, sans-serif;
-            font-size: 8pt;
+            font-size: 7pt;
             margin: 0;
             padding: 0;
         }
 
         .header {
             width: 100%;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
         }
 
         .header-left {
@@ -38,24 +38,24 @@
             float: right;
             width: 20%;
             text-align: right;
-            font-size: 9pt;
+            font-size: 8pt;
         }
 
         .logo {
-            width: 60px;
+            width: 50px;
             height: auto;
         }
 
         .header-center h3 {
             margin: 0;
             padding: 0;
-            font-size: 11pt;
+            font-size: 10pt;
             font-weight: bold;
         }
 
         .header-center p {
-            margin: 2px 0;
-            font-size: 9pt;
+            margin: 1px 0;
+            font-size: 8pt;
         }
 
         .clearfix::after {
@@ -66,7 +66,7 @@
 
         .main-container {
             width: 100%;
-            margin-top: 10px;
+            margin-top: 5px;
         }
 
         .left-section {
@@ -76,7 +76,7 @@
 
         .right-section {
             width: 100%;
-            margin-top: 20px;
+            margin-top: 10px;
         }
 
         .grading-container {
@@ -93,18 +93,18 @@
         table {
             border-collapse: collapse;
             width: 100%;
-            font-size: 7pt;
+            font-size: 6pt;
         }
 
         table,
         th,
         td {
-            border: 1px solid #000;
+            border: 0.5px solid #000;
         }
 
         th,
         td {
-            padding: 3px 4px;
+            padding: 2px 2px;
             text-align: center;
         }
 
@@ -114,7 +114,7 @@
         }
 
         .assessment-table th {
-            font-size: 7pt;
+            font-size: 6pt;
         }
 
         .percent-row {
@@ -129,11 +129,15 @@
 
         .student-name {
             text-align: left;
-            padding-left: 5px;
+            padding-left: 3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 150px;
         }
 
         .grading-table {
-            font-size: 7pt;
+            font-size: 6pt;
         }
 
         .grading-table th {
@@ -141,7 +145,7 @@
         }
 
         .chart-container {
-            padding: 10px;
+            padding: 5px;
             border: 1px solid #000;
             height: auto;
         }
@@ -149,8 +153,8 @@
         .chart-title {
             text-align: center;
             font-weight: bold;
-            margin-bottom: 10px;
-            font-size: 9pt;
+            margin-bottom: 5px;
+            font-size: 8pt;
         }
 
         .chart-bars {
@@ -160,22 +164,22 @@
         .bar {
             display: inline-block;
             background-color: #4472C4;
-            margin: 2px;
+            margin: 1px;
             text-align: center;
             color: white;
             font-weight: bold;
-            min-width: 20px;
+            min-width: 15px;
         }
 
         .bar-label {
             display: inline-block;
-            width: 30px;
+            width: 25px;
             text-align: right;
             margin-right: 5px;
         }
 
         .signature-section {
-            margin-top: 20px;
+            margin-top: 15px;
             width: 100%;
         }
 
@@ -190,27 +194,29 @@
         }
 
         .col-bil {
-            width: 3%;
+            width: 20px;
         }
 
         .col-matric {
-            width: 5%;
+            width: 50px;
         }
 
         .col-nama {
-            width: 15%;
+            width: auto;
+            min-width: 100px;
         }
 
         .col-assessment {
-            width: 4%;
+            width: auto;
+            min-width: 25px;
         }
 
         .col-overall {
-            width: 5%;
+            width: 30px;
         }
 
         .col-grade {
-            width: 4%;
+            width: 25px;
         }
     </style>
 </head>
@@ -294,7 +300,7 @@
                         @endforeach
 
                         @if(count($quiz) > 0)
-                        <th class="col-assessment">Keseluruhan Kuiz</th>
+                        <th class="col-assessment">Keseluruhan<br>Kuiz</th>
                         @endif
 
                         <!-- @foreach($test as $key => $ts)
@@ -306,7 +312,7 @@
                         @endforeach
 
                         @if(count($test) > 0)
-                        <th class="col-assessment">Keseluruhan Ujian</th>
+                        <th class="col-assessment">Keseluruhan<br>Ujian</th>
                         @endif
 
                         <!-- @foreach($test2 as $key => $ts2)
@@ -318,7 +324,7 @@
                         @endforeach
 
                         @if(count($test2) > 0)
-                        <th class="col-assessment">Keseluruhan Ujian 2</th>
+                        <th class="col-assessment">Keseluruhan<br>Ujian 2</th>
                         @endif
 
                         @foreach($assign as $key => $ag)
@@ -326,7 +332,7 @@
                         @endforeach
 
                         @if(count($assign) > 0)
-                        <th class="col-assessment">Keseluruhan Tugasan</th>
+                        <th class="col-assessment">Keseluruhan<br>Tugasan</th>
                         @endif
 
                         @foreach($extra as $key => $ex)
@@ -334,7 +340,7 @@
                         @endforeach
 
                         @if(count($extra) > 0)
-                        <th class="col-assessment">Keseluruhan Tambahan</th>
+                        <th class="col-assessment">Keseluruhan<br>Tambahan</th>
                         @endif
 
                         @foreach($practical as $key => $pr)
@@ -342,7 +348,7 @@
                         @endforeach
 
                         @if(count($practical) > 0)
-                        <th class="col-assessment">Keseluruhan Praktikal</th>
+                        <th class="col-assessment">Keseluruhan<br>Praktikal</th>
                         @endif
 
                         @foreach($other as $key => $ot)
@@ -350,7 +356,7 @@
                         @endforeach
 
                         @if(count($other) > 0)
-                        <th class="col-assessment">Keseluruhan Lain-lain</th>
+                        <th class="col-assessment">Keseluruhan<br>Lain-lain</th>
                         @endif
 
                         @foreach($midterm as $key => $mt)
@@ -358,7 +364,7 @@
                         @endforeach
 
                         @if(count($midterm) > 0)
-                        <th class="col-assessment">Keseluruhan Pertengahan</th>
+                        <th class="col-assessment">Keseluruhan<br>Pertengahan</th>
                         @endif
 
                         {{-- <th class="col-assessment">Attend</th> --}}
@@ -368,7 +374,7 @@
                         <th class="col-assessment">Akhir Tahun {{ $key + 1 }}<br></th>
                         @endforeach
 
-                        <th class="col-assessment">Keseluruhan Akhir Tahun</th>
+                        <th class="col-assessment">Keseluruhan<br>Akhir Tahun</th>
                         @endif
                     </tr>
 
