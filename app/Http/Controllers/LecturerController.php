@@ -4052,6 +4052,7 @@ class LecturerController extends Controller
         // Fetch OTHER assessments
         $others = DB::table('tblclassother')
             ->join('tblclassother_group', 'tblclassother.id', 'tblclassother_group.otherid')
+            ->join('tblextra_title', 'tblclassother.title', 'tblextra_title.id')
             ->where([
                 ['tblclassother.classid', $id],
                 ['tblclassother.sessionid', Session::get('SessionID')],
@@ -4060,6 +4061,7 @@ class LecturerController extends Controller
                 ['tblclassother.addby', $user->ic]
             ]);
         $other = $others->get();
+        $othername = $others->pluck('tblextra_title.name');
         $otherid = $others->pluck('tblclassother.id');
         $totalother = $others->sum('tblclassother.total_mark');
 
@@ -4281,6 +4283,7 @@ class LecturerController extends Controller
             'percentpractical',
             'totalpractical',
             'other',
+            'othername',
             'otheranswer',
             'overallother',
             'percentother',
