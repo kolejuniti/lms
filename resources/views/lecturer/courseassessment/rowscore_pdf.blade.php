@@ -360,21 +360,21 @@
                         @endif
 
                         @foreach($midterm as $key => $mt)
-                        <th class="col-assessment">PEPERIKSAAN PERTENGAHAN SEMESTER<br></th>
+                        <th class="col-assessment">PEPERIKSAAN<br>PERTENGAHAN SEMESTER</th>
                         @endforeach
 
                         @if(count($midterm) > 0)
-                        <th class="col-assessment">KESELURUHAN<br>PEPERIKSAAN PERTENGAHAN SEMESTER</th>
+                        <th class="col-assessment">KESELURUHAN PEPERIKSAAN<br> PERTENGAHAN SEMESTER</th>
                         @endif
 
                         {{-- <th class="col-assessment">Attend</th> --}}
 
                         @if(count($final) > 0)
                         @foreach($final as $key => $fn)
-                        <th class="col-assessment">PEPERIKSAAN AKHIR TAHUN<br></th>
+                        <th class="col-assessment">PEPERIKSAAN<br>AKHIR TAHUN<br></th>
                         @endforeach
 
-                        <th class="col-assessment">KESELURUHAN<br>PEPERIKSAAN AKHIR TAHUN</th>
+                        <th class="col-assessment">KESELURUHAN PEPERIKSAAN<br>AKHIR TAHUN</th>
                         @endif
                     </tr>
 
