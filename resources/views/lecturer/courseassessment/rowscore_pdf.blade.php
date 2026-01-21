@@ -296,11 +296,11 @@
                     <tr>
                         <!-- Individual Assessment Columns with titles and marks -->
                         @foreach($quiz as $key => $qz)
-                        <th class="col-assessment">Kuiz {{ $key + 1 }}<br></th>
+                        <th class="col-assessment">KUIZ {{ $key + 1 }}<br></th>
                         @endforeach
 
                         @if(count($quiz) > 0)
-                        <th class="col-assessment">Keseluruhan<br>Kuiz</th>
+                        <th class="col-assessment">KESELURUHAN<br>KUIZ</th>
                         @endif
 
                         <!-- @foreach($test as $key => $ts)
@@ -308,11 +308,11 @@
                         @endforeach -->
 
                         @foreach($test as $key => $ts)
-                        <th class="col-assessment">Ujian 1<br></th>
+                        <th class="col-assessment">UJIAN 1<br></th>
                         @endforeach
 
                         @if(count($test) > 0)
-                        <th class="col-assessment">Keseluruhan<br>Ujian</th>
+                        <th class="col-assessment">KESELURUHAN<br>UJIAN</th>
                         @endif
 
                         <!-- @foreach($test2 as $key => $ts2)
@@ -320,61 +320,61 @@
                         @endforeach -->
 
                         @foreach($test2 as $key => $ts2)
-                        <th class="col-assessment">Ujian 2<br></th>
+                        <th class="col-assessment">UJIAN 2<br></th>
                         @endforeach
 
                         @if(count($test2) > 0)
-                        <th class="col-assessment">Keseluruhan<br>Ujian 2</th>
+                        <th class="col-assessment">KESELURUHAN<br>UJIAN 2</th>
                         @endif
 
                         @foreach($assign as $key => $ag)
-                        <th class="col-assessment">Tugasan {{ $key + 1 }}<br></th>
+                        <th class="col-assessment">TUGASAN {{ $key + 1 }}<br></th>
                         @endforeach
 
                         @if(count($assign) > 0)
-                        <th class="col-assessment">Keseluruhan<br>Tugasan</th>
+                        <th class="col-assessment">KESELURUHAN<br>TUGASAN</th>
                         @endif
 
                         @foreach($extra as $key => $ex)
-                        <th class="col-assessment">Tambahan {{ $key + 1 }}<br></th>
+                        <th class="col-assessment">TAMBAHAN {{ $key + 1 }}<br></th>
                         @endforeach
 
                         @if(count($extra) > 0)
-                        <th class="col-assessment">Keseluruhan<br>Tambahan</th>
+                        <th class="col-assessment">KESELURUHAN<br>TAMBAHAN</th>
                         @endif
 
                         @foreach($practical as $key => $pr)
-                        <th class="col-assessment">Praktikal {{ $key + 1 }}<br></th>
+                        <th class="col-assessment">PRAKTIKAL {{ $key + 1 }}<br></th>
                         @endforeach
 
                         @if(count($practical) > 0)
-                        <th class="col-assessment">Keseluruhan<br>Praktikal</th>
+                        <th class="col-assessment">KESELURUHAN<br>PRAKTIKAL</th>
                         @endif
 
                         @foreach($other as $key => $ot)
-                        <th class="col-assessment">Lain-lain {{ $key + 1 }}<br></th>
+                        <th class="col-assessment">LAIN-LAIN<br>({{ $othername[$key] }})</th>
                         @endforeach
 
                         @if(count($other) > 0)
-                        <th class="col-assessment">Keseluruhan<br>Lain-lain</th>
+                        <th class="col-assessment">KESELURUHAN<br>LAIN-LAIN</th>
                         @endif
 
                         @foreach($midterm as $key => $mt)
-                        <th class="col-assessment">Pertengahan<br></th>
+                        <th class="col-assessment">PEPERIKSAAN PERTENGAHAN SEMESTER<br></th>
                         @endforeach
 
                         @if(count($midterm) > 0)
-                        <th class="col-assessment">Keseluruhan<br>Pertengahan</th>
+                        <th class="col-assessment">KESELURUHAN<br>PEPERIKSAAN PERTENGAHAN SEMESTER</th>
                         @endif
 
                         {{-- <th class="col-assessment">Attend</th> --}}
 
                         @if(count($final) > 0)
                         @foreach($final as $key => $fn)
-                        <th class="col-assessment">Akhir Tahun {{ $key + 1 }}<br></th>
+                        <th class="col-assessment">PEPERIKSAAN AKHIR TAHUN<br></th>
                         @endforeach
 
-                        <th class="col-assessment">Keseluruhan<br>Akhir Tahun</th>
+                        <th class="col-assessment">KESELURUHAN<br>PEPERIKSAAN AKHIR TAHUN</th>
                         @endif
                     </tr>
 
