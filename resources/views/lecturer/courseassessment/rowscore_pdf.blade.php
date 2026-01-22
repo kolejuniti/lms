@@ -287,11 +287,11 @@
                         @endif
 
                         @if(count($final) > 0)
-                        <th colspan="{{ count($final) + 1 }}" class="col-assessment">PEP. AKHIR</th>
+                        <th colspan="{{ count($final) + 1 }}" class="col-assessment">PEPERIKSAAN AKHIR</th>
                         @endif
 
                         <!-- MARKAH KESELURUHAN Header -->
-                        <th rowspan="2" colspan="2">MARKAH KESELURUHAN</th>
+                        <th rowspan="2" colspan="2">JUMLAH MARKAH & GRED</th>
                     </tr>
                     <tr>
                         <!-- Individual Assessment Columns with titles and marks -->
@@ -300,7 +300,7 @@
                         @endforeach
 
                         @if(count($quiz) > 0)
-                        <th class="col-assessment">KESELURUHAN<br>KUIZ</th>
+                        <th class="col-assessment">JUMLAH<br>KUIZ</th>
                         @endif
 
                         <!-- @foreach($test as $key => $ts)
@@ -312,7 +312,7 @@
                         @endforeach
 
                         @if(count($test) > 0)
-                        <th class="col-assessment">KESELURUHAN<br>UJIAN</th>
+                        <th class="col-assessment">JUMLAH<br>UJIAN 1</th>
                         @endif
 
                         <!-- @foreach($test2 as $key => $ts2)
@@ -324,7 +324,7 @@
                         @endforeach
 
                         @if(count($test2) > 0)
-                        <th class="col-assessment">KESELURUHAN<br>UJIAN 2</th>
+                        <th class="col-assessment">JUMLAH<br>UJIAN 2</th>
                         @endif
 
                         @foreach($assign as $key => $ag)
@@ -332,7 +332,7 @@
                         @endforeach
 
                         @if(count($assign) > 0)
-                        <th class="col-assessment">KESELURUHAN<br>TUGASAN</th>
+                        <th class="col-assessment">JUMLAH<br>TUGASAN</th>
                         @endif
 
                         @foreach($extra as $key => $ex)
@@ -340,15 +340,15 @@
                         @endforeach
 
                         @if(count($extra) > 0)
-                        <th class="col-assessment">KESELURUHAN<br>TAMBAHAN</th>
+                        <th class="col-assessment">JUMLAH<br>TAMBAHAN</th>
                         @endif
 
                         @foreach($practical as $key => $pr)
-                        <th class="col-assessment">PRAKTIKAL {{ $key + 1 }}<br></th>
+                        <th class="col-assessment">AMALI {{ $key + 1 }}<br></th>
                         @endforeach
 
                         @if(count($practical) > 0)
-                        <th class="col-assessment">KESELURUHAN<br>PRAKTIKAL</th>
+                        <th class="col-assessment">JUMLAH<br>AMALI</th>
                         @endif
 
                         @foreach($other as $key => $ot)
@@ -356,7 +356,7 @@
                         @endforeach
 
                         @if(count($other) > 0)
-                        <th class="col-assessment">KESELURUHAN<br>LAIN-LAIN</th>
+                        <th class="col-assessment">JUMLAH<br>LAIN-LAIN</th>
                         @endif
 
                         @foreach($midterm as $key => $mt)
@@ -364,17 +364,17 @@
                         @endforeach
 
                         @if(count($midterm) > 0)
-                        <th class="col-assessment">KESELURUHAN PEPERIKSAAN<br> PERTENGAHAN SEMESTER</th>
+                        <th class="col-assessment">JUMLAH<br>PEPERIKSAAN PERTENGAHAN SEMESTER</th>
                         @endif
 
                         {{-- <th class="col-assessment">Attend</th> --}}
 
                         @if(count($final) > 0)
                         @foreach($final as $key => $fn)
-                        <th class="col-assessment">PEPERIKSAAN<br>AKHIR TAHUN<br></th>
+                        <th class="col-assessment">PEPERIKSAAN<br>AKHIR<br></th>
                         @endforeach
 
-                        <th class="col-assessment">KESELURUHAN PEPERIKSAAN<br>AKHIR TAHUN</th>
+                        <th class="col-assessment">JUMLAH<br>PEPERIKSAAN AKHIR</th>
                         @endif
                     </tr>
 
