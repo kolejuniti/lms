@@ -300,7 +300,7 @@
                         @endforeach
 
                         @if(count($quiz) > 0)
-                        <th class="col-assessment">JUMLAH<br>KUIZ</th>
+                        <th class="col-assessment">JUMLAH<br>MARKAH</th>
                         @endif
 
                         <!-- @foreach($test as $key => $ts)
@@ -312,7 +312,7 @@
                         @endforeach
 
                         @if(count($test) > 0)
-                        <th class="col-assessment">JUMLAH<br>UJIAN 1</th>
+                        <th class="col-assessment">JUMLAH<br>MARKAH</th>
                         @endif
 
                         <!-- @foreach($test2 as $key => $ts2)
@@ -324,7 +324,7 @@
                         @endforeach
 
                         @if(count($test2) > 0)
-                        <th class="col-assessment">JUMLAH<br>UJIAN 2</th>
+                        <th class="col-assessment">JUMLAH<br>MARKAH</th>
                         @endif
 
                         @foreach($assign as $key => $ag)
@@ -332,7 +332,7 @@
                         @endforeach
 
                         @if(count($assign) > 0)
-                        <th class="col-assessment">JUMLAH<br>TUGASAN</th>
+                        <th class="col-assessment">JUMLAH<br>MARKAH</th>
                         @endif
 
                         @foreach($extra as $key => $ex)
@@ -340,7 +340,7 @@
                         @endforeach
 
                         @if(count($extra) > 0)
-                        <th class="col-assessment">JUMLAH<br>TAMBAHAN</th>
+                        <th class="col-assessment">JUMLAH<br>MARKAH</th>
                         @endif
 
                         @foreach($practical as $key => $pr)
@@ -348,7 +348,7 @@
                         @endforeach
 
                         @if(count($practical) > 0)
-                        <th class="col-assessment">JUMLAH<br>AMALI</th>
+                        <th class="col-assessment">JUMLAH<br>MARKAH</th>
                         @endif
 
                         @foreach($other as $key => $ot)
@@ -356,7 +356,7 @@
                         @endforeach
 
                         @if(count($other) > 0)
-                        <th class="col-assessment">JUMLAH<br>LAIN-LAIN</th>
+                        <th class="col-assessment">JUMLAH<br>MARKAH</th>
                         @endif
 
                         @foreach($midterm as $key => $mt)
@@ -364,7 +364,7 @@
                         @endforeach
 
                         @if(count($midterm) > 0)
-                        <th class="col-assessment">JUMLAH<br>PEPERIKSAAN PERTENGAHAN SEMESTER</th>
+                        <th class="col-assessment">JUMLAH<br>MARKAH</th>
                         @endif
 
                         {{-- <th class="col-assessment">Attend</th> --}}
@@ -374,7 +374,7 @@
                         <th class="col-assessment">PEPERIKSAAN<br>AKHIR<br></th>
                         @endforeach
 
-                        <th class="col-assessment">JUMLAH<br>PEPERIKSAAN AKHIR</th>
+                        <th class="col-assessment">JUMLAH<br>MARKAH</th>
                         @endif
                     </tr>
 
