@@ -5,19 +5,22 @@ import { Editor } from '@tinymce/tinymce-react';
 
 const AnnouncementManagement = () => {
 
-    const userRole = document.getElementById('announcement-management').dataset.userRole;
-    let type;
-    
-    if (userRole === 'ADM') {
-        type = 'Admin';
-    } else if (userRole === 'FN') {
-        type = 'Finance';
-    } else if (userRole === 'AR') {
-        type = 'Pendaftar Akademik';
-    } else if (userRole === 'RGS') {
-        type = 'Pendaftar';
-    }
-    
+  const element = document.getElementById('announcement-management');
+  if (!element) return <div>Error: Announcement container not found.</div>;
+
+  const userRole = element.dataset.userRole;
+  let type;
+
+  if (userRole === 'ADM') {
+    type = 'Admin';
+  } else if (userRole === 'FN') {
+    type = 'Finance';
+  } else if (userRole === 'AR') {
+    type = 'Pendaftar Akademik';
+  } else if (userRole === 'RGS') {
+    type = 'Pendaftar';
+  }
+
 
   const [announcements, setAnnouncements] = useState([]);
   const [showForm, setShowForm] = useState(false);
@@ -158,29 +161,29 @@ const AnnouncementManagement = () => {
                 <div className="mb-3">
                   <label className="form-label">Content</label>
                   <Editor
-                      apiKey='m87hnvtbh67hlojxi0rtvmck66pxl1t95e28zms4v8qhpn7v'
-                      value={newAnnouncement.content}
-                      init={{
-                        plugins: [
-                          // Core editing features
-                          'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'image', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount',
-                          // Your account includes a free trial of TinyMCE premium features
-                          // Try the most popular premium features until Feb 3, 2025:
-                          'checklist', 'mediaembed', 'casechange', 'export', 'formatpainter', 'pageembed', 'a11ychecker', 'tinymcespellchecker', 'permanentpen', 'powerpaste', 'advtable', 'advcode', 'editimage', 'advtemplate', 'ai', 'mentions', 'tinycomments', 'tableofcontents', 'footnotes', 'mergetags', 'autocorrect', 'typography', 'inlinecss', 'markdown','importword', 'exportword', 'exportpdf'
-                        ],
-                        toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
-                        tinycomments_mode: 'embedded',
-                        tinycomments_author: 'Author name',
-                        mergetags_list: [
-                          { value: 'First.Name', title: 'First Name' },
-                          { value: 'Email', title: 'Email' },
-                        ],
-                        ai_request: (request, respondWith) => respondWith.string(() => Promise.reject('See docs to implement AI Assistant')),
-                      }}
-                      onEditorChange={(content) =>
-                        setNewAnnouncement({ ...newAnnouncement, content })
-                      }
-                    />
+                    apiKey='m87hnvtbh67hlojxi0rtvmck66pxl1t95e28zms4v8qhpn7v'
+                    value={newAnnouncement.content}
+                    init={{
+                      plugins: [
+                        // Core editing features
+                        'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'image', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount',
+                        // Your account includes a free trial of TinyMCE premium features
+                        // Try the most popular premium features until Feb 3, 2025:
+                        'checklist', 'mediaembed', 'casechange', 'export', 'formatpainter', 'pageembed', 'a11ychecker', 'tinymcespellchecker', 'permanentpen', 'powerpaste', 'advtable', 'advcode', 'editimage', 'advtemplate', 'ai', 'mentions', 'tinycomments', 'tableofcontents', 'footnotes', 'mergetags', 'autocorrect', 'typography', 'inlinecss', 'markdown', 'importword', 'exportword', 'exportpdf'
+                      ],
+                      toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
+                      tinycomments_mode: 'embedded',
+                      tinycomments_author: 'Author name',
+                      mergetags_list: [
+                        { value: 'First.Name', title: 'First Name' },
+                        { value: 'Email', title: 'Email' },
+                      ],
+                      ai_request: (request, respondWith) => respondWith.string(() => Promise.reject('See docs to implement AI Assistant')),
+                    }}
+                    onEditorChange={(content) =>
+                      setNewAnnouncement({ ...newAnnouncement, content })
+                    }
+                  />
                 </div>
                 <div className="row mb-3">
                   <div className="col-md-6">
@@ -211,18 +214,18 @@ const AnnouncementManagement = () => {
                 <div className="row mb-3">
                   <div className="col-md-6">
                     <label className="form-label">Department</label>
-                        <select
-                        className="form-select"
-                        value={newAnnouncement.department}
-                        onChange={(e) =>
+                    <select
+                      className="form-select"
+                      value={newAnnouncement.department}
+                      onChange={(e) =>
                         setNewAnnouncement({ ...newAnnouncement, department: e.target.value })
-                        }
-                        disabled // This makes the select field read-only
-                        >
-                        <option value="Admin">Admin</option>
-                        <option value="Finance">Finance</option>
-                        <option value="Pendaftar Akademik">Pendaftar Akademik</option>
-                        <option value="Pendaftar">Pendaftar</option>
+                      }
+                      disabled // This makes the select field read-only
+                    >
+                      <option value="Admin">Admin</option>
+                      <option value="Finance">Finance</option>
+                      <option value="Pendaftar Akademik">Pendaftar Akademik</option>
+                      <option value="Pendaftar">Pendaftar</option>
                     </select>
                   </div>
 
@@ -257,13 +260,12 @@ const AnnouncementManagement = () => {
           announcements.map((announcement) => (
             <div key={announcement.id} className="col-12">
               <div
-                className={`card border-${
-                  announcement.priority === 'high'
+                className={`card border-${announcement.priority === 'high'
                     ? 'danger'
                     : announcement.priority === 'medium'
-                    ? 'warning'
-                    : 'success'
-                }`}
+                      ? 'warning'
+                      : 'success'
+                  }`}
               >
                 <div className="card-body">
                   <div className="d-flex justify-content-between align-items-start mb-3">
@@ -307,98 +309,98 @@ const AnnouncementManagement = () => {
 
       {showEditModal && editAnnouncement && (
         <div className="modal show d-block" tabIndex="-1" aria-labelledby="editAnnouncementModal">
-            <div className="modal-dialog">
+          <div className="modal-dialog">
             <div className="modal-content">
-                <div className="modal-header">
+              <div className="modal-header">
                 <h5 className="modal-title">Edit Announcement</h5>
                 <button
-                    type="button"
-                    className="btn-close"
-                    onClick={handleModalClose} // Close the modal when clicked
-                    aria-label="Close"
+                  type="button"
+                  className="btn-close"
+                  onClick={handleModalClose} // Close the modal when clicked
+                  aria-label="Close"
                 ></button>
-                </div>
-                <div className="modal-body">
+              </div>
+              <div className="modal-body">
                 <form onSubmit={handleEditSubmit}>
-                    <div className="mb-3">
+                  <div className="mb-3">
                     <label className="form-label">Title</label>
                     <input
-                        type="text"
-                        className="form-control"
-                        value={editAnnouncement.title}
-                        onChange={(e) =>
+                      type="text"
+                      className="form-control"
+                      value={editAnnouncement.title}
+                      onChange={(e) =>
                         setEditAnnouncement({ ...editAnnouncement, title: e.target.value })
-                        }
-                        required
+                      }
+                      required
                     />
-                    </div>
-                    <div className="mb-3">
-                      <label className="form-label">Content</label>
-                      <Editor
-                        apiKey='m87hnvtbh67hlojxi0rtvmck66pxl1t95e28zms4v8qhpn7v'
-                        value={editAnnouncement.content}
-                        init={{
-                          plugins: [
-                            // Core editing features
-                            'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'image', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount',
-                            // Your account includes a free trial of TinyMCE premium features
-                            // Try the most popular premium features until Feb 3, 2025:
-                            'checklist', 'mediaembed', 'casechange', 'export', 'formatpainter', 'pageembed', 'a11ychecker', 'tinymcespellchecker', 'permanentpen', 'powerpaste', 'advtable', 'advcode', 'editimage', 'advtemplate', 'ai', 'mentions', 'tinycomments', 'tableofcontents', 'footnotes', 'mergetags', 'autocorrect', 'typography', 'inlinecss', 'markdown','importword', 'exportword', 'exportpdf'
-                          ],
-                          toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
-                          tinycomments_mode: 'embedded',
-                          tinycomments_author: 'Author name',
-                          mergetags_list: [
-                            { value: 'First.Name', title: 'First Name' },
-                            { value: 'Email', title: 'Email' },
-                          ],
-                          ai_request: (request, respondWith) => respondWith.string(() => Promise.reject('See docs to implement AI Assistant')),
-                        }}
-                        onEditorChange={(content) =>
-                          setEditAnnouncement({ ...editAnnouncement, content })
-                        }
-                      />
-                    </div>
-                    <div className="row mb-3">
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label">Content</label>
+                    <Editor
+                      apiKey='m87hnvtbh67hlojxi0rtvmck66pxl1t95e28zms4v8qhpn7v'
+                      value={editAnnouncement.content}
+                      init={{
+                        plugins: [
+                          // Core editing features
+                          'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'image', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount',
+                          // Your account includes a free trial of TinyMCE premium features
+                          // Try the most popular premium features until Feb 3, 2025:
+                          'checklist', 'mediaembed', 'casechange', 'export', 'formatpainter', 'pageembed', 'a11ychecker', 'tinymcespellchecker', 'permanentpen', 'powerpaste', 'advtable', 'advcode', 'editimage', 'advtemplate', 'ai', 'mentions', 'tinycomments', 'tableofcontents', 'footnotes', 'mergetags', 'autocorrect', 'typography', 'inlinecss', 'markdown', 'importword', 'exportword', 'exportpdf'
+                        ],
+                        toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
+                        tinycomments_mode: 'embedded',
+                        tinycomments_author: 'Author name',
+                        mergetags_list: [
+                          { value: 'First.Name', title: 'First Name' },
+                          { value: 'Email', title: 'Email' },
+                        ],
+                        ai_request: (request, respondWith) => respondWith.string(() => Promise.reject('See docs to implement AI Assistant')),
+                      }}
+                      onEditorChange={(content) =>
+                        setEditAnnouncement({ ...editAnnouncement, content })
+                      }
+                    />
+                  </div>
+                  <div className="row mb-3">
                     <div className="col-md-6">
-                        <label className="form-label">Start Date</label>
-                        <input
+                      <label className="form-label">Start Date</label>
+                      <input
                         type="date"
                         className="form-control"
                         value={editAnnouncement.start_date}
                         onChange={(e) =>
-                            setEditAnnouncement({ ...editAnnouncement, start_date: e.target.value })
+                          setEditAnnouncement({ ...editAnnouncement, start_date: e.target.value })
                         }
                         required
-                        />
+                      />
                     </div>
                     <div className="col-md-6">
-                        <label className="form-label">End Date</label>
-                        <input
+                      <label className="form-label">End Date</label>
+                      <input
                         type="date"
                         className="form-control"
                         value={editAnnouncement.end_date}
                         onChange={(e) =>
-                            setEditAnnouncement({ ...editAnnouncement, end_date: e.target.value })
+                          setEditAnnouncement({ ...editAnnouncement, end_date: e.target.value })
                         }
                         required
-                        />
+                      />
                     </div>
-                    </div>
-                    <button type="submit" className="btn btn-primary">
+                  </div>
+                  <button type="submit" className="btn btn-primary">
                     Save Changes
-                    </button>
-                    <button
+                  </button>
+                  <button
                     type="button"
                     className="btn btn-secondary ms-2 pull-right"
                     onClick={handleModalClose} // Close the modal with a secondary button
-                    >
+                  >
                     Cancel
-                    </button>
+                  </button>
                 </form>
-                </div>
+              </div>
             </div>
-            </div>
+          </div>
         </div>
       )}
 
