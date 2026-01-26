@@ -7,7 +7,7 @@ import AnnouncementSystem from './components/annoucementStudent/annoucementStude
 import AnnouncementBanner from './components/annoucementStudent/annoucementBanner.jsx';
 // import ScheduleStudent from './components/scheduleStudent/scheduleStudent.jsx';
 
-window.renderSenateReport = function(data) {
+window.renderSenateReport = function (data) {
 
     const container = document.createElement('div');
     container.id = 'senateReport';
@@ -20,7 +20,7 @@ window.renderSenateReport = function(data) {
 
 }
 
-window.renderResultReport = function(data){
+window.renderResultReport = function (data) {
 
     const container = document.createElement('div');
     container.id = 'resultReport';
@@ -47,29 +47,13 @@ window.renderVehicleReport = (data) => {
 }
 
 window.renderAnnouncementSystem = () => {
-
-    const container = document.createElement('div');
-    container.id = 'announcementSystem';
-    $('#form-student').html(container);
-
-    ReactDOM.render(
-        <AnnouncementSystem />,
-        document.getElementById('announcementSystem')
-    )
-
-}
-
-window.renderAnnouncementSystem = () => {
-
-    const container = document.createElement('div');
-    container.id = 'announcementSystem';
-    $('#form-student').html(container);
-
-    ReactDOM.render(
-        <AnnouncementSystem />,
-        document.getElementById('announcementSystem')
-    )
-
+    // Check if the element exists before rendering
+    if (document.getElementById('announcement-management')) {
+        ReactDOM.render(
+            <AnnouncementSystem />,
+            document.getElementById('announcement-management')
+        );
+    }
 }
 
 if (document.getElementById('announcementBanner')) {

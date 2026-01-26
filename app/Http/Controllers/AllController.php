@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\User;
@@ -28,39 +29,36 @@ class AllController extends Controller
     {
 
         $data['user'] = DB::table('users')
-                        ->leftjoin('tblfaculty', 'users.faculty', 'tblfaculty.id')
-                        ->join('tbluser_type', 'users.usrtype', 'tbluser_type.code')
-                        ->select('users.*', 'tbluser_type.name AS type', 'tblfaculty.facultyname AS faculty')
-                        ->where('users.ic', Auth::user()->ic)->first();
+            ->leftjoin('tblfaculty', 'users.faculty', 'tblfaculty.id')
+            ->join('tbluser_type', 'users.usrtype', 'tbluser_type.code')
+            ->select('users.*', 'tbluser_type.name AS type', 'tblfaculty.facultyname AS faculty')
+            ->where('users.ic', Auth::user()->ic)->first();
 
         $data['post'] = DB::table('tblposting')->where('staff_ic', $data['user']->ic)->get();
 
-        foreach($data['post'] as $key => $post)
-        {
+        foreach ($data['post'] as $key => $post) {
 
             $data['history'][$key] = DB::table('tblposting_history')->where('post_id', $post->id)->get();
-
         }
 
         return view('alluser.post.post', compact('data'));
-
     }
 
     public function postingCreate(Request $request)
     {
         // Handle image upload if provided
         $imagePath = null;
-        
+
         if ($request->hasFile('image') && $request->file('image')->isValid()) {
             // Check if posting directory exists, if not create it
             if (!Storage::disk('linode')->exists('posting')) {
                 Storage::disk('linode')->makeDirectory('posting', 'public');
             }
-            
+
             // Get the file and generate a unique name
             $file = $request->file('image');
             $fileName = time() . '_' . $file->getClientOriginalName();
-            
+
             // Store the file with public visibility
             $path = $file->storeAs('posting', $fileName, [
                 'disk' => 'linode',
@@ -69,16 +67,15 @@ class AllController extends Controller
             $imagePath = $path;
         }
 
-        if(isset($request->idS))
-        {
+        if (isset($request->idS)) {
             // Get current post to check if it has an image
             $currentPost = DB::table('tblposting')->where('id', $request->idS)->first();
-            
+
             // If there's a new image and the post already has an image, delete the old one
             if ($imagePath && $currentPost->image) {
                 Storage::disk('linode')->delete($currentPost->image);
             }
-            
+
             // If no new image was uploaded, keep the existing image path
             if (!$imagePath && $currentPost->image) {
                 $imagePath = $currentPost->image;
@@ -116,8 +113,7 @@ class AllController extends Controller
             ]);
 
             $alert =  'Post successfully updated!';
-
-        }else{
+        } else {
 
             DB::table('tblposting')->insert([
                 'staff_ic' => Auth::user()->ic,
@@ -137,7 +133,6 @@ class AllController extends Controller
             ]);
 
             $alert =  'Post successfully added!';
-
         }
 
         return back()->with('success', $alert);
@@ -147,7 +142,7 @@ class AllController extends Controller
     {
         // Get the post details to check if it has an image
         $post = DB::table('tblposting')->where('id', $request->id)->first();
-        
+
         // If the post has an image, delete it from storage
         if ($post && $post->image) {
             Storage::disk('linode')->delete($post->image);
@@ -164,7 +159,6 @@ class AllController extends Controller
         $data['post'] = DB::table('tblposting')->where('id', $request->id)->first();
 
         return view('alluser.post.updatePost', compact('data'));
-
     }
 
     public function adminPosting()
@@ -173,19 +167,18 @@ class AllController extends Controller
         $data['faculty'] = DB::table('tblfaculty')->get();
 
         return view('alluser.post.admin', compact('data'));
-
     }
 
     public function getStaffList(Request $request)
     {
-        $staffs = DB::table('users')->where('name', 'LIKE', "%".$request->search."%")
-                                         ->orwhere('ic', 'LIKE', "%".$request->search."%")
-                                         ->orwhere('no_staf', 'LIKE', "%".$request->search."%")->get();
+        $staffs = DB::table('users')->where('name', 'LIKE', "%" . $request->search . "%")
+            ->orwhere('ic', 'LIKE', "%" . $request->search . "%")
+            ->orwhere('no_staf', 'LIKE', "%" . $request->search . "%")->get();
 
         $content = "";
 
         $content .= "<option value='0' selected disabled>-</option>";
-        foreach($staffs as $stf){
+        foreach ($staffs as $stf) {
 
             $content .= "<option data-style=\"btn-inverse\"
             data-content=\"<div class='row'>
@@ -196,16 +189,14 @@ class AllController extends Controller
                         </div>
                 </div>
                 <div class='col-md-10 align-self-center lh-lg'>
-                    <span><strong>". $stf->name ."</strong></span><br>
-                    <span>". $stf->email ." | <strong class='text-fade'>". $stf->ic ."</strong></span><br>
+                    <span><strong>" . $stf->name . "</strong></span><br>
+                    <span>" . $stf->email . " | <strong class='text-fade'>" . $stf->ic . "</strong></span><br>
                     <span class='text-fade'></span>
                 </div>
-            </div>\" value='". $stf->ic ."' ></option>";
-
+            </div>\" value='" . $stf->ic . "' ></option>";
         }
-        
-        return $content;
 
+        return $content;
     }
 
     public function getStaffPost(Request $request)
@@ -213,68 +204,53 @@ class AllController extends Controller
 
         $data['post'] = [];
 
-        if(isset($request->staff))
-        {
+        if (isset($request->staff)) {
 
             $post = DB::table('tblposting')
-                    ->join('users', 'tblposting.staff_ic', 'users.ic')
-                    ->where('tblposting.staff_ic', $request->staff);
-
+                ->join('users', 'tblposting.staff_ic', 'users.ic')
+                ->where('tblposting.staff_ic', $request->staff);
         }
 
-        if(isset($request->faculty))
-        {
+        if (isset($request->faculty)) {
 
-            if($request->faculty == 'all')
-            {
+            if ($request->faculty == 'all') {
 
                 $post = DB::table('tblposting')
                     ->join('users', 'tblposting.staff_ic', 'users.ic');
-
-            }else{
+            } else {
 
                 $post = DB::table('tblposting')
                     ->join('users', 'tblposting.staff_ic', 'users.ic')
                     ->where('users.faculty', $request->faculty);
-
             }
-
         }
 
-        if(isset($request->from) && isset($request->to))
-        {
+        if (isset($request->from) && isset($request->to)) {
 
             $post = DB::table('tblposting')
-                    ->join('users', 'tblposting.staff_ic', 'users.ic')
-                    ->whereBetween('tblposting.post_date', [$request->from, $request->to]);
-
+                ->join('users', 'tblposting.staff_ic', 'users.ic')
+                ->whereBetween('tblposting.post_date', [$request->from, $request->to]);
         }
 
-        if(isset($request->from2) && isset($request->to2))
-        {
+        if (isset($request->from2) && isset($request->to2)) {
 
             $post = DB::table('tblposting')
-                    ->join('users', 'tblposting.staff_ic', 'users.ic')
-                    ->whereBetween('tblposting.date', [$request->from2, $request->to2]);
-
+                ->join('users', 'tblposting.staff_ic', 'users.ic')
+                ->whereBetween('tblposting.date', [$request->from2, $request->to2]);
         }
 
-        if(isset($post))
-        {
+        if (isset($post)) {
 
             $data['post'] = $post->leftjoin('tblfaculty', 'users.faculty', 'tblfaculty.id')->get();
-
         }
 
         return view('alluser.post.adminGetStaffTbody', compact('data'));
-
     }
 
     public function postingReport()
     {
 
         return view('alluser.post.report');
-
     }
 
     public function getPostingReport(Request $request)
@@ -284,11 +260,10 @@ class AllController extends Controller
 
         $data['staff'] = DB::table('users')->get();
 
-        foreach($data['staff'] as $key => $staff)
-        {
+        foreach ($data['staff'] as $key => $staff) {
             $data['post'][$key] = DB::table('tblposting')
-            ->whereBetween('post_date', [$from, $to])
-            ->where('staff_ic', $staff->ic)->get();
+                ->whereBetween('post_date', [$from, $to])
+                ->where('staff_ic', $staff->ic)->get();
 
             // Initialize counters before the loop
             $facebookCount = 0;
@@ -298,9 +273,8 @@ class AllController extends Controller
             $tiktokCount = 0;
             $whatsappCount = 0;
             $totalCount = 0;
-            
-            foreach($data['post'][$key] as $key2 => $post)
-            {
+
+            foreach ($data['post'][$key] as $key2 => $post) {
                 if ($post->channel == 'facebook') {
                     $facebookCount++;
                 }
@@ -345,54 +319,48 @@ class AllController extends Controller
         $data['year'] = DB::table('tblyear')->get();
 
         return view('alluser.student.spm.index', compact('data'));
-
     }
 
     public function getStudentSPM(Request $request)
     {
 
         $query = DB::table('students')
-                    ->join('sessions', 'students.session', 'sessions.SessionID')
-                    ->join('sessions AS b', 'students.intake', 'b.SessionID')
-                    ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
-                    ->select('students.*', 'sessions.SessionName', 'tblstudent_status.name AS status');
+            ->join('sessions', 'students.session', 'sessions.SessionID')
+            ->join('sessions AS b', 'students.intake', 'b.SessionID')
+            ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
+            ->select('students.*', 'sessions.SessionName', 'tblstudent_status.name AS status');
 
-        if($request->program != '')
-        {
+        if ($request->program != '') {
             $query->where('students.program', $request->program);
-
         }
 
-        if($request->year != '')
-        {
+        if ($request->year != '') {
             $query->where('b.Year', $request->year);
-
         }
 
         $data['student'] = $query->get();
 
-        foreach($data['student'] as $key => $std)
-        {
+        foreach ($data['student'] as $key => $std) {
 
             // Fetch the first four specific records (1, 2, 5, 6)
             $firstFour = DB::table('tblspm_dtl')
-            ->join('tblsubject_spm', 'tblspm_dtl.subject_spm_id', 'tblsubject_spm.id')
-            ->join('tblgrade_spm', 'tblspm_dtl.grade_spm_id', 'tblgrade_spm.id')
-            ->where('tblspm_dtl.student_spm_ic', $std->ic)
-            ->whereIn('tblsubject_spm.id', [1, 2, 5, 6]) // Filter for the specific subjects
-            ->orderByRaw(DB::raw("FIELD(tblsubject_spm.id, 1, 2, 5, 6)")) // Order them in specific order
-            ->select('tblsubject_spm.name AS subject', 'tblgrade_spm.name AS grade')
-            ->get();
+                ->join('tblsubject_spm', 'tblspm_dtl.subject_spm_id', 'tblsubject_spm.id')
+                ->join('tblgrade_spm', 'tblspm_dtl.grade_spm_id', 'tblgrade_spm.id')
+                ->where('tblspm_dtl.student_spm_ic', $std->ic)
+                ->whereIn('tblsubject_spm.id', [1, 2, 5, 6]) // Filter for the specific subjects
+                ->orderByRaw(DB::raw("FIELD(tblsubject_spm.id, 1, 2, 5, 6)")) // Order them in specific order
+                ->select('tblsubject_spm.name AS subject', 'tblgrade_spm.name AS grade')
+                ->get();
 
             // Fetch the rest of the records in random order
             $randomSubjects = DB::table('tblspm_dtl')
-            ->join('tblsubject_spm', 'tblspm_dtl.subject_spm_id', 'tblsubject_spm.id')
-            ->join('tblgrade_spm', 'tblspm_dtl.grade_spm_id', 'tblgrade_spm.id')
-            ->where('tblspm_dtl.student_spm_ic', $std->ic)
-            ->whereNotIn('tblsubject_spm.id', [1, 2, 5, 6]) // Exclude the first four subjects
-            ->inRandomOrder() // Randomize the rest
-            ->select('tblsubject_spm.name AS subject', 'tblgrade_spm.name AS grade')
-            ->get();
+                ->join('tblsubject_spm', 'tblspm_dtl.subject_spm_id', 'tblsubject_spm.id')
+                ->join('tblgrade_spm', 'tblspm_dtl.grade_spm_id', 'tblgrade_spm.id')
+                ->where('tblspm_dtl.student_spm_ic', $std->ic)
+                ->whereNotIn('tblsubject_spm.id', [1, 2, 5, 6]) // Exclude the first four subjects
+                ->inRandomOrder() // Randomize the rest
+                ->select('tblsubject_spm.name AS subject', 'tblgrade_spm.name AS grade')
+                ->get();
 
             // Merge the two collections
             $data['spm'][$key] = $firstFour->merge($randomSubjects);
@@ -409,65 +377,62 @@ class AllController extends Controller
 
             // Count the subjects excluding grades 8, 9, 10, 19, 20, 21, 22, with specific conditions first
             $firstFourCount = DB::table('tblspm_dtl')
-            ->join('tblsubject_spm', 'tblspm_dtl.subject_spm_id', 'tblsubject_spm.id')
-            ->join('tblgrade_spm', 'tblspm_dtl.grade_spm_id', 'tblgrade_spm.id')
-            ->where('tblspm_dtl.student_spm_ic', $std->ic)
-            ->whereNotIn('tblgrade_spm.id', [8, 9, 10, 19, 20, 21, 22]) // Exclude these specific grades
-            ->whereIn('tblsubject_spm.id', [1, 2, 5, 6]) // Filter for specific subjects first
-            ->select(DB::raw('COUNT(tblspm_dtl.id) AS count'))
-            ->value('count');
+                ->join('tblsubject_spm', 'tblspm_dtl.subject_spm_id', 'tblsubject_spm.id')
+                ->join('tblgrade_spm', 'tblspm_dtl.grade_spm_id', 'tblgrade_spm.id')
+                ->where('tblspm_dtl.student_spm_ic', $std->ic)
+                ->whereNotIn('tblgrade_spm.id', [8, 9, 10, 19, 20, 21, 22]) // Exclude these specific grades
+                ->whereIn('tblsubject_spm.id', [1, 2, 5, 6]) // Filter for specific subjects first
+                ->select(DB::raw('COUNT(tblspm_dtl.id) AS count'))
+                ->value('count');
 
             // Count the rest of the subjects (excluding both specific grades and specific subjects)
             $randomCount = DB::table('tblspm_dtl')
-            ->join('tblsubject_spm', 'tblspm_dtl.subject_spm_id', 'tblsubject_spm.id')
-            ->join('tblgrade_spm', 'tblspm_dtl.grade_spm_id', 'tblgrade_spm.id')
-            ->where('tblspm_dtl.student_spm_ic', $std->ic)
-            ->whereNotIn('tblgrade_spm.id', [8, 9, 10, 19, 20, 21, 22]) // Exclude the specific grades
-            ->whereNotIn('tblsubject_spm.id', [1, 2, 5, 6]) // Exclude the specific subjects
-            ->select(DB::raw('COUNT(tblspm_dtl.id) AS count'))
-            ->value('count');
+                ->join('tblsubject_spm', 'tblspm_dtl.subject_spm_id', 'tblsubject_spm.id')
+                ->join('tblgrade_spm', 'tblspm_dtl.grade_spm_id', 'tblgrade_spm.id')
+                ->where('tblspm_dtl.student_spm_ic', $std->ic)
+                ->whereNotIn('tblgrade_spm.id', [8, 9, 10, 19, 20, 21, 22]) // Exclude the specific grades
+                ->whereNotIn('tblsubject_spm.id', [1, 2, 5, 6]) // Exclude the specific subjects
+                ->select(DB::raw('COUNT(tblspm_dtl.id) AS count'))
+                ->value('count');
 
             // Sum the two counts to get the final result
             $data['result'][$key] = $firstFourCount + $randomCount;
 
             $data['total_grade'][$key] = DB::table('tblspm_dtl')
-            ->join('tblgrade_spm', 'tblspm_dtl.grade_spm_id', 'tblgrade_spm.id')
-            ->join('tblsubject_spm', 'tblspm_dtl.subject_spm_id', 'tblsubject_spm.id')
-            ->where('tblspm_dtl.student_spm_ic', $std->ic)
-            ->whereNotNull('tblgrade_spm.grade_value')
-            ->select(DB::raw('SUM(tblgrade_spm.grade_value) AS total_grade_value'))
-            ->value('total_grade_value') ?? 0;
+                ->join('tblgrade_spm', 'tblspm_dtl.grade_spm_id', 'tblgrade_spm.id')
+                ->join('tblsubject_spm', 'tblspm_dtl.subject_spm_id', 'tblsubject_spm.id')
+                ->where('tblspm_dtl.student_spm_ic', $std->ic)
+                ->whereNotNull('tblgrade_spm.grade_value')
+                ->select(DB::raw('SUM(tblgrade_spm.grade_value) AS total_grade_value'))
+                ->value('total_grade_value') ?? 0;
 
             $data['total_grade_overall'][$key] = DB::table('tblspm_dtl')
-            ->join('tblgrade_spm', 'tblspm_dtl.grade_spm_id', 'tblgrade_spm.id')
-            ->join('tblsubject_spm', 'tblspm_dtl.subject_spm_id', 'tblsubject_spm.id')
-            ->where('tblspm_dtl.student_spm_ic', $std->ic)
-            ->whereNotNull('tblgrade_spm.grade_value')
-            ->orderBy('tblgrade_spm.grade_value', 'asc')
-            ->limit(3)
-            ->pluck('tblgrade_spm.grade_value')
-            ->sum();
+                ->join('tblgrade_spm', 'tblspm_dtl.grade_spm_id', 'tblgrade_spm.id')
+                ->join('tblsubject_spm', 'tblspm_dtl.subject_spm_id', 'tblsubject_spm.id')
+                ->where('tblspm_dtl.student_spm_ic', $std->ic)
+                ->whereNotNull('tblgrade_spm.grade_value')
+                ->orderBy('tblgrade_spm.grade_value', 'asc')
+                ->limit(3)
+                ->pluck('tblgrade_spm.grade_value')
+                ->sum();
 
 
             $data['spmv'][$key] = DB::table('tblstudent_spmv')
-                                  ->where('student_ic', $std->ic)
-                                  ->first();
+                ->where('student_ic', $std->ic)
+                ->first();
 
             $data['skm'][$key] = DB::table('tblstudent_skm')
-                                 ->where('student_ic', $std->ic)
-                                 ->first();
-                                 
+                ->where('student_ic', $std->ic)
+                ->first();
         }
 
         return view('alluser.student.spm.indexGetSPM', compact('data'));
-
     }
 
     public function studentMassage()
     {
 
         return view('alluser.message.student_list.index');
-
     }
 
     public function getStudentMassage(Request $request)
@@ -480,53 +445,48 @@ class AllController extends Controller
             ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
             ->join('tblstudent_personal', 'students.ic', 'tblstudent_personal.student_ic')
             ->join('tblsex', 'tblstudent_personal.sex_id', 'tblsex.id')
-            ->select('students.*', 'tblprogramme.progname', 'a.SessionName AS intake', 
-                     'b.SessionName AS session', 'tblstudent_status.name AS status',
-                     'tblstudent_personal.no_tel', 'tblsex.sex_name AS gender')
-            ->where('students.name', 'LIKE', "%".$request->search."%")
-            ->orwhere('students.ic', 'LIKE', "%".$request->search."%")
-            ->orwhere('students.no_matric', 'LIKE', "%".$request->search."%")->get();
+            ->select(
+                'students.*',
+                'tblprogramme.progname',
+                'a.SessionName AS intake',
+                'b.SessionName AS session',
+                'tblstudent_status.name AS status',
+                'tblstudent_personal.no_tel',
+                'tblsex.sex_name AS gender'
+            )
+            ->where('students.name', 'LIKE', "%" . $request->search . "%")
+            ->orwhere('students.ic', 'LIKE', "%" . $request->search . "%")
+            ->orwhere('students.no_matric', 'LIKE', "%" . $request->search . "%")->get();
 
-        foreach($students as $key => $std)
-        {
+        foreach ($students as $key => $std) {
 
             $sponsor_id[$key] = DB::table('tblpayment')
-                                ->where([
-                                    ['student_ic', $std->ic],
-                                    ['sponsor_id', '!=', null]
-                                    ])
-                                ->latest('id')->first();
+                ->where([
+                    ['student_ic', $std->ic],
+                    ['sponsor_id', '!=', null]
+                ])
+                ->latest('id')->first();
 
-            if($sponsor_id[$key] != null)
-            {
+            if ($sponsor_id[$key] != null) {
 
                 $sponsor[$key] = DB::table('tblpayment')
-                                ->join('tblsponsor_library', 'tblpayment.payment_sponsor_id', 'tblsponsor_library.id')
-                                ->where('tblpayment.id', $sponsor_id[$key]->sponsor_id)->pluck('tblsponsor_library.name')->first();
-
-            }else{
+                    ->join('tblsponsor_library', 'tblpayment.payment_sponsor_id', 'tblsponsor_library.id')
+                    ->where('tblpayment.id', $sponsor_id[$key]->sponsor_id)->pluck('tblsponsor_library.name')->first();
+            } else {
 
                 $sponsor[$key] = 'SENDIRI';
-
             }
 
-            if($std->student_status == 1)
-            {
+            if ($std->student_status == 1) {
 
                 $student_status[$key] = 'Holding';
-
-            }elseif($std->student_status == 2)
-            {
+            } elseif ($std->student_status == 2) {
 
                 $student_status[$key] = 'Kuliah';
-
-            }elseif($std->student_status == 4)
-            {
+            } elseif ($std->student_status == 4) {
 
                 $student_status[$key] = 'Latihan Industri';
-
             }
-
         }
 
         $content = "";
@@ -561,40 +521,40 @@ class AllController extends Controller
                         </tr>
                     </thead>
                     <tbody id="table">';
-                    
-        foreach($students as $key => $student){
+
+        foreach ($students as $key => $student) {
             //$registered = ($student->status == 'ACTIVE') ? 'checked' : '';
             $content .= '
             <tr>
                 <td style="width: 1%">
-                '. $key+1 .'
+                ' . $key + 1 . '
                 </td>
                 <td>
-                '. $student->name .'
+                ' . $student->name . '
                 </td>
                 <td>
-                '. $student->ic .'
+                ' . $student->ic . '
                 </td>
                 <td>
-                '. $student->no_matric .'
+                ' . $student->no_matric . '
                 </td>
                 <td>
-                '. $student->progname .'
+                ' . $student->progname . '
                 </td>
                 <td>
-                '. $student->intake .'
+                ' . $student->intake . '
                 </td>
                 <td>
-                '. $student->session .'
+                ' . $student->session . '
                 </td>
                 <td>
-                '. $student->semester .'
+                ' . $student->semester . '
                 </td>';
-                
 
-            
-                $content .= '<td class="project-actions text-right" >
-                                <a class="btn btn-secondary btn-sm btn-sm mr-2 mb-2" href="#" onclick="getMessage(\''. $student->ic .'\', \''. Auth::user()->usrtype .'\', \''. addslashes($student->name) .'\', \''. $student->no_matric .'\')">
+
+
+            $content .= '<td class="project-actions text-right" >
+                                <a class="btn btn-secondary btn-sm btn-sm mr-2 mb-2" href="#" onclick="getMessage(\'' . $student->ic . '\', \'' . Auth::user()->usrtype . '\', \'' . addslashes($student->name) . '\', \'' . $student->no_matric . '\')">
                                     <i class="ti-eye">
                                     </i>
                                     Massage
@@ -602,12 +562,10 @@ class AllController extends Controller
                             </td>
                         
                         ';
-           
-            }
-            $content .= '</tr></tbody>';
+        }
+        $content .= '</tr></tbody>';
 
-            return $content;
-
+        return $content;
     }
 
     public function getStudentNewMassage(Request $request)
@@ -618,8 +576,13 @@ class AllController extends Controller
             ->join('sessions AS a', 'students.intake', 'a.SessionID')
             ->join('sessions AS b', 'students.session', 'b.SessionID')
             ->join('tblmessage', 'students.ic', 'tblmessage.recipient')
-            ->select('students.*', 'tblprogramme.progname', 'a.SessionName AS intake', 
-                     'b.SessionName AS session', 'tblmessage.id AS message_id')
+            ->select(
+                'students.*',
+                'tblprogramme.progname',
+                'a.SessionName AS intake',
+                'b.SessionName AS session',
+                'tblmessage.id AS message_id'
+            )
             ->where('tblmessage.user_type', Auth::user()->usrtype)
             ->whereExists(function ($query) {
                 // Check if there are NEW messages from the student
@@ -639,7 +602,7 @@ class AllController extends Controller
                 ->whereIn('status', ['NEW', 'READ']) // Exclude DELETED
                 ->orderBy('datetime', 'desc')
                 ->first();
-            
+
             $student->last_message_datetime = $lastMessage ? $lastMessage->datetime : null;
         }
 
@@ -681,47 +644,47 @@ class AllController extends Controller
                         </tr>
                     </thead>
                     <tbody id="table">';
-                    
-        foreach($students as $key => $student){
+
+        foreach ($students as $key => $student) {
             // Format the datetime
-            $lastMessageFormatted = $student->last_message_datetime 
-                ? Carbon::parse($student->last_message_datetime)->format('d/m/Y H:i') 
+            $lastMessageFormatted = $student->last_message_datetime
+                ? Carbon::parse($student->last_message_datetime)->format('d/m/Y H:i')
                 : '-';
-            
+
             $content .= '
             <tr>
                 <td style="width: 1%">
-                '. ($key+1) .'
+                ' . ($key + 1) . '
                 </td>
                 <td>
-                '. $student->name .'
+                ' . $student->name . '
                 </td>
                 <td>
-                '. $student->ic .'
+                ' . $student->ic . '
                 </td>
                 <td>
-                '. $student->no_matric .'
+                ' . $student->no_matric . '
                 </td>
                 <td>
-                '. $student->progname .'
+                ' . $student->progname . '
                 </td>
                 <td>
-                '. $student->intake .'
+                ' . $student->intake . '
                 </td>
                 <td>
-                '. $student->session .'
+                ' . $student->session . '
                 </td>
                 <td>
-                '. $student->semester .'
+                ' . $student->semester . '
                 </td>
                 <td>
-                '. $lastMessageFormatted .'
+                ' . $lastMessageFormatted . '
                 </td>';
-                
 
-            
-                $content .= '<td class="project-actions text-right" >
-                                <a class="btn btn-secondary btn-sm btn-sm mr-2 mb-2" href="#" onclick="getMessage(\''. $student->ic .'\', \''. Auth::user()->usrtype .'\', \''. addslashes($student->name) .'\', \''. $student->no_matric .'\')">
+
+
+            $content .= '<td class="project-actions text-right" >
+                                <a class="btn btn-secondary btn-sm btn-sm mr-2 mb-2" href="#" onclick="getMessage(\'' . $student->ic . '\', \'' . Auth::user()->usrtype . '\', \'' . addslashes($student->name) . '\', \'' . $student->no_matric . '\')">
                                     <i class="ti-eye">
                                     </i>
                                     Massage
@@ -729,12 +692,10 @@ class AllController extends Controller
                             </td>
                         
                         ';
-           
-            }
-            $content .= '</tr></tbody>';
+        }
+        $content .= '</tr></tbody>';
 
-            return $content;
-
+        return $content;
     }
 
     public function getStudentOldMassage(Request $request)
@@ -745,8 +706,13 @@ class AllController extends Controller
             ->join('sessions AS a', 'students.intake', 'a.SessionID')
             ->join('sessions AS b', 'students.session', 'b.SessionID')
             ->join('tblmessage', 'students.ic', 'tblmessage.recipient')
-            ->select('students.*', 'tblprogramme.progname', 'a.SessionName AS intake', 
-                     'b.SessionName AS session', 'tblmessage.id AS message_id')
+            ->select(
+                'students.*',
+                'tblprogramme.progname',
+                'a.SessionName AS intake',
+                'b.SessionName AS session',
+                'tblmessage.id AS message_id'
+            )
             ->where('tblmessage.user_type', Auth::user()->usrtype)
             ->whereNotExists(function ($query) {
                 // Exclude students who have NEW messages from them (they appear in New Messages tab)
@@ -766,7 +732,7 @@ class AllController extends Controller
                 ->whereIn('status', ['NEW', 'READ']) // Exclude DELETED
                 ->orderBy('datetime', 'desc')
                 ->first();
-            
+
             $student->last_message_datetime = $lastMessage ? $lastMessage->datetime : null;
         }
 
@@ -808,47 +774,47 @@ class AllController extends Controller
                         </tr>
                     </thead>
                     <tbody id="table">';
-                    
-        foreach($students as $key => $student){
+
+        foreach ($students as $key => $student) {
             // Format the datetime
-            $lastMessageFormatted = $student->last_message_datetime 
-                ? Carbon::parse($student->last_message_datetime)->format('d/m/Y H:i') 
+            $lastMessageFormatted = $student->last_message_datetime
+                ? Carbon::parse($student->last_message_datetime)->format('d/m/Y H:i')
                 : '-';
-            
+
             $content .= '
             <tr>
                 <td style="width: 1%">
-                '. ($key+1) .'
+                ' . ($key + 1) . '
                 </td>
                 <td>
-                '. $student->name .'
+                ' . $student->name . '
                 </td>
                 <td>
-                '. $student->ic .'
+                ' . $student->ic . '
                 </td>
                 <td>
-                '. $student->no_matric .'
+                ' . $student->no_matric . '
                 </td>
                 <td>
-                '. $student->progname .'
+                ' . $student->progname . '
                 </td>
                 <td>
-                '. $student->intake .'
+                ' . $student->intake . '
                 </td>
                 <td>
-                '. $student->session .'
+                ' . $student->session . '
                 </td>
                 <td>
-                '. $student->semester .'
+                ' . $student->semester . '
                 </td>
                 <td>
-                '. $lastMessageFormatted .'
+                ' . $lastMessageFormatted . '
                 </td>';
-                
 
-            
-                $content .= '<td class="project-actions text-right" >
-                                <a class="btn btn-secondary btn-sm btn-sm mr-2 mb-2" href="#" onclick="getMessage(\''. $student->ic .'\', \''. Auth::user()->usrtype .'\', \''. addslashes($student->name) .'\', \''. $student->no_matric .'\')">
+
+
+            $content .= '<td class="project-actions text-right" >
+                                <a class="btn btn-secondary btn-sm btn-sm mr-2 mb-2" href="#" onclick="getMessage(\'' . $student->ic . '\', \'' . Auth::user()->usrtype . '\', \'' . addslashes($student->name) . '\', \'' . $student->no_matric . '\')">
                                     <i class="ti-eye">
                                     </i>
                                     Massage
@@ -856,12 +822,10 @@ class AllController extends Controller
                             </td>
                         
                         ';
-           
-            }
-            $content .= '</tr></tbody>';
+        }
+        $content .= '</tr></tbody>';
 
-            return $content;
-
+        return $content;
     }
 
     public function sendMassage(Request $request)
@@ -883,28 +847,24 @@ class AllController extends Controller
         // Handle reply_to_message_id for WhatsApp-style replies
         $replyToMessageId = $request->reply_to_message_id ? (int) $request->reply_to_message_id : null;
 
-        if($request->type != 'STUDENT')
-        {
+        if ($request->type != 'STUDENT') {
 
-            if(!DB::table('tblmessage')->where([
+            if (!DB::table('tblmessage')->where([
                 ['user_type', Auth::user()->usrtype],
                 ['recipient', $request->ic]
-            ])->exists())
-            {
+            ])->exists()) {
 
                 $id = DB::table('tblmessage')->insertGetId([
-                        'sender' => Auth::user()->ic,
-                        'user_type' => Auth::user()->usrtype,
-                        'recipient' => $request->ic
-                    ]);
-
-            }else{
+                    'sender' => Auth::user()->ic,
+                    'user_type' => Auth::user()->usrtype,
+                    'recipient' => $request->ic
+                ]);
+            } else {
 
                 $id = DB::table('tblmessage')->where([
                     ['user_type', Auth::user()->usrtype],
                     ['recipient', $request->ic]
                 ])->value('id');
-
             }
 
             // Validate reply_to_message_id belongs to this conversation (prevent cross-chat replies)
@@ -931,29 +891,25 @@ class AllController extends Controller
                 'status' => 'NEW',
                 'reply_to_message_id' => $replyToMessageId
             ]);
+        } else {
 
-        }else{
 
-
-            if(!DB::table('tblmessage')->where([
+            if (!DB::table('tblmessage')->where([
                 ['user_type', $request->ic],
                 ['recipient', Auth::guard('student')->user()->ic]
-            ])->exists())
-            {
+            ])->exists()) {
 
                 $id = DB::table('tblmessage')->insertGetId([
-                        'sender' => null,
-                        'user_type' => $request->ic,
-                        'recipient' => Auth::guard('student')->user()->ic
-                    ]);
-
-            }else{
+                    'sender' => null,
+                    'user_type' => $request->ic,
+                    'recipient' => Auth::guard('student')->user()->ic
+                ]);
+            } else {
 
                 $id = DB::table('tblmessage')->where([
                     ['user_type', $request->ic],
                     ['recipient', Auth::guard('student')->user()->ic]
                 ])->value('id');
-
             }
 
             // Validate reply_to_message_id belongs to this conversation (prevent cross-chat replies)
@@ -980,7 +936,6 @@ class AllController extends Controller
                 'status' => 'NEW',
                 'reply_to_message_id' => $replyToMessageId
             ]);
-
         }
 
         return response()->json([
@@ -1000,7 +955,11 @@ class AllController extends Controller
             // Validate file type
             $allowedTypes = [
                 // Images
-                'image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'image/webp',
+                'image/jpeg',
+                'image/png',
+                'image/jpg',
+                'image/gif',
+                'image/webp',
                 // Documents
                 'application/pdf',
                 'application/msword', // .doc
@@ -1050,7 +1009,6 @@ class AllController extends Controller
                 'size' => $file->getSize(),
                 'path' => $path
             ];
-
         } catch (\Exception $e) {
             Log::error('File upload failed: ' . $e->getMessage());
             return [
@@ -1065,8 +1023,7 @@ class AllController extends Controller
     public function getMassage(Request $request)
     {
 
-        if($request->type != 'STUDENT')
-        {
+        if ($request->type != 'STUDENT') {
 
             DB::table('tblmessage')
                 ->join('tblmessage_dtl', 'tblmessage.id', '=', 'tblmessage_dtl.message_id')
@@ -1079,15 +1036,14 @@ class AllController extends Controller
                 ]);
 
             $messages = DB::table('tblmessage')
-            ->join('tblmessage_dtl', 'tblmessage.id', '=', 'tblmessage_dtl.message_id')
-            ->where('tblmessage.user_type', $request->type)
-            ->where('tblmessage.recipient', $request->ic)
-            // If you want to include messages where the user is the recipient, uncomment the line below:
-            //->orWhere('tblmessage.recipient', Auth::user()->ic)
-            ->select('tblmessage_dtl.*', 'tblmessage_dtl.user_type', 'tblmessage.recipient', 'tblmessage.datetime as message_datetime')
-            ->get();
-
-        }else{
+                ->join('tblmessage_dtl', 'tblmessage.id', '=', 'tblmessage_dtl.message_id')
+                ->where('tblmessage.user_type', $request->type)
+                ->where('tblmessage.recipient', $request->ic)
+                // If you want to include messages where the user is the recipient, uncomment the line below:
+                //->orWhere('tblmessage.recipient', Auth::user()->ic)
+                ->select('tblmessage_dtl.*', 'tblmessage_dtl.user_type', 'tblmessage.recipient', 'tblmessage.datetime as message_datetime')
+                ->get();
+        } else {
 
             DB::table('tblmessage')
                 ->join('tblmessage_dtl', 'tblmessage.id', '=', 'tblmessage_dtl.message_id')
@@ -1108,7 +1064,6 @@ class AllController extends Controller
                 //->orWhere('tblmessage.recipient', Auth::user()->ic)
                 ->select('tblmessage_dtl.*', 'tblmessage_dtl.user_type', 'tblmessage.recipient', 'tblmessage.datetime as message_datetime')
                 ->get();
-
         }
 
         return response()->json($messages);
@@ -1135,7 +1090,6 @@ class AllController extends Controller
             } else {
                 return response()->json(['error' => 'Message not found or already deleted'], 404);
             }
-
         } catch (\Exception $e) {
             Log::error('Delete message failed: ' . $e->getMessage());
             return response()->json(['error' => 'Failed to delete message'], 500);
@@ -1146,40 +1100,46 @@ class AllController extends Controller
     {
 
         $count = DB::table('tblmessage')
-                    ->join('tblmessage_dtl', 'tblmessage.id', '=', 'tblmessage_dtl.message_id')
-                    ->where('tblmessage.user_type', $request->type)
-                    ->where('tblmessage.recipient', Auth::guard('student')->user()->ic)
-                    ->where('tblmessage_dtl.sender', '!=', Auth::guard('student')->user()->ic)
-                    ->where('tblmessage_dtl.status', 'NEW')
-                    ->count();
+            ->join('tblmessage_dtl', 'tblmessage.id', '=', 'tblmessage_dtl.message_id')
+            ->where('tblmessage.user_type', $request->type)
+            ->where('tblmessage.recipient', Auth::guard('student')->user()->ic)
+            ->where('tblmessage_dtl.sender', '!=', Auth::guard('student')->user()->ic)
+            ->where('tblmessage_dtl.status', 'NEW')
+            ->count();
 
         return response()->json(['count' => $count]);
-
     }
 
     public function countMassageAdmin(Request $request)
     {
 
         $count = DB::table('tblmessage')
-        ->where('user_type', Auth::user()->usrtype)
-        ->whereExists(function ($query) {
-            $query->select(DB::raw(1))
-                ->from('tblmessage_dtl')
-                ->whereColumn('tblmessage_dtl.message_id', 'tblmessage.id')
-                ->where('tblmessage_dtl.status', 'NEW')
-                ->where('tblmessage_dtl.user_type', '!=', Auth::user()->usrtype);
-        })
-        ->count();
+            ->where('user_type', Auth::user()->usrtype)
+            ->whereExists(function ($query) {
+                $query->select(DB::raw(1))
+                    ->from('tblmessage_dtl')
+                    ->whereColumn('tblmessage_dtl.message_id', 'tblmessage.id')
+                    ->where('tblmessage_dtl.status', 'NEW')
+                    ->where('tblmessage_dtl.user_type', '!=', Auth::user()->usrtype);
+            })
+            ->count();
 
 
         return response()->json(['count' => $count]);
-
     }
 
 
     // Display a listing of the announcements
     public function indexAnnouncements()
     {
+        // Check if user is authenticated
+        if (!Auth::check()) {
+            return response()->json([
+                'error' => 'User not authenticated',
+                'message' => 'Please login to view announcements'
+            ], 401);
+        }
+
         $userRole = Auth::user()->usrtype;
 
         if ($userRole === 'ADM') {
@@ -1190,12 +1150,12 @@ class AllController extends Controller
             $type = 'Pendaftar Akademik';
         } else if ($userRole === 'RGS') {
             $type = 'Pendaftar';
+        } else {
+            // If user role doesn't match any known type, return empty array
+            return response()->json([]);
         }
 
         $announcements = DB::table('tblstdannoucement')->where('department', $type)->get();
-
-        // Debugging: Check the data being fetched
-        error_log($announcements);
 
         return response()->json($announcements);
     }
@@ -1266,11 +1226,11 @@ class AllController extends Controller
     public function getBannerAnnouncement()
     {
         $announcements = DB::table('tblstdannoucement')
-        ->whereDate('start_date', '<=', now()) // Fetch rows where start_date is before or equal to today
-        ->whereDate('end_date', '>=', now())   // Fetch rows where end_date is after or equal to today
-        ->orderByRaw("FIELD(priority, 'high', 'medium', 'low')") // Sort by priority
-        ->orderBy('created_at', 'desc') // Optional: Further sort by creation date
-        ->get();
+            ->whereDate('start_date', '<=', now()) // Fetch rows where start_date is before or equal to today
+            ->whereDate('end_date', '>=', now())   // Fetch rows where end_date is after or equal to today
+            ->orderByRaw("FIELD(priority, 'high', 'medium', 'low')") // Sort by priority
+            ->orderBy('created_at', 'desc') // Optional: Further sort by creation date
+            ->get();
 
 
         return response()->json($announcements);
@@ -1279,13 +1239,13 @@ class AllController extends Controller
     public function fixImagesVisibility()
     {
         $posts = DB::table('tblposting')->whereNotNull('image')->get();
-        
-        foreach($posts as $post) {
+
+        foreach ($posts as $post) {
             if (Storage::disk('linode')->exists($post->image)) {
                 Storage::disk('linode')->setVisibility($post->image, 'public');
             }
         }
-        
+
         return back()->with('success', 'Images visibility updated successfully!');
     }
 
@@ -1310,7 +1270,7 @@ class AllController extends Controller
 
             // Read Excel data
             $data = Excel::toArray([], storage_path('app/' . $excelPath));
-            
+
             if (empty($data) || empty($data[0])) {
                 return back()->with('error', 'Excel file is empty or invalid.');
             }
@@ -1320,20 +1280,20 @@ class AllController extends Controller
 
             // Process each row and generate PDFs
             $generatedFiles = [];
-            
+
             foreach ($excelData as $index => $row) {
                 if (empty(array_filter($row))) continue; // Skip empty rows
-                
+
                 // Create associative array with headers as keys
                 $rowData = array_combine($headers, $row);
-                
+
                 // Generate PDF for this row
                 $pdfFileName = $this->generatePdfFromTemplate(
-                    storage_path('app/' . $templatePath), 
-                    $rowData, 
+                    storage_path('app/' . $templatePath),
+                    $rowData,
                     $index + 1
                 );
-                
+
                 if ($pdfFileName) {
                     $generatedFiles[] = $pdfFileName;
                 }
@@ -1354,10 +1314,9 @@ class AllController extends Controller
 
             // If multiple files, create a zip
             $zipFileName = $this->createZipFile($generatedFiles);
-            
-            return back()->with('success', 'PDFs generated successfully!')
-                        ->with('download_link', route('all.pdf.export.download', ['filename' => $zipFileName]));
 
+            return back()->with('success', 'PDFs generated successfully!')
+                ->with('download_link', route('all.pdf.export.download', ['filename' => $zipFileName]));
         } catch (\Exception $e) {
             Log::error('PDF Export Error: ' . $e->getMessage());
             return back()->with('error', 'Error generating PDFs: ' . $e->getMessage());
@@ -1369,7 +1328,7 @@ class AllController extends Controller
         try {
             // Create a copy of the template
             $templateProcessor = new TemplateProcessor($templatePath);
-            
+
             // Replace placeholders with data
             foreach ($data as $key => $value) {
                 $templateProcessor->setValue($key, $value ?? '');
@@ -1381,17 +1340,17 @@ class AllController extends Controller
 
             // Convert Word to HTML first, then to PDF
             $htmlContent = $this->convertWordToHtml($processedDocPath, $data);
-            
+
             // Generate PDF using DomPDF
             $pdf = PDF::loadHTML($htmlContent);
             $pdfFileName = 'generated_' . $index . '_' . time() . '.pdf';
             $pdfPath = storage_path('app/temp/pdfs/' . $pdfFileName);
-            
+
             // Ensure directory exists
             if (!file_exists(dirname($pdfPath))) {
                 mkdir(dirname($pdfPath), 0755, true);
             }
-            
+
             $pdf->save($pdfPath);
 
             // Clean up processed document
@@ -1400,7 +1359,6 @@ class AllController extends Controller
             }
 
             return $pdfFileName;
-
         } catch (\Exception $e) {
             Log::error('Template processing error: ' . $e->getMessage());
             return null;
@@ -1464,7 +1422,7 @@ class AllController extends Controller
     public function pdfExportDownload($filename)
     {
         $filePath = storage_path('app/temp/pdfs/' . $filename);
-        
+
         if (!file_exists($filePath)) {
             return back()->with('error', 'File not found.');
         }
@@ -1475,7 +1433,7 @@ class AllController extends Controller
     public function downloadTemplate()
     {
         $templatePath = public_path('template/template_example.txt');
-        
+
         if (!file_exists($templatePath)) {
             return back()->with('error', 'Template example file not found.');
         }
@@ -1486,7 +1444,7 @@ class AllController extends Controller
     public function downloadSample()
     {
         $samplePath = public_path('template/sample_data.csv');
-        
+
         if (!file_exists($samplePath)) {
             return back()->with('error', 'Sample file not found.');
         }
@@ -1498,19 +1456,26 @@ class AllController extends Controller
     public function searchStudents(Request $request)
     {
         $currentStudentIc = Auth::guard('student')->user()->ic;
-        
+
         $students = DB::table('students')
             ->join('tblprogramme', 'students.program', 'tblprogramme.id')
             ->join('sessions AS a', 'students.intake', 'a.SessionID')
             ->join('sessions AS b', 'students.session', 'b.SessionID')
             ->join('tblstudent_status', 'students.status', 'tblstudent_status.id')
-            ->select('students.ic', 'students.name', 'students.no_matric', 'tblprogramme.progname', 
-                     'a.SessionName AS intake', 'b.SessionName AS session', 'students.semester')
+            ->select(
+                'students.ic',
+                'students.name',
+                'students.no_matric',
+                'tblprogramme.progname',
+                'a.SessionName AS intake',
+                'b.SessionName AS session',
+                'students.semester'
+            )
             ->where('students.ic', '!=', $currentStudentIc) // Exclude current student
-            ->where(function($query) use ($request) {
-                $query->where('students.name', 'LIKE', "%".$request->search."%")
-                      ->orWhere('students.ic', 'LIKE', "%".$request->search."%")
-                      ->orWhere('students.no_matric', 'LIKE', "%".$request->search."%");
+            ->where(function ($query) use ($request) {
+                $query->where('students.name', 'LIKE', "%" . $request->search . "%")
+                    ->orWhere('students.ic', 'LIKE', "%" . $request->search . "%")
+                    ->orWhere('students.no_matric', 'LIKE', "%" . $request->search . "%");
             })
             ->limit(10) // Limit results for performance
             ->get();
@@ -1605,8 +1570,8 @@ class AllController extends Controller
         $recipientIc = $request->recipient_ic;
 
         // Create conversation ID
-        $conversationId = ($currentStudentIc < $recipientIc) 
-            ? $currentStudentIc . '_' . $recipientIc 
+        $conversationId = ($currentStudentIc < $recipientIc)
+            ? $currentStudentIc . '_' . $recipientIc
             : $recipientIc . '_' . $currentStudentIc;
 
         // Mark messages as read (only messages from the other student)
@@ -1638,17 +1603,17 @@ class AllController extends Controller
         $recipientIc = $request->recipient_ic;
 
         // Create conversation ID
-        $conversationId = ($currentStudentIc < $recipientIc) 
-            ? $currentStudentIc . '_' . $recipientIc 
+        $conversationId = ($currentStudentIc < $recipientIc)
+            ? $currentStudentIc . '_' . $recipientIc
             : $recipientIc . '_' . $currentStudentIc;
 
         $count = DB::table('tblmessage')
-                    ->join('tblmessage_dtl', 'tblmessage.id', '=', 'tblmessage_dtl.message_id')
-                    ->where('tblmessage.user_type', 'STUDENT_CONVERSATION')
-                    ->where('tblmessage.recipient', $conversationId)
-                    ->where('tblmessage_dtl.sender', '!=', $currentStudentIc)
-                    ->where('tblmessage_dtl.status', 'NEW')
-                    ->count();
+            ->join('tblmessage_dtl', 'tblmessage.id', '=', 'tblmessage_dtl.message_id')
+            ->where('tblmessage.user_type', 'STUDENT_CONVERSATION')
+            ->where('tblmessage.recipient', $conversationId)
+            ->where('tblmessage_dtl.sender', '!=', $currentStudentIc)
+            ->where('tblmessage_dtl.status', 'NEW')
+            ->count();
 
         return response()->json(['count' => $count]);
     }
@@ -1744,7 +1709,7 @@ class AllController extends Controller
                 }
 
                 $messagesToTransfer = $query->get();
-                
+
                 // Transfer messages to target conversation
                 foreach ($messagesToTransfer as $message) {
                     DB::table('tblmessage_dtl')->insert([
@@ -1761,10 +1726,10 @@ class AllController extends Controller
 
                 // Add transfer summary message to target conversation
                 if ($transferredCount > 0) {
-                    $transferSummary = $transferOption === 'all' 
+                    $transferSummary = $transferOption === 'all'
                         ? "All conversation history transferred ({$transferredCount} messages)"
                         : "Recent conversation history transferred ({$transferredCount} messages)";
-                    
+
                     DB::table('tblmessage_dtl')->insert([
                         'message_id' => $targetConversationId,
                         'sender' => Auth::user()->ic,
@@ -1792,7 +1757,6 @@ class AllController extends Controller
                 'transferred_messages' => $transferredCount,
                 'transfer_option' => $transferOption
             ]);
-
         } catch (\Exception $e) {
             Log::error('Conversation reassignment failed: ' . $e->getMessage());
             return response()->json(['error' => 'Failed to reassign conversation: ' . $e->getMessage()], 500);
@@ -1808,7 +1772,7 @@ class AllController extends Controller
             'AR' => 'Academic Registrar',
             'ADM' => 'Admin'
         ];
-        
+
         return $departments[$code] ?? $code;
     }
 
@@ -1863,11 +1827,10 @@ class AllController extends Controller
         }
 
         // Sort by last message time
-        usort($conversationList, function($a, $b) {
+        usort($conversationList, function ($a, $b) {
             return strtotime($b['last_message']->datetime ?? '1970-01-01') - strtotime($a['last_message']->datetime ?? '1970-01-01');
         });
 
         return response()->json($conversationList);
     }
-
 }

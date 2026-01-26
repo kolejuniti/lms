@@ -188,6 +188,8 @@ Route::get('/pendaftar/student/internationalReport', [App\Http\Controllers\Penda
 Route::get('/pendaftar/student/annualStudentReport', [App\Http\Controllers\PendaftarController::class, 'annualStudentReport'])->name('pendaftar.student.annualStudentReport');
 Route::post('/pendaftar/student/annualStudentReport/getAnnualStudentReport', [App\Http\Controllers\PendaftarController::class, 'getAnnualStudentReport']);
 
+Route::get('/pendaftar/report/student-by-year', [App\Http\Controllers\ReportStudentController::class, 'index'])->name('pendaftar.report.student-by-year');
+
 
 Route::get('/AR_dashboard', [App\Http\Controllers\AR_Controller::class, 'dashboard'])->name('pendaftar_akademik.dashboard');
 Route::get('/AR', [App\Http\Controllers\AR_Controller::class, 'courseList'])->name('pendaftar_akademik');
@@ -1162,7 +1164,7 @@ Route::get('/student/test-messaging', function () {
     return view('student.test_messaging');
 })->middleware('auth:student')->name('student.test.messaging');
 
-Route::prefix('all')->group(function () {
+Route::prefix('all')->middleware('auth')->group(function () {
     Route::get('/student/announcements/getannoucement', [App\Http\Controllers\AllController::class, 'indexAnnouncements']);
     Route::post('/student/announcements/post', [App\Http\Controllers\AllController::class, 'storeAnnouncements']);
     Route::get('/student/announcements/get/{id}', [App\Http\Controllers\AllController::class, 'showAnnouncements']);
@@ -1180,7 +1182,7 @@ Route::get('/all/pdf-export/sample/download', [App\Http\Controllers\AllControlle
 
 Route::get('/all/student/announcements', function () {
     return view('alluser.student.announcements.index');
-})->name('all.student.announcements');
+})->middleware('auth')->name('all.student.announcements');
 
 Route::get('/yuran-pengajian', [App\Http\Controllers\PaymentController::class, 'showPaymentForm'])->name('yuran-pengajian');
 Route::post('/yuran-pengajian/submitPayment', [App\Http\Controllers\PaymentController::class, 'submitPayment'])->name('yuran-pengajian.submitpayment');
