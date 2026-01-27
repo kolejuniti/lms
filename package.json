@@ -28,6 +28,7 @@
         "vue-template-compiler": "^2.7.16"
     },
     "dependencies": {
+        "@tinymce/tinymce-react": "^6.3.0",
         "datatables.net": "^2.1.0",
         "datatables.net-buttons": "^3.1.0",
         "datatables.net-buttons-dt": "^3.1.0",
