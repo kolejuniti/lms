@@ -152,6 +152,7 @@
                                 <div class="input-group">
                                   <span class="input-group-text" id="serial-prefix">CERT-<span id="selected-year"></span>-</span>
                                   <input type="text" class="form-control" id="manualSerialNumber" placeholder="0001" maxlength="20" pattern="[A-Za-z0-9\-]+" title="Only letters, numbers, and hyphens are allowed">
+                                  <div id="serial-feedback" style="display:none; width: 100%; margin-top: 0.25rem; font-size: 0.875em;"></div>
                                 </div>
                               </div>
                             </div>
@@ -317,7 +318,54 @@
   $('#manualYear').on('change', function() {
     var selectedYear = $(this).val();
     $('#selected-year').text(selectedYear);
+    checkSerialAvailability();
   });
+
+  $('#manualSerialNumber').on('keyup blur', function() {
+    checkSerialAvailability();
+  });
+
+  function checkSerialAvailability() {
+    var manualSerial = $('#manualSerialNumber').val();
+    var manualYear = $('#manualYear').val();
+
+    if (manualSerial && manualYear) {
+      // Don't check if empty or just whitespace
+      if (manualSerial.trim() === '') {
+        $('#manualSerialNumber').removeClass('is-valid is-invalid');
+        $('#serial-feedback').hide();
+        return;
+      }
+
+      $.ajax({
+        headers: {
+          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        url: "{{ url('AR/student/certificate/checkAvailability') }}",
+        method: 'POST',
+        data: {
+          manual_serial_number: manualSerial,
+          manual_year: manualYear
+        },
+        success: function(response) {
+          var feedback = $('#serial-feedback');
+          if (response.available) {
+            $('#manualSerialNumber').removeClass('is-invalid').addClass('is-valid');
+            feedback.removeClass('text-danger').addClass('text-success').text(response.message).show();
+          } else {
+            $('#manualSerialNumber').removeClass('is-valid').addClass('is-invalid');
+            feedback.removeClass('text-success').addClass('text-danger').text(response.message).show();
+          }
+        },
+        error: function() {
+          console.log('Error checking availability');
+        }
+      });
+    } else {
+      $('#manualSerialNumber').removeClass('is-valid is-invalid');
+      $('#serial-feedback').hide();
+    }
+  }
 
   // Function to populate year dropdown
   function populateYearDropdown() {

@@ -6465,7 +6465,20 @@ class AR_Controller extends Controller
                 // Combine with standard prefix format using selected year
                 $serialNo = 'CERT-' . $manualYear . '-' . $manualSerialSuffix;
 
-                // Check if the complete manual serial number already exists
+                // Check for global suffix uniqueness first
+                // E.g., if 7906 is used in CERT-2026-7906, it cannot be used in CERT-2027-7906
+                $existingSuffix = DB::table('student_certificate')
+                    ->where('serial_no', 'LIKE', '%-' . $manualSerialSuffix)
+                    ->first();
+
+                if ($existingSuffix) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Serial number suffix ' . $manualSerialSuffix . ' already exists (Used in: ' . $existingSuffix->serial_no . ').'
+                    ]);
+                }
+
+                // Double check if the complete manual serial number already exists (redundant but safe)
                 $existingSerial = DB::table('student_certificate')
                     ->where('serial_no', $serialNo)
                     ->first();
@@ -6653,6 +6666,38 @@ class AR_Controller extends Controller
                 'message' => 'Error updating certificate details: ' . $e->getMessage()
             ]);
         }
+    }
+
+    public function checkSerialNumberAvailability(Request $request)
+    {
+        $manualSerialNumber = $request->manual_serial_number;
+        // Manual year is not needed for the check if we are checking global suffix uniqueness
+        // but we keep it optional or just ignore it for the query
+
+        if (!$manualSerialNumber) {
+            return response()->json(['available' => false, 'message' => 'Missing input']);
+        }
+
+        $manualSerialSuffix = trim($manualSerialNumber);
+
+        // Check if any certificate ends with this suffix
+        // This prevents using the same number/suffix across different years
+        // E.g., if 7906 is used in CERT-2026-7906, it cannot be used in CERT-2027-7906
+        $existingSerial = DB::table('student_certificate')
+            ->where('serial_no', 'LIKE', '%-' . $manualSerialSuffix)
+            ->first();
+
+        if ($existingSerial) {
+            return response()->json([
+                'available' => false,
+                'message' => 'Serial number suffix ' . $manualSerialSuffix . ' already exists (Used in: ' . $existingSerial->serial_no . ').'
+            ]);
+        }
+
+        return response()->json([
+            'available' => true,
+            'message' => 'Serial number available.'
+        ]);
     }
 
     public function bulkGenerateCertificates(Request $request)
