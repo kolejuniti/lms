@@ -4,10 +4,10 @@ import axios from 'axios';
 const AnnouncementBanner = () => {
   // State to store announcements fetched from the backend
   const [announcements, setAnnouncements] = useState([]);
-  
+
   // State to track which announcement is currently displayed
   const [currentIndex, setCurrentIndex] = useState(0);
-  
+
   // State for animation
   const [animationDirection, setAnimationDirection] = useState('');
 
@@ -16,8 +16,8 @@ const AnnouncementBanner = () => {
     const fetchAnnouncements = async () => {
       try {
         // Axios GET request to fetch announcements from the backend API
-        const response = await axios.get('all/student/announcements/getBannerAnnouncement');
-        
+        const response = await axios.get('/student/announcements/getBanner');
+
         // Ensure we have data before setting it
         if (response.data && response.data.length > 0) {
           setAnnouncements(response.data);
@@ -45,22 +45,22 @@ const AnnouncementBanner = () => {
     };
 
     fetchAnnouncements();
-    
+
     // Auto-rotate announcements every 8 seconds, but only if we have more than one
     let rotationInterval;
-    
+
     // Reference to the nextAnnouncement function for the interval
     const autoRotate = () => {
       if (announcements.length > 1 && !animationDirection) {
         nextAnnouncement();
       }
     };
-    
+
     // Only set interval if we have multiple announcements
     if (announcements.length > 1) {
       rotationInterval = setInterval(autoRotate, 20000);
     }
-    
+
     // Clear interval on component unmount
     return () => {
       if (rotationInterval) {
@@ -72,15 +72,15 @@ const AnnouncementBanner = () => {
   // Function to navigate to the next announcement with animation
   const nextAnnouncement = () => {
     if (animationDirection) return; // Prevent multiple animations at once
-    
+
     setAnimationDirection('slide-out-left');
-    
+
     // Short delay to allow animation to complete before changing content
     setTimeout(() => {
       setCurrentIndex((prev) => (prev + 1) % announcements.length);
       // Set the incoming animation after content change
       setAnimationDirection('slide-in-right');
-      
+
       // Clear animation class after it completes
       setTimeout(() => {
         setAnimationDirection('');
@@ -91,15 +91,15 @@ const AnnouncementBanner = () => {
   // Function to navigate to the previous announcement with animation
   const prevAnnouncement = () => {
     if (animationDirection) return; // Prevent multiple animations at once
-    
+
     setAnimationDirection('slide-out-right');
-    
+
     // Short delay to allow animation to complete before changing content
     setTimeout(() => {
       setCurrentIndex((prev) => (prev - 1 + announcements.length) % announcements.length);
       // Set the incoming animation after content change
       setAnimationDirection('slide-in-left');
-      
+
       // Clear animation class after it completes
       setTimeout(() => {
         setAnimationDirection('');
@@ -153,8 +153,8 @@ const AnnouncementBanner = () => {
         animation: 'pulse 1.5s infinite ease-in-out'
       }}>
         <div style={{ fontSize: '24px', marginBottom: '8px' }}>✨</div>
-        <p style={{ 
-          fontWeight: '600', 
+        <p style={{
+          fontWeight: '600',
           color: '#4a5568',
           fontSize: '16px'
         }}>
@@ -209,17 +209,17 @@ const AnnouncementBanner = () => {
           left: '30%',
           zIndex: 0,
         }} />
-        
+
         {/* Title and icon */}
-        <div style={{ 
-          display: 'flex', 
-          alignItems: 'center', 
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
           gap: '12px',
           position: 'relative',
           zIndex: 1,
         }}>
-          <span style={{ 
-            fontSize: '24px', 
+          <span style={{
+            fontSize: '24px',
             backgroundColor: 'white',
             borderRadius: '50%',
             width: '40px',
@@ -231,21 +231,21 @@ const AnnouncementBanner = () => {
           }}>
             {currentStyles.icon}
           </span>
-          <h3 style={{ 
-            margin: 0, 
-            fontWeight: '700', 
-            fontSize: '20px', 
+          <h3 style={{
+            margin: 0,
+            fontWeight: '700',
+            fontSize: '20px',
             color: 'white',
             textShadow: '0 1px 2px rgba(0, 0, 0, 0.1)'
           }}>
             Announcements
           </h3>
         </div>
-        
+
         {/* Navigation buttons */}
-        <div style={{ 
-          display: 'flex', 
-          alignItems: 'center', 
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
           gap: '12px',
           position: 'relative',
           zIndex: 1,
@@ -274,7 +274,7 @@ const AnnouncementBanner = () => {
           >
             ←
           </button>
-          
+
           {/* Indicator dots for navigation */}
           <div style={{ display: 'flex', gap: '6px' }}>
             {announcements.map((_, index) => (
@@ -290,7 +290,7 @@ const AnnouncementBanner = () => {
               />
             ))}
           </div>
-          
+
           <button
             onClick={nextAnnouncement}
             style={{
@@ -363,10 +363,10 @@ const AnnouncementBanner = () => {
           padding: '16px',
           borderRadius: '8px',
           border: '1px solid rgba(0, 0, 0, 0.05)',
-        }} 
-        dangerouslySetInnerHTML={{
-          __html: announcements[currentIndex].content,
-        }} />
+        }}
+          dangerouslySetInnerHTML={{
+            __html: announcements[currentIndex].content,
+          }} />
 
         {/* Footer section with date and controls */}
         <div style={{
@@ -387,14 +387,14 @@ const AnnouncementBanner = () => {
           }}>
             <span>📅</span>
             <p style={{ margin: 0 }}>
-              Posted: {new Date(announcements[currentIndex].created_at).toLocaleDateString('en-US', { 
-                year: 'numeric', 
-                month: 'short', 
-                day: 'numeric' 
+              Posted: {new Date(announcements[currentIndex].created_at).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
               })}
             </p>
           </div>
-          
+
           {/* Pagination indicator */}
           <div style={{
             fontSize: '14px',
@@ -408,7 +408,7 @@ const AnnouncementBanner = () => {
           </div>
         </div>
       </div>
-      
+
       {/* CSS for animations */}
       <style>
         {`
