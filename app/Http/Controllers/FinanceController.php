@@ -1616,7 +1616,7 @@ class FinanceController extends Controller
                     $updateData = [
                         'register_at' => now(),
                         'status_id' => ($normalizedIc1 == $normalizedIc2) ? 20 : 22,
-                        'commission' => ($normalizedIc1 == $normalizedIc2) ? 300 : 0
+                        'commission' => ($normalizedIc1 == $normalizedIc2) ? 500 : 0
                     ];
 
                     // Perform the update
