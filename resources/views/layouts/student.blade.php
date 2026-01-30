@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -9,24 +10,24 @@
   <meta name="csrf-token" content="{{ csrf_token() }}">
   <link rel="icon" href="{{ asset('assets/images/favicon.ico') }}">
   <title>EduHub - @yield('title')</title>
-  
+
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  
+
   <!-- Vendors Style-->
   <link rel="stylesheet" href="{{ asset('assets/src/css/vendors_css.css') }}">
-  
-  <!-- Style-->  
+
+  <!-- Style-->
   <link rel="stylesheet" href="{{ asset('assets/src/css/style.css') }}">
   <link rel="stylesheet" href="{{ asset('assets/src/css/skin_color.css') }}">
   <link rel="stylesheet" href="https://unpkg.com/css-skeletons@1.0.3/css/css-skeletons.min.css" />
-  
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="{{ asset('css/customCSS.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/customLayoutCSS.css') }}">
-  
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="{{ asset('css/customCSS.css') }}">
+  <link rel="stylesheet" href="{{ asset('css/customLayoutCSS.css') }}">
+
   @stack('styles')
-  
+
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.8.2/dist/alpine.min.js" defer></script>
 </head>
@@ -41,10 +42,10 @@
 
   <div class="wrapper">
     <div id="loader"></div>
-    
+
     <!-- Header -->
     <header class="main-header">
-      <div class="d-flex align-items-center logo-box justify-content-start">	
+      <div class="d-flex align-items-center logo-box justify-content-start">
         <!-- Logo -->
         <a href="{{ url('student') }}" class="logo">
           <!-- logo-->
@@ -60,17 +61,17 @@
               <span class="ucms-text-white">U</span><span class="ucms-text-orange">CMS</span>
             </span>
           </div>
-        </a>	
+        </a>
       </div>
-      
+
       <!-- Header Navbar -->
       <nav class="navbar navbar-static-top">
         <!-- Sidebar toggle button-->
         <div class="app-menu">
           <ul class="header-megamenu nav">
             <li class="btn-group nav-item">
-              <a href="#" class="waves-effect waves-light nav-link push-btn btn-primary-light ms-0" 
-              data-toggle-status="true" data-toggle="push-menu" role="button">
+              <a href="#" class="waves-effect waves-light nav-link push-btn btn-primary-light ms-0"
+                data-toggle-status="true" data-toggle="push-menu" role="button">
                 <i data-feather="menu"></i>
               </a>
             </li>
@@ -88,9 +89,9 @@
                 </div>
               </div>
             </li>
-          </ul> 
+          </ul>
         </div>
-        
+
         <div class="navbar-custom-menu r-side">
           <ul class="nav navbar-nav">
             <!-- Dark Mode Toggle -->
@@ -103,10 +104,10 @@
                     <i data-feather="sun" class="switch-off"></i>
                   </span>
                 </label>
-              </a>				
+              </a>
             </li>
-            
-           <!-- Spotify Widget Toggle -->
+
+            <!-- Spotify Widget Toggle -->
             {{-- <li class="spotify-toggle d-flex align-items-center">
               <button class="messaging-btn" onclick="toggleSpotifyWidget()" title="Music Player">
                 <i data-feather="music" style="color: #1db954;"></i>
@@ -129,69 +130,69 @@
                 <i data-feather="bell" style="color: #4f81c7;"></i>
                 <div class="pulse-wave"></div>
                 @if(auth()->guard('student')->check() && auth()->guard('student')->user()->unreadNotifications && auth()->guard('student')->user()->unreadNotifications->count() > 0)
-                  <span class="badge">
-                    {{ auth()->guard('student')->user()->unreadNotifications->count() }}
-                  </span>
+                <span class="badge">
+                  {{ auth()->guard('student')->user()->unreadNotifications->count() }}
+                </span>
                 @endif
               </button>
-              
+
               <!-- Dropdown panel -->
               <div class="notification-dropdown-content" id="notificationDropdown">
                 <!-- Header -->
                 <div class="notification-dropdown-header">
                   <h4>Notifications</h4>
                   @if(auth()->guard('student')->check())
-                    <a href="{{ route('notifications.clear') }}" class="clear-all">Clear All</a>
+                  <a href="{{ route('notifications.clear') }}" class="clear-all">Clear All</a>
                   @endif
                 </div>
-                
+
                 <!-- Notification List -->
                 <ul class="notification-dropdown-list">
                   @if(auth()->guard('student')->check() && auth()->guard('student')->user()->unreadNotifications)
-                    @forelse(auth()->guard('student')->user()->unreadNotifications as $notification)
-                      <li>
-                        <a href="{{ $notification->data['url'] ?? '#' }}"
-                          onclick="markNotificationAndRedirect('{{ $notification->id }}', '{{ $notification->data['url'] ?? '#' }}'); return false;">
-                          <i class="fa {{ $notification->data['icon'] ?? 'fa-info-circle' }}"
-                            style="color: {{ $notification->data['icon_color'] ?? '#4f81c7' }};"></i>
-                          {{ $notification->data['message'] ?? 'No message provided.' }}
-                          <br>
-                          <small class="text-muted">{{ $notification->created_at->diffForHumans() }}</small>
-                        </a>
-                      </li>
-                    @empty
-                      <li>
-                        <a href="#">No new notifications</a>
-                      </li>
-                    @endforelse
+                  @forelse(auth()->guard('student')->user()->unreadNotifications as $notification)
+                  <li>
+                    <a href="{{ $notification->data['url'] ?? '#' }}"
+                      onclick="markNotificationAndRedirect('{{ $notification->id }}', '{{ $notification->data['url'] ?? '#' }}'); return false;">
+                      <i class="fa {{ $notification->data['icon'] ?? 'fa-info-circle' }}"
+                        style="color: {{ $notification->data['icon_color'] ?? '#4f81c7' }};"></i>
+                      {{ $notification->data['message'] ?? 'No message provided.' }}
+                      <br>
+                      <small class="text-muted">{{ $notification->created_at->diffForHumans() }}</small>
+                    </a>
+                  </li>
+                  @empty
+                  <li>
+                    <a href="#">No new notifications</a>
+                  </li>
+                  @endforelse
                   @else
-                    <li>
-                      <a href="#">No notifications available</a>
-                    </li>
+                  <li>
+                    <a href="#">No notifications available</a>
+                  </li>
                   @endif
                 </ul>
-                
+
                 <!-- Footer -->
                 <div class="notification-dropdown-footer">
                   @if(auth()->guard('student')->check())
-                    <a href="{{ route('notifications.index') }}">View all notifications</a>
+                  <a href="{{ route('notifications.index') }}">View all notifications</a>
                   @else
-                    <a href="{{ route('login') }}">Login to view notifications</a>
+                  <a href="{{ route('login') }}">Login to view notifications</a>
                   @endif
                 </div>
               </div>
             </li>
-            
+
             <!-- User Account-->
             <li class="dropdown user user-menu">
-              <a href="#" class="waves-effect waves-light dropdown-toggle w-auto l-h-12 bg-transparent p-0 no-shadow" 
+              <a href="#" class="waves-effect waves-light dropdown-toggle w-auto l-h-12 bg-transparent p-0 no-shadow"
                 title="User Profile" data-bs-toggle="modal" data-bs-target="#quick_user_toggle">
                 <div class="d-flex pt-1 align-items-center">
                   <div class="text-end me-10">
                     <p class="pt-5 fs-14 mb-0 fw-700">{{ Session::get('User')->name ?? '' }}</p>
                     <small class="fs-10 mb-0 text-uppercase text-mute">student</small>
                   </div>
-                  <img src="{{ Storage::disk('linode')->url('storage/student_image/' . Session::get('User')->ic . '.jpg') }}" 
+                  <img src="{{ Storage::disk('linode')->url('storage/student_image/' . Session::get('User')->ic . '.jpg') }}"
                     class="avatar rounded-circle bg-primary-light h-40 w-40" alt="" />
                 </div>
               </a>
@@ -200,12 +201,12 @@
         </div>
       </nav>
     </header>
-    
+
     <!-- Sidebar -->
     <aside class="main-sidebar">
-      <section class="sidebar position-relative"> 
+      <section class="sidebar position-relative">
         <div class="multinav">
-          <div class="multinav-scroll" style="height: 97%;">	
+          <div class="multinav-scroll" style="height: 97%;">
             <!-- Sidebar menu-->
             <ul class="sidebar-menu" data-widget="tree">
               <li>
@@ -220,15 +221,15 @@
               </li>
               {{-- <li>
                 <a href="{{ Storage::disk('linode')->url('classschedule/index.htm') }}" target="_blank">
-                  <i data-feather="layout"></i><span>Old Timetable</span>
-                </a>
+              <i data-feather="layout"></i><span>Old Timetable</span>
+              </a>
               </li> --}}
               <li>
                 <a href="AR/schedule/scheduleTable/{{ Auth::guard('student')->user()->ic }}?type=std" target="_blank">
                   <i data-feather="calendar"></i><span>Timetable</span>
                 </a>
               </li>
-              
+
               <!-- Student Affairs Dropdown -->
               <li class="treeview">
                 <a href="#">
@@ -239,200 +240,200 @@
                 </a>
                 <ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
                   <li>
-                    <a href="{{ route('student.affair.statement') }}" 
+                    <a href="{{ route('student.affair.statement') }}"
                       class="{{ (route('student.affair.statement') == Request::url()) ? 'active' : ''}}">
                       Statement
                     </a>
                   </li>
-                  
+
                   @php
                   $now = now();
                   $block_status = Auth::guard('student')->user()->block_status;
                   $student = Session::get('User');
-                  
+
                   // Check if there are any active result periods that match this student
                   $hasActiveResultPeriod = false;
-                  
+
                   if ($student) {
-                      $activePeriods = DB::table('tblresult_period')
-                          ->where('Start', '<=', $now)
-                          ->where('End', '>=', $now)
-                          ->get();
-                      
+                  $activePeriods = DB::table('tblresult_period')
+                  ->where('Start', '<=', $now)
+                    ->where('End', '>=', $now)
+                    ->get();
+
+                    foreach ($activePeriods as $period) {
+                    $programs = json_decode($period->program, true) ?: [];
+                    $sessions = json_decode($period->session, true) ?: [];
+                    // $semesters = json_decode($period->semester, true) ?: [];
+
+                    if (in_array($student->program, $programs) &&
+                    in_array($student->session, $sessions)) {
+                    $hasActiveResultPeriod = true;
+                    break;
+                    }
+                    }
+                    }
+                    @endphp
+
+                    @if($hasActiveResultPeriod && $block_status == 0)
+                    <li>
+                      <a href="{{ route('student.affair.result') }}"
+                        class="{{ (route('student.affair.result') == Request::url()) ? 'active' : ''}}">
+                        Result
+                      </a>
+                    </li>
+                    @endif
+
+                    @php
+                    // Check if there are any active slip periods that match this student
+                    $hasActiveSlipPeriod = false;
+
+                    if ($student) {
+                    $activePeriods = DB::table('tblslip_period')
+                    ->where('Start', '<=', $now)
+                      ->where('End', '>=', $now)
+                      ->get();
+
                       foreach ($activePeriods as $period) {
-                          $programs = json_decode($period->program, true) ?: [];
-                          $sessions = json_decode($period->session, true) ?: [];
-                          // $semesters = json_decode($period->semester, true) ?: [];
-                          
-                          if (in_array($student->program, $programs) && 
-                              in_array($student->session, $sessions)) {
-                              $hasActiveResultPeriod = true;
-                              break;
-                          }
+                      $programs = json_decode($period->program, true) ?: [];
+                      $sessions = json_decode($period->session, true) ?: [];
+                      $semesters = json_decode($period->semester, true) ?: [];
+
+                      if (in_array($student->program, $programs) &&
+                      in_array($student->session, $sessions) &&
+                      in_array($student->semester, $semesters)) {
+                      $hasActiveSlipPeriod = true;
+                      break;
                       }
-                  }
-                  @endphp
-
-                  @if($hasActiveResultPeriod && $block_status == 0)
-                  <li>
-                    <a href="{{ route('student.affair.result') }}" 
-                      class="{{ (route('student.affair.result') == Request::url()) ? 'active' : ''}}">
-                      Result
-                    </a>
-                  </li>
-                  @endif
-
-                  @php
-                  // Check if there are any active slip periods that match this student
-                  $hasActiveSlipPeriod = false;
-                  
-                  if ($student) {
-                      $activePeriods = DB::table('tblslip_period')
-                          ->where('Start', '<=', $now)
-                          ->where('End', '>=', $now)
-                          ->get();
-                      
-                      foreach ($activePeriods as $period) {
-                          $programs = json_decode($period->program, true) ?: [];
-                          $sessions = json_decode($period->session, true) ?: [];
-                          $semesters = json_decode($period->semester, true) ?: [];
-                          
-                          if (in_array($student->program, $programs) && 
-                              in_array($student->session, $sessions) && 
-                              in_array($student->semester, $semesters)) {
-                              $hasActiveSlipPeriod = true;
-                              break;
-                          }
                       }
-                  }
-                  @endphp
+                      }
+                      @endphp
 
-                  @if($hasActiveSlipPeriod && $block_status == 0)
-                  <li>
-                    <a id="examSlipLink" href="#" target="_blank">Slip Exam</a>
-                  </li>
-                  @endif
-                  {{-- <li>
+                      @if($hasActiveSlipPeriod && $block_status == 0)
+                      <li>
+                        <a id="examSlipLink" href="#" target="_blank">Slip Exam</a>
+                      </li>
+                      @endif
+                      {{-- <li>
                     <a href="{{ asset('storage/memo/2025.01.07 - Memo 01 Ketetapan Mod Pengajian Kuliah Kolej UNITI bagi Sesi 20242025-II.pdf') }}" target="_blank">
                       <span>Memo</span>
-                    </a>
-                  </li> --}}
-                  <li>
-                    <a href="{{ asset('storage/takwim/Takwim Akademik Kolej UNITI Semester I Sesi 20252026 (Kemasukan Jun) - Edaran Pelajar.pdf') }}" target="_blank">
-                      <span>Takwim Uniti (June)</span>
-                    </a>
-                  </li>
-                  <li>
-                    <a href="{{ asset('storage/takwim/Takwim Akademik Kolej UNITI Semester I Sesi 20252026 (Kemasukan September) - Edaran Pelajar.pdf') }}" target="_blank">
-                      <span>Takwim Uniti (September)</span>
-                    </a>
-                  </li>
-                  <li>
-                    <a href="{{ asset('storage/takwim/Takwim Akademik Kolej UNITI Semester I Sesi 20252026 (Kemasukan November) - Edaran Pelajar.pdf') }}" target="_blank">
-                      <span>Takwim Uniti (November)</span>
-                    </a>
-                  </li>
-                  <li>
-                    <a href="{{ asset('storage/takwim/Takwim Akademik Semester II-20242025 (UiTM) - Edaran Pelajar.pdf') }}" target="_blank">
-                      <span>Takwim UiTM</span>
-                    </a>
-                  </li>
-                </ul>
-              </li>
-              
-              <!-- Messages Dropdown -->
-              <li class="treeview">
-                <a href="#">
-                  <i data-feather="message-square"></i>
-                  <span>Messages</span>
-                  <span id="total-messages-count" class="count-circle hidden">0</span>
-                  <span class="pull-right-container">
-                    <i class="fa fa-angle-right pull-right"></i>
-                  </span>
-                </a>
-                <ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
-                  <li><a href="#" onclick="getMessage('FN', 'FN')">UKP (Student Finance)<span id="ukp-count" class="count-circle">0</span></a></li>
-                  <li><a href="#" onclick="getMessage('RGS', 'RGS')">KRP (Registration)<span id="krp-count" class="count-circle">0</span></a></li>
-                  <li><a href="#" onclick="getMessage('AR', 'AR')">Academic Registrar<span id="ar-count" class="count-circle hidden">0</span></a></li>
-                  <li><a href="#" onclick="getMessage('HEA', 'HEA')">HEP <span id="hep-count" class="count-circle hidden">0</span></a></li>
-                </ul>
-              </li>
-              
-              <!-- Quick Student Messages (Sidebar) -->
-              <li class="treeview">
-                <a href="#">
-                  <i data-feather="users"></i>
-                  <span>Student Messages</span>
-                  <span id="sidebar-student-messages-count" class="count-circle hidden">0</span>
-                  <span class="pull-right-container">
-                    <i class="fa fa-angle-right pull-right"></i>
-                  </span>
-                </a>
-                <ul class="treeview-menu treeview-menu-visible">
-                  <li>
-                    <div class="sidebar-quick-search">
-                      <input type="text" id="sidebar-student-search" placeholder="Quick search..." class="form-control form-control-sm">
-                      <div id="sidebar-search-results" class="sidebar-search-results"></div>
-                    </div>
-                  </li>
-                  <li>
-                    <div id="sidebar-recent-conversations" class="sidebar-conversations">
-                      <!-- Recent conversations will be loaded here -->
-                    </div>
-                  </li>
-                  <li>
-                    <a href="#" onclick="toggleMessagingPanel()" class="view-all-messages">
-                      <i data-feather="message-square"></i>
-                      <span>View All Messages</span>
-                    </a>
-                  </li>
-                </ul>
-              </li>
-
-              
+                      </a>
+              </li> --}}
               <li>
-                <a href="/yuran-pengajian" class="">
-                  <i data-feather="credit-card"></i><span>Payment</span>
+                <a href="{{ asset('storage/takwim/Takwim Akademik Kolej UNITI Semester I Sesi 20252026 (Kemasukan Jun) - Edaran Pelajar.pdf') }}" target="_blank">
+                  <span>Takwim Uniti (June)</span>
                 </a>
               </li>
               <li>
-                <a href="{{ asset('storage/finals_schedule/Jadual Peperiksaan Semester I Sesi 20252026 (Kemasukan September).pdf') }}" target="_blank">
-                  <i data-feather="file-text"></i><span>Finals Timetable</span>
+                <a href="{{ asset('storage/takwim/Takwim Akademik Kolej UNITI Semester I Sesi 20252026 (Kemasukan September) - Edaran Pelajar.pdf') }}" target="_blank">
+                  <span>Takwim Uniti (September)</span>
                 </a>
               </li>
-              
-              <!-- Mini Games -->
-              <li class="treeview">
-                <a href="#">
-                  <i data-feather="gamepad-2"></i>
-                  <span>Mini Games</span>
-                  <span class="pull-right-container">
-                    <i class="fa fa-angle-right pull-right"></i>
-                  </span>
+              <li>
+                <a href="{{ asset('storage/takwim/Takwim Akademik Kolej UNITI Semester I Sesi 20252026 (Kemasukan November) - Edaran Pelajar.pdf') }}" target="_blank">
+                  <span>Takwim Uniti (November)</span>
                 </a>
-                <ul class="treeview-menu treeview-menu-visible">
-                  <li>
-                    <a href="{{ route('student.games.lobby') }}" 
-                      class="{{ (route('student.games.lobby') == Request::url()) ? 'active' : ''}}">
-                      <i data-feather="users"></i> Game Lobby
-                    </a>
-                  </li>
-                  <li>
-                    <a href="{{ route('student.games.tictactoe') }}" 
-                      class="{{ (route('student.games.tictactoe') == Request::url()) ? 'active' : ''}}">
-                      <i data-feather="grid-3x3"></i> Tic Tac Toe
-                    </a>
-                  </li>
-                  <li>
-                    <a href="{{ route('student.games.connectfour') }}" 
-                      class="{{ (route('student.games.connectfour') == Request::url()) ? 'active' : ''}}">
-                      <i data-feather="circle"></i> Connect Four
-                    </a>
-                  </li>
-                </ul>
+              </li>
+              <li>
+                <a href="{{ asset('storage/takwim/Takwim Akademik Semester II-20242025 (UiTM) - Edaran Pelajar.pdf') }}" target="_blank">
+                  <span>Takwim UiTM</span>
+                </a>
               </li>
             </ul>
-            
+            </li>
+
+            <!-- Messages Dropdown -->
+            <li class="treeview">
+              <a href="#">
+                <i data-feather="message-square"></i>
+                <span>Messages</span>
+                <span id="total-messages-count" class="count-circle hidden">0</span>
+                <span class="pull-right-container">
+                  <i class="fa fa-angle-right pull-right"></i>
+                </span>
+              </a>
+              <ul class="treeview-menu treeview-menu-visible" id="treeview-menu-visible">
+                <li><a href="#" onclick="getMessage('FN', 'FN')">UKP (Student Finance)<span id="ukp-count" class="count-circle">0</span></a></li>
+                <li><a href="#" onclick="getMessage('RGS', 'RGS')">KRP (Registration)<span id="krp-count" class="count-circle">0</span></a></li>
+                <li><a href="#" onclick="getMessage('AR', 'AR')">Academic Registrar<span id="ar-count" class="count-circle hidden">0</span></a></li>
+                <li><a href="#" onclick="getMessage('HEA', 'HEA')">HEP <span id="hep-count" class="count-circle hidden">0</span></a></li>
+              </ul>
+            </li>
+
+            <!-- Quick Student Messages (Sidebar) -->
+            <li class="treeview">
+              <a href="#">
+                <i data-feather="users"></i>
+                <span>Student Messages</span>
+                <span id="sidebar-student-messages-count" class="count-circle hidden">0</span>
+                <span class="pull-right-container">
+                  <i class="fa fa-angle-right pull-right"></i>
+                </span>
+              </a>
+              <ul class="treeview-menu treeview-menu-visible">
+                <li>
+                  <div class="sidebar-quick-search">
+                    <input type="text" id="sidebar-student-search" placeholder="Quick search..." class="form-control form-control-sm">
+                    <div id="sidebar-search-results" class="sidebar-search-results"></div>
+                  </div>
+                </li>
+                <li>
+                  <div id="sidebar-recent-conversations" class="sidebar-conversations">
+                    <!-- Recent conversations will be loaded here -->
+                  </div>
+                </li>
+                <li>
+                  <a href="#" onclick="toggleMessagingPanel()" class="view-all-messages">
+                    <i data-feather="message-square"></i>
+                    <span>View All Messages</span>
+                  </a>
+                </li>
+              </ul>
+            </li>
+
+
+            <li>
+              <a href="/yuran-pengajian" class="">
+                <i data-feather="credit-card"></i><span>Payment</span>
+              </a>
+            </li>
+            <li>
+              <a href="{{ asset('storage/finals_schedule/Jadual Peperiksaan Akhir UNITI Semester I Sesi 20252026 (Kemasukan November).pdf') }}" target="_blank">
+                <i data-feather="file-text"></i><span>Final Exam Timetable</span>
+              </a>
+            </li>
+
+            <!-- Mini Games -->
+            <li class="treeview">
+              <a href="#">
+                <i data-feather="gamepad-2"></i>
+                <span>Mini Games</span>
+                <span class="pull-right-container">
+                  <i class="fa fa-angle-right pull-right"></i>
+                </span>
+              </a>
+              <ul class="treeview-menu treeview-menu-visible">
+                <li>
+                  <a href="{{ route('student.games.lobby') }}"
+                    class="{{ (route('student.games.lobby') == Request::url()) ? 'active' : ''}}">
+                    <i data-feather="users"></i> Game Lobby
+                  </a>
+                </li>
+                <li>
+                  <a href="{{ route('student.games.tictactoe') }}"
+                    class="{{ (route('student.games.tictactoe') == Request::url()) ? 'active' : ''}}">
+                    <i data-feather="grid-3x3"></i> Tic Tac Toe
+                  </a>
+                </li>
+                <li>
+                  <a href="{{ route('student.games.connectfour') }}"
+                    class="{{ (route('student.games.connectfour') == Request::url()) ? 'active' : ''}}">
+                    <i data-feather="circle"></i> Connect Four
+                  </a>
+                </li>
+              </ul>
+            </li>
+            </ul>
+
             <!-- Sidebar Widget -->
             <div class="sidebar-widgets">
               <div class="mx-25 mb-30 pb-20 side-bx bg-primary-light rounded20">
@@ -452,17 +453,17 @@
       <div id="blockAlertModal">
         <div class="warning-icon">
           <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="orange" viewBox="0 0 24 24">
-            <path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm1 17.5h-2v-2h2v2zm0-4.5h-2v-7h2v7z"/>
+            <path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm1 17.5h-2v-2h2v2zm0-4.5h-2v-7h2v7z" />
           </svg>
         </div>
         <h3>Anda mempunyai tunggakan yang perlu dijelaskan, sila semak penyata kewangan anda.</h3>
         <button onclick="closeModal()">OK</button>
       </div>
     </div>
-    
+
     <!-- Main Content -->
     @yield('main')
-    
+
     <!-- Student Messaging Panel (Facebook-like) -->
     <div id="messaging-panel" class="messaging-panel">
       <div class="messaging-panel-header">
@@ -480,7 +481,7 @@
           </div>
         </div>
       </div>
-      
+
       <div class="messaging-panel-body">
         <!-- Recent Conversations -->
         <div class="messaging-section">
@@ -498,16 +499,18 @@
 
     <!-- Messaging Panel Overlay -->
     <div id="messaging-overlay" class="messaging-overlay" onclick="toggleMessagingPanel()"></div>
-    
+
     <!-- Footer -->
     <footer class="main-footer">
       <div class="pull-right d-none d-sm-inline-block">
         <ul class="nav nav-primary nav-dotted nav-dot-separated justify-content-center justify-content-md-end">
         </ul>
       </div>
-      &copy; <script>document.write(new Date().getFullYear())</script> <a href="http://eduhub.intds.com.my">EduHub</a>
+      &copy; <script>
+        document.write(new Date().getFullYear())
+      </script> <a href="http://eduhub.intds.com.my">EduHub</a>
     </footer>
-    
+
     <!-- Quick User Toggle Modal -->
     <div class="modal modal-right fade" id="quick_user_toggle" tabindex="-1">
       <div class="modal-dialog">
@@ -521,11 +524,11 @@
                 <span class="fa fa-close"></span>
               </a>
             </div>
-            
+
             <div>
               <div class="d-flex flex-row">
                 <div class="">
-                  <img src="{{ Storage::disk('linode')->url('storage/student_image/' . Session::get('User')->ic . '.jpg') }}" 
+                  <img src="{{ Storage::disk('linode')->url('storage/student_image/' . Session::get('User')->ic . '.jpg') }}"
                     alt="user" class="rounded bg-danger-light w-150" width="100">
                 </div>
                 <div class="ps-20">
@@ -535,14 +538,14 @@
                     <span class="icon-Mail-notification me-5 text-success">
                       <span class="path1"></span>
                       <span class="path2">{{ Session::get('User')->email }}</span>
-                    </span> 
+                    </span>
                   </a>
                 </div>
               </div>
             </div>
-            
+
             <div class="dropdown-divider my-30"></div>
-            
+
             <div>
               <div class="col-sm-12 d-flex justify-content-center">
                 <a href="/student/setting" type="button" class="waves-effect waves-light btn btn-secondary btn-rounded mb-5" style="margin-right:10px;">
@@ -552,28 +555,28 @@
                   onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                   <i class="mdi mdi-logout"></i>{{ __('Logout') }}
                 </a>
-                
+
                 <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                   @csrf
                 </form>
               </div>
             </div>
-            
+
             <div class="dropdown-divider my-30"></div>
           </div>
         </div>
       </div>
     </div>
-    
+
     <!-- Control Sidebar Background -->
     <div class="control-sidebar-bg"></div>
   </div>
   <!-- ./wrapper -->
-  
+
   <div id="app">
     <example-component></example-component>
   </div>
-  
+
   <!-- Scripts -->
   <style>
     /* Messaging Button Styles */
@@ -586,11 +589,11 @@
       border-radius: 50%;
       transition: background-color 0.2s ease;
     }
-    
+
     .messaging-btn:hover {
       background-color: rgba(79, 129, 199, 0.1);
     }
-    
+
     .messaging-btn .badge {
       position: absolute;
       top: 0;
@@ -607,7 +610,7 @@
       justify-content: center;
       border: 2px solid white;
     }
-    
+
     .messaging-btn .badge.hidden {
       display: none;
     }
@@ -625,7 +628,7 @@
       visibility: hidden;
       transition: all 0.3s ease;
     }
-    
+
     .messaging-overlay.active {
       opacity: 1;
       visibility: visible;
@@ -644,7 +647,7 @@
       display: flex;
       flex-direction: column;
     }
-    
+
     .messaging-panel.active {
       right: 0;
     }
@@ -655,14 +658,14 @@
       padding: 20px;
       border-bottom: 1px solid #e1e8ed;
     }
-    
+
     .messaging-header-content {
       display: flex;
       align-items: center;
       justify-content: space-between;
       margin-bottom: 15px;
     }
-    
+
     .messaging-header-content h3 {
       margin: 0;
       font-size: 20px;
@@ -671,7 +674,7 @@
       align-items: center;
       gap: 8px;
     }
-    
+
     .close-messaging-btn {
       background: none;
       border: none;
@@ -681,7 +684,7 @@
       border-radius: 50%;
       transition: background-color 0.2s ease;
     }
-    
+
     .close-messaging-btn:hover {
       background-color: rgba(255, 255, 255, 0.1);
     }
@@ -689,7 +692,7 @@
     .messaging-search-container {
       position: relative;
     }
-    
+
     .messaging-search-box {
       position: relative;
       background: rgba(255, 255, 255, 0.9);
@@ -699,13 +702,13 @@
       align-items: center;
       gap: 8px;
     }
-    
+
     .search-icon {
       width: 16px;
       height: 16px;
       color: #666;
     }
-    
+
     .messaging-search-input {
       flex: 1;
       border: none;
@@ -714,7 +717,7 @@
       font-size: 14px;
       color: #333;
     }
-    
+
     .messaging-search-input::placeholder {
       color: #666;
     }
@@ -733,7 +736,7 @@
       display: none;
       margin-top: 8px;
     }
-    
+
     .messaging-search-results.active {
       display: block;
     }
@@ -747,7 +750,7 @@
     .messaging-section {
       padding: 20px;
     }
-    
+
     .messaging-section-title {
       font-size: 16px;
       font-weight: 600;
@@ -758,26 +761,26 @@
     .messaging-conversations {
       /* Remove max-height to allow full expansion */
     }
-    
+
     .messaging-empty-state {
       text-align: center;
       padding: 40px 20px;
       color: #666;
     }
-    
+
     .messaging-empty-state i {
       width: 48px;
       height: 48px;
       margin-bottom: 15px;
       color: #ccc;
     }
-    
+
     .messaging-empty-state p {
       font-size: 16px;
       font-weight: 500;
       margin: 0 0 5px 0;
     }
-    
+
     .messaging-empty-state span {
       font-size: 14px;
       color: #999;
@@ -793,15 +796,15 @@
       align-items: center;
       gap: 12px;
     }
-    
+
     .messaging-search-result-item:hover {
       background-color: #f8f9fa;
     }
-    
+
     .messaging-search-result-item:last-child {
       border-bottom: none;
     }
-    
+
     .messaging-search-avatar {
       width: 40px;
       height: 40px;
@@ -815,19 +818,19 @@
       font-size: 16px;
       flex-shrink: 0;
     }
-    
+
     .messaging-search-details {
       flex: 1;
       min-width: 0;
     }
-    
+
     .messaging-search-name {
       font-weight: 600;
       font-size: 14px;
       color: #333;
       margin-bottom: 2px;
     }
-    
+
     .messaging-search-info {
       font-size: 12px;
       color: #666;
@@ -843,7 +846,7 @@
       transition: background-color 0.2s ease;
       gap: 12px;
     }
-    
+
     .messaging-conversation-item:hover {
       background-color: #f8f9fa;
       padding-left: 8px;
@@ -852,11 +855,11 @@
       margin-right: -8px;
       border-radius: 8px;
     }
-    
+
     .messaging-conversation-item:last-child {
       border-bottom: none;
     }
-    
+
     .messaging-conversation-avatar {
       width: 48px;
       height: 48px;
@@ -871,7 +874,7 @@
       flex-shrink: 0;
       position: relative;
     }
-    
+
     .messaging-conversation-avatar.online::after {
       content: '';
       position: absolute;
@@ -883,30 +886,30 @@
       border: 2px solid white;
       border-radius: 50%;
     }
-    
+
     .messaging-conversation-details {
       flex: 1;
       min-width: 0;
     }
-    
+
     .messaging-conversation-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 4px;
     }
-    
+
     .messaging-conversation-name {
       font-weight: 600;
       font-size: 15px;
       color: #333;
     }
-    
+
     .messaging-conversation-time {
       font-size: 12px;
       color: #999;
     }
-    
+
     .messaging-conversation-preview {
       font-size: 13px;
       color: #666;
@@ -917,18 +920,18 @@
       align-items: center;
       gap: 4px;
     }
-    
+
     .messaging-conversation-preview.unread {
       font-weight: 600;
       color: #333;
     }
-    
+
     .messaging-conversation-meta {
       display: flex;
       align-items: center;
       gap: 8px;
     }
-    
+
     .messaging-unread-badge {
       background: #4f81c7;
       color: white;
@@ -954,14 +957,14 @@
     .sidebar-quick-search {
       padding: 10px 15px;
     }
-    
+
     .sidebar-quick-search .form-control-sm {
       font-size: 12px;
       padding: 6px 10px;
       border-radius: 15px;
       border: 1px solid #ddd;
     }
-    
+
     .sidebar-search-results {
       position: absolute;
       top: 100%;
@@ -977,11 +980,11 @@
       display: none;
       margin-top: 5px;
     }
-    
+
     .sidebar-search-results.active {
       display: block;
     }
-    
+
     .sidebar-search-item {
       padding: 8px 12px;
       cursor: pointer;
@@ -991,15 +994,15 @@
       align-items: center;
       gap: 8px;
     }
-    
+
     .sidebar-search-item:hover {
       background-color: #f8f9fa;
     }
-    
+
     .sidebar-search-item:last-child {
       border-bottom: none;
     }
-    
+
     .sidebar-search-avatar {
       width: 28px;
       height: 28px;
@@ -1013,19 +1016,19 @@
       font-size: 11px;
       flex-shrink: 0;
     }
-    
+
     .sidebar-search-info {
       flex: 1;
       min-width: 0;
     }
-    
+
     .sidebar-search-name {
       font-weight: 600;
       font-size: 12px;
       color: #333;
       margin-bottom: 1px;
     }
-    
+
     .sidebar-search-details {
       font-size: 10px;
       color: #666;
@@ -1033,13 +1036,13 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
-    
+
     .sidebar-conversations {
       max-height: 250px;
       overflow-y: auto;
       padding: 0 15px;
     }
-    
+
     .sidebar-conversation-item {
       display: flex;
       align-items: center;
@@ -1049,18 +1052,18 @@
       transition: all 0.2s ease;
       gap: 8px;
     }
-    
+
     .sidebar-conversation-item:hover {
       background-color: #f8f9fa;
       margin: 0 -8px;
       padding: 8px 8px;
       border-radius: 6px;
     }
-    
+
     .sidebar-conversation-item:last-child {
       border-bottom: none;
     }
-    
+
     .sidebar-conversation-avatar {
       width: 32px;
       height: 32px;
@@ -1075,7 +1078,7 @@
       flex-shrink: 0;
       position: relative;
     }
-    
+
     .sidebar-conversation-avatar.online::after {
       content: '';
       position: absolute;
@@ -1087,19 +1090,19 @@
       border: 2px solid white;
       border-radius: 50%;
     }
-    
+
     .sidebar-conversation-details {
       flex: 1;
       min-width: 0;
     }
-    
+
     .sidebar-conversation-name {
       font-weight: 600;
       font-size: 12px;
       color: #333;
       margin-bottom: 2px;
     }
-    
+
     .sidebar-conversation-preview {
       font-size: 11px;
       color: #666;
@@ -1107,12 +1110,12 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
-    
+
     .sidebar-conversation-preview.unread {
       font-weight: 600;
       color: #333;
     }
-    
+
     .sidebar-conversation-unread {
       background: #4f81c7;
       color: white;
@@ -1125,14 +1128,14 @@
       align-items: center;
       justify-content: center;
     }
-    
+
     .sidebar-empty-conversations {
       padding: 15px 0;
       text-align: center;
       color: #666;
       font-size: 11px;
     }
-    
+
     .view-all-messages {
       display: flex;
       align-items: center;
@@ -1141,12 +1144,12 @@
       font-weight: 500;
       transition: all 0.2s ease;
     }
-    
+
     .view-all-messages:hover {
       color: #3d6bb3 !important;
       background-color: rgba(79, 129, 199, 0.1);
     }
-    
+
     .view-all-messages i {
       width: 14px;
       height: 14px;
@@ -1158,46 +1161,50 @@
       const dropdown = document.getElementById('notificationDropdown');
       dropdown.classList.toggle('active');
     }
-    
+
     // Close the dropdown if the user clicks outside
     document.addEventListener('click', function(event) {
       const dropdown = document.getElementById('notificationDropdown');
       const button = document.querySelector('.notification-btn');
-      
+
       // If the click is not on the button or inside the dropdown, close it
       if (!button.contains(event.target) && !dropdown.contains(event.target)) {
         dropdown.classList.remove('active');
       }
     });
-    
+
     function markNotificationAndRedirect(notificationId, redirectUrl) {
       // Send AJAX request to mark the notification as read
       fetch('/notifications/mark-read/' + notificationId, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        }
-      })
-      .then(response => {
-        // After marking as read, redirect the user to the intended URL
-        window.location.href = redirectUrl;
-      })
-      .catch(error => {
-        console.error('Error marking notification as read:', error);
-        // If there's an error, still navigate to the URL
-        window.location.href = redirectUrl;
-      });
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+          }
+        })
+        .then(response => {
+          // After marking as read, redirect the user to the intended URL
+          window.location.href = redirectUrl;
+        })
+        .catch(error => {
+          console.error('Error marking notification as read:', error);
+          // If there's an error, still navigate to the URL
+          window.location.href = redirectUrl;
+        });
     }
-    
+
     // Exam slip modal
     document.addEventListener('DOMContentLoaded', function() {
       if (document.getElementById('examSlipLink')) {
         document.getElementById('examSlipLink').addEventListener('click', function(event) {
           event.preventDefault(); // Prevent default navigation
-          
-          var block_status = {{ $block_status ?? 0 }}; // Fetch the block status from PHP
-          
+
+          var block_status = {
+            {
+              $block_status ?? 0
+            }
+          }; // Fetch the block status from PHP
+
           if (block_status === 1) {
             // Show the overlay and modal
             document.getElementById('overlay').style.display = 'flex';
@@ -1208,32 +1215,32 @@
         });
       }
     });
-    
+
     function closeModal() {
       document.getElementById('overlay').style.display = 'none';
     }
-    
+
     // Message count updates
     let previousUkpCount = 0;
     let previousKrpCount = 0;
     let previousArCount = 0;
     let previousHepCount = 0;
     let totalCount = 0;
-    
+
     function updateMessageCount(type, elementId) {
       fetch(`/all/massage/student/countMessage?type=${type}`) // Replace with your API endpoint
         .then(response => response.json())
         .then(data => {
           const count = data.count;
           const element = document.getElementById(elementId);
-          
+
           if (count === 0) {
             element.classList.add('hidden');
           } else {
             element.classList.remove('hidden');
             element.innerText = count;
           }
-          
+
           // Check for changes in count and update total accordingly
           if (type === 'FN') {
             if (previousUkpCount !== count) {
@@ -1256,7 +1263,7 @@
               previousHepCount = count;
             }
           }
-          
+
           // Update total count display
           const totalElement = document.getElementById('total-messages-count');
           if (totalCount === 0) {
@@ -1268,7 +1275,7 @@
         })
         .catch(error => console.error('Error:', error));
     }
-    
+
     // Update counts every second
     setInterval(() => {
       updateMessageCount('FN', 'ukp-count');
@@ -1276,24 +1283,24 @@
       updateMessageCount('AR', 'ar-count');
       updateMessageCount('HEP', 'hep-count');
     }, 1000);
-    
+
     window.Laravel = {
       sessionUserId: 'STUDENT',
       currentStudentIc: '{{ Auth::guard("student")->user()->ic ?? "" }}'
     };
-    
+
     // Student messaging functionality
     let searchTimeout;
     let currentStudentChat = null;
     let messagingPanelOpen = false;
-    
+
     // Toggle messaging panel
     function toggleMessagingPanel() {
       const panel = document.getElementById('messaging-panel');
       const overlay = document.getElementById('messaging-overlay');
-      
+
       messagingPanelOpen = !messagingPanelOpen;
-      
+
       if (messagingPanelOpen) {
         panel.classList.add('active');
         overlay.classList.add('active');
@@ -1311,76 +1318,76 @@
         if (searchResults) searchResults.classList.remove('active');
       }
     }
-    
+
     // Initialize student messaging
     document.addEventListener('DOMContentLoaded', function() {
       // Main messaging panel search
       const searchInput = document.getElementById('messaging-student-search');
       const searchResults = document.getElementById('messaging-search-results');
-      
+
       // Sidebar quick search
       const sidebarSearchInput = document.getElementById('sidebar-student-search');
       const sidebarSearchResults = document.getElementById('sidebar-search-results');
-      
+
       if (searchInput) {
         searchInput.addEventListener('input', function() {
           clearTimeout(searchTimeout);
           const query = this.value.trim();
-          
+
           if (query.length < 2) {
             searchResults.classList.remove('active');
             return;
           }
-          
+
           searchTimeout = setTimeout(() => {
             searchStudents(query);
           }, 300);
         });
-        
+
         // Hide search results when clicking outside
         document.addEventListener('click', function(e) {
           if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
             searchResults.classList.remove('active');
           }
-          
+
           // Also handle sidebar search results
-          if (sidebarSearchInput && sidebarSearchResults && 
-              !sidebarSearchInput.contains(e.target) && !sidebarSearchResults.contains(e.target)) {
+          if (sidebarSearchInput && sidebarSearchResults &&
+            !sidebarSearchInput.contains(e.target) && !sidebarSearchResults.contains(e.target)) {
             sidebarSearchResults.classList.remove('active');
           }
         });
-              }
-        
-        // Sidebar search functionality
-        if (sidebarSearchInput) {
-          sidebarSearchInput.addEventListener('input', function() {
-            clearTimeout(searchTimeout);
-            const query = this.value.trim();
-            
-            if (query.length < 2) {
-              sidebarSearchResults.classList.remove('active');
-              return;
-            }
-            
-            searchTimeout = setTimeout(() => {
-              searchStudentsForSidebar(query);
-            }, 300);
-          });
-        }
-        
-        // Load existing conversations
-        loadStudentConversations();
-        loadSidebarConversations();
-      
-              // Set up periodic refresh for conversations when panel is open
-        setInterval(() => {
-          if (messagingPanelOpen) {
-            loadStudentConversations();
+      }
+
+      // Sidebar search functionality
+      if (sidebarSearchInput) {
+        sidebarSearchInput.addEventListener('input', function() {
+          clearTimeout(searchTimeout);
+          const query = this.value.trim();
+
+          if (query.length < 2) {
+            sidebarSearchResults.classList.remove('active');
+            return;
           }
-          // Always refresh sidebar conversations
-          loadSidebarConversations();
-        }, 5000);
-      
+
+          searchTimeout = setTimeout(() => {
+            searchStudentsForSidebar(query);
+          }, 300);
+        });
+      }
+
+      // Load existing conversations
+      loadStudentConversations();
+      loadSidebarConversations();
+
+      // Set up periodic refresh for conversations when panel is open
+      setInterval(() => {
+        if (messagingPanelOpen) {
+          loadStudentConversations();
+        }
+        // Always refresh sidebar conversations
+        loadSidebarConversations();
+      }, 5000);
+
       // Keyboard shortcuts
       document.addEventListener('keydown', function(e) {
         // Close messaging panel with Escape key
@@ -1389,24 +1396,26 @@
         }
       });
     });
-    
+
     function searchStudents(query) {
       fetch('/all/student/search', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-        },
-        body: JSON.stringify({ search: query })
-      })
-      .then(response => response.json())
-      .then(students => {
-        const searchResults = document.getElementById('messaging-search-results');
-        
-        if (students.length === 0) {
-          searchResults.innerHTML = '<div class="messaging-search-result-item">No students found</div>';
-        } else {
-          searchResults.innerHTML = students.map(student => `
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+          },
+          body: JSON.stringify({
+            search: query
+          })
+        })
+        .then(response => response.json())
+        .then(students => {
+          const searchResults = document.getElementById('messaging-search-results');
+
+          if (students.length === 0) {
+            searchResults.innerHTML = '<div class="messaging-search-result-item">No students found</div>';
+          } else {
+            searchResults.innerHTML = students.map(student => `
             <div class="messaging-search-result-item" onclick="startStudentChat('${student.ic}', '${student.name}')">
               <div class="messaging-search-avatar">
                 ${student.name.charAt(0).toUpperCase()}
@@ -1417,32 +1426,34 @@
               </div>
             </div>
           `).join('');
-        }
-        
-        searchResults.classList.add('active');
-      })
-      .catch(error => {
-        console.error('Error searching students:', error);
-      });
+          }
+
+          searchResults.classList.add('active');
+        })
+        .catch(error => {
+          console.error('Error searching students:', error);
+        });
     }
-    
+
     function searchStudentsForSidebar(query) {
       fetch('/all/student/search', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-        },
-        body: JSON.stringify({ search: query })
-      })
-      .then(response => response.json())
-      .then(students => {
-        const searchResults = document.getElementById('sidebar-search-results');
-        
-        if (students.length === 0) {
-          searchResults.innerHTML = '<div class="sidebar-search-item">No students found</div>';
-        } else {
-          searchResults.innerHTML = students.map(student => `
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+          },
+          body: JSON.stringify({
+            search: query
+          })
+        })
+        .then(response => response.json())
+        .then(students => {
+          const searchResults = document.getElementById('sidebar-search-results');
+
+          if (students.length === 0) {
+            searchResults.innerHTML = '<div class="sidebar-search-item">No students found</div>';
+          } else {
+            searchResults.innerHTML = students.map(student => `
             <div class="sidebar-search-item" onclick="startStudentChatFromSidebar('${student.ic}', '${student.name}')">
               <div class="sidebar-search-avatar">
                 ${student.name.charAt(0).toUpperCase()}
@@ -1453,25 +1464,25 @@
               </div>
             </div>
           `).join('');
-        }
-        
-        searchResults.classList.add('active');
-      })
-      .catch(error => {
-        console.error('Error searching students:', error);
-      });
+          }
+
+          searchResults.classList.add('active');
+        })
+        .catch(error => {
+          console.error('Error searching students:', error);
+        });
     }
-    
+
     function startStudentChat(studentIc, studentName) {
       // Hide search results and clear search
       const searchResults = document.getElementById('messaging-search-results');
       const searchInput = document.getElementById('messaging-student-search');
       if (searchResults) searchResults.classList.remove('active');
       if (searchInput) searchInput.value = '';
-      
+
       // Close messaging panel
       toggleMessagingPanel();
-      
+
       // Check if TextBox component is available
       if (window.textBoxComponent) {
         currentStudentChat = studentIc;
@@ -1481,14 +1492,14 @@
         openStudentChatModal(studentIc, studentName);
       }
     }
-    
+
     function startStudentChatFromSidebar(studentIc, studentName) {
       // Hide sidebar search results and clear search
       const sidebarSearchResults = document.getElementById('sidebar-search-results');
       const sidebarSearchInput = document.getElementById('sidebar-student-search');
       if (sidebarSearchResults) sidebarSearchResults.classList.remove('active');
       if (sidebarSearchInput) sidebarSearchInput.value = '';
-      
+
       // Check if TextBox component is available
       if (window.textBoxComponent) {
         currentStudentChat = studentIc;
@@ -1498,7 +1509,7 @@
         openStudentChatModal(studentIc, studentName);
       }
     }
-    
+
     function openStudentChatModal(studentIc, studentName) {
       // Create a modal for student chat
       const modal = document.createElement('div');
@@ -1517,25 +1528,25 @@
           </div>
         </div>
       `;
-      
+
       document.body.appendChild(modal);
-      
+
       // Show the modal
       const modalElement = new bootstrap.Modal(document.getElementById('studentChatModal'));
       modalElement.show();
-      
+
       // Clean up when modal is closed
       document.getElementById('studentChatModal').addEventListener('hidden.bs.modal', function() {
         this.remove();
       });
     }
-    
+
     function loadStudentConversations() {
       fetch('/all/student/conversations')
         .then(response => response.json())
         .then(conversations => {
           const container = document.getElementById('messaging-conversations');
-          
+
           if (conversations.length === 0) {
             container.innerHTML = `
               <div class="messaging-empty-state">
@@ -1549,11 +1560,14 @@
               const lastMessage = conv.last_message;
               const student = conv.student;
               const unreadCount = conv.unread_count;
-              
+
               // Format time
-              const messageTime = lastMessage && lastMessage.datetime ? 
-                new Date(lastMessage.datetime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '';
-              
+              const messageTime = lastMessage && lastMessage.datetime ?
+                new Date(lastMessage.datetime).toLocaleTimeString([], {
+                  hour: '2-digit',
+                  minute: '2-digit'
+                }) : '';
+
               // Format message preview
               let messagePreview = 'No messages yet';
               if (lastMessage) {
@@ -1563,7 +1577,7 @@
                   messagePreview = '📷 Photo';
                 }
               }
-              
+
               return `
                 <div class="messaging-conversation-item" onclick="startStudentChat('${student.ic}', '${student.name}')">
                   <div class="messaging-conversation-avatar online">
@@ -1585,12 +1599,12 @@
               `;
             }).join('');
           }
-          
+
           // Re-initialize feather icons
           if (window.feather) {
             feather.replace();
           }
-          
+
           // Update total unread count
           const totalUnread = conversations.reduce((sum, conv) => sum + conv.unread_count, 0);
           const countElement = document.getElementById('total-student-messages-count');
@@ -1605,13 +1619,13 @@
           console.error('Error loading conversations:', error);
         });
     }
-    
+
     function loadSidebarConversations() {
       fetch('/all/student/conversations')
         .then(response => response.json())
         .then(conversations => {
           const container = document.getElementById('sidebar-recent-conversations');
-          
+
           if (conversations.length === 0) {
             container.innerHTML = `
               <div class="sidebar-empty-conversations">
@@ -1621,12 +1635,12 @@
           } else {
             // Show only the first 3 conversations for the sidebar
             const recentConversations = conversations.slice(0, 3);
-            
+
             container.innerHTML = recentConversations.map(conv => {
               const lastMessage = conv.last_message;
               const student = conv.student;
               const unreadCount = conv.unread_count;
-              
+
               // Format message preview
               let messagePreview = 'No messages yet';
               if (lastMessage) {
@@ -1636,7 +1650,7 @@
                   messagePreview = '📷 Photo';
                 }
               }
-              
+
               return `
                 <div class="sidebar-conversation-item" onclick="startStudentChatFromSidebar('${student.ic}', '${student.name}')">
                   <div class="sidebar-conversation-avatar online">
@@ -1653,7 +1667,7 @@
               `;
             }).join('');
           }
-          
+
           // Update sidebar unread count
           const totalUnread = conversations.reduce((sum, conv) => sum + conv.unread_count, 0);
           const sidebarCountElement = document.getElementById('sidebar-student-messages-count');
@@ -1668,7 +1682,7 @@
           console.error('Error loading sidebar conversations:', error);
         });
     }
-    
+
     // Function to be called by TextBox component for student messaging
     function getStudentMessage(ic, type) {
       if (type === 'STUDENT_TO_STUDENT') {
@@ -1678,7 +1692,9 @@
             'Content-Type': 'application/json',
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
           },
-          body: JSON.stringify({ recipient_ic: ic })
+          body: JSON.stringify({
+            recipient_ic: ic
+          })
         }).then(response => response.json());
       } else {
         // Fallback to original getMessage for departments
@@ -1688,11 +1704,14 @@
             'Content-Type': 'application/json',
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
           },
-          body: JSON.stringify({ ic: ic, type: type })
+          body: JSON.stringify({
+            ic: ic,
+            type: type
+          })
         }).then(response => response.json());
       }
     }
-    
+
     // Function to send student message
     function sendStudentMessage(recipientIc, message, imageFile) {
       const formData = new FormData();
@@ -1701,7 +1720,7 @@
       if (imageFile) {
         formData.append('image', imageFile);
       }
-      
+
       return fetch('/all/student/sendMessage', {
         method: 'POST',
         headers: {
@@ -1711,7 +1730,7 @@
       }).then(response => response.json());
     }
   </script>
-  
+
   <!-- Vendor and App JS -->
   <script src="{{ mix('js/app.js') }}"></script>
   <script src="{{ asset('assets/src/js/vendors.min.js') }}"></script>
@@ -1735,7 +1754,7 @@
   <script src="{{ asset('assets/assets/vendor_components/bootstrap-colorpicker/dist/js/bootstrap-colorpicker.min.js') }}"></script>
   <script src="{{ asset('assets/assets/vendor_plugins/timepicker/bootstrap-timepicker.min.js') }}"></script>
   <script src="{{ asset('assets/assets/vendor_plugins/iCheck/icheck.min.js') }}"></script>
-  
+
   <!-- App JS -->
   <script src="{{ asset('assets/src/js/demo.js') }}"></script>
   <script src="{{ asset('assets/src/js/template.js') }}"></script>
@@ -1747,11 +1766,12 @@
   {{-- <script src="http://spp3.intds.com.my/assets/js/formplugins/select2/select2.bundle.js"></script> --}}
   <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
   <script src="{{ asset('assets/src/js/pages/component-animations-css3.js')}}"></script>
-  
+
   @yield('content')
 
   {{-- <!-- Include Spotify Widget -->
   @include('components.spotify-widget') --}}
 
 </body>
+
 </html>
