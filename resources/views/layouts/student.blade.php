@@ -398,7 +398,12 @@
             </li>
             <li>
               <a href="{{ asset('storage/finals_schedule/Jadual Peperiksaan Akhir UNITI Semester I Sesi 20252026 (Kemasukan November).pdf') }}" target="_blank">
-                <i data-feather="file-text"></i><span>Final Exam Timetable</span>
+                <i data-feather="file-text"></i><span>Exam Timetable (UNITI)</span>
+              </a>
+            </li>
+            <li>
+              <a href="{{ asset('storage/finals_schedule/Jadual Pengawasan Peperiksaan Akhir UiTM Semester I Sesi 20252026 (Kemasukan Oktober).pdf') }}" target="_blank">
+                <i data-feather="file-text"></i><span>Exam Timetable (UiTM)</span>
               </a>
             </li>
 
