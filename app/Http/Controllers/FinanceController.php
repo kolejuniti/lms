@@ -6758,8 +6758,8 @@ class FinanceController extends Controller
                 'students.program',
                 'students.semester',
                 'tblpayment.add_date',
-                'tblstudentclaim.groupid',
-                'tblpaymentdtl.claim_type_id'
+                DB::raw('GROUP_CONCAT(tblstudentclaim.groupid) as group_ids'),
+                DB::raw('GROUP_CONCAT(tblpaymentdtl.claim_type_id) as claim_type_ids')
             )
             ->whereBetween('tblpayment.add_date', [$request->from, $request->to])
             ->where('tblpayment.process_status_id', 2)
@@ -6769,7 +6769,10 @@ class FinanceController extends Controller
             ->get();
 
         foreach ($other as $ot) {
-            if (array_intersect([8], (array) $ot->process_type_id) && array_intersect([2], (array) $ot->groupid) && $ot->amount != 0) {
+            $groupIds = explode(',', $ot->group_ids);
+            $claimTypeIds = explode(',', $ot->claim_type_ids);
+
+            if (array_intersect([8], (array) $ot->process_type_id) && array_intersect([2], $groupIds) && $ot->amount != 0) {
                 $data['hostel'][] = $ot;
 
                 $data['hostelStudDetail'][] = DB::table('tblpaymentdtl')
@@ -6786,7 +6789,9 @@ class FinanceController extends Controller
                     ->groupBy('tblpaymentmethod.id')
                     ->select('tblpaymentmethod.*', 'tblpayment_bank.name AS bank', 'tblpayment_method.name AS method')
                     ->get();
-            } elseif (array_intersect([8, 1], (array) $ot->process_type_id) && array_intersect([5], (array) $ot->groupid) && $ot->amount != 0 && $ot->claim_type_id == 47) {
+            }
+
+            if (array_intersect([8, 1], (array) $ot->process_type_id) && array_intersect([5], $groupIds) && $ot->amount != 0 && array_intersect([47], $claimTypeIds)) {
                 $data['convo'][] = $ot;
 
                 $data['convoStudDetail'][] = DB::table('tblpaymentdtl')
@@ -6803,13 +6808,16 @@ class FinanceController extends Controller
                     ->groupBy('tblpaymentmethod.id')
                     ->select('tblpaymentmethod.*', 'tblpayment_bank.name AS bank', 'tblpayment_method.name AS method')
                     ->get();
-            } elseif (array_intersect([4], (array) $ot->groupid) && $ot->amount != 0) {
+            }
+
+            if (array_intersect([4], $groupIds) && $ot->amount != 0) {
                 $data['fine'][] = $ot;
 
                 $data['fineStudDetail'][] = DB::table('tblpaymentdtl')
                     ->join('tblstudentclaim', 'tblpaymentdtl.claim_type_id', 'tblstudentclaim.id')
                     ->where('tblpaymentdtl.payment_id', $ot->id)
                     ->where('tblpaymentdtl.amount', '!=', 0)
+                    ->where('tblstudentclaim.groupid', 4)
                     ->select('tblpaymentdtl.*', 'tblstudentclaim.name AS type')
                     ->get();
 
